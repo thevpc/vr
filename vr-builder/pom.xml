@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.vpc.app.vain-ruling</groupId>
+    <artifactId>vain-ruling-builder</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>..</module>
+        <module>../api/vr-api-service</module>
+        <module>../api/vr-api-web</module>
+        <module>../plugins/common-model/vr-common-model-service</module>
+        <module>../plugins/common-model/vr-common-model-web</module>
+        <module>../plugins/filesystem/vr-filesystem-service</module>
+        <module>../plugins/filesystem/vr-filesystem-web</module>
+        <module>../plugins/academic/vr-academic-service</module>
+        <module>../plugins/academic/vr-academic-web</module>
+        <module>../plugins/academic-internship/vr-academic-internship-service</module>
+        <module>../plugins/tasks/vr-tasks-service</module>
+        <module>../plugins/tasks/vr-tasks-web</module>
+        <module>../plugins/blog/vr-blog-service</module>
+        <module>../plugins/mailbox/vr-mailbox-service</module>
+        <module>../plugins/mailbox/vr-mailbox-web</module>
+        <module>../plugins/inventory/vr-inventory-service</module>
+        <module>../plugins/forum/vr-forum-service</module>
+        <module>../plugins/equipments/vr-equipments-service</module>
+        <module>../plugins/articles/vr-articles-service</module>
+        <module>../plugins/articles/vr-articles-web</module>
+
+        <module>../core/vr-core-service</module>
+        <module>../core/vr-core-web</module>
+        <module>../vr-app-service</module>
+        <module>../vr-app-web</module>
+    </modules>
+</project>
