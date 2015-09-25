@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+
+
+        <ui:composition template="/templates/template.xhtml">
+            <ui:define name="content">
+                <h:form id="listForm" enctype="multipart/form-data" >
+                    <p:commandButton style="margin-bottom: 20px" value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
+
+                    <div class="row">
+                        <p:dataTable var="i" value="#{documentsCtrl.model.files}" class="table table-bordered table-hover"
+                                     paginatorAlwaysVisible="false"
+                                     paginator="true"
+                                     paginatorPosition="bottom"
+                                     rows="20"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="20,50,100,200,1000"
+                                     >
+                            <p:column headerText="" width="30">
+                                <h:outputText styleClass="vr-icon-prefix-#{i.css}" style="color: white" value="."/>
+                            </p:column>
+                            <p:column headerText="#{documentsCtrl.model.current.file.path}">
+                                <p:commandLink value="#{i.name}" 
+                                               rendered="#{i.file.directory}" 
+                                               actionListener="#{documentsCtrl.updateCurrent(i.file)}"
+                                               ajax="true"
+                                               update=":listForm"
+                                               />
+                                <h:outputText value="#{i.name}" rendered="#{! i.file.directory}"/>
+                            </p:column>
+                            <p:column headerText="Taille" width="100">
+                                <h:outputText rendered="#{!i.file.directory}" value="#{i.file.length()}" converter="fileSizeConverter"/>
+                            </p:column>
+                            <p:column headerText="Modification" width="150">
+                                <h:outputText value="#{i.lastModifiedDate}" >
+                                    <f:convertDateTime type="date" pattern="dd-MM-yyyy HH:mm"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="" width="60">
+                                <p:commandButton rendered="#{! i.file.directory}" style="color: silver" value="." ajax="false" icon="ui-icon-arrowthick-1-s">
+                                    <p:fileDownload value="#{documentsCtrl.getContent(i)}" />
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </h:form>
+            </ui:define>
+
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

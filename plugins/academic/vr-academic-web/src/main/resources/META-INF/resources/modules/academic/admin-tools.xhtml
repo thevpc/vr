@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+
+
+        <ui:composition template="/templates/template.xhtml">
+            <ui:define name="content">
+                <h:form id="itemForm" enctype="multipart/form-data" >
+                    <p:growl id="growl" showDetail="true" sticky="true" />  
+                    <h1>Import</h1>
+                    <p:commandButton value="Import Local Teaching Load Folder" actionListener="#{academicAdminToolsCtrl.importTeachingLoad}" update="growl"
+                                     style="margin-bottom: 20px;"
+                                     />
+                    <p:fileUpload fileUploadListener="#{academicAdminToolsCtrl.handleTeachingLoadFileUpload}" 
+                                  label="Import any Academic File"
+                                  mode="advanced"
+                                  update="growl"
+                                  auto="true" sizeLimit="100000000" allowTypes="/(\.|\/)(xlsx)$/" />
+                    <p:separator/>
+                    <h1>Generate</h1>
+                    <p:commandButton value="Generate Teaching Load" actionListener="#{academicAdminToolsCtrl.generateTeachingLoad}" update="growl"/>
+                    <p:separator/>
+                    <h1>Misc</h1>
+                    <p:commandButton value="Update all formulas" actionListener="#{objCtrl.updateAllFormulas}"  update="growl"/>
+                </h:form>
+            </ui:define>
+
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

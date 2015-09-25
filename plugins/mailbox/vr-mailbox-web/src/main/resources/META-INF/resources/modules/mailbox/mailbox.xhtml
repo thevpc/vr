@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+
+
+        <ui:composition template="/templates/template.xhtml">
+            <ui:define name="content">
+                <h:form id="buttonsForm">
+                    <p:confirmDialog message="Etes vous sur de vouloir supprimer cet élément ?"  header="ATTENTION : Suppression"  widgetVar="confirmationDelete">  
+                        <p:commandButton value="Oui En Effet"  onclick="PF('confirmationDelete').hide();
+                                processOnDeleteSelected();"/>
+                        <p:commandButton value="Non merci" onclick="PF('confirmationDelete').hide()" type="button" />   
+                    </p:confirmDialog>
+
+                    <p:confirmDialog message="Etes vous sur de vouloir archiver cet élément ?"  header="ATTENTION : Suppression"  widgetVar="confirmationArchive">  
+                        <p:commandButton value="Oui En Effet"  onclick="PF('confirmationArchive').hide();
+                                processOnArchiveSelected();"/>
+                        <p:commandButton value="Non merci" onclick="PF('confirmationArchive').hide()" type="button" />   
+                    </p:confirmDialog>
+
+                    <!-- /.row -->
+                    <div class="row">
+                        <p:outputPanel id="buttons">
+                            <p:menuButton value="#{mailboxCtrl.preferredTitle}">
+                                <p:menuitem value="Boîte réception" actionListener="#{mailboxCtrl.onSelectInboxFolder}" update="buttons :listForm :itemForm :pageTitleForm :newItemForm" icon="ui-icon-shuffle"/>
+                                <p:menuitem value="Archive"  actionListener="#{mailboxCtrl.onSelectArchivedInboxFolder}" update="buttons :listForm :itemForm :pageTitleForm :newItemForm" icon="ui-icon-disk"/>
+                                <p:menuitem value="Corbeille"  actionListener="#{mailboxCtrl.onSelectDeletedInboxFolder}" update="buttons :listForm :itemForm :pageTitleForm :newItemForm"  icon="ui-icon-trash"/>
+                                <p:separator />
+                                <p:menuitem value="Boîte Envoi" actionListener="#{mailboxCtrl.onSelectOutboxFolder}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"  icon="ui-icon-link"/>
+                                <p:menuitem value="Archive Envoi" actionListener="#{mailboxCtrl.onSelectArchivedOutboxFolder}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"  icon="ui-icon-disk"/>
+                                <p:menuitem value="Corbeille Envoi" actionListener="#{mailboxCtrl.onSelectDeletedOutboxFolder}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"  icon="ui-icon-trash"/>
+                            </p:menuButton>
+                            <p:commandButton value="Env." rendered="#{mailboxCtrl.isEnabledButton('Send')}" icon="ui-ribbonicon-email" styleClass="ui-ribbon-bigbutton" ajax="true" onclick="processOnSendCurrent()"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                            <p:commandButton value="Rep." rendered="#{mailboxCtrl.isEnabledButton('Reply')}" icon="ui-ribbonicon-reply" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{mailboxCtrl.onReply}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                            <p:commandButton value="Rafr." rendered="#{mailboxCtrl.isEnabledButton('Refresh')}" icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{mailboxCtrl.onRefresh}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                            <p:commandButton value="Nouv." rendered="#{mailboxCtrl.isEnabledButton('New')}" icon="ui-ribbonicon-add" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{mailboxCtrl.onNew}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                            <p:commandButton value="Supp." rendered="#{mailboxCtrl.isEnabledButton('Remove')}" icon="ui-ribbonicon-del" styleClass="ui-ribbon-bigbutton" ajax="true"   onclick="PF('confirmationDelete').show();"  />
+                            <p:commandButton value="Arch." rendered="#{mailboxCtrl.isEnabledButton('Archive')}" icon="ui-ribbonicon-arch" styleClass="ui-ribbon-bigbutton" ajax="true"  onclick="PF('confirmationArchive').show();"/>
+                            <p:commandButton value="Ava." rendered="#{mailboxCtrl.isEnabledButton('Advanced')}" icon="ui-ribbonicon-details" styleClass="ui-ribbon-bigbutton" ajax="true"  actionListener="#{mailboxCtrl.onAdvancedSettings}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                            <p:commandButton value="Ann." rendered="#{mailboxCtrl.isEnabledButton('Cancel')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{mailboxCtrl.onCancelCurrent}" update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                        </p:outputPanel>
+                    </div>
+
+
+                    <!-- /.row -->
+                </h:form>
+                <h:form id="newItemForm" enctype="multipart/form-data" >
+                    <p:outputPanel rendered="#{mailboxCtrl.newMode}">
+
+                        <div class="panel-body">
+                            <p:panelGrid id="newPanelId"  style="width:100%;border-width: 0px;border-style: none;"> 
+                                <p:row style=";border-width: 0px;border-style: none;">
+                                    <p:column style="width:5%;border-width: 0px;border-style: none">
+                                        <p:outputLabel value="A"/>
+                                    </p:column>
+                                    <p:column style="width:80%;border-width: 0px;border-style: none;">
+                                        <p:inputText  style="width:100%" value="#{mailboxCtrl.model.newItem.toProfiles}"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row style=";border-width: 0px;border-style: none;" rendered="#{mailboxCtrl.model.advancedSettings}">
+                                    <p:column style="width:20px;border-width: 0px;border-style: none;">
+                                        <p:outputLabel value="Modèle"/>
+                                    </p:column>
+                                    <p:column style="width:10px;border-width: 0px;border-style: none;">
+                                        <p:selectBooleanCheckbox  style="width:10px" value="#{mailboxCtrl.model.newItem.templateMessage}"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row style=";border-width: 0px;border-style: none;" rendered="#{mailboxCtrl.model.advancedSettings}">
+                                    <p:column style="width:20px;border-width: 0px;border-style: none;">
+                                        <p:outputLabel value="Envoyer E-Mail"/>
+                                    </p:column>
+                                    <p:column style="width:10px;border-width: 0px;border-style: none;">
+                                        <p:selectBooleanCheckbox  style="width:10px" value="#{mailboxCtrl.model.newItem.externalMessage}"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row style=";border-width: 0px;border-style: none;" rendered="#{mailboxCtrl.model.advancedSettings}">
+                                    <p:column style=";border-width: 0px;border-style: none;">
+                                        <p:outputLabel value="CC"/>
+                                    </p:column>
+                                    <p:column style=";border-width: 0px;border-style: none;" colspan="3">
+                                        <p:inputText style="width:100%" value="#{mailboxCtrl.model.newItem.ccProfiles}"/>
+                                    </p:column>
+                                </p:row>
+                                <p:row style=";border-width: 0px;border-style: none;" rendered="#{mailboxCtrl.model.advancedSettings}">
+                                    <p:column style=";border-width: 0px;border-style: none;">
+                                        <p:outputLabel value="BCC"/>
+                                    </p:column>
+                                    <p:column style=";border-width: 0px;border-style: none;" colspan="3">
+                                        <p:inputText style="width:100%" value="#{mailboxCtrl.model.newItem.bccProfiles}"/>
+                                    </p:column>
+                                </p:row>
+
+                                <p:row style=";border-width: 0px;border-style: none;">
+                                    <p:column style=";border-width: 0px;border-style: none;">
+                                        <p:outputLabel value="Categorie"/>
+                                    </p:column>
+                                    <p:column style=";border-width: 0px;border-style: none;" colspan="3">
+                                        <p:inputText style="width:100%" value="#{mailboxCtrl.model.newItem.category}"/>
+                                    </p:column>
+                                </p:row>
+
+                                <p:row style=";border-width: 0px;border-style: none;">
+                                    <p:column colspan="4" style=";border-width: 0px;border-style: none;">
+                                        <p:outputLabel value="Sujet"/>
+                                    </p:column> 
+                                </p:row>
+                                <p:row style=";border-width: 0px;border-style: none;">
+                                    <p:column colspan="4" style=";border-width: 0px;border-style: none;">
+                                        <p:inputText style="width:100%" value="#{mailboxCtrl.model.newItem.subject}"/>
+                                    </p:column> 
+                                </p:row>
+
+                                <p:row style=";border-width: 0px;border-style: none;">
+                                    <p:column colspan="4" style=";border-width: 0px;border-style: none;">
+                                        <p:editor style="width:100%" value="#{mailboxCtrl.model.newItem.content}"/>
+                                    </p:column> 
+                                </p:row>
+
+                            </p:panelGrid>  
+                        </div>
+
+                    </p:outputPanel>
+                    <p:remoteCommand name="processOnSendCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{mailboxCtrl.onSend()}"/>
+                </h:form>
+
+                <h:form id="listForm">
+                    <p:outputPanel id="editItemList">
+                        <div class="row">
+                            <p:spacer width="10" height="10" />
+                        </div>
+                        <div class="row">
+                            <!--<div class="col-lg-6">-->
+
+                            <div class="table-responsive">
+                                <p:dataTable id="listTable" var="i" value="#{mailboxCtrl.model.inbox}" 
+                                             class="table table-bordered table-hover hide-column-names"
+                                             paginatorAlwaysVisible="false"
+                                             paginator="true"
+                                             paginatorPosition="bottom"
+                                             emptyMessage="Aucun message"
+                                             rows="20"
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="20,50,100,200,1000"
+                                             >
+
+                                    <!--                                    <f:facet name="header">
+                                                                            List
+                                                                            <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                                                                            <p:columnToggler datasource="cars" trigger="toggler" />
+                                                                        </f:facet>-->
+                                    <p:column headerText="" style="border-right: 0px !important;width: 25px; padding-left: 5px">
+                                        <p:selectBooleanCheckbox value="#{i.selected}" >
+                                        </p:selectBooleanCheckbox>
+                                    </p:column>
+                                    <p:column headerText="" style="border-right: 0px !important;width: 15px; border-left: 0px !important; padding-left: 0px;">
+                                        <ui:fragment rendered="#{i.value.important}">
+                                            <span class="ui-icon ui-icon-star"></span>
+                                        </ui:fragment>
+                                    </p:column>
+                                    <p:column headerText="" style="border-left: 0px !important;border-right: 0px !important;width: 10%;">
+                                        <p:outputLabel value="#{jsfCtrl.strcut(i.value.category, 20)}"/>
+                                    </p:column>
+                                    <p:column headerText="" style="border-left: 0px !important;border-right: 0px !important;width: 10%;">
+                                        <p:outputLabel value="#{i.value.userFullName}"/>
+                                    </p:column>
+                                    <p:column headerText="" style="border-left: 0px !important;border-right: 0px !important;width: 70%;">
+                                        <p:commandLink ajax="true" actionListener="#{mailboxCtrl.onSelect(i.value)}" 
+                                                       update=":listForm :itemForm :buttonsForm :pageTitleForm">
+                                            <p:outputLabel style="
+                                                           #{i.value.read?'font-size: small;font-weight: normal;':'font-weight: bolder;color: #519181;font-size: small;'}
+                                                           " value="#{jsfCtrl.strexpand(jsfCtrl.strcut(i.value.subject, 50),'.',3)}"/>
+                                            <p:spacer width="10" height="10" />
+                                            <p:outputLabel value="-"/>
+                                            <p:spacer width="10" height="10" />
+                                            <p:outputLabel style="
+                                                           #{i.value.read?'color: #9F9F9F;':'color: #797A7B;'}
+                                                           "
+                                                           value="#{jsfCtrl.strcut(jsfCtrl.html2txt(i.value.content), 120)}"/>
+                                            <f:setPropertyActionListener target="#{mailboxCtrl.model.current}" value="#{i.value}" />
+                                        </p:commandLink>
+                                    </p:column>
+                                    <p:column headerText="" style="border-left: 0px !important;width: 10%;">
+                                        <p:outputLabel value="#{i.value.sendTime}">
+                                            <f:converter converterId="RelativeDateConverter"/>
+                                        </p:outputLabel>
+                                    </p:column>
+                                    <f:facet name="footer">
+                                        <p:outputLabel value="Total #{mailboxCtrl.model.inbox.size()}"/>
+                                    </f:facet>
+                                </p:dataTable>
+                            </div>
+
+                        </div>
+                        <!-- /.row -->
+                    </p:outputPanel>
+                    <p:remoteCommand name="processOnDeleteSelected" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{mailboxCtrl.onRemoveSelected()}"/>
+                    <p:remoteCommand name="processOnArchiveSelected" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{mailboxCtrl.onArchiveSelected()}"/>
+                </h:form>
+
+                <h:form id="itemForm" enctype="multipart/form-data" >
+                    <p:outputPanel id="editItemDialog" rendered="#{mailboxCtrl.model.current ne null and mailboxCtrl.model.current.content ne null}" style="width: 100%">
+
+                        <p:panel id="basic" header="#{mailboxCtrl.model.current.subject}" style="margin-bottom:20px;width: 100%;border-width: 0px;">
+                            <p:spacer width="5" height="10"/>
+                            <p:outputLabel value="#{mailboxCtrl.model.current.userFullName} , "/>
+                            <p:spacer width="5" height="10"/>
+                            <p:outputLabel value="le"/>
+                            <p:spacer width="5" height="10"/>
+                            <p:outputLabel value="#{jsfCtrl.date(mailboxCtrl.model.current.sendTime, 'dd MMM yyyy à HH:mm')}"/>
+                            <p:spacer width="5" height="20"/>
+                            <p:commandButton id="msgDetailsId" value="" style="    padding-top: 5px;
+                                             padding-bottom: 5px;
+                                             padding-left: 0;
+                                             padding-right: 0;" type="button" icon="fa fa-fw fa-edit"/>
+                            <p:separator style="margin-top: 0px"/>
+                            <p:outputLabel value="#{mailboxCtrl.model.current.content}" escape="false"/>
+                        </p:panel>
+
+
+                        <p:overlayPanel id="msgDetailsPanel" for="msgDetailsId" hideEffect="fade" dynamic="true">
+                            <h:panelGrid columns="2">  
+                                <p:outputLabel value="de"/>
+                                <p:outputLabel value="#{mailboxCtrl.model.current.userFullName}" style="margin-left: 10px;"/>
+                                <p:outputLabel value="à"/>
+                                <p:outputLabel value="#{mailboxCtrl.model.current.toProfiles}" style="margin-left: 10px;"/>
+                                <p:outputLabel value="cc"/>
+                                <p:outputLabel value="#{mailboxCtrl.model.current.ccProfiles}" style="margin-left: 10px;"/>
+                                <p:outputLabel value="le"/>
+                                <p:outputLabel value="#{jsfCtrl.date(mailboxCtrl.model.current.sendTime, 'dd MMM yyyy à HH:mm')}" style="margin-left: 10px;"/>
+                                <p:outputLabel value="important"/>
+                                <p:selectBooleanCheckbox value="#{mailboxCtrl.model.current.important}" disabled="true" style="margin-left: 10px;"/>
+                            </h:panelGrid>
+                        </p:overlayPanel>
+
+                    </p:outputPanel>
+                    <!--                    <p:remoteCommand name="processOnSaveCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="# {objCtrl.onSaveCurrent()}"/>
+                                        <p:remoteCommand name="processOnDeleteCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="# {objCtrl.onDeleteCurrent()}"/>-->
+                </h:form>
+
+                <h:outputScript id="dynaFormScript" target="body">  
+                    /* <![CDATA[ */ 
+                    function handleComplete(xhr, status, args) { 
+                    if(args && args.isValid) { 
+                    PF('inputValuesWidget').show(); 
+                    } else { 
+                    PF('inputValuesWidget').hide(); 
+                    } 
+                    } 
+                    /* ]]> */  
+                </h:outputScript>  
+
+                <h:outputStylesheet id="dynaFormCSS">  
+
+                    .pe-dynaform-cell input,  
+                    .pe-dynaform-cell textarea,  
+                    .pe-dynaform-cell[colspan="1"] input,  
+                    .pe-dynaform-cell[colspan="1"] textarea {  
+                    width: 100%;  
+                    }  
+
+
+                    .pe-dynaform-cell.calendar input,  
+                    .pe-dynaform-cell[colspan="1"].calendar input {  
+                    width: 120px;  
+                    }  
+
+                    .pe-dynaform-cell.select .ui-selectonemenu {  
+                    width: 157px !important;  
+                    }  
+
+                    .pe-dynaform-cell.select .ui-selectonemenu .ui-selectonemenu-label {  
+                    width: 230px !important;  
+                    } 
+
+                    .pe-dynaform-cell.separator {  
+                    padding: 10px 0 10px 0;  
+                    }  
+
+                    .pe-dynaform-cell.separator .separatorText {  
+                    width: 15%;  
+                    padding-left: 0;  
+                    }  
+                    .nopadding{
+                    padding : 0 !important;
+                    border-style: none !important;
+                    }
+                </h:outputStylesheet>
+
+
+            </ui:define>
+
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

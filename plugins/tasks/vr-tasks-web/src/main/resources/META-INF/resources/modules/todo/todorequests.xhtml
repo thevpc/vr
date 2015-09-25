@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+
+
+        <ui:composition template="/templates/template.xhtml">
+            <ui:define name="content">
+                <h:form id="buttonsForm">
+                    <p:confirmDialog message="Are you sure, you want to delete ?"  header="Initiating deleting process"  widgetVar="confirmationDelete">  
+                        <p:commandButton value="Yes Sure"  onclick="PF('confirmationDelete').hide();
+                                processOnDeleteCurrent();"/>
+                        <p:commandButton value="Not Yet" onclick="PF('confirmationDelete').hide()" type="button" />   
+                    </p:confirmDialog>
+
+                    <!-- /.row -->
+                    <div class="row">
+                        <p:outputLabel id="buttons">
+                            <p:commandButton value="Rafr." rendered="#{todoRequestsCtrl.isEnabledButton('refresh')}" icon="ui-ribbonicon-add" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{todoRequestsCtrl.onRefresh}"  update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Nouv." rendered="#{todoRequestsCtrl.isEnabledButton('new')}" icon="ui-ribbonicon-add" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{todoRequestsCtrl.onNew}"  update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Enreg." rendered="#{todoRequestsCtrl.isEnabledButton('save')}"  icon="ui-ribbonicon-save" styleClass="ui-ribbon-bigbutton" ajax="true"  onclick="processOnSaveCurrent()"  update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Supp." rendered="#{todoRequestsCtrl.isEnabledButton('remove')}" icon="ui-ribbonicon-del" styleClass="ui-ribbon-bigbutton" ajax="true"   onclick="PF('confirmationDelete').show();"   update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Arch." rendered="#{todoRequestsCtrl.isEnabledButton('archive')}" icon="ui-ribbonicon-arch" styleClass="ui-ribbon-bigbutton" ajax="true"  onclick="processOnArchiveCurrent()"  update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Ann." rendered="#{todoRequestsCtrl.isEnabledButton('cancel')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{todoRequestsCtrl.onCancelCurrent}" update="buttons :listForm :itemForm"/>
+
+                            <p:commandButton value="Ann." rendered="#{todoRequestsCtrl.isEnabledButton('assign')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{todoRequestsCtrl.onAssignCurrent}" update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Ann." rendered="#{todoRequestsCtrl.isEnabledButton('unassign')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{todoRequestsCtrl.onUnassignCurrent}" update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Ann." rendered="#{todoRequestsCtrl.isEnabledButton('done')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{todoRequestsCtrl.onDoneCurrent}" update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Ann." rendered="#{todoRequestsCtrl.isEnabledButton('verify')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{todoRequestsCtrl.onVerifyCurrent}" update="buttons :listForm :itemForm"/>
+
+                            <p:commandButton value="Cop." rendered="#{todoRequestsCtrl.isEnabledButton('copy')}" icon="ui-ribbonicon-copy" styleClass="ui-ribbon-bigbutton"  update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Coll." rendered="#{todoRequestsCtrl.isEnabledButton('paste')}" icon="ui-ribbonicon-paste" styleClass="ui-ribbon-bigbutton"  update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Coup." rendered="#{todoRequestsCtrl.isEnabledButton('cut')}" icon="ui-ribbonicon-cut" styleClass="ui-ribbon-bigbutton"  update="buttons :listForm :itemForm"/>
+
+                            <p:commandButton value="impr." rendered="#{todoRequestsCtrl.isEnabledButton('print')}" icon="ui-ribbonicon-print"  styleClass="ui-ribbon-bigbutton" update="buttons :listForm :itemForm"/>
+
+                            <p:commandButton value="imp." rendered="#{todoRequestsCtrl.isEnabledButton('import')}" icon="ui-ribbonicon-import"  styleClass="ui-ribbon-bigbutton" update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="csv" rendered="#{todoRequestsCtrl.isEnabledButton('export-csv')}" icon="ui-ribbonicon-csv"  styleClass="ui-ribbon-bigbutton" update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="xls" rendered="#{todoRequestsCtrl.isEnabledButton('export-xls')}" icon="ui-ribbonicon-xls"  styleClass="ui-ribbon-bigbutton" update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="pdf" rendered="#{todoRequestsCtrl.isEnabledButton('export-pdf')}" icon="ui-ribbonicon-pdf"  styleClass="ui-ribbon-bigbutton" update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Auth." rendered="#{todoRequestsCtrl.isEnabledButton('authorization')}" icon="ui-ribbonicon-acl" styleClass="ui-ribbon-bigbutton" type="button"  update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Trace" rendered="#{todoRequestsCtrl.isEnabledButton('log')}" icon="ui-ribbonicon-log" styleClass="ui-ribbon-bigbutton" type="button" update="buttons :listForm :itemForm"/>  
+                        </p:outputLabel>
+                    </div>
+
+
+                    <!-- /.row -->
+                </h:form>
+                <h:form id="listForm">
+                    <p:outputLabel id="editItemList" rendered="#{todoRequestsCtrl.isListMode()}">
+
+
+                        <div class="row">
+                            <!--<div class="col-lg-6">-->
+                                <div class="table-responsive">
+                                    <p:dataTable var="i" value="#{todoRequestsCtrl.model.allTodos}" class="table table-bordered table-hover"
+                                                 paginatorAlwaysVisible="false"
+                                                 paginator="true"
+                                                 paginatorPosition="bottom"
+                                                 rows="20">
+                                        <p:column headerText="Libellé">
+                                            <p:commandLink ajax="true" actionListener="#{todoRequestsCtrl.onSelectCurrent}" update=":buttonsForm :listForm :itemForm">
+                                                <!--<button type="button" class="btn btn-default btn-circle">-->
+                                                <i class="fa fa-list"></i>
+                                                <!--</button>-->
+                                                <f:setPropertyActionListener target="#{todoRequestsCtrl.model.current}" value="#{i}" />
+                                            </p:commandLink>
+                                            <h:outputText value="#{i.name}" />
+                                        </p:column>
+
+                                        <p:column headerText="Serv"  style="width: 70px">
+                                            <h:outputText value="#{i.list.name}" />
+                                        </p:column>
+                                        <p:column headerText="Cat"  style="width: 70px">
+                                            <h:outputText value="#{i.category.shortName}" />
+                                        </p:column>
+
+                                        <p:column headerText="De"  style="width: 70px">
+                                            <h:outputText value="#{i.initiator.login}" />
+                                        </p:column>
+                                        <p:column headerText="Resp"  style="width: 70px">
+                                            <h:outputText value="#{i.responsible.login}" />
+                                        </p:column>
+
+                                        <p:column headerText="Echeance"  style="width: 100px">
+                                            <h:outputText value="#{i.deadline}" >
+                                                <f:convertDateTime type="date" pattern="dd-MM-yy"/>
+                                            </h:outputText>
+                                        </p:column>
+
+                                        <p:column headerText=""  style="width: 35px">
+                                            <!--<p:progressBar value="# {i.progress}" labelTemplate="{value}%" styleClass="animated" global="false"/>-->
+                                            <div class="progress progress-striped active">
+                                                <div class="progress-bar #{i.priority.ordinal()==0?'progress-bar-default':i.priority.ordinal()==1?'progress-bar-primary':i.priority.ordinal()==2?'progress-bar-success':i.priority.ordinal()==3?'progress-bar-info':i.priority.ordinal()==4?'progress-bar-warning':i.priority.ordinal()==5?'progress-bar-danger':'progress-bar-link'}" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                                </div>
+                                            </div>
+                                        </p:column>
+
+                                        <f:facet name="footer">
+                                            <p:outputLabel value="Total #{todoRequestsCtrl.model.allTodos.size()}"/>
+                                        </f:facet>
+                                    </p:dataTable>
+                                </div>
+                            <!--</div>-->
+                        </div>
+                        <!-- /.row -->
+
+                    </p:outputLabel>
+                </h:form>
+
+                <h:form id="itemForm" enctype="multipart/form-data" >
+                    <p:outputPanel id="editItemDialog" rendered="#{todoRequestsCtrl.isNewOrUpdateMode()}">
+                        <!--<p:outputPanel id="editItemDialog" >-->
+                        <!--                        width="570"
+                        height="450"-->
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label>Service</label>
+                                        <p:selectOneMenu value="#{todoRequestsCtrl.model.currentTodoListId}" 
+                                                         style="width: 100%">
+                                            <p:ajax listener="#{todoRequestsCtrl.currentTodoListChanged}" update=":listForm"/>
+                                            <f:selectItems value="#{todoRequestsCtrl.model.todoListItems}" />
+                                        </p:selectOneMenu>                                            
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Titre</label>
+                                        <p:inputText value="#{todoRequestsCtrl.model.current.name}" styleClass="form-control" />
+                                        <!--<p class="help-block">Le titre de l'action à afficher.</p>-->
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <p:inputTextarea styleClass="form-control" rows="8"/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Attachements</label>
+                                        <input type="file"/>
+                                    </div>
+                                    <p:dataList var="car" type="unordered" itemType="none" paginator="true" rows="10" 
+                                                styleClass="paginated"
+                                                paginatorPosition="bottom"
+                                                paginatorAlwaysVisible="false"
+                                                emptyMessage=""
+                                                >
+                                        <!--                                            <f:facet name="header">
+                                                                                        Paginator
+                                                                                    </f:facet>-->
+                                        <!--                                            <p:commandLink update=":form:carDetail" oncomplete="PF('carDialog').show()" title="View Detail" styleClass="ui-icon ui-icon-search" style="float:left;margin-right:10px">
+                                                                                        <f:setPropertyActionListener value="# {car}" target="# {dataListView.selectedCar}" />
+                                                                                        <h:outputText value="# {car.brand}, # {car.year}" />
+                                                                                    </p:commandLink>
+                                                                                    <h:outputText value="# {car.brand}, # {car.year}" style="display:inline-block"/>-->
+                                    </p:dataList>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label>Echéance</label><p:spacer width="30" height="10" />
+                                        <p:calendar  value="#{todoRequestsCtrl.model.current.deadline}" pattern="MM/dd/yyyy HH:mm:ss">
+                                            <f:converter converterId="TimestampConverter"/>
+                                        </p:calendar>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Categorie</label>
+                                        <p:selectOneMenu value="#{todoRequestsCtrl.model.currentCategoryId}" style="width: 100%">
+                                            <f:selectItems value="#{todoRequestsCtrl.model.categoryItems}" />
+                                        </p:selectOneMenu>                                            
+                                    </div>
+                                    <p:outputPanel rendered="#{!todoCtrl.isNewMode()}">
+                                        <div class="form-group">
+                                            <label>Etat</label>
+                                            <p:selectOneMenu value="#{todoRequestsCtrl.model.currentStatusId}" style="width: 100%">
+                                                <f:selectItems value="#{todoRequestsCtrl.model.statusItems}" />
+                                            </p:selectOneMenu>                                            
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Complexité</label>
+                                            <p:inputText id="complexityField" value="#{todoRequestsCtrl.model.current.estimation}" styleClass="form-control" />
+                                            <p:slider minValue="1" maxValue="24" for="complexityField" />
+                                            <!--<p class="help-block">Le titre de l'action à afficher.</p>-->
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Priorité</label>
+                                            <p:selectOneMenu value="#{todoRequestsCtrl.model.current.priority}"  style="width: 100%">
+                                                <f:selectItems value="#{dropDownCtrl.todoPriorities}" />
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Progression</label>
+                                            <div class="progress progress-striped active">
+                                                #{i.progress}%<div class="progress-bar #{todoRequestsCtrl.model.current.priority.ordinal()==0?'progress-bar-default':todoCtrl.model.current.priority.ordinal()==1?'progress-bar-primary':todoCtrl.model.current.priority.ordinal()==2?'progress-bar-success':todoCtrl.model.current.priority.ordinal()==3?'progress-bar-info':todoCtrl.model.current.priority.ordinal()==4?'progress-bar-warning':todoCtrl.model.current.priority.ordinal()==5?'progress-bar-danger':'progress-bar-link'}" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: #{todoRequestsCtrl.model.current.progress le 10?10:todoCtrl.model.current.progress}%">
+                                                    <span class="sr-only">#{todoRequestsCtrl.model.current.progress}%</span>
+                                                </div>
+                                            </div>
+                                            <h:panelGrid columns="4">
+                                                <p:commandButton  styleClass="form-control" value="+1%"/>
+                                                <p:commandButton  styleClass="form-control" value="+5%"/>
+                                                <p:commandButton  styleClass="form-control" value="+10%"/>
+                                                <p:commandButton  styleClass="form-control" value="-1%"/>
+                                            </h:panelGrid>   
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Consommation</label>
+                                            <p:inputText value="#{todoRequestsCtrl.model.current.consumption}" styleClass="form-control" />
+                                            <!--<p class="help-block">Le titre de l'action à afficher.</p>-->
+                                            <h:panelGrid columns="4">
+                                                <p:commandButton  styleClass="form-control" value="+0.25"/>
+                                                <p:commandButton  styleClass="form-control" value="+0.5"/>
+                                                <p:commandButton  styleClass="form-control" value="+1"/>
+                                                <p:commandButton  styleClass="form-control" value="-0.25"/>
+                                            </h:panelGrid>   
+                                        </div>
+                                    </p:outputPanel>
+                                </div>
+                            </div>
+                            <!-- /.row (nested) -->
+                        </div>
+                        <p:remoteCommand name="processOnSaveCurrent" process="@form" update=":listForm :itemForm" action="#{todoRequestsCtrl.onSaveCurrent()}"/>
+                        <p:remoteCommand name="processOnDeleteCurrent" process="@form" update=":listForm :itemForm" action="#{todoRequestsCtrl.onDeleteCurrent()}"/>
+                        <p:remoteCommand name="processOnArchiveCurrent" process="@form" update=":listForm :itemForm" action="#{todoRequestsCtrl.onArchiveCurrent()}"/>
+                        <p:remoteCommand name="processOnCancelCurrent" process="@form" update=":listForm :itemForm" action="#{todoRequestsCtrl.onCancelCurrent()}"/>
+                    </p:outputPanel>
+                </h:form>
+
+            </ui:define>
+
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+
+
+        <ui:composition template="/templates/template.xhtml">
+            <ui:define name="content">
+                <h:form id="buttonsForm">
+                    <p:confirmDialog message="Are you sure, you want to delete ?"  header="Initiating deleting process"  widgetVar="confirmationDelete">  
+                        <p:commandButton value="Yes Sure"  onclick="PF('confirmationDelete').hide();
+                                processOnDeleteCurrent();"/>
+                        <p:commandButton value="Not Yet" onclick="PF('confirmationDelete').hide()" type="button" />   
+                    </p:confirmDialog>
+
+                    <!-- /.row -->
+                    <div class="row">
+                        <p:outputLabel id="buttons">
+                            <p:commandButton value="Rafr." rendered="#{todoListCtrl.isEnabledButton('refresh')}" icon="ui-ribbonicon-add" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{todoListCtrl.onRefresh}"  update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Nouv." rendered="#{todoListCtrl.isEnabledButton('new')}" icon="ui-ribbonicon-add" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{todoListCtrl.onNew}"  update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Enreg." rendered="#{todoListCtrl.isEnabledButton('save')}"  icon="ui-ribbonicon-save" styleClass="ui-ribbon-bigbutton" ajax="true"  onclick="processOnSaveCurrent()"  update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Supp." rendered="#{todoListCtrl.isEnabledButton('remove')}" icon="ui-ribbonicon-del" styleClass="ui-ribbon-bigbutton" ajax="true"   onclick="PF('confirmationDelete').show();"  update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Arch." rendered="#{todoListCtrl.isEnabledButton('archive')}" icon="ui-ribbonicon-arch" styleClass="ui-ribbon-bigbutton" ajax="true"  onclick="processOnArchiveCurrent()"  update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Ann." rendered="#{todoListCtrl.isEnabledButton('cancel')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{todoListCtrl.onCancelCurrent}" update="buttons :listForm :itemForm"/>
+
+                            <p:commandButton value="Ann." rendered="#{todoListCtrl.isEnabledButton('assign')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{todoListCtrl.onAssignCurrent}" update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Ann." rendered="#{todoListCtrl.isEnabledButton('unassign')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{todoListCtrl.onUnassignCurrent}" update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Ann." rendered="#{todoListCtrl.isEnabledButton('done')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{todoListCtrl.onDoneCurrent}" update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Ann." rendered="#{todoListCtrl.isEnabledButton('verify')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{todoListCtrl.onVerifyCurrent}" update="buttons :listForm :itemForm"/>
+
+                            <p:commandButton value="Cop." rendered="#{todoListCtrl.isEnabledButton('copy')}" icon="ui-ribbonicon-copy" styleClass="ui-ribbon-bigbutton"  update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Coll." rendered="#{todoListCtrl.isEnabledButton('paste')}" icon="ui-ribbonicon-paste" styleClass="ui-ribbon-bigbutton"  update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Coup." rendered="#{todoListCtrl.isEnabledButton('cut')}" icon="ui-ribbonicon-cut" styleClass="ui-ribbon-bigbutton"  update="buttons :listForm :itemForm"/>
+
+                            <p:commandButton value="impr." rendered="#{todoListCtrl.isEnabledButton('print')}" icon="ui-ribbonicon-print"  styleClass="ui-ribbon-bigbutton" update="buttons :listForm :itemForm"/>
+
+                            <p:commandButton value="imp." rendered="#{todoListCtrl.isEnabledButton('import')}" icon="ui-ribbonicon-import"  styleClass="ui-ribbon-bigbutton" update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="csv" rendered="#{todoListCtrl.isEnabledButton('export-csv')}" icon="ui-ribbonicon-csv"  styleClass="ui-ribbon-bigbutton" update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="xls" rendered="#{todoListCtrl.isEnabledButton('export-xls')}" icon="ui-ribbonicon-xls"  styleClass="ui-ribbon-bigbutton" update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="pdf" rendered="#{todoListCtrl.isEnabledButton('export-pdf')}" icon="ui-ribbonicon-pdf"  styleClass="ui-ribbon-bigbutton" update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Auth." rendered="#{todoListCtrl.isEnabledButton('authorization')}" icon="ui-ribbonicon-acl" styleClass="ui-ribbon-bigbutton" type="button"  update="buttons :listForm :itemForm"/>
+                            <p:commandButton value="Trace" rendered="#{todoListCtrl.isEnabledButton('log')}" icon="ui-ribbonicon-log" styleClass="ui-ribbon-bigbutton" type="button" update="buttons :listForm :itemForm :itemForm"/>  
+                        </p:outputLabel>
+                    </div>
+
+
+                    <!-- /.row -->
+                </h:form>
+                <h:form id="listForm">
+                    <p:outputLabel id="editItemList" rendered="#{todoListCtrl.isListMode()}">
+
+
+
+
+                        <div class="row">
+                            <!--<div class="col-lg-6">-->
+
+                            <div class="table-responsive">
+                                <p:dataTable var="i" value="#{todoListCtrl.model.list}" class="table table-bordered table-hover"
+                                             paginatorAlwaysVisible="false"
+                                             paginator="true"
+                                             paginatorPosition="bottom"
+                                             rows="5">
+                                    <p:column headerText=""  style="width: 25px">
+                                        <p:commandLink ajax="true" actionListener="#{todoListCtrl.onSelectCurrent}" update=":buttonsForm :listForm :itemForm">
+                                            <!--<button type="button" class="btn btn-default btn-circle">-->
+                                            <i class="fa fa-list"></i>
+                                            <!--</button>-->
+                                            <f:setPropertyActionListener target="#{todoListCtrl.model.current}" value="#{i}" />
+                                        </p:commandLink>
+                                    </p:column>
+                                    <p:column headerText="Libellé">
+                                        <h:outputText value="#{i.name}" />
+                                    </p:column>
+
+                                    <p:column headerText="Système"  style="width: 70px">
+                                        <h:selectBooleanCheckbox disabled="true" value="#{i.systemList}" />
+                                    </p:column>
+
+                                    <f:facet name="footer">
+                                        <p:outputLabel value="Total #{todoListCtrl.model.list.size()}"/>
+                                    </f:facet>
+                                </p:dataTable>
+                            </div>
+                            <!--</div>-->
+                        </div>
+                        <!-- /.row -->
+                    </p:outputLabel>
+                </h:form>
+
+                <h:form id="itemForm" enctype="multipart/form-data" >
+                    <p:outputPanel id="editItemDialog" rendered="#{todoListCtrl.isNewOrUpdateMode()}">
+                        <!--                        width="570"
+                        height="450"-->
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label>Titre</label>
+                                        <p:inputText disabled="#{todoListCtrl.model.current.systemList}" value="#{todoListCtrl.model.current.name}" styleClass="form-control" />
+                                        <!--<p class="help-block">Le titre de l'action à afficher.</p>-->
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <p:inputTextarea styleClass="form-control" rows="8" value="#{todoListCtrl.model.current.description}"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Système</label>
+                                        <h:selectBooleanCheckbox disabled="true" value="#{todoListCtrl.model.current.systemList}" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </p:outputPanel>
+                    <p:remoteCommand name="processOnSaveCurrent" process="@form" update=":listForm :itemForm" action="#{todoListCtrl.onSaveCurrent()}"/>
+                    <p:remoteCommand name="processOnDeleteCurrent" process="@form" update=":listForm :itemForm" action="#{todoListCtrl.onDeleteCurrent()}"/>
+                </h:form>
+
+            </ui:define>
+
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>
