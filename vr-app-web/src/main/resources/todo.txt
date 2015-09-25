@@ -1,0 +1,3 @@
+drop table vr.MAILBOX_RECEIVED
+drop table vr.MAILBOX_SENT
+drop table vr.RAW_MESSAGE

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" 
+      xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+    <h:head>
+    </h:head>
+    <h:body>
+        <ui:composition template="/templates/public-template.xhtml">
+            <ui:define name="row1">
+
+            </ui:define>
+            <ui:define name="row2">
+
+            </ui:define>
+            <ui:define name="row3">
+                <div class="text-inter">
+                    <div class="container">
+                        <div class="row">
+                            <h1>News</h1>
+                        </div>
+                        <ui:repeat value="#{articlesCtrl.news}" var="i" varStatus="istat">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h3>#{i.content.subject}</h3>
+                                        <p:imageSwitch effect="zoom" slideshowAuto="true" style="float: left; 
+                                                       margin-right: 10px; 
+                                                       margin-bottom: 10px;
+                                                       ">
+                                            <ui:repeat value="#{i.imageAttachments}" var="im">
+                                                <p:graphicImage value="#{im.path}" alt="#{im.name}" width="400"/>
+                                            </ui:repeat>
+                                        </p:imageSwitch>
+
+                                        <p>
+                                            <p:outputLabel escape="false" value="#{jsfCtrl.pureHtml(i.content.content)}"/>
+                                        </p>
+                                        <ui:repeat value="#{i.attachments}" var="att">
+                                            <h:outputLink 
+                                                value="#{att.path}" 
+                                                styleClass="#{(att.style eq null or att.style eq '')?'hero-btn':att.style}">
+                                                <h:outputText value="#{att.name}" />
+                                            </h:outputLink>
+                                        </ui:repeat>
+                                    </div>
+                                   
+                                </div>
+                            </ui:repeat>
+                    </div>
+                </div>
+                <div class="shadow"></div>
+            </ui:define>
+            <ui:define name="row4">
+
+            </ui:define>
+            <ui:define name="row5">
+
+            </ui:define>
+            <!--            <ui:define name="row6">
+            
+                        </ui:define>-->
+            <!--            <ui:define name="row7">
+            
+                        </ui:define>-->
+        </ui:composition>
+    </h:body>
+</html>

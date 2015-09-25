@@ -1,0 +1,267 @@
+.ui-ribbon .ui-colorpicker .ui-button {
+    height: 24px;
+}
+
+.ui-icon.ui-ribbonicon-new {
+    margin-left: -10px;
+    margin-top: -20px;
+    background-image: url("../fs/Site/images/icons/new16.png");
+}
+
+.ui-icon.ui-ribbonicon-save {
+    background-image: url("../fs/Site/images/icons/save16.png");
+}
+
+.ui-icon.ui-ribbonicon-add {
+    background-image: url("../fs/Site/images/icons/add16.png");
+}
+
+.ui-icon.ui-ribbonicon-refresh {
+    background-image: url("../fs/Site/images/icons/refresh16.png");
+}
+
+.ui-icon.ui-ribbonicon-reply {
+    background-image: url("../fs/Site/images/icons/reply16.png");
+}
+
+.ui-icon.ui-ribbonicon-details {
+    background-image: url("../fs/Site/images/icons/details16.png");
+}
+
+.ui-icon.ui-ribbonicon-del {
+    background-image: url("../fs/Site/images/icons/delete16.png");
+}
+
+.ui-icon.ui-ribbonicon-canc {
+    background-image: url("../fs/Site/images/icons/undo16.png");
+}
+
+.ui-icon.ui-ribbonicon-arch {
+    background-image: url("../fs/Site/images/icons/zip16.png");
+}
+
+.ui-icon.ui-ribbonicon-csv {
+    background-image: url("../fs/Site/images/icons/csv.png");
+}
+.ui-icon.ui-ribbonicon-xls {
+    background-image: url("../fs/Site/images/icons/sheet16.png");
+}
+
+.ui-icon.ui-ribbonicon-pdf {
+    background-image: url("../fs/Site/images/icons/pdf.png");
+}
+
+.ui-icon.ui-ribbonicon-paste {
+    background-image: url("../fs/Site/images/icons/paste16.png");
+}
+.ui-icon.ui-ribbonicon-copy {
+    background-image: url("../fs/Site/images/icons/copy16.png");
+}
+
+.ui-icon.ui-ribbonicon-cut {
+    background-image: url("../fs/Site/images/icons/cut16.png");
+}
+
+.ui-icon.ui-ribbonicon-print {
+    background-image: url("../fs/Site/images/icons/print16.png");
+}
+
+.ui-icon.ui-ribbonicon-zoomin {
+    background-image: url("../fs/Site/images/icons/zoomin.png");
+}
+
+.ui-icon.ui-ribbonicon-zoomout {
+    background-image: url("../fs/Site/images/icons/zoomout.png");
+}
+.ui-icon.ui-ribbonicon-acl {
+    background-image: url("../fs/Site/images/icons/acl.png");
+}
+.ui-icon.ui-ribbonicon-log {
+    background-image: url("../fs/Site/images/icons/log.png");
+}
+.ui-icon.ui-ribbonicon-import {
+    background-image: url("../fs/Site/images/icons/import.png");
+}
+.ui-icon.ui-ribbonicon-email {
+    background-image: url("../fs/Site/images/icons/email16.png");
+}
+.ui-icon.ui-ribbonicon-xemail {
+    background-image: url("../fs/Site/images/icons/xemail16.png");
+}
+.ui-widget, .ui-widget .ui-widget {
+    font-size: 90%;
+}
+.legend {
+    font-size: 100%;
+}
+
+.vr-clock{
+    background: none;
+    border-color: #1a6b57;
+    border-style: none;
+    border-width: 0px;
+    font-family: monospace;
+    font-size: medium;
+    color: #1a6b57;
+}
+.ui-clock {
+    padding: 4px 10px;
+    background: none;
+    border-style: none;
+    border-width: 0px;
+    border-color: #0f6b57;
+    font-family: monospace;
+    /*font-size: x-small !important;*/ 
+    font-size: small;
+    color: #0f6b57;
+}
+.vr-cnx-nbr{
+    background-color: #468A79;
+}
+.vr-cnx-label{
+    font-size: x-small;
+    color: #468A79;
+}
+
+table.NoPaddingTableClass td {
+    padding: 0
+}
+
+.ui-selectmanycheckbox td{
+    margin-left: 10px;
+}
+
+.vr-assigned-course{
+    color: #1a6b57;
+    font-weight: bold;
+}
+
+
+.vr-icon-prefix-folder {
+    background-image: url('../fs/Site/images/icons/folder16.png');
+    position: relative;
+    float: left;
+    width: 0;
+    background-position: left;
+    padding-left: 16px;
+    word-spacing: 20px;
+}
+.vr-icon-prefix-file {
+    background-image: url('../fs/Site/images/icons/file16.png');
+    position: relative;
+    float: left;
+    width: 0;
+    background-position: left;
+    padding-left: 16px;
+}
+.vr-icon-prefix-file-csv {
+    background-image: url('../fs/Site/images/icons/file-csv16.png');
+    position: relative;
+    float: left;
+    width: 0;
+    background-position: left;
+    padding-left: 16px;
+}
+.vr-icon-prefix-file-xls {
+    background-image: url('../fs/Site/images/icons/file-xls16.png');
+    position: relative;
+    float: left;
+    width: 0;
+    background-position: left;
+    padding-left: 16px;
+}
+.vr-icon-prefix-file-doc {
+    background-image: url('../fs/Site/images/icons/file-doc16.png');
+    position: relative;
+    float: left;
+    width: 0;
+    background-position: left;
+    padding-left: 16px;
+}
+.vr-icon-prefix-file-zip {
+    background-image: url('../fs/Site/images/icons/file-zip16.png');
+    position: relative;
+    float: left;
+    width: 0;
+    background-position: left;
+    padding-left: 16px;
+}
+.vr-icon-prefix-file-pdf {
+    background-image: url('../fs/Site/images/icons/file-pdf16.png');
+    position: relative;
+    float: left;
+    width: 0;
+    background-position: left;
+    padding-left: 16px;
+}
+.vr-icon-prefix-file-log {
+    background-image: url('../fs/Site/images/icons/file-log16.png');
+    position: relative;
+    float: left;
+    width: 0;
+    background-position: left;
+    padding-left: 16px;
+}
+.vr-icon-prefix-file-txt {
+    background-image: url('../fs/Site/images/icons/file-txt16.png');
+    position: relative;
+    float: left;
+    width: 0;
+    background-position: left;
+    padding-left: 16px;
+}
+.vr-icon-prefix-file-csv {
+    background-image: url('../fs/Site/images/icons/file-csv16.png');
+    position: relative;
+    float: left;
+    width: 0;
+    background-position: left;
+    padding-left: 16px;
+}
+.vr-icon-prefix-file-xml {
+    background-image: url('../fs/Site/images/icons/file-xml16.png');
+    position: relative;
+    float: left;
+    width: 0;
+    background-position: left;
+    padding-left: 16px;
+}
+.vr-icon-prefix-file-html {
+    background-image: url('../fs/Site/images/icons/file-html16.png');
+    position: relative;
+    float: left;
+    width: 0;
+    background-position: left;
+    padding-left: 16px;
+}
+.vr-icon-prefix-file-img {
+    background-image: url('../fs/Site/images/icons/file-img16.png');
+    position: relative;
+    float: left;
+    width: 0;
+    background-position: left;
+    padding-left: 16px;
+}
+
+.hide-column-names table thead tr {
+    display: none;
+}
+
+.ui-datatable tr.ui-datatable-even:hover, .ui-datatable tr.ui-datatable-odd:hover {
+    background: #dde9e9;
+}
+
+.vr-row-not-relevant {
+    background-color: #cccccc !important;
+    background-image: none !important;
+    color: #000000 !important;
+}
+
+.h1, .h2, .h3, h1, h2, h3 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.page-header {
+    margin: 10px 0 10px;
+}
