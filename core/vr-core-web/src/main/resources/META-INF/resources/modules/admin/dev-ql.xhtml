@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+
+
+        <ui:composition template="/templates/template.xhtml">
+            <ui:define name="content">
+                <h:form id="listForm" enctype="multipart/form-data" >
+                    <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
+                        <h:outputText value="Query" />
+                        <p:column>
+                            <p:inputTextarea rows="10" cols="100" value="#{devToolsCtrl.model.query}" autoResize="false"/>
+                        </p:column>
+                        <h:outputText value="Langage" />
+                        <p:selectOneRadio value="#{devToolsCtrl.model.lang}">
+                            <f:selectItem itemLabel="SQL" itemValue="sql" />
+                            <f:selectItem itemLabel="UPQL" itemValue="upql" />
+                        </p:selectOneRadio>
+                    </h:panelGrid>
+                    <p:commandButton style="margin-bottom: 20px" value="Exec." 
+                                     icon="ui-ribbonicon-refresh" 
+                                     styleClass="ui-ribbon-bigbutton" ajax="true" 
+                                     actionListener="#{devToolsCtrl.exec}"  update=":listForm"/>
+
+                    <div class="row">
+                        <p:dataTable var="i" value="#{devToolsCtrl.model.rows}" class="table table-bordered table-hover"
+                                     paginatorAlwaysVisible="false"
+                                     paginator="true"
+                                     paginatorPosition="bottom"
+                                     rows="20"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="20,50,100,200,1000"
+                                     >
+                            <p:columns var="nn" value="#{devToolsCtrl.model.rowNames}">
+                                <f:facet name="header">
+                                    <h:outputText value="#{nn.name}" />
+                                </f:facet>
+                                <h:outputText value="#{i.get(nn.index)}" />
+                            </p:columns>
+                        </p:dataTable>
+                    </div>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

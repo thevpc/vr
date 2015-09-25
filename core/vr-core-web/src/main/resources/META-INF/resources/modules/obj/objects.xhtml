@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+
+
+        <ui:composition template="/templates/template.xhtml">
+            <ui:define name="content">
+                <h:form id="buttonsForm">
+                    <p:confirmDialog message="Are you sure, you want to delete ?"  header="Initiating deleting process"  widgetVar="confirmationDelete">  
+                        <p:commandButton value="Yes Sure"  onclick="PF('confirmationDelete').hide();
+                                processOnDeleteCurrent();"/>
+                        <p:commandButton value="Not Yet" onclick="PF('confirmationDelete').hide()" type="button" />   
+                    </p:confirmDialog>
+
+                    <!-- /.row -->
+                    <div class="row">
+                        <p:outputPanel id="buttons">
+                            <p:commandButton value="Rafr." rendered="#{objCtrl.isEnabledButton('Refresh')}" icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{objCtrl.onRefresh}"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Nouv." rendered="#{objCtrl.isEnabledButton('New')}" icon="ui-ribbonicon-add" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{objCtrl.onNew}"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Enreg." rendered="#{objCtrl.isEnabledButton('Save')}"  icon="ui-ribbonicon-save" styleClass="ui-ribbon-bigbutton" ajax="true"  onclick="processOnSaveCurrent()"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Supp." rendered="#{objCtrl.isEnabledButton('Remove')}" icon="ui-ribbonicon-del" styleClass="ui-ribbon-bigbutton" ajax="true"   onclick="PF('confirmationDelete').show();"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Arch." rendered="#{objCtrl.isEnabledButton('Archive')}" icon="ui-ribbonicon-arch" styleClass="ui-ribbon-bigbutton" ajax="true"  onclick="processOnArchiveCurrent()"  update="buttons :listForm :itemForm :pageTitleForm"/>
+
+                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Assign')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{objCtrl.onAssignCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Unassign')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{objCtrl.onUnassignCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Done')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{objCtrl.onDoneCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Verify')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{objCtrl.onVerifyCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
+
+                            <p:commandButton value="Cop." rendered="#{objCtrl.isEnabledButton('Copy')}" icon="ui-ribbonicon-copy" styleClass="ui-ribbon-bigbutton"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Coll." rendered="#{objCtrl.isEnabledButton('Paste')}" icon="ui-ribbonicon-paste" styleClass="ui-ribbon-bigbutton"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Coup." rendered="#{objCtrl.isEnabledButton('Cut')}" icon="ui-ribbonicon-cut" styleClass="ui-ribbon-bigbutton"  update="buttons :listForm :itemForm :pageTitleForm"/>
+
+                            <p:commandButton value="impr." rendered="#{objCtrl.isEnabledButton('Print')}" icon="ui-ribbonicon-print"  styleClass="ui-ribbon-bigbutton" update="buttons :listForm :itemForm :pageTitleForm"/>
+
+                            <p:commandButton value="imp." rendered="#{objCtrl.isEnabledButton('Import')}" icon="ui-ribbonicon-import"  styleClass="ui-ribbon-bigbutton" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="csv" rendered="#{objCtrl.isEnabledButton('ExportCSV')}" icon="ui-ribbonicon-csv"  styleClass="ui-ribbon-bigbutton" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="xls" rendered="#{objCtrl.isEnabledButton('ExportXls')}" icon="ui-ribbonicon-xls"  styleClass="ui-ribbon-bigbutton" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="pdf" rendered="#{objCtrl.isEnabledButton('ExportPdf')}" icon="ui-ribbonicon-pdf"  styleClass="ui-ribbon-bigbutton" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Auth." rendered="#{objCtrl.isEnabledButton('Authorization')}" icon="ui-ribbonicon-acl" styleClass="ui-ribbon-bigbutton" type="button"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Trace" rendered="#{objCtrl.isEnabledButton('Log')}" icon="ui-ribbonicon-log" styleClass="ui-ribbon-bigbutton" type="button" update="buttons :listForm :itemForm :itemForm :pageTitleForm"/>  
+
+
+                            <p:commandButton 
+                                value="#{objCtrl.model.actions.get(0).value}" 
+                                rendered="#{objCtrl.model.actions.size() gt 0 and objCtrl.isEnabledButton(objCtrl.model.actions.get(0).key)}" 
+                                icon="#{objCtrl.model.actions.get(0).icon}" 
+                                styleClass="ui-ribbon-bigbutton" 
+                                action="#{objCtrl.onAction(objCtrl.model.actions.get(0).key)}"
+                                update="buttons :listForm :itemForm :itemForm :pageTitleForm"
+                                />
+
+                            <p:commandButton value="#{objCtrl.model.actions.get(1).value}" 
+                                             rendered="#{objCtrl.model.actions.size() gt 1 and objCtrl.isEnabledButton(objCtrl.model.actions.get(1).key)}" 
+                                             icon="#{objCtrl.model.actions.get(1).icon}" 
+                                             styleClass="ui-ribbon-bigbutton" 
+                                             action="#{objCtrl.onAction(objCtrl.model.actions.get(1).key)}"
+                                             update="buttons :listForm :itemForm :itemForm :pageTitleForm"
+                                             />
+
+                            <p:commandButton value="#{objCtrl.model.actions.get(2).value}" 
+                                             rendered="#{objCtrl.model.actions.size() gt 2 and objCtrl.isEnabledButton(objCtrl.model.actions.get(2).key)}" 
+                                             icon="#{objCtrl.model.actions.get(2).icon}" 
+                                             styleClass="ui-ribbon-bigbutton" 
+                                             action="#{objCtrl.onAction(objCtrl.model.actions.get(2).key)}"
+                                             update="buttons :listForm :itemForm :itemForm :pageTitleForm"
+                                             />
+
+                            <!-- some crazy bug in PF cant help make this work (stackoverflow in dynaform)
+                                <ui:repeat value="# {objCtrl.model.actions}" var="aac">
+                                <p:commandButton value="# {aac.value}" rendered="# {objCtrl.isEnabledButton(aac.key)}" 
+                                                 icon="# {aac.icon}" 
+                                                 styleClass="ui-ribbon-bigbutton" 
+                                                 action="# {objCtrl.onAction(aac.key)}"
+                                                 update="buttons :listForm :itemForm :itemForm :pageTitleForm"/>  
+                            </ui:repeat>-->
+                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Cancel')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{objCtrl.onCancelCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
+
+                        </p:outputPanel>
+                    </div>
+
+
+                    <!-- /.row -->
+                </h:form>
+                <h:form id="listForm">
+                    <div class="row">
+                        <p:spacer width="10" height="10" />
+                    </div>
+                    <p:outputPanel id="editItemList" rendered="#{objCtrl.isListMode()}">
+                        <div class="row">
+                            <!--<div class="col-lg-6">-->
+
+                            <div class="table-responsive">
+                                <p:dataTable id="listTable" var="i" value="#{objCtrl.model.list}" class="table table-bordered table-hover"
+                                             paginatorAlwaysVisible="false"
+                                             paginator="true"
+                                             paginatorPosition="bottom"
+                                             emptyMessage="Aucun résultat"
+                                             rows="20"
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="20,50,100,200,1000"
+                                             rowStyleClass="#{objCtrl.rowStyle}"
+                                             >
+
+                                    <!--                                    <f:facet name="header">
+                                                                            List
+                                                                            <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                                                                            <p:columnToggler datasource="cars" trigger="toggler" />
+                                                                        </f:facet>-->
+                                    <p:column headerText="" style="width: 50px;">
+                                        <p:commandLink ajax="true" actionListener="#{objCtrl.onSelect(i)}" update=":listForm :itemForm :buttonsForm :pageTitleForm">
+                                            <i class="fa fa-list"></i>
+                                            <f:setPropertyActionListener target="#{objCtrl.model.current}" value="#{i}" />
+                                        </p:commandLink>
+                                    </p:column>
+
+                                    <!--                                               filterBy="# {i[column.property]}"
+                                                                                   filterFunction="# {objCtrl.filterByProperty}"-->
+                                    <p:columns value="#{objCtrl.columns}" 
+                                               var="column" columnIndexVar="colIndex" 
+                                               sortBy="#{objCtrl.getSortLayoutPropertyValue(i,column.property)}" 
+                                               style="#{objCtrl.getPropertyColumnStyle(column.property)}"
+                                               >
+                                        <f:facet name="header">
+                                            <h:outputText value="#{column.header}" />
+                                        </f:facet>
+                                        <h:outputText rendered="#{column.type eq 'text'}" value="#{objCtrl.getLayoutPropertyValue(i,column.property)}" />
+                                        <h:selectBooleanCheckbox rendered="#{column.type eq 'checkbox'}"  disabled="true" 
+                                                                 value="#{objCtrl.getLayoutPropertyValue(i,column.property)}" />
+                                    </p:columns>
+                                    <f:facet name="footer">
+                                        <p:outputLabel value="Total #{objCtrl.model.list.size()}"/>
+                                    </f:facet>
+                                </p:dataTable>
+                            </div>
+
+                        </div>
+                        <!-- /.row -->
+                    </p:outputPanel>
+                </h:form>
+
+                <h:form id="itemForm" enctype="multipart/form-data" >
+                    <div class="row">
+                        <p:spacer width="10" height="10" />
+                    </div>
+                    <p:outputPanel id="editItemDialog" rendered="#{objCtrl.isNewOrUpdateMode()}">
+                        <!--<p:outputPanel id="editItemDialog" >-->
+                        <!--                        width="570"
+                        height="450"-->
+                        <h:panelGroup id="dynaFormGroup">  
+                            <div class="panel-body">
+                                <pe:dynaForm id="dynaForm" value="#{objCtrl.dynModel}" var="data">  
+                                    <pe:dynaFormControl type="text" for="txt">  
+                                        <p:inputText id="txt" value="#{data.value}" required="#{data.required}" disabled="#{data.disabled}" />  
+                                    </pe:dynaFormControl>  
+                                    <pe:dynaFormControl type="integer" for="tinteger">  
+                                        <p:inputText id="tinteger" value="#{data.valueInteger}" required="#{data.required}" disabled="#{data.disabled}" />  
+                                    </pe:dynaFormControl>  
+                                    <pe:dynaFormControl type="long" for="tlong">  
+                                        <p:inputText id="tlong" value="#{data.valueLong}" required="#{data.required}" disabled="#{data.disabled}" />  
+                                    </pe:dynaFormControl>  
+                                    <pe:dynaFormControl type="double" for="tdouble">  
+                                        <p:inputText id="tdouble" value="#{data.valueDouble}" required="#{data.required}" disabled="#{data.disabled}" />  
+                                    </pe:dynaFormControl>  
+                                    <pe:dynaFormControl type="float" for="tfloat">  
+                                        <p:inputText id="tfloat" value="#{data.valueFloat}" required="#{data.required}" disabled="#{data.disabled}" />  
+                                    </pe:dynaFormControl>  
+                                    <pe:dynaFormControl type="datetime" for="tdatetime" styleClass="calendar">  
+                                        <p:calendar id="tdatetime" value="#{data.value}" 
+                                                    required="#{data.required}" 
+                                                    showOn="button"  
+                                                    disabled="#{data.disabled}" 
+                                                    pattern="dd/MM/yyyy HH:mm:ss"
+                                                    mask="true"
+                                                    />  
+                                    </pe:dynaFormControl>  
+                                    <pe:dynaFormControl type="date" for="tdate" styleClass="calendar">  
+                                        <p:calendar id="tdate" value="#{data.value}" 
+                                                    required="#{data.required}" 
+                                                    showOn="button"  
+                                                    disabled="#{data.disabled}" 
+                                                    pattern="dd/MM/yyyy"
+                                                    mask="true"
+                                                    />  
+                                    </pe:dynaFormControl>  
+                                    <pe:dynaFormControl type="time" for="ttime" styleClass="calendar">  
+                                        <p:calendar id="ttime" value="#{data.value}" 
+                                                    required="#{data.required}" 
+                                                    showOn="button"  
+                                                    disabled="#{data.disabled}" 
+                                                    pattern="HH:mm"
+                                                    timeOnly="true"
+                                                    mask="true"
+                                                    />  
+                                    </pe:dynaFormControl>  
+                                    <pe:dynaFormControl type="select" for="sel" styleClass="select">  
+                                        <p:selectOneMenu id="sel" value="#{data.selectedItem}" required="#{data.required}"  
+                                                         disabled="#{data.disabled}" 
+                                                         valueChangeListener="#{data.onChange}"
+                                                         onchange="submit();">  
+                                            <f:selectItems value="#{data.items}"/>  
+                                        </p:selectOneMenu>  
+                                    </pe:dynaFormControl>  
+                                    <pe:dynaFormControl type="entity" for="tentity" styleClass="select">  
+                                        <p:panelGrid columns="2" style="border-style: hidden" columnClasses="nopadding,nopadding">
+                                            <p:selectOneMenu id="tentity" value="#{data.selectedItem}" required="#{data.required}"  
+                                                             disabled="#{data.disabled}" 
+                                                             valueChangeListener="#{data.onChange}"
+                                                             onchange="submit();">  
+                                                <f:selectItems value="#{data.items}"/>  
+                                            </p:selectOneMenu>
+                                            <p:commandButton 
+                                                style="    padding-top: 4px; margin-bottom: 3px;"
+                                                ajax="false" value="..." action="#{vrMenuManager.gotoPage('obj', data.buildActionCommand())}"/>
+                                        </p:panelGrid>
+                                    </pe:dynaFormControl>  
+                                    <pe:dynaFormControl type="textarea" for="tarea">  
+                                        <p:inputTextarea id="tarea" value="#{data.value}" required="#{data.required}" autoResize="false"  disabled="#{data.disabled}" />  
+                                    </pe:dynaFormControl>  
+                                    <pe:dynaFormControl type="richtextarea" for="trichtextarea">  
+                                        <p:editor id="trichtextarea" value="#{data.value}" required="#{data.required}" disabled="#{data.disabled}"  />
+                                    </pe:dynaFormControl>  
+                                    <pe:dynaFormControl type="checkbox" for="tcheckbox"> 
+                                        <p:selectBooleanCheckbox id="tcheckbox" value="#{data.value}" required="#{data.required}"  disabled="#{data.disabled}" />
+                                    </pe:dynaFormControl>  
+                                    <pe:dynaFormControl type="rating" for="rat">  
+                                        <p:rating id="rat" value="#{data.value}" required="#{data.required}"  disabled="#{data.disabled}" />  
+                                    </pe:dynaFormControl>  
+                                    <pe:dynaFormControl type="separator" styleClass="separator ui-state-disabled">  
+                                        <h:panelGrid columns="2" style="width:100%;" columnClasses="separatorText">  
+                                            <h:outputText value="#{data}"/>  
+                                            <p:separator/>  
+                                        </h:panelGrid>  
+                                    </pe:dynaFormControl>
+                                    <pe:dynaFormControl type="entityDetail">  
+                                        <p:commandButton ajax="false" value="..." disabled="#{data.disabled}" action="#{vrMenuManager.gotoPage('obj', data.buildActionCommand())}"/>
+                                    </pe:dynaFormControl>
+                                </pe:dynaForm>
+                            </div>
+                        </h:panelGroup>  
+
+                    </p:outputPanel>
+                    <p:remoteCommand name="processOnSaveCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onSaveCurrent()}"/>
+                    <p:remoteCommand name="processOnDeleteCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onDeleteCurrent()}"/>
+                </h:form>
+
+                <h:outputScript id="dynaFormScript" target="body">  
+                    /* <![CDATA[ */ 
+                    function handleComplete(xhr, status, args) { 
+                    if(args && args.isValid) { 
+                    PF('inputValuesWidget').show(); 
+                    } else { 
+                    PF('inputValuesWidget').hide(); 
+                    } 
+                    } 
+                    /* ]]> */  
+                </h:outputScript>  
+
+                <h:outputStylesheet id="dynaFormCSS">  
+
+                    .pe-dynaform-cell input,  
+                    .pe-dynaform-cell textarea,  
+                    .pe-dynaform-cell[colspan="1"] input,  
+                    .pe-dynaform-cell[colspan="1"] textarea {  
+                    width: 100%;  
+                    }  
+
+
+                    .pe-dynaform-cell.calendar input,  
+                    .pe-dynaform-cell[colspan="1"].calendar input {  
+                    width: 120px;  
+                    }  
+
+                    .pe-dynaform-cell.select .ui-selectonemenu {  
+                    width: 157px !important;  
+                    }  
+
+                    .pe-dynaform-cell.select .ui-selectonemenu .ui-selectonemenu-label {  
+                    width: 230px !important;  
+                    } 
+
+                    .pe-dynaform-cell.separator {  
+                    padding: 10px 0 10px 0;  
+                    }  
+
+                    .pe-dynaform-cell.separator .separatorText {  
+                    width: 15%;  
+                    padding-left: 0;  
+                    }  
+                    .nopadding{
+                    padding : 0 !important;
+                    border-style: none !important;
+                    }
+                </h:outputStylesheet>
+
+
+            </ui:define>
+
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>
