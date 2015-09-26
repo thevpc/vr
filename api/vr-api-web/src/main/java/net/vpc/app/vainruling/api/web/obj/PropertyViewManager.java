@@ -65,13 +65,13 @@ public class PropertyViewManager {
         return defaultPropertyViewFactory;
     }
 
-    public PropertyView[] createPropertyView(String componentId, Field field) {
+    public PropertyView[] createPropertyView(String componentId, Field field,Map<String,Object> configuration) {
         DataType dt = field.getDataType();
-        return getPropertyViewFactory(field, dt).createPropertyView(componentId, field, dt, this);
+        return getPropertyViewFactory(field, dt).createPropertyView(componentId, field, dt, configuration,this);
     }
 
-    public PropertyView[] createPropertyView(String componentId, DataType dt) {
-        return getPropertyViewFactory(null, dt).createPropertyView(componentId, null, dt, this);
+    public PropertyView[] createPropertyView(String componentId, DataType dt,Map<String,Object> configuration) {
+        return getPropertyViewFactory(null, dt).createPropertyView(componentId, null, dt, configuration,this);
     }
 
     public void registerPropertyViewFactory(Field f, PropertyViewFactory factory) {

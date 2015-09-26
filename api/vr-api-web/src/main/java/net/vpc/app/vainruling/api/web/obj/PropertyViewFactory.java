@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.api.web.obj;
 
+import java.util.Map;
 import net.vpc.upa.Field;
 import net.vpc.upa.types.DataType;
 
@@ -13,5 +14,6 @@ import net.vpc.upa.types.DataType;
  * @author vpc
  */
 public interface PropertyViewFactory {
-    public PropertyView[] createPropertyView(String componentId, Field field, DataType dt, PropertyViewManager manager);
+
+    public PropertyView[] createPropertyView(String componentId, Field field, DataType dt, Map<String, Object> configuration, PropertyViewManager manager);
 }

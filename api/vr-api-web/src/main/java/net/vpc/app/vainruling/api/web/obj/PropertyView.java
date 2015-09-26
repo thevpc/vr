@@ -17,7 +17,6 @@ import jersey.repackaged.com.google.common.base.Objects;
 import net.vpc.common.utils.Convert;
 import net.vpc.upa.Entity;
 import net.vpc.upa.EntityBuilder;
-import net.vpc.upa.impl.EntityConverter;
 import net.vpc.upa.types.DataType;
 import net.vpc.upa.types.EntityType;
 import net.vpc.upa.types.EnumType;

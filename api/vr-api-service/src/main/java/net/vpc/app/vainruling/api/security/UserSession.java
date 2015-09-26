@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 @Scope(value = "session")
 public class UserSession implements Serializable {
 
+    private transient AppUser rootUser;
     private transient AppUser user;
     private boolean connected;
     private Date connexionTime;
@@ -51,6 +52,10 @@ public class UserSession implements Serializable {
 
     public boolean isDestroyed() {
         return destroyed;
+    }
+
+    public boolean isImpersonating() {
+        return rootUser != null;
     }
 
     public void setDestroyed(boolean destroyed) {
@@ -80,9 +85,9 @@ public class UserSession implements Serializable {
     public AppUser getUser() {
         return user;
     }
-    
+
     public boolean isFemale() {
-        if(user==null || user.getGender()==null || user.getGender().getName()==null){
+        if (user == null || user.getGender() == null || user.getGender().getName() == null) {
             return false;
         }
         return user.getGender().getName().equals("F");
@@ -173,7 +178,6 @@ public class UserSession implements Serializable {
         this.profilesString = profilesString;
     }
 
-    
     public void reset() {
         setLocale(null);
         setConnexionTime(null);
@@ -184,4 +188,13 @@ public class UserSession implements Serializable {
         setProfilesString(null);
         setProfiles(new ArrayList<AppProfile>());
     }
+
+    public AppUser getRootUser() {
+        return rootUser;
+    }
+
+    public void setRootUser(AppUser rootUser) {
+        this.rootUser = rootUser;
+    }
+
 }

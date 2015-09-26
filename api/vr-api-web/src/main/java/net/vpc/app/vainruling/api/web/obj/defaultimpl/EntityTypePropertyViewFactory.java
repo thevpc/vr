@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.api.web.obj.defaultimpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ValueChangeEvent;
@@ -34,7 +35,7 @@ public class EntityTypePropertyViewFactory implements PropertyViewFactory {
     private static final Logger log = Logger.getLogger(EntityTypePropertyViewFactory.class.getName());
 
     @Override
-    public PropertyView[] createPropertyView(String componentId, Field field, DataType datatype, PropertyViewManager manager) {
+    public PropertyView[] createPropertyView(String componentId, Field field, DataType datatype, Map<String, Object> configuration, PropertyViewManager manager) {
         DataType dt = field.getDataType();
         boolean main = field.getModifiers().contains(FieldModifier.MAIN);
         boolean id = field.getModifiers().contains(FieldModifier.ID);
@@ -45,9 +46,21 @@ public class EntityTypePropertyViewFactory implements PropertyViewFactory {
         boolean listMode = objCtrl.getModel().getMode() == EditCtrlMode.LIST;
         boolean insertMode = objCtrl.getModel().getMode() == EditCtrlMode.NEW;
         boolean updateMode = objCtrl.getModel().getMode() == EditCtrlMode.UPDATE;
+        boolean forceDisabled = configuration != null && configuration.get("disabled") != null && (Boolean.TRUE.equals(configuration.get("disabled")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("disabled"))));
+        boolean forceInvisible = configuration != null && configuration.get("invisible") != null && (Boolean.TRUE.equals(configuration.get("invisible")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("invisible"))));
         EntityType t = (EntityType) dt;
         Entity me = t.getRelationship().getTargetRole().getEntity();
         String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.ENTITY);
+
+        boolean visible
+                = insertMode
+                        ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_CREATE, null, true)
+                        : updateMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_UPDATE, null, true)
+                                : true;
+        if (!visible || forceInvisible) {
+            return null;
+        }
+
         final EntityTypePropertyView propView = new EntityTypePropertyView(componentId, field, controlType, manager);
         propView.update();
 
@@ -65,13 +78,16 @@ public class EntityTypePropertyViewFactory implements PropertyViewFactory {
         List<PropertyView> all = new ArrayList<>();
         String ih = UPAObjectHelper.findStringProperty(me, UIConstants.ENTITY_ID_HIERARCHY, null, null);
         if (ih != null) {
-            PropertyView[] r = manager.createPropertyView(me.getField(ih).getName(), me.getField(ih));
+            PropertyView[] r = manager.createPropertyView(me.getField(ih).getName(), me.getField(ih), configuration);
             if (r != null) {
                 for (int i = 0; i < r.length; i++) {
                     PropertyView r0 = r[i];
                     if (r0 != null) {
                         r0.setName(field.getName() + " / " + r0.getName());
                         r0.setComponentId(propView.getComponentId() + "." + r0.getComponentId());
+                        if (forceDisabled) {
+                            r0.setDisabled(forceDisabled);
+                        }
                         if (i == r.length - 1) {
                             r0.getUpdatablePropertyViews().add(propView);
                         }

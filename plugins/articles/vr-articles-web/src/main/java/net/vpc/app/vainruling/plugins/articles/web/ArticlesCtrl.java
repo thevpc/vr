@@ -29,6 +29,35 @@ public class ArticlesCtrl {
     @Autowired
     private ArticlesPlugin articles;
     private Model model = new Model();
+    private String[] imageSwitchEffects = new String[]{
+"blindX",
+"blindY",
+"blindZ",
+"cover",
+"curtainX",
+"curtainY",
+"fade",
+"fadeZoom",
+"growX",
+"growY",
+"none",
+"scrollUp",
+"scrollDown",
+"scrollLeft",
+"scrollRight",
+"scrollVert",
+"shuffle",
+"slideX",
+"slideY",
+"toss",
+"turnUp",
+"turnDown",
+"turnLeft",
+"turnRight",
+"uncover",
+"wipe",
+"zoom"
+};
 
     public Model getModel() {
         return model;
@@ -69,6 +98,10 @@ public class ArticlesCtrl {
 
     public List<FullArticle> getActivities() {
         return findArticles("Activities");
+    }
+
+    public String getImageSwitchRandomEffect() {
+        return imageSwitchEffects[(int) (Math.random() * imageSwitchEffects.length)];
     }
 
     public List<FullArticle> getNews() {

@@ -25,8 +25,9 @@ import net.vpc.upa.types.DateTime;
 @Entity(listOrder = "deleted, archived, position desc, sendTime desc")
 @Path("Social")
 @Properties(
+        //i is a ObjRow!
         @Property(name = UIConstants.Grid.ROW_STYLE,
-                value = "(i.deleted or i.archived or i.disposition eq null) ?'vr-row-not-relevant':''")
+                value = "(i.value.deleted or i.value.archived or i.value.disposition eq null) ?'vr-row-not-relevant':''")
 )
 public class ArticlesItem {
 

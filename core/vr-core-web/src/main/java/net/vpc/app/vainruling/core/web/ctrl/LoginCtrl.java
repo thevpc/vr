@@ -50,6 +50,17 @@ public class LoginCtrl {
         return VrApp.getBean(VrMenuManager.class).gotoPage(AppInfoCtrl.class, "");
     }
 
+    public String doimpersonate() {
+        AppUser u = loginService.impersonate(getModel().getLogin(), getModel().getPassword());
+        if (u != null) {
+            return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
+//            return VRApp.getBean(VrMenu.class).gotoPage("todo", "sys-labo-action");
+        }
+        FacesUtils.addErrorMessage("Login ou mot de passe incorrect");
+        getModel().setPassword(null);
+        return null;
+    }
+
     public String dologin() {
         VRWebHelper.prepareUserSession();
         AppUser u = loginService.login(getModel().getLogin(), getModel().getPassword());
@@ -64,8 +75,12 @@ public class LoginCtrl {
 
     public String dologout() {
         loginService.logout();
+        if (getSession().isImpersonating()) {
+            return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
+        }
         FacesUtils.invalidateSession();
         return "/index.xhtml?faces-redirect=true";
+
     }
 
     public Model getModel() {

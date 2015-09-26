@@ -18,6 +18,7 @@ import net.vpc.upa.CustomDefaultObject;
 import net.vpc.upa.UPA;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.impl.util.Strings;
+import net.vpc.upa.types.DateTime;
 import net.vpc.upa.types.StringType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,6 +35,20 @@ public class VrHelper {
         @Override
         public Object getObject() {
             return VrApp.getBean(UserSession.class).getUser();
+        }
+    };
+    public static final CustomDefaultObject DEFAULT_OBJECT_CURRENT_DATETIME = new CustomDefaultObject() {
+
+        @Override
+        public Object getObject() {
+            return new DateTime();
+        }
+    };
+    public static final CustomDefaultObject DEFAULT_OBJECT_CURRENT_DATEONLY = new CustomDefaultObject() {
+
+        @Override
+        public Object getObject() {
+            return new net.vpc.upa.types.Date();
         }
     };
 
@@ -133,8 +148,8 @@ public class VrHelper {
     public static String strcut(String value, net.vpc.upa.Entity e, String fieldName) {
         StringType d = (StringType) e.getField("data").getDataType();
         int m = d.getMax();
-        if(m<=0){
-            m=255;
+        if (m <= 0) {
+            m = 255;
         }
         return VrHelper.strcut(value, m);
     }

@@ -5,8 +5,6 @@
  */
 package net.vpc.app.vainruling.core.service;
 
-import java.util.ArrayList;
-import java.util.Date;
 import net.vpc.app.vainruling.api.TraceService;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.security.UserSession;
@@ -40,13 +38,56 @@ public class LoginService {
 
     public void logout() {
         final UserSession s = getUserSession();
-        VrApp.getBean(ActiveSessionsTracker.class).onDestroy(s);
+        if (s.isImpersonating()) {
+            trace.trace("logout", "successfull logout " + s.getUser().getLogin() + " to " + s.getRootUser().getLogin(),
+                    s.getUser().getLogin() + " => "
+                    + s.getRootUser().getLogin(),
+                    getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.INFO);
+            s.setUser(s.getRootUser());
+            s.setRootUser(null);
+            buildSession(s, s.getUser());
+        } else {
+            trace.trace("logout", "successfull logout " + s.getUser().getLogin(),
+                    s.getUser().getLogin(),
+                    getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.INFO);
+            VrApp.getBean(ActiveSessionsTracker.class).onDestroy(s);
+        }
+    }
+
+    public AppUser impersonate(String login, String password) {
+        UserSession s = getUserSession();
+        if (s.isAdmin() && !s.isImpersonating()) {
+            AppUser user = findEnabledUser(login, password);
+            if (user != null) {
+                trace.trace("impersonate", "successfull impersonate of " + login, login, getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.INFO);
+            } else {
+                user = findUser(login);
+                if (user != null) {
+                    if (!user.isEnabled()) {
+                        trace.trace("impersonate", "successfull impersonate of " + login + ". but user is not enabled!", login, getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.WARNING);
+                    } else {
+                        trace.trace("impersonate", "successfull impersonate of " + login + ". but password " + password + " seems not to be incorrect", login, getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.WARNING);
+                    }
+                } else {
+                    trace.trace("impersonate", "failed impersonate of " + login, login, getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.SEVERE);
+                }
+            }
+            if (user != null) {
+                s.setRootUser(s.getUser());
+                s.setUser(user);
+                buildSession(s, user);
+            }
+            return user;
+        } else {
+            trace.trace("impersonate", "failed impersonate of " + login + ". not admin or already impersonating", login, getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.WARNING);
+        }
+        return null;
     }
 
     public AppUser login(String login, String password) {
         final AppUser user = findEnabledUser(login, password);
         if (user != null) {
-            user.setConnexionCount(user.getConnexionCount()+1);
+            user.setConnexionCount(user.getConnexionCount() + 1);
             user.setLastConnexionDate(new DateTime());
             UPA.getContext().invokePrivileged(new Action<Object>() {
 
@@ -56,50 +97,54 @@ public class LoginService {
                     return null;
                 }
             }, null);
-            CorePlugin core = VrApp.getBean(CorePlugin.class);
-            getUserSession().setDestroyed(false);
             UserSession s = getUserSession();
+            s.setDestroyed(false);
             VrApp.getBean(ActiveSessionsTracker.class).onCreate(s);
             trace.trace("login", "successfull", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO);
             getUserSession().setConnexionTime(user.getLastConnexionDate());
             getUserSession().setUser(user);
-            final List<AppProfile> userProfiles = findUserProfiles(user.getId());
-            Set<String> userProfilesNames = new HashSet<>();
-            for (AppProfile u : userProfiles) {
-                userProfilesNames.add(u.getName());
-            }
-            getUserSession().setProfiles(userProfiles);
-            StringBuilder ps = new StringBuilder();
-            for (AppProfile up : userProfiles) {
-                if (ps.length() > 0) {
-                    ps.append(", ");
-                }
-                ps.append(up.getName());
-            }
-            getUserSession().setProfileNames(userProfilesNames);
-            getUserSession().setProfilesString(ps.toString());
-            getUserSession().setAdmin(false);
-            getUserSession().setRights(core.findUserRights(user.getId()));
-            if (user.getLogin().equalsIgnoreCase("admin")) {
-                getUserSession().setAdmin(true);
-            }
+            buildSession(s, user);
         } else {
             getUserSession().reset();
             AppUser user2 = findUser(login);
             if (user2 == null) {
                 trace.trace("login", "login not found. Failed as " + login + "/" + password, login + "/" + password, getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, -1, Level.SEVERE);
             } else {
-                if(user2.isDeleted() || !user2.isEnabled()){
-                trace.trace("login", "invalid state. Failed as " + login + "/" + password, login + "/" + password
-                        +". deleted="+user2.isDeleted()
-                        +". enabled="+user2.isEnabled()
-                        , getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE);
-                }else{
-                trace.trace("login", "invalid password. Failed as " + login + "/" + password, login + "/" + password, getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE);
+                if (user2.isDeleted() || !user2.isEnabled()) {
+                    trace.trace("login", "invalid state. Failed as " + login + "/" + password, login + "/" + password
+                            + ". deleted=" + user2.isDeleted()
+                            + ". enabled=" + user2.isEnabled(), getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE);
+                } else {
+                    trace.trace("login", "invalid password. Failed as " + login + "/" + password, login + "/" + password, getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE);
                 }
             }
         }
         return user;
+    }
+
+    protected void buildSession(UserSession s, AppUser user) {
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        final List<AppProfile> userProfiles = findUserProfiles(user.getId());
+        Set<String> userProfilesNames = new HashSet<>();
+        for (AppProfile u : userProfiles) {
+            userProfilesNames.add(u.getName());
+        }
+        getUserSession().setProfiles(userProfiles);
+        StringBuilder ps = new StringBuilder();
+        for (AppProfile up : userProfiles) {
+            if (ps.length() > 0) {
+                ps.append(", ");
+            }
+            ps.append(up.getName());
+        }
+        getUserSession().setProfileNames(userProfilesNames);
+        getUserSession().setProfilesString(ps.toString());
+        getUserSession().setAdmin(false);
+        getUserSession().setRights(core.findUserRights(user.getId()));
+        if (user.getLogin().equalsIgnoreCase("admin")) {
+            getUserSession().setAdmin(true);
+        }
+
     }
 
     private AppUser findUser(String login) {
@@ -125,7 +170,7 @@ public class LoginService {
                 .setParameter("password", password)
                 .getEntity();
     }
-    
+
     private AppUser findEnabledUser(String login, String password) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return (AppUser) pu

@@ -19,7 +19,9 @@ import net.vpc.upa.Relationship;
  * @author vpc
  */
 public class EntityDetailPropertyView extends PropertyView {
+
     private String actionCommand;
+
     public EntityDetailPropertyView(String componentId, Relationship relation, String ctrlType, PropertyViewManager manager) {
         super(componentId, VrApp.getBean(I18n.class).get(relation.getSourceRole()), relation, ctrlType, manager);
         setHeader(VrApp.getBean(I18n.class).get(relation.getSourceRole()));
@@ -28,26 +30,32 @@ public class EntityDetailPropertyView extends PropertyView {
         setColspan(Integer.MAX_VALUE);
         setAppendNewLine(true);
         Field f = relation.getSourceRole().getEntityField();
-        if(f==null){
-            f=relation.getSourceRole().getFields().get(0);
+        if (f == null) {
+            f = relation.getSourceRole().getFields().get(0);
         }
-        String idExpr = "o.`"+f.getName()+"`.`"+relation.getTargetEntity().getPrimaryFields().get(0).getName()+"`";
-        setActionCommand("{entity:\""+relation.getSourceEntity().getName()+"\",listFilter:\""+idExpr+"=${ID}\"}");
+        String idExpr = "o.`" + f.getName() + "`.`" + relation.getTargetEntity().getPrimaryFields().get(0).getName() + "`";
+
+        String argEntity = "entity:\"" + relation.getSourceEntity().getName() + "\"";
+        String argListFilter = "listFilter:\"" + idExpr + "=${ID}\"";
+        String argValues = "values:{" + f.getName() + ":${ID}}";
+        String argDisabledFields = "disabledFields:[\"" + f.getName() + "\"]";
+
+        setActionCommand("{" + argEntity + "," + argListFilter + "," + argValues + "," + argDisabledFields + "}");
     }
 
     public String buildActionCommand() {
-        ObjCtrl ctrl=(ObjCtrl)VrApp.getBean(ObjCtrl.class);
-        Object idVal = getRelationship().getTargetEntity().getBuilder().entityToId(ctrl.getModel().getCurrent());
-        if(idVal ==null){
-            idVal="null";
-        }else if(idVal instanceof Number){
-            idVal=idVal.toString();
-        }else{
-            idVal="'"+idVal.toString().replace("'","''")+"'";
+        ObjCtrl ctrl = (ObjCtrl) VrApp.getBean(ObjCtrl.class);
+        Object idVal = getRelationship().getTargetEntity().getBuilder().entityToId(ctrl.getModel().getCurrentObj());
+        if (idVal == null) {
+            idVal = "null";
+        } else if (idVal instanceof Number) {
+            idVal = idVal.toString();
+        } else {
+            idVal = "'" + idVal.toString().replace("'", "''") + "'";
         }
-        return getActionCommand().replace("${ID}", idVal==null?"":idVal.toString());
+        return getActionCommand().replace("${ID}", idVal == null ? "" : idVal.toString());
     }
-    
+
     public String getActionCommand() {
         return actionCommand;
     }
@@ -55,8 +63,6 @@ public class EntityDetailPropertyView extends PropertyView {
     public final void setActionCommand(String actionCommand) {
         this.actionCommand = actionCommand;
     }
-    
-    
 
     public Relationship getRelationship() {
         return (Relationship) getReferrer();

@@ -25,6 +25,9 @@ and open the template in the editor.
                         <p:outputPanel style="margin-bottom:20px;border-width: 2px;border-style: solid;border-color: #0f6b57;border-radius: 5px;padding: 5px">
                             <p>Bonjour <strong>#{userSession.user==null?'anonymous' : userSession.user.fullName}</strong></p>
                             <p>Vous êtes connecté#{userSession.female?'e':''} en tant que <strong>#{userSession.user.login}</strong>
+                                <ui:fragment rendered="#{userSession.impersonating}">
+                                    , (en réalité vous ête <strong>#{userSession.rootUser.fullName}</strong> aka <strong>#{userSession.rootUser.login}</strong>)
+                                </ui:fragment>
                                 <ui:fragment rendered="#{userSession.profiles.size() gt 0}">
                                     , vous faites partie #{(userSession.profiles.size() gt 1)?'des groupes':'du groupe'} <strong>#{userSession.profilesString}</strong>
                                 </ui:fragment>

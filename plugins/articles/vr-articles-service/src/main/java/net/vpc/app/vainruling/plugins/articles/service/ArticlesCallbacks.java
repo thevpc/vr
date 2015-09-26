@@ -21,21 +21,25 @@ import net.vpc.upa.exceptions.UPAException;
  * @author vpc
  */
 @Callback
-public class ArticlesCallbacks extends DefinitionListenerAdapter 
-    implements FieldDefinitionListener{
+public class ArticlesCallbacks extends DefinitionListenerAdapter
+        implements FieldDefinitionListener {
 
     @Override
     public void onCreateField(FieldEvent event) throws UPAException {
         Entity e = event.getEntity();
         Field f = event.getField();
-        if(e.getEntityType().equals(ArticlesItem.class) && f.getName().equals("sender")){
-            f.setDefaultObject(VrHelper.DEFAULT_OBJECT_CURRENT_USER);
+        if (e.getEntityType().equals(ArticlesItem.class)) {
+            if (f.getName().equals("sender")) {
+                f.setDefaultObject(VrHelper.DEFAULT_OBJECT_CURRENT_USER);
+            }
+            if (f.getName().equals("sendTime")) {
+                f.setDefaultObject(VrHelper.DEFAULT_OBJECT_CURRENT_DATETIME);
+            }
         }
     }
 
-    
     @Override
     public void onCreateEntity(EntityEvent event) {
     }
-    
+
 }

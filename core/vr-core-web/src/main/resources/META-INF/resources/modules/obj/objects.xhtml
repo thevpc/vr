@@ -27,6 +27,11 @@ and open the template in the editor.
                                 processOnDeleteCurrent();"/>
                         <p:commandButton value="Not Yet" onclick="PF('confirmationDelete').hide()" type="button" />   
                     </p:confirmDialog>
+                    <p:confirmDialog message="Are you sure, you want to archive ?"  header="Initiating archive process"  widgetVar="confirmationDelete">  
+                        <p:commandButton value="Yes Sure"  onclick="PF('confirmationArchive').hide();
+                                processOnArchiveCurrent();"/>
+                        <p:commandButton value="Not Yet" onclick="PF('confirmationArchive').hide()" type="button" />   
+                    </p:confirmDialog>
 
                     <!-- /.row -->
                     <div class="row">
@@ -34,8 +39,8 @@ and open the template in the editor.
                             <p:commandButton value="Rafr." rendered="#{objCtrl.isEnabledButton('Refresh')}" icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{objCtrl.onRefresh}"  update="buttons :listForm :itemForm :pageTitleForm"/>
                             <p:commandButton value="Nouv." rendered="#{objCtrl.isEnabledButton('New')}" icon="ui-ribbonicon-add" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{objCtrl.onNew}"  update="buttons :listForm :itemForm :pageTitleForm"/>
                             <p:commandButton value="Enreg." rendered="#{objCtrl.isEnabledButton('Save')}"  icon="ui-ribbonicon-save" styleClass="ui-ribbon-bigbutton" ajax="true"  onclick="processOnSaveCurrent()"  update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="Supp." rendered="#{objCtrl.isEnabledButton('Remove')}" icon="ui-ribbonicon-del" styleClass="ui-ribbon-bigbutton" ajax="true"   onclick="PF('confirmationDelete').show();"  update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="Arch." rendered="#{objCtrl.isEnabledButton('Archive')}" icon="ui-ribbonicon-arch" styleClass="ui-ribbon-bigbutton" ajax="true"  onclick="processOnArchiveCurrent()"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Supp." rendered="#{objCtrl.isEnabledButton('Remove')}" icon="ui-ribbonicon-del" styleClass="ui-ribbon-bigbutton" ajax="true"   onclick="PF('confirmationDelete').show();" />
+                            <p:commandButton value="Arch." rendered="#{objCtrl.isEnabledButton('Archive')}" icon="ui-ribbonicon-arch" styleClass="ui-ribbon-bigbutton" ajax="true"  onclick="PF('confirmationArchive').show();"/>
 
                             <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Assign')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{objCtrl.onAssignCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
                             <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Unassign')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{objCtrl.onUnassignCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
@@ -122,9 +127,15 @@ and open the template in the editor.
                                                                             <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
                                                                             <p:columnToggler datasource="cars" trigger="toggler" />
                                                                         </f:facet>-->
-                                    <p:column headerText="" style="width: 50px;">
-                                        <p:commandLink ajax="true" actionListener="#{objCtrl.onSelect(i)}" update=":listForm :itemForm :buttonsForm :pageTitleForm">
-                                            <i class="fa fa-list"></i>
+                                    <p:column headerText="" style="width: 60px;">
+                                        <p:selectBooleanCheckbox disabled="#{!(i.selectable)}" value="#{i.selected}" >
+                                        </p:selectBooleanCheckbox>
+                                        <p:commandLink 
+                                            disabled="#{!(i.read)}"
+                                            ajax="true" actionListener="#{objCtrl.onSelect(i)}" 
+                                            
+                                            update=":listForm :itemForm :buttonsForm :pageTitleForm">
+                                            <i class="fa fa-list" style="font-size: 17px;color: cadetblue;"></i>
                                             <f:setPropertyActionListener target="#{objCtrl.model.current}" value="#{i}" />
                                         </p:commandLink>
                                     </p:column>
@@ -133,15 +144,15 @@ and open the template in the editor.
                                                                                    filterFunction="# {objCtrl.filterByProperty}"-->
                                     <p:columns value="#{objCtrl.columns}" 
                                                var="column" columnIndexVar="colIndex" 
-                                               sortBy="#{objCtrl.getSortLayoutPropertyValue(i,column.property)}" 
+                                               sortBy="#{objCtrl.getSortLayoutPropertyValue(i.value,column.property)}" 
                                                style="#{objCtrl.getPropertyColumnStyle(column.property)}"
                                                >
                                         <f:facet name="header">
                                             <h:outputText value="#{column.header}" />
                                         </f:facet>
-                                        <h:outputText rendered="#{column.type eq 'text'}" value="#{objCtrl.getLayoutPropertyValue(i,column.property)}" />
+                                        <h:outputText rendered="#{column.type eq 'text'}" value="#{objCtrl.getLayoutPropertyValue(i.value,column.property)}" />
                                         <h:selectBooleanCheckbox rendered="#{column.type eq 'checkbox'}"  disabled="true" 
-                                                                 value="#{objCtrl.getLayoutPropertyValue(i,column.property)}" />
+                                                                 value="#{objCtrl.getLayoutPropertyValue(i.value,column.property)}" />
                                     </p:columns>
                                     <f:facet name="footer">
                                         <p:outputLabel value="Total #{objCtrl.model.list.size()}"/>
@@ -152,6 +163,8 @@ and open the template in the editor.
                         </div>
                         <!-- /.row -->
                     </p:outputPanel>
+                    <p:remoteCommand name="processOnDeleteCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onDeleteCurrent()}"/>
+                    <p:remoteCommand name="processOnArchiveCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onArchiveCurrent()}"/>
                 </h:form>
 
                 <h:form id="itemForm" enctype="multipart/form-data" >
@@ -256,7 +269,6 @@ and open the template in the editor.
 
                     </p:outputPanel>
                     <p:remoteCommand name="processOnSaveCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onSaveCurrent()}"/>
-                    <p:remoteCommand name="processOnDeleteCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onDeleteCurrent()}"/>
                 </h:form>
 
                 <h:outputScript id="dynaFormScript" target="body">  

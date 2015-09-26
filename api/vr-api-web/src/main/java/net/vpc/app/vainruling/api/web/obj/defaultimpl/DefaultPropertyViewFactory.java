@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.api.web.obj.defaultimpl;
 
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.api.VrApp;
@@ -34,7 +35,7 @@ public class DefaultPropertyViewFactory implements PropertyViewFactory {
     private EnumTypePropertyViewFactory enumTypePropertyViewFactory = new EnumTypePropertyViewFactory();
 
     @Override
-    public PropertyView[] createPropertyView(String componentId, Field field, DataType datatype, PropertyViewManager manager) {
+    public PropertyView[] createPropertyView(String componentId, Field field, DataType datatype, Map<String, Object> configuration, PropertyViewManager manager) {
         DataType dt = field.getDataType();
         PropertyView propView = null;
         boolean main = field.getModifiers().contains(FieldModifier.MAIN);
@@ -47,17 +48,19 @@ public class DefaultPropertyViewFactory implements PropertyViewFactory {
         boolean listMode = objCtrl.getModel().getMode() == EditCtrlMode.LIST;
         boolean insertMode = objCtrl.getModel().getMode() == EditCtrlMode.NEW;
         boolean updateMode = objCtrl.getModel().getMode() == EditCtrlMode.UPDATE;
-        boolean visible = 
-                insertMode? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_CREATE, null, !insert_seq):
-                updateMode? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_UPDATE, null, !insert_seq):
-                true;
-        if(!visible){
+        boolean visible
+                = insertMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_CREATE, null, !insert_seq)
+                        : updateMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_UPDATE, null, !insert_seq)
+                                : true;
+        boolean forceDisabled = configuration != null && configuration.get("disabled") != null && (Boolean.TRUE.equals(configuration.get("disabled")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("disabled"))));
+        boolean forceInvisible = configuration != null && configuration.get("invisible") != null && (Boolean.TRUE.equals(configuration.get("disabled")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("invisible"))));
+        if (!visible || forceInvisible) {
             return null;
         }
         if (dt instanceof EntityType) {
-            return entityTypePropertyViewFactory.createPropertyView(componentId, field, datatype, manager);
+            return entityTypePropertyViewFactory.createPropertyView(componentId, field, datatype, configuration, manager);
         } else if (dt instanceof EnumType) {
-            return enumTypePropertyViewFactory.createPropertyView(componentId, field, datatype, manager);
+            return enumTypePropertyViewFactory.createPropertyView(componentId, field, datatype, configuration, manager);
         } else {
             Class t = dt.getPlatformType();
             if (t.equals(String.class)) {
@@ -87,21 +90,21 @@ public class DefaultPropertyViewFactory implements PropertyViewFactory {
                 String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.TEXT);
                 propView = new FieldPropertyView(componentId, field, controlType, manager);
             } else if (PlatformTypes.isDateType(t)) {
-                if(dt instanceof DateType){
-                    DateType ddt=(DateType)dt;
-                    if(ddt.isDateOnly()){
+                if (dt instanceof DateType) {
+                    DateType ddt = (DateType) dt;
+                    if (ddt.isDateOnly()) {
                         String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.DATE);
                         propView = new FieldPropertyView(componentId, field, controlType, manager);
                     }
-                    if(ddt.isTimeOnly()){
+                    if (ddt.isTimeOnly()) {
                         String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.TIME);
                         propView = new FieldPropertyView(componentId, field, controlType, manager);
                     }
-                    if(ddt.isTimestamp()){
+                    if (ddt.isTimestamp()) {
                         String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.DATETIME);
                         propView = new FieldPropertyView(componentId, field, controlType, manager);
                     }
-                    if(ddt.isDateTime()){
+                    if (ddt.isDateTime()) {
                         String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.DATETIME);
                         propView = new FieldPropertyView(componentId, field, controlType, manager);
                     }
@@ -128,6 +131,9 @@ public class DefaultPropertyViewFactory implements PropertyViewFactory {
                 }
             }
             UPAObjectHelper.applyLayout(field, propView);
+            if (forceDisabled) {
+                propView.setDisabled(forceDisabled);
+            }
             return new PropertyView[]{propView};
         }
         return new PropertyView[0];
