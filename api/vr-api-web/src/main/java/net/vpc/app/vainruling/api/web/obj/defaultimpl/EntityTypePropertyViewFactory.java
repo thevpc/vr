@@ -108,6 +108,9 @@ public class EntityTypePropertyViewFactory implements PropertyViewFactory {
         for (PropertyView a : all) {
             propView.getDependentPropertyViews().add(a);
         }
+        if (forceDisabled) {
+            propView.setDisabled(forceDisabled);
+        }
         all.add(propView);
         if (all.size() > 1) {
             if (propView.isPrependNewLine()) {

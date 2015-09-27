@@ -48,7 +48,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     @Override
     public UCtrlData getUCtrl(String cmd) {
-        Config config = VrHelper.parseObject(cmd, Config.class);
+        Config config = VrHelper.parseJSONObject(cmd, Config.class);
         if (config.folder == null) {
             config.folder = MailboxFolder.CURRENT;
         }

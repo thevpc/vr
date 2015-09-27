@@ -68,13 +68,17 @@ public class AcademicAdminToolsCtrl {
                     + "-" + VrApp.getBean(UserSession.class).getUser().getLogin();
             new File(p).mkdirs();
             File f = new File(p, event.getFile().getFileName());
-            event.getFile().write(f.getPath());
-            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-            int count = a.importFile(VFS.createNativeFS().get(f.getPath()), null);
-            if (count > 0) {
-                FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully imported.");
-            } else {
-                FacesUtils.addWarnMessage(null, event.getFile().getFileName() + " is uploaded but nothing is imported.");
+            try {
+                event.getFile().write(f.getPath());
+                AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+                int count = a.importFile(VFS.createNativeFS().get(f.getPath()), null);
+                if (count > 0) {
+                    FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully imported.");
+                } else {
+                    FacesUtils.addWarnMessage(null, event.getFile().getFileName() + " is uploaded but nothing is imported.");
+                }
+            } finally {
+                //should not delete the file!
             }
         } catch (Exception ex) {
             Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);

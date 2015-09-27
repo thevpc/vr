@@ -183,7 +183,7 @@ public class ArticlesPlugin {
 //    public String[] findArticleActions(){
 //        return new String[]{"SendEmail"};
 //    }
-    @EntityAction(entityType = ArticlesItem.class, actionLabel = "email", actionStyle = "ui-ribbonicon-xemail")
+    @EntityAction(entityType = ArticlesItem.class, actionLabel = "email", actionStyle = "fa-envelope-o")
     public void sendExternalMail(Object obj) {
         if (obj == null || !(obj instanceof ArticlesItem)) {
             return;
@@ -244,7 +244,7 @@ public class ArticlesPlugin {
         }
     }
 
-    @EntityAction(entityType = ArticlesItem.class, actionLabel = "inbox", actionStyle = "ui-ribbonicon-email")
+    @EntityAction(entityType = ArticlesItem.class, actionLabel = "inbox", actionStyle = "fa-envelope-square")
     public void sendLocalMail(Object obj) {
         if (obj == null || !(obj instanceof ArticlesItem)) {
             return;

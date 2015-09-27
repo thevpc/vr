@@ -8,15 +8,13 @@ package net.vpc.app.vainruling.api.util;
 import com.google.gson.Gson;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.model.AppTrace;
 import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.upa.CustomDefaultObject;
-import net.vpc.upa.UPA;
-import net.vpc.upa.config.Entity;
 import net.vpc.upa.impl.util.Strings;
 import net.vpc.upa.types.DateTime;
 import net.vpc.upa.types.StringType;
@@ -77,13 +75,19 @@ public class VrHelper {
         return d.html();
     }
 
-    public static String getRelativeDateMessage(Date dte) {
+    public static String getRelativeDateMessage(Date dte, Locale loc) {
         if (dte == null) {
             return "";
         }
+        if (loc == null) {
+            loc = Locale.getDefault();
+        }
+        boolean fr = loc.getLanguage() != null && loc.getLanguage().equalsIgnoreCase("fr");
+//        boolean en = en = !fr;
         Date now = new Date();
-        SimpleDateFormat dateOnlyFormat = DateFormatUtils.getFormat("yyyy-MM-dd");
-        SimpleDateFormat yearMonthFormat = DateFormatUtils.getFormat("yyyy-MM");
+        SimpleDateFormat dateOnlyFormat = DateFormatUtils.getFormat(fr ? "dd/MM/yyyy" : "yyyy-MM-dd");
+        SimpleDateFormat dayMonthFormat = DateFormatUtils.getFormat("dd MMM");
+        SimpleDateFormat yearMonthFormat = DateFormatUtils.getFormat(fr ? "MM/yyyy" : "yyyy-MM");
         SimpleDateFormat yearFormat = DateFormatUtils.getFormat("yyyy");
         if (dateOnlyFormat.format(dte).equals(dateOnlyFormat.format(now))) {
             return DateFormatUtils.getFormat("HH:mm").format(dte);
@@ -94,30 +98,30 @@ public class VrHelper {
             Calendar now0 = Calendar.getInstance();
             now0.setTime(now);
             if (dte0.get(Calendar.DAY_OF_MONTH) == now0.get(Calendar.DAY_OF_MONTH) - 1) {
-                return "hier";
+                return fr ? "hier" : "yesterdy";
             }
             if (dte0.get(Calendar.DAY_OF_MONTH) == now0.get(Calendar.DAY_OF_MONTH) - 2) {
-                return "il y a 2 jours";
+                return fr ? "il y'a 2 jours" : "2 days ago";
             }
             if (dte0.get(Calendar.DAY_OF_MONTH) == now0.get(Calendar.DAY_OF_MONTH) - 3) {
-                return "il y a 3 jours";
+                return fr ? "il y'a 3 jours" : "3 days ago";
             }
             if (dte0.get(Calendar.DAY_OF_MONTH) == now0.get(Calendar.DAY_OF_MONTH) + 1) {
-                return "demain";
+                return fr ? "demain" : "tomorrow";
             }
             if (dte0.get(Calendar.DAY_OF_MONTH) == now0.get(Calendar.DAY_OF_MONTH) + 2) {
-                return "dans 2 jours";
+                return fr ? "dans 2 jours" : "in 2 days";
             }
             if (dte0.get(Calendar.DAY_OF_MONTH) == now0.get(Calendar.DAY_OF_MONTH) + 3) {
                 return "dans 3 jours";
             }
 
-            return DateFormatUtils.getFormat("dd MMM").format(dte);
+            return dayMonthFormat.format(dte);
         }
         if (yearFormat.format(dte).equals(yearFormat.format(now))) {
-            return DateFormatUtils.getFormat("dd MMM").format(dte);
+            return dayMonthFormat.format(dte);
         }
-        return DateFormatUtils.getFormat("yyyy-MM-dd").format(dte);
+        return dateOnlyFormat.format(dte);
     }
 
     public static String str(Object... a) {
@@ -182,7 +186,12 @@ public class VrHelper {
         return VrHelper.extratTextFormHTML(value);
     }
 
-    public static <T> T parseObject(String cmd, Class<T> type) {
+    public static String formatJSONObject(Object cmd) {
+        Gson gson = new Gson();
+        return gson.toJson(cmd);
+    }
+
+    public static <T> T parseJSONObject(String cmd, Class<T> type) {
         Object arg = null;
         if (cmd != null) {
             Class pt = type;

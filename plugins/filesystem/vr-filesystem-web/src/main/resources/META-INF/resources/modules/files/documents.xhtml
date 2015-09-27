@@ -21,8 +21,10 @@ and open the template in the editor.
         <ui:composition template="/templates/template.xhtml">
             <ui:define name="content">
                 <h:form id="listForm" enctype="multipart/form-data" >
-                    <p:commandButton style="margin-bottom: 20px" value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
-
+                    <p:commandButton style="margin-bottom: 20px" value="Rafr." icon="fa-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
+                    <p:commandButton style="margin-bottom: 20px" value="Rafr." icon="fa-add" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
+                    <p:fileUpload fileUploadListener="#{documentsCtrl.handleNewFile}" label="new" mode="simple" auto="true" skinSimple="true"/>
+                    <p:fileUpload fileUploadListener="#{documentsCtrl.handleUpdatedFile}" label="update" mode="simple" auto="true" skinSimple="true"/>
                     <div class="row">
                         <p:dataTable var="i" value="#{documentsCtrl.model.files}" class="table table-bordered table-hover"
                                      paginatorAlwaysVisible="false"
@@ -32,7 +34,8 @@ and open the template in the editor.
                                      paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                      rowsPerPageTemplate="20,50,100,200,1000"
                                      >
-                            <p:column headerText="" width="30">
+                            <p:column headerText="" width="60">
+                                <p:selectBooleanCheckbox value="#{i.selected}" styleClass="vr-icon-prefix-#{i.css}" />
                                 <h:outputText styleClass="vr-icon-prefix-#{i.css}" style="color: white" value="."/>
                             </p:column>
                             <p:column headerText="#{documentsCtrl.model.current.file.path}">
@@ -42,7 +45,10 @@ and open the template in the editor.
                                                ajax="true"
                                                update=":listForm"
                                                />
-                                <h:outputText value="#{i.name}" rendered="#{! i.file.directory}"/>
+                                <!--<h:outputText value="# {i.name}" rendered="# {! i.file.directory}"/>-->
+                                <p:commandLink rendered="#{! i.file.directory}" value="#{i.name}" ajax="false">
+                                    <p:fileDownload value="#{documentsCtrl.getContent(i)}" />
+                                </p:commandLink>
                             </p:column>
                             <p:column headerText="Taille" width="100">
                                 <h:outputText rendered="#{!i.file.directory}" value="#{i.file.length()}" converter="fileSizeConverter"/>
@@ -51,11 +57,6 @@ and open the template in the editor.
                                 <h:outputText value="#{i.lastModifiedDate}" >
                                     <f:convertDateTime type="date" pattern="dd-MM-yyyy HH:mm"/>
                                 </h:outputText>
-                            </p:column>
-                            <p:column headerText="" width="60">
-                                <p:commandButton rendered="#{! i.file.directory}" style="color: silver" value="." ajax="false" icon="ui-icon-arrowthick-1-s">
-                                    <p:fileDownload value="#{documentsCtrl.getContent(i)}" />
-                                </p:commandButton>
                             </p:column>
                         </p:dataTable>
                     </div>

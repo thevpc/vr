@@ -47,7 +47,7 @@ public class LoginCtrl {
     }
 
     public String gotoAppInfo() {
-        return VrApp.getBean(VrMenuManager.class).gotoPage(AppInfoCtrl.class, "");
+        return VrApp.getBean(VrMenuManager.class).gotoPage("appInfo", "");
     }
 
     public String doimpersonate() {

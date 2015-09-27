@@ -10,6 +10,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.api.util.VrHelper;
 
 /**
@@ -27,7 +29,13 @@ public class RelativeDateConverter implements Converter {
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
         Date dte = (java.util.Date) o;
-        return VrHelper.getRelativeDateMessage(dte);
+        UserSession s = null;
+        try {
+            s = VrApp.getBean(UserSession.class);
+        } catch (Exception e) {
+            //ignore error
+        }
+        return VrHelper.getRelativeDateMessage(dte, s == null ? null : s.getLocale());
     }
 
 }

@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.filesystem.web.files;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -28,10 +29,13 @@ import net.vpc.app.vainruling.api.web.UCtrlProvider;
 import net.vpc.app.vainruling.api.web.VRMenuDef;
 import net.vpc.app.vainruling.api.web.VRMenuDefFactory;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.streams.PathInfo;
 import net.vpc.upa.impl.util.Strings;
+import net.vpc.vfs.VFS;
 import net.vpc.vfs.VFile;
 import net.vpc.vfs.VirtualFileSystem;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.springframework.context.annotation.Scope;
@@ -113,15 +117,15 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         List<VRMenuDef> m = new ArrayList<>();
         VrApp.getBean(CorePlugin.class).createRight("Custom.FileSystem.RootFileSystem", "Root FileSystem Access");
         VrApp.getBean(CorePlugin.class).createRight("Custom.FileSystem.MyFileSystem", "My FileSystem Access");
-        m.add(new VRMenuDef("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", "Custom.FileSystem.RootFileSystem",""));
-        m.add(new VRMenuDef("Mes Documents", "/FileSystem", "documents", "{type:'me'}", "Custom.FileSystem.MyFileSystem",""));
+        m.add(new VRMenuDef("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", "Custom.FileSystem.RootFileSystem", ""));
+        m.add(new VRMenuDef("Mes Documents", "/FileSystem", "documents", "{type:'me'}", "Custom.FileSystem.MyFileSystem", ""));
         return m;
     }
 
     @Override
     public UCtrlData getUCtrl(String cmd) {
         try {
-            Config c = VrHelper.parseObject(cmd,Config.class);
+            Config c = VrHelper.parseJSONObject(cmd, Config.class);
 
             if (c == null) {
                 c = new Config();
@@ -294,11 +298,20 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         private String name;
         private String css;
         private VFile file;
+        private boolean selected;
 
         public FileInfo(String name, VFile file, String css) {
             this.name = name;
             this.file = file;
             this.css = css;
+        }
+
+        public boolean isSelected() {
+            return selected;
+        }
+
+        public void setSelected(boolean selected) {
+            this.selected = selected;
         }
 
         public String getName() {
@@ -343,4 +356,54 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         return model;
     }
 
+    public void handleNewFile(FileUploadEvent event) {
+        try {
+            String p = VrApp.getBean(FileSystemPlugin.class).getNativeFileSystemPath()
+                    + "/Temp/Files/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+                    + "-" + VrApp.getBean(UserSession.class).getUser().getLogin();
+            new File(p).mkdirs();
+            File f = new File(p, event.getFile().getFileName());
+            try {
+                event.getFile().write(f.getPath());
+                //do work here
+                int count = 1;//
+                if (count > 0) {
+                    FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
+                } else {
+                    FacesUtils.addWarnMessage(null, event.getFile().getFileName() + " is uploaded but nothing is updated.");
+                }
+            } finally {
+                //should not delete the file!
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            FacesUtils.addErrorMessage(event.getFile().getFileName() + " uploading failed.", ex.getMessage());
+        }
+    }
+
+    public void handleUpdatedFile(FileUploadEvent event) {
+        try {
+            String p = VrApp.getBean(FileSystemPlugin.class).getNativeFileSystemPath()
+                    + "/Temp/Files/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+                    + "-" + VrApp.getBean(UserSession.class).getUser().getLogin();
+            new File(p).mkdirs();
+            File f = new File(p, event.getFile().getFileName());
+            try {
+                event.getFile().write(f.getPath());
+                //do work here
+                int count = 1;
+                if (count > 0) {
+                    FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
+                } else {
+                    FacesUtils.addWarnMessage(null, event.getFile().getFileName() + " is uploaded but nothing is updated.");
+                }
+            } finally {
+                //should not delete the file!
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            FacesUtils.addErrorMessage(event.getFile().getFileName() + " uploading failed.", ex.getMessage());
+        }
+
+    }
 }

@@ -75,7 +75,33 @@ public class JsfCtrl {
         return mf.format(a);
     }
 
+    public String date(Date dte) {
+        UserSession s = null;
+        try {
+            s = VrApp.getBean(UserSession.class);
+        } catch (Exception e) {
+            //ignore error
+        }
+        return VrHelper.getRelativeDateMessage(dte, s == null ? null : s.getLocale());
+    }
+
+    public String date(Date dte, Locale loc) {
+        UserSession s = null;
+        try {
+            s = VrApp.getBean(UserSession.class);
+        } catch (Exception e) {
+            //ignore error
+        }
+        if (loc == null && s != null) {
+            loc = s.getLocale();
+        }
+        return VrHelper.getRelativeDateMessage(dte, loc);
+    }
+
     public String date(Date d, String format) {
+        if (format.startsWith("#")) {
+            return date(d, new Locale(format.substring(1)));
+        }
         return d == null ? "" : new SimpleDateFormat(format).format(d);
     }
 
@@ -106,7 +132,7 @@ public class JsfCtrl {
     public String html2txt(String value) {
         return VrHelper.extratTextFormHTML(value);
     }
-    
+
     public String pureHtml(String value) {
         return VrHelper.extratPureHTML(value);
     }
@@ -115,4 +141,25 @@ public class JsfCtrl {
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         return req.getContextPath();
     }
+
+    public Locale getLocale(String preferred) {
+        Locale loc = Strings.isNullOrEmpty(preferred) ? null : new Locale(preferred);
+        if (loc == null) {
+            UserSession s = null;
+            try {
+                s = VrApp.getBean(UserSession.class);
+            } catch (Exception e) {
+                //ignore error
+            }
+            if (loc == null && s != null) {
+                loc = s.getLocale();
+            }
+            if (loc == null) {
+                loc = Locale.getDefault();
+            }
+        }
+        return loc;
+    }
+
+   
 }

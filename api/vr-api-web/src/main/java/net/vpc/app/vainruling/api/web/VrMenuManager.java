@@ -8,12 +8,14 @@ package net.vpc.app.vainruling.api.web;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.i18n.I18n;
 import net.vpc.app.vainruling.api.util.Reflector;
 import net.vpc.app.vainruling.api.util.VrHelper;
+import net.vpc.app.vainruling.api.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.api.web.util.TreeDefinition;
 //import net.vpc.app.vainruling.tasks.TaskPlugin;
 //import net.vpc.app.vainruling.tasks.model.TodoList;
@@ -49,6 +51,7 @@ public class VrMenuManager {
 //    private TaskPlugin todoService;
     @Autowired
     private I18n i18n;
+    private LinkedList<PageInfo> pageHistory = new LinkedList<>();
 
     public Object getPageCtrl() {
         return pageCtrl;
@@ -66,9 +69,9 @@ public class VrMenuManager {
     }
 
     public boolean isCurrentPageId(String name) {
-        if(Strings.isNullOrEmpty(name)){
+        if (Strings.isNullOrEmpty(name)) {
             return Strings.isNullOrEmpty(getModel().getCurrentPageId());
-        }else{
+        } else {
             return name.equals(getModel().getCurrentPageId());
         }
     }
@@ -150,16 +153,6 @@ public class VrMenuManager {
         return out;
     }
 
-    public String gotoPage(String type, String cmd) {
-        Object o = getPageCtrl(type);
-        return gotoPageByBean(o, cmd);
-    }
-
-    public String gotoPage(Class type, String cmd) {
-        Object o = VrApp.getBean(type);
-        return gotoPageByBean(o, cmd);
-    }
-
     private UCtrlData getUCtrlData(String ctrl0, String cmd) {
         Object ccc = getPageCtrl(ctrl0);
         if (ccc instanceof UCtrlProvider) {
@@ -203,10 +196,30 @@ public class VrMenuManager {
         return ctrl0.toString();
     }
 
-    public String gotoPageByBean(Object o, String cmd) {
+//    public String gotoPage(Class type, String cmd) {
+//        Object o = VrApp.getBean(type);
+//        return gotoPageByBean(o, cmd);
+//    }
+    public String goBack() {
+        if (pageHistory.size() > 0) {
+            pageHistory.removeLast();
+            if (pageHistory.size() > 0) {
+                PageInfo last = pageHistory.getLast();
+                return gotoPage(last.getCommand(), last.getArguments(), false);
+            }
+        }
+        return null;
+    }
+
+    public String gotoPage(String command, String arguments) {
+        return gotoPage(command, arguments, true);
+    }
+
+    private String gotoPage(String command, String arguments, boolean addtoHistory) {
+        Object o = getPageCtrl(command);
         VRWebHelper.prepareUserSession();
         String goodBeanName = resolveGoodBeanName(o);
-        UCtrlData d = getUCtrlData(goodBeanName, cmd);
+        UCtrlData d = getUCtrlData(goodBeanName, arguments);
         setPageCtrl(o);
         List<BreadcrumbItem> bc = new ArrayList<>();
         String url = null;
@@ -220,7 +233,7 @@ public class VrMenuManager {
             if (m.getParameterTypes().length == 0) {
                 m.invoke();
             } else if (m.getParameterTypes().length == 1) {
-                m.invoke(VrHelper.parseObject(cmd, m.getParameterTypes()[0]));
+                m.invoke(VrHelper.parseJSONObject(arguments, m.getParameterTypes()[0]));
             }
         }
         if (d != null) {
@@ -229,7 +242,31 @@ public class VrMenuManager {
             bc.add(new BreadcrumbItem("", "", "", ""));
         }
         getModel().setBreadcrumb(bc);
-        return StringUtils.isEmpty(url) ? null : path(url);
+        if (StringUtils.isEmpty(url)) {
+            return null;
+        }
+        if (addtoHistory) {
+            pushHistory(command, arguments);
+        }
+        return path(url);
+    }
+
+    public void pushHistory(String command, Object arguments) {
+        if (arguments == null) {
+            arguments = "";
+        } else if (arguments instanceof String) {
+            //okkay
+        } else {
+            arguments = VrHelper.formatJSONObject(arguments);
+        }
+        PageInfo pi = new PageInfo(command, String.valueOf(arguments));
+        if (pageHistory.size() > 0 && pageHistory.getLast().equals(pi)) {
+            return;
+        }
+        pageHistory.add(pi);
+        if (pageHistory.size() > 20) {
+            pageHistory.removeFirst();
+        }
     }
 
 //    public String invoke(String name) {

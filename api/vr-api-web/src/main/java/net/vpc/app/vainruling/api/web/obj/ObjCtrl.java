@@ -54,10 +54,8 @@ import net.vpc.upa.RelationshipType;
 import net.vpc.upa.UPA;
 import net.vpc.upa.UPASecurityManager;
 import net.vpc.upa.filters.Fields;
-import net.vpc.upa.impl.util.PlatformUtils;
 import net.vpc.upa.impl.util.Strings;
 import net.vpc.upa.types.DataType;
-import net.vpc.upa.types.DateType;
 import net.vpc.upa.types.EntityType;
 import net.vpc.upa.types.IntType;
 import net.vpc.upa.types.StringType;
@@ -103,7 +101,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     @Override
     public UCtrlData getUCtrl(String cmd) {
         try {
-            Config c = VrHelper.parseObject(cmd, Config.class);
+            Config c = VrHelper.parseJSONObject(cmd, Config.class);
             Entity entity = UPA.getPersistenceUnit().getEntity(c.entity);
             UCtrlData d = new UCtrlData();
             d.setTitle(getPageTitleString(entity, EditCtrlMode.LIST));
@@ -188,9 +186,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                         return UPA.getPersistenceUnit().getSecurityManager().isAllowedRemove(getEntity());
                     }
                     if ("Archive".equals(buttonId)) {
-                        return 
-                                UPA.getPersistenceUnit().getSecurityManager()
-                                        .isAllowedUpdate(getEntity()) 
+                        return UPA.getPersistenceUnit().getSecurityManager()
+                                .isAllowedUpdate(getEntity())
                                 && objService.isArchivable(getModel().getEntityName());
                     }
                     if (objService.isEntityAction(getEntity().getName(), buttonId, null)) {
@@ -219,7 +216,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                     if ("Archive".equals(buttonId)) {
                         return UPA.getPersistenceUnit().getSecurityManager()
-                                        .isAllowedUpdate(getEntity()) 
+                                .isAllowedUpdate(getEntity())
                                 && objService.isArchivable(getModel().getEntityName());
                     }
                     if (objService.isEntityAction(getEntity().getName(), buttonId, getModel().getCurrentObj())) {
@@ -364,7 +361,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     @Override
     public void reloadPage(String cmd) {
         try {
-            Config cfg = VrHelper.parseObject(cmd, Config.class);
+            Config cfg = VrHelper.parseJSONObject(cmd, Config.class);
             getModel().setConfig(cfg);
             getModel().setDisabledFields(new HashSet<String>());
             if (cfg.disabledFields != null) {
@@ -584,7 +581,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public void updateModelFromConfig() {
-        Config cfg = VrHelper.parseObject(getModel().getCmd(), Config.class);
+        Config cfg = VrHelper.parseJSONObject(getModel().getCmd(), Config.class);
         Object o = getModel().getCurrentObj();
         Entity e = getEntity();
         EntityBuilder builder = e.getBuilder();
@@ -881,6 +878,27 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
+        }
+        VrMenuManager menu = VrApp.getBean(VrMenuManager.class);
+        if (getModel().getCurrent() != null) {
+            Config cfg = new Config();
+            cfg.entity = getEntityName();
+            cfg.id = String.valueOf(getEntity().getBuilder().entityToId(getModel().getCurrent().getValue()));
+            menu.pushHistory("obj", cfg);
+        }
+    }
+
+    public void onCancelCurrent() {
+        super.onCancelCurrent();
+        VrMenuManager menu = VrApp.getBean(VrMenuManager.class);
+        if (getModel().getCurrent() != null) {
+            Config cfg = new Config();
+            cfg.entity = getEntityName();
+            cfg.id = String.valueOf(getEntity().getBuilder().entityToId(getModel().getCurrent().getValue()));
+            cfg.values = getModel().getConfig().values;
+            cfg.listFilter = getModel().getConfig().listFilter;
+            cfg.disabledFields = getModel().getConfig().disabledFields;
+            menu.pushHistory("obj", cfg);
         }
     }
 

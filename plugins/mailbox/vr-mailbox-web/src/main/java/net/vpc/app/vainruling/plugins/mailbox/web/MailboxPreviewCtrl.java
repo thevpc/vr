@@ -48,7 +48,7 @@ public class MailboxPreviewCtrl {
             previews.add(new MessagePreview(
                     lo.getSender()==null?null:lo.getSender().getFullName(), 
                     VrHelper.strcut(subject, 36), 
-                    VrHelper.getRelativeDateMessage(lo.getSendTime())));
+                    VrHelper.getRelativeDateMessage(lo.getSendTime(),null)));
         }
         model.setInbox(previews);
         model.setUnreadCount(p.getLocalUnreadInboxCount(userId));

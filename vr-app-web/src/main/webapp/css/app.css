@@ -265,3 +265,9 @@ table.NoPaddingTableClass td {
 .page-header {
     margin: 10px 0 10px;
 }
+
+button.ui-button > span.ui-icon{
+    text-indent: 0px !important;
+    background-image: none;
+    color: #468A79;
+}

@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.api.web.VrMenuManager;
 
 /**
  *
