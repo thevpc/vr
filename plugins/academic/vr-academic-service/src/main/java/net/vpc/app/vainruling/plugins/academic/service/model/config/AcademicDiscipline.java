@@ -26,10 +26,14 @@ public class AcademicDiscipline {
     @Sequence
 
     private int id;
+    @Field(modifiers = {UserFieldModifier.SUMMARY})
     private String code;
     @Field(modifiers = {UserFieldModifier.MAIN})
     private String name;
+    @Field(modifiers = {UserFieldModifier.SUMMARY})
     private String name2;
+    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    private String name3;
 
     public AcademicDiscipline() {
     }
@@ -75,4 +79,13 @@ public class AcademicDiscipline {
     public String toString() {
         return StringUtils.nonnull(name);
     }
+
+    public String getName3() {
+        return name3;
+    }
+
+    public void setName3(String name3) {
+        this.name3 = name3;
+    }
+
 }

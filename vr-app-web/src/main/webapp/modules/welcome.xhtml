@@ -23,10 +23,10 @@ and open the template in the editor.
                 <h:form id="itemForm" enctype="multipart/form-data" >
                     <div class="row">
                         <p:outputPanel style="margin-bottom:20px;border-width: 2px;border-style: solid;border-color: #0f6b57;border-radius: 5px;padding: 5px">
-                            <p>Bonjour <strong>#{userSession.user==null?'anonymous' : userSession.user.fullName}</strong></p>
+                            <p>Bonjour <strong>#{userSession.user==null?'anonymous' : userSession.user.contact.fullName}</strong></p>
                             <p>Vous êtes connecté#{userSession.female?'e':''} en tant que <strong>#{userSession.user.login}</strong>
                                 <ui:fragment rendered="#{userSession.impersonating}">
-                                    , (en réalité vous ête <strong>#{userSession.rootUser.fullName}</strong> aka <strong>#{userSession.rootUser.login}</strong>)
+                                    , (en réalité vous ête <strong>#{userSession.rootUser.contact.fullName}</strong> aka <strong>#{userSession.rootUser.login}</strong>)
                                 </ui:fragment>
                                 <ui:fragment rendered="#{userSession.profiles.size() gt 0}">
                                     , vous faites partie #{(userSession.profiles.size() gt 1)?'des groupes':'du groupe'} <strong>#{userSession.profilesString}</strong>
@@ -50,7 +50,7 @@ and open the template in the editor.
 
 
                         <ui:repeat value="#{articlesCtrl.welcomeArticles}" var="a">
-                            <p:panel header="#{a.content.subject}" footer="écrit par #{(a.content.sender eq null)?'//inconnu//':a.content.sender.fullName} #{(a.content.sendTime eq null)?'' : (jsfCtrl.str(' - (le ',jsfCtrl.date(a.content.sendTime,'dd MMM yyyy à HH:mm') ,')'))}" style="margin-bottom:20px">
+                            <p:panel header="#{a.content.subject}" footer="écrit par #{(a.content.sender eq null)?'//inconnu//':a.content.sender.contact.fullName} #{(a.content.sendTime eq null)?'' : (jsfCtrl.str(' - (le ',jsfCtrl.date(a.content.sendTime,'dd MMM yyyy à HH:mm') ,')'))}" style="margin-bottom:20px">
                                 <h:panelGrid columns="1" cellpadding="10">
                                     <h:outputText value="#{a.content.content}" escape="false"/>
                                     <h:outputLink rendered="#{a.content.linkText ne null and a.content.linkText ne ''}" 

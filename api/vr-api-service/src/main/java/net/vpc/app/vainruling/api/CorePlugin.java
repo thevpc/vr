@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import net.vpc.app.vainruling.api.model.AppCivility;
 import net.vpc.app.vainruling.api.model.AppCompany;
+import net.vpc.app.vainruling.api.model.AppContact;
 import net.vpc.app.vainruling.api.model.AppCountry;
 import net.vpc.app.vainruling.api.model.AppDepartment;
 import net.vpc.app.vainruling.api.model.AppGender;
@@ -44,7 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author vpc
  */
-@AppPlugin(version = "1.4")
+@AppPlugin(version = "1.5")
 public class CorePlugin {
 
     public static final String HEAD_OF_DEPARTMENT = "HeadOfDepartment";
@@ -289,6 +290,10 @@ public class CorePlugin {
         return (AppCivility) UPA.getPersistenceUnit().findByMainField(AppCivility.class, t);
     }
 
+    public AppContact findContact(int id) {
+        return (AppContact) UPA.getPersistenceUnit().findById(AppContact.class, id);
+    }
+
     public AppGender findGender(String t) {
         return (AppGender) UPA.getPersistenceUnit().findByMainField(AppGender.class, t);
     }
@@ -314,20 +319,20 @@ public class CorePlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AppCountry tunisia = pu.findByMainField(AppCountry.class, "Tunisie");
         if (tunisia == null) {
-            tunisia=new AppCountry();
+            tunisia = new AppCountry();
             tunisia.setName("Tunisie");
             pu.persist(tunisia);
         }
         AppIndustry eduIndustry = pu.findByMainField(AppIndustry.class, "Education");
         if (eduIndustry == null) {
-            eduIndustry=new AppIndustry();
+            eduIndustry = new AppIndustry();
             eduIndustry.setName("Education");
             pu.persist(eduIndustry);
         }
 
         AppCompany eniso = pu.findByMainField(AppIndustry.class, "ENISo");
         if (eniso == null) {
-            eniso=new AppCompany();
+            eniso = new AppCompany();
             eniso.setName("ENISo");
             eniso.setIndustry(eduIndustry);
             eniso.setCountry(tunisia);
@@ -361,18 +366,21 @@ public class CorePlugin {
             c = insertIfNotFound(c);
             d.genders.add(c);
         }
+        AppContact adminContact = new AppContact();
+        adminContact.setFirstName("admin");
+        adminContact.setLastName("admin");
+        adminContact.setFullName("admin");
+        adminContact.setCivility(d.civilities.get(0));
+        adminContact.setGender(d.genders.get(0));
+        adminContact.setEmail("admin@vr.net");
+        adminContact = insertIfNotFound(adminContact, "nin");
 
         AppUser uu = new AppUser();
         d.admin = uu;
-        d.admin.setFirstName("admin");
-        d.admin.setLastName("admin");
-        d.admin.setFullName("admin");
         d.admin.setLogin("admin");
         d.admin.setPassword("admin");
-        d.admin.setCivitity(d.civilities.get(0));
-        d.admin.setGender(d.genders.get(0));
-        d.admin.setEmail("admin@vr.net");
         d.admin.setType(d.adminType);
+        d.admin.setContact(adminContact);
         d.admin = insertIfNotFound(d.admin);
         if (d.admin == uu) {
             pu.persist(new AppUserProfileBinding(d.admin, d.adminProfile));
@@ -819,4 +827,27 @@ public class CorePlugin {
             pu.merge(old);
         }
     }
+
+    public AppContact findOrCreateContact(AppContact c) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        if (Strings.isNullOrEmpty(c.getNin())) {
+            AppContact oldAcademicTeacher = pu.createQueryBuilder(AppContact.class)
+                    .addAndField("nin", c.getNin())
+                    .getEntity();
+            if (oldAcademicTeacher != null) {
+                return oldAcademicTeacher;
+            }
+        } else {
+            AppContact oldAcademicTeacher = pu.createQueryBuilder(AppContact.class)
+                    .addAndField("firstName", c.getFirstName())
+                    .addAndField("lastName", c.getLastName())
+                    .getEntity();
+            if (oldAcademicTeacher != null) {
+                return oldAcademicTeacher;
+            }
+        }
+        pu.persist(c);
+        return c;
+    }
+
 }

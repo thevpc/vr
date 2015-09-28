@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.service;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.api.VrApp;
@@ -15,6 +14,7 @@ import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.core.service.LoginService;
 import net.vpc.lib.gomail.GoMail;
 import net.vpc.lib.gomail.GoMailBodyPosition;
+import net.vpc.upa.Action;
 //import ;
 import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
@@ -30,32 +30,6 @@ import net.vpc.upa.UPAObject;
 public class Standalone {
 
     public static void main(String[] args) {
-        try {
-            GoMail m=new GoMail();
-            m.setCredentials("eniso.info", "canard77");
-            m.from("eniso.info@gmail.com");
-            m.to("taha.bensalah@gmail.com");
-            m.subject("Hi");
-            m.body("This is my first example","text/plain",GoMailBodyPosition.OBJECT);
-            m.send();
-        } catch (IOException ex) {
-            Logger.getLogger(Standalone.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    public static void main0(String[] args) {
-        try {
-            System.setProperty("java.library.path", ":/home/vpc/Programs/ttcn3/lib:/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib");
-            System.out.println("loading LogUtils");
-            ClassLoader loader = Standalone.class.getClassLoader();
-            loader.loadClass("net.vpc.common.utils.LogUtils");
-            System.out.println("okk");
-//            Thread.sleep(000);
-        } catch (Exception ex) {
-            Logger.getLogger(Standalone.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        for (Map.Entry<Object, Object> entrySet : System.getProperties().entrySet()) {
-            System.out.println(entrySet.getKey() + " = " + entrySet.getValue());
-        }
 
         net.vpc.common.utils.LogUtils.configure(Level.FINE, "net.vpc");
         VrApp.runStandalone(args);
@@ -63,39 +37,63 @@ public class Standalone {
         VrApp.getBean(LoginService.class).login("admin", "admin");
         int count = checkI18n();
         System.out.println(count + " Missing resources!");
+        UPA.getContext().invokePrivileged(new Action<Object>() {
 
-//        final List<ArticlesItem> findArticlesByUserAndCategory = VrApp.getBean(ArticlesPlugin.class).findArticlesByUserAndCategory("admin", "Welcome");
-//        System.out.println(findArticlesByUserAndCategory);
-//        UPA.getContext().invokePrivileged(new Action<Object>() {
-//
-//            @Override
-//            public Object run() {
-//                AcademicTeacher academicTeacher = new AcademicTeacher();
-//                academicTeacher.setName(UUID.randomUUID().toString());
-//                VrApp.getBean(AcademicPlugin.class).add(academicTeacher);
-//                return null;
-//            }
-//        }, null);
-//        UPA.getContext().invokePrivileged(new Action<Object>() {
-//
-//            @Override
-//            public Object run() {
-//                UPA.getPersistenceUnit().updateFormulas();
-////                for (AcademicCoursePlan c : VrApp.getBean(AcademicPlugin.class).findCoursePlans()) {
-////                    if (c.getFullName() == null) {
-////                        UPA.getPersistenceUnit().merge(c);
-////                    }
-////                }
-//                return null;
-//            }
-//        }, null);
-//        System.out.println("***************");
-//        List<AppUser> uu = VrApp.getBean(CorePlugin.class)
-//                .resolveUsersByProfileFilter("(taha.bensalah +admin) | 'ad+min'");
-//        System.out.println("***************");
-//        for (AppUser u : uu) {
-//            System.out.println("*************** "+u);
-//        }
+            @Override
+            public Object run() {
+//                for (Object o : UPA.getPersistenceUnit().findAll(AcademicInternship.class)) {
+//                    System.out.println(o);
+//                }
+//                VrApp.getBean(DevSrv.class).doUpgrade();
+                return null;
+            }
+        }, null);
+        //        final List<ArticlesItem> findArticlesByUserAndCategory = VrApp.getBean(ArticlesPlugin.class).findArticlesByUserAndCategory("admin", "Welcome");
+        //        System.out.println(findArticlesByUserAndCategory);
+        //        UPA.getContext().invokePrivileged(new Action<Object>() {
+        //
+        //            @Override
+        //            public Object run() {
+        //                AcademicTeacher academicTeacher = new AcademicTeacher();
+        //                academicTeacher.setName(UUID.randomUUID().toString());
+        //                VrApp.getBean(AcademicPlugin.class).add(academicTeacher);
+        //                return null;
+        //            }
+        //        }, null);
+        //        UPA.getContext().invokePrivileged(new Action<Object>() {
+        //
+        //            @Override
+        //            public Object run() {
+        //                UPA.getPersistenceUnit().updateFormulas();
+        ////                for (AcademicCoursePlan c : VrApp.getBean(AcademicPlugin.class).findCoursePlans()) {
+        ////                    if (c.getFullName() == null) {
+        ////                        UPA.getPersistenceUnit().merge(c);
+        ////                    }
+        ////                }
+        //                return null;
+        //            }
+        //        }, null);
+        //        System.out.println("***************");
+        //        List<AppUser> uu = VrApp.getBean(CorePlugin.class)
+        //                .resolveUsersByProfileFilter("(taha.bensalah +admin) | 'ad+min'");
+        //        System.out.println("***************");
+        //        for (AppUser u : uu) {
+        //            System.out.println("*************** "+u);
+        //        }
+    }
+
+    public static void main0(String[] args) {
+        try {
+            GoMail m = new GoMail();
+            m.setCredentials("eniso.info", "canard77");
+            m.from("eniso.info@gmail.com");
+            m.to("taha.bensalah@gmail.com");
+            m.subject("Hi");
+            m.body("This is my first example", "text/plain", GoMailBodyPosition.OBJECT);
+            m.send();
+        } catch (IOException ex) {
+            Logger.getLogger(Standalone.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private static int checkI18n() {

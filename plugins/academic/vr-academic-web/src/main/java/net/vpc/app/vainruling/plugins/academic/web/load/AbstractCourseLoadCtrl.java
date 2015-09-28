@@ -153,7 +153,7 @@ public abstract class AbstractCourseLoadCtrl {
                         accepted = false;
                     } else if (c.getAssignment().getTeacher() != null) {
                         accepted = (c.getIntentsSet().size() == 1
-                                && !c.getAssignment().getTeacher().getName().equals(c.getIntentsSet().toArray()[0]))
+                                && !c.getAssignment().getTeacher().getContact().getFullName().equals(c.getIntentsSet().toArray()[0]))
                                 || c.getIntentsSet().size() > 1;
                     } else {
                         accepted = c.getIntentsSet().size() > 1;
@@ -250,7 +250,7 @@ public abstract class AbstractCourseLoadCtrl {
                         }
                     }
                 }
-                d = t.getCoursePlan().getStudentClass().getProgram().getDepartment();
+                d = (t.getCoursePlan()!=null && t.getCoursePlan().getStudentClass()!=null && t.getCoursePlan().getStudentClass().getProgram()!=null)?t.getCoursePlan().getStudentClass().getProgram().getDepartment():null;
                 if (d != null) {
                     if (userSession.allowed("Custom.Education.CourseLoadUpdateIntents")) {
                         AppDepartment d2 = user.getDepartment();
@@ -290,7 +290,7 @@ public abstract class AbstractCourseLoadCtrl {
                         }
                     }
                 }
-                d = t.getCoursePlan().getStudentClass().getProgram().getDepartment();
+                d = (t.getCoursePlan()!=null && t.getCoursePlan().getStudentClass()!=null && t.getCoursePlan().getStudentClass().getProgram()!=null)?t.getCoursePlan().getStudentClass().getProgram().getDepartment():null;
                 if (d != null) {
                     if (userSession.allowed("Custom.Education.CourseLoadUpdateAssignments")) {
                         AppDepartment d2 = userSession.getUser().getDepartment();

@@ -65,7 +65,7 @@ and open the template in the editor.
                             </li>
                             <li>
                                 <p:outputPanel>
-                                    <h:commandLink value="sign-out #{userSession.user.firstName}" action="#{loginCtrl.dologout}"/>
+                                    <h:commandLink value="sign-out #{userSession.user.contact.firstName}" action="#{loginCtrl.dologout}"/>
                                 </p:outputPanel>
                             </li>
                         </ui:fragment>

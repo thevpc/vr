@@ -489,7 +489,7 @@ public class MailboxPlugin {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         List<String[]> rows = new ArrayList<>();
         for (AppUser p : core.resolveUsersByProfileFilter(recipientProfiles)) {
-            String email = p.getEmail();
+            String email = p.getContact().getEmail();
             if (!Strings.isNullOrEmpty(email)) {
                 Map<String, Object> allValues = new HashMap<>();
 
@@ -500,14 +500,14 @@ public class MailboxPlugin {
                 profilesString.append(";");
                 allValues.put("index", (rows.size() + 1));
                 allValues.put("id", (p.getId()));
-                allValues.put("email", p.getEmail());
+                allValues.put("email", p.getContact().getEmail());
                 allValues.put("login", p.getLogin());
-                allValues.put("firstName", p.getFirstName());
-                allValues.put("lastName", p.getLastName());
-                allValues.put("fullName", p.getFullName());
-                allValues.put("civility", p.getCivitity() == null ? "" : p.getCivitity().getName());
+                allValues.put("firstName", p.getContact().getFirstName());
+                allValues.put("lastName", p.getContact().getLastName());
+                allValues.put("fullName", p.getContact().getFullName());
+                allValues.put("civility", p.getContact().getCivility() == null ? "" : p.getContact().getCivility().getName());
                 allValues.put("department", p.getDepartment() == null ? "" : p.getDepartment().getName());
-                allValues.put("gender", p.getGender() == null ? "" : p.getGender().getName());
+                allValues.put("gender", p.getContact().getGender() == null ? "" : p.getContact().getGender().getName());
                 allValues.put("type", p.getType() == null ? "" : p.getType().getName());
                 allValues.put("properties", profilesString.toString());
 
@@ -601,13 +601,13 @@ public class MailboxPlugin {
         if(u!=null){
             m.getProperties().setProperty("from_login", StringUtils.nonnull(u.getLogin()));
             m.getProperties().setProperty("from_type", StringUtils.nonnull(u.getType().getName()));
-            m.getProperties().setProperty("from_fullName", StringUtils.nonnull(u.getFullName()));
-            m.getProperties().setProperty("from_firstName", StringUtils.nonnull(u.getFirstName()));
-            m.getProperties().setProperty("from_lastName", StringUtils.nonnull(u.getLastName()));
-            m.getProperties().setProperty("from_positionTitle1", StringUtils.nonnull(u.getPositionTitle1()));
-            m.getProperties().setProperty("from_positionTitle2", StringUtils.nonnull(u.getPositionTitle2()));
-            m.getProperties().setProperty("from_positionTitle3", StringUtils.nonnull(u.getPositionTitle3()));
-            m.getProperties().setProperty("from_gender", StringUtils.nonnull(u.getGender()==null?null:u.getGender().getName()));
+            m.getProperties().setProperty("from_fullName", StringUtils.nonnull(u.getContact().getFullName()));
+            m.getProperties().setProperty("from_firstName", StringUtils.nonnull(u.getContact().getFirstName()));
+            m.getProperties().setProperty("from_lastName", StringUtils.nonnull(u.getContact().getLastName()));
+            m.getProperties().setProperty("from_positionTitle1", StringUtils.nonnull(u.getContact().getPositionTitle1()));
+            m.getProperties().setProperty("from_positionTitle2", StringUtils.nonnull(u.getContact().getPositionTitle2()));
+            m.getProperties().setProperty("from_positionTitle3", StringUtils.nonnull(u.getContact().getPositionTitle3()));
+            m.getProperties().setProperty("from_gender", StringUtils.nonnull(u.getContact().getGender()==null?null:u.getContact().getGender().getName()));
             m.getProperties().setProperty("from_department", StringUtils.nonnull(u.getDepartment()==null?null:u.getDepartment().getName()));
         }
         emailSubject = mailTemplate.getSubject().replace("${mail_subject}", subject);

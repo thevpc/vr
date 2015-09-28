@@ -21,10 +21,20 @@ and open the template in the editor.
         <ui:composition template="/templates/template.xhtml">
             <ui:define name="content">
                 <h:form id="listForm" enctype="multipart/form-data" >
-                    <p:commandButton style="margin-bottom: 20px" value="Rafr." icon="fa-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
-                    <p:commandButton style="margin-bottom: 20px" value="Rafr." icon="fa-add" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
-                    <p:fileUpload fileUploadListener="#{documentsCtrl.handleNewFile}" label="new" mode="simple" auto="true" skinSimple="true"/>
-                    <p:fileUpload fileUploadListener="#{documentsCtrl.handleUpdatedFile}" label="update" mode="simple" auto="true" skinSimple="true"/>
+                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Refresh')}" style="margin-bottom: 20px" value="Rafr." icon="fa-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
+                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFolder')}" style="margin-bottom: 20px" value="Nouv Rep." icon="fa-folder-o" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
+                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFile')}" style="margin-bottom: 20px" value="Nouv Fichier." icon="fa-file-o" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
+                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Remove')}" style="margin-bottom: 20px" value="Suppr." icon="fa-remove" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
+                    <p:fileUpload rendered="#{documentsCtrl.isEnabledButton('upload')}" multiple="true" 
+                                  fileUploadListener="#{documentsCtrl.handleNewFile}" 
+                                  dragDropSupport="true"
+                                  label="ajouter fichiers" 
+                                  mode="advanced" 
+                                  auto="true" 
+                                  skinSimple="true"
+                                  uploadLabel="Téléverser"
+                                  cancelLabel="Annuler"
+                                  />
                     <div class="row">
                         <p:dataTable var="i" value="#{documentsCtrl.model.files}" class="table table-bordered table-hover"
                                      paginatorAlwaysVisible="false"
@@ -36,7 +46,6 @@ and open the template in the editor.
                                      >
                             <p:column headerText="" width="60">
                                 <p:selectBooleanCheckbox value="#{i.selected}" styleClass="vr-icon-prefix-#{i.css}" />
-                                <h:outputText styleClass="vr-icon-prefix-#{i.css}" style="color: white" value="."/>
                             </p:column>
                             <p:column headerText="#{documentsCtrl.model.current.file.path}">
                                 <p:commandLink value="#{i.name}" 
@@ -46,9 +55,10 @@ and open the template in the editor.
                                                update=":listForm"
                                                />
                                 <!--<h:outputText value="# {i.name}" rendered="# {! i.file.directory}"/>-->
-                                <p:commandLink rendered="#{! i.file.directory}" value="#{i.name}" ajax="false">
+                                <p:commandLink rendered="#{!i.file.directory and documentsCtrl.isEnabledButton('Download')}" value="#{i.name}" ajax="false">
                                     <p:fileDownload value="#{documentsCtrl.getContent(i)}" />
                                 </p:commandLink>
+                                <p:outputLabel rendered="#{!i.file.directory and !documentsCtrl.isEnabledButton('Download')}" value="#{i.name}"/>
                             </p:column>
                             <p:column headerText="Taille" width="100">
                                 <h:outputText rendered="#{!i.file.directory}" value="#{i.file.length()}" converter="fileSizeConverter"/>

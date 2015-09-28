@@ -53,7 +53,8 @@ public class TaskPlugin {
     }
 
     public List<TodoList> findProfileTodoLists(int profileId) {
-        return UPA.getPersistenceUnit().createQuery("select a.list from TodoListProfile a where a.profileId=:pi")
+        return UPA.getPersistenceUnit()
+                .createQuery("select a.list from TodoListProfile a where a.profileId=:pi")
                 .setParameter("pi", profileId)
                 .getEntityList();
     }

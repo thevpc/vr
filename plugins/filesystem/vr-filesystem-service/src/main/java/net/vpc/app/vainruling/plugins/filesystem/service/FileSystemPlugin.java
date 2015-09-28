@@ -10,7 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.api.AppPlugin;
 import net.vpc.app.vainruling.api.CorePlugin;
+import net.vpc.app.vainruling.api.Install;
 import net.vpc.app.vainruling.api.Start;
+import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.model.AppProfile;
 import net.vpc.app.vainruling.api.model.AppUser;
 import net.vpc.app.vainruling.api.model.AppUserType;
@@ -33,6 +35,12 @@ public class FileSystemPlugin {
     private VirtualFileSystem fileSystem;
     private String nativeFileSystemPath;
 
+    @Install
+    public void installService() {
+        VrApp.getBean(CorePlugin.class).createRight("Custom.FileSystem.RootFileSystem", "Root FileSystem Access");
+        VrApp.getBean(CorePlugin.class).createRight("Custom.FileSystem.MyFileSystem", "My FileSystem Access");        
+    }
+    
     @Start
     public void start() {
         String home = System.getProperty("user.home");

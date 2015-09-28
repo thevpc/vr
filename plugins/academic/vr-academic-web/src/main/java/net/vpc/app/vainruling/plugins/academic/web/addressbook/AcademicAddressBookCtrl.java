@@ -15,6 +15,7 @@ import net.vpc.app.vainruling.api.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.content.AcademicTeacherCV;
 import net.vpc.app.vainruling.plugins.academic.web.AcademicCtrlUtils;
@@ -94,9 +95,9 @@ public class AcademicAddressBookCtrl {
                 if (qt.equals("teachers")) {
                     AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
                     for (AcademicTeacher t : ap.findEnabledTeachers()) {
-                        if (t.getName().toLowerCase().contains(q.toLowerCase())) {
+                        if (t.getContact().getFullName().toLowerCase().contains(q.toLowerCase())) {
                             Contact ct = new Contact();
-                            ct.setName(t.getName());
+                            ct.setName(t.getContact().getFullName());
                             if (t.getDepartment() != null) {
                                 ct.getTitles().add(t.getDepartment().getName());
                             }
@@ -118,9 +119,9 @@ public class AcademicAddressBookCtrl {
                     }
                 } else if (qt.endsWith("students")) {
                     for (AcademicStudent t : VrApp.getBean(AcademicPlugin.class).findStudents()) {
-                        if (t.getName().toLowerCase().contains(q.toLowerCase())) {
+                        if (t.getContact().getFullName().toLowerCase().contains(q.toLowerCase())) {
                             Contact ct = new Contact();
-                            ct.setName(t.getName());
+                            ct.setName(t.getContact().getFullName());
                             if (t.getFirstSubscription() != null) {
                                 ct.getTitles().add("sub. " + t.getFirstSubscription().getName());
                             }
@@ -139,26 +140,26 @@ public class AcademicAddressBookCtrl {
                     }
                 } else if (qt.endsWith("graduated")) {
                     for (AcademicFormerStudent t : VrApp.getBean(AcademicPlugin.class).findGraduatedStudents()) {
-                        if (t.getName().toLowerCase().contains(q.toLowerCase())) {
+                        if (t.getStudent().getContact().getFullName().toLowerCase().contains(q.toLowerCase())) {
                             Contact ct = new Contact();
-                            ct.setName(t.getName());
-                            if (t.isGraduated()) {
+                            ct.setName(t.getStudent().getContact().getFullName());
+                            if (t.getStudent().getStage()==AcademicStudentStage.GRADUATED) {
                                 ct.getTitles().add("Graduated on " + t.getGraduationDate());
                             } else {
                                 ct.getTitles().add("Eliminated");
                             }
-                            if (t.getFirstSubscription() != null) {
-                                ct.getTitles().add("sub. " + t.getFirstSubscription().getName());
+                            if (t.getStudent().getFirstSubscription() != null) {
+                                ct.getTitles().add("sub. " + t.getStudent().getContact().getFullName());
                             }
-                            if (t.getLastClass1() != null) {
-                                ct.getTitles().add(t.getLastClass1().getName());
-                            }
-                            if (t.getLastClass2() != null) {
-                                ct.getTitles().add(t.getLastClass2().getName());
-                            }
-                            if (t.getLastClass3() != null) {
-                                ct.getTitles().add(t.getLastClass3().getName());
-                            }
+//                            if (t.getLastClass1() != null) {
+//                                ct.getTitles().add(t.getLastClass1().getName());
+//                            }
+//                            if (t.getLastClass2() != null) {
+//                                ct.getTitles().add(t.getLastClass2().getName());
+//                            }
+//                            if (t.getLastClass3() != null) {
+//                                ct.getTitles().add(t.getLastClass3().getName());
+//                            }
                             if (t.getLastJobPosition() != null) {
                                 ct.getTitles().add(t.getLastJobPosition());
                             }

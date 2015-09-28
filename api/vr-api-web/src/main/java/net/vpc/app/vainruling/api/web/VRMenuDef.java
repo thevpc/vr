@@ -136,4 +136,9 @@ public class VRMenuDef {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "VRMenuDef{" + "name=" + name + ", path=" + path + ", type=" + type + ", command=" + command + ", securityKey=" + securityKey + ", icon=" + icon + '}';
+    }
+    
 }

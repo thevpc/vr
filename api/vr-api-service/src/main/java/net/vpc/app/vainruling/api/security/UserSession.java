@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.model.AppProfile;
 import net.vpc.app.vainruling.api.model.AppUser;
 import org.springframework.context.annotation.DependsOn;
@@ -41,6 +42,19 @@ public class UserSession implements Serializable {
     private List<AppProfile> profiles = new ArrayList<>();
     private String profilesString;
     private Set<String> profileNames = new HashSet<>();
+
+    public static UserSession getCurrentSession() {
+        try {
+            return VrApp.getBean(UserSession.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static AppUser getCurrentUser() {
+        UserSession s = getCurrentSession();
+        return s == null ? null : s.getUser();
+    }
 
     public Date getConnexionTime() {
         return connexionTime;
@@ -87,10 +101,10 @@ public class UserSession implements Serializable {
     }
 
     public boolean isFemale() {
-        if (user == null || user.getGender() == null || user.getGender().getName() == null) {
+        if (user == null || user.getContact()==null || user.getContact().getGender() == null || user.getContact().getGender().getName() == null) {
             return false;
         }
-        return user.getGender().getName().equals("F");
+        return user.getContact().getGender().getName().equals("F");
     }
 
     public Set<String> getRights() {

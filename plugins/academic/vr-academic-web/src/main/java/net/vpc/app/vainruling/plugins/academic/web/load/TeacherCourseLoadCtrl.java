@@ -71,7 +71,7 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
         getModel().setTeachers(new ArrayList<SelectItem>());
         for (AcademicTeacher t : p.findTeachers()) {
             if (t.isEnabled()) {
-                getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), t.getName()));
+                getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), t.getContact().getFullName()));
             }
         }
     }

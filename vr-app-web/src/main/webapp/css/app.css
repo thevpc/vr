@@ -1,3 +1,9 @@
+@font-face {
+    font-family: dsdigi;
+    src: url('/vr/fs/Site/fonts/DSDIGI.woff');
+    font-weight: normal;
+}
+
 .ui-ribbon .ui-colorpicker .ui-button {
     height: 24px;
 }
@@ -96,13 +102,14 @@
 }
 
 .vr-clock{
-    background: none;
+/*    background: none;
     border-color: #1a6b57;
     border-style: none;
     border-width: 0px;
-    font-family: monospace;
+    font-family: dsdigi;
     font-size: medium;
     color: #1a6b57;
+    font-weight: normal;*/
 }
 .ui-clock {
     padding: 4px 10px;
@@ -110,10 +117,12 @@
     border-style: none;
     border-width: 0px;
     border-color: #0f6b57;
-    font-family: monospace;
+    font-family: dsdigi;
     /*font-size: x-small !important;*/ 
-    font-size: small;
+    font-size: medium;
     color: #0f6b57;
+    font-weight: bold;
+    text-shadow: none;
 }
 .vr-cnx-nbr{
     background-color: #468A79;
@@ -144,7 +153,8 @@ table.NoPaddingTableClass td {
     width: 0;
     background-position: left;
     padding-left: 16px;
-    word-spacing: 20px;
+    padding-left: 22px;
+    background-repeat: no-repeat;
 }
 .vr-icon-prefix-file {
     background-image: url('../fs/Site/images/icons/file16.png');
@@ -152,7 +162,8 @@ table.NoPaddingTableClass td {
     float: left;
     width: 0;
     background-position: left;
-    padding-left: 16px;
+    padding-left: 22px;
+    background-repeat: no-repeat;
 }
 .vr-icon-prefix-file-csv {
     background-image: url('../fs/Site/images/icons/file-csv16.png');
@@ -160,7 +171,8 @@ table.NoPaddingTableClass td {
     float: left;
     width: 0;
     background-position: left;
-    padding-left: 16px;
+    padding-left: 22px;
+    background-repeat: no-repeat;
 }
 .vr-icon-prefix-file-xls {
     background-image: url('../fs/Site/images/icons/file-xls16.png');
@@ -168,7 +180,8 @@ table.NoPaddingTableClass td {
     float: left;
     width: 0;
     background-position: left;
-    padding-left: 16px;
+    padding-left: 22px;
+    background-repeat: no-repeat;
 }
 .vr-icon-prefix-file-doc {
     background-image: url('../fs/Site/images/icons/file-doc16.png');
@@ -176,7 +189,8 @@ table.NoPaddingTableClass td {
     float: left;
     width: 0;
     background-position: left;
-    padding-left: 16px;
+    padding-left: 22px;
+    background-repeat: no-repeat;
 }
 .vr-icon-prefix-file-zip {
     background-image: url('../fs/Site/images/icons/file-zip16.png');
@@ -184,7 +198,8 @@ table.NoPaddingTableClass td {
     float: left;
     width: 0;
     background-position: left;
-    padding-left: 16px;
+    padding-left: 22px;
+    background-repeat: no-repeat;
 }
 .vr-icon-prefix-file-pdf {
     background-image: url('../fs/Site/images/icons/file-pdf16.png');
@@ -192,7 +207,8 @@ table.NoPaddingTableClass td {
     float: left;
     width: 0;
     background-position: left;
-    padding-left: 16px;
+    padding-left: 22px;
+    background-repeat: no-repeat;
 }
 .vr-icon-prefix-file-log {
     background-image: url('../fs/Site/images/icons/file-log16.png');
@@ -200,7 +216,8 @@ table.NoPaddingTableClass td {
     float: left;
     width: 0;
     background-position: left;
-    padding-left: 16px;
+    padding-left: 22px;
+    background-repeat: no-repeat;
 }
 .vr-icon-prefix-file-txt {
     background-image: url('../fs/Site/images/icons/file-txt16.png');
@@ -208,7 +225,8 @@ table.NoPaddingTableClass td {
     float: left;
     width: 0;
     background-position: left;
-    padding-left: 16px;
+    padding-left: 22px;
+    background-repeat: no-repeat;
 }
 .vr-icon-prefix-file-csv {
     background-image: url('../fs/Site/images/icons/file-csv16.png');
@@ -216,7 +234,8 @@ table.NoPaddingTableClass td {
     float: left;
     width: 0;
     background-position: left;
-    padding-left: 16px;
+    padding-left: 22px;
+    background-repeat: no-repeat;
 }
 .vr-icon-prefix-file-xml {
     background-image: url('../fs/Site/images/icons/file-xml16.png');
@@ -224,7 +243,8 @@ table.NoPaddingTableClass td {
     float: left;
     width: 0;
     background-position: left;
-    padding-left: 16px;
+    padding-left: 22px;
+    background-repeat: no-repeat;
 }
 .vr-icon-prefix-file-html {
     background-image: url('../fs/Site/images/icons/file-html16.png');
@@ -232,7 +252,8 @@ table.NoPaddingTableClass td {
     float: left;
     width: 0;
     background-position: left;
-    padding-left: 16px;
+    padding-left: 22px;
+    background-repeat: no-repeat;
 }
 .vr-icon-prefix-file-img {
     background-image: url('../fs/Site/images/icons/file-img16.png');
@@ -240,7 +261,8 @@ table.NoPaddingTableClass td {
     float: left;
     width: 0;
     background-position: left;
-    padding-left: 16px;
+    padding-left: 22px;
+    background-repeat: no-repeat;
 }
 
 .hide-column-names table thead tr {
@@ -271,3 +293,10 @@ button.ui-button > span.ui-icon{
     background-image: none;
     color: #468A79;
 }
+
+/*input[type='file']
+{   
+    width: 10px;
+    height: 10px;
+}*/
+

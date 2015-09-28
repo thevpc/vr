@@ -291,7 +291,7 @@ and open the template in the editor.
                                     <p:commandLink style="margin-left: 20px;
                                                    font-family: sans-serif;
                                                    font-size: smaller;
-                                                   color: #0E150E;" ajax="false" value="Bienvenue #{userSession.user.firstName}" rendered="#{userSession.connected}" disabled="true">
+                                                   color: #0E150E;" ajax="false" value="Bienvenue #{userSession.user.contact.firstName}" rendered="#{userSession.connected}" disabled="true">
                                         <i class="fa fa-sign-out fa-fw"></i>
                                     </p:commandLink>
                                 </li>
@@ -385,7 +385,7 @@ and open the template in the editor.
 
                 </h:form>
                 <h:form>
-                    <p:poll interval="15" listener="#{mailboxPreviewCtrl.onRefresh}" update=":headForm" />
+                    <p:poll interval="60" listener="#{mailboxPreviewCtrl.onRefresh}" update=":headForm" />
                 </h:form>
                 <!-- /.navbar-static-side -->
             </nav>

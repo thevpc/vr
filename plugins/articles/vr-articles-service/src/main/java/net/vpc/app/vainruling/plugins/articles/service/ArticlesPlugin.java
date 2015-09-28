@@ -310,7 +310,7 @@ public class ArticlesPlugin {
                 description.setType(MailboxPlugin.TYPE_HTML);
                 description.setValue(art.getContent());
                 entry.setDescription(description);
-                entry.setAuthor(art.getSender() == null ? null : art.getSender().getFullName());
+                entry.setAuthor(art.getSender() == null ? null : art.getSender().getContact().getFullName());
                 entries.add(entry);
             }
 

@@ -15,6 +15,7 @@ import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.Install;
 import net.vpc.app.vainruling.api.InstallDemo;
 import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.api.model.AppContact;
 import net.vpc.app.vainruling.plugins.commonmodel.service.model.AppArea;
 import net.vpc.app.vainruling.plugins.commonmodel.service.model.AppAreaType;
 import net.vpc.app.vainruling.api.model.AppProfile;
@@ -108,28 +109,34 @@ public class EquipmentPlugin {
             core.addProfileRight(technicianProfile.getId(), ee.getAbsoluteName() + ".DefaultEditor");
         }
 
+        AppContact techContact = new AppContact();
         AppUser tech1 = new AppUser();
-        tech1.setFirstName("riadh");
-        tech1.setLastName("tech");
-        tech1.setFullName("riadh");
+        techContact.setFirstName("riadh");
+        techContact.setLastName("tech");
+        techContact.setFullName("riadh");
         tech1.setLogin("riadh");
         tech1.setPassword("riadh");
-        tech1.setCivitity(core.findCivility("M."));
-        tech1.setEmail("riadh@vr.net");
-        tech1.setGender(core.findGender("H"));
+        techContact.setCivility(core.findCivility("M."));
+        techContact.setEmail("riadh@vr.net");
+        techContact.setGender(core.findGender("H"));
         tech1.setType(technicianType);
+        techContact=core.findOrCreateContact(techContact);
+        tech1.setContact(techContact);
         tech1 = core.insertIfNotFound(tech1);
 
+        techContact = new AppContact();
         AppUser tech2 = new AppUser();
-        tech2.setFirstName("sameh");
-        tech2.setLastName("tech");
-        tech2.setFullName("techsameh");
+        techContact.setFirstName("sameh");
+        techContact.setLastName("tech");
+        techContact.setFullName("techsameh");
         tech2.setLogin("sameh");
         tech2.setPassword("sameh");
-        tech2.setCivitity(core.findCivility("Mme"));
-        tech2.setEmail("sameh@vr.net");
-        tech2.setGender(core.findGender("F"));
+        techContact.setCivility(core.findCivility("Mme"));
+        techContact.setEmail("sameh@vr.net");
+        techContact.setGender(core.findGender("F"));
         tech2.setType(technicianType);
+        techContact=core.findOrCreateContact(techContact);
+        tech2.setContact(techContact);
         tech2 = core.insertIfNotFound(tech2);
 
         core.userAddProfile(tech1.getId(), "Technician");

@@ -30,6 +30,7 @@ public class AcademicTeacherDegree {
     @Field(modifiers = {UserFieldModifier.MAIN})
     private String name;
     private String name2;
+    private String name3;
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     private double valueC;
     @Field(modifiers = {UserFieldModifier.SUMMARY})
@@ -136,7 +137,6 @@ public class AcademicTeacherDegree {
         this.valuePM = valuePM;
     }
 
-
     @Override
     public String toString() {
         return "TeacherDegree{" + "name=" + name + ", valueC=" + valueC + ", valueTD=" + valueTD + ", valueTP=" + valueTP + ", valueDU=" + valueDU + ", valuePM=" + valuePM + '}';
@@ -186,6 +186,14 @@ public class AcademicTeacherDegree {
             return false;
         }
         return true;
+    }
+
+    public String getName3() {
+        return name3;
+    }
+
+    public void setName3(String name3) {
+        this.name3 = name3;
     }
 
 }

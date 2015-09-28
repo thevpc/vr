@@ -97,7 +97,7 @@ and open the template in the editor.
                                                  action="# {objCtrl.onAction(aac.key)}"
                                                  update="buttons :listForm :itemForm :itemForm :pageTitleForm"/>  
                             </ui:repeat>-->
-                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Cancel')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{objCtrl.onCancelCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Cancel')}" icon="fa-arrow-left" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{objCtrl.onCancelCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
 
                         </p:outputPanel>
                     </div>

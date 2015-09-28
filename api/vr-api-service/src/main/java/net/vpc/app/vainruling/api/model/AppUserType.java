@@ -24,9 +24,11 @@ public class AppUserType {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
+    private String code;
+    @Field(modifiers = {UserFieldModifier.MAIN})
     private String name;
     private String name2;
+    private String name3;
 
     public AppUserType() {
     }
@@ -63,6 +65,22 @@ public class AppUserType {
     @Override
     public String toString() {
         return StringUtils.nonnull(name);
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getName3() {
+        return name3;
+    }
+
+    public void setName3(String name3) {
+        this.name3 = name3;
     }
 
 }

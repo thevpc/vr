@@ -28,6 +28,7 @@ public class AppCountry {
     @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
     private String name;
     private String name2;
+    private String name3;
 
     public AppCountry() {
     }
@@ -64,6 +65,14 @@ public class AppCountry {
     @Override
     public String toString() {
         return StringUtils.nonnull(name);
+    }
+
+    public String getName3() {
+        return name3;
+    }
+
+    public void setName3(String name3) {
+        this.name3 = name3;
     }
 
 }

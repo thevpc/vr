@@ -51,14 +51,21 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
         return INTERNAL_LOGIN.equals(s);
     }
 
-    public boolean isAdmin(String s) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        return "admin".equals(s) || 
-                pu.createQuery("Select u from AppUserProfileBinding u where u.user.login=:login and u.profile.name=:profile")
-                .setParameter("login", s)
-                .setParameter("profile", "Admin")
-                .getRecordList().size()>0
-                ;
+    public boolean isAdmin(String login) {
+        if ("admin".equals(login)) {
+            return true;
+        }
+        UserSession s = UserSession.getCurrentSession();
+        if (s == null) {
+            return false;
+        }
+        return s.getProfileNames().contains("Admin");
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        return "admin".equals(s)
+//                || pu.createQuery("Select u from AppUserProfileBinding u where u.user.login=:login and u.profile.name=:profile")
+//                .setParameter("login", s)
+//                .setParameter("profile", "Admin")
+//                .getRecordList().size() > 0;
     }
 
     public boolean isAllowedKey(Entity e, String key) throws UPAException {
@@ -91,14 +98,19 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
         if (denyOthers.contains(key)) {
             return false;
         }
-        List<AppProfileRight> list = pu.createQuery("Select r from AppProfileRight r inner join AppUserProfileBinding u on u.profileId=r.profileId where u.user.login=:login")
-                .setParameter("login", u).getEntityList();
-        for (AppProfileRight x : list) {
-            if (x.getRight().getName().endsWith(key)) {
-                return true;
-            }
+        UserSession s = UserSession.getCurrentSession();
+        if (s == null) {
+            return false;
         }
-        return false;
+        return s.getRights().contains(key);
+//        List<AppProfileRight> list = pu.createQuery("Select r from AppProfileRight r inner join AppUserProfileBinding u on u.profileId=r.profileId where u.user.login=:login")
+//                .setParameter("login", u).getEntityList();
+//        for (AppProfileRight x : list) {
+//            if (x.getRight().getName().endsWith(key)) {
+//                return true;
+//            }
+//        }
+//        return false;
     }
 
     @Override

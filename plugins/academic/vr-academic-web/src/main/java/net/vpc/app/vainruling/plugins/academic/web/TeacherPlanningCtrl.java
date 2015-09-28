@@ -123,7 +123,7 @@ public class TeacherPlanningCtrl {
         getModel().setTeachers(new ArrayList<SelectItem>());
         for (AcademicTeacher t : p.findTeachersWithAssignements()) {
             if (t.isEnabled()) {
-                getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), t.getName()));
+                getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), t.getContact().getFullName()));
             }
         }
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);

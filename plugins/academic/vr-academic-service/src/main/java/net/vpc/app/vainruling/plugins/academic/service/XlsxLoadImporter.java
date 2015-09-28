@@ -35,12 +35,14 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTea
 import net.vpc.app.vainruling.api.TraceService;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.model.AppCivility;
+import net.vpc.app.vainruling.api.model.AppContact;
 import net.vpc.app.vainruling.api.model.AppDepartment;
 import net.vpc.app.vainruling.api.model.AppGender;
 import net.vpc.app.vainruling.api.model.AppProfile;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.commonmodel.service.CommonModelPlugin;
 import net.vpc.app.vainruling.api.model.AppPeriod;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.utils.Chronometer;
 import net.vpc.common.utils.PlatformTypes;
@@ -130,7 +132,7 @@ public class XlsxLoadImporter {
                 d.setCode(code);
                 d.setName(Convert.toString(values[0]));
             } else {
-                d=old;
+                d = old;
             }
             d.setValueC(Convert.toDouble(values[1]));
             d.setValueTD(Convert.toDouble(values[2]));
@@ -140,7 +142,7 @@ public class XlsxLoadImporter {
             d.setPosition(Convert.toInteger(values[6]));
             if (old == null) {
                 service.add(d);
-            }else{
+            } else {
                 service.update(d);
             }
             count++;
@@ -228,6 +230,7 @@ public class XlsxLoadImporter {
         final int COL_SITUATION2 = 11;
         final int COL_FIRST_NAME2 = 12;
         final int COL_LAST_NAME2 = 13;
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
 //        final AppUserType teacherType = VRApp.getBean(CorePlugin.class).findUserType("Teacher");
         long count = 0;
         while (rows.hasNext()) {
@@ -237,27 +240,30 @@ public class XlsxLoadImporter {
             AcademicTeacher academicTeacher = new AcademicTeacher();
             String fs = Convert.toString(values[COL_FIRST_NAME]);
             String ln = Convert.toString(values[COL_LAST_NAME]);
-            if (!StringUtils.isEmpty(fs) || !StringUtils.isEmpty(ln)) {
-                AcademicTeacher oldAcademicTeacher = UPA.getPersistenceUnit().createQueryBuilder(AcademicTeacher.class)
-                        .addAndField("firstName", fs)
-                        .addAndField("lastName", ln)
-                        .getEntity();
+            String nin = null;// national identification number aca CIN
+            if (!StringUtils.isEmpty(nin) || !StringUtils.isEmpty(fs) || !StringUtils.isEmpty(ln)) {
+                AppContact contact = new AppContact();
+                contact.setNin(nin);
+                contact.setFirstName(fs);
+                contact.setLastName(ln);
+                contact = core.findOrCreateContact(contact);
+                AcademicTeacher oldAcademicTeacher = service.findTeacherByContact(contact.getId());
                 if (oldAcademicTeacher != null) {
                     academicTeacher = oldAcademicTeacher;
+                } else {
+                    academicTeacher.setContact(contact);
                 }
-                academicTeacher.setFirstName(fs);
-                academicTeacher.setLastName(ln);
-                academicTeacher.setName(AcademicTeacher.getName(academicTeacher));
+                contact.setFullName(AppContact.getName(contact));
                 String fs2 = Convert.toString(values[COL_FIRST_NAME2]);
                 String ln2 = Convert.toString(values[COL_LAST_NAME2]);
-                academicTeacher.setFirstName2(fs2);
-                academicTeacher.setLastName2(ln2);
-                academicTeacher.setName2(AcademicTeacher.getName2(academicTeacher));
+                contact.setFirstName2(fs2);
+                contact.setLastName2(ln2);
+                contact.setFullName2(AppContact.getName2(contact));
 
                 List<AcademicTeacherSemestrialLoad> semestrialLoads = new ArrayList<>();
                 String degreeString = Convert.toString(values[COL_DEGREE]);
                 if (degreeString == null) {
-                    throw new NoSuchElementException("Missing Degree for " + academicTeacher.getName());
+                    throw new NoSuchElementException("Missing Degree for " + academicTeacher.getContact().getFullName());
                 }
                 AcademicTeacherDegree degree = service.findTeacherDegree(degreeString);
                 if (degree == null) {
@@ -296,7 +302,7 @@ public class XlsxLoadImporter {
                         v.setName(stringVal);
                         service.add(v);
                     }
-                    academicTeacher.setGender(v);
+                    contact.setGender(v);
                 }
                 {
                     String stringVal = Convert.toString(values[COL_CIVILITY]);
@@ -306,11 +312,12 @@ public class XlsxLoadImporter {
                         v.setName(stringVal);
                         service.add(v);
                     }
-                    academicTeacher.setCivitity(v);
+                    contact.setCivility(v);
                 }
 
-                academicTeacher.setEmail(Convert.toString(values[COL_EMAIL]));
+                academicTeacher.getContact().setEmail(Convert.toString(values[COL_EMAIL]));
                 academicTeacher.setDiscipline(VrApp.getBean(AcademicPlugin.class).formatDisciplinesNames(Convert.toString(values[COL_DISCIPLINE]), true));
+                service.update(contact);
                 if (oldAcademicTeacher == null) {
                     service.add(academicTeacher);
                 } else {
@@ -393,26 +400,29 @@ public class XlsxLoadImporter {
             Object[] values = row.getValues();
 //            if (!"x".equalsIgnoreCase(Convert.toString(values[8]))) {
             AcademicStudent academicStudent = new AcademicStudent();
+            String fs = Convert.toString(values[COL_FIRST_NAME]);
+            String ln = Convert.toString(values[COL_LAST_NAME]);
             String nin = Convert.toString(values[COL_NIN]);
-            if (!StringUtils.isEmpty(nin)) {
-                String fs = Convert.toString(values[COL_FIRST_NAME]);
-                String ln = Convert.toString(values[COL_LAST_NAME]);
-                AcademicStudent oldAcademicStudent = UPA.getPersistenceUnit().createQueryBuilder(AcademicTeacher.class)
-                        .addAndField("nin", nin)
-                        .getEntity();
+            if (!StringUtils.isEmpty(nin) || !StringUtils.isEmpty(fs) || !StringUtils.isEmpty(ln)) {
+                AppContact contact = new AppContact();
+                contact.setNin(nin);
+                contact.setFirstName(fs);
+                contact.setLastName(ln);
+                contact = core.findOrCreateContact(contact);
+                AcademicStudent oldAcademicStudent = service.findStudentByContact(contact.getId());
                 if (oldAcademicStudent != null) {
                     academicStudent = oldAcademicStudent;
                 } else {
-                    academicStudent.setNin(nin);
+                    academicStudent.setContact(contact);
                 }
-                academicStudent.setFirstName(fs);
-                academicStudent.setLastName(ln);
-                academicStudent.setName(AcademicStudent.getName(academicStudent));
+                contact.setFirstName(fs);
+                contact.setLastName(ln);
+                contact.setFullName(AppContact.getName(contact));
                 String fs2 = Convert.toString(values[COL_FIRST_NAME2]);
                 String ln2 = Convert.toString(values[COL_LAST_NAME2]);
-                academicStudent.setFirstName2(fs2);
-                academicStudent.setLastName2(ln2);
-                academicStudent.setName2(AcademicStudent.getName2(academicStudent));
+                contact.setFirstName2(fs2);
+                contact.setLastName2(ln2);
+                contact.setFullName2(AppContact.getName2(contact));
                 String periodName = Convert.toString(values[COL_YEAR1]);
 
                 AppPeriod period = common.findPeriod(periodName);
@@ -438,13 +448,13 @@ public class XlsxLoadImporter {
                         service.add(v);
                         genders.put(stringVal.toUpperCase(), v);
                     }
-                    academicStudent.setGender(v);
+                    contact.setGender(v);
                 }
                 academicStudent.setSubscriptionNumber(Convert.toString(values[COL_SUBSCRIPTION_NBR]));
                 {
                     String stringVal = Convert.toString(values[COL_CIVILITY]);
                     if (Strings.isNullOrEmpty(stringVal)) {
-                        AppGender g = academicStudent.getGender();
+                        AppGender g = contact.getGender();
                         if (g != null && g.getName().equalsIgnoreCase("F")) {
                             stringVal = "Mlle.";
                         } else {
@@ -457,11 +467,13 @@ public class XlsxLoadImporter {
                         v.setName(stringVal);
                         service.add(v);
                     }
-                    academicStudent.setCivitity(v);
+                    contact.setCivility(v);
                 }
 
-                academicStudent.setEmail(Convert.toString(values[COL_EMAIL]));
+                contact.setEmail(Convert.toString(values[COL_EMAIL]));
 
+                service.update(contact);
+                academicStudent.setStage(AcademicStudentStage.ATTENDING);
                 if (oldAcademicStudent == null) {
                     service.add(academicStudent);
                 } else {
@@ -579,9 +591,9 @@ public class XlsxLoadImporter {
                     }
                     {
                         String stringVal = Convert.toString(values[STUDENT_CLASS_COLUMN]);
-                        String goodName=stringVal;
+                        String goodName = stringVal;
                         if (PlatformTypes.isInteger(stringVal)) {
-                            goodName=program.getName() + stringVal;
+                            goodName = program.getName() + stringVal;
                         }
                         studentClass = service.findStudentClass(program.getId(), goodName);
                         if (studentClass == null) {

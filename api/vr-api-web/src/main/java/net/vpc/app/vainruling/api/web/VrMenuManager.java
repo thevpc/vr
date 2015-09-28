@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.api.web;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -15,7 +16,6 @@ import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.i18n.I18n;
 import net.vpc.app.vainruling.api.util.Reflector;
 import net.vpc.app.vainruling.api.util.VrHelper;
-import net.vpc.app.vainruling.api.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.api.web.util.TreeDefinition;
 //import net.vpc.app.vainruling.tasks.TaskPlugin;
 //import net.vpc.app.vainruling.tasks.model.TodoList;
@@ -30,9 +30,6 @@ import net.vpc.upa.exceptions.UPAException;
 import net.vpc.upa.filters.DefaultEntityFilter;
 import net.vpc.upa.filters.EntityFilter;
 import net.vpc.upa.impl.util.Strings;
-import net.vpc.vfs.VFS;
-import net.vpc.vfs.VFile;
-import net.vpc.vfs.VirtualFileSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
@@ -85,9 +82,9 @@ public class VrMenuManager {
 
             }
         });
-        for (VRMenuDef nonVisitedCustomMenu : v.nonVisitedCustomMenus) {
-            System.err.println(nonVisitedCustomMenu + " not added ");
-        }
+//        for (VRMenuDef nonVisitedCustomMenu : v.nonVisitedCustomMenus) {
+//            System.err.println(nonVisitedCustomMenu + " not added ");
+//        }
         return new MenuTree().root;
     }
 
@@ -115,11 +112,14 @@ public class VrMenuManager {
     }
 
     private List<String> findCustomPaths(String parent, List<VRMenuDef> autowiredCustomMenusByCtrl) {
-        List<String> ok = new ArrayList<>();
+        LinkedHashSet<String> ok = new LinkedHashSet<>();
         if (parent == null) {
             parent = "/";
         }
-        VirtualFileSystem fs = VFS.createEmptyFS();
+        String parent2 = parent;
+        if (!parent2.endsWith("/")) {
+            parent2 = parent2 + "/";
+        }
         for (VRMenuDef m : autowiredCustomMenusByCtrl) {
             String p = m.getPath();
             if (p == null) {
@@ -128,15 +128,23 @@ public class VrMenuManager {
             if (!p.startsWith("/")) {
                 p = "/" + p;
             }
-            if (!p.equals("/")) {
-                VFile containingFolder = fs.get(p).getParentFile();
-                String ancestor = containingFolder.getParentPath();
-                if (ancestor != null && ancestor.equalsIgnoreCase(parent)) {
-                    ok.add(containingFolder.getPath());
+            if (p.toLowerCase().startsWith(parent2.toLowerCase()) && !p.toLowerCase().equals(parent2.toLowerCase())) {
+                String p2 = p.substring(parent2.length() - 1);
+                if (p2.length() > 0) {
+                    int c = p2.indexOf("/", 1);
+                    String path = null;
+                    if (c < 0) {
+                        path = parent2 + p2.substring(1);
+                    } else {
+                        path = parent2 + p2.substring(1, c);
+                    }
+                    if (!ok.contains(path)) {
+                        ok.add(path);
+                    }
                 }
             }
         }
-        return ok;
+        return new ArrayList<>(ok);
     }
 
     private List<Entity> filterEntities(List<Entity> in) {
@@ -453,7 +461,7 @@ public class VrMenuManager {
                             if (!p0.startsWith("/")) {
                                 p0 = "/" + p0;
                             }
-                            children.add(new VRMenuDef(i18n.get("Package./" + p), p, "package", "", "", i18n.getOrNull("Package." + p0 + ".css-icon-class")));
+                            children.add(new VRMenuDef(i18n.get("Package." + p0), p0, "package", "", "", i18n.getOrNull("Package." + p0 + ".css-icon-class")));
                         }
                     }
                     for (VRMenuDef p : findCustomMenus(t.getPath(), autowiredCustomMenusByCtrl)) {

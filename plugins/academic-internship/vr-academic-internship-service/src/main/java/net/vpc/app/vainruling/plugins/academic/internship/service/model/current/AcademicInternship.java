@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.internship.service.model.current
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.api.model.AppCompany;
+import net.vpc.app.vainruling.api.model.AppContact;
 import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
@@ -18,7 +19,6 @@ import net.vpc.upa.config.Property;
 import net.vpc.upa.config.Sequence;
 import net.vpc.upa.types.Date;
 import net.vpc.upa.types.DateTime;
-import net.vpc.upa.vfs.FileEntry;
 
 /**
  *
@@ -48,18 +48,13 @@ public class AcademicInternship {
     private AcademicTeacher secondSupervisor;
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
     private AppCompany company;
-    private String companyMentorName;
-    private String companyMentorEmail;
-    private String companyMentorSecondEmail;
-    private String companyMentorPhone;
-    private String companyMentorSecondPhone;
-    private String companyMentorOffice;
+    private AppContact companyMentor;
     private String duration;
     private Date startDate;
     private Date endDate;
-    private FileEntry specFile;
-    private FileEntry midTermReportFile;
-    private FileEntry reportFile;
+    private String specFilePath;
+    private String midTermReportFilePath;
+    private String reportFilePath;
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
     private AcademicTeacher firstExaminer;
     private AcademicTeacher secondExaminer;
@@ -123,28 +118,28 @@ public class AcademicInternship {
         this.company = company;
     }
 
-    public FileEntry getSpecFile() {
-        return specFile;
+    public String getSpecFilePath() {
+        return specFilePath;
     }
 
-    public void setSpecFile(FileEntry specFile) {
-        this.specFile = specFile;
+    public void setSpecFilePath(String specFilePath) {
+        this.specFilePath = specFilePath;
     }
 
-    public FileEntry getMidTermReportFile() {
-        return midTermReportFile;
+    public String getMidTermReportFilePath() {
+        return midTermReportFilePath;
     }
 
-    public void setMidTermReportFile(FileEntry midTermReportFile) {
-        this.midTermReportFile = midTermReportFile;
+    public void setMidTermReportFilePath(String midTermReportFilePath) {
+        this.midTermReportFilePath = midTermReportFilePath;
     }
 
-    public FileEntry getReportFile() {
-        return reportFile;
+    public String getReportFilePath() {
+        return reportFilePath;
     }
 
-    public void setReportFile(FileEntry reportFile) {
-        this.reportFile = reportFile;
+    public void setReportFilePath(String reportFilePath) {
+        this.reportFilePath = reportFilePath;
     }
 
     public AcademicStudent getSecondStudent() {
@@ -171,52 +166,12 @@ public class AcademicInternship {
         this.secondSupervisor = secondSupervisor;
     }
 
-    public String getCompanyMentorName() {
-        return companyMentorName;
+    public AppContact getCompanyMentor() {
+        return companyMentor;
     }
 
-    public void setCompanyMentorName(String companyMentorName) {
-        this.companyMentorName = companyMentorName;
-    }
-
-    public String getCompanyMentorEmail() {
-        return companyMentorEmail;
-    }
-
-    public void setCompanyMentorEmail(String companyMentorEmail) {
-        this.companyMentorEmail = companyMentorEmail;
-    }
-
-    public String getCompanyMentorSecondEmail() {
-        return companyMentorSecondEmail;
-    }
-
-    public void setCompanyMentorSecondEmail(String companyMentorSecondEmail) {
-        this.companyMentorSecondEmail = companyMentorSecondEmail;
-    }
-
-    public String getCompanyMentorPhone() {
-        return companyMentorPhone;
-    }
-
-    public void setCompanyMentorPhone(String companyMentorPhone) {
-        this.companyMentorPhone = companyMentorPhone;
-    }
-
-    public String getCompanyMentorSecondPhone() {
-        return companyMentorSecondPhone;
-    }
-
-    public void setCompanyMentorSecondPhone(String companyMentorSecondPhone) {
-        this.companyMentorSecondPhone = companyMentorSecondPhone;
-    }
-
-    public String getCompanyMentorOffice() {
-        return companyMentorOffice;
-    }
-
-    public void setCompanyMentorOffice(String companyMentorOffice) {
-        this.companyMentorOffice = companyMentorOffice;
+    public void setCompanyMentor(AppContact companyMentor) {
+        this.companyMentor = companyMentor;
     }
 
     public String getDuration() {

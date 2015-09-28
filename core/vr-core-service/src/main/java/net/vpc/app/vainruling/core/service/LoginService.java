@@ -141,7 +141,7 @@ public class LoginService {
         getUserSession().setProfilesString(ps.toString());
         getUserSession().setAdmin(false);
         getUserSession().setRights(core.findUserRights(user.getId()));
-        if (user.getLogin().equalsIgnoreCase("admin")) {
+        if (user.getLogin().equalsIgnoreCase("admin") || userProfilesNames.contains("Admin")) {
             getUserSession().setAdmin(true);
         }
 

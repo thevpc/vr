@@ -115,8 +115,6 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
     @Override
     public List<VRMenuDef> createVRMenuDefList() {
         List<VRMenuDef> m = new ArrayList<>();
-        VrApp.getBean(CorePlugin.class).createRight("Custom.FileSystem.RootFileSystem", "Root FileSystem Access");
-        VrApp.getBean(CorePlugin.class).createRight("Custom.FileSystem.MyFileSystem", "My FileSystem Access");
         m.add(new VRMenuDef("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", "Custom.FileSystem.RootFileSystem", ""));
         m.add(new VRMenuDef("Mes Documents", "/FileSystem", "documents", "{type:'me'}", "Custom.FileSystem.MyFileSystem", ""));
         return m;
@@ -354,6 +352,20 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
 
     public Model getModel() {
         return model;
+    }
+
+    public boolean isEnabledButton(String buttonId) {
+        if ("Refresh".equals(buttonId)) {
+            return true;
+        }
+        return VrApp.getBean(UserSession.class).isAdmin();
+    }
+    
+    public boolean isEnabledButton(String buttonId,FileInfo forFile) {
+        if ("Refresh".equals(buttonId)) {
+            return true;
+        }
+        return VrApp.getBean(UserSession.class).isAdmin();
     }
 
     public void handleNewFile(FileUploadEvent event) {

@@ -5,7 +5,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <h:head>
-        <title>${teacherCurriculumCtrl.model.teacher.name}</title>
+        <title>${teacherCurriculumCtrl.model.teacher.contact.fullName}</title>
         <meta charset="utf-8"/>
         <meta name="author" content="vpc"/>
         <meta name="description" content="ENISo's people"/>
@@ -22,8 +22,8 @@
     </h:head>
     <h:body>
         <h:form id="contactForm">
-            <h:inputHidden id="teacher_name" value="#{teacherCurriculumCtrl.model.teacherCV.teacher.name}" />
-            <h:inputHidden id="teacher_email" value="#{teacherCurriculumCtrl.model.teacherCV.teacher.email}" />
+            <h:inputHidden id="teacher_name" value="#{teacherCurriculumCtrl.model.teacherCV.teacher.contact.fullName}" />
+            <h:inputHidden id="teacher_email" value="#{teacherCurriculumCtrl.model.teacherCV.teacher.contact.email}" />
         </h:form>
         <header>
             <div class="vr-top">
@@ -31,7 +31,7 @@
             </div>
 
             <div class="logo">
-                <a href="#" class="vr-contact">${teacherCurriculumCtrl.model.teacher.name}</a>
+                <a href="#" class="vr-contact">${teacherCurriculumCtrl.model.teacher.contact.fullName}</a>
             </div><!-- end logo -->
             <ul style="list-style-type: none;font-family: 'Anivers', serif;">
                 <li>#{teacherCurriculumCtrl.model.teacherCV.title1}</li>

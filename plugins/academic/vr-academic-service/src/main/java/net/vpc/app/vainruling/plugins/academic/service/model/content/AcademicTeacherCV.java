@@ -27,6 +27,7 @@ public class AcademicTeacherCV {
     @Field(modifiers = UserFieldModifier.MAIN)
     private AcademicTeacher teacher;
 
+    @Field(modifiers = UserFieldModifier.SUMMARY)
     private String title1;
     private String title2;
     private String title3;
@@ -71,7 +72,7 @@ public class AcademicTeacherCV {
     private String socialURL3;
     private String socialURL4;
     private String rssURL;
-    @Field(defaultValue = "0")
+    @Field(defaultValue = "0",modifiers = UserFieldModifier.SUMMARY)
     private long viewsCounter;
 
     public AcademicTeacher getTeacher() {

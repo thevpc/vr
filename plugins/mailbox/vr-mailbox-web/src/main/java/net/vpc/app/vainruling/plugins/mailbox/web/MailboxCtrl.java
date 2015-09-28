@@ -530,7 +530,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
         public String getUserFullName() {
             if (recieved) {
-                return ((MailboxReceived) msg).getSender() == null ? null : ((MailboxReceived) msg).getSender().getFullName();
+                return ((MailboxReceived) msg).getSender() == null ? null : ((MailboxReceived) msg).getSender().getContact().getFullName();
             }
             return ((MailboxSent) msg).getToProfiles();
         }

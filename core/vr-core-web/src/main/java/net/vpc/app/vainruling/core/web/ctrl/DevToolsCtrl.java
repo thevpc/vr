@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.faces.bean.ManagedBean;
+import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.web.UCtrl;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.MultiRecord;
@@ -140,7 +141,7 @@ public class DevToolsCtrl {
                         }
                     } catch (Exception e) {
                         List<Object> row1 = Arrays.asList((Object) e.getMessage());
-                        List<Object> row2 = Arrays.asList((Object) StringUtils.stacktraceToString(e));
+                        List<Object> row2 = Arrays.asList((Object) StringUtils.verboseStacktraceToString(e));
                         getModel().getRows().add((List<Object>) row1);
                         getModel().getRows().add((List<Object>) row2);
                         getModel().getRowNames().add(new ColDef("<Error>", 0));
@@ -153,7 +154,7 @@ public class DevToolsCtrl {
                         getModel().getRowNames().add(new ColDef("<Result>", 0));
                     } catch (Exception e) {
                         List<Object> row1 = Arrays.asList((Object) e.getMessage());
-                        List<Object> row2 = Arrays.asList((Object) StringUtils.stacktraceToString(e));
+                        List<Object> row2 = Arrays.asList((Object) StringUtils.verboseStacktraceToString(e));
                         getModel().getRows().add((List<Object>) row1);
                         getModel().getRows().add((List<Object>) row2);
                         getModel().getRowNames().add(new ColDef("<Error>", 0));
@@ -188,7 +189,7 @@ public class DevToolsCtrl {
                         }
                     } catch (Exception e) {
                         List<Object> row1 = Arrays.asList((Object) e.getMessage());
-                        List<Object> row2 = Arrays.asList((Object) StringUtils.stacktraceToString(e));
+                        List<Object> row2 = Arrays.asList((Object) StringUtils.verboseStacktraceToString(e));
                         getModel().getRows().add((List<Object>) row1);
                         getModel().getRows().add((List<Object>) row2);
                         getModel().getRowNames().add(new ColDef("<Error>", 0));
@@ -201,7 +202,7 @@ public class DevToolsCtrl {
                         getModel().getRowNames().add(new ColDef("<Result>", 0));
                     } catch (Exception e) {
                         List<Object> row1 = Arrays.asList((Object) e.getMessage());
-                        List<Object> row2 = Arrays.asList((Object) StringUtils.stacktraceToString(e));
+                        List<Object> row2 = Arrays.asList((Object) StringUtils.verboseStacktraceToString(e));
                         getModel().getRows().add((List<Object>) row1);
                         getModel().getRows().add((List<Object>) row2);
                         getModel().getRowNames().add(new ColDef("<Error>", 0));

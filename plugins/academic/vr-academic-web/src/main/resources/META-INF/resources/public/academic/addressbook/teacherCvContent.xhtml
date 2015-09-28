@@ -5,7 +5,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <h:head>
-        <title>#{teacherCurriculumContentCtrl.model.teacher.name}</title>
+        <title>#{teacherCurriculumContentCtrl.model.teacher.contact.fullName}</title>
         <meta charset="utf-8"/>
         <meta name="author" content="vpc"/>
         <meta name="description" content="ENISo's people"/>
@@ -25,7 +25,7 @@
             </div>
 
             <div class="logo">
-                <a href="#" class="vr-contact">${teacherCurriculumContentCtrl.model.teacher.name}</a>
+                <a href="#" class="vr-contact">${teacherCurriculumContentCtrl.model.teacher.contact.fullName}</a>
             </div><!-- end logo -->
             <ul style="list-style-type: none;font-family: 'Anivers', serif;">
                 <li>#{teacherCurriculumContentCtrl.model.teacherCV.title1}</li>

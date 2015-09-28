@@ -19,10 +19,16 @@ import net.vpc.upa.config.Sequence;
 @Entity(listOrder = "name")
 @Path("Admin/Security")
 public class AppProfile {
-    @Id @Sequence
+
+    @Id
+    @Sequence
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN,UserFieldModifier.UNIQUE})
+    private String code;
+    @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
     private String name;
+    private String name2;
+    private String name3;
+    private String description;
 
     public int getId() {
         return id;
@@ -39,5 +45,37 @@ public class AppProfile {
     public void setName(String name) {
         this.name = name;
     }
-    
+
+    public String getName2() {
+        return name2;
+    }
+
+    public void setName2(String name2) {
+        this.name2 = name2;
+    }
+
+    public String getName3() {
+        return name3;
+    }
+
+    public void setName3(String name3) {
+        this.name3 = name3;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
 }

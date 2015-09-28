@@ -33,21 +33,41 @@ public class TreeTraversal {
         postOrderTreeTraversal(tree.getRoot(), null, 0, tree,vis);
     }
 
-    private static <T> void postOrderTreeTraversal(T n, T parent, int index, TreeDefinition<T> tree,TreeVisitor<T> vis) {
-        if (n == null) {
+//    private static <T> void postOrderTreeTraversal(T node, T parent, int index, TreeDefinition<T> tree,TreeVisitor<T> vis) {
+//        if (node == null) {
+//            return;
+//        }
+//        System.out.println("postOrderTreeTraversal "+node+" :: "+parent+" :: "+index);
+//        List<T> nchildren = tree.getChildren(node);
+//        if (nchildren.size() > 0) {
+//            postOrderTreeTraversal(nchildren.get(0), node, 0, tree,vis);
+//        }
+//        vis.visit(node,tree);
+//        if (parent != null) {
+//            List<T> pchildren = tree.getChildren(parent);
+//            if (pchildren.size() > index + 1) {
+//                postOrderTreeTraversal(pchildren.get(index + 1), parent, index + 1, tree,vis);
+//            }
+//        }
+//    }
+    
+    private static <T> void postOrderTreeTraversal(T node, T parent, int index, TreeDefinition<T> tree,TreeVisitor<T> vis) {
+        if (node == null) {
             return;
         }
-        List<T> nchildren = tree.getChildren(n);
-        if (nchildren.size() > 0) {
-            postOrderTreeTraversal(nchildren.get(0), n, 0, tree,vis);
+//        System.out.println("postOrderTreeTraversal "+node+" :: "+parent+" :: "+index);
+        List<T> nchildren = tree.getChildren(node);
+        
+        for (int i = 0; i < nchildren.size(); i++) {
+            postOrderTreeTraversal(nchildren.get(i), node, i, tree,vis);
         }
-        vis.visit(n,tree);
-        if (parent != null) {
-            List<T> pchildren = tree.getChildren(parent);
-            if (pchildren.size() > index + 1) {
-                postOrderTreeTraversal(pchildren.get(index + 1), parent, index + 1, tree,vis);
-            }
-        }
+        vis.visit(node,tree);
+//        if (parent != null) {
+//            List<T> pchildren = tree.getChildren(parent);
+//            if (pchildren.size() > index + 1) {
+//                postOrderTreeTraversal(pchildren.get(index + 1), parent, index + 1, tree,vis);
+//            }
+//        }
     }
 
 

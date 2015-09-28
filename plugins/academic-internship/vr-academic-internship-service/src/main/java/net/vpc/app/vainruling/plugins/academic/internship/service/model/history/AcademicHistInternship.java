@@ -6,9 +6,7 @@
 package net.vpc.app.vainruling.plugins.academic.internship.service.model.history;
 
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.api.model.AppPeriod;
-import net.vpc.app.vainruling.api.model.AppCompany;
 import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
@@ -19,7 +17,6 @@ import net.vpc.upa.config.Property;
 import net.vpc.upa.config.Sequence;
 import net.vpc.upa.types.Date;
 import net.vpc.upa.types.DateTime;
-import net.vpc.upa.vfs.FileContent;
 
 /**
  *
@@ -45,10 +42,10 @@ public class AcademicHistInternship {
     private AcademicStudent student;
     private AcademicStudent secondStudent;
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
-    private AcademicTeacher supervisor;
-    private AcademicTeacher secondSupervisor;
+    private String supervisorName;
+    private String secondSupervisorName;
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
-    private AppCompany company;
+    private String companyName;
     private String companyMentorName;
     private String companyMentorEmail;
     private String companyMentorSecondEmail;
@@ -58,14 +55,11 @@ public class AcademicHistInternship {
     private String duration;
     private Date startDate;
     private Date endDate;
-    private FileContent specFile;
-    private FileContent midTermReportFile;
-    private FileContent reportFile;
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
-    private AcademicTeacher firstExaminer;
-    private AcademicTeacher secondExaminer;
+    private String firstExaminerName;
+    private String secondExaminerName;
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
-    private AcademicTeacher chairExaminer;
+    private String chairExaminerName;
     private AppPeriod academicYear;
     private DateTime examDate;
 
@@ -117,60 +111,12 @@ public class AcademicHistInternship {
         this.student = student;
     }
 
-    public AppCompany getCompany() {
-        return company;
-    }
-
-    public void setCompany(AppCompany company) {
-        this.company = company;
-    }
-
-    public FileContent getSpecFile() {
-        return specFile;
-    }
-
-    public void setSpecFile(FileContent specFile) {
-        this.specFile = specFile;
-    }
-
-    public FileContent getMidTermReportFile() {
-        return midTermReportFile;
-    }
-
-    public void setMidTermReportFile(FileContent midTermReportFile) {
-        this.midTermReportFile = midTermReportFile;
-    }
-
-    public FileContent getReportFile() {
-        return reportFile;
-    }
-
-    public void setReportFile(FileContent reportFile) {
-        this.reportFile = reportFile;
-    }
-
     public AcademicStudent getSecondStudent() {
         return secondStudent;
     }
 
     public void setSecondStudent(AcademicStudent secondStudent) {
         this.secondStudent = secondStudent;
-    }
-
-    public AcademicTeacher getSupervisor() {
-        return supervisor;
-    }
-
-    public void setSupervisor(AcademicTeacher supervisor) {
-        this.supervisor = supervisor;
-    }
-
-    public AcademicTeacher getSecondSupervisor() {
-        return secondSupervisor;
-    }
-
-    public void setSecondSupervisor(AcademicTeacher secondSupervisor) {
-        this.secondSupervisor = secondSupervisor;
     }
 
     public String getCompanyMentorName() {
@@ -245,30 +191,6 @@ public class AcademicHistInternship {
         this.endDate = endDate;
     }
 
-    public AcademicTeacher getFirstExaminer() {
-        return firstExaminer;
-    }
-
-    public void setFirstExaminer(AcademicTeacher firstExaminer) {
-        this.firstExaminer = firstExaminer;
-    }
-
-    public AcademicTeacher getSecondExaminer() {
-        return secondExaminer;
-    }
-
-    public void setSecondExaminer(AcademicTeacher secondExaminer) {
-        this.secondExaminer = secondExaminer;
-    }
-
-    public AcademicTeacher getChairExaminer() {
-        return chairExaminer;
-    }
-
-    public void setChairExaminer(AcademicTeacher chairExaminer) {
-        this.chairExaminer = chairExaminer;
-    }
-
     public AppPeriod getAcademicYear() {
         return academicYear;
     }
@@ -283,6 +205,54 @@ public class AcademicHistInternship {
 
     public void setExamDate(DateTime examDate) {
         this.examDate = examDate;
+    }
+
+    public String getSupervisorName() {
+        return supervisorName;
+    }
+
+    public void setSupervisorName(String supervisorName) {
+        this.supervisorName = supervisorName;
+    }
+
+    public String getSecondSupervisorName() {
+        return secondSupervisorName;
+    }
+
+    public void setSecondSupervisorName(String secondSupervisorName) {
+        this.secondSupervisorName = secondSupervisorName;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getFirstExaminerName() {
+        return firstExaminerName;
+    }
+
+    public void setFirstExaminerName(String firstExaminerName) {
+        this.firstExaminerName = firstExaminerName;
+    }
+
+    public String getSecondExaminerName() {
+        return secondExaminerName;
+    }
+
+    public void setSecondExaminerName(String secondExaminerName) {
+        this.secondExaminerName = secondExaminerName;
+    }
+
+    public String getChairExaminerName() {
+        return chairExaminerName;
+    }
+
+    public void setChairExaminerName(String chairExaminerName) {
+        this.chairExaminerName = chairExaminerName;
     }
 
 }

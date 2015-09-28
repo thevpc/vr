@@ -46,7 +46,7 @@ public class MailboxPreviewCtrl {
             String subject = lo.getSubject();
 //            String content = lo.getContent();
             previews.add(new MessagePreview(
-                    lo.getSender()==null?null:lo.getSender().getFullName(), 
+                    lo.getSender()==null?null:lo.getSender().getContact().getFullName(), 
                     VrHelper.strcut(subject, 36), 
                     VrHelper.getRelativeDateMessage(lo.getSendTime(),null)));
         }

@@ -72,11 +72,11 @@
             <artifactId>vfs</artifactId>
             <version>1.1</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>net.vpc.upa.extensions</groupId>
             <artifactId>upa-vfs</artifactId>
             <version>1.0</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.fathzer</groupId>
             <artifactId>javaluator</artifactId>
