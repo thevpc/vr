@@ -75,7 +75,8 @@ public class TeachersLoadTest {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         core.setAppProperty("academicPlugin.year", null, "2014-2015");
         core.setAppProperty("academicPlugin.import.version", null, "21bis");
-        s.resetTeachers();
+//        s.resetTeachers();
+        s.resetModuleTeaching();
         s.importTeachingLoad();
         s.generateTeachingLoad();
     }
