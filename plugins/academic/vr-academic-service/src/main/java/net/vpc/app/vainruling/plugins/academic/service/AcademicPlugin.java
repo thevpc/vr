@@ -1508,7 +1508,11 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public AcademicTeacher findTeacher(String t) {
-        return (AcademicTeacher) UPA.getPersistenceUnit().findByMainField(AcademicTeacher.class, t);
+        return (AcademicTeacher) UPA.getPersistenceUnit().createQuery("Select u from AcademicTeacher u where u.contact.fullName=:name").setParameter("name", t).getEntity();
+    }
+    
+    public AcademicStudent findStudent(String t) {
+        return (AcademicStudent) UPA.getPersistenceUnit().createQuery("Select u from AcademicStudent u where u.contact.fullName=:name").setParameter("name", t).getEntity();
     }
 
     public AcademicTeacherDegree findTeacherDegree(String t) {
