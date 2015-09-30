@@ -202,8 +202,13 @@ public class XlsxLoadImporter {
             importCourseAssignments(file, importOptions);
         }
         long end = System.currentTimeMillis();
-        trace.trace("importTeachingLoad", "data file " + file.getPath() + " imported in " + Duration.ofMillis(end - start), null, getClass().getSimpleName(), Level.INFO);
-        System.out.println("data file " + file.getPath() + " imported in " + Duration.ofMillis(end - start));
+        if (count > 0) {
+            trace.trace("importTeachingLoad", "data file " + file.getPath() + " imported in " + Duration.ofMillis(end - start), null, getClass().getSimpleName(), Level.INFO);
+            System.out.println("data file " + file.getPath() + " imported in " + Duration.ofMillis(end - start));
+        } else {
+            trace.trace("importTeachingLoad", "ignored data file " + file.getPath(), null, getClass().getSimpleName(), Level.INFO);
+            System.out.println("ignored data file " + file.getPath());
+        }
         return count;
     }
 

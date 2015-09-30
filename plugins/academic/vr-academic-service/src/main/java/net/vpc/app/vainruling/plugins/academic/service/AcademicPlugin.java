@@ -156,8 +156,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //        int teacherId = tal.getTeacher().getId();
         if (modules == null) {
             modules = findCourseAssignments(teacherId, null, includeIntent, cache);
-            if (modules != null) {
-                log.severe("Modules not found for teacherId=" + teacherId);
+            if (modules == null) {
+                log.severe("No assignements found for teacherId=" + teacherId+" ("+teacher+")");
             }
         }
         TeacherStat teacher_stat = new TeacherStat();
@@ -173,7 +173,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (findTeacherSemestrialLoads == null) {
             findTeacherSemestrialLoads = cache.getAcademicTeacherSemestrialLoadByTeacherIdMap().get(teacherId);
             if (findTeacherSemestrialLoads == null) {
-                log.severe("findTeacherSemestrialLoads not found for teacherId=" + teacherId);
+                log.severe("reacherSemestrialLoads not found for teacherId=" + teacherId+" ("+teacher+")");
                 findTeacherSemestrialLoads = new ArrayList<>();
             }
         }
@@ -1655,6 +1655,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     public List<AcademicCourseAssignment> findCourseAssignments() {
         return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a order by a.coursePlan.semester.code,a.coursePlan.program.name,a.name,a.courseType.name")
+                .setHint("navigationDepth", 5)
                 .getEntityList();
     }
 

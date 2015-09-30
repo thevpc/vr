@@ -178,7 +178,7 @@ public class StatCache {
         } else {
             List<AcademicCourseAssignment> list = getAcademicCourseAssignmentListByTeacherId().get(teacher);
             if (list == null) {
-                System.out.println("No assignments for " + teacher + " : " + getAcademicTeacherMap().get(teacher));
+                System.out.println("No assignments for teacherId=" + teacher + " : " + getAcademicTeacherMap().get(teacher));
             } else {
                 for (AcademicCourseAssignment value : list) {
                     if (semester == null || (value.getCoursePlan().getSemester() != null && value.getCoursePlan().getSemester().getName().equals(semester))) {
