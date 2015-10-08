@@ -72,7 +72,7 @@
             <artifactId>vfs</artifactId>
             <version>1.1</version>
         </dependency>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>net.vpc.upa.extensions</groupId>
             <artifactId>upa-vfs</artifactId>
             <version>1.0</version>
@@ -89,4 +89,14 @@
         </dependency>
     </dependencies>
     <name>vr-api-service</name>
+    <repositories>
+        <repository>
+            <id>vpc-public-maven</id>
+            <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>    
 </project>

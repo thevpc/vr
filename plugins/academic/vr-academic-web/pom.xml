@@ -22,4 +22,14 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>vpc-public-maven</id>
+            <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>    
 </project>
