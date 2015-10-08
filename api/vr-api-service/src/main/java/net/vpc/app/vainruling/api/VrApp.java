@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.api;
 
+import net.vpc.app.vainruling.api.security.UserSession;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;

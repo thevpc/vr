@@ -5,6 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.inbox.service.security;
 
+import net.vpc.app.vainruling.api.CorePlugin;
+import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.upa.DefaultEntitySecurityManager;
 import net.vpc.upa.Entity;
 import net.vpc.upa.config.SecurityContext;
@@ -21,7 +23,7 @@ public class MailboxSentSecurer extends DefaultEntitySecurityManager{
 
     @Override
     public Expression getEntityFilter(Entity entity) throws UPAException {
-        if(entity.getPersistenceUnit().getPersistenceGroup().getSecurityManager().getUserPrincipal().getName().equals("admin")){
+        if(VrApp.getBean(CorePlugin.class).isActualAdmin()){
             return null;
         }
         return new UserExpression("this.deleted=false and this.sender.login=currentUser()");

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -152,6 +153,61 @@ public class XlsxLoadImporter {
         log.log(Level.INFO, "importTeacherDegrees from {0} in {1}", new Object[]{file, ch.stop()});
     }
 
+    private static class ImportFile implements Comparable<ImportFile> {
+
+        VFile file;
+        int order;
+
+        public ImportFile(VFile file, int order) {
+            this.file = file;
+            this.order = order;
+        }
+
+        @Override
+        public int compareTo(ImportFile o) {
+            return order - o.order;
+        }
+    }
+
+    private List<ImportFile> locateImportFile(VFile file, ImportOptions importOptions) throws IOException {
+        if (importOptions == null) {
+            importOptions = new ImportOptions();
+        }
+        if (file.exists()) {
+
+            List<ImportFile> all = new ArrayList<>();
+            if (file.isDirectory()) {
+                if (importOptions.getMaxDepth() < 0 || importOptions.getMaxDepth() > 0) {
+                    ImportOptions i = importOptions.copy();
+                    if (i.getMaxDepth() > 0) {
+                        i.setMaxDepth(i.getMaxDepth() - 1);
+                    }
+                    for (VFile f : file.listFiles()) {
+                        all.addAll(locateImportFile(f, i));
+                    }
+                }
+                return all;
+            }
+
+            if (file.getName().equals("departments.xlsx")) {
+                return Arrays.asList(new ImportFile(file, 1));
+            }
+            if (file.getName().equals("teacher-degrees.xlsx")) {
+                return Arrays.asList(new ImportFile(file, 2));
+            }
+            if (file.getName().equals("teachers.xlsx") || file.getName().endsWith(".teachers.xlsx")) {
+                return Arrays.asList(new ImportFile(file, 3));
+            }
+            if (file.getName().equals("students.xlsx") || file.getName().endsWith(".students.xlsx")) {
+                return Arrays.asList(new ImportFile(file, 4));
+            }
+            if (file.getName().equals("course-assignments.xlsx")) {
+                return Arrays.asList(new ImportFile(file, 5));
+            }
+        }
+        return Collections.EMPTY_LIST;
+    }
+
     public int importFile(VFile file, ImportOptions importOptions) throws IOException {
         if (importOptions == null) {
             importOptions = new ImportOptions();
@@ -169,8 +225,10 @@ public class XlsxLoadImporter {
                 if (i.getMaxDepth() > 0) {
                     i.setMaxDepth(i.getMaxDepth() - 1);
                 }
-                for (VFile f : file.listFiles()) {
-                    count += importFile(f, i);
+                List<ImportFile> locateImportFile = locateImportFile(file, importOptions);
+                Collections.sort(locateImportFile);
+                for (ImportFile f : locateImportFile) {
+                    count += importFile(f.file, i);
                 }
             }
             return count;
@@ -251,6 +309,7 @@ public class XlsxLoadImporter {
                 contact.setNin(nin);
                 contact.setFirstName(fs);
                 contact.setLastName(ln);
+                contact.setFullName(AppContact.getName(contact));
                 contact = core.findOrCreateContact(contact);
                 AcademicTeacher oldAcademicTeacher = service.findTeacherByContact(contact.getId());
                 if (oldAcademicTeacher != null) {
@@ -258,7 +317,6 @@ public class XlsxLoadImporter {
                 } else {
                     academicTeacher.setContact(contact);
                 }
-                contact.setFullName(AppContact.getName(contact));
                 String fs2 = Convert.toString(values[COL_FIRST_NAME2]);
                 String ln2 = Convert.toString(values[COL_LAST_NAME2]);
                 contact.setFirstName2(fs2);
@@ -413,6 +471,8 @@ public class XlsxLoadImporter {
                 contact.setNin(nin);
                 contact.setFirstName(fs);
                 contact.setLastName(ln);
+                contact.setFullName(AppContact.getName(contact));
+                String fs2 = Convert.toString(values[COL_FIRST_NAME2]);
                 contact = core.findOrCreateContact(contact);
                 AcademicStudent oldAcademicStudent = service.findStudentByContact(contact.getId());
                 if (oldAcademicStudent != null) {
@@ -420,10 +480,6 @@ public class XlsxLoadImporter {
                 } else {
                     academicStudent.setContact(contact);
                 }
-                contact.setFirstName(fs);
-                contact.setLastName(ln);
-                contact.setFullName(AppContact.getName(contact));
-                String fs2 = Convert.toString(values[COL_FIRST_NAME2]);
                 String ln2 = Convert.toString(values[COL_LAST_NAME2]);
                 contact.setFirstName2(fs2);
                 contact.setLastName2(ln2);

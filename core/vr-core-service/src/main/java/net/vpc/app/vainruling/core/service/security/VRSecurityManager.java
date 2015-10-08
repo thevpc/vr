@@ -7,14 +7,12 @@ package net.vpc.app.vainruling.core.service.security;
 
 import net.vpc.app.vainruling.api.security.UserSession;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.TraceService;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.model.AppUser;
-import net.vpc.app.vainruling.api.model.AppProfileRight;
 import net.vpc.upa.DefaultUserPrincipal;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
@@ -52,19 +50,19 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
     }
 
     public boolean isAdmin(String login) {
-        if ("admin".equals(login)) {
+        if (CorePlugin.USER_ADMIN.equals(login)) {
             return true;
         }
         UserSession s = UserSession.getCurrentSession();
         if (s == null) {
             return false;
         }
-        return s.getProfileNames().contains("Admin");
+        return s.getProfileNames().contains(CorePlugin.PROFILE_ADMIN);
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        return "admin".equals(s)
 //                || pu.createQuery("Select u from AppUserProfileBinding u where u.user.login=:login and u.profile.name=:profile")
 //                .setParameter("login", s)
-//                .setParameter("profile", "Admin")
+//                .setParameter("profile", CorePlugin.PROFILE_ADMIN)
 //                .getRecordList().size() > 0;
     }
 

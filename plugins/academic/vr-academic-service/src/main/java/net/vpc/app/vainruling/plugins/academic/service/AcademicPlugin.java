@@ -1105,7 +1105,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public AcademicTeacher findHeadOfDepartment(int depId) throws IOException {
-        for (AppUser u : core.findUsersByProfile(CorePlugin.HEAD_OF_DEPARTMENT)) {
+        for (AppUser u : core.findUsersByProfile(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT)) {
             if (u.getDepartment() != null && u.getDepartment().getId() == depId) {
                 return findTeacherByUser(u.getId());
             }
@@ -2085,17 +2085,17 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         AppUserType teacherType;
         teacherType = new AppUserType();
         teacherType.setName("Teacher");
-        teacherType = core.insertIfNotFound(teacherType);
+        teacherType = core.findOrCreate(teacherType);
 
         AppUserType studentType;
         studentType = new AppUserType();
         studentType.setName("Student");
-        studentType = core.insertIfNotFound(studentType);
+        studentType = core.findOrCreate(studentType);
 
         AppProfile teacherProfile;
         teacherProfile = new AppProfile();
         teacherProfile.setName("Teacher");
-        teacherProfile = core.insertIfNotFound(teacherProfile);
+        teacherProfile = core.findOrCreate(teacherProfile);
 
         core.addProfileRight(teacherProfile.getId(), "Custom.Education.MyCourseLoad");
         core.addProfileRight(teacherProfile.getId(), "AcademicCourseIntent.Persist");
@@ -2116,14 +2116,14 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         AppProfile studentProfile;
         studentProfile = new AppProfile();
         studentProfile.setName("Student");
-        studentProfile = core.insertIfNotFound(studentProfile);
+        studentProfile = core.findOrCreate(studentProfile);
 
         core.addProfileRight(studentProfile.getId(), "Custom.FileSystem.MyFileSystem");
 
         AppProfile headOfDepartment;
         headOfDepartment = new AppProfile();
-        headOfDepartment.setName(CorePlugin.HEAD_OF_DEPARTMENT);
-        headOfDepartment = core.insertIfNotFound(headOfDepartment);
+        headOfDepartment.setName(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT);
+        headOfDepartment = core.findOrCreate(headOfDepartment);
 
         core.addProfileRight(headOfDepartment.getId(), "Custom.Education.TeacherCourseLoad");
         core.addProfileRight(headOfDepartment.getId(), "Custom.Education.GlobalStat");
@@ -2144,7 +2144,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         AppProfile directorOfStudies;
         directorOfStudies = new AppProfile();
         directorOfStudies.setName("DirectorOfStudies");
-        directorOfStudies = core.insertIfNotFound(directorOfStudies);
+        directorOfStudies = core.findOrCreate(directorOfStudies);
 
         core.addProfileRight(directorOfStudies.getId(), "Custom.Education.TeacherCourseLoad");
         core.addProfileRight(directorOfStudies.getId(), "Custom.Education.GlobalStat");
@@ -2160,7 +2160,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         AppProfile director;
         director = new AppProfile();
         director.setName("Director");
-        director = core.insertIfNotFound(director);
+        director = core.findOrCreate(director);
 
         core.addProfileRight(director.getId(), "Custom.Education.TeacherCourseLoad");
         core.addProfileRight(director.getId(), "Custom.Education.GlobalStat");

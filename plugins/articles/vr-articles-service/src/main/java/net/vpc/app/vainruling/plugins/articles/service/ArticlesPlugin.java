@@ -100,23 +100,23 @@ public class ArticlesPlugin {
             d = new ArticlesDisposition();
             d.setName("Main.Row" + i);
             d.setDescription("Page principale, Ligne " + i);
-            core.insertIfNotFound(d);
+            core.findOrCreate(d);
         }
 
         d = new ArticlesDisposition();
         d.setName("Welcome");
         d.setDescription("Page de bienvenue");
-        core.insertIfNotFound(d);
+        core.findOrCreate(d);
         
         d = new ArticlesDisposition();
         d.setName("News");
         d.setDescription("Page actualités");
-        core.insertIfNotFound(d);
+        core.findOrCreate(d);
         
         d = new ArticlesDisposition();
         d.setName("Activities");
         d.setDescription("Page activités");
-        core.insertIfNotFound(d);
+        core.findOrCreate(d);
         
         {
             MailboxMessageFormat m = new MailboxMessageFormat();
@@ -142,7 +142,7 @@ public class ArticlesPlugin {
                     + "\n Restez connectés sur http://www.eniso.info"
             );
             m.setFooterEmbeddedImage("/Config/VisualIdentity/Institution.jpg");
-            core.insertIfNotFound(m);
+            core.findOrCreate(m);
         }
         {
             MailboxMessageFormat m = new MailboxMessageFormat();
@@ -167,7 +167,7 @@ public class ArticlesPlugin {
             );
             m.setFooterEmbeddedImage(null);
             m.setFooterEmbeddedImage("/Config/VisualIdentity/Institution.jpg");
-            core.insertIfNotFound(m);
+            core.findOrCreate(m);
         }
     }
 

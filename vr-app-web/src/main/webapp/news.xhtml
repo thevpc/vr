@@ -42,7 +42,9 @@
                                         <ui:repeat value="#{i.attachments}" var="att">
                                             <h:outputLink 
                                                 value="#{att.path}" 
-                                                styleClass="#{(att.style eq null or att.style eq '')?'hero-btn':att.style}">
+                                                styleClass="#{(att.style eq null or att.style eq '')?'hero-btn':att.style}"
+                                                style="margin-right: 10px;line-height: 6;"
+                                                >
                                                 <h:outputText value="#{att.name}" />
                                             </h:outputLink>
                                         </ui:repeat>

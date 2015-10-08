@@ -37,6 +37,7 @@ public class AcademicCoursePlan {
     @Formula(
             value="concat((select a.name from AcademicCourseLevel a where a.id=this.courseLevelId),'-',this.name)",
             type = {FormulaType.PERSIST,FormulaType.UPDATE}
+            
             )
     private String fullName;
 

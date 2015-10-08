@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.inbox.service.security;
+package net.vpc.app.vainruling.plugins.academic.service.security;
 
 import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.VrApp;
@@ -18,15 +18,16 @@ import net.vpc.upa.expressions.UserExpression;
  *
  * @author vpc
  */
-@SecurityContext(entity = "MailboxReceived")
-public class MailboxReceivedSecurer extends DefaultEntitySecurityManager{
+@SecurityContext(entity = "AcademicTeacherCV")
+public class AcademicTeacherCVSecurer extends DefaultEntitySecurityManager {
 
     @Override
     public Expression getEntityFilter(Entity entity) throws UPAException {
-        if(VrApp.getBean(CorePlugin.class).isActualAdmin()){
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        if (core.isActualAdmin()) {
             return null;
         }
-        return new UserExpression("this.deleted=false and this.sender.login=currentUser()");
+        return new UserExpression("this.teacher.login=currentUser()");
     }
-    
+
 }

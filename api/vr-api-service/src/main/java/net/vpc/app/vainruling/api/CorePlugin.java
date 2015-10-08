@@ -35,6 +35,7 @@ import net.vpc.upa.EntityShield;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.QueryBuilder;
 import net.vpc.upa.UPA;
+import net.vpc.upa.UserPrincipal;
 import net.vpc.upa.expressions.Equals;
 import net.vpc.upa.expressions.Literal;
 import net.vpc.upa.expressions.Var;
@@ -48,7 +49,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 @AppPlugin(version = "1.5")
 public class CorePlugin {
 
-    public static final String HEAD_OF_DEPARTMENT = "HeadOfDepartment";
+    public static final String USER_ADMIN = "admin";
+    public static final String PROFILE_ADMIN = "Admin";
+    public static final String PROFILE_HEAD_OF_DEPARTMENT = "HeadOfDepartment";
     public static final Set<String> ADMIN_ENTITIES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("Trace", "User", "UserProfile", "UserProfileBinding", "UserProfileRight")));
     @Autowired
     private TraceService trace;
@@ -74,7 +77,7 @@ public class CorePlugin {
         return (AppUserType) pu.findByMainField(AppUserType.class, name);
     }
 
-    public AppProfile findUserProfile(String profileName) {
+    public AppProfile findProfile(String profileName) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return (AppProfile) pu.findByMainField(AppProfile.class, profileName);
     }
@@ -348,22 +351,22 @@ public class CorePlugin {
         d.now = System.currentTimeMillis();
         d.adminProfile = new AppProfile();
         d.adminProfile.setName("Admin");
-        d.adminProfile = insertIfNotFound(d.adminProfile);
+        d.adminProfile = findOrCreate(d.adminProfile);
 
         d.adminType = new AppUserType();
         d.adminType.setName("Admin");
-        d.adminType = insertIfNotFound(d.adminType);
+        d.adminType = findOrCreate(d.adminType);
 
         d.civilities = new ArrayList<>();
         for (String n : new String[]{"M.", "Mlle", "Mme"}) {
             AppCivility c = new AppCivility(0, n);
-            c = insertIfNotFound(c);
+            c = findOrCreate(c);
             d.civilities.add(c);
         }
         d.genders = new ArrayList<>();
         for (String n : new String[]{"H", "F"}) {
             AppGender c = new AppGender(0, n);
-            c = insertIfNotFound(c);
+            c = findOrCreate(c);
             d.genders.add(c);
         }
         AppContact adminContact = new AppContact();
@@ -373,7 +376,7 @@ public class CorePlugin {
         adminContact.setCivility(d.civilities.get(0));
         adminContact.setGender(d.genders.get(0));
         adminContact.setEmail("admin@vr.net");
-        adminContact = insertIfNotFound(adminContact, "nin");
+        adminContact = findOrCreate(adminContact, "nin");
 
         AppUser uu = new AppUser();
         d.admin = uu;
@@ -381,7 +384,7 @@ public class CorePlugin {
         d.admin.setPassword("admin");
         d.admin.setType(d.adminType);
         d.admin.setContact(adminContact);
-        d.admin = insertIfNotFound(d.admin);
+        d.admin = findOrCreate(d.admin);
         if (d.admin == uu) {
             pu.persist(new AppUserProfileBinding(d.admin, d.adminProfile));
         }
@@ -392,7 +395,7 @@ public class CorePlugin {
             c.setName(n[1]);
             AppDepartment old = pu.findByField(AppDepartment.class, "code", c.getCode());
             if (old == null) {
-                c = insertIfNotFound(c);
+                c = findOrCreate(c);
             } else {
                 c = old;
             }
@@ -405,38 +408,38 @@ public class CorePlugin {
                     AppRightName r = new AppRightName();
                     r.setName(entity.getAbsoluteName() + ".DefaultEditor");
                     r.setDescription("List " + entity.getName());
-                    insertIfNotFound(r);
+                    findOrCreate(r);
                 }
                 if (true) {
                     AppRightName r = new AppRightName();
                     r.setName(entity.getAbsoluteName() + ".Navigate");
                     r.setDescription("List " + entity.getName());
-                    insertIfNotFound(r);
+                    findOrCreate(r);
                 }
                 if (true) {
                     AppRightName r = new AppRightName();
                     r.setName(entity.getAbsoluteName() + ".Load");
                     r.setDescription("Detail " + entity.getName());
-                    insertIfNotFound(r);
+                    findOrCreate(r);
                 }
                 if (!ADMIN_ENTITIES.contains(entity.getName())) {
                     if (s.isPersistSupported()) {
                         AppRightName r = new AppRightName();
                         r.setName(entity.getAbsoluteName() + ".Persist");
                         r.setDescription("Persist " + entity.getName());
-                        insertIfNotFound(r);
+                        findOrCreate(r);
                     }
                     if (s.isUpdateSupported()) {
                         AppRightName r = new AppRightName();
                         r.setName(entity.getAbsoluteName() + ".Update");
                         r.setDescription("Update " + entity.getName());
-                        insertIfNotFound(r);
+                        findOrCreate(r);
                     }
                     if (s.isDeleteSupported()) {
                         AppRightName r = new AppRightName();
                         r.setName(entity.getAbsoluteName() + ".Remove");
                         r.setDescription("Remove " + entity.getName());
-                        insertIfNotFound(r);
+                        findOrCreate(r);
                     }
                     String extraActions = entity.getProperties().getString("actions");
                     if (extraActions != null) {
@@ -445,7 +448,7 @@ public class CorePlugin {
                                 AppRightName r = new AppRightName();
                                 r.setName(entity.getAbsoluteName() + "." + a);
                                 r.setDescription(a + " " + entity.getName());
-                                insertIfNotFound(r);
+                                findOrCreate(r);
                             }
                         }
                     }
@@ -454,13 +457,13 @@ public class CorePlugin {
         }
     }
 
-    public <T> T insertIfNotFound(T o) {
+    public <T> T findOrCreate(T o) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(o.getClass());
-        return insertIfNotFound(o, e.getMainField().getName());
+        return findOrCreate(o, e.getMainField().getName());
     }
 
-    public <T> T insertIfNotFound(T o, String field) {
+    public <T> T findOrCreate(T o, String field) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(o.getClass());
         Object value = e.getBuilder().entityToRecord(o, true).getObject(field);
@@ -830,7 +833,7 @@ public class CorePlugin {
 
     public AppContact findOrCreateContact(AppContact c) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        if (Strings.isNullOrEmpty(c.getNin())) {
+        if (!Strings.isNullOrEmpty(c.getNin())) {
             AppContact oldAcademicTeacher = pu.createQueryBuilder(AppContact.class)
                     .addAndField("nin", c.getNin())
                     .getEntity();
@@ -848,6 +851,84 @@ public class CorePlugin {
         }
         pu.persist(c);
         return c;
+    }
+
+    public String getActualLogin() {
+        UserPrincipal up = UPA.getPersistenceUnit().getUserPrincipal();
+        if (up != null && up.getObject() instanceof AppUser) {
+            AppUser u = (AppUser) up.getObject();
+            return u.getLogin();
+        }
+        UserSession us = VrApp.getBean(UserSession.class);
+        if (us != null) {
+            if (us.getUser() != null) {
+                return us.getUser().getLogin();
+            }
+        }
+        return null;
+    }
+
+    public boolean isActualAdminOrUser(String login) {
+        UserSession us = VrApp.getBean(UserSession.class);
+        UserPrincipal up = UPA.getPersistenceUnit().getUserPrincipal();
+        if (up != null && up.getObject() instanceof AppUser) {
+            AppUser u = (AppUser) up;
+            if (us.getUser() != null) {
+                String login2 = u.getLogin();
+                if (login2.equals(login)) {
+                    return true;
+                }
+                if (login2.equals(us.getUser().getLogin())) {
+                    return us.isAdmin();
+                }
+            }
+            CorePlugin core = VrApp.getBean(CorePlugin.class);
+            List<AppProfile> profiles = core.findProfilesByUser(u.getId());
+            for (AppProfile p : profiles) {
+                if (PROFILE_ADMIN.equals(p.getCode())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        if (us != null) {
+            if (us.isAdmin()) {
+                return true;
+            }
+            if (us.getUser().getLogin().equals(login)) {
+                return true;
+            }
+        }
+        return us != null && us.isAdmin();
+    }
+
+    public boolean isActualAdmin() {
+        UserSession us = VrApp.getBean(UserSession.class);
+        UserPrincipal up = UPA.getPersistenceUnit().getUserPrincipal();
+        if (up != null) {
+            if (up.getName().equals("<internal>")) {
+                return true;
+            }
+            if (up.getObject() instanceof AppUser) {
+                AppUser u = (AppUser) up.getObject();
+                if (us.getUser() != null && u.getLogin().equals(us.getUser().getLogin())) {
+                    return us.isAdmin();
+                }
+                CorePlugin core = VrApp.getBean(CorePlugin.class);
+                List<AppProfile> profiles = core.findProfilesByUser(u.getId());
+                for (AppProfile p : profiles) {
+                    if (PROFILE_ADMIN.equals(p.getCode())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return us != null && us.isAdmin();
+    }
+
+    public boolean isSessionAdmin() {
+        UserSession us = VrApp.getBean(UserSession.class);
+        return us != null && us.isAdmin();
     }
 
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.vpc.app.vainruling.service.test;
 
 import java.io.File;
@@ -17,17 +12,9 @@ import net.vpc.lib.gomail.GoMailFormat;
 import net.vpc.lib.gomail.modules.GoMailModuleProcessor;
 import org.springframework.stereotype.Service;
 
-/**
- *
- * @author vpc
- */
 @Service
 public class GoMailServiceTest {
 
-//    public static void main(String[] args) {
-//        Expression t = new UQLParser(new StringReader("${if a=4 then 3 else 4 end}")).Any();
-//        System.out.println(t);
-//    }
     public static void main(String[] args) {
         VrApp.runStandalone(args);
         VrApp.getBean(GoMailServiceTest.class).run();

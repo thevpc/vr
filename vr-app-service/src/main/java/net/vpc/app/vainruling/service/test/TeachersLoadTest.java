@@ -13,6 +13,8 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.plugins.academic.service.XlsxLoadImporter;
 import net.vpc.app.vainruling.api.CorePlugin;
+import net.vpc.app.vainruling.api.security.UserSession;
+import net.vpc.app.vainruling.core.service.LoginService;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.lib.gomail.GoMail;
 import net.vpc.lib.gomail.GoMailFormat;
@@ -31,6 +33,8 @@ public class TeachersLoadTest {
     public static void main(String[] args) {
         LogUtils.configure(Level.ALL, "net.vpc.app.vainruling");
         VrApp.runStandalone(args);
+        VrApp.getBean(UserSession.class).setSessionId("custom");
+        VrApp.getBean(LoginService.class).login(CorePlugin.USER_ADMIN, "admin");
         VrApp.getBean(TeachersLoadTest.class).run();
     }
 

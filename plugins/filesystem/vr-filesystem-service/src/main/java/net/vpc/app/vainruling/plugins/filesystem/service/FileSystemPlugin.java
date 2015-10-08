@@ -16,6 +16,8 @@ import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.model.AppProfile;
 import net.vpc.app.vainruling.api.model.AppUser;
 import net.vpc.app.vainruling.api.model.AppUserType;
+import net.vpc.upa.Action;
+import net.vpc.upa.UPA;
 import net.vpc.vfs.MountableFS;
 import net.vpc.vfs.VFS;
 import net.vpc.vfs.VFile;
@@ -38,9 +40,9 @@ public class FileSystemPlugin {
     @Install
     public void installService() {
         VrApp.getBean(CorePlugin.class).createRight("Custom.FileSystem.RootFileSystem", "Root FileSystem Access");
-        VrApp.getBean(CorePlugin.class).createRight("Custom.FileSystem.MyFileSystem", "My FileSystem Access");        
+        VrApp.getBean(CorePlugin.class).createRight("Custom.FileSystem.MyFileSystem", "My FileSystem Access");
     }
-    
+
     @Start
     public void start() {
         String home = System.getProperty("user.home");
@@ -55,7 +57,7 @@ public class FileSystemPlugin {
 
         );
         nativeFileSystemPath = path;
-        fileSystem = VFS.createNativeFS().subfs(path);
+        fileSystem = new VrFS().subfs(path);
         fileSystem.get("/").mkdirs();
     }
 
@@ -67,46 +69,75 @@ public class FileSystemPlugin {
         return fileSystem;
     }
 
-    public VFile getUserFolder(String login) {
+    public VFile getUserFolder(final String login) {
         AppUser u = core.findUser(login);
         if (u != null) {
             AppUserType t = u.getType();
             String typeName = t == null ? "NoType" : t.getName();
-            String path = "/Documents/ByUser/" + typeName + "/" + login;
+            final String path = "/Documents/ByUser/" + typeName + "/" + login;
             getFileSystem().mkdirs(path);
+            UPA.getContext().invokePrivileged(new Action<Object>() {
+
+                @Override
+                public Object run() {
+                    VrACL v = (VrACL) getFileSystem().getACL(path);
+                    v.chown(login);
+                    return null;
+                }
+
+            }, null);
             return fileSystem.get(path);
         }
         return null;
     }
 
-    public VFile getProfileFolder(String profile) {
+    public VFile getProfileFolder(final String profile) {
         AppProfile u = core.findProfileByName(profile);
         if (u != null) {
-            String path = "/Documents/ByProfile/" + profile;
+            final String path = "/Documents/ByProfile/" + profile;
             getFileSystem().mkdirs(path);
+
+            UPA.getContext().invokePrivileged(new Action<Object>() {
+
+                @Override
+                public Object run() {
+                    VrACL v = (VrACL) getFileSystem().getACL(path);
+                    v.grantListDirectory(profile);
+                    return null;
+                }
+
+            }, null);
+
             return fileSystem.get(path);
         }
         return null;
     }
-    
+
     public VFile getUserTypeFolder(String userType) {
         AppProfile u = core.findProfileByName(userType);
         if (u != null) {
-            String path = "/Documents/ByUserType/" + userType;
-            getFileSystem().mkdirs(path);
+            final String path = "/Documents/ByUserType/" + userType;
+            UPA.getContext().invokePrivileged(new Action<Object>() {
+
+                @Override
+                public Object run() {
+                    getFileSystem().mkdirs(path);
+                    VrACL v = (VrACL) getFileSystem().getACL(path);
+//                    v.chown(login);
+                    return null;
+                }
+
+            }, null);
             return fileSystem.get(path);
         }
         return null;
     }
 
-    public VirtualFileSystem getUserFileSystem(String login) {
+    public VirtualFileSystem getUserFileSystem(final String login) {
         AppUser u = core.findUser(login);
         if (u != null) {
-            AppUserType t = u.getType();
-            String typeName = t == null ? "NoType" : t.getName();
-            String path = "/Documents/ByUser/" + typeName + "/" + login;
-            getFileSystem().mkdirs(path);
-            final VirtualFileSystem me = fileSystem.subfs(path);
+            VFile home = getUserFolder(login);
+            final VirtualFileSystem me = fileSystem.subfs(home.getPath());
             MountableFS mfs = VFS.createMountableFS();
             try {
                 mfs.mount("/MyDocuments", me);

@@ -5,12 +5,22 @@
  */
 package net.vpc.app.vainruling.plugins.filesystem.web.files;
 
+import java.io.File;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.model.AppUser;
+import net.vpc.app.vainruling.api.security.UserSession;
+import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.app.vainruling.api.web.util.JsfCtrl;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
+import net.vpc.common.jsf.FacesUtils;
+import net.vpc.vfs.VFS;
 import net.vpc.vfs.VFile;
+import net.vpc.vfs.VirtualFileSystem;
+import org.primefaces.event.FileUploadEvent;
 
 /**
  *
@@ -66,5 +76,27 @@ public class FSWebUtils {
             }
         }
         return null;
+    }
+
+    public VFile handleFileUploadEvent(FileUploadEvent event) throws Exception {
+        String tempPath = "/Temp/Files/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+                + "-" + VrApp.getBean(UserSession.class).getUser().getLogin();
+        FileSystemPlugin fsp = VrApp.getBean(FileSystemPlugin.class);
+        String p = fsp.getNativeFileSystemPath() + tempPath;
+        new File(p).mkdirs();
+        File f = new File(p, event.getFile().getFileName());
+        try {
+            event.getFile().write(f.getPath());
+        } finally {
+            //should not delete the file!
+        }
+        VirtualFileSystem nfs = VFS.createNativeFS();
+        return nfs.get(f.getPath());
+    }
+
+    public VFile handleFileUploadEvent(FileUploadEvent event, VFile out) throws Exception {
+        VFile temp = handleFileUploadEvent(event);
+        temp.renameTo(out);
+        return out;
     }
 }

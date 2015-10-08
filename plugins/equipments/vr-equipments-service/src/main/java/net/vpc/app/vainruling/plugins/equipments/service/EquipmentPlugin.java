@@ -81,17 +81,17 @@ public class EquipmentPlugin {
         AppUserType technicianType;
         technicianType = new AppUserType();
         technicianType.setName("Technician");
-        technicianType = core.insertIfNotFound(technicianType);
+        technicianType = core.findOrCreate(technicianType);
 
         AppProfile technicianProfile;
         technicianProfile = new AppProfile();
         technicianProfile.setName("Technician");
-        technicianProfile = core.insertIfNotFound(technicianProfile);
+        technicianProfile = core.findOrCreate(technicianProfile);
 
         AppProfile headOfDepartment;
         headOfDepartment = new AppProfile();
-        headOfDepartment.setName(CorePlugin.HEAD_OF_DEPARTMENT);
-        headOfDepartment = core.insertIfNotFound(headOfDepartment);
+        headOfDepartment.setName(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT);
+        headOfDepartment = core.findOrCreate(headOfDepartment);
 
 //        core.profileAddRight(headOfDepartment.getId(),"Custom.Education.MyCourseLoad");
         for (net.vpc.upa.Entity ee : UPA.getPersistenceUnit().getPackage("Equipment").getEntities(true)) {
@@ -122,7 +122,7 @@ public class EquipmentPlugin {
         tech1.setType(technicianType);
         techContact=core.findOrCreateContact(techContact);
         tech1.setContact(techContact);
-        tech1 = core.insertIfNotFound(tech1);
+        tech1 = core.findOrCreate(tech1);
 
         techContact = new AppContact();
         AppUser tech2 = new AppUser();
@@ -137,7 +137,7 @@ public class EquipmentPlugin {
         tech2.setType(technicianType);
         techContact=core.findOrCreateContact(techContact);
         tech2.setContact(techContact);
-        tech2 = core.insertIfNotFound(tech2);
+        tech2 = core.findOrCreate(tech2);
 
         core.userAddProfile(tech1.getId(), "Technician");
         core.userAddProfile(tech2.getId(), "Technician");
@@ -156,30 +156,30 @@ public class EquipmentPlugin {
     public void installDemoService() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         InitData initData = new InitData();
-        initData.areaType_etablissement = core.insertIfNotFound(initData.areaType_etablissement);
-        initData.areaType_bloc = core.insertIfNotFound(initData.areaType_bloc);
-        initData.areaType_salle = core.insertIfNotFound(initData.areaType_salle);
-        initData.areaType_armoire = core.insertIfNotFound(initData.areaType_armoire);
-        initData.areaType_rangement = core.insertIfNotFound(initData.areaType_rangement);
+        initData.areaType_etablissement = core.findOrCreate(initData.areaType_etablissement);
+        initData.areaType_bloc = core.findOrCreate(initData.areaType_bloc);
+        initData.areaType_salle = core.findOrCreate(initData.areaType_salle);
+        initData.areaType_armoire = core.findOrCreate(initData.areaType_armoire);
+        initData.areaType_rangement = core.findOrCreate(initData.areaType_rangement);
 
         List<AppArea> areas = new ArrayList<>();
         List<AppArea> salles = new ArrayList<>();
         AppArea areaEniso = new AppArea("Eniso", null, initData.areaType_etablissement, null);
-        areaEniso = core.insertIfNotFound(areaEniso);
+        areaEniso = core.findOrCreate(areaEniso);
         areas.add(areaEniso);
         AppArea areaBlocA = new AppArea("Bloc A", null, initData.areaType_bloc, areaEniso);
-        areaBlocA = core.insertIfNotFound(areaBlocA);
+        areaBlocA = core.findOrCreate(areaBlocA);
         areas.add(areaBlocA);
         AppArea areaBlocB = new AppArea("Bloc B", null, initData.areaType_bloc, areaEniso);
-        areaBlocB = core.insertIfNotFound(areaBlocB);
+        areaBlocB = core.findOrCreate(areaBlocB);
         areas.add(areaBlocB);
 
         AppArea areaBlocII = new AppArea("Bloc II", null, initData.areaType_bloc, areaEniso);
-        areaBlocII = core.insertIfNotFound(areaBlocII);
+        areaBlocII = core.findOrCreate(areaBlocII);
         areas.add(areaBlocII);
         for (String s : new String[]{"II01", "II02", "II03", "II12", "II13", "II21", "II22"}) {
             AppArea salle = new AppArea(s, null, initData.areaType_salle, areaBlocII);
-            salle = core.insertIfNotFound(salle);
+            salle = core.findOrCreate(salle);
             areas.add(salle);
             salles.add(salle);
         }
@@ -210,7 +210,7 @@ public class EquipmentPlugin {
             if (eqTypeGroup == null) {
                 eqTypeGroup = new EquipmentTypeGroup();
                 eqTypeGroup.setName(eqTypeGroupName);
-                eqTypeGroup = core.insertIfNotFound(eqTypeGroup);
+                eqTypeGroup = core.findOrCreate(eqTypeGroup);
                 cached.put(eqTypeGroupName, eqTypeGroup);
             }
 
@@ -219,7 +219,7 @@ public class EquipmentPlugin {
                 eqType = new EquipmentType();
                 eqType.setTypeGroup(eqTypeGroup);
                 eqType.setName(eqTypeName);
-                eqType = core.insertIfNotFound(eqType);
+                eqType = core.findOrCreate(eqType);
                 cached.put(eqTypeName, eqType);
             }
 
@@ -227,7 +227,7 @@ public class EquipmentPlugin {
             if (eqBrand == null) {
                 eqBrand = new EquipmentBrand();
                 eqBrand.setName(eqBrandName);
-                eqBrand = core.insertIfNotFound(eqBrand);
+                eqBrand = core.findOrCreate(eqBrand);
                 cached.put(eqBrandName, eqBrand);
             }
 
@@ -236,7 +236,7 @@ public class EquipmentPlugin {
                 eqBrandLine = new EquipmentBrandLine();
                 eqBrandLine.setBrand(eqBrand);
                 eqBrandLine.setName(eqLineName);
-                eqBrandLine = core.insertIfNotFound(eqBrandLine);
+                eqBrandLine = core.findOrCreate(eqBrandLine);
                 cached.put(eqLineName, eqBrandLine);
             }
 
@@ -247,7 +247,7 @@ public class EquipmentPlugin {
             e.setBrandLine(eqBrandLine);
             e.setStatusType(Utils.rand(EquipmentStatusType.class));
             e.setLocation(Utils.rand(salles));
-            e = core.insertIfNotFound(e);
+            e = core.findOrCreate(e);
             int count = pu.createQueryBuilder(EquipmentProperty.class).setExpression("equipmentId=" + e.getId()).getEntityList().size();
             if (count == 0) {
                 for (String nnn : new String[]{"Color", "Width", "Height"}) {

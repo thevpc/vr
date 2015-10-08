@@ -21,11 +21,22 @@ and open the template in the editor.
         <ui:composition template="/templates/template.xhtml">
             <ui:define name="content">
                 <h:form id="listForm" enctype="multipart/form-data" >
+                    <p:messages showDetail="false"/>
+                    <p:confirmDialog message="Are you sure, you want to delete ?"  header="Initiating deleting process"  widgetVar="confirmationDelete">  
+                        <p:commandButton value="Yes Sure"  onclick="PF('confirmationDelete').hide();
+                                processOnDeleteCurrent();"/>
+                        <p:commandButton value="Not Yet" onclick="PF('confirmationDelete').hide()" type="button" />   
+                    </p:confirmDialog>
+
+                    <div class="row">
                     <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Refresh')}" style="margin-bottom: 20px" value="Rafr." icon="fa-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFolder')}" style="margin-bottom: 20px" value="Nouv Rep." icon="fa-folder-o" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFile')}" style="margin-bottom: 20px" value="Nouv Fichier." icon="fa-file-o" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Remove')}" style="margin-bottom: 20px" value="Suppr." icon="fa-remove" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
-                    <p:fileUpload rendered="#{documentsCtrl.isEnabledButton('upload')}" multiple="true" 
+                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Save')}" style="margin-bottom: 20px" value="Enr." icon="fa-save" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onSave}"  update=":listForm"/>
+                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFolder')}" style="margin-bottom: 20px" value="Nouv Rep." icon="fa-folder-o" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onNewFolder}"  update=":listForm"/>
+                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFile')}" style="margin-bottom: 20px" value="Nouv Fichier." icon="fa-file-o" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onNewFile}"  update=":listForm"/>
+                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Upload')}" style="margin-bottom: 20px" value="Upl." icon="fa-cloud-upload" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onUpload}"  update=":listForm"/>
+                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Remove')}" style="margin-bottom: 20px" value="Suppr." icon="fa-remove" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"  onclick="PF('confirmationDelete').show();" />
+                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Cancel')}" style="margin-bottom: 20px" value="Ann." icon="fa-arrow-left" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onCancel}"  update=":listForm"/>
+                    <p:fileUpload rendered="#{documentsCtrl.model.area.equals('Upload')}" multiple="true" 
                                   fileUploadListener="#{documentsCtrl.handleNewFile}" 
                                   dragDropSupport="true"
                                   label="ajouter fichiers" 
@@ -34,8 +45,14 @@ and open the template in the editor.
                                   skinSimple="true"
                                   uploadLabel="Téléverser"
                                   cancelLabel="Annuler"
+                                  update=":listForm"
                                   />
+                    </div>
                     <div class="row">
+                        <p:panel id="newFilePanel" rendered="#{documentsCtrl.model.area.equals('NewFile') or documentsCtrl.model.area.equals('NewFolder')}" style="border-style: none">
+                            <p:outputLabel value="Intitulé"/>
+                            <p:inputText value="#{documentsCtrl.model.newName}"/>
+                        </p:panel>
                         <p:dataTable var="i" value="#{documentsCtrl.model.files}" class="table table-bordered table-hover"
                                      paginatorAlwaysVisible="false"
                                      paginator="true"
@@ -45,7 +62,7 @@ and open the template in the editor.
                                      rowsPerPageTemplate="20,50,100,200,1000"
                                      >
                             <p:column headerText="" width="60">
-                                <p:selectBooleanCheckbox value="#{i.selected}" styleClass="vr-icon-prefix-#{i.css}" />
+                                <p:selectBooleanCheckbox value="#{i.selected}" disabled="#{!documentsCtrl.isEnabledButton('SelectFile')}" styleClass="vr-icon-prefix-#{i.css}" />
                             </p:column>
                             <p:column headerText="#{documentsCtrl.model.current.file.path}">
                                 <p:commandLink value="#{i.name}" 
@@ -55,10 +72,10 @@ and open the template in the editor.
                                                update=":listForm"
                                                />
                                 <!--<h:outputText value="# {i.name}" rendered="# {! i.file.directory}"/>-->
-                                <p:commandLink rendered="#{!i.file.directory and documentsCtrl.isEnabledButton('Download')}" value="#{i.name}" ajax="false">
+                                <p:commandLink rendered="#{!i.file.directory}" disabled="#{!documentsCtrl.isEnabledButton('Download',i)}" value="#{i.name}" ajax="false">
                                     <p:fileDownload value="#{documentsCtrl.getContent(i)}" />
                                 </p:commandLink>
-                                <p:outputLabel rendered="#{!i.file.directory and !documentsCtrl.isEnabledButton('Download')}" value="#{i.name}"/>
+                                <!--<p:outputLabel rendered="# {!i.file.directory and !documentsCtrl.isEnabledButton('Download',i)}" value="#{i.name}"/>-->
                             </p:column>
                             <p:column headerText="Taille" width="100">
                                 <h:outputText rendered="#{!i.file.directory}" value="#{i.file.length()}" converter="fileSizeConverter"/>
@@ -70,6 +87,8 @@ and open the template in the editor.
                             </p:column>
                         </p:dataTable>
                     </div>
+                    <p:remoteCommand name="processOnDeleteCurrent" process="@form" update=":listForm " action="#{documentsCtrl.onRemove()}"/>
+
                 </h:form>
             </ui:define>
 

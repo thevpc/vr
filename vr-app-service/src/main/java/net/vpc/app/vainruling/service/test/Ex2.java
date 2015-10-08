@@ -1,27 +1,18 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package net.vpc.app.vainruling.service;
-
+package net.vpc.app.vainruling.service.test;
 import java.util.logging.Level;
-import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.core.service.LoginService;
-
-/**
- *
- * @author vpc
- */
-public class Standalone {
-
+import net.vpc.app.vainruling.plugins.filesystem.service.VrFS;
+import net.vpc.vfs.VirtualFileSystem;
+public class Ex2 {
     public static void main(String[] args) {
-
         net.vpc.common.utils.LogUtils.configure(Level.FINE, "net.vpc");
         VrApp.runStandalone(args);
         VrApp.getBean(UserSession.class).setSessionId("custom");
-        VrApp.getBean(LoginService.class).login(CorePlugin.USER_ADMIN, "admin");
+        VrApp.getBean(LoginService.class).login("aref.meddeb", "aref1243");
+        VrFS f=new VrFS();
+        VirtualFileSystem vfs2 = f.subfs("/home/vpc/vfs");
+        vfs2.mkdir("/test");
     }
 }

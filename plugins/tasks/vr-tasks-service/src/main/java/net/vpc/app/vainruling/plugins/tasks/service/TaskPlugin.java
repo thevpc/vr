@@ -498,8 +498,8 @@ public class TaskPlugin {
         d.laboActions = new TodoList();
         d.laboActions.setName(TodoList.LABO_ACTION);
         d.laboActions.setSystemList(true);
-        d.laboActions.setRespProfile(core.findUserProfile("Technician"));
-        d.laboActions = core.insertIfNotFound(d.laboActions);
+        d.laboActions.setRespProfile(core.findProfile("Technician"));
+        d.laboActions = core.findOrCreate(d.laboActions);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         {
             TodoCategory s = new TodoCategory();
@@ -529,8 +529,8 @@ public class TaskPlugin {
         d.laboTickets = new TodoList();
         d.laboTickets.setName(TodoList.LABO_TICKET);
         d.laboTickets.setSystemList(true);
-        d.laboTickets.setRespProfile(core.findUserProfile("Technician"));
-        d.laboTickets = core.insertIfNotFound(d.laboTickets);
+        d.laboTickets.setRespProfile(core.findProfile("Technician"));
+        d.laboTickets = core.findOrCreate(d.laboTickets);
         {
             TodoCategory s = new TodoCategory();
             s.setName("Divers");
@@ -559,7 +559,7 @@ public class TaskPlugin {
     @InstallDemo
     public void installDemoService() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        final AppUser admin = core.findUser("admin");
+        final AppUser admin = core.findUser(CorePlugin.USER_ADMIN);
         TodoList laboActionsList = (TodoList) pu.findByMainField(TodoList.class, TodoList.LABO_ACTION);
         TodoList laboTicketsList = (TodoList) pu.findByMainField(TodoList.class, TodoList.LABO_TICKET);
 
