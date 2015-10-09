@@ -384,6 +384,7 @@ public class CorePlugin {
         d.admin.setPassword("admin");
         d.admin.setType(d.adminType);
         d.admin.setContact(adminContact);
+        d.admin.setEnabled(true);
         d.admin = findOrCreate(d.admin);
         if (d.admin == uu) {
             pu.persist(new AppUserProfileBinding(d.admin, d.adminProfile));

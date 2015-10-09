@@ -157,7 +157,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (modules == null) {
             modules = findCourseAssignments(teacherId, null, includeIntent, cache);
             if (modules == null) {
-                log.severe("No assignements found for teacherId=" + teacherId+" ("+teacher+")");
+                log.severe("No assignements found for teacherId=" + teacherId + " (" + teacher + ")");
             }
         }
         TeacherStat teacher_stat = new TeacherStat();
@@ -173,7 +173,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (findTeacherSemestrialLoads == null) {
             findTeacherSemestrialLoads = cache.getAcademicTeacherSemestrialLoadByTeacherIdMap().get(teacherId);
             if (findTeacherSemestrialLoads == null) {
-                log.severe("reacherSemestrialLoads not found for teacherId=" + teacherId+" ("+teacher+")");
+                log.severe("reacherSemestrialLoads not found for teacherId=" + teacherId + " (" + teacher + ")");
                 findTeacherSemestrialLoads = new ArrayList<>();
             }
         }
@@ -1510,7 +1510,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public AcademicTeacher findTeacher(String t) {
         return (AcademicTeacher) UPA.getPersistenceUnit().createQuery("Select u from AcademicTeacher u where u.contact.fullName=:name").setParameter("name", t).getEntity();
     }
-    
+
     public AcademicStudent findStudent(String t) {
         return (AcademicStudent) UPA.getPersistenceUnit().createQuery("Select u from AcademicStudent u where u.contact.fullName=:name").setParameter("name", t).getEntity();
     }
@@ -2299,6 +2299,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             u.setPassword(academicTeacher.getContact().getFirstName().toLowerCase() + "1243");
             u.setType(teacherType);
             u.setDepartment(academicTeacher.getDepartment());
+            u.setEnabled(true);
             UPA.getPersistenceUnit().persist(u);
         } else {
             u.setContact(academicTeacher.getContact());
@@ -2325,6 +2326,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             u.setPassword(academicStudent.getContact().getFirstName().toLowerCase() + "7788");
             u.setType(studentType);
             u.setDepartment(academicStudent.getDepartment());
+            u.setEnabled(true);
             UPA.getPersistenceUnit().persist(u);
         } else {
             u.setContact(academicStudent.getContact());
