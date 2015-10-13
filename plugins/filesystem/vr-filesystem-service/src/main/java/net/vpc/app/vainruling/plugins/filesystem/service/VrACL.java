@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.impl.util.Strings;
 import net.vpc.vfs.VFile;
 import net.vpc.vfs.VFileType;
@@ -25,9 +24,10 @@ import net.vpc.vfs.impl.VirtualFileACL;
  */
 public class VrACL implements SerializableVirtualFileACL {
 
-    Properties p;
-    String path;
-    VrFS outer;
+    private static final Logger log = Logger.getLogger(VrACL.class.getName());
+    private Properties p;
+    private String path;
+    private VrFS outer;
 
     public VrACL(String path, Properties p, VrFS outer) {
         this.outer = outer;
@@ -192,10 +192,15 @@ public class VrACL implements SerializableVirtualFileACL {
     }
 
     protected void setACLProperty(String property, String value) {
-        if (VrApp.getBean(CorePlugin.class).isActualAdmin()
-                || getOwner().equals(VrApp.getBean(CorePlugin.class).getActualLogin())) {
-            set(property, value);
-            outer.storeACL(path, this);
+        try {
+            if (VrApp.getBean(CorePlugin.class).isActualAdmin()
+                    || getOwner().equals(VrApp.getBean(CorePlugin.class).getActualLogin())) {
+                set(property, value);
+                outer.storeACL(path, this);
+            }
+        } catch (Exception e) {
+            log.log(Level.FINER, "Error", e);
+            //ignore
         }
     }
 
