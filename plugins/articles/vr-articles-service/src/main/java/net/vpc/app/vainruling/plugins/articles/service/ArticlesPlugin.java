@@ -72,7 +72,8 @@ public class ArticlesPlugin {
     }
 
     public List<ArticlesItem> findArticlesByUserAndCategory(String login, String disposition) {
-        List<ArticlesItem> all = UPA.getPersistenceUnit().createQuery("Select u from ArticlesItem u where "
+        List<ArticlesItem> all = UPA.getPersistenceUnit().createQuery(
+                "Select u from ArticlesItem u where "
                 + " u.disposition.name=:disposition"
                 + " and u.deleted=false"
                 + " and u.archived=false"

@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.plugins.academic.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -261,8 +260,8 @@ public class XlsxLoadImporter {
         }
         long end = System.currentTimeMillis();
         if (count > 0) {
-            trace.trace("importTeachingLoad", "data file " + file.getPath() + " imported in " + Duration.ofMillis(end - start), null, getClass().getSimpleName(), Level.INFO);
-            System.out.println("data file " + file.getPath() + " imported in " + Duration.ofMillis(end - start));
+            trace.trace("importTeachingLoad", "data file " + file.getPath() + " imported in " + Chronometer.formatPeriod(end - start), null, getClass().getSimpleName(), Level.INFO);
+            System.out.println("data file " + file.getPath() + " imported in " + Chronometer.formatPeriod(end - start));
         } else {
             trace.trace("importTeachingLoad", "ignored data file " + file.getPath(), null, getClass().getSimpleName(), Level.INFO);
             System.out.println("ignored data file " + file.getPath());
