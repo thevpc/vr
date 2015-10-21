@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.plugins.articles.service.model;
 import java.sql.Timestamp;
 import net.vpc.app.vainruling.api.model.AppUser;
 import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.upa.AccessLevel;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
@@ -61,7 +62,10 @@ public class ArticlesItem {
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private boolean important;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Field(modifiers = UserFieldModifier.SUMMARY,
+            persistAccessLevel = AccessLevel.PROTECTED,
+            updateAccessLevel = AccessLevel.PROTECTED
+    )
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "SourceAndDestination"))
     private AppUser sender;
@@ -69,13 +73,20 @@ public class ArticlesItem {
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private String recipientProfiles;
 
+    @Field(modifiers = UserFieldModifier.SUMMARY,
+            readAccessLevel = AccessLevel.PROTECTED
+    )
     private String filterExpression;
 
+    @Field(modifiers = UserFieldModifier.SUMMARY,
+            readAccessLevel = AccessLevel.PROTECTED
+    )
     private EmailType emailType = EmailType.TOEACH;
 
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "TimeAndLayout"))
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Field(modifiers = UserFieldModifier.SUMMARY
+    )
     private DateTime sendTime;
 
     @Field(modifiers = UserFieldModifier.SUMMARY)

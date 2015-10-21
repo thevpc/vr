@@ -13,7 +13,6 @@ import net.vpc.app.vainruling.api.model.AppTrace;
 import net.vpc.upa.Entity;
 import net.vpc.upa.EntityModifier;
 import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.Record;
 import net.vpc.upa.callbacks.EntityListenerAdapter;
 import net.vpc.upa.callbacks.EntityListener;
 import net.vpc.upa.callbacks.PersistEvent;

@@ -9,8 +9,8 @@ import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.core.service.ActiveSessionsTracker;
-import net.vpc.app.vainruling.core.service.LoginService;
+import net.vpc.app.vainruling.api.ActiveSessionsTracker;
+import net.vpc.app.vainruling.api.LoginService;
 
 /**
  *

@@ -17,7 +17,11 @@
     <dependencies>
 
         <!-- .................................................................. -->
-       
+<!--        <dependency>
+            <groupId>net.vpc.app.vain-ruling.plugins</groupId>
+            <artifactId>vr-ezp-web</artifactId>
+            <version>1.0</version>
+        </dependency>-->
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>

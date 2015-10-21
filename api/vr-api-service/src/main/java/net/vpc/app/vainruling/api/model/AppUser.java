@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.api.model;
 
 import java.sql.Timestamp;
+import net.vpc.upa.AccessLevel;
 import net.vpc.upa.PasswordStrategyType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
@@ -40,14 +41,31 @@ public class AppUser {
     private AppDepartment department;
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     private AppUserType type;
+    
+    @Field(persistAccessLevel = AccessLevel.PRIVATE
+            ,updateAccessLevel = AccessLevel.PRIVATE
+            ,readAccessLevel = AccessLevel.PROTECTED
+    )
     private DateTime lastConnexionDate;
-    @Field(defaultValue = "0")
+    
+    @Field(defaultValue = "0"
+            ,persistAccessLevel = AccessLevel.PRIVATE
+            ,updateAccessLevel = AccessLevel.PROTECTED
+            ,readAccessLevel = AccessLevel.PROTECTED
+    )
     private long connexionCount;
-    @Field(defaultValue = "false")
+    
     private boolean deleted;
-    @Field(defaultValue = "true")
+    
+    @Field(defaultValue = "true"
+            ,persistAccessLevel = AccessLevel.PRIVATE
+            ,updateAccessLevel = AccessLevel.PROTECTED
+            ,readAccessLevel = AccessLevel.PROTECTED
+    )
     private boolean enabled;
+
     private String deletedBy;
+    
     private Timestamp deletedOn;
 
     public int getId() {

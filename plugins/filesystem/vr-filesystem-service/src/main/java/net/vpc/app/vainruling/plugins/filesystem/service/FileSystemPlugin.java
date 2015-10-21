@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author vpc
  */
-@AppPlugin(version = "1.0")
+@AppPlugin(version = "1.1")
 public class FileSystemPlugin {
 
     @Autowired
@@ -36,11 +36,13 @@ public class FileSystemPlugin {
 
     private VirtualFileSystem fileSystem;
     private String nativeFileSystemPath;
-
+    public static final String RIGHT_FILESYSTEM_WRITE="Custom.FileSystem.Write";
+    
     @Install
     public void installService() {
         VrApp.getBean(CorePlugin.class).createRight("Custom.FileSystem.RootFileSystem", "Root FileSystem Access");
         VrApp.getBean(CorePlugin.class).createRight("Custom.FileSystem.MyFileSystem", "My FileSystem Access");
+        VrApp.getBean(CorePlugin.class).createRight(RIGHT_FILESYSTEM_WRITE, "Enable Write Access for File System");
     }
 
     @Start
@@ -75,11 +77,11 @@ public class FileSystemPlugin {
             AppUserType t = u.getType();
             String typeName = t == null ? "NoType" : t.getName();
             final String path = "/Documents/ByUser/" + typeName + "/" + login;
-            getFileSystem().mkdirs(path);
             UPA.getContext().invokePrivileged(new Action<Object>() {
 
                 @Override
                 public Object run() {
+                    getFileSystem().mkdirs(path);
                     VrACL v = (VrACL) getFileSystem().getACL(path);
                     v.chown(login);
                     return null;
@@ -95,12 +97,12 @@ public class FileSystemPlugin {
         AppProfile u = core.findProfileByName(profile);
         if (u != null) {
             final String path = "/Documents/ByProfile/" + profile;
-            getFileSystem().mkdirs(path);
 
             UPA.getContext().invokePrivileged(new Action<Object>() {
 
                 @Override
                 public Object run() {
+                    getFileSystem().mkdirs(path);
                     VrACL v = (VrACL) getFileSystem().getACL(path);
                     v.grantListDirectory(profile);
                     return null;
@@ -156,8 +158,19 @@ public class FileSystemPlugin {
     public VirtualFileSystem getProfileFileSystem(String profileName) {
         AppProfile u = core.findProfileByName(profileName);
         if (u != null) {
-            String path = "/Documents/ByProfile/" + profileName;
-            getFileSystem().mkdirs(path);
+            final String path = "/Documents/ByProfile/" + profileName;
+            UPA.getContext().invokePrivileged(new Action<Object>() {
+
+                @Override
+                public Object run() {
+                    getFileSystem().mkdirs(path);
+//                    VrACL v = (VrACL) getFileSystem().getACL(path);
+//                    v.chown(login);
+                    return null;
+                }
+
+            }, null);
+
             return fileSystem.subfs(path);
         } else {
             return VFS.createEmptyFS();

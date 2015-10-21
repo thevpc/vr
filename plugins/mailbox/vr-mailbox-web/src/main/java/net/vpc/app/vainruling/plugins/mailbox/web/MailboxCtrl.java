@@ -49,6 +49,9 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     @Override
     public UCtrlData getUCtrl(String cmd) {
         Config config = VrHelper.parseJSONObject(cmd, Config.class);
+        if (config == null) {
+            config = new Config();
+        }
         if (config.folder == null) {
             config.folder = MailboxFolder.CURRENT;
         }
@@ -108,14 +111,17 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     @Override
     public List<VRMenuDef> createVRMenuDefList() {
         return Arrays.asList(
-                new VRMenuDef("Mes Messages", "/Social", "mailbox", "{folder:'CURRENT',sent:false}", "Custom.Site.Mailbox","")//, 
-//                new VRMenuDef("Messages Envoyés", "/Social", "mailbox", "{folder:'CURRENT',sent:true}", "Custom.Site.Outbox","")
+                new VRMenuDef("Mes Messages", "/Social", "mailbox", "{folder:'CURRENT',sent:false}", "Custom.Site.Mailbox", "")//, 
+        //                new VRMenuDef("Messages Envoyés", "/Social", "mailbox", "{folder:'CURRENT',sent:true}", "Custom.Site.Outbox","")
         //                , new VRMenuDef("Mes Messages Archivés", "/Social", "mailbox", "{folder:'ARCHIVED'}", "Custom.Site.Mailbox.Archived")
         );
     }
 
     @OnPageLoad
     public void onPageLoad(Config config) {
+        if (config == null) {
+            config = new Config();
+        }
         if (config.folder == null) {
             config.folder = MailboxFolder.CURRENT;
         }
@@ -248,10 +254,10 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         MailboxSent s = new MailboxSent();
         Message current = getModel().getCurrent();
         if (current != null && current.recieved) {
-            MailboxReceived r=(MailboxReceived) current.msg;
-            s.setToProfiles(""+r.getSender().getLogin()+",(("+r.getToProfiles()+")-"+r.getOwner().getLogin()+")");
+            MailboxReceived r = (MailboxReceived) current.msg;
+            s.setToProfiles("" + r.getSender().getLogin() + ",((" + r.getToProfiles() + ")-" + r.getOwner().getLogin() + ")");
             s.setCcProfiles(r.getCcProfiles());
-            s.setSubject("RE:"+r.getSubject());
+            s.setSubject("RE:" + r.getSubject());
             getModel().setNewItem(s);
             getModel().setMode(EditCtrlMode.NEW);
             getModel().setCurrent(null);

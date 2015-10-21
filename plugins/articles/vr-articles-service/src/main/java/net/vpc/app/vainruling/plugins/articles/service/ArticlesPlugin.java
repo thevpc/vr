@@ -26,6 +26,7 @@ import net.vpc.app.vainruling.api.EntityAction;
 import net.vpc.app.vainruling.api.Install;
 import net.vpc.app.vainruling.api.ProfilePatternFilter;
 import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.api.model.AppProfile;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesDisposition;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesFile;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
@@ -44,7 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author vpc
  */
-@AppPlugin(version = "1.5", dependsOn = {"mailboxPlugin", "fileSystemPlugin"})
+@AppPlugin(version = "1.7", dependsOn = {"mailboxPlugin", "fileSystemPlugin"})
 public class ArticlesPlugin {
 
     @Autowired
@@ -95,6 +96,8 @@ public class ArticlesPlugin {
 
     @Install
     public void install() {
+        core.createRight("Custom.Article.SendExternalEmail", "Send External Email");
+        core.createRight("Custom.Article.SendInternalEmail", "Send Internal Email");
         ArticlesDisposition d;
 
         for (int i = 1; i <= 7; i++) {
@@ -108,17 +111,17 @@ public class ArticlesPlugin {
         d.setName("Welcome");
         d.setDescription("Page de bienvenue");
         core.findOrCreate(d);
-        
+
         d = new ArticlesDisposition();
         d.setName("News");
         d.setDescription("Page actualités");
         core.findOrCreate(d);
-        
+
         d = new ArticlesDisposition();
         d.setName("Activities");
         d.setDescription("Page activités");
         core.findOrCreate(d);
-        
+
         {
             MailboxMessageFormat m = new MailboxMessageFormat();
             m.setName("DefaultExternalMail");
@@ -170,6 +173,24 @@ public class ArticlesPlugin {
             m.setFooterEmbeddedImage("/Config/VisualIdentity/Institution.jpg");
             core.findOrCreate(m);
         }
+        {
+            AppProfile p = new AppProfile();
+            p.setCode("Publisher");
+            p.setName("Publisher");
+            p = core.findOrCreate(p);
+            core.addProfileRight(p.getId(), "ArticleItem.DefaultEditor");
+            core.addProfileRight(p.getId(), "ArticleItem.Load");
+            core.addProfileRight(p.getId(), "ArticleItem.Navigate");
+            core.addProfileRight(p.getId(), "ArticleItem.Persist");
+            core.addProfileRight(p.getId(), "ArticleItem.Update");
+            core.addProfileRight(p.getId(), "ArticleItem.Remove");
+            core.addProfileRight(p.getId(), "ArticleFile.DefaultEditor");
+            core.addProfileRight(p.getId(), "ArticleFile.Load");
+            core.addProfileRight(p.getId(), "ArticleFile.Navigate");
+            core.addProfileRight(p.getId(), "ArticleFile.Persist");
+            core.addProfileRight(p.getId(), "ArticleFile.Update");
+            core.addProfileRight(p.getId(), "ArticleFile.Remove");
+        }
     }
 
     public MailboxMessageFormat getExternalMailTemplate() {
@@ -187,6 +208,9 @@ public class ArticlesPlugin {
     @EntityAction(entityType = ArticlesItem.class, actionLabel = "email", actionStyle = "fa-envelope-o")
     public void sendExternalMail(Object obj) {
         if (obj == null || !(obj instanceof ArticlesItem)) {
+            return;
+        }
+        if (!UPA.getPersistenceGroup().getSecurityManager().isAllowedKey("Custom.Article.SendExternalEmail")) {
             return;
         }
         ArticlesItem a = (ArticlesItem) obj;
@@ -248,6 +272,9 @@ public class ArticlesPlugin {
     @EntityAction(entityType = ArticlesItem.class, actionLabel = "inbox", actionStyle = "fa-envelope-square")
     public void sendLocalMail(Object obj) {
         if (obj == null || !(obj instanceof ArticlesItem)) {
+            return;
+        }
+        if (!UPA.getPersistenceGroup().getSecurityManager().isAllowedKey("Custom.Article.SendInternalEmail")) {
             return;
         }
         ArticlesItem a = (ArticlesItem) obj;

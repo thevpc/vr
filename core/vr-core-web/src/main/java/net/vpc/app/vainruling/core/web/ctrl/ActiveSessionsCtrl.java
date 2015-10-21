@@ -12,7 +12,7 @@ import javax.faces.bean.SessionScoped;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.api.web.UCtrl;
-import net.vpc.app.vainruling.core.service.ActiveSessionsTracker;
+import net.vpc.app.vainruling.api.ActiveSessionsTracker;
 import net.vpc.common.utils.Chronometer;
 
 /**

@@ -100,7 +100,7 @@ and open the template in the editor.
                                 <ui:repeat id="inboxList" value="#{mailboxPreviewCtrl.model.inbox}" var="i">
                                     <ui:fragment>
                                         <li>
-                                            <a href="#">
+                                            <h:commandLink action="#{vrMenuManager.gotoPage('mailbox', '')}">
                                                 <div>
                                                     <strong>#{i.from}</strong>
                                                     <span class="pull-right text-muted">
@@ -110,7 +110,7 @@ and open the template in the editor.
                                                 <div>
                                                     #{i.text}
                                                 </div>
-                                            </a>
+                                            </h:commandLink>
                                         </li>
                                         <li class="divider"></li>
                                     </ui:fragment>
@@ -119,15 +119,13 @@ and open the template in the editor.
                                     <li>
                                         <a class="text-center" href="#">
                                             <strong>Lire #{mailboxPreviewCtrl.model.unreadCount} Message(s)</strong>
-                                            <i class="fa fa-angle-right"></i>
                                         </a>
                                     </li>
                                 </ui:fragment>
                                 <ui:fragment id="inboxCount0" rendered="#{mailboxPreviewCtrl.model.inbox.size() eq 0}">
                                     <li>
-                                        <a class="text-center" style="font-size: x-small" href="#">
-                                            <strong>Aucun message non lu</strong>
-                                        </a>
+                                        <h:commandLink styleClass="text-center" style="font-size: x-small" value="Aucun message non lu"  action="#{vrMenuManager.gotoPage('mailbox', '')}">
+                                        </h:commandLink>
                                     </li>
                                 </ui:fragment>
                             </ul>

@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<!DOCTYPE MODE SYSTEM "xmode.dtd">
+<MODE>
+    <PROPS>
+        <PROPERTY NAME="lineComment" VALUE="#" />
+        <PROPERTY NAME="noTabs" VALUE="false" />
+    </PROPS>
+    <RULES ESCAPE="\" IGNORE_CASE="FALSE">
+        <!-- Variable definition -->
+        <EOL_SPAN TYPE="OPERATOR" DELEGATE="TEXT">=</EOL_SPAN>
+        <EOL_SPAN TYPE="OPERATOR" DELEGATE="TEXT">:=</EOL_SPAN>
+        <EOL_SPAN TYPE="OPERATOR" DELEGATE="TEXT">+=</EOL_SPAN>
+        <EOL_SPAN TYPE="OPERATOR" DELEGATE="TEXT">?=</EOL_SPAN>
+        <EOL_SPAN TYPE="OPERATOR" DELEGATE="TEXT">=</EOL_SPAN>
+        <!-- Rule -->
+        <EOL_SPAN TYPE="OPERATOR" DELEGATE="AFTER_TARGET">:</EOL_SPAN>
+        <EOL_SPAN TYPE="OPERATOR" DELEGATE="NOCOMMENT_TEXT">&#x9;</EOL_SPAN>
+        <!-- Directive -->
+        <EOL_SPAN TYPE="KEYWORD1" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">from</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD1" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">toeach</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD1" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">to</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD1" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">cc</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD1" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">simulate</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD1" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">datasource</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD1" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">simulate</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD1" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">object</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD1" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">property</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD1" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">attachment</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD1" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">include</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD1" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">subject</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD1" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">repeat</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD1" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">footer</EOL_SPAN>
+        
+        <EOL_SPAN TYPE="KEYWORD2" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">app.mail.user</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD2" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">app.mail.password</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD2" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">true</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD2" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">false</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD2" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">expandable</EOL_SPAN>
+        <EOL_SPAN TYPE="KEYWORD2" AT_WHITESPACE_END="TRUE" DELEGATE="TEXT">path</EOL_SPAN>
+
+
+
+
+        <!-- Normal text -->
+        <IMPORT DELEGATE="TEXT"/>
+        <!-- Keywords for a variable definition -->
+        <KEYWORDS>
+            <KEYWORD1>override</KEYWORD1>
+        </KEYWORDS>
+    </RULES>
+    <RULES SET="TEXT" ESCAPE="\" IGNORE_CASE="FALSE" DEFAULT="NULL">
+        <!-- Comment -->
+        <EOL_SPAN TYPE="COMMENT1">#</EOL_SPAN>
+        <IMPORT DELEGATE="NOCOMMENT_TEXT"/>
+    </RULES>
+    <RULES SET="NOCOMMENT_TEXT" ESCAPE="\" IGNORE_CASE="FALSE" DEFAULT="NULL">
+        <!-- $(...) variables -->
+        <SEQ TYPE="KEYWORD2">$$</SEQ>
+        <SPAN TYPE="KEYWORD2" DELEGATE="VARIABLE">
+            <BEGIN>$(</BEGIN>
+            <END>)</END>
+        </SPAN>
+        <SPAN TYPE="KEYWORD2" DELEGATE="VARIABLE">
+            <BEGIN>${</BEGIN>
+            <END>}</END>
+        </SPAN>
+        <MARK_FOLLOWING TYPE="KEYWORD2">$</MARK_FOLLOWING>
+    </RULES>
+    <RULES SET="VARIABLE" ESCAPE="\" IGNORE_CASE="FALSE">
+        <IMPORT DELEGATE="NOCOMMENT_TEXT"/>
+        <KEYWORDS>
+            <KEYWORD1>subst</KEYWORD1>
+            <KEYWORD1>addprefix</KEYWORD1>
+            <KEYWORD1>addsuffix</KEYWORD1>
+            <KEYWORD1>basename</KEYWORD1>
+            <KEYWORD1>dir</KEYWORD1>
+            <KEYWORD1>filter</KEYWORD1>
+            <KEYWORD1>filter-out</KEYWORD1>
+            <KEYWORD1>findstring</KEYWORD1>
+            <KEYWORD1>firstword</KEYWORD1>
+            <KEYWORD1>foreach</KEYWORD1>
+            <KEYWORD1>join</KEYWORD1>
+            <KEYWORD1>notdir</KEYWORD1>
+            <KEYWORD1>origin</KEYWORD1>
+            <KEYWORD1>patsubst</KEYWORD1>
+            <KEYWORD1>shell</KEYWORD1>
+            <KEYWORD1>sort</KEYWORD1>
+            <KEYWORD1>strip</KEYWORD1>
+            <KEYWORD1>suffix</KEYWORD1>
+            <KEYWORD1>wildcard</KEYWORD1>
+            <KEYWORD1>word</KEYWORD1>
+            <KEYWORD1>words</KEYWORD1>
+            <KEYWORD1>error</KEYWORD1>
+            <KEYWORD1>warning</KEYWORD1>
+            <KEYWORD1>eval</KEYWORD1>
+        </KEYWORDS>
+    </RULES>
+    <RULES SET="AFTER_TARGET" ESCAPE="\" IGNORE_CASE="FALSE">
+        <!-- Target(pattern) specific variable definition -->
+        <EOL_SPAN TYPE="OPERATOR" DELEGATE="TEXT">:=</EOL_SPAN>
+        <EOL_SPAN TYPE="OPERATOR" DELEGATE="TEXT">+=</EOL_SPAN>
+        <EOL_SPAN TYPE="OPERATOR" DELEGATE="TEXT">?=</EOL_SPAN>
+        <EOL_SPAN TYPE="OPERATOR" DELEGATE="TEXT">=</EOL_SPAN>
+        <!-- Static pattern rule -->
+        <EOL_SPAN TYPE="OPERATOR" DELEGATE="TEXT">:</EOL_SPAN>
+        <IMPORT DELEGATE="TEXT"/>
+        <!-- Keywords for a variable definition -->
+        <KEYWORDS>
+            <KEYWORD1>override</KEYWORD1>
+            <KEYWORD1>export</KEYWORD1>
+        </KEYWORDS>
+    </RULES>
+</MODE> 

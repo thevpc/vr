@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.service.model.content;
 
 import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.upa.AccessLevel;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
@@ -72,7 +73,10 @@ public class AcademicTeacherCV {
     private String socialURL3;
     private String socialURL4;
     private String rssURL;
-    @Field(defaultValue = "0",modifiers = UserFieldModifier.SUMMARY)
+    @Field(defaultValue = "0",modifiers = {UserFieldModifier.SUMMARY}
+            ,updateAccessLevel = AccessLevel.PROTECTED
+            ,readAccessLevel = AccessLevel.PUBLIC
+    )
     private long viewsCounter;
 
     public AcademicTeacher getTeacher() {

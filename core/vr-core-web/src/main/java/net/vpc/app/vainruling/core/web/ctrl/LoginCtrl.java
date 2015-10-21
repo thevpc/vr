@@ -15,7 +15,7 @@ import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.api.web.UCtrl;
 import net.vpc.app.vainruling.api.web.VRWebHelper;
 import net.vpc.app.vainruling.api.web.VrMenuManager;
-import net.vpc.app.vainruling.core.service.LoginService;
+import net.vpc.app.vainruling.api.LoginService;
 import net.vpc.common.jsf.FacesUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 

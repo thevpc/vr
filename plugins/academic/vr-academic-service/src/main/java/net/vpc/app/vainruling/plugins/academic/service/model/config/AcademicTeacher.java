@@ -12,6 +12,7 @@ import net.vpc.app.vainruling.api.model.AppUser;
 import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 import net.vpc.app.vainruling.api.model.AppPeriod;
+import net.vpc.upa.AccessLevel;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
@@ -19,7 +20,6 @@ import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
 import net.vpc.upa.config.Property;
 import net.vpc.upa.config.Sequence;
-import net.vpc.upa.impl.util.Strings;
 
 /**
  *
@@ -42,6 +42,7 @@ public class AcademicTeacher {
 
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private AcademicTeacherSituation situation;
+    @Field(modifiers = UserFieldModifier.SUMMARY)
     private AppDepartment department;
     @Field(defaultValue = "true", modifiers = {UserFieldModifier.SUMMARY})
     @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
@@ -51,9 +52,21 @@ public class AcademicTeacher {
     private String uniqueCode;
     private String officeLocationNumber;
     private String officePhoneNumber;
-    @Field(defaultValue = "false")
+    @Field(
+            defaultValue = "false",
+            updateAccessLevel = AccessLevel.PROTECTED, 
+            readAccessLevel = AccessLevel.PROTECTED
+    )
     private boolean deleted;
+    @Field(
+            updateAccessLevel = AccessLevel.PROTECTED, 
+            readAccessLevel = AccessLevel.PROTECTED
+    )
     private String deletedBy;
+    @Field(
+            updateAccessLevel = AccessLevel.PROTECTED, 
+            readAccessLevel = AccessLevel.PROTECTED
+    )
     private Timestamp deletedOn;
 
     public int getId() {
@@ -186,7 +199,7 @@ public class AcademicTeacher {
 
     @Override
     public String toString() {
-        if (contact!=null) {
+        if (contact != null) {
             return contact.toString();
         }
         return "AcademicTeacher{" + "id=" + id + ", contact=" + contact.toString() + '}';

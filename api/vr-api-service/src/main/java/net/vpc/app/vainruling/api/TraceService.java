@@ -21,7 +21,6 @@ import net.vpc.upa.InvokeContext;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.Record;
 import net.vpc.upa.UPA;
-import net.vpc.upa.types.StringType;
 import org.springframework.stereotype.Service;
 
 /**

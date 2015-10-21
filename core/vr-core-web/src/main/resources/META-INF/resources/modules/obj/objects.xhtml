@@ -59,7 +59,7 @@ and open the template in the editor.
                             <p:commandButton value="pdf" rendered="#{objCtrl.isEnabledButton('ExportPdf')}" icon="fa-file-pdf-o"  styleClass="ui-ribbon-bigbutton vr-icon-aws" update="buttons :listForm :itemForm :pageTitleForm"/>
                             <p:commandButton value="Auth." rendered="#{objCtrl.isEnabledButton('Authorization')}" icon="fa-user-secret" styleClass="ui-ribbon-bigbutton vr-icon-aws" type="button"  update="buttons :listForm :itemForm :pageTitleForm"/>
                             <p:commandButton value="Trace" rendered="#{objCtrl.isEnabledButton('Log')}" icon="fa-backward" styleClass="ui-ribbon-bigbutton vr-icon-aws" type="button" update="buttons :listForm :itemForm :itemForm :pageTitleForm"/>  
-                            <p:commandButton value="Back" icon="fa-arrow-left" 
+                            <p:commandButton value="Retour" icon="fa-arrow-left" 
                                              action="#{vrMenuManager.goBack}" 
                                              ajax="false" styleClass="ui-ribbon-bigbutton vr-icon-aws"/>  
 
@@ -131,7 +131,9 @@ and open the template in the editor.
                                                                             <p:columnToggler datasource="cars" trigger="toggler" />
                                                                         </f:facet>-->
                                     <p:column headerText="" style="width: 60px;">
-                                        <p:selectBooleanCheckbox disabled="#{!(i.selectable)}" value="#{i.selected}" >
+                                        <p:selectBooleanCheckbox 
+                                            rendered="#{objCtrl.isEnabledButton('Select')}"
+                                            disabled="#{!(i.selectable)}" value="#{i.selected}" >
                                         </p:selectBooleanCheckbox>
                                         <p:commandLink 
                                             disabled="#{!(i.read)}"

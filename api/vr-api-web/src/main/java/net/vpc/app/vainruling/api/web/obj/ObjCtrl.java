@@ -90,6 +90,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     private I18n i18n;
     private final List<ColumnView> columns = new ArrayList<>();
     private final List<PropertyView> properties = new ArrayList<>();
+    private final Map<String, Boolean> enabledButtons = new HashMap<>();
     private DynaFormModel dynModel = new DynaFormModel();
     private static final Logger log = Logger.getLogger(ObjCtrl.class.getName());
 
@@ -170,9 +171,22 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public boolean isEnabledButton(String buttonId) {
+        Boolean v = enabledButtons.get(buttonId);
+        if (v == null) {
+            v = isEnabledButtonImpl(buttonId);
+            enabledButtons.put(buttonId, v);
+        }
+        return v.booleanValue();
+    }
+
+    public boolean isEnabledButtonImpl(String buttonId) {
         try {
             switch (getModel().getMode()) {
                 case LIST: {
+                    if ("Select".equals(buttonId)) {
+                        return isEnabledButton("Remove")
+                                || isEnabledButton("Archive");
+                    }
                     if ("Refresh".equals(buttonId)) {
                         return true;
                     }
@@ -246,12 +260,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     @Override
     protected void updateMode(EditCtrlMode m) {
+        enabledButtons.clear();
         super.updateMode(m);
         updateModelFromConfig();
         updateView();
     }
 
     public void setEntityName(String entityName) {
+        enabledButtons.clear();
         try {
             UPA.getPersistenceUnit().getEntity(entityName);
             getModel().setEntityName(entityName);
@@ -274,6 +290,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public void onSaveCurrent() {
+        enabledButtons.clear();
         try {
             currentViewToModel();
             switch (getModel().getMode()) {
@@ -299,6 +316,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public void onDeleteCurrent() {
+        enabledButtons.clear();
         int count = 0;
         try {
             if (getModel().getMode() == EditCtrlMode.LIST) {
@@ -329,6 +347,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public void onArchiveCurrent() {
+        enabledButtons.clear();
         int count = 0;
         try {
             if (getModel().getMode() == EditCtrlMode.LIST) {
@@ -360,6 +379,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     @OnPageLoad
     @Override
     public void reloadPage(String cmd) {
+        enabledButtons.clear();
         try {
             Config cfg = VrHelper.parseJSONObject(cmd, Config.class);
             getModel().setConfig(cfg);
@@ -551,6 +571,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     @Override
     protected ObjRow delegated_newInstance() {
+        enabledButtons.clear();
         try {
             if (getModel().getEntityName() != null) {
                 Entity e = UPA.getPersistenceUnit().getEntity(getModel().getEntityName());
@@ -581,6 +602,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public void updateModelFromConfig() {
+        enabledButtons.clear();
         Config cfg = VrHelper.parseJSONObject(getModel().getCmd(), Config.class);
         Object o = getModel().getCurrentObj();
         Entity e = getEntity();
@@ -675,6 +697,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public void updateView() {
+        enabledButtons.clear();
         try {
             //reset table state
             try {
@@ -872,6 +895,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     @Override
     public void onSelectCurrent() {
+        enabledButtons.clear();
         try {
             super.onSelectCurrent();
             currentModelToView();
@@ -889,6 +913,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public void onCancelCurrent() {
+        enabledButtons.clear();
         super.onCancelCurrent();
         VrMenuManager menu = VrApp.getBean(VrMenuManager.class);
         if (getModel().getCurrent() != null) {
@@ -935,6 +960,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public void onAction(String actionKey) {
+        enabledButtons.clear();
         if ("Persist".equals(actionKey)) {
             onNew();
         } else if ("Save".equals(actionKey)) {
@@ -954,6 +980,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public void updateAllFormulas() {
+        enabledButtons.clear();
         UPA.getPersistenceUnit().updateFormulas();
     }
 }

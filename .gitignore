@@ -54,3 +54,10 @@
 /vr-app-service/target/
 /vr-app-web/target/
 /vr-app-web-maintenance/target/
+/vr-app-service-test/target/
+/plugins/dev-toolbox/vr-mailbox-service/target/
+/plugins/dev-toolbox/vr-mailbox-web/target/
+/plugins/dev-toolbox/vr-dev-toolbox-service/target/
+/plugins/dev-toolbox/vr-dev-toolbox-web/target/
+/plugins/sample-plugin/vr-sample-plugin-service/target/
+/plugins/sample-plugin/vr-sample-plugin-web/target/

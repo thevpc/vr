@@ -12,14 +12,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.api.util.VrHelper;
@@ -33,6 +30,7 @@ import net.vpc.app.vainruling.api.web.VRMenuDefFactory;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.streams.PathInfo;
+import net.vpc.upa.UPA;
 import net.vpc.upa.impl.util.Strings;
 import net.vpc.vfs.VFS;
 import net.vpc.vfs.VFile;
@@ -467,20 +465,24 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         }
         if ("NewFile".equals(buttonId)) {
             return getModel().getArea().isEmpty()
+                    && UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(FileSystemPlugin.RIGHT_FILESYSTEM_WRITE)
                     && getModel().getCurrent().getFile().getACL().isAllowedCreateChild(VFileType.FILE, null);
         }
         if ("NewFolder".equals(buttonId)) {
             return getModel().getArea().isEmpty()
+                    && UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(FileSystemPlugin.RIGHT_FILESYSTEM_WRITE)
                     && getModel().getCurrent().getFile().getACL().isAllowedCreateChild(VFileType.DIRECTORY, null);
         }
         if ("Upload".equals(buttonId)) {
             VirtualFileACL acl = getModel().getCurrent().getFile().getACL();
             return getModel().getArea().isEmpty()
+                    && UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(FileSystemPlugin.RIGHT_FILESYSTEM_WRITE)
                     && (acl.isAllowedCreateChild(VFileType.FILE, null)
                     || acl.isAllowedUpdateChild(VFileType.FILE, null));
         }
         if ("Remove".equals(buttonId)) {
             return getModel().getArea().isEmpty()
+                    && UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(FileSystemPlugin.RIGHT_FILESYSTEM_WRITE)
                     && getModel().getCurrent().getFile().getACL().isAllowedRemoveChild(null, null);
         }
         if ("Save".equals(buttonId)) {
