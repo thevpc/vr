@@ -19,7 +19,7 @@ import net.vpc.upa.config.Sequence;
  * @author vpc
  */
 @Entity(listOrder = "name")
-@Path("Admin/Config")
+@Path("Contact")
 public class AppCompany {
 
     @Id

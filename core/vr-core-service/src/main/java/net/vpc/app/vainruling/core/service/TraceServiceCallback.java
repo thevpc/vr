@@ -20,7 +20,7 @@ import net.vpc.upa.callbacks.UpdateEvent;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.expressions.Expression;
 import net.vpc.upa.expressions.Var;
-import net.vpc.upa.impl.uql.expression.KeyEnumerationExpression;
+import net.vpc.upa.expressions.IdEnumerationExpression;
 
 /**
  *
@@ -77,9 +77,9 @@ public class TraceServiceCallback
             return;
         }
         Expression expr = event.getFilterExpression();
-        if (expr instanceof KeyEnumerationExpression) {
-            KeyEnumerationExpression k = (KeyEnumerationExpression) expr;
-            expr = new KeyEnumerationExpression(k.getKeys(), new Var(entity.getName()));
+        if (expr instanceof IdEnumerationExpression) {
+            IdEnumerationExpression k = (IdEnumerationExpression) expr;
+            expr = new IdEnumerationExpression(k.getIds(), new Var(entity.getName()));
         }
         List old = pu.createQueryBuilder(entity.getName()).setExpression(expr).getEntityList();
         old.size();//force load!

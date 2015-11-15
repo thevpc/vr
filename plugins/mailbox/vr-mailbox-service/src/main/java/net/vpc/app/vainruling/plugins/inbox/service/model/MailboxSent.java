@@ -29,36 +29,51 @@ public class MailboxSent {
     @Id
     @Sequence
     private int id;
+
     @Field(modifiers = UserFieldModifier.MAIN)
     private String subject;
+
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA))
     @Field(max = "30000")
     private String content;
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Flags"))
     private boolean read;
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private boolean important;
+
     private boolean deleteOnRead;
+
+    @Field(modifiers = UserFieldModifier.SUMMARY)
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "SourceAndDestination"))
     private AppUser sender;
 
     @Field(defaultValue = "false", modifiers = UserFieldModifier.SUMMARY)
     private boolean templateMessage;
-    @Field(defaultValue = "false")
+
+    @Field(defaultValue = "false",modifiers = UserFieldModifier.SUMMARY)
     private boolean externalMessage;
 
+    @Field(modifiers = UserFieldModifier.SUMMARY)
     private String toProfiles;
+
+    @Field(modifiers = UserFieldModifier.SUMMARY)
     private String ccProfiles;
+
     private String bccProfiles;
+
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Time"))
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private DateTime sendTime;
+
     private DateTime readTime;
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private String category;
 

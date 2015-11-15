@@ -3,40 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.academic.web;
+package net.vpc.app.vainruling.plugins.academic.web.planning;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.web.OnPageLoad;
-import net.vpc.app.vainruling.api.web.UCtrl;
-import net.vpc.app.vainruling.api.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningHour;
-import net.vpc.upa.impl.util.Strings;
+import net.vpc.common.strings.StringUtils;
 
 /**
  *
  * @author vpc
  */
-@UCtrl(
-        breadcrumb = {
-            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "Mon Emploi du Temps",
-        url = "modules/academic/myplanning",
-        menu = "/Education"
-//,securityKey = "Custom.Education.MyCourseLoad"
-)
-@ManagedBean
-public class MyPlanningCtrl {
+public class AbstractPlanningCtrl {
 
-    private static final String[] colorsCourse = new String[]{
+    public static final String[] colorsCourse = new String[]{
         "#DDE6CB",
         "#C0F7BA",
         "aliceblue",
@@ -47,7 +30,7 @@ public class MyPlanningCtrl {
         "beige",
         "#FDD5E0"
     };
-    private static final String[] colorsClass = new String[]{
+    public static final String[] colorsClass = new String[]{
         "mediumseagreen",
         "#3FB3B3",
         "#B563FF",
@@ -56,73 +39,31 @@ public class MyPlanningCtrl {
         "deeppink"
     };
 
-    public static class Model {
-
-        List<PlanningDay> planning = new ArrayList<>();
-        List<String> courseNames = new ArrayList<>();
-        List<String> classNames = new ArrayList<>();
-
-        public List<PlanningDay> getPlanning() {
-            return planning;
-        }
-
-        public void setPlanning(List<PlanningDay> planning) {
-            this.planning = planning;
-        }
-
-        public List<String> getCourseNames() {
-            return courseNames;
-        }
-
-        public void setCourseNames(List<String> courseNames) {
-            this.courseNames = courseNames;
-        }
-
-        public List<String> getClassNames() {
-            return classNames;
-        }
-
-        public void setClassNames(List<String> classNames) {
-            this.classNames = classNames;
-        }
-
-    }
-    private Model model = new Model();
-
-    public MyPlanningCtrl() {
-    }
+    protected Model model;
 
     public Model getModel() {
         return model;
     }
 
-    @OnPageLoad
-    public void onPageLoad() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = a.getCurrentTeacher();
-        List<PlanningDay> plannings = a.loadTeacherPlanning(t == null ? -1 : t.getId());
-        if(plannings==null){
-            plannings=new ArrayList<>();
+    public void updateModel(List<PlanningDay> plannings) {
+        if (plannings == null) {
+            plannings = new ArrayList<>();
         }
         getModel().setPlanning(plannings);
         Set<String> courses = new HashSet<>();
         Set<String> classes = new HashSet<>();
         for (PlanningDay p : plannings) {
             for (PlanningHour h : p.getHours()) {
-                if (!Strings.isNullOrEmpty(h.getSubject())) {
+                if (!StringUtils.isEmpty(h.getSubject())) {
                     courses.add(h.getSubject().trim());
                 }
-                if (!Strings.isNullOrEmpty(h.getStudents())) {
+                if (!StringUtils.isEmpty(h.getStudents())) {
                     classes.add(h.getStudents().trim());
                 }
             }
         }
         getModel().setClassNames(new ArrayList<>(classes));
         getModel().setCourseNames(new ArrayList<>(courses));
-    }
-
-    public void onRefresh() {
-        onPageLoad();
     }
 
     public String resolveCssStyleForClass(String value) {
@@ -159,4 +100,37 @@ public class MyPlanningCtrl {
         return colorsCourse[Math.abs(getModel().getCourseNames().indexOf(value.trim())) % colorsCourse.length];
 
     }
+
+    public static class Model {
+
+        List<PlanningDay> planning = new ArrayList<>();
+        List<String> courseNames = new ArrayList<>();
+        List<String> classNames = new ArrayList<>();
+
+        public List<PlanningDay> getPlanning() {
+            return planning;
+        }
+
+        public void setPlanning(List<PlanningDay> planning) {
+            this.planning = planning;
+        }
+
+        public List<String> getCourseNames() {
+            return courseNames;
+        }
+
+        public void setCourseNames(List<String> courseNames) {
+            this.courseNames = courseNames;
+        }
+
+        public List<String> getClassNames() {
+            return classNames;
+        }
+
+        public void setClassNames(List<String> classNames) {
+            this.classNames = classNames;
+        }
+
+    }
+
 }

@@ -78,10 +78,12 @@ public class AppTrace {
     )
     private String data;
 
+    private String ip;
+    
     public AppTrace() {
     }
 
-    public AppTrace(String message, String data, String module, Timestamp time, String user, int userId, int levelId, String level, String action, String objectName, String objectId) {
+    public AppTrace(String message, String data, String module, Timestamp time, String user, int userId, int levelId, String level, String action, String objectName, String objectId,String ip) {
         this.message = message;
         this.data = data;
         this.module = module;
@@ -93,6 +95,7 @@ public class AppTrace {
         this.action = action;
         this.objectName = objectName;
         this.objectId = objectId;
+        this.ip = ip;
     }
 
     public String getObjectName() {
@@ -190,5 +193,14 @@ public class AppTrace {
     public void setAction(String action) {
         this.action = action;
     }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+    
 
 }

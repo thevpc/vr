@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.faces.model.SelectItem;
+import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.api.i18n.I18n;
 import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.app.vainruling.api.web.obj.PropertyView;
 import net.vpc.app.vainruling.api.web.obj.PropertyViewFactory;
@@ -56,8 +58,10 @@ public class EnumTypePropertyViewFactory implements PropertyViewFactory {
         if (dataType.isNullable()) {
             items.add(new SelectItem(null, "N/A"));
         }
+        I18n i18n = VrApp.getBean(I18n.class);
+
         for (Object value : propView.getValues()) {
-            items.add(new SelectItem(value, value.toString()));
+            items.add(new SelectItem(value, i18n.getEnum(value)));
         }
         propView.setItems(items);
         propView.setDisabled(nfo.disabled);

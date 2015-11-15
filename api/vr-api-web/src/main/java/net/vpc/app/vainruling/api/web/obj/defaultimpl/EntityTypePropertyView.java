@@ -61,10 +61,10 @@ public class EntityTypePropertyView extends FieldPropertyView {
         Field field = this.getField();
         DataType dt = field.getDataType();
         Entity me = getMasterEntity();
-        ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
-        Map<String, Object> otherValues = objCtrl.currentViewToMap();
-        List<PropertyView> updatablePropertyViews = getUpdatablePropertyViews();
-        List<PropertyView> dependentPropertyViews = getDependentPropertyViews();
+//        ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
+//        Map<String, Object> otherValues = objCtrl.currentViewToMap();
+//        List<PropertyView> updatablePropertyViews = getUpdatablePropertyViews();
+//        List<PropertyView> dependentPropertyViews = getDependentPropertyViews();
         this.setValues(getPropertyViewManager().getPropertyViewValuesProvider(field, dt).resolveValues(this, field, dt));
         List<SelectItem> items = new ArrayList<>();
         if (dt.isNullable()) {

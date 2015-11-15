@@ -269,13 +269,14 @@ and open the template in the editor.
                         <li class="dropdown">
                             <ui:fragment id="activeSessionsFragment">
                                 <div style="padding-right: 5px;">
-                                    <span class="badge vr-cnx-nbr">${activeSessionsCtrl.activeSessions.size()}</span> 
+                                    <span class="badge vr-cnx-nbr">${activeSessionsCtrl.model.sessions.size()}</span> 
                                     <!--<span class="vr-cnx-label">cnx</span>-->
                                 </div>
                             </ui:fragment>
                         </li>
                         <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" style="padding-left: 0px;">
+                                <h:outputText style="font-size: x-small;" value="#{userSession.user.contact.firstName}"/>
                                 <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-user">
@@ -383,7 +384,7 @@ and open the template in the editor.
 
                 </h:form>
                 <h:form>
-                    <p:poll interval="60" listener="#{mailboxPreviewCtrl.onRefresh}" update=":headForm" />
+                    <p:poll interval="60" listener="#{loginCtrl.onPoll}" update=":headForm" />
                 </h:form>
                 <!-- /.navbar-static-side -->
             </nav>

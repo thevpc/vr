@@ -31,39 +31,57 @@ public class MailboxReceived {
     @Id
     @Sequence
     private int id;
+    
     @Field(modifiers = UserFieldModifier.MAIN)
     private String subject;
+    
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA))
     @Field(max = "30000")
     private String content;
+    
     @Field(modifiers = UserFieldModifier.SUMMARY)
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Flags"))
     private boolean read;
+    
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private boolean important;
+    
+    @Field(modifiers = UserFieldModifier.SUMMARY)
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "SourceAndDestination"))
     private AppUser sender;
+    
+    @Field(modifiers = UserFieldModifier.SUMMARY)
     private String toProfiles;
+    
     private String ccProfiles;
+    
     private AppUser owner;
+    
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Time"))
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private DateTime sendTime;
+    
     private DateTime readTime;
+    
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private String category;
 
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
     private boolean archived;
+    
     private boolean deleted;
+    
     private String deletedBy;
+    
     private Timestamp deletedOn;
+    
     private RecipientType recipientType = RecipientType.TO;
+    
     @ManyToOne(type = RelationshipType.SHADOW_ASSOCIATION)
     private MailboxSent outboxMessage;
 

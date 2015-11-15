@@ -25,6 +25,7 @@ import javax.faces.FacesException;
 import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.core.ActionInfo;
 import net.vpc.app.vainruling.api.core.ObjManagerService;
@@ -41,8 +42,10 @@ import net.vpc.app.vainruling.api.web.ctrl.AbstractObjectCtrl;
 import net.vpc.app.vainruling.api.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.api.web.obj.defaultimpl.EntityDetailPropertyView;
 import net.vpc.common.jsf.FacesUtils;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.common.utils.Convert;
 import net.vpc.common.utils.PlatformTypes;
+import net.vpc.upa.AccessLevel;
 import net.vpc.upa.Entity;
 import net.vpc.upa.EntityBuilder;
 import net.vpc.upa.Field;
@@ -54,9 +57,9 @@ import net.vpc.upa.RelationshipType;
 import net.vpc.upa.UPA;
 import net.vpc.upa.UPASecurityManager;
 import net.vpc.upa.filters.Fields;
-import net.vpc.upa.impl.util.Strings;
 import net.vpc.upa.types.DataType;
 import net.vpc.upa.types.EntityType;
+import net.vpc.upa.types.EnumType;
 import net.vpc.upa.types.IntType;
 import net.vpc.upa.types.StringType;
 import net.vpc.upa.types.TemporalType;
@@ -386,7 +389,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             getModel().setDisabledFields(new HashSet<String>());
             if (cfg.disabledFields != null) {
                 for (String disabledField : cfg.disabledFields) {
-                    if (!Strings.isNullOrEmpty(disabledField)) {
+                    if (!StringUtils.isEmpty(disabledField)) {
                         getModel().getDisabledFields().add(disabledField);
                     }
                 }
@@ -407,7 +410,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 }
             }
             getModel().setList(filteredObjects);
-            if (cfg.id == null) {
+            if (cfg.id == null || cfg.id.trim().length() == 0) {
                 updateMode(EditCtrlMode.LIST);
                 getModel().setCurrent(null);
             } else {
@@ -440,7 +443,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     public String getRowStyle() {
         Entity p = getEntity();
         String v = p.getProperties().getString(UIConstants.Grid.ROW_STYLE);
-        if (Strings.isNullOrEmpty(v)) {
+        if (StringUtils.isEmpty(v)) {
             return v;
         }
         FacesContext fc = FacesContext.getCurrentInstance();
@@ -478,9 +481,12 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             Entity e = UPA.getPersistenceUnit().getEntity(o.getClass());
             Object v = e.getBuilder().getProperty(o, property);
             if (v != null) {
-                Entity e2 = UPA.getPersistenceUnit().findEntity(v.getClass());
-                if (e2 != null) {
-                    v = e2.getBuilder().getMainValue(v);
+                DataType d = (DataType) e.getField(property).getDataType();
+                if (d instanceof EntityType) {
+                    EntityType ed = (EntityType) d;
+                    v = ed.getRelationship().getTargetEntity().getBuilder().getMainValue(v);
+                } else if (d instanceof EnumType) {
+                    v = i18n.getEnum(v);
                 }
             }
             return v;
@@ -621,7 +627,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     } else if (t instanceof TemporalType) {
                         Date v = null;
                         boolean set = false;
-                        if (Strings.isNullOrEmpty(fieldValueString)) {
+                        if (StringUtils.isEmpty(fieldValueString)) {
                             set = true;
                         } else {
                             for (String df : new String[]{}) {
@@ -717,8 +723,16 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             Entity ot = UPA.getPersistenceUnit().getEntity(getEntityName());
             columns.clear();
             properties.clear();
-
+            boolean adm = VrApp.getBean(CorePlugin.class).isActualAdmin();
             for (Field field : ot.getFields(Fields.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY))) {
+                AccessLevel ral = field.getReadAccessLevel();
+                if (ral == AccessLevel.PRIVATE) {
+                    continue;
+                } else if (ral == AccessLevel.PROTECTED) {
+                    if (!adm) {
+                        continue;
+                    }
+                }
                 String type = UIConstants.ControlType.TEXT;
                 if (PlatformTypes.isBooleanType(field.getDataType().getPlatformType())) {
                     type = UIConstants.ControlType.CHECKBOX;
@@ -731,7 +745,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 }
                 columns.add(new ColumnView(i18n.get(field), property, propertyExpr, type));
             }
-            FomrHelper h = new FomrHelper();
+            FormHelper h = new FormHelper();
             dynModel = h.dynModel;
 
             List<OrderedPropertyView> propertyViews = new ArrayList<OrderedPropertyView>();
@@ -752,12 +766,15 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             if (getModel().getMode() == EditCtrlMode.UPDATE) {
                 boolean firstDetailRelation = true;
                 int counter = 0;
-                int maxPerLine = 4;
+                int maxPerLine = 3;
                 for (Relationship relation : ot.getRelationships()) {
                     if (relation.getTargetEntity().getName().equals(ot.getName())) {
                         if (relation.getRelationshipType() == RelationshipType.COMPOSITION) {
                             EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.ControlType.ENTITY_DETAIL, propertyViewManager);
                             details.setPrependNewLine((counter % maxPerLine) == 0);
+                            details.setAppendNewLine(false);
+                            details.setColspan(1);
+                            counter++;
                             if (firstDetailRelation) {
                                 details.setSeparatorText("Details");
                                 firstDetailRelation = false;
@@ -767,12 +784,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                 }
                 counter = 0;
-                maxPerLine = 4;
                 for (Relationship relation : ot.getRelationships()) {
                     if (relation.getTargetEntity().getName().equals(ot.getName())) {
                         if (relation.getRelationshipType() == RelationshipType.AGGREGATION) {
                             EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.ControlType.ENTITY_DETAIL, propertyViewManager);
                             details.setPrependNewLine((counter % maxPerLine) == 0);
+                            details.setAppendNewLine(false);
+                            details.setColspan(1);
+                            counter++;
                             if (firstDetailRelation) {
                                 details.setSeparatorText("Details");
                                 firstDetailRelation = false;
@@ -782,7 +801,6 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                 }
                 counter = 0;
-                maxPerLine = 4;
                 boolean firstAssoRelation = true;
                 for (Relationship relation : ot.getRelationships()) {
                     if (relation.getTargetEntity().getName().equals(ot.getName())) {
@@ -790,6 +808,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                         if (t != RelationshipType.AGGREGATION && t != RelationshipType.COMPOSITION) {
                             EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.ControlType.ENTITY_DETAIL, propertyViewManager);
                             details.setPrependNewLine((counter % maxPerLine) == 0);
+                            details.setAppendNewLine(false);
+                            details.setColspan(1);
+                            counter++;
                             if (firstAssoRelation) {
                                 details.setSeparatorText("References");
                                 firstAssoRelation = false;
@@ -841,7 +862,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
-    private static class FomrHelper {
+    private static class FormHelper {
 
         DynaFormModel dynModel = new DynaFormModel();
         DynaFormRow row = null;

@@ -25,7 +25,7 @@ and open the template in the editor.
                         <h:panelGrid columns="3" cellspacing="10px" cellpadding="10px">
                             <p:outputLabel value="Utilisateur"/>
                             <p:outputLabel style="margin-left: 10px" value=" :         "/>
-                            <p:outputLabel style="margin-left: 20px" value="#{userSession.user==null?'anonymous' : userSession.user.fullName}"/>
+                            <p:outputLabel style="margin-left: 20px" value="#{userSession.user==null?'anonymous' : jsfCtrl.strcat(userSession.user.login,' / ',userSession.user.contact.fullName) }"/>
                             <p:outputLabel value="Version"/>
                             <p:outputLabel style="margin-left: 10px" value=" :          "/>
                             <p:outputLabel style="margin-left: 20px" value="#{appInfoCtrl.model.appVersion}"/>

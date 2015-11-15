@@ -8,14 +8,13 @@ package net.vpc.app.vainruling.api.util;
 import com.google.gson.Gson;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.security.UserSession;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.CustomDefaultObject;
-import net.vpc.upa.impl.util.Strings;
 import net.vpc.upa.types.DateTime;
 import net.vpc.upa.types.StringType;
 import org.jsoup.Jsoup;
@@ -68,7 +67,7 @@ public class VrHelper {
         }
         for (Element e : d.select("span")) {
             String s = e.attr("style");
-            if (!Strings.isNullOrEmpty(s)) {
+            if (!StringUtils.isEmpty(s)) {
                 e.attributes().remove("style");
             }
         }
@@ -198,21 +197,21 @@ public class VrHelper {
             if (pt.equals(String.class)) {
                 arg = cmd;
             } else if (pt.equals(Boolean.class)) {
-                arg = Strings.isNullOrEmpty(cmd) ? null : Boolean.parseBoolean(cmd);
+                arg = StringUtils.isEmpty(cmd) ? null : Boolean.parseBoolean(cmd);
             } else if (pt.equals(Boolean.TYPE)) {
-                arg = Strings.isNullOrEmpty(cmd) ? Boolean.FALSE : Boolean.parseBoolean(cmd);
+                arg = StringUtils.isEmpty(cmd) ? Boolean.FALSE : Boolean.parseBoolean(cmd);
             } else if (pt.equals(Integer.class)) {
-                arg = Strings.isNullOrEmpty(cmd) ? null : Integer.parseInt(cmd);
+                arg = StringUtils.isEmpty(cmd) ? null : Integer.parseInt(cmd);
             } else if (pt.equals(Integer.TYPE)) {
-                arg = Strings.isNullOrEmpty(cmd) ? 0 : Integer.parseInt(cmd);
+                arg = StringUtils.isEmpty(cmd) ? 0 : Integer.parseInt(cmd);
             } else if (pt.equals(Double.class)) {
-                arg = Strings.isNullOrEmpty(cmd) ? null : Double.parseDouble(cmd);
+                arg = StringUtils.isEmpty(cmd) ? null : Double.parseDouble(cmd);
             } else if (pt.equals(Double.TYPE)) {
-                arg = Strings.isNullOrEmpty(cmd) ? 0.0 : Double.parseDouble(cmd);
+                arg = StringUtils.isEmpty(cmd) ? 0.0 : Double.parseDouble(cmd);
             } else if (pt.equals(Long.class)) {
-                arg = Strings.isNullOrEmpty(cmd) ? null : Long.parseLong(cmd);
+                arg = StringUtils.isEmpty(cmd) ? null : Long.parseLong(cmd);
             } else if (pt.equals(Long.TYPE)) {
-                arg = Strings.isNullOrEmpty(cmd) ? 0L : Long.parseLong(cmd);
+                arg = StringUtils.isEmpty(cmd) ? 0L : Long.parseLong(cmd);
             } else if (pt.isPrimitive()) {
                 throw new IllegalArgumentException("Not yet supported");
             } else if (pt.isInstance(Number.class)) {

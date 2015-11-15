@@ -7,8 +7,6 @@ package net.vpc.app.vainruling.plugins.filesystem.web.files;
 
 import java.io.File;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.model.AppUser;
@@ -16,7 +14,6 @@ import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.app.vainruling.api.web.util.JsfCtrl;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
-import net.vpc.common.jsf.FacesUtils;
 import net.vpc.vfs.VFS;
 import net.vpc.vfs.VFile;
 import net.vpc.vfs.VirtualFileSystem;

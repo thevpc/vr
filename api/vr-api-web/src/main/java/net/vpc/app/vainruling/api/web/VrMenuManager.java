@@ -29,7 +29,6 @@ import net.vpc.upa.UPA;
 import net.vpc.upa.exceptions.UPAException;
 import net.vpc.upa.filters.DefaultEntityFilter;
 import net.vpc.upa.filters.EntityFilter;
-import net.vpc.upa.impl.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
@@ -66,8 +65,8 @@ public class VrMenuManager {
     }
 
     public boolean isCurrentPageId(String name) {
-        if (Strings.isNullOrEmpty(name)) {
-            return Strings.isNullOrEmpty(getModel().getCurrentPageId());
+        if (StringUtils.isEmpty(name)) {
+            return StringUtils.isEmpty(getModel().getCurrentPageId());
         } else {
             return name.equals(getModel().getCurrentPageId());
         }

@@ -15,6 +15,7 @@ import net.vpc.app.vainruling.api.security.UserSession;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import net.vpc.app.vainruling.api.model.AppCivility;
 import net.vpc.app.vainruling.api.model.AppCompany;
 import net.vpc.app.vainruling.api.model.AppContact;
@@ -30,6 +31,7 @@ import net.vpc.app.vainruling.api.model.AppUserProfileBinding;
 import net.vpc.app.vainruling.api.model.AppRightName;
 import net.vpc.app.vainruling.api.model.AppUserType;
 import net.vpc.app.vainruling.api.util.InSetEvaluator;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Entity;
 import net.vpc.upa.EntityShield;
 import net.vpc.upa.PersistenceUnit;
@@ -39,8 +41,8 @@ import net.vpc.upa.UserPrincipal;
 import net.vpc.upa.expressions.Equals;
 import net.vpc.upa.expressions.Literal;
 import net.vpc.upa.expressions.Var;
-import net.vpc.upa.impl.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 /**
  *
@@ -49,12 +51,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 @AppPlugin(version = "1.5")
 public class CorePlugin {
 
+    private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePlugin.class.getName());
+
     public static final String USER_ADMIN = "admin";
     public static final String PROFILE_ADMIN = "Admin";
     public static final String PROFILE_HEAD_OF_DEPARTMENT = "HeadOfDepartment";
     public static final Set<String> ADMIN_ENTITIES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("Trace", "User", "UserProfile", "UserProfileBinding", "UserProfileRight")));
     @Autowired
     private TraceService trace;
+    private boolean updatingPoll = false;
+
+    public void onPoll() {
+        if (!updatingPoll) {
+            updatingPoll = true;
+            try {
+                synchronized (this) {
+                    ApplicationContext context = VrApp.getContext();
+                    for (String pn : context.getBeanNamesForType(PollAware.class)) {
+                        PollAware b = (PollAware) context.getBean(pn);
+                        b.onPoll();
+                    }
+                }
+            } finally {
+                updatingPoll = false;
+            }
+        }
+    }
 
 //    private void init(){
 //    }
@@ -108,17 +130,15 @@ public class CorePlugin {
                     } else if (f instanceof AppProfile) {
                         p.add((AppProfile) f);
                     }
-                } else {
-                    if (s.contains("*")) {
-                        for (AppProfile pp : allProfiles) {
-                            if (Strings.matchesSimpleExpression(pp.getName(), s)) {
-                                p.add(pp);
-                            }
+                } else if (s.contains("*")) {
+                    for (AppProfile pp : allProfiles) {
+                        if (StringUtils.matchesWildcardExpression(pp.getName(), s)) {
+                            p.add(pp);
                         }
-                        for (AppUser uu : allUsers) {
-                            if (Strings.matchesSimpleExpression(uu.getLogin(), s)) {
-                                u.add(uu);
-                            }
+                    }
+                    for (AppUser uu : allUsers) {
+                        if (StringUtils.matchesWildcardExpression(uu.getLogin(), s)) {
+                            u.add(uu);
                         }
                     }
                 }
@@ -157,7 +177,8 @@ public class CorePlugin {
         }
         AppRightName r = pu.findById(AppRightName.class, rightName);
         if (r == null) {
-            throw new IllegalArgumentException("Right " + rightName + " not found");
+            log.log(Level.SEVERE, "Right " + rightName + " not found");
+            return false;
         }
         AppProfileRight pr = pu.createQuery("Select u from AppProfileRight u where u.profileId=:profileId and u.rightName=:rightName")
                 .setParameter("rightName", rightName)
@@ -503,7 +524,7 @@ public class CorePlugin {
     }
 
     private boolean userMatchesProfileFilter(Integer userId, String login, ProfileFilterExpression profileExpr, Map<String, Object> cache) {
-        if (Strings.isNullOrEmpty(profileExpr.getFilterExpression()) && Strings.isNullOrEmpty(profileExpr.getProfileListExpression())) {
+        if (StringUtils.isEmpty(profileExpr.getFilterExpression()) && StringUtils.isEmpty(profileExpr.getProfileListExpression())) {
             return true;
         }
         if (cache == null) {
@@ -525,7 +546,7 @@ public class CorePlugin {
                 }
             }
         }
-        if (!Strings.isNullOrEmpty(login)) {
+        if (!StringUtils.isEmpty(login)) {
             Map<String, AppUser> usersByLogin = (Map<String, AppUser>) cache.get("usersByLogin");
             if (usersByLogin == null) {
                 usersByLogin = new HashMap<>();
@@ -568,7 +589,7 @@ public class CorePlugin {
         }
         InSetEvaluator evaluator = createProfilesEvaluator(foundProfileNames);
         boolean b = evaluator.evaluate(profileExpr.getProfileListExpression());
-        if (b && !Strings.isNullOrEmpty(profileExpr.getFilterExpression())) {
+        if (b && !StringUtils.isEmpty(profileExpr.getFilterExpression())) {
             return filterUsersByExpression(Arrays.asList(u), profileExpr.getFilterExpression()).size() > 0;
         }
         return b;
@@ -615,7 +636,7 @@ public class CorePlugin {
     }
 
     private List<AppUser> filterUsersByExpression(List<AppUser> all, String expression) {
-        if (Strings.isNullOrEmpty(expression)) {
+        if (StringUtils.isEmpty(expression)) {
             return new ArrayList<AppUser>(all);
         }
         HashSet<Integer> ids = new HashSet<>();
@@ -832,9 +853,16 @@ public class CorePlugin {
         }
     }
 
+    public AppUser findUserByContact(int contactId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQueryBuilder(AppUser.class)
+                .addAndField("contactId", contactId)
+                .getEntity();
+    }
+
     public AppContact findOrCreateContact(AppContact c) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        if (!Strings.isNullOrEmpty(c.getNin())) {
+        if (!StringUtils.isEmpty(c.getNin())) {
             AppContact oldAcademicTeacher = pu.createQueryBuilder(AppContact.class)
                     .addAndField("nin", c.getNin())
                     .getEntity();
@@ -932,4 +960,41 @@ public class CorePlugin {
         return us != null && us.isAdmin();
     }
 
+    public String validateName(String text) {
+        //make it kamel based
+        boolean wasWhite = true;
+        char[] chars = (text == null ? "" : text).toCharArray();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < chars.length; i++) {
+            char aChar = chars[i];
+            if (Character.isWhitespace(aChar)) {
+                if (!(aChar == ' ' || aChar == '\t')) {
+                    aChar = ' ';
+                }
+                if (!wasWhite) {
+                    sb.append(aChar);
+                }
+                wasWhite = true;
+            } else if (wasWhite) {
+                sb.append(Character.toUpperCase(aChar));
+                wasWhite = false;
+            } else {
+                sb.append(Character.toLowerCase(aChar));
+                wasWhite = false;
+            }
+        }
+        return sb.toString().trim();
+    }
+
+    public String resolveLoginProposal(AppContact contact) {
+        String fn = contact.getFirstName();
+        String ln = contact.getLastName();
+        if (fn == null) {
+            fn = "";
+        }
+        if (ln == null) {
+            ln = "";
+        }
+        return fn.toLowerCase().replace(" ", "") + "." + ln.toLowerCase().replace(" ", "");
+    }
 }

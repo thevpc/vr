@@ -26,7 +26,7 @@ import net.vpc.upa.config.Sequence;
  * @author vpc
  */
 @Entity(listOrder = "contact.fullName")
-@Path("Education")
+@Path("Contact")
 public class AcademicTeacher {
 
     @Id

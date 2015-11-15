@@ -8,9 +8,11 @@ package net.vpc.app.vainruling.plugins.equipments.service.model;
 import net.vpc.app.vainruling.plugins.commonmodel.service.model.AppArea;
 import java.sql.Timestamp;
 import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
+import net.vpc.upa.config.Formula;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Sequence;
 import net.vpc.upa.config.Hierarchy;
@@ -33,6 +35,7 @@ public class Equipment {
     private int id;
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private String serial;
+    private String stockSerial;
     @Field(modifiers = UserFieldModifier.MAIN)
     private String name;
     @Properties(
@@ -49,6 +52,13 @@ public class Equipment {
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Category"))
     private EquipmentType type;
+
+//    @Field(modifiers = UserFieldModifier.SUMMARY)
+//    @Formula(value = "this.brandLine.brand", type = FormulaType.LIVE)
+//    private EquipmentBrand brand;
+
+    private EquipmentAcquisition acquisition;
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_NEWLINE, value = "before,after"))
@@ -59,12 +69,17 @@ public class Equipment {
             @Property(name = UIConstants.FIELD_FORM_NEWLINE, value = "before,after"))
     private Equipment relativeTo;
 
+
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
     private boolean archived;
     private boolean deleted;
     private String deletedBy;
     private Timestamp deletedOn;
+
+    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Formula(value = "currentTimestamp()",type = FormulaType.PERSIST)
+    private Timestamp createdOn;
 
     public int getId() {
         return id;
@@ -178,4 +193,35 @@ public class Equipment {
         this.quantity = quantity;
     }
 
+    public EquipmentAcquisition getAcquisition() {
+        return acquisition;
+    }
+
+    public void setAcquisition(EquipmentAcquisition acquisition) {
+        this.acquisition = acquisition;
+    }
+
+    public String getStockSerial() {
+        return stockSerial;
+    }
+
+    public void setStockSerial(String stockSerial) {
+        this.stockSerial = stockSerial;
+    }
+
+    public Timestamp getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(Timestamp createdOn) {
+        this.createdOn = createdOn;
+    }
+
+//    public EquipmentBrand getBrand() {
+//        return brand;
+//    }
+//
+//    public void setBrand(EquipmentBrand brand) {
+//        this.brand = brand;
+//    }
 }

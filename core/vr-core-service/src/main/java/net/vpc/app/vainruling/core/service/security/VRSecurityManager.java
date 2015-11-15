@@ -133,14 +133,20 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
             return new DefaultUserPrincipal(INTERNAL_LOGIN, user);
         } else {
             PersistenceUnit pu = UPA.getPersistenceUnit();
+            UserSession sm = null;
+            try {
+                sm = VrApp.getBean(UserSession.class);
+            } catch (Exception e) {
+                //
+            }
             AppUser user = (AppUser) pu.createQuery("Select u from AppUser u where u.login=:login")
                     .setParameter("login", login)
                     .getEntity();
             if (user != null) {
-                trace.trace("login-privileged", "successfull", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO);
+                trace.trace("login-privileged", "successfull", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO, sm == null ? null : sm.getClientIpAddress());
                 return new DefaultUserPrincipal(login, user);
             } else {
-                trace.trace("login-privileged", "failed", login, getClass().getSimpleName(), null, null, "anonymous", -1, Level.SEVERE);
+                trace.trace("login-privileged", "failed", login, getClass().getSimpleName(), null, null, "anonymous", -1, Level.SEVERE, sm == null ? null : sm.getClientIpAddress());
                 throw new UPAException("InvalidLogin");
             }
         }
@@ -160,11 +166,17 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
                 .setParameter("password", credentials)
                 .getEntity();
         TraceService trace = VrApp.getContext().getBean(TraceService.class);
+        UserSession sm = null;
+        try {
+            sm = VrApp.getBean(UserSession.class);
+        } catch (Exception e) {
+            //
+        }
         if (user != null) {
-            trace.trace("login", "successfull", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO);
+            trace.trace("login", "successfull", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO,sm == null ? null : sm.getClientIpAddress());
             return new DefaultUserPrincipal(login, user);
         } else {
-            trace.trace("login", "failed", login + "/" + credentials, getClass().getSimpleName(), null, null, "anonymous", -1, Level.SEVERE);
+            trace.trace("login", "failed", login + "/" + credentials, getClass().getSimpleName(), null, null, "anonymous", -1, Level.SEVERE,sm == null ? null : sm.getClientIpAddress());
             throw new UPAException("InvalidLogin");
         }
     }

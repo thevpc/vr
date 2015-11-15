@@ -105,6 +105,23 @@ public class I18n implements Serializable {
         return getResourceBundleSuite().get(key, null, params);
     }
 
+    public String getEnum(Object obj) {
+        if(obj==null){
+            return "";
+        }
+        String t = obj.getClass().getName();
+        String r = getOrNull("Enum."+t+"["+obj+"]");
+        if(r!=null){
+            return r;
+        }
+        t = obj.getClass().getSimpleName();
+        r = getOrNull("Enum."+t+"["+obj+"]");
+        if(r!=null){
+            return r;
+        }
+        return obj.toString();
+    }
+    
     public String get(String key) {
         return get(key, new Object[0]);
     }

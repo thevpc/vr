@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.api.model;
 
 import java.sql.Timestamp;
+import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.PasswordStrategyType;
 import net.vpc.upa.UserFieldModifier;
@@ -14,6 +15,8 @@ import net.vpc.upa.config.Field;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Password;
 import net.vpc.upa.config.Path;
+import net.vpc.upa.config.Properties;
+import net.vpc.upa.config.Property;
 import net.vpc.upa.config.Sequence;
 import net.vpc.upa.types.DateTime;
 
@@ -22,7 +25,7 @@ import net.vpc.upa.types.DateTime;
  * @author vpc
  */
 @Entity(listOrder = "contact.fullName")
-@Path("Admin/Security")
+@Path("Contact")
 public class AppUser {
 
     @Id
@@ -35,38 +38,40 @@ public class AppUser {
     @Password(strategyType = PasswordStrategyType.MD5)
     private String password;
 
+
     @Field(modifiers = {UserFieldModifier.MAIN})
     private AppContact contact;
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     private AppDepartment department;
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     private AppUserType type;
-    
-    @Field(persistAccessLevel = AccessLevel.PRIVATE
-            ,updateAccessLevel = AccessLevel.PRIVATE
-            ,readAccessLevel = AccessLevel.PROTECTED
+
+    @Properties(
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+    @Field(persistAccessLevel = AccessLevel.PRIVATE, updateAccessLevel = AccessLevel.PRIVATE, readAccessLevel = AccessLevel.PROTECTED, modifiers = UserFieldModifier.SUMMARY
     )
     private DateTime lastConnexionDate;
-    
-    @Field(defaultValue = "0"
-            ,persistAccessLevel = AccessLevel.PRIVATE
-            ,updateAccessLevel = AccessLevel.PROTECTED
-            ,readAccessLevel = AccessLevel.PROTECTED
+
+    @Field(defaultValue = "0", persistAccessLevel = AccessLevel.PRIVATE, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PROTECTED, modifiers = UserFieldModifier.SUMMARY
     )
     private long connexionCount;
-    
-    private boolean deleted;
-    
-    @Field(defaultValue = "true"
-            ,persistAccessLevel = AccessLevel.PRIVATE
-            ,updateAccessLevel = AccessLevel.PROTECTED
-            ,readAccessLevel = AccessLevel.PROTECTED
+
+    @Field(defaultValue = "true", persistAccessLevel = AccessLevel.PRIVATE, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PROTECTED, modifiers = UserFieldModifier.SUMMARY
     )
     private boolean enabled;
 
+    private boolean deleted;
+
     private String deletedBy;
-    
+
     private Timestamp deletedOn;
+
+    /**
+     * password field generated automatically, should be reset on some event
+     * though
+     */
+    @Field(persistAccessLevel = AccessLevel.PRIVATE, updateAccessLevel = AccessLevel.PRIVATE, readAccessLevel = AccessLevel.PRIVATE)
+    private String passwordAuto;
 
     public int getId() {
         return id;
@@ -162,6 +167,14 @@ public class AppUser {
 
     public void setContact(AppContact contact) {
         this.contact = contact;
+    }
+
+    public String getPasswordAuto() {
+        return passwordAuto;
+    }
+
+    public void setPasswordAuto(String passwordAuto) {
+        this.passwordAuto = passwordAuto;
     }
 
 }

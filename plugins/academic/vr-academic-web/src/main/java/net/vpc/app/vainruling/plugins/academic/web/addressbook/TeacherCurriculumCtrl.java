@@ -16,7 +16,7 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.content.AcademicTeacherCV;
 import net.vpc.app.vainruling.plugins.academic.web.AcademicCtrlUtils;
-import net.vpc.upa.impl.util.Strings;
+import net.vpc.common.strings.StringUtils;
 
 /**
  *
@@ -54,9 +54,9 @@ public class TeacherCurriculumCtrl {
         String photo = t == null ? null : AcademicCtrlUtils.getTeacherAbsoluteWebPath(t.getId(), "WebSite/photo.jpg");
         getModel().setPhotoUrl(photo);
         getModel().setTeacherCV(t == null ? null : ap.findOrCreateAcademicTeacherCV(t.getId()));
-        if (Strings.isNullOrEmpty(getModel().getTeacherCV().getExtraImage())) {
+        if (StringUtils.isEmpty(getModel().getTeacherCV().getExtraImage())) {
             String extraActivity = t == null ? null : AcademicCtrlUtils.getTeacherAbsoluteWebPath(t.getId(), "WebSite/extra-activity.jpg");
-            if (!Strings.isNullOrEmpty(extraActivity)) {
+            if (!StringUtils.isEmpty(extraActivity)) {
                 getModel().getTeacherCV().setExtraImage(extraActivity);
             }
 

@@ -27,6 +27,7 @@ import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxSent;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.UPA;
 
 /**
@@ -157,36 +158,42 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     }
 
     public void onSelectInboxFolder() {
+        FacesUtils.clearMessages();
         getModel().setSent(false);
         getModel().setFolder(MailboxFolder.CURRENT);
         onRefresh();
     }
 
     public void onSelectDeletedInboxFolder() {
+        FacesUtils.clearMessages();
         getModel().setSent(false);
         getModel().setFolder(MailboxFolder.DELETED);
         onRefresh();
     }
 
     public void onSelectArchivedInboxFolder() {
+        FacesUtils.clearMessages();
         getModel().setSent(false);
         getModel().setFolder(MailboxFolder.ARCHIVED);
         onRefresh();
     }
 
     public void onSelectOutboxFolder() {
+        FacesUtils.clearMessages();
         getModel().setSent(true);
         getModel().setFolder(MailboxFolder.CURRENT);
         onRefresh();
     }
 
     public void onSelectDeletedOutboxFolder() {
+        FacesUtils.clearMessages();
         getModel().setSent(true);
         getModel().setFolder(MailboxFolder.DELETED);
         onRefresh();
     }
 
     public void onSelectArchivedOutboxFolder() {
+        FacesUtils.clearMessages();
         getModel().setSent(true);
         getModel().setFolder(MailboxFolder.ARCHIVED);
         onRefresh();
@@ -203,11 +210,13 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     }
 
     public void onCancelCurrent() {
+        FacesUtils.clearMessages();
         getModel().setNewItem(new MailboxSent());
         getModel().setMode(EditCtrlMode.LIST);
     }
 
     public void onRemoveSelected() {
+        FacesUtils.clearMessages();
         if (getModel().getFolder() == MailboxFolder.DELETED) {
             onEraseSelected();
             return;
@@ -223,6 +232,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     }
 
     public void onArchiveSelected() {
+        FacesUtils.clearMessages();
         for (Row inbox : getModel().getInbox()) {
             if (inbox.isSelected()) {
                 inbox.getValue().setArchived(true);
@@ -233,6 +243,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     }
 
     public void onEraseSelected() {
+        FacesUtils.clearMessages();
         for (Row inbox : getModel().getInbox()) {
             if (inbox.isSelected()) {
                 UPA.getPersistenceUnit().remove(inbox.value.msg);
@@ -242,15 +253,22 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     }
 
     public void onSend() {
+        FacesUtils.clearMessages();
         MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
         getModel().getNewItem().setSender(VrApp.getBean(UserSession.class).getUser());
-        p.sendLocalMail(getModel().getNewItem(), true);
+        try{
+            p.sendLocalMail(getModel().getNewItem(), true);
+            FacesUtils.addInfoMessage("Envoi réussi");
+        }catch(Exception e){
+            FacesUtils.addErrorMessage("Envoi impossible : "+e.getMessage());
+        }
         getModel().setNewItem(new MailboxSent());
         getModel().setMode(EditCtrlMode.LIST);
         onRefresh();
     }
 
     public void onReply() {
+        FacesUtils.clearMessages();
         MailboxSent s = new MailboxSent();
         Message current = getModel().getCurrent();
         if (current != null && current.recieved) {
@@ -265,6 +283,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     }
 
     public void onAdvancedSettings() {
+        FacesUtils.clearMessages();
         getModel().setAdvancedSettings(!getModel().isAdvancedSettings());
     }
 

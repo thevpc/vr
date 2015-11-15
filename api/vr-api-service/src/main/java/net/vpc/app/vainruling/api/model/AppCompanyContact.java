@@ -17,7 +17,7 @@ import net.vpc.upa.config.Sequence;
  * @author vpc
  */
 @Entity()
-@Path("Admin/Config")
+@Path("Contact")
 public class AppCompanyContact {
 
     @Id

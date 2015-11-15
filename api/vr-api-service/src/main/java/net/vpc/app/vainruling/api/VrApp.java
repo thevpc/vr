@@ -7,10 +7,10 @@ package net.vpc.app.vainruling.api;
 
 import java.util.logging.Level;
 import net.vpc.app.vainruling.api.security.UserSession;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.TransactionType;
 import net.vpc.upa.UPA;
-import net.vpc.upa.impl.util.Strings;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -50,7 +50,7 @@ public class VrApp implements ApplicationContextAware {
                 getBeanFactory().registerScope("session", new SimpleThreadScope());
             }
         };
-        if (!Strings.isNullOrEmpty(login)) {
+        if (!StringUtils.isEmpty(login)) {
             VrApp.getBean(UserSession.class).setSessionId("custom");
             VrApp.getBean(LoginService.class).login(login, password);
         }

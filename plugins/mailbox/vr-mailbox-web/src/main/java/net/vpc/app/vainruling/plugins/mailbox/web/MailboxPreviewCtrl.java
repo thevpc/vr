@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
+import net.vpc.app.vainruling.api.PollAware;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.api.util.VrHelper;
@@ -31,24 +32,29 @@ import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
         securityKey = "Custom.Inbox"
 )
 @ManagedBean
-public class MailboxPreviewCtrl {
+public class MailboxPreviewCtrl implements PollAware {
 
     private Model model = new Model();
+
+    @Override
+    public void onPoll() {
+        onRefresh();
+    }
 
     @OnPageLoad
     @PostConstruct
     public void onRefresh() {
         MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
         int userId = VrApp.getBean(UserSession.class).getUser().getId();
-        List<MailboxReceived> loadUnreadInbox = p.loadLocalMailbox(userId, 3,true,MailboxFolder.CURRENT);
+        List<MailboxReceived> loadUnreadInbox = p.loadLocalMailbox(userId, 3, true, MailboxFolder.CURRENT);
         List<MessagePreview> previews = new ArrayList<>();
         for (MailboxReceived lo : loadUnreadInbox) {
             String subject = lo.getSubject();
 //            String content = lo.getContent();
             previews.add(new MessagePreview(
-                    lo.getSender()==null?null:lo.getSender().getContact().getFullName(), 
-                    VrHelper.strcut(subject, 36), 
-                    VrHelper.getRelativeDateMessage(lo.getSendTime(),null)));
+                    lo.getSender() == null ? null : lo.getSender().getContact().getFullName(),
+                    VrHelper.strcut(subject, 36),
+                    VrHelper.getRelativeDateMessage(lo.getSendTime(), null)));
         }
         model.setInbox(previews);
         model.setUnreadCount(p.getLocalUnreadInboxCount(userId));

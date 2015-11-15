@@ -11,7 +11,10 @@ import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.i18n.I18n;
 import net.vpc.app.vainruling.api.web.obj.PropertyView;
 import net.vpc.app.vainruling.api.web.obj.PropertyViewManager;
+import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
+import net.vpc.upa.Record;
+import net.vpc.upa.UPA;
 import net.vpc.upa.types.DataType;
 import net.vpc.upa.types.EntityType;
 
@@ -28,10 +31,10 @@ public class FieldPropertyView extends PropertyView {
         setDataType(field.getDataType());
     }
 
-    public Field getField(){
-        return (Field)getReferrer();
+    public Field getField() {
+        return (Field) getReferrer();
     }
-    
+
     public void storeToMap(Map<String, Object> map) {
         if (getReferrer() != null) {
             map.put(getComponentId(), getValue());
@@ -39,35 +42,66 @@ public class FieldPropertyView extends PropertyView {
     }
 
     public void storeTo(Object o) {
-        Field field = getField();
-        final Object v2 = field.getDataType().convert(value);
-        if (o != null && field != null && field.getEntity().getEntityType().isAssignableFrom(o.getClass())) {
-            field.getEntity().getBuilder().entityToRecord(o).setObject(field.getName(), v2);
+        if (!getComponentId().contains(".")) {
+            Field field = getField();
+            final Object v2 = field.getDataType().convert(value);
+            if (o != null && field.getEntity().getEntityType().isAssignableFrom(o.getClass())) {
+                field.getEntity().getBuilder().entityToRecord(o).setObject(field.getName(), v2);
+            }
         }
     }
 
-    public void loadFrom(Object o) {
-        Field field = getField();
-        boolean someUpdates = false;
-        if (o != null && field != null && field.getEntity().getEntityType().isAssignableFrom(o.getClass())) {
-            DataType dataType = field.getDataType();
-            Object object = field.getEntity().getBuilder().entityToRecord(o).getObject(field.getName());
-            if (dataType instanceof EntityType) {
-                EntityType et = (EntityType) dataType;
-                someUpdates |= !Objects.equal(this.value, object);
-                this.value = object;
-                Object newSelectedItem = et.getRelationship().getTargetRole().getEntity().getBuilder().entityToId(object);
-                someUpdates |= !Objects.equal(this.selectedItem, newSelectedItem);
-                this.selectedItem = newSelectedItem;
-            } else {
-                someUpdates |= !Objects.equal(this.value, object);
-                this.value = object;
-                someUpdates |= !Objects.equal(this.selectedItem, object);
-                this.selectedItem = object;
+    protected static class SelectValue {
+
+        Object value;
+        Object selectedItem;
+        Entity entity;
+
+        public SelectValue(Object value, Object selectedItem, Entity entity) {
+            this.value = value;
+            this.selectedItem = selectedItem;
+            this.entity = entity;
+        }
+
+    }
+
+    public void loadFrom(Object obj) {
+        String expr = getComponentId();
+        SelectValue sv = null;
+        if (obj != null) {
+            String[] exprArr = expr.split("\\.");
+            sv = new SelectValue(obj, obj, UPA.getPersistenceUnit().getEntity(obj.getClass()));
+            for (String n : exprArr) {
+                Field field = sv.entity.getField(n);
+                DataType dataType = field.getDataType();
+                Record er = field.getEntity().getBuilder().entityToRecord(sv.value);
+                Object oo = er==null?null:er.getObject(field.getName());
+                if (dataType instanceof EntityType) {
+                    EntityType et = (EntityType) dataType;
+                    Entity e2 = et.getRelationship().getTargetRole().getEntity();
+                    Object newSelectedItem = e2.getBuilder().entityToId(oo);
+                    sv = new SelectValue(oo, newSelectedItem, e2);
+                } else {
+                    sv = new SelectValue(oo, oo, null);
+                }
             }
         }
+        if (sv == null) {
+            sv = new SelectValue(null, null, null);
+        }
+        boolean someUpdates = false;
+        someUpdates |= !Objects.equal(this.value, sv.value);
+        someUpdates |= !Objects.equal(this.selectedItem, sv.selectedItem);
+        this.value = sv.value;
+        this.selectedItem = sv.selectedItem;
         if (someUpdates) {
             onChange(null);
         }
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + getComponentId() + ')';
+    }
+
 }

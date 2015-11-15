@@ -30,8 +30,8 @@ import net.vpc.app.vainruling.api.web.VRMenuDefFactory;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.streams.PathInfo;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UPA;
-import net.vpc.upa.impl.util.Strings;
 import net.vpc.vfs.VFS;
 import net.vpc.vfs.VFile;
 import net.vpc.vfs.VFileType;
@@ -139,13 +139,13 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
                 d.setTitle("Tous les Documents");
             } else if ("user".equals(c.getType())) {
                 String v = c.getValue();
-                if (Strings.isNullOrEmpty(v)) {
+                if (StringUtils.isEmpty(v)) {
                     v = login;
                 }
                 d.setTitle("Documents de " + v);
             } else if ("profile".equals(c.getType())) {
                 String v = c.getValue();
-                if (Strings.isNullOrEmpty(v)) {
+                if (StringUtils.isEmpty(v)) {
                     v = "user";
                 }
                 d.setTitle("Documents de " + v);
@@ -177,13 +177,13 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
             fs = rootfs;
         } else if ("user".equals(c.getType())) {
             String v = c.getValue();
-            if (Strings.isNullOrEmpty(v)) {
+            if (StringUtils.isEmpty(v)) {
                 v = login;
             }
             fs = fsp.getUserFileSystem(v);
         } else if ("profile".equals(c.getType())) {
             String v = c.getValue();
-            if (Strings.isNullOrEmpty(v)) {
+            if (StringUtils.isEmpty(v)) {
                 v = "user";
             }
             fs = fsp.getProfileFileSystem(v);
@@ -276,7 +276,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
     }
 
     public void onSave() {
-        if (!Strings.isNullOrEmpty(getModel().getArea())) {
+        if (!StringUtils.isEmpty(getModel().getArea())) {
             if ("NewFile".equals(getModel().getArea())) {
                 String n = getModel().getNewName().trim();
                 VFile f2 = getModel().getCurrent().file.get(n);

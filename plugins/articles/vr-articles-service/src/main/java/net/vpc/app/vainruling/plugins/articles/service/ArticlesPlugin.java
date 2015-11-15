@@ -35,17 +35,18 @@ import net.vpc.app.vainruling.plugins.articles.service.model.FullArticle;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.lib.gomail.GoMail;
+import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
-import net.vpc.upa.impl.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author vpc
  */
-@AppPlugin(version = "1.7", dependsOn = {"mailboxPlugin", "fileSystemPlugin"})
+@AppPlugin(version = "1.8", dependsOn = {"mailboxPlugin", "fileSystemPlugin"})
 public class ArticlesPlugin {
 
     @Autowired
@@ -63,13 +64,20 @@ public class ArticlesPlugin {
                 .getEntityList();
     }
 
-    public List<FullArticle> findFullArticlesByUserAndCategory(String login, String disposition) {
-        List<FullArticle> all = new ArrayList<>();
-        for (ArticlesItem a : findArticlesByUserAndCategory(login, disposition)) {
-            FullArticle f = new FullArticle(a, findArticlesFiles(a.getId()));
-            all.add(f);
-        }
-        return all;
+    public List<FullArticle> findFullArticlesByUserAndCategory(final String login, final String disposition) {
+        return UPA.getContext().invokePrivileged(new Action<List<FullArticle>>() {
+
+            @Override
+            public List<FullArticle> run() {
+                List<FullArticle> all = new ArrayList<>();
+                for (ArticlesItem a : findArticlesByUserAndCategory(login, disposition)) {
+                    FullArticle f = new FullArticle(a, findArticlesFiles(a.getId()));
+                    all.add(f);
+                }
+                return all;
+            }
+
+        }, null);
     }
 
     public List<ArticlesItem> findArticlesByUserAndCategory(String login, String disposition) {
@@ -178,18 +186,18 @@ public class ArticlesPlugin {
             p.setCode("Publisher");
             p.setName("Publisher");
             p = core.findOrCreate(p);
-            core.addProfileRight(p.getId(), "ArticleItem.DefaultEditor");
-            core.addProfileRight(p.getId(), "ArticleItem.Load");
-            core.addProfileRight(p.getId(), "ArticleItem.Navigate");
-            core.addProfileRight(p.getId(), "ArticleItem.Persist");
-            core.addProfileRight(p.getId(), "ArticleItem.Update");
-            core.addProfileRight(p.getId(), "ArticleItem.Remove");
-            core.addProfileRight(p.getId(), "ArticleFile.DefaultEditor");
-            core.addProfileRight(p.getId(), "ArticleFile.Load");
-            core.addProfileRight(p.getId(), "ArticleFile.Navigate");
-            core.addProfileRight(p.getId(), "ArticleFile.Persist");
-            core.addProfileRight(p.getId(), "ArticleFile.Update");
-            core.addProfileRight(p.getId(), "ArticleFile.Remove");
+            core.addProfileRight(p.getId(), "ArticlesItem.DefaultEditor");
+            core.addProfileRight(p.getId(), "ArticlesItem.Load");
+            core.addProfileRight(p.getId(), "ArticlesItem.Navigate");
+            core.addProfileRight(p.getId(), "ArticlesItem.Persist");
+            core.addProfileRight(p.getId(), "ArticlesItem.Update");
+            core.addProfileRight(p.getId(), "ArticlesItem.Remove");
+            core.addProfileRight(p.getId(), "ArticlesFile.DefaultEditor");
+            core.addProfileRight(p.getId(), "ArticlesFile.Load");
+            core.addProfileRight(p.getId(), "ArticlesFile.Navigate");
+            core.addProfileRight(p.getId(), "ArticlesFile.Persist");
+            core.addProfileRight(p.getId(), "ArticlesFile.Update");
+            core.addProfileRight(p.getId(), "ArticlesFile.Remove");
         }
     }
 
@@ -218,7 +226,7 @@ public class ArticlesPlugin {
         if (etype == null) {
             etype = EmailType.TOEACH;
         }
-        if (!Strings.isNullOrEmpty(a.getRecipientProfiles())) {
+        if (!StringUtils.isEmpty(a.getRecipientProfiles())) {
             GoMail m = new GoMail();
             MailboxPlugin emailPlugin = VrApp.getBean(MailboxPlugin.class);
 
@@ -282,7 +290,7 @@ public class ArticlesPlugin {
         if (etype == null) {
             etype = EmailType.TOEACH;
         }
-        if (!Strings.isNullOrEmpty(a.getRecipientProfiles())) {
+        if (!StringUtils.isEmpty(a.getRecipientProfiles())) {
             GoMail m = new GoMail();
             MailboxPlugin mailboxPlugin = VrApp.getBean(MailboxPlugin.class);
 
@@ -314,7 +322,7 @@ public class ArticlesPlugin {
     public void generateRSS(String login, String rss, OutputStream out) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         ArticlesDisposition t = pu.findByMainField(ArticlesDisposition.class, "rss." + rss);
-        List<ArticlesItem> articles = findArticlesByUserAndCategory(login, "rss." + rss);
+        List<FullArticle> articles = findFullArticlesByUserAndCategory(login, "rss." + rss);
         try {
             String feedType = "rss_2.0";
 //            String fileName = "feed.xml";
@@ -329,16 +337,16 @@ public class ArticlesPlugin {
             List entries = new ArrayList();
             SyndEntry entry;
             SyndContent description;
-            for (ArticlesItem art : articles) {
+            for (FullArticle art : articles) {
                 entry = new SyndEntryImpl();
-                entry.setTitle(art.getSubject());
-                entry.setLink(art.getLinkURL() == null ? feed.getLink() : art.getLinkURL());
-                entry.setPublishedDate(art.getSendTime());
+                entry.setTitle(art.getContent().getSubject());
+                entry.setLink(art.getContent().getLinkURL() == null ? feed.getLink() : art.getContent().getLinkURL());
+                entry.setPublishedDate(art.getContent().getSendTime());
                 description = new SyndContentImpl();
                 description.setType(MailboxPlugin.TYPE_HTML);
-                description.setValue(art.getContent());
+                description.setValue(art.getContent().getContent());
                 entry.setDescription(description);
-                entry.setAuthor(art.getSender() == null ? null : art.getSender().getContact().getFullName());
+                entry.setAuthor(art.getContent().getSender() == null ? null : art.getContent().getSender().getContact().getFullName());
                 entries.add(entry);
             }
 

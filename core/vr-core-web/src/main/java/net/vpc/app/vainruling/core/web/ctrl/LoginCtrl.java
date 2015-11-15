@@ -42,6 +42,10 @@ public class LoginCtrl {
     private void prepare() {
     }
 
+    public void onPoll() {
+        VrApp.getBean(CorePlugin.class).onPoll();
+    }
+
     public String gotoLogin() {
         return "/login";
     }
@@ -65,6 +69,7 @@ public class LoginCtrl {
         VRWebHelper.prepareUserSession();
         AppUser u = loginService.login(getModel().getLogin(), getModel().getPassword());
         if (u != null) {
+            VrApp.getBean(ActiveSessionsCtrl.class).onRefresh();
             return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
 //            return VRApp.getBean(VrMenu.class).gotoPage("todo", "sys-labo-action");
         }

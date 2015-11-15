@@ -48,7 +48,6 @@ public class EntityTypePropertyViewFactory implements PropertyViewFactory {
 //        boolean updateMode = objCtrl.getModel().getMode() == EditCtrlMode.UPDATE;
 //        boolean forceDisabled = configuration != null && configuration.get("disabled") != null && (Boolean.TRUE.equals(configuration.get("disabled")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("disabled"))));
 //        boolean forceInvisible = configuration != null && configuration.get("invisible") != null && (Boolean.TRUE.equals(configuration.get("invisible")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("invisible"))));
-
 //        boolean visible
 //                = insertMode
 //                        ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_CREATE, null, true)
@@ -84,6 +83,10 @@ public class EntityTypePropertyViewFactory implements PropertyViewFactory {
                         }
                         all.add(r0);
                         if (i == (r.length - 1)) {
+                            if (!r0.getComponentId().contains("_onchanage")) {
+                                r0.setComponentId(r0.getComponentId() + "_onchanage");
+                            }
+                            r0.setSubmitOnChange(true);
                             r0.setChangeListener(new ValueChangeListener() {
 
                                 @Override

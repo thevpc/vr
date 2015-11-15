@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.upa.impl.util.Strings;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.vfs.VFile;
 import net.vpc.vfs.VFileType;
 import net.vpc.vfs.impl.SerializableVirtualFileACL;
@@ -43,9 +43,9 @@ public class VrACL implements SerializableVirtualFileACL {
     }
 
     public String getUser(String login) {
-        if (Strings.isNullOrEmpty(login)) {
+        if (StringUtils.isEmpty(login)) {
             String login2 = VrApp.getBean(CorePlugin.class).getActualLogin();
-            if (!Strings.isNullOrEmpty(login2)) {
+            if (!StringUtils.isEmpty(login2)) {
                 return login2;
             }
         }
@@ -62,11 +62,11 @@ public class VrACL implements SerializableVirtualFileACL {
         if (p == null) {
             return defaultValue;
         }
-        if (Strings.isNullOrEmpty(login) || getOwner().equals(login)) {
+        if (StringUtils.isEmpty(login) || getOwner().equals(login)) {
             return true;
         }
         String allowedProfiles = p.getProperty(action);
-        if (Strings.isNullOrEmpty(allowedProfiles)) {
+        if (StringUtils.isEmpty(allowedProfiles)) {
             return defaultValue;
         }
         if (allowedProfiles.trim().equals("*")) {

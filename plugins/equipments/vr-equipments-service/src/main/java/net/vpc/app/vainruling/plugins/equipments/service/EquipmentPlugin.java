@@ -37,7 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author vpc
  */
-@AppPlugin(version = "1.1", dependsOn = "commonModel")
+@AppPlugin(version = "1.2", dependsOn = "commonModel")
 public class EquipmentPlugin {
 
     @Autowired
@@ -115,7 +115,7 @@ public class EquipmentPlugin {
         techContact.setFirstName("riadh");
         techContact.setLastName("tech");
         techContact.setFullName("riadh");
-        tech1.setLogin("riadh");
+        tech1.setLogin("riadh.chikhaoui");
         tech1.setPassword("riadh");
         techContact.setCivility(core.findCivility("M."));
         techContact.setEmail("riadh@vr.net");
@@ -131,7 +131,7 @@ public class EquipmentPlugin {
         techContact.setFirstName("sameh");
         techContact.setLastName("tech");
         techContact.setFullName("techsameh");
-        tech2.setLogin("sameh");
+        tech2.setLogin("sameh.gassab");
         tech2.setPassword("sameh");
         techContact.setCivility(core.findCivility("Mme"));
         techContact.setEmail("sameh@vr.net");

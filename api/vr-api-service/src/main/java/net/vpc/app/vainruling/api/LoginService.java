@@ -39,14 +39,16 @@ public class LoginService {
             trace.trace("logout", "successfull logout " + s.getUser().getLogin() + " to " + s.getRootUser().getLogin(),
                     s.getUser().getLogin() + " => "
                     + s.getRootUser().getLogin(),
-                    getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.INFO);
+                    getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.INFO, s.getClientIpAddress()
+            );
             s.setUser(s.getRootUser());
             s.setRootUser(null);
             buildSession(s, s.getUser());
         } else {
             trace.trace("logout", "successfull logout " + s.getUser().getLogin(),
                     s.getUser().getLogin(),
-                    getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.INFO);
+                    getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.INFO, s.getClientIpAddress()
+            );
             VrApp.getBean(ActiveSessionsTracker.class).onDestroy(s);
         }
     }
@@ -56,17 +58,22 @@ public class LoginService {
         if (s.isAdmin() && !s.isImpersonating()) {
             AppUser user = findEnabledUser(login, password);
             if (user != null) {
-                trace.trace("impersonate", "successfull impersonate of " + login, login, getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.INFO);
+                trace.trace("impersonate", "successfull impersonate of " + login, login, getClass().getSimpleName(), null, null, s.getUser().getLogin(),
+                        s.getUser().getId(), Level.INFO, s.getClientIpAddress()
+                );
             } else {
                 user = findUser(login);
                 if (user != null) {
                     if (!user.isEnabled()) {
-                        trace.trace("impersonate", "successfull impersonate of " + login + ". but user is not enabled!", login, getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.WARNING);
+                        trace.trace("impersonate", "successfull impersonate of " + login + ". but user is not enabled!", login, getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.WARNING, s.getClientIpAddress()
+                        );
                     } else {
-                        trace.trace("impersonate", "successfull impersonate of " + login + ". but password " + password + " seems not to be incorrect", login, getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.WARNING);
+                        trace.trace("impersonate", "successfull impersonate of " + login + ". but password " + password + " seems not to be incorrect", login, getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.WARNING, s.getClientIpAddress());
                     }
                 } else {
-                    trace.trace("impersonate", "failed impersonate of " + login, login, getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.SEVERE);
+                    trace.trace(
+                            "impersonate", "failed impersonate of " + login, login, getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.SEVERE, s.getClientIpAddress()
+                    );
                 }
             }
             if (user != null) {
@@ -76,7 +83,9 @@ public class LoginService {
             }
             return user;
         } else {
-            trace.trace("impersonate", "failed impersonate of " + login + ". not admin or already impersonating", login, getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.WARNING);
+            trace.trace(
+                    "impersonate", "failed impersonate of " + login + ". not admin or already impersonating", login, getClass().getSimpleName(), null, null, s.getUser().getLogin(), s.getUser().getId(), Level.WARNING, s.getClientIpAddress()
+            );
         }
         return null;
     }
@@ -97,22 +106,28 @@ public class LoginService {
             UserSession s = getUserSession();
             s.setDestroyed(false);
             VrApp.getBean(ActiveSessionsTracker.class).onCreate(s);
-            trace.trace("login", "successfull", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO);
+            trace.trace("login", "successfull", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO, s.getClientIpAddress());
             getUserSession().setConnexionTime(user.getLastConnexionDate());
             getUserSession().setUser(user);
             buildSession(s, user);
         } else {
-            getUserSession().reset();
+            UserSession s = getUserSession();
+            s.reset();
             AppUser user2 = findUser(login);
             if (user2 == null) {
-                trace.trace("login", "login not found. Failed as " + login + "/" + password, login + "/" + password, getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, -1, Level.SEVERE);
+                trace.trace("login", "login not found. Failed as " + login + "/" + password, login + "/" + password, getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, -1, Level.SEVERE, s.getClientIpAddress());
             } else {
                 if (user2.isDeleted() || !user2.isEnabled()) {
                     trace.trace("login", "invalid state. Failed as " + login + "/" + password, login + "/" + password
                             + ". deleted=" + user2.isDeleted()
-                            + ". enabled=" + user2.isEnabled(), getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE);
+                            + ". enabled=" + user2.isEnabled(), getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE, s.getClientIpAddress()
+                    );
                 } else {
-                    trace.trace("login", "invalid password. Failed as " + login + "/" + password, login + "/" + password, getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE);
+                    trace.trace(
+                            "login", "invalid password. Failed as " + login + "/" + password, login + "/" + password,
+                            getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(),
+                            Level.SEVERE, s.getClientIpAddress()
+                    );
                 }
             }
         }

@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.app.vainruling.api.security.UserSession;
-import net.vpc.upa.impl.util.Strings;
+import net.vpc.common.strings.StringUtils;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -42,7 +42,7 @@ public class JsfCtrl {
     public String nvlstr(Object... a) {
         for (Object x : a) {
             String s = x == null ? "" : String.valueOf(x);
-            if (!Strings.isNullOrEmpty(s)) {
+            if (!StringUtils.isEmpty(s)) {
                 return s;
             }
         }
@@ -53,7 +53,7 @@ public class JsfCtrl {
         for (Object x : a) {
             if (x != null) {
                 if (x instanceof String) {
-                    if (!Strings.isNullOrEmpty((String) x)) {
+                    if (!StringUtils.isEmpty((String) x)) {
                         return x;
                     }
                 } else {
@@ -62,6 +62,22 @@ public class JsfCtrl {
             }
         }
         return null;
+    }
+
+    public String strcat(Object... a) {
+        StringBuilder sb = new StringBuilder();
+        for (Object x : a) {
+            if (x != null) {
+                if (x instanceof String) {
+                    if (!StringUtils.isEmpty((String) x)) {
+                        sb.append((String) x);
+                    }
+                } else {
+                    sb.append(x);
+                }
+            }
+        }
+        return sb.toString();
     }
 
     public String fstr(String format, Object... a) {
@@ -116,14 +132,21 @@ public class JsfCtrl {
     }
 
     public String strexpand(String value, String chars, int min) {
+        if (chars == null || chars.length() == 0) {
+            chars = " ";
+        }
         if (value == null) {
             value = "";
         }
         while (value.length() < min) {
-            if (value.length() + chars.length() < min) {
+            if (value.length() + chars.length() <= min) {
                 value = value + chars;
             } else {
-                value = value + chars.substring(0, min - (value.length() + chars.length()));
+                int x = min - value.length();
+                if (x > chars.length()) {
+                    x = chars.length();
+                }
+                value = value + chars.substring(0, x);
             }
         }
         return value;
@@ -143,7 +166,7 @@ public class JsfCtrl {
     }
 
     public Locale getLocale(String preferred) {
-        Locale loc = Strings.isNullOrEmpty(preferred) ? null : new Locale(preferred);
+        Locale loc = StringUtils.isEmpty(preferred) ? null : new Locale(preferred);
         if (loc == null) {
             UserSession s = null;
             try {
@@ -161,5 +184,4 @@ public class JsfCtrl {
         return loc;
     }
 
-   
 }

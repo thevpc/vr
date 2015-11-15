@@ -19,7 +19,7 @@ import net.vpc.upa.config.Path;
  * @author vpc
  */
 @Entity(listOrder = "student.contact.fullName")
-@Path("Education/History")
+@Path("Contact")
 public class AcademicFormerStudent {
 
     @Id

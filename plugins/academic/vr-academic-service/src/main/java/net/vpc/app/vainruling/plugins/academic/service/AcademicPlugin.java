@@ -92,7 +92,6 @@ import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import net.vpc.upa.expressions.Order;
 import net.vpc.upa.expressions.Var;
-import net.vpc.upa.impl.util.Strings;
 import net.vpc.upa.types.DateTime;
 import net.vpc.vfs.VFS;
 import net.vpc.vfs.VFile;
@@ -1291,10 +1290,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
         if (prefix == null || prefix.isEmpty()) {
             prefix = "";
-        } else {
-            if (!prefix.endsWith(".")) {
-                prefix = prefix + ".";
-            }
+        } else if (!prefix.endsWith(".")) {
+            prefix = prefix + ".";
         }
         for (Map.Entry<String, Object> entrySet : p.entrySet()) {
             p2.put(prefix + entrySet.getKey(), entrySet.getValue());
@@ -1628,29 +1625,28 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
     }
 
-    public AcademicTeacherCV findOrCreateAcademicTeacherCV(int t) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        AcademicTeacherCV a = (AcademicTeacherCV) pu.createQuery("Select u from AcademicTeacherCV u where u.teacherId=:id")
-                .setParameter("id", t).getEntity();
-        if (a != null) {
-            return a;
-        }
-        //check teacher
-        AcademicTeacher teacher = findTeacher(t);
-        if (teacher != null) {
-            final AcademicTeacherCV cv = new AcademicTeacherCV();
-            cv.setTeacher(teacher);
-            UPA.getContext().invokePrivileged(new Action<Object>() {
+    public AcademicTeacherCV findOrCreateAcademicTeacherCV(final int t) {
+        return UPA.getContext().invokePrivileged(new Action<AcademicTeacherCV>() {
 
-                @Override
-                public Object run() {
-                    UPA.getPersistenceUnit().persist(cv);
-                    return null;
+            @Override
+            public AcademicTeacherCV run() {
+                PersistenceUnit pu = UPA.getPersistenceUnit();
+                AcademicTeacherCV a = (AcademicTeacherCV) pu.createQuery("Select u from AcademicTeacherCV u where u.teacherId=:id")
+                        .setParameter("id", t).getEntity();
+                if (a != null) {
+                    return a;
                 }
-            }, null);
-            return cv;
-        }
-        return null;
+                //check teacher
+                AcademicTeacher teacher = findTeacher(t);
+                if (teacher != null) {
+                    final AcademicTeacherCV cv = new AcademicTeacherCV();
+                    cv.setTeacher(teacher);
+                    UPA.getPersistenceUnit().persist(cv);
+                    return cv;
+                }
+                return null;
+            }
+        }, null);
     }
 
     public List<AcademicCourseAssignment> findCourseAssignments() {
@@ -2041,7 +2037,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             String code = cn[0].toLowerCase();
             AcademicDiscipline t = pu.findByMainField(AcademicDiscipline.class, code);
             if (t == null && autoCreate) {
-                if (!Strings.isNullOrEmpty(code)) {
+                if (!StringUtils.isEmpty(code)) {
                     t = new AcademicDiscipline();
                     t.setCode(code);
                     t.setName(cn[1]);
@@ -2286,54 +2282,81 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public void addUserForTeacher(AcademicTeacher academicTeacher) {
-        String login = academicTeacher.getContact().getFullName();
-        login = login.replaceFirst(" ", ".");
-        login = login.replaceAll(" ", "");
-        login = login.toLowerCase();
-        AppUser u = core.findUser(login);
-        AppUserType teacherType = VrApp.getBean(CorePlugin.class).findUserType("Teacher");
+        AppUser u = core.findUserByContact(academicTeacher.getContact().getId());
         if (u == null) {
-            u = new AppUser();
-            u.setLogin(login);
-            u.setContact(academicTeacher.getContact());
-            u.setPassword(academicTeacher.getContact().getFirstName().toLowerCase() + "1243");
-            u.setType(teacherType);
-            u.setDepartment(academicTeacher.getDepartment());
-            u.setEnabled(true);
-            UPA.getPersistenceUnit().persist(u);
-        } else {
-            u.setContact(academicTeacher.getContact());
-            u.setType(teacherType);
-            UPA.getPersistenceUnit().merge(u);
+            String login = core.resolveLoginProposal(academicTeacher.getContact());
+            u = core.findUser(login);
+            AppUserType teacherType = VrApp.getBean(CorePlugin.class).findUserType("Teacher");
+            if (u == null) {
+                u = new AppUser();
+                u.setLogin(login);
+                u.setContact(academicTeacher.getContact());
+                String pwd = academicTeacher.getContact().getFirstName().toLowerCase() + "1243";
+                u.setPassword(pwd);
+                u.setPasswordAuto(pwd);
+                u.setType(teacherType);
+                u.setDepartment(academicTeacher.getDepartment());
+                u.setEnabled(true);
+                UPA.getPersistenceUnit().persist(u);
+            } else {
+                u.setContact(academicTeacher.getContact());
+                u.setType(teacherType);
+                UPA.getPersistenceUnit().merge(u);
+            }
+            academicTeacher.setUser(u);
+            UPA.getPersistenceUnit().merge(academicTeacher);
         }
-        academicTeacher.setUser(u);
         core.userAddProfile(u.getId(), "Teacher");
-        UPA.getPersistenceUnit().merge(academicTeacher);
     }
 
     public boolean addUserForStudent(AcademicStudent academicStudent) {
-        String login = academicStudent.getContact().getFullName();
-        if (Strings.isNullOrEmpty(login)) {
-            return false;
-        }
-        AppUser u = core.findUser(login);
-        AppUserType studentType = VrApp.getBean(CorePlugin.class).findUserType("Student");
+        AppUser u = core.findUserByContact(academicStudent.getContact().getId());
         if (u == null) {
-            u = new AppUser();
+            String login = core.resolveLoginProposal(academicStudent.getContact());
+            if (StringUtils.isEmpty(login)) {
+                return false;
+            }
+            u = core.findUser(login);
+            if (u != null) {
+                //check if already bound to another contact!
+                AppContact otherContact = u.getContact();
+                AppContact myContact = academicStudent.getContact();
+                if (otherContact != null && myContact != null && otherContact.getId() != myContact.getId()) {
+                    //two students with the same name?
+                    int index = 2;
+                    while (true) {
+                        AppUser u2 = core.findUser(login + index);
+                        if (u2 != null) {
+                            u = u2;
+                            login = login + index;
+                            break;
+                        }
+                        index++;
+                    }
+                }
+            }
+            AppUserType studentType = VrApp.getBean(CorePlugin.class).findUserType("Student");
+            if (u == null) {
+                u = new AppUser();
 
-            u.setLogin(login);
-            u.setContact(academicStudent.getContact());
-            u.setPassword(academicStudent.getContact().getFirstName().toLowerCase() + "7788");
-            u.setType(studentType);
-            u.setDepartment(academicStudent.getDepartment());
-            u.setEnabled(true);
-            UPA.getPersistenceUnit().persist(u);
-        } else {
-            u.setContact(academicStudent.getContact());
-            u.setType(studentType);
-            UPA.getPersistenceUnit().merge(u);
+                u.setLogin(login);
+                u.setContact(academicStudent.getContact());
+                String pwd = academicStudent.getContact().getFirstName().toLowerCase() + "7788";
+                u.setPassword(pwd);
+                u.setPasswordAuto(pwd);
+                u.setType(studentType);
+                u.setDepartment(academicStudent.getDepartment());
+                u.setEnabled(true);
+                UPA.getPersistenceUnit().persist(u);
+            } else {
+                u.setContact(academicStudent.getContact());
+                u.setType(studentType);
+                UPA.getPersistenceUnit().merge(u);
+            }
+            academicStudent.setUser(u);
+            UPA.getPersistenceUnit().merge(academicStudent);
         }
-        academicStudent.setUser(u);
+
         core.userAddProfile(u.getId(), "Student");
 
         for (AcademicClass c : new AcademicClass[]{academicStudent.getLastClass1(), academicStudent.getLastClass2(), academicStudent.getLastClass3()}) {
@@ -2343,7 +2366,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 AppProfile p = core.findOrCreateProfile(s);
                 core.userAddProfile(u.getId(), p.getName());
             }
-            UPA.getPersistenceUnit().merge(academicStudent);
 
             AcademicProgram pr = academicStudent.getLastClass1() == null ? null : academicStudent.getLastClass1().getProgram();
             if (pr != null) {
@@ -2360,7 +2382,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             AppProfile p = core.findOrCreateProfile(s);
             core.userAddProfile(u.getId(), p.getName());
         }
-        UPA.getPersistenceUnit().merge(academicStudent);
 
         return true;
     }
@@ -2466,8 +2487,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
                     Node nNode = nList.item(temp);
 
-                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
-
+//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
                     if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
                         Element eElement = (Element) nNode;

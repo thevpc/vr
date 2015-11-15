@@ -19,7 +19,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStud
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.content.AcademicTeacherCV;
 import net.vpc.app.vainruling.plugins.academic.web.AcademicCtrlUtils;
-import net.vpc.upa.impl.util.Strings;
+import net.vpc.common.strings.StringUtils;
 
 /**
  *
@@ -90,7 +90,7 @@ public class AcademicAddressBookCtrl {
         q = q.trim();
         String qt = getModel().getQueryType();
         List<Contact> cc = new ArrayList<>();
-        if (!Strings.isNullOrEmpty(qt)) {
+        if (!StringUtils.isEmpty(qt)) {
             if (q.length() > 0) {
                 if (qt.equals("teachers")) {
                     AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
@@ -103,12 +103,12 @@ public class AcademicAddressBookCtrl {
                             }
                             ct.getTitles().add(t.getDegree().getName() + ", " + t.getSituation().getName());
 
-                            if (!Strings.isNullOrEmpty(t.getDiscipline())) {
+                            if (!StringUtils.isEmpty(t.getDiscipline())) {
                                 ct.getTitles().add(t.getDiscipline());
                             }
 
                             AcademicTeacherCV cv = ap.findOrCreateAcademicTeacherCV(t.getId());
-                            if (!Strings.isNullOrEmpty(cv.getTitle1())) {
+                            if (!StringUtils.isEmpty(cv.getTitle1())) {
                                 ct.getTitles().add(cv.getTitle1());
                             }
                             ct.setUrlCommand("teacherCurriculum");

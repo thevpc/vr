@@ -20,8 +20,7 @@ import net.vpc.app.vainruling.api.Start;
 import net.vpc.app.vainruling.api.util.Reflector;
 import net.vpc.upa.Entity;
 import net.vpc.upa.UPA;
-import net.vpc.upa.impl.util.Strings;
-
+import net.vpc.common.strings.*;
 /**
  *
  * @author vpc
@@ -92,13 +91,13 @@ public class Plugin implements Comparable<Plugin> {
             d = true;
             r = s1.getBeanName().compareTo(s2.getBeanName());
         }
-        String op = "=";
-        if (r < 0) {
-            op = "<";
-        } else if (r > 0) {
-            op = ">";
-        }
-        System.out.println(s1.getBeanName() + " " + op + " " + s2.getBeanName() + (d ? " (byname)" : ""));
+//        String op = "=";
+//        if (r < 0) {
+//            op = "<";
+//        } else if (r > 0) {
+//            op = ">";
+//        }
+//        System.out.println(s1.getBeanName() + " " + op + " " + s2.getBeanName() + (d ? " (byname)" : ""));
         return r;
     }
 
@@ -287,10 +286,10 @@ public class Plugin implements Comparable<Plugin> {
             EntityAction r = p.getAnnotation();
             String actionId = r.actionName();
             String actionLabel = r.actionLabel();
-            if (Strings.isNullOrEmpty(actionId)) {
+            if (StringUtils.isEmpty(actionId)) {
                 actionId = p.getName();
             }
-            if (Strings.isNullOrEmpty(actionLabel)) {
+            if (StringUtils.isEmpty(actionLabel)) {
                 actionLabel = actionId;
             }
             boolean unspecifiedEntityType = r.entityType().equals(Void.class);

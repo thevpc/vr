@@ -62,3 +62,5 @@
 /plugins/sample-plugin/vr-sample-plugin-service/target/
 /plugins/sample-plugin/vr-sample-plugin-web/target/
 /vr-app-service-test/
+/runtime/filesystem/Config/Import/2014-2015_/
+/runtime/filesystem/Config/Import/2015-2016_/

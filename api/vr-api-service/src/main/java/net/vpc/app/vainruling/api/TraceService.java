@@ -79,10 +79,11 @@ public class TraceService {
         AppUser u = us == null ? null : us.getUser();
         String login = u == null ? "anonymous" : u.getLogin();
         int userId = u == null ? -1 : u.getId();
-        trace(action, message, data, module, objectName, objectId, login, userId, level);
+        String ip = us == null ? "" : us.getClientIpAddress();
+        trace(action, message, data, module, objectName, objectId, login, userId, level,ip);
     }
 
-    public void trace(final String action, final String message, final String data, final String module, final String objectName, Object objectId, final String user, final int userId, final Level level) {
+    public void trace(final String action, final String message, final String data, final String module, final String objectName, Object objectId, final String user, final int userId, final Level level, final String ip) {
         final PersistenceUnit pu = UPA.getPersistenceUnit();
         if (objectId instanceof Object[]) {
             objectId = Arrays.deepToString((Object[]) objectId);
@@ -105,7 +106,8 @@ public class TraceService {
                         level.getName(),
                         action,
                         objectName,
-                        objectId2.toString()));
+                        objectId2.toString(),
+                        ip));
                 return null;
             }
         }, new InvokeContext());

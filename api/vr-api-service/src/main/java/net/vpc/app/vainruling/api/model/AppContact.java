@@ -6,43 +6,51 @@
 package net.vpc.app.vainruling.api.model;
 
 import java.sql.Timestamp;
+import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
+import net.vpc.upa.config.Properties;
+import net.vpc.upa.config.Property;
 import net.vpc.upa.config.Sequence;
-import net.vpc.upa.impl.util.Strings;
 
 /**
  *
  * @author vpc
  */
 @Entity(listOrder = "fullName")
-@Path("Admin/Security")
+@Path("Contact")
 public class AppContact {
 
     @Id
     @Sequence
     private int id;
 
+    /**
+     * National Identity Number
+     */
+    private String nin;
+
+    private AppCivility civility;
+
     @Field(modifiers = {UserFieldModifier.MAIN})
     private String fullName;
     private String firstName;
     private String lastName;
 
+    @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
     private String fullName2;
     private String firstName2;
     private String lastName2;
-    /**
-     * National Identity Number
-     */
-    private String nin;
+    private AppGender gender;
+
+    @Properties(
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Details"))
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     private String email;
-    private AppGender gender;
-    private AppCivility civility;
-
     private AppCompany company;
 
     @Field(modifiers = {UserFieldModifier.SUMMARY})
@@ -50,13 +58,18 @@ public class AppContact {
     private String phone2;
     private String phone3;
 
+    @Field(modifiers = {UserFieldModifier.SUMMARY})
     private String positionTitle1;
+    @Field(modifiers = {UserFieldModifier.SUMMARY})
     private String positionTitle2;
     private String positionTitle3;
-    @Field(defaultValue = "false")
-    private boolean deleted;
+
+    @Properties(
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
     @Field(defaultValue = "true")
     private boolean enabled;
+    @Field(defaultValue = "false")
+    private boolean deleted;
     private String deletedBy;
     private Timestamp deletedOn;
 
@@ -118,7 +131,7 @@ public class AppContact {
 
     @Override
     public String toString() {
-        if(!Strings.isNullOrEmpty(fullName)){
+        if (!StringUtils.isEmpty(fullName)) {
             return fullName;
         }
         return "NO_NAME";//"AppContact{" + "id=" + id + ", fullName=" + fullName + ", firstName=" + firstName + ", lastName=" + lastName + ", nin=" + nin + ", email=" + email + ", gender=" + gender + ", civitity=" + civility + ", company=" + company + ", positionTitle1=" + positionTitle1 + ", positionTitle2=" + positionTitle2 + ", positionTitle3=" + positionTitle3 + ", deleted=" + deleted + ", enabled=" + enabled + ", deletedBy=" + deletedBy + ", deletedOn=" + deletedOn + '}';
