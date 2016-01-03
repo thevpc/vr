@@ -21,6 +21,7 @@ import net.vpc.app.vainruling.api.web.obj.PropertyViewManager;
 import net.vpc.app.vainruling.api.web.util.UPAObjectHelper;
 import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
+import net.vpc.upa.KeyType;
 import net.vpc.upa.types.DataType;
 import net.vpc.upa.types.EntityType;
 
@@ -34,7 +35,7 @@ public class EntityTypePropertyViewFactory implements PropertyViewFactory {
 
     @Override
     public PropertyView[] createPropertyView(String componentId, Field field, DataType datatype, Map<String, Object> configuration, PropertyViewManager manager) {
-        FieldPropertyViewInfo nfo = FieldPropertyViewInfo.build(field, configuration);
+        FieldPropertyViewInfo nfo = FieldPropertyViewInfo.build(field, datatype, configuration);
 
 //        ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
 //        DataType dataType = field.getDataType();
@@ -56,11 +57,16 @@ public class EntityTypePropertyViewFactory implements PropertyViewFactory {
         if (!nfo.visible) {
             return null;
         }
-
-        EntityType t = (EntityType) nfo.dataType;
-        Entity me = t.getRelationship().getTargetRole().getEntity();
-        String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.ENTITY);
-        final EntityTypePropertyView propView = new EntityTypePropertyView(componentId, field, controlType, manager);
+        Entity me = null;
+        if (nfo.dataType instanceof EntityType) {
+            EntityType t = (EntityType) nfo.dataType;
+            me = t.getRelationship().getTargetRole().getEntity();
+        } else if (nfo.dataType instanceof KeyType) {
+            KeyType t = (KeyType) nfo.dataType;
+            me = t.getEntity();
+        }
+        String controlType = field == null ? UIConstants.ControlType.ENTITY : UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.ENTITY);
+        final EntityTypePropertyView propView = new EntityTypePropertyView(componentId, field, nfo.dataType, controlType, manager);
         propView.update();
 
         propView.setDisabled(nfo.disabled);
@@ -83,8 +89,8 @@ public class EntityTypePropertyViewFactory implements PropertyViewFactory {
                         }
                         all.add(r0);
                         if (i == (r.length - 1)) {
-                            if (!r0.getComponentId().contains("_onchanage")) {
-                                r0.setComponentId(r0.getComponentId() + "_onchanage");
+                            if (r0.getCtrlType().equals(UIConstants.ControlType.ENTITY)) {
+                                r0.setCtrlType(UIConstants.ControlType.ENTITY + "_onchange");
                             }
                             r0.setSubmitOnChange(true);
                             r0.setChangeListener(new ValueChangeListener() {

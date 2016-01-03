@@ -32,8 +32,14 @@ public class AppCompany {
     private String name2;
     private String address;
     private AppGovernorate governorate;
+    private AppSettlement settlement;
     private AppCountry country;
     private AppIndustry industry;
+    private String postalCode;
+    private String phone;
+    private String fax;
+    private String mainContact;
+    private String mainContactAddress;
 
     public int getId() {
         return id;
@@ -89,6 +95,54 @@ public class AppCompany {
 
     public void setCountry(AppCountry country) {
         this.country = country;
+    }
+
+    public AppSettlement getSettlement() {
+        return settlement;
+    }
+
+    public void setSettlement(AppSettlement settlement) {
+        this.settlement = settlement;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getFax() {
+        return fax;
+    }
+
+    public void setFax(String fax) {
+        this.fax = fax;
+    }
+
+    public String getMainContact() {
+        return mainContact;
+    }
+
+    public void setMainContact(String mainContact) {
+        this.mainContact = mainContact;
+    }
+
+    public String getMainContactAddress() {
+        return mainContactAddress;
+    }
+
+    public void setMainContactAddress(String mainContactAddress) {
+        this.mainContactAddress = mainContactAddress;
     }
 
 }

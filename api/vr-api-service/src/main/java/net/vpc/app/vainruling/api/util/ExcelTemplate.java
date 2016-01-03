@@ -23,8 +23,8 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import net.vpc.common.utils.Convert;
 import net.vpc.common.utils.PlatformTypes;
-import net.vpc.vfs.VFS;
-import net.vpc.vfs.VFile;
+import net.vpc.common.vfs.VFS;
+import net.vpc.common.vfs.VFile;
 import org.springframework.util.PropertyPlaceholderHelper;
 
 /**

@@ -20,7 +20,7 @@ import net.vpc.upa.config.Sequence;
 
 /**
  * cours (dans un plan d'études)
- *
+ * Module
  * @author vpc
  */
 @Entity(listOrder = "name")
@@ -99,6 +99,10 @@ public class AcademicCoursePlan {
     private int weeksTP = 0;
     private int weeksPM = 0;
     private int weeksTPPM = 0;
+    @Field(modifiers = UserFieldModifier.SUMMARY)
+    private String roomConstraintsC;
+    @Field(modifiers = UserFieldModifier.SUMMARY)
+    private String roomConstraintsTP;
 
     public int getId() {
         return id;
@@ -320,4 +324,22 @@ public class AcademicCoursePlan {
         this.fullName = fullName;
     }
 
+    public String getRoomConstraintsC() {
+        return roomConstraintsC;
+    }
+
+    public void setRoomConstraintsC(String roomConstraintsC) {
+        this.roomConstraintsC = roomConstraintsC;
+    }
+
+    public String getRoomConstraintsTP() {
+        return roomConstraintsTP;
+    }
+
+    public void setRoomConstraintsTP(String roomConstraintsTP) {
+        this.roomConstraintsTP = roomConstraintsTP;
+    }
+
+   
+    
 }

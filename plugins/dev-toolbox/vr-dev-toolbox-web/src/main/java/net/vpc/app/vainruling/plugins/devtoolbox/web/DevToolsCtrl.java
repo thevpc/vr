@@ -48,8 +48,12 @@ public class DevToolsCtrl {
             this.query = query;
         }
 
-        public String isSql() {
-            return lang;
+        public boolean isSql() {
+            return "sql".equals(lang);
+        }
+        
+        public boolean isupql() {
+            return "upql".equals(lang);
         }
 
         public void setLang(String lang) {
@@ -121,7 +125,7 @@ public class DevToolsCtrl {
     public void exec() {
         String q = getModel().getQuery();
         if (q != null && q.trim().length() > 0) {
-            if ("sql".equals(getModel().isSql())) {
+            if (getModel().isSql()) {
                 clear();
                 q = q.trim();
                 if (q.toLowerCase().startsWith("select")) {
@@ -159,7 +163,7 @@ public class DevToolsCtrl {
                         getModel().getRowNames().add(new ColDef("<Error>", 0));
                     }
                 }
-            } else if ("upql".equals(getModel().isSql())) {
+            } else if (getModel().isupql()) {
                 if (q.toLowerCase().startsWith("select")) {
                     try {
                         List<MultiRecord> r = UPA.getPersistenceUnit().createQuery(q).getMultiRecordList();
@@ -189,8 +193,10 @@ public class DevToolsCtrl {
                     } catch (Exception e) {
                         List<Object> row1 = Arrays.asList((Object) e.getMessage());
                         List<Object> row2 = Arrays.asList((Object) StringUtils.verboseStacktraceToString(e));
+                        getModel().getRows().clear();
                         getModel().getRows().add((List<Object>) row1);
                         getModel().getRows().add((List<Object>) row2);
+                        getModel().getRowNames().clear();
                         getModel().getRowNames().add(new ColDef("<Error>", 0));
                     }
                 } else {
@@ -202,8 +208,10 @@ public class DevToolsCtrl {
                     } catch (Exception e) {
                         List<Object> row1 = Arrays.asList((Object) e.getMessage());
                         List<Object> row2 = Arrays.asList((Object) StringUtils.verboseStacktraceToString(e));
+                        getModel().getRows().clear();
                         getModel().getRows().add((List<Object>) row1);
                         getModel().getRows().add((List<Object>) row2);
+                        getModel().getRowNames().clear();
                         getModel().getRowNames().add(new ColDef("<Error>", 0));
                     }
                 }

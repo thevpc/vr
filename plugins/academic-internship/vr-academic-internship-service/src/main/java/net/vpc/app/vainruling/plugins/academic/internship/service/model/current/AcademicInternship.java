@@ -9,12 +9,17 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStud
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.api.model.AppCompany;
 import net.vpc.app.vainruling.api.model.AppContact;
+import net.vpc.app.vainruling.api.model.AppDepartment;
 import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipStatus;
+import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipType;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
+import net.vpc.upa.config.Properties;
 import net.vpc.upa.config.Property;
 import net.vpc.upa.config.Sequence;
 import net.vpc.upa.types.Date;
@@ -37,6 +42,10 @@ public class AcademicInternship {
 
     @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
     private String description;
+    @Field(modifiers = UserFieldModifier.SUMMARY)
+    private AcademicInternshipType internshipType;
+    @Field(modifiers = UserFieldModifier.SUMMARY)
+    private AcademicInternshipStatus internshipStatus;
     private String technologies;
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private String mainDiscipline;
@@ -49,11 +58,29 @@ public class AcademicInternship {
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
     private AppCompany company;
     private AppContact companyMentor;
+    private AppDepartment department;
+    private AcademicProgram program;
     private String duration;
     private Date startDate;
     private Date endDate;
+    @Properties({
+        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Evaluation")
+        ,@Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
+        @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+    }
+    )
     private String specFilePath;
+    @Properties({
+        @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
+        @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+    }
+    )
     private String midTermReportFilePath;
+    @Properties({
+        @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
+        @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+    }
+    )
     private String reportFilePath;
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
     private AcademicTeacher firstExaminer;
@@ -228,6 +255,38 @@ public class AcademicInternship {
 
     public void setExamDate(DateTime examDate) {
         this.examDate = examDate;
+    }
+
+    public AppDepartment getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(AppDepartment department) {
+        this.department = department;
+    }
+
+    public AcademicProgram getProgram() {
+        return program;
+    }
+
+    public void setProgram(AcademicProgram program) {
+        this.program = program;
+    }
+
+    public AcademicInternshipType getInternshipType() {
+        return internshipType;
+    }
+
+    public void setInternshipType(AcademicInternshipType internshipType) {
+        this.internshipType = internshipType;
+    }
+
+    public AcademicInternshipStatus getInternshipStatus() {
+        return internshipStatus;
+    }
+
+    public void setInternshipStatus(AcademicInternshipStatus internshipStatus) {
+        this.internshipStatus = internshipStatus;
     }
 
 }

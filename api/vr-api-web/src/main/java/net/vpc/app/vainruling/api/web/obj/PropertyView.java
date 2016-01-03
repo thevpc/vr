@@ -17,6 +17,7 @@ import jersey.repackaged.com.google.common.base.Objects;
 import net.vpc.common.utils.Convert;
 import net.vpc.upa.Entity;
 import net.vpc.upa.EntityBuilder;
+import net.vpc.upa.KeyType;
 import net.vpc.upa.types.DataType;
 import net.vpc.upa.types.EntityType;
 import net.vpc.upa.types.EnumType;
@@ -219,6 +220,18 @@ public class PropertyView implements Serializable {
                 if (dataType instanceof EntityType) {
                     EntityType et = (EntityType) dataType;
                     Entity masterEntity = et.getRelationship().getTargetRole().getEntity();
+                    EntityBuilder mconverter = masterEntity.getBuilder();
+                    for (Object v : values) {
+                        Object id = mconverter.entityToId(v);
+                        if (Objects.equal(Convert.toString(selectedItem), Convert.toString(id))) {
+                            someUpdates |= !Objects.equal(value, v);
+                            value = v;
+                            break;
+                        }
+                    }
+                }else if (dataType instanceof KeyType) {
+                    KeyType et = (KeyType) dataType;
+                    Entity masterEntity = et.getEntity();
                     EntityBuilder mconverter = masterEntity.getBuilder();
                     for (Object v : values) {
                         Object id = mconverter.entityToId(v);

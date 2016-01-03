@@ -33,6 +33,7 @@ public class InSetEvaluator extends AbstractEvaluator<Boolean> {
     final static Operator OR = new Operator("|", 2, Operator.Associativity.LEFT, 1);
     final static Operator OR2 = new Operator("||", 2, Operator.Associativity.LEFT, 1);
     final static Operator OR3 = new Operator(",", 2, Operator.Associativity.LEFT, 1);
+    final static Operator OR4 = new Operator(";", 2, Operator.Associativity.LEFT, 1);
 
     private static final Parameters evalParams;
 
@@ -50,6 +51,7 @@ public class InSetEvaluator extends AbstractEvaluator<Boolean> {
         evalParams.addExpressionBracket(BracketPair.PARENTHESES);
         evalParams.addConstants(Arrays.asList(new Constant("all")));
         evalParams.addConstants(Arrays.asList(new Constant("none")));
+        evalParams.setFunctionArgumentSeparator('\0');
     }
     private Set<String> items;
 
@@ -84,7 +86,7 @@ public class InSetEvaluator extends AbstractEvaluator<Boolean> {
         Boolean o1 = operands.next();
         Boolean o2 = operands.next();
         Boolean result;
-        if (operator == OR || operator == OR2 || operator == OR3) {
+        if (operator == OR || operator == OR2 || operator == OR3|| operator == OR4) {
             result = o1 || o2;
         } else if (operator == AND || operator == AND2 || operator == AND3) {
             result = o1 && o2;

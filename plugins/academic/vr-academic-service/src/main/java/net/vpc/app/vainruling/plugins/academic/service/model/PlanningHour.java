@@ -14,6 +14,8 @@ public class PlanningHour {
     private String hour;
     private String room;
     private String students;
+    private String teacher;
+    private String actor;
     private String activity;
     private String subject;
 
@@ -60,6 +62,22 @@ public class PlanningHour {
     @Override
     public String toString() {
         return "PlanningHour{" + "hour=" + hour + ", room=" + room + ", students=" + students + ", activity=" + activity + ", subject=" + subject + '}';
+    }
+
+    public String getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(String teacher) {
+        this.teacher = teacher;
+    }
+
+    public String getActor() {
+        return actor;
+    }
+
+    public void setActor(String actor) {
+        this.actor = actor;
     }
 
 }

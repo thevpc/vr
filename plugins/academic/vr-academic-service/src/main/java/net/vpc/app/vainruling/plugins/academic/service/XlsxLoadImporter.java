@@ -5,6 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service;
 
+import net.vpc.common.vfs.VFile;
+import net.vpc.common.vfs.VFS;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,7 +55,6 @@ import net.vpc.upa.UPA;
 import net.vpc.upa.bulk.DataRow;
 import net.vpc.upa.bulk.ParseFormatManager;
 import net.vpc.upa.bulk.SheetParser;
-import net.vpc.vfs.*;
 
 /**
  *

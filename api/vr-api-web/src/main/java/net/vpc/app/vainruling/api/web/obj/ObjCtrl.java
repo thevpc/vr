@@ -63,6 +63,7 @@ import net.vpc.upa.types.EnumType;
 import net.vpc.upa.types.IntType;
 import net.vpc.upa.types.StringType;
 import net.vpc.upa.types.TemporalType;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.extensions.model.dynaform.DynaFormControl;
 import org.primefaces.extensions.model.dynaform.DynaFormLabel;
 import org.primefaces.extensions.model.dynaform.DynaFormModel;
@@ -430,7 +431,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     private Object resolveEntityId(String strId) {
-        if (strId == null || strId.length() == 0) {
+        if (strId == null || strId.trim().length() == 0) {
             return null;
         }
         return Convert.toInteger(strId);
@@ -503,7 +504,6 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     public class PModel extends Model<ObjRow> {
 
         private String entityName;
-        private Object[] actionArgs;
         private List<ObjFormAction> actions = new ArrayList<ObjFormAction>();
         private Config config;
         private Set<String> disabledFields = new HashSet<String>();
@@ -518,14 +518,6 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
         public void setActions(List<ObjFormAction> actions) {
             this.actions = actions;
-        }
-
-        public Object[] getActionArgs() {
-            return actionArgs;
-        }
-
-        public void setActionArgs(Object[] actionArgs) {
-            this.actionArgs = actionArgs;
         }
 
         public String getEntityName() {
@@ -980,7 +972,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         return svalue.toLowerCase().contains(sfilter.toLowerCase());
     }
 
-    public void onAction(String actionKey) {
+    public void onAction(String actionKey, Object[] args) {
         enabledButtons.clear();
         if ("Persist".equals(actionKey)) {
             onNew();
@@ -992,7 +984,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             try {
                 currentViewToModel();
                 Object c = getModel().getCurrentObj();
-                objService.invokeEntityAction(getEntityName(), actionKey, c, getModel().getActionArgs());
+                objService.invokeEntityAction(getEntityName(), actionKey, c, args);
             } catch (RuntimeException ex) {
                 log.log(Level.SEVERE, "Error", ex);
                 throw ex;
@@ -1003,5 +995,50 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     public void updateAllFormulas() {
         enabledButtons.clear();
         UPA.getPersistenceUnit().updateFormulas();
+    }
+
+    public PropertyView findPropertyView(String componentId) {
+        for (PropertyView p : properties) {
+            if (p.getComponentId().equals(componentId)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public void openActionDialog(String actionId) {
+        if (actionId != null) {
+            ActionDialog ed = VrApp.getBean(ActionDialogManager.class).getActionDialog(actionId);
+            if (ed != null) {
+                ed.openDialog(actionId, actionId);
+                return;
+            }
+        }
+        onAction(actionId, null);
+    }
+
+    public void onActionDialogClosed(SelectEvent event) {
+        DialogResult o = (DialogResult) event.getObject();
+        if (o != null) {
+            onAction(o.getUserInfo(), (Object[]) o.getValue());
+        }
+    }
+
+    public void openPropertyViewDialog(String property) {
+        PropertyView p = findPropertyView(property);
+        if (p != null) {
+            PropertyViewDialog ed = VrApp.getBean(PropertyViewDialogManager.class).getPropertyViewDialog(p.getCtrlType());
+            if (ed != null) {
+                ed.openDialog(p, p.getComponentId());
+            }
+        }
+    }
+
+    public void onPropertyViewDialogClosed(SelectEvent event) {
+        DialogResult o = (DialogResult) event.getObject();
+        PropertyView p = findPropertyView(o.getUserInfo());
+        if (p != null) {
+            p.setValue(o.getValue());
+        }
     }
 }

@@ -12,9 +12,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.lib</groupId>
+            <groupId>net.vpc.common</groupId>
             <artifactId>gomail</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

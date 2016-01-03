@@ -32,11 +32,11 @@ import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.streams.PathInfo;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UPA;
-import net.vpc.vfs.VFS;
-import net.vpc.vfs.VFile;
-import net.vpc.vfs.VFileType;
-import net.vpc.vfs.VirtualFileSystem;
-import net.vpc.vfs.impl.VirtualFileACL;
+import net.vpc.common.vfs.VFS;
+import net.vpc.common.vfs.VFile;
+import net.vpc.common.vfs.VFileType;
+import net.vpc.common.vfs.VirtualFileSystem;
+import net.vpc.common.vfs.VirtualFileACL;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -56,7 +56,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
 
     private static final Logger log = Logger.getLogger(DocumentsCtrl.class.getName());
 
-    private static final Map<String, String> extensionsToCss = new HashMap<String, String>();
+    public static final Map<String, String> extensionsToCss = new HashMap<String, String>();
 
     static {
         extensionsToCss.put("csv", "file-csv");
@@ -207,14 +207,17 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         onRefresh();
     }
 
-    public StreamedContent getContent(FileInfo i) {
+    public StreamedContent getContent(VFileInfo i) {
         InputStream stream = null;
         try {
             if (i.getFile().isDirectory()) {
                 //should zip it?   
             } else {
                 final VFile f = i.getFile();
+                FileSystemPlugin fsp = VrApp.getBean(FileSystemPlugin.class);
+                fsp.markDownloaded(f);
                 stream = f.getInputStream();
+                onRefresh();
                 return new DefaultStreamedContent(stream, f.probeContentType(), f.getName());
             }
         } catch (IOException ex) {
@@ -239,7 +242,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
 
     public void onRemove() {
         try {
-            for (FileInfo file : getModel().getFiles()) {
+            for (VFileInfo file : getModel().getFiles()) {
                 if (file.isSelected()) {
                     file.file.deleteAll();
                 }
@@ -302,7 +305,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
     public void onRefresh() {
         final VFile curr = getModel().getCurrent().getFile();
         VFile[] all = getModel().getFileSystem().listFiles(curr.getPath());
-        ArrayList<FileInfo> ret = new ArrayList<>();
+        ArrayList<VFileInfo> ret = new ArrayList<>();
         for (VFile a : all) {
             ret.add(createFileInfo(a.getName(), a));
         }
@@ -315,10 +318,10 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
 
     public static class Model {
 
-        FileInfo current;
+        VFileInfo current;
         VirtualFileSystem fileSystem;
         Config config;
-        private List<FileInfo> files = new ArrayList<>();
+        private List<VFileInfo> files = new ArrayList<>();
         private String area = "";
         private String newName;
         private String newUploadName;
@@ -331,19 +334,19 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
             this.newName = newName;
         }
 
-        public FileInfo getCurrent() {
+        public VFileInfo getCurrent() {
             return current;
         }
 
-        public void setCurrent(FileInfo current) {
+        public void setCurrent(VFileInfo current) {
             this.current = current;
         }
 
-        public List<FileInfo> getFiles() {
+        public List<VFileInfo> getFiles() {
             return files;
         }
 
-        public void setFiles(List<FileInfo> files) {
+        public void setFiles(List<VFileInfo> files) {
             this.files = files;
         }
 
@@ -381,8 +384,9 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
 
     }
 
-    private FileInfo createFileInfo(String name, VFile file) {
+    private VFileInfo createFileInfo(String name, VFile file) {
         String css = "file";
+        long downloads = 0;
         if (file.isDirectory()) {
             css = "folder";
         } else {
@@ -392,68 +396,12 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
             if (css == null) {
                 css = "file";
             }
+            FileSystemPlugin fsp = VrApp.getBean(FileSystemPlugin.class);
+            downloads = fsp.getDownloadsCount(file);
         }
-        return new FileInfo(name, file, css);
+        return new VFileInfo(name, file, css, downloads);
     }
 
-    public class FileInfo implements Comparable<FileInfo> {
-
-        private String name;
-        private String css;
-        private VFile file;
-        private boolean selected;
-
-        public FileInfo(String name, VFile file, String css) {
-            this.name = name;
-            this.file = file;
-            this.css = css;
-        }
-
-        public boolean isSelected() {
-            return selected;
-        }
-
-        public void setSelected(boolean selected) {
-            this.selected = selected;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public VFile getFile() {
-            return file;
-        }
-
-        public Date getLastModifiedDate() {
-            return new Date(file.lastModified());
-        }
-
-        public void setFile(VFile file) {
-            this.file = file;
-        }
-
-        public String getCss() {
-            return css;
-        }
-
-        public void setCss(String css) {
-            this.css = css;
-        }
-
-        @Override
-        public int compareTo(FileInfo o) {
-            if (file.isDirectory() != o.file.isDirectory()) {
-                return file.isDirectory() ? -1 : 1;
-            }
-            return file.getName().compareToIgnoreCase(o.file.getName());
-        }
-
-    }
 
     public Model getModel() {
         return model;
@@ -497,7 +445,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         return VrApp.getBean(UserSession.class).isAdmin();
     }
 
-    public boolean isEnabledButton(String buttonId, FileInfo forFile) {
+    public boolean isEnabledButton(String buttonId, VFileInfo forFile) {
         if ("Refresh".equals(buttonId)) {
             return true;
         }
@@ -511,7 +459,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
             if (newFile.exists()) {
                 boolean doOverride = false;
                 //check if alreay selected
-                for (FileInfo ex : getModel().getFiles()) {
+                for (VFileInfo ex : getModel().getFiles()) {
                     if (ex.getFile().getName().equals(newFile.getName()) && ex.isSelected()) {
                         doOverride = true;
                         break;

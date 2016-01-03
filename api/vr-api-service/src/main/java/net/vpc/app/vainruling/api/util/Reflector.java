@@ -290,7 +290,10 @@ public class Reflector {
             } catch (IllegalArgumentException ex) {
                 throw new RuntimeException(ex);
             } catch (InvocationTargetException ex) {
-                throw new RuntimeException(ex);
+                if(ex.getCause() instanceof RuntimeException){
+                   throw (RuntimeException)ex.getCause(); 
+                }
+                throw new RuntimeException(ex.getCause());
             }
         }
 

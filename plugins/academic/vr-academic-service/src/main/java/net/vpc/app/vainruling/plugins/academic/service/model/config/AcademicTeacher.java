@@ -54,20 +54,21 @@ public class AcademicTeacher {
     private String officePhoneNumber;
     @Field(
             defaultValue = "false",
-            updateAccessLevel = AccessLevel.PROTECTED, 
+            updateAccessLevel = AccessLevel.PROTECTED,
             readAccessLevel = AccessLevel.PROTECTED
     )
     private boolean deleted;
     @Field(
-            updateAccessLevel = AccessLevel.PROTECTED, 
+            updateAccessLevel = AccessLevel.PROTECTED,
             readAccessLevel = AccessLevel.PROTECTED
     )
     private String deletedBy;
     @Field(
-            updateAccessLevel = AccessLevel.PROTECTED, 
+            updateAccessLevel = AccessLevel.PROTECTED,
             readAccessLevel = AccessLevel.PROTECTED
     )
     private Timestamp deletedOn;
+    private String otherNames;
 
     public int getId() {
         return id;
@@ -203,6 +204,14 @@ public class AcademicTeacher {
             return contact.toString();
         }
         return "AcademicTeacher{" + "id=" + id + ", contact=" + contact.toString() + '}';
+    }
+
+    public String getOtherNames() {
+        return otherNames;
+    }
+
+    public void setOtherNames(String otherNames) {
+        this.otherNames = otherNames;
     }
 
 }

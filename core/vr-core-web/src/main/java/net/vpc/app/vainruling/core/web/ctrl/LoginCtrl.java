@@ -79,8 +79,9 @@ public class LoginCtrl {
     }
 
     public String dologout() {
+        boolean impersonating = getSession().isImpersonating();
         loginService.logout();
-        if (getSession().isImpersonating()) {
+        if (impersonating) {
             return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
         }
         FacesUtils.invalidateSession();

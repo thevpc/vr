@@ -14,8 +14,8 @@ import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.plugins.academic.service.XlsxLoadImporter;
 import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
-import net.vpc.lib.gomail.GoMail;
-import net.vpc.lib.gomail.GoMailFormat;
+import net.vpc.common.gomail.GoMail;
+import net.vpc.common.gomail.GoMailFormat;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import org.springframework.stereotype.Service;
@@ -147,7 +147,7 @@ public class TeachersLoadTest {
             MailboxPlugin mails = new MailboxPlugin();
             GoMail m = mails.read(GoMailFormat.TEXT, new File(dir + "/notification-charge-finale.xmail"));
             m.setSimulate(false);
-            mails.sendExternalMail(m);
+            mails.sendExternalMail(m,null,null);
 //            for () {
 //                break;
 //            }

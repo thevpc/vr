@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
+import net.vpc.upa.FieldModifier;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.QueryBuilder;
 import net.vpc.upa.Record;
@@ -61,8 +62,10 @@ public class ObjManagerService {
             DataType dt = pf.get(0).getDataType();
             if (dt instanceof EntityType) {
                 persist = entity.findById(id) == null;
-            } else {
+            } else if (pf.size()==1 && pf.get(0).getModifiers().contains(FieldModifier.PERSIST_SEQUENCE)) {
                 persist = Objects.equals(dt.getDefaultUnspecifiedValue(), id);
+            } else {
+                persist = entity.findById(id) == null;
             }
         } else {
             persist = entity.findById(id) == null;

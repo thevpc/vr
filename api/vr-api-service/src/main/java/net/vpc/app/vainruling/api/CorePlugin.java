@@ -104,58 +104,6 @@ public class CorePlugin {
         return (AppProfile) pu.findByMainField(AppProfile.class, profileName);
     }
 
-    public List<AppUser> findUserByProfileExpression(String profileExpression) {
-        if (profileExpression == null) {
-            profileExpression = "";
-        }
-        List<AppUser> u = new ArrayList<>();
-        List<AppProfile> p = new ArrayList<>();
-
-        List<AppUser> allUsers = findEnabledUsers();
-        List<AppProfile> allProfiles = findProfiles();
-        Map<String, Object> matchedProfilesAndUsers = new HashMap<String, Object>();
-        for (AppUser x : allUsers) {
-            matchedProfilesAndUsers.put(x.getLogin(), x);
-        }
-        for (AppProfile x : allProfiles) {
-            matchedProfilesAndUsers.put(x.getName(), x);
-        }
-
-        for (String s : profileExpression.split(" ,;")) {
-            if (s.length() > 0) {
-                Object f = matchedProfilesAndUsers.get(s);
-                if (f != null) {
-                    if (f instanceof AppUser) {
-                        u.add((AppUser) f);
-                    } else if (f instanceof AppProfile) {
-                        p.add((AppProfile) f);
-                    }
-                } else if (s.contains("*")) {
-                    for (AppProfile pp : allProfiles) {
-                        if (StringUtils.matchesWildcardExpression(pp.getName(), s)) {
-                            p.add(pp);
-                        }
-                    }
-                    for (AppUser uu : allUsers) {
-                        if (StringUtils.matchesWildcardExpression(uu.getLogin(), s)) {
-                            u.add(uu);
-                        }
-                    }
-                }
-            }
-        }
-        Map<Integer, AppUser> result = new HashMap<>();
-        for (AppProfile pp : allProfiles) {
-            for (AppUser uu : findUsersByProfile(pp.getId())) {
-                result.put(uu.getId(), uu);
-            }
-        }
-        for (AppUser uu : allUsers) {
-            result.put(uu.getId(), uu);
-        }
-        return new ArrayList<>(result.values());
-    }
-
     public boolean createRight(String rightName, String desc) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AppRightName r = pu.findById(AppRightName.class, rightName);
@@ -996,5 +944,9 @@ public class CorePlugin {
             ln = "";
         }
         return fn.toLowerCase().replace(" ", "") + "." + ln.toLowerCase().replace(" ", "");
+    }
+
+    public void runThread(Runnable r) {
+        new SpringThread(r).start();
     }
 }

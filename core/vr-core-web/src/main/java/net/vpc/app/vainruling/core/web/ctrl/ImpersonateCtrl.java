@@ -16,7 +16,7 @@ import net.vpc.app.vainruling.api.web.UCtrl;
 @UCtrl(
         title = "Switch User",
         url = "modules/admin/impersonate",
-        menu = "/",
+        menu = "/Admin",
         securityKey = "Custom.Admin.Impersonate"
 )
 @ManagedBean

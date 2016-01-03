@@ -30,11 +30,10 @@ public class EnumTypePropertyViewFactory implements PropertyViewFactory {
 
     @Override
     public PropertyView[] createPropertyView(String componentId, Field field, DataType datatype, Map<String, Object> configuration, PropertyViewManager manager) {
-        FieldPropertyViewInfo nfo = FieldPropertyViewInfo.build(field, configuration);
-        DataType dataType = field.getDataType();
+        FieldPropertyViewInfo nfo = FieldPropertyViewInfo.build(field, datatype,configuration);
         String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.SELECT);
-        PropertyView propView = new FieldPropertyView(componentId, field, controlType, manager);
-        propView.setValues(manager.getPropertyViewValuesProvider(field, dataType).resolveValues(propView, field, dataType));
+        PropertyView propView = new FieldPropertyView(componentId, field, datatype,controlType, manager);
+        propView.setValues(manager.getPropertyViewValuesProvider(field, nfo.dataType).resolveValues(propView, field, nfo.dataType));
 //        EnumType t = (EnumType) dataType;
 //        boolean main = field.getModifiers().contains(FieldModifier.MAIN);
 //        boolean id = field.getModifiers().contains(FieldModifier.ID);
@@ -55,7 +54,7 @@ public class EnumTypePropertyViewFactory implements PropertyViewFactory {
             return null;
         }
         List<SelectItem> items = new ArrayList<>();
-        if (dataType.isNullable()) {
+        if (nfo.dataType.isNullable()) {
             items.add(new SelectItem(null, "N/A"));
         }
         I18n i18n = VrApp.getBean(I18n.class);

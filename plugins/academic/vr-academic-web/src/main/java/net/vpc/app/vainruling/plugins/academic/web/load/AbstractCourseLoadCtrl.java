@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.web.load;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfo;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;

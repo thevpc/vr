@@ -73,6 +73,11 @@
             <artifactId>vr-mailbox-web</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.plugins</groupId>
+            <artifactId>vr-dev-toolbox-web</artifactId>
+            <version>1.0</version>
+        </dependency>
 
     </dependencies>
 

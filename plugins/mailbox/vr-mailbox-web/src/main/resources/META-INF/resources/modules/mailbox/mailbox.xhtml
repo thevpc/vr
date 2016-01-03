@@ -71,16 +71,39 @@ and open the template in the editor.
                                         <p:outputLabel value="A"/>
                                     </p:column>
                                     <p:column style="width:80%;border-width: 0px;border-style: none;">
-                                        <p:inputText  style="width:100%" value="#{mailboxCtrl.model.newItem.toProfiles}"/>
+                                        <p:inputText id="comptoProfiles" style="width:100%" value="#{mailboxCtrl.model.newItem.toProfiles}"/>
+                                    </p:column>
+                                    <p:column style="width:5%;border-width: 0px;border-style: none;">
+                                        <p:commandButton 
+                                            style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
+                                            ajax="true" value="" 
+                                            icon="fa fa-users"
+                                            actionListener="#{mailboxCtrl.openProfileExprDialog('to')}"
+                                            >
+                                            <p:ajax event="dialogReturn" listener="#{mailboxCtrl.onProfileExprDialogClosed}" update="comptoProfiles" />
+                                        </p:commandButton>
                                     </p:column>
                                 </p:row>
                                 <p:row style=";border-width: 0px;border-style: none;" rendered="#{mailboxCtrl.model.advancedSettings}">
                                     <p:column style="width:20px;border-width: 0px;border-style: none;">
-                                        <p:outputLabel value="Modèle"/>
+                                        <p:outputLabel value="Ceci est un Modèle"/>
                                     </p:column>
                                     <p:column style="width:10px;border-width: 0px;border-style: none;">
                                         <p:selectBooleanCheckbox  style="width:10px" value="#{mailboxCtrl.model.newItem.templateMessage}"/>
                                     </p:column>
+                                </p:row>
+                                <p:row style=";border-width: 0px;border-style: none;" rendered="#{mailboxCtrl.model.advancedSettings}">
+                                    <p:column style=";border-width: 0px;border-style: none;">
+                                        <p:outputLabel value="Appliquer Modèle Existant" />
+                                    </p:column>
+                                    <p:column style=";border-width: 0px;border-style: none;">
+                                        <p:selectOneMenu id="tmailboxMessageFormat" value="#{mailboxCtrl.model.mailboxMessageFormat.selectedItem}" required="#{mailboxCtrl.model.mailboxMessageFormat.required}"  
+                                                         disabled="#{mailboxCtrl.model.mailboxMessageFormat.disabled}" 
+                                                         >  
+                                            <f:selectItems value="#{mailboxCtrl.model.mailboxMessageFormat.items}"/>  
+                                        </p:selectOneMenu>  
+                                    </p:column>
+
                                 </p:row>
                                 <p:row style=";border-width: 0px;border-style: none;" rendered="#{mailboxCtrl.model.advancedSettings}">
                                     <p:column style="width:20px;border-width: 0px;border-style: none;">
@@ -95,7 +118,17 @@ and open the template in the editor.
                                         <p:outputLabel value="CC"/>
                                     </p:column>
                                     <p:column style=";border-width: 0px;border-style: none;" colspan="3">
-                                        <p:inputText style="width:100%" value="#{mailboxCtrl.model.newItem.ccProfiles}"/>
+                                        <p:inputText id="compccProfiles" style="width:100%" value="#{mailboxCtrl.model.newItem.ccProfiles}"/>
+                                    </p:column>
+                                    <p:column style=";border-width: 0px;border-style: none;" colspan="3">
+                                        <p:commandButton 
+                                            style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
+                                            ajax="true" value="" 
+                                            icon="fa fa-users"
+                                            actionListener="#{mailboxCtrl.openProfileExprDialog('cc')}"
+                                            >
+                                            <p:ajax event="dialogReturn" listener="#{mailboxCtrl.onProfileExprDialogClosed}" update="compccProfiles" />
+                                        </p:commandButton>
                                     </p:column>
                                 </p:row>
                                 <p:row style=";border-width: 0px;border-style: none;" rendered="#{mailboxCtrl.model.advancedSettings}">
@@ -103,7 +136,17 @@ and open the template in the editor.
                                         <p:outputLabel value="BCC"/>
                                     </p:column>
                                     <p:column style=";border-width: 0px;border-style: none;" colspan="3">
-                                        <p:inputText style="width:100%" value="#{mailboxCtrl.model.newItem.bccProfiles}"/>
+                                        <p:inputText id="compbccProfiles" style="width:100%" value="#{mailboxCtrl.model.newItem.bccProfiles}"/>
+                                    </p:column>
+                                    <p:column style=";border-width: 0px;border-style: none;" colspan="3">
+                                        <p:commandButton 
+                                            style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
+                                            ajax="true" value="" 
+                                            icon="fa fa-users"
+                                            actionListener="#{mailboxCtrl.openProfileExprDialog('bcc')}"
+                                            >
+                                            <p:ajax event="dialogReturn" listener="#{mailboxCtrl.onProfileExprDialogClosed}" update="compbccProfiles" />
+                                        </p:commandButton>
                                     </p:column>
                                 </p:row>
 
@@ -141,7 +184,7 @@ and open the template in the editor.
                 </h:form>
 
                 <h:form id="listForm">
-                    <p:outputPanel id="editItemList">
+                    <p:outputPanel id="editItemList" rendered="#{mailboxCtrl.listMode}">
                         <div class="row">
                             <p:spacer width="10" height="10" />
                         </div>
@@ -214,12 +257,14 @@ and open the template in the editor.
                     <p:remoteCommand name="processOnArchiveSelected" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{mailboxCtrl.onArchiveSelected()}"/>
                 </h:form>
 
-                <h:form id="itemForm" enctype="multipart/form-data" >
-                    <p:outputPanel id="editItemDialog" rendered="#{mailboxCtrl.model.current ne null and mailboxCtrl.model.current.content ne null}" style="width: 100%">
-
-                        <p:panel id="basic" header="#{mailboxCtrl.model.current.subject}" style="margin-bottom:20px;width: 100%;border-width: 0px;">
+                <h:form id="itemForm" enctype="multipart/form-data">
+                    <p:outputPanel id="editItemDialog" 
+                                   rendered="#{mailboxCtrl.newOrUpdateMode and (mailboxCtrl.model.current ne null and mailboxCtrl.model.current.content ne null)}" 
+                                   style="width: 100%;margin-top: 20px">
+                        <h3><h:outputText value="#{mailboxCtrl.model.current.subject}"/></h3>
+                        <p:panel id="basic" style="margin-bottom:20px;width: 100%;border-width: 0px;">
                             <p:spacer width="5" height="10"/>
-                            <p:outputLabel value="#{mailboxCtrl.model.current.userFullName} , "/>
+                            <p:outputLabel value="de #{mailboxCtrl.model.current.userFullName} , "/>
                             <p:spacer width="5" height="10"/>
                             <p:outputLabel value="le"/>
                             <p:spacer width="5" height="10"/>

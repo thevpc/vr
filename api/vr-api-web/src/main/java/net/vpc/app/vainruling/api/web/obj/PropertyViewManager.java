@@ -9,8 +9,12 @@ import net.vpc.app.vainruling.api.web.obj.defaultimpl.DefaultPropertyViewFactory
 import java.util.HashMap;
 import java.util.Map;
 import net.vpc.common.utils.ClassMap;
+import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
+import net.vpc.upa.UPA;
 import net.vpc.upa.types.DataType;
+import net.vpc.upa.types.EntityType;
+import net.vpc.upa.types.TypesFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -33,45 +37,63 @@ public class PropertyViewManager {
 
     public PropertyViewValuesProvider getPropertyViewValuesProvider(Field field, DataType dt) {
         PropertyViewValuesProvider v = null;
-        v = propertyViewValuesProviderByField.get(field.getAbsoluteName());
-        if (v != null) {
-            return v;
+        if (field != null) {
+            v = propertyViewValuesProviderByField.get(field.getAbsoluteName());
+            if (v != null) {
+                return v;
+            }
         }
-        v = propertyViewValuesProviderByDataType.get(field.getDataType().getClass());
-        if (v != null) {
-            return v;
-        }
-        v = propertyViewValuesProviderByPlatformType.get(field.getDataType().getPlatformType());
-        if (v != null) {
-            return v;
+        DataType dtok = dt != null ? dt : field != null ? field.getDataType() : null;
+        if (dtok != null) {
+            v = propertyViewValuesProviderByDataType.get(dtok.getClass());
+            if (v != null) {
+                return v;
+            }
+            v = propertyViewValuesProviderByPlatformType.get(dtok.getPlatformType());
+            if (v != null) {
+                return v;
+            }
         }
         return defaultPropertyViewValuesProvider;
     }
 
     public PropertyViewFactory getPropertyViewFactory(Field field, DataType dt) {
         PropertyViewFactory v = null;
-        v = propertyViewFactoryByField.get(field.getAbsoluteName());
-        if (v != null) {
-            return v;
+        if (field != null) {
+            v = propertyViewFactoryByField.get(field.getAbsoluteName());
+            if (v != null) {
+                return v;
+            }
         }
-        v = propertyViewFactoryByDataType.get(field.getDataType().getClass());
-        if (v != null) {
-            return v;
-        }
-        v = propertyViewFactoryByPlatformType.get(field.getDataType().getPlatformType());
-        if (v != null) {
-            return v;
+        DataType dtok = dt != null ? dt : field != null ? field.getDataType() : null;
+        if (dtok != null) {
+            v = propertyViewFactoryByDataType.get(dtok.getClass());
+            if (v != null) {
+                return v;
+            }
+            v = propertyViewFactoryByPlatformType.get(dtok.getPlatformType());
+            if (v != null) {
+                return v;
+            }
         }
         return defaultPropertyViewFactory;
     }
 
-    public PropertyView[] createPropertyView(String componentId, Field field,Map<String,Object> configuration) {
+    public PropertyView[] createPropertyView(String componentId, Field field, Map<String, Object> configuration) {
         DataType dt = field.getDataType();
-        return getPropertyViewFactory(field, dt).createPropertyView(componentId, field, dt, configuration,this);
+        return getPropertyViewFactory(field, dt).createPropertyView(componentId, field, dt, configuration, this);
     }
 
-    public PropertyView[] createPropertyView(String componentId, DataType dt,Map<String,Object> configuration) {
-        return getPropertyViewFactory(null, dt).createPropertyView(componentId, null, dt, configuration,this);
+    public PropertyView[] createPropertyView(String componentId, Class dt, Map<String, Object> configuration) {
+        if (UPA.getPersistenceUnit().findEntity(dt) != null) {
+            Entity ee = UPA.getPersistenceUnit().findEntity(dt);
+            return createPropertyView(componentId, ee.getDataType(), configuration);
+        }
+        return createPropertyView(componentId, TypesFactory.forPlatformType(dt), configuration);
+    }
+
+    public PropertyView[] createPropertyView(String componentId, DataType dt, Map<String, Object> configuration) {
+        return getPropertyViewFactory(null, dt).createPropertyView(componentId, null, dt, configuration, this);
     }
 
     public void registerPropertyViewFactory(Field f, PropertyViewFactory factory) {

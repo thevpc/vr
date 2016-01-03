@@ -105,7 +105,9 @@ public class StatCache {
 
     public List<AcademicCourseIntent> getAcademicCourseIntentList() {
         if (academicCourseIntentList == null) {
-            academicCourseIntentList = UPA.getPersistenceUnit().findAll(AcademicCourseIntent.class);
+            academicCourseIntentList = UPA.getPersistenceUnit().createQuery("Select u from AcademicCourseIntent u")
+                    .setHint("navigationDepth", 5)
+                    .getEntityList();
         }
         return academicCourseIntentList;
     }

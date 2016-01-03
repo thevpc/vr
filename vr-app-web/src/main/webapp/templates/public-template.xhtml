@@ -16,16 +16,19 @@ and open the template in the editor.
         <meta charset="utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>  
-        <title>ENISo Info</title>
+        <title>ENISo info</title>
         <!-- Bootstrap -->
         <link href="${jsfCtrl.context}/fs/Site/wplugins/infusion/css/bootstrap.min.css" rel="stylesheet"/>
         <link rel="stylesheet" href="${jsfCtrl.context}/fs/Site/wplugins/infusion/css/styles.css"/>
         <link rel="stylesheet" href="${jsfCtrl.context}/fs/Site/wplugins/infusion/css/queries.css"/>
         <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"/>
+        <link href="${jsfCtrl.context}/css/app.css" rel="stylesheet" type="text/css"/>
         <!-- Fonts -->
         <link href='http://fonts.googleapis.com/css?family=Sintony:400,700' rel='stylesheet' type='text/css'/>
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700' rel='stylesheet' type='text/css'/>
         <link rel="shortcut icon" href="${jsfCtrl.context}/images/favicon.ico" type="image/x-icon" />
+        <link href='https://fonts.googleapis.com/css?family=Stalemate' rel='stylesheet' type='text/css'/>
+        <link href='https://fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css'/>
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -41,8 +44,8 @@ and open the template in the editor.
 
         <header class="clearfix">
             <div class="logo col-md-3">
-                <a href="/"><img class="navbar-brand" style="margin-top: 0px;margin-left: 20px;height: 80px;" src="${jsfCtrl.context}/images/eniso-ii.png" alt="VR ENISo" height="40"/></a>
-                <h2 class="logo-text">ENISo Info</h2>
+                <a href="/"><img class="navbar-brand" style="margin-top: 0px;margin-left: 20px;height: 80px;" src="${jsfCtrl.context}/images/eniso-ii.png" alt="ENISo info" height="40"/></a>
+                <h2 class="logo-text"><span style="font-family: 'Audiowide', serif;font-weight:normal;">ENISo</span> <span style="font-family: 'Stalemate', serif;font-weight:800;font-size: 32px;">info</span></h2>
             </div>
             <h:form id="pageMenuForm">
                 <nav class="clearfix">
@@ -98,24 +101,34 @@ and open the template in the editor.
                             </li>
                         </ui:fragment>
                         <ui:repeat value="#{articlesCtrl.mainRow1Articles}" var="a">
-                            <li style="background-image: url('#{a.content.imageURL}');">
+                            <li style="background-image: url('#{jsfCtrl.url(a.content.imageURL)}'); background-size:100% 100%;">
                                 <div class="container">
                                     <div class="row">
                                         <div class="col-md-6 col-md-offset-3">
-                                            <div class="hero-title">
-                                                <h:outputLabel value="#{a.content.subject}"/>
-                                            </div>
-                                            <p class="hero-content">
-                                                <h:outputLabel value="#{a.content.content}" escape="false"/>
-                                            </p>
-                                            <h:outputLink value="#{a.content.linkURL}"
-                                                          styleClass="#{(a.content.linkClassStyle eq null or a.content.linkClassStyle eq '')?'hero-btn':a.content.linkClassStyle}"
-                                                          ><h:outputText value="#{a.content.linkText}"/>
+                                            <ui:fragment 
+                                                rendered="#{!jsfCtrl.isEmpty(a.content.subject)}"
+                                                >
+                                                <div class="hero-title">
+                                                    <h:outputLabel value="#{a.content.subject}"/>
+                                                </div>
+                                            </ui:fragment>
+                                            <ui:fragment 
+                                                rendered="#{!jsfCtrl.isEmpty(a.content.content)}"
+                                                >
+                                                <p class="hero-content">
+                                                    <h:outputLabel value="#{a.content.content}" escape="false"/>
+                                                </p>
+                                            </ui:fragment>
+                                            <h:outputLink 
+                                                rendered="#{!jsfCtrl.isEmpty(a.content.linkURL)}"
+                                                value="#{jsfCtrl.url(a.content.linkURL)}"
+                                                styleClass="#{(a.content.linkClassStyle eq null or a.content.linkClassStyle eq '')?'hero-btn':a.content.linkClassStyle}"
+                                                ><h:outputText value="#{a.content.linkText}"/>
                                             </h:outputLink>
                                             <p:outputPanel rendered="#{a.attachments.size() ne 0}">
                                                 <ui:repeat value="#{a.attachments}" var="att">
                                                     <h:outputLink 
-                                                        value="#{att.path}" 
+                                                        value="#{jsfCtrl.url(att.path)}" 
                                                         styleClass="#{(att.style eq null or att.style eq '')?'hero-btn':att.style}">
                                                         <h:outputText value="#{att.name}" />
                                                     </h:outputLink>
@@ -192,7 +205,7 @@ and open the template in the editor.
                                 <div class="carousel-content">
                                     <h3>Partnership</h3>
                                     <p>
-                                        The School has number of links and partnerships with organisations in industry, commerce, research, and the public sector.
+                                        The School has number of links and partnerships with organizations in industry, commerce, research, and the public sector.
                                         These are vitally important in enhancing the delivery of both our research and teaching activities, and we work closely with external organisations in the following ways.
                                     </p>
                                 </div>
@@ -257,13 +270,13 @@ and open the template in the editor.
 
                                     <h:outputLink class="button #{a.content.linkClassStyle}}" 
                                                   rendered="#{a.content.linkText ne null and a.content.linkText ne ''}" 
-                                                  value="#{a.content.linkURL}">
+                                                  value="#{jsfCtrl.url(a.content.linkURL)}">
                                         <h:outputLabel value="#{a.content.linkText}"/>
                                     </h:outputLink>
                                     <p:outputPanel rendered="#{a.attachments.size() ne 0}">
                                         <ui:repeat value="#{a.attachments}" var="att">
                                             <h:outputLink 
-                                                value="#{att.path}" 
+                                                value="#{jsfCtrl.url(att.path)}" 
                                                 styleClass="#{(att.style eq null or att.style eq '')?'hero-btn':att.style}">
                                                 <h:outputText value="#{att.name}" />
                                             </h:outputLink>
@@ -451,6 +464,7 @@ and open the template in the editor.
                                     <li><a href="#">Work</a></li>
                                     <li><a href="http://www.eniso.rnu.tn">ENISo official website</a></li>
                                     <li><a href="http://www.tahabensalah.net">Taha BEN Salah's WebSite (author)</a></li>
+                                    <li><a href="http://www.eniso.info/vr/services/rss/main"><img src="${jsfCtrl.context}/fs/Site/images/icons/rss-feed.png"/></a></li>
                                 </ul>
                             </div>
                         </div>

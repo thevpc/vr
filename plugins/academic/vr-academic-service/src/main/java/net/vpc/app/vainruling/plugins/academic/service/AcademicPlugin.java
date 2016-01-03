@@ -74,6 +74,7 @@ import net.vpc.app.vainruling.api.model.AppUserType;
 import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.api.util.ExcelTemplate;
 import net.vpc.app.vainruling.api.util.NamedDoubles;
+import net.vpc.app.vainruling.plugins.academic.service.model.PlanningData;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningHour;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
@@ -93,13 +94,13 @@ import net.vpc.upa.UPA;
 import net.vpc.upa.expressions.Order;
 import net.vpc.upa.expressions.Var;
 import net.vpc.upa.types.DateTime;
-import net.vpc.vfs.VFS;
-import net.vpc.vfs.VFile;
-import net.vpc.vfs.VFileFilter;
-import net.vpc.vfs.VirtualFileSystem;
-import net.vpc.vfs.impl.NativeVFS;
-import net.vpc.vfs.impl.VZipOptions;
-import net.vpc.vfs.impl.VZipUtils;
+import net.vpc.common.vfs.VFS;
+import net.vpc.common.vfs.VFile;
+import net.vpc.common.vfs.VFileFilter;
+import net.vpc.common.vfs.VirtualFileSystem;
+import net.vpc.common.vfs.impl.NativeVFS;
+import net.vpc.common.vfs.impl.VZipOptions;
+import net.vpc.common.vfs.impl.VZipUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.w3c.dom.Document;
@@ -111,7 +112,7 @@ import org.w3c.dom.NodeList;
  *
  * @author vpc
  */
-@AppPlugin(version = "1.5", dependsOn = {"fileSystemPlugin", "commonModel"})
+@AppPlugin(version = "1.8", dependsOn = {"fileSystemPlugin", "commonModel"})
 public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     private static final Logger log = Logger.getLogger(AcademicPlugin.class.getName());
@@ -293,7 +294,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
         teacher_stat.setWeeks(sum_semester_weeks);
         teacher_stat.setMaxWeeks(sum_max_semester_weeks);
-        log.log(Level.FINE, "evalTeacherStat {0} in {1}", new Object[]{teacher.getContact().getFullName(), ch.stop()});
+        log.log(Level.FINE, "evalTeacherStat {0} in {1}", new Object[]{getValidName(teacher), ch.stop()});
 
         return teacher_stat;
     }
@@ -364,6 +365,12 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     public AcademicTeacher findTeacherByUser(Integer userId) {
         return UPA.getPersistenceUnit().createQuery("Select u from AcademicTeacher u where u.userId=:userId")
+                .setParameter("userId", userId)
+                .getEntity();
+    }
+
+    public AcademicStudent findStudentByUser(Integer userId) {
+        return UPA.getPersistenceUnit().createQuery("Select u from AcademicStudent u where u.userId=:userId")
                 .setParameter("userId", userId)
                 .getEntity();
     }
@@ -523,17 +530,21 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             TreeSet<Integer> allIntentIds = new TreeSet<>();
             for (AcademicCourseIntent b1 : b) {
                 if (teacher == null || (teacher.intValue() != b1.getTeacher().getId())) {
-                    String n = b1.getTeacher().getContact().getFullName();
+                    String n = getValidName(b1.getTeacher());
                     allIntents.add(n);
                 }
                 allIntentIds.add(b1.getTeacher().getId());
             }
             StringBuilder sb = new StringBuilder();
             if (a.getAssignment().getTeacher() != null) {
-                sb.append(a.getAssignment().getTeacher().getContact().getFullName() + " (*)");
+                AcademicTeacher t = a.getAssignment().getTeacher();
+                String name = getValidName(t);
+                sb.append(name + " (*)");
             }
             for (String i : allIntents) {
-                if (a.getAssignment().getTeacher() != null && i.equals(a.getAssignment().getTeacher().getContact().getFullName())) {
+                if (a.getAssignment().getTeacher() != null
+                        && a.getAssignment().getTeacher().getContact() != null
+                        && i.equals(a.getAssignment().getTeacher().getContact().getFullName())) {
                     //ignore  
                 } else {
                     if (sb.length() > 0) {
@@ -552,8 +563,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             public int compare(AcademicCourseAssignmentInfo o1, AcademicCourseAssignmentInfo o2) {
                 AcademicCourseAssignment a1 = o1.getAssignment();
                 AcademicCourseAssignment a2 = o2.getAssignment();
-                String s1 = a1.getCoursePlan().getName();
-                String s2 = a2.getCoursePlan().getName();
+//                String s1 = a1.getCoursePlan().getName();
+//                String s2 = a2.getCoursePlan().getName();
+                String s1 = a1.getFullName();
+                String s2 = a2.getFullName();
                 return s1.compareTo(s2);
             }
         });
@@ -663,7 +676,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 if (r != 0) {
                     return r;
                 }
-                r = t1.getContact().getFullName().compareTo(t2.getContact().getFullName());
+                r = getValidName(t1).compareTo(getValidName(t2));
                 if (r != 0) {
                     return r;
                 }
@@ -1164,6 +1177,25 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         p.put(prefix + "name2", c.getName2());
         p.put(prefix + "type", StringUtils.nonnull(c.getCourseType() == null ? null : c.getCourseType().getName()));
         p.put(prefix + "discipline", c.getCoursePlan().getDiscipline());
+        p.put(prefix + "roomConstraintsC", c.getCoursePlan().getRoomConstraintsC());
+        p.put(prefix + "roomConstraintsTP", c.getCoursePlan().getRoomConstraintsTP());
+        if (c.getValueC() != 0 && c.getValueTP() == 0) {
+            p.put(prefix + "roomConstraints", c.getCoursePlan().getRoomConstraintsC());
+        } else if (c.getValueC() == 0 && c.getValueTP() != 0) {
+            p.put(prefix + "roomConstraints", c.getCoursePlan().getRoomConstraintsTP());
+        } else {
+            StringBuilder s = new StringBuilder();
+            if (c.getValueC() != 0 && !StringUtils.isEmpty(c.getCoursePlan().getRoomConstraintsC())) {
+                s.append("C:").append(c.getCoursePlan().getRoomConstraintsC().trim());
+            }
+            if (c.getValueTP() != 0 && !StringUtils.isEmpty(c.getCoursePlan().getRoomConstraintsTP())) {
+                if (s.length() > 0) {
+                    s.append(", ");
+                }
+                s.append("TP:").append(c.getCoursePlan().getRoomConstraintsTP().trim());
+            }
+            p.put(prefix + "roomConstraints", s.toString());
+        }
         p.put(prefix + "sem.code", c.getCoursePlan().getSemester().getCode());
         p.put(prefix + "sem.name", c.getCoursePlan().getSemester().getName());
         p.put(prefix + "sem.name2", c.getCoursePlan().getSemester().getName2());
@@ -1200,8 +1232,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         p.put(prefix + "department.code", c.getCoursePlan().getProgram().getDepartment().getCode());
         p.put(prefix + "department.name", c.getCoursePlan().getProgram().getDepartment().getName());
         p.put(prefix + "department.name2", c.getCoursePlan().getProgram().getDepartment().getName2());
-        p.put(prefix + "teacher.name", c.getTeacher() == null ? null : c.getTeacher().getContact().getFullName());
-        p.put(prefix + "teacher.name2", c.getTeacher() == null ? null : c.getTeacher().getContact().getFullName2());
+        p.put(prefix + "teacher.name", c.getTeacher() == null ? null : getValidName(c.getTeacher()));
+        p.put(prefix + "teacher.name2", (c.getTeacher() == null || c.getTeacher().getContact() == null) ? null : c.getTeacher().getContact().getFullName2());
         p.put(prefix + "teacher.discipline", c.getTeacher() == null ? null : c.getTeacher().getDiscipline());
     }
 
@@ -1381,7 +1413,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     public AcademicTeacher findTeacher(StringComparator t) {
         for (AcademicTeacher teacher : findTeachers()) {
-            if (t.matches(teacher.getContact().getFullName())) {
+            if (t.matches(teacher.getContact() == null ? null : teacher.getContact().getFullName())) {
                 return teacher;
             }
         }
@@ -1615,6 +1647,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     public AcademicTeacher findTeacher(int t) {
         return (AcademicTeacher) UPA.getPersistenceUnit().findById(AcademicTeacher.class, t);
+    }
+
+    public AcademicStudent findStudent(int t) {
+        return (AcademicStudent) UPA.getPersistenceUnit().findById(AcademicStudent.class, t);
     }
 
     public void updateViewsCounterforTeacherCV(int t) {
@@ -2060,6 +2096,15 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return null;
     }
 
+    public AcademicStudent getCurrentStudent() {
+        UserSession sm = VrApp.getBean(UserSession.class);
+        AppUser user = (sm == null) ? null : sm.getUser();
+        if (user != null) {
+            return findStudentByUser(user.getId());
+        }
+        return null;
+    }
+
     @Start
     public void startService() {
 
@@ -2077,6 +2122,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         core.createRight("Custom.Education.CourseLoadUpdateAssignments", "Mettre à jours les affectations");
         core.createRight("Custom.FileSystem.RootFileSystem", "Systeme de Fichier Racine");
         core.createRight("Custom.FileSystem.MyFileSystem", "Systeme de Fichier Utilisateur");
+        core.createRight("Custom.Education.TeacherPlanning", "TeacherPlanning");
+        core.createRight("Custom.Education.MyPlanning", "MyPlanning");
+        core.createRight("Custom.Education.ClassPlanning", "ClassPlanning");
 
         AppUserType teacherType;
         teacherType = new AppUserType();
@@ -2204,7 +2252,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
             AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
 
-            net.vpc.vfs.VirtualFileSystem fs = this.fileSystemPlugin.getFileSystem();
+            net.vpc.common.vfs.VirtualFileSystem fs = this.fileSystemPlugin.getFileSystem();
             s.resetModuleTeaching();
             s.importFile(
                     fs.get(dataFolder),
@@ -2240,7 +2288,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
             AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
 
-            net.vpc.vfs.VirtualFileSystem fs = getFileSystem();
+            net.vpc.common.vfs.VirtualFileSystem fs = getFileSystem();
             fs.get(outdir).mkdirs();
             //TODO should export from DB all this information
 //            VFS.copy(fs.get(dataFolder), fs.get(outdir), new VFileFilter() {
@@ -2454,34 +2502,27 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //        }
     }
 
-    public List<PlanningDay> loadTeacherPlanning(int teacherId) {
-        AcademicTeacher teacher = findTeacher(teacherId);
-        String teacherName = teacher == null ? "" : teacher.getContact().getFullName();
+    public List<String> loadStudentPlanningListNames() {
+        TreeSet<String> all = new TreeSet<>();
+
         VFile[] emploisFiles = fileSystemPlugin.getProfileFileSystem("Teacher").get("/EmploiDuTemps").listFiles(new VFileFilter() {
 
             @Override
             public boolean accept(VFile pathname) {
-                return pathname.getName().toLowerCase().endsWith("_teachers.xml");
+                return pathname.getName().toLowerCase().endsWith("_subgroups.xml");
             }
         });
         VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
-        List<PlanningDay> list = new ArrayList<>();
         if (p != null && p.exists()) {
             try {
 
                 DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
                 Document doc = dBuilder.parse(p.getInputStream());
-
-                //optional, but recommended
                 //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
                 doc.getDocumentElement().normalize();
 
-                System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-
-                NodeList nList = doc.getElementsByTagName("Teacher");
-
-                System.out.println("----------------------------");
+                NodeList nList = doc.getElementsByTagName("Subgroup");
 
                 for (int temp = 0; temp < nList.getLength(); temp++) {
 
@@ -2492,44 +2533,178 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
                         Element eElement = (Element) nNode;
                         String tn = eElement.getAttribute("name");
-                        if (tn.trim().equalsIgnoreCase(teacherName.trim())) {
-                            NodeList days = eElement.getElementsByTagName("Day");
-                            for (int di = 0; di < days.getLength(); di++) {
-                                Node dayNode = days.item(di);
-                                if (dayNode.getNodeType() == Node.ELEMENT_NODE) {
-                                    Element dayElement = (Element) dayNode;
-                                    PlanningDay planningDay = new PlanningDay();
-                                    planningDay.setDayName(dayElement.getAttribute("name"));
-                                    List<PlanningHour> planningHours = new ArrayList<>();
-                                    NodeList hours = dayElement.getElementsByTagName("Hour");
-                                    for (int hi = 0; hi < hours.getLength(); hi++) {
-                                        Node hourNode = hours.item(hi);
-                                        if (hourNode.getNodeType() == Node.ELEMENT_NODE) {
-                                            Element hourElement = (Element) hourNode;
-                                            PlanningHour ph = new PlanningHour();
-                                            ph.setHour(hourElement.getAttribute("name"));
-                                            NodeList childNodes = hourElement.getChildNodes();
-                                            for (int ci = 0; ci < childNodes.getLength(); ci++) {
-                                                Node cNode = childNodes.item(ci);
-                                                if (cNode.getNodeType() == Node.ELEMENT_NODE) {
-                                                    Element cElement = (Element) cNode;
-                                                    if ("Activity_Tag".equals(cElement.getNodeName())) {
-                                                        ph.setActivity(cElement.getAttribute("name"));
-                                                    } else if ("Students".equals(cElement.getNodeName())) {
-                                                        ph.setStudents(cElement.getAttribute("name"));
-                                                    } else if ("Subject".equals(cElement.getNodeName())) {
-                                                        ph.setSubject(cElement.getAttribute("name"));
-                                                    } else if ("Room".equals(cElement.getNodeName())) {
-                                                        ph.setRoom(cElement.getAttribute("name"));
-                                                    }
-                                                }
-                                            }
-                                            planningHours.add(ph);
-                                        }
-                                    }
-                                    planningDay.setHours(planningHours);
-                                    list.add(planningDay);
-                                }
+                        all.add(tn);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return new ArrayList<>(all);
+    }
+
+    private PlanningData parsePlanningDataXML(Node planningNode) {
+//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
+        if (planningNode.getNodeType() == Node.ELEMENT_NODE) {
+
+            Element eElement = (Element) planningNode;
+            String tn = eElement.getAttribute("name");
+            PlanningData p2 = new PlanningData();
+            p2.setPlanningName(tn.trim());
+            p2.setDays(new ArrayList<PlanningDay>());
+            NodeList days = eElement.getElementsByTagName("Day");
+            for (int di = 0; di < days.getLength(); di++) {
+                Node dayNode = days.item(di);
+                PlanningDay dd = parsePlanningDayXML(dayNode);
+                if (dd != null) {
+                    p2.getDays().add(dd);
+                }
+            }
+            while (p2.getDays().size() < 6) {
+                PlanningDay d = new PlanningDay();
+                d.setDayName("Day " + p2.getDays().size());
+                p2.getDays().add(d);
+            }
+            return p2;
+        }
+        return null;
+    }
+
+    private PlanningDay parsePlanningDayXML(Node dayNode) {
+        if (dayNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element dayElement = (Element) dayNode;
+            PlanningDay planningDay = new PlanningDay();
+            planningDay.setDayName(dayElement.getAttribute("name"));
+            List<PlanningHour> planningHours = new ArrayList<>();
+            NodeList hours = dayElement.getElementsByTagName("Hour");
+            for (int hi = 0; hi < hours.getLength(); hi++) {
+                Node hourNode = hours.item(hi);
+                PlanningHour ph = parsePlanningHourXML(hourNode);
+                if (ph != null) {
+                    planningHours.add(ph);
+                }
+
+            }
+            planningDay.setHours(planningHours);
+
+            if (planningDay.getHours() == null || planningDay.getHours().size() < 5) {
+                List<PlanningHour> all = new ArrayList<>();
+                if (planningDay.getHours() != null) {
+                    all.addAll((planningDay.getHours()));
+                }
+                while (all.size() < 5) {
+                    PlanningHour dd = new PlanningHour();
+                    dd.setHour("H #" + all.size());
+                    all.add(dd);
+                }
+                planningDay.setHours(all);
+            }
+
+            return (planningDay);
+        }
+        return null;
+    }
+
+    private PlanningHour parsePlanningHourXML(Node hourNode) {
+        if (hourNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element hourElement = (Element) hourNode;
+            PlanningHour ph = new PlanningHour();
+            ph.setHour(hourElement.getAttribute("name"));
+            NodeList childNodes = hourElement.getChildNodes();
+            for (int ci = 0; ci < childNodes.getLength(); ci++) {
+                Node cNode = childNodes.item(ci);
+                if (cNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element cElement = (Element) cNode;
+                    if ("Activity_Tag".equals(cElement.getNodeName())) {
+                        ph.setActivity(cElement.getAttribute("name"));
+                    } else if ("Students".equals(cElement.getNodeName())) {
+                        ph.setStudents(cElement.getAttribute("name"));
+                    } else if ("Teacher".equals(cElement.getNodeName())) {
+                        ph.setTeacher(cElement.getAttribute("name"));
+                    } else if ("Subject".equals(cElement.getNodeName())) {
+                        ph.setSubject(cElement.getAttribute("name"));
+                    } else if ("Room".equals(cElement.getNodeName())) {
+                        ph.setRoom(cElement.getAttribute("name"));
+                    }
+                }
+            }
+            String actor = "";
+            if (!StringUtils.isEmpty(ph.getStudents())) {
+                if (actor.length() > 0) {
+                    actor += " / ";
+                }
+                actor += ph.getStudents();
+            }
+            if (!StringUtils.isEmpty(ph.getTeacher())) {
+                if (actor.length() > 0) {
+                    actor += " / ";
+                }
+                actor += ph.getTeacher();
+            }
+            ph.setActor(actor);
+            return (ph);
+        }
+        return null;
+    }
+
+    public List<PlanningData> loadStudentPlanningList(int studentId) {
+        AcademicStudent student = findStudent(studentId);
+        List<PlanningData> list = new ArrayList<>();
+        HashMap<String, String> nameMapping = new HashMap<>();
+        if (student.getLastClass1() != null) {
+            String n2 = student.getLastClass1().getName().trim().toLowerCase();
+            nameMapping.put(n2, n2);
+            for (String s : splitOtherNames(student.getLastClass1().getOtherNames())) {
+                nameMapping.put(s, n2);
+            }
+        }
+        if (student.getLastClass2() != null) {
+            String n2 = student.getLastClass2().getName().trim().toLowerCase();
+            nameMapping.put(n2, n2);
+            for (String s : splitOtherNames(student.getLastClass2().getOtherNames())) {
+                nameMapping.put(s, n2);
+            }
+        }
+        if (student.getLastClass3() != null) {
+            String n2 = student.getLastClass3().getName().trim().toLowerCase();
+            nameMapping.put(n2, n2);
+            for (String s : splitOtherNames(student.getLastClass3().getOtherNames())) {
+                nameMapping.put(s, n2);
+            }
+        }
+        VFile[] emploisFiles = fileSystemPlugin.getProfileFileSystem("Teacher").get("/EmploiDuTemps").listFiles(new VFileFilter() {
+
+            @Override
+            public boolean accept(VFile pathname) {
+                return pathname.getName().toLowerCase().endsWith("_subgroups.xml");
+            }
+        });
+        VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
+        if (p != null && p.exists()) {
+            try {
+
+                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                Document doc = dBuilder.parse(p.getInputStream());
+                //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+                doc.getDocumentElement().normalize();
+
+                NodeList nList = doc.getElementsByTagName("Subgroup");
+
+                for (int temp = 0; temp < nList.getLength(); temp++) {
+
+                    Node nNode = nList.item(temp);
+
+//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
+                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+                        Element eElement = (Element) nNode;
+                        String tn = eElement.getAttribute("name");
+                        if (nameMapping.containsKey(tn.trim().toLowerCase())) {
+                            PlanningData p2 = parsePlanningDataXML(nNode);
+                            if (p2 != null) {
+                                p2.setPlanningUniformName(nameMapping.get(tn.trim().toLowerCase()));
+                                list.add(p2);
                             }
                         }
                     }
@@ -2538,29 +2713,160 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 e.printStackTrace();
             }
         }
-        if (list.isEmpty()) {
+        return list;
+    }
+
+    public PlanningData loadClassPlanning(String className) {
+        String uniformClassName = className == null ? "" : className.toLowerCase().trim();
+        if (StringUtils.isEmpty(uniformClassName)) {
             return null;
         }
-        while (list.size() < 6) {
-            PlanningDay d = new PlanningDay();
-            d.setDayName("Day " + list.size());
-            list.add(d);
-        }
-        for (PlanningDay d : list) {
-            if (d.getHours() == null || d.getHours().size() < 5) {
-                List<PlanningHour> all = new ArrayList<>();
-                if (d.getHours() != null) {
-                    all.addAll((d.getHours()));
+        VFile[] emploisFiles = fileSystemPlugin.getProfileFileSystem("Teacher").get("/EmploiDuTemps").listFiles(new VFileFilter() {
+
+            @Override
+            public boolean accept(VFile pathname) {
+                return pathname.getName().toLowerCase().endsWith("_subgroups.xml");
+            }
+        });
+        VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
+        if (p != null && p.exists()) {
+            try {
+
+                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                Document doc = dBuilder.parse(p.getInputStream());
+                //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+                doc.getDocumentElement().normalize();
+
+                NodeList nList = doc.getElementsByTagName("Subgroup");
+
+                for (int temp = 0; temp < nList.getLength(); temp++) {
+
+                    Node nNode = nList.item(temp);
+
+//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
+                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+                        Element eElement = (Element) nNode;
+                        String tn = eElement.getAttribute("name");
+                        if (uniformClassName.equals(tn.trim().toLowerCase())) {
+                            PlanningData p2 = parsePlanningDataXML(nNode);
+                            return p2;
+                        }
+                    }
                 }
-                while (all.size() < 5) {
-                    PlanningHour dd = new PlanningHour();
-                    dd.setHour("H #" + all.size());
-                    all.add(dd);
-                }
-                d.setHours(all);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
-        return list;//.toArray(new PlanningDay[list.size()]);
+        return null;
+    }
+
+    private Set<String> splitOtherNames(String value) {
+        Set<String> all = new HashSet<>();
+        if (value != null) {
+            for (String s : value.split(",|;")) {
+                if (s.trim().length() > 0) {
+                    all.add(s.trim().toLowerCase());
+                }
+            }
+        }
+        return all;
+    }
+
+    public List<PlanningData> loadUserPlannings(int userId) {
+        AppUser uuu = core.findUser(userId);
+        List<PlanningData> list = new ArrayList<>();
+        if (uuu == null) {
+            return list;
+        }
+//        String teacherName = uuu == null ? "" : uuu.getContact().getFullName();
+        VFile p = fileSystemPlugin.getUserFolder(uuu.getLogin()).get("/myplanning.xml");
+        if (p != null && p.exists()) {
+            try {
+
+                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                Document doc = dBuilder.parse(p.getInputStream());
+                //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+                doc.getDocumentElement().normalize();
+
+                NodeList nList = doc.getElementsByTagName("User");
+
+                for (int temp = 0; temp < nList.getLength(); temp++) {
+
+                    Node nNode = nList.item(temp);
+
+//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
+                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+                        Element eElement = (Element) nNode;
+                        PlanningData d = parsePlanningDataXML(nNode);
+                        if (d != null) {
+                            list.add(d);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return list;
+    }
+
+    public PlanningData loadTeacherPlanning(int teacherId) {
+        AcademicTeacher teacher = findTeacher(teacherId);
+
+        String teacherName = teacher == null ? "" : teacher.getContact().getFullName();
+        HashSet<String> teacherNames = new HashSet<>();
+        teacherNames.add(teacherName.toLowerCase());
+        if (teacher != null) {
+            for (String s : splitOtherNames(teacher.getOtherNames())) {
+                teacherNames.add(s);
+            }
+        }
+        VFile[] emploisFiles = fileSystemPlugin.getProfileFileSystem("Teacher").get("/EmploiDuTemps").listFiles(new VFileFilter() {
+
+            @Override
+            public boolean accept(VFile pathname) {
+                return pathname.getName().toLowerCase().endsWith("_teachers.xml");
+            }
+        });
+        VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
+        if (p != null && p.exists()) {
+            try {
+
+                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                Document doc = dBuilder.parse(p.getInputStream());
+                //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+                doc.getDocumentElement().normalize();
+
+                NodeList nList = doc.getElementsByTagName("Teacher");
+
+                for (int temp = 0; temp < nList.getLength(); temp++) {
+
+                    Node nNode = nList.item(temp);
+
+//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
+                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+                        Element eElement = (Element) nNode;
+                        String tn = eElement.getAttribute("name");
+                        if (teacherNames.contains(tn.trim().toLowerCase().trim())) {
+                            PlanningData dd = parsePlanningDataXML(nNode);
+                            if (dd != null) {
+                                dd.setPlanningUniformName(teacherName);
+                                return dd;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     @Override
@@ -2588,4 +2894,31 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return null;
     }
 
+    public String getValidName(AcademicTeacher t) {
+        String name = null;
+        if (t.getContact() != null) {
+            name = t.getContact().getFullName();
+        }
+        if (StringUtils.isEmpty(name) && t.getUser() != null) {
+            name = t.getUser().getLogin();
+        }
+        if (StringUtils.isEmpty(name)) {
+            name = "Teacher #" + t.getId();
+        }
+        return (name);
+    }
+
+    public String getValidName(AcademicStudent t) {
+        String name = null;
+        if (t.getContact() != null) {
+            name = t.getContact().getFullName();
+        }
+        if (StringUtils.isEmpty(name) && t.getUser() != null) {
+            name = t.getUser().getLogin();
+        }
+        if (StringUtils.isEmpty(name)) {
+            name = "Teacher #" + t.getId();
+        }
+        return (name);
+    }
 }

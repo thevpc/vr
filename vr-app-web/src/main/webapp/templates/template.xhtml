@@ -19,7 +19,7 @@ and open the template in the editor.
         <meta name="description" content=""/>
         <meta name="author" content="Taha BEN SALAH"/>
 
-        <title>Eniso VR</title>
+        <title>ENISo info</title>
 
         <!-- Bootstrap Core CSS -->
         <link href="${jsfCtrl.context}/fs/Site/wplugins/sb-admin2/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
@@ -34,6 +34,8 @@ and open the template in the editor.
         <link href="${jsfCtrl.context}/fs/Site/wplugins/sb-admin2/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
         <link href="${jsfCtrl.context}/css/app.css" rel="stylesheet" type="text/css"/>
         <link rel="shortcut icon" href="${jsfCtrl.context}/images/favicon.ico" type="image/x-icon" />
+        <link href='https://fonts.googleapis.com/css?family=Stalemate' rel='stylesheet' type='text/css'/>
+        <link href='https://fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css'/>
         <ui:insert name="links" >
 
         </ui:insert>
@@ -51,7 +53,7 @@ and open the template in the editor.
         <div id="wrapper">
 
             <!-- Navigation -->
-            <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0;background-color: #63C6AE">
+            <nav class="vr-navbar navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0;background-color: #63C6AE">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                         <span class="sr-only">Toggle navigation</span>
@@ -59,12 +61,27 @@ and open the template in the editor.
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a href="/"><img class="navbar-brand" style="margin-top: 12px;margin-left: 20px;" src="${jsfCtrl.context}/images/vr-logo.png" alt="VR ENISo" height="35"/></a>
-                    <div style="font-size: smaller;font-family: fantasy;font-weight: bolder; display: inline ; color: #468a79">
+                    <!--<a href="/"><img class="navbar-brand" style="margin-top: 12px;margin-left: 20px;" src="$ {jsfCtrl.context}/images/vr-logo.png" alt="VR ENISo" height="35"/></a>-->
+                    <a href="${jsfCtrl.context}"><img class="navbar-brand" style="margin-top: 0px;margin-left: 0px;" src="${jsfCtrl.context}/images/eniso-ii.png" alt="ENISo info" height="35"/></a>
+                    <a class="navbar-brand" style="color: #448978;" href="${jsfCtrl.context}"><span style="font-family: 'Audiowide', serif;font-weight:normal;">ENISo</span> <span style="font-family: 'Stalemate', serif;font-weight:800;font-size: 32px;">info</span></a>
+                    <div style="font-size: smaller; vertical-align: top;font-family: fantasy;font-weight: bolder; display: inline ; color: #468a79">
                         v#{appInfoCtrl.model.appVersion}
                     </div>
-                    <!--<a class="navbar-brand" href="index.html">ENISo VR</a>-->
                 </div>
+
+<!--                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a href="/"><img class="navbar-brand" style="margin-top: 12px;margin-left: 20px;" src="$ {jsfCtrl.context}/images/vr-logo.png" alt="VR ENISo" height="35"/></a>
+                    <div style="font-size: smaller;font-family: fantasy;font-weight: bolder; display: inline ; color: #468a79">
+                        v# {appInfoCtrl.model.appVersion}
+                    </div>
+                    <a class="navbar-brand" href="index.html">ENISo VR</a>
+                </div>-->
                 <!-- /.navbar-header -->
 
                 <h:form  id="headForm">

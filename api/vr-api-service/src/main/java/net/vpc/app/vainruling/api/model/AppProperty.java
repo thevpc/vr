@@ -20,16 +20,12 @@ import net.vpc.upa.config.Sequence;
 @Path("Admin")
 public class AppProperty {
 
-    public static final String TYPE_STRING = "string";
-    public static final String TYPE_INT = "int";
-    public static final String TYPE_DOUBLE = "double";
-    public static final String TYPE_BOOLEAN = "boolean";
     @Id
     @Sequence
     private int id;
     @Field(modifiers = {UserFieldModifier.MAIN}, max = "512")
     private String propertyName;
-    @Field(modifiers = {UserFieldModifier.SUMMARY}, max = "4096")
+    @Field(/*modifiers = {UserFieldModifier.SUMMARY},*/ max = "4096")
     private String propertyValue;
     private String propertyType;
     @Field(modifiers = {UserFieldModifier.SUMMARY})

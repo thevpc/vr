@@ -27,6 +27,7 @@ public class AcademicClass {
     @Field(modifiers = {UserFieldModifier.MAIN})
     private String name;
     private String name2;
+    private String otherNames;
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     private AcademicProgram program;
 
@@ -73,6 +74,14 @@ public class AcademicClass {
 
     public void setName2(String name2) {
         this.name2 = name2;
+    }
+
+    public String getOtherNames() {
+        return otherNames;
+    }
+
+    public void setOtherNames(String otherNames) {
+        this.otherNames = otherNames;
     }
 
 }

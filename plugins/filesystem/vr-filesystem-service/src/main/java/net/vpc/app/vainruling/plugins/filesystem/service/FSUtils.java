@@ -8,8 +8,7 @@ package net.vpc.app.vainruling.plugins.filesystem.service;
 import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.model.AppUser;
-import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
-import net.vpc.vfs.VFile;
+import net.vpc.common.vfs.VFile;
 
 /**
  *

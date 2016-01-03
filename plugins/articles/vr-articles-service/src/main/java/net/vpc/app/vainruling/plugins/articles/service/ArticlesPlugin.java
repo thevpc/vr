@@ -25,18 +25,26 @@ import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.EntityAction;
 import net.vpc.app.vainruling.api.Install;
 import net.vpc.app.vainruling.api.ProfilePatternFilter;
+import net.vpc.app.vainruling.api.Start;
 import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.api.VrNotificationEvent;
+import net.vpc.app.vainruling.api.VrNotificationManager;
+import net.vpc.app.vainruling.api.VrNotificationSession;
+import net.vpc.app.vainruling.api.core.PluginActionEvent;
 import net.vpc.app.vainruling.api.model.AppProfile;
+import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesDisposition;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesFile;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
-import net.vpc.app.vainruling.plugins.articles.service.model.EmailType;
+import net.vpc.app.vainruling.plugins.inbox.service.model.EmailType;
 import net.vpc.app.vainruling.plugins.articles.service.model.FullArticle;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
+import net.vpc.app.vainruling.plugins.inbox.service.MailData;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.lib.gomail.GoMail;
+import net.vpc.common.gomail.GoMail;
+import net.vpc.common.gomail.GoMailListener;
 import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
@@ -53,6 +61,7 @@ public class ArticlesPlugin {
     CorePlugin core;
     @Autowired
     FileSystemPlugin fileSystemPlugin;
+    public static final String SEND_EXTERNAL_MAIL_QUEUE = "sendExternalMailQueue";
 
     public List<ArticlesFile> findArticlesFiles(int articleId) {
         return UPA.getPersistenceUnit().createQuery("Select u from ArticlesFile u where "
@@ -100,6 +109,11 @@ public class ArticlesPlugin {
                 return t.getRecipientProfiles();
             }
         });
+    }
+
+    @Start
+    public void start() {
+        VrApp.getBean(VrNotificationManager.class).register(SEND_EXTERNAL_MAIL_QUEUE, SEND_EXTERNAL_MAIL_QUEUE, 200);
     }
 
     @Install
@@ -209,40 +223,97 @@ public class ArticlesPlugin {
         return UPA.getPersistenceUnit().findByMainField(MailboxMessageFormat.class, "DefaultLocalMail");
     }
 
+    public static class SendExternalMailConfig {
+
+        private EmailType emailType;
+        private Integer templateId;
+
+        public EmailType getEmailType() {
+            return emailType;
+        }
+
+        public void setEmailType(EmailType emailType) {
+            this.emailType = emailType;
+        }
+
+        public Integer getTemplateId() {
+            return templateId;
+        }
+
+        public void setTemplateId(Integer templateId) {
+            this.templateId = templateId;
+        }
+
+    }
+
 //    @EntityActionList(entityType = ArticlesItem.class)
 //    public String[] findArticleActions(){
 //        return new String[]{"SendEmail"};
 //    }
     @EntityAction(entityType = ArticlesItem.class, actionLabel = "email", actionStyle = "fa-envelope-o")
-    public void sendExternalMail(Object obj) {
+    public void sendExternalMail(PluginActionEvent event) {
+        Object obj = event.getObject();
+        String config = (String) event.getArguments()[0];
+
         if (obj == null || !(obj instanceof ArticlesItem)) {
             return;
         }
         if (!UPA.getPersistenceGroup().getSecurityManager().isAllowedKey("Custom.Article.SendExternalEmail")) {
             return;
         }
+        SendExternalMailConfig c = VrHelper.parseJSONObject(config, SendExternalMailConfig.class);
+        if (c == null) {
+            c = new SendExternalMailConfig();
+        }
         ArticlesItem a = (ArticlesItem) obj;
-        EmailType etype = a.getEmailType();
+        EmailType etype = c.getEmailType();
         if (etype == null) {
             etype = EmailType.TOEACH;
         }
         if (!StringUtils.isEmpty(a.getRecipientProfiles())) {
-            GoMail m = new GoMail();
+            MailData mailData = new MailData();
+            mailData.setFrom(a.getSender() == null ? null : a.getSender().getLogin());
+            mailData.setTemplateId(c.getTemplateId());
+            mailData.setSubject(a.getSubject());
+            mailData.setBody(a.getContent());
+            mailData.setTo(a.getRecipientProfiles());
+            mailData.setToFilter(a.getFilterExpression());
+            mailData.setCategory("Article");
+            mailData.setEmailType(etype);
+            mailData.setExternal(true);
+
+//            GoMail m = new GoMail();
+//
+//            emailPlugin.prepareSender(m);
+//
+//            MailboxMessageFormat mailTemplate = getExternalMailTemplate();
+//            emailPlugin.prepareBody(
+//                    a.getSubject(),
+//                    a.getContent(),
+//                    m,
+//                    a.getSender() == null
+//                            ? core.getUserSession().getUser().getId()
+//                            : a.getSender().getId(), mailTemplate);
+//            prepareRecipients(m, etype, a.getRecipientProfiles(), a.getFilterExpression(), false);
             MailboxPlugin emailPlugin = VrApp.getBean(MailboxPlugin.class);
-
-            emailPlugin.prepareSender(m);
-
-            MailboxMessageFormat mailTemplate = getExternalMailTemplate();
-            emailPlugin.prepareBody(
-                    a.getSubject(),
-                    a.getContent(),
-                    m,
-                    a.getSender() == null
-                            ? core.getUserSession().getUser().getId()
-                            : a.getSender().getId(), mailTemplate);
-            prepareRecipients(m, etype, a.getRecipientProfiles(), a.getFilterExpression(), false);
             try {
-                emailPlugin.sendExternalMail(m);
+                GoMail m = emailPlugin.createGoMail(mailData);
+                emailPlugin.sendExternalMail(m, null, new GoMailListener() {
+                    @Override
+                    public void onBeforeSend(GoMail mail) {
+
+                    }
+
+                    @Override
+                    public void onAfterSend(GoMail mail) {
+                        VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(ArticlesPlugin.SEND_EXTERNAL_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject(), null, Level.INFO));
+                    }
+
+                    @Override
+                    public void onSendError(GoMail mail, Throwable exc) {
+                        VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(ArticlesPlugin.SEND_EXTERNAL_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject() + " : " + exc, null, Level.SEVERE));
+                    }
+                });
             } catch (IOException ex) {
                 Logger.getLogger(ArticlesPlugin.class.getName()).log(Level.SEVERE, null, ex);
                 throw new RuntimeException(ex);
@@ -252,64 +323,39 @@ public class ArticlesPlugin {
         }
     }
 
-    public void prepareRecipients(GoMail m, EmailType etype, String recipientProfiles, String filterExpression, boolean preferLogin) {
-        MailboxPlugin emailPlugin = VrApp.getBean(MailboxPlugin.class);
-        switch (etype) {
-            case TO: {
-                m.getProperties().setProperty(MailboxPlugin.HEADER_TO_PROFILES, recipientProfiles);
-                emailPlugin.prepareToAll(m, recipientProfiles, filterExpression, preferLogin);
-                break;
-            }
-            case TOEACH: {
-                emailPlugin.prepareToEach(m, recipientProfiles, filterExpression, preferLogin);
-                break;
-            }
-            case CC: {
-                m.getProperties().setProperty(MailboxPlugin.HEADER_CC_PROFILES, recipientProfiles);
-                emailPlugin.prepareCCAll(m, recipientProfiles, filterExpression, preferLogin);
-                break;
-            }
-            case BCC: {
-                m.getProperties().setProperty(MailboxPlugin.HEADER_BCC_PROFILES, recipientProfiles);
-                emailPlugin.prepareBCCAll(m, recipientProfiles, filterExpression, preferLogin);
-                break;
-            }
-        }
-    }
-
     @EntityAction(entityType = ArticlesItem.class, actionLabel = "inbox", actionStyle = "fa-envelope-square")
-    public void sendLocalMail(Object obj) {
+    public void sendLocalMail(PluginActionEvent event) {
+        Object obj = event.getObject();
         if (obj == null || !(obj instanceof ArticlesItem)) {
             return;
         }
         if (!UPA.getPersistenceGroup().getSecurityManager().isAllowedKey("Custom.Article.SendInternalEmail")) {
             return;
         }
+        String config = (String) event.getArguments()[0];
         ArticlesItem a = (ArticlesItem) obj;
-        EmailType etype = a.getEmailType();
+        SendExternalMailConfig c = VrHelper.parseJSONObject(config, SendExternalMailConfig.class);
+        if (c == null) {
+            c = new SendExternalMailConfig();
+        }
+        EmailType etype = c.getEmailType();
         if (etype == null) {
             etype = EmailType.TOEACH;
         }
         if (!StringUtils.isEmpty(a.getRecipientProfiles())) {
-            GoMail m = new GoMail();
+            MailData mailData = new MailData();
+            mailData.setFrom(a.getSender() == null ? null : a.getSender().getLogin());
+            mailData.setTemplateId(c.getTemplateId());
+            mailData.setSubject(a.getSubject());
+            mailData.setBody(a.getContent());
+            mailData.setTo(a.getRecipientProfiles());
+            mailData.setToFilter(a.getFilterExpression());
+            mailData.setCategory("Article");
+            mailData.setEmailType(etype);
             MailboxPlugin mailboxPlugin = VrApp.getBean(MailboxPlugin.class);
-
-            mailboxPlugin.prepareSender(m);
-            m.from(a.getSender() == null ? null : a.getSender().getLogin());
-
-            MailboxMessageFormat mailTemplate = getInternalMailTemplate();
-            mailboxPlugin.prepareBody(
-                    a.getSubject(),
-                    a.getContent(),
-                    m,
-                    a.getSender() == null
-                            ? core.getUserSession().getUser().getId()
-                            : a.getSender().getId(), mailTemplate);
-
-            prepareRecipients(m, etype, a.getRecipientProfiles(), a.getFilterExpression(), true);
-            m.getProperties().setProperty("header.X-App-Category", "Article");
             try {
-                mailboxPlugin.sendLocalMail(m, true);
+                GoMail m = mailboxPlugin.createGoMail(mailData);
+                mailboxPlugin.sendLocalMail(m, true, false);
             } catch (Exception ex) {
                 Logger.getLogger(ArticlesPlugin.class.getName()).log(Level.SEVERE, null, ex);
                 throw new RuntimeException(ex);

@@ -10,7 +10,7 @@ import net.vpc.app.vainruling.api.web.util.JsfCtrl;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
-import net.vpc.vfs.VFile;
+import net.vpc.common.vfs.VFile;
 
 /**
  *

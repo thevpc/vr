@@ -24,11 +24,14 @@ import net.vpc.upa.types.EntityType;
  */
 public class FieldPropertyView extends PropertyView {
 
-    public FieldPropertyView(String componentId, Field field, String ctrlType, PropertyViewManager manager) {
-        super(componentId, VrApp.getBean(I18n.class).get(field), field, ctrlType, manager);
-        setHeader(VrApp.getBean(I18n.class).get(field));
-        setRequired(!field.getDataType().isNullable());
-        setDataType(field.getDataType());
+    public FieldPropertyView(String componentId, Field field, DataType dataType,String ctrlType, PropertyViewManager manager) {
+        super(componentId, 
+                field==null?VrApp.getBean(I18n.class).get(componentId):
+                VrApp.getBean(I18n.class).get(field), field, ctrlType, manager);
+        setHeader(field==null?VrApp.getBean(I18n.class).get(componentId):
+                VrApp.getBean(I18n.class).get(field));
+        setDataType(dataType!=null?dataType:field.getDataType());
+        setRequired(getDataType()==null?false:!getDataType().isNullable());
     }
 
     public Field getField() {
@@ -74,8 +77,7 @@ public class FieldPropertyView extends PropertyView {
             for (String n : exprArr) {
                 Field field = sv.entity.getField(n);
                 DataType dataType = field.getDataType();
-                Record er = field.getEntity().getBuilder().entityToRecord(sv.value);
-                Object oo = er==null?null:er.getObject(field.getName());
+                Object oo = sv.value==null?null:field.getValue(sv.value);
                 if (dataType instanceof EntityType) {
                     EntityType et = (EntityType) dataType;
                     Entity e2 = et.getRelationship().getTargetRole().getEntity();

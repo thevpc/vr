@@ -56,6 +56,8 @@ public final class UIConstants {
         public static final String RATING = "rating";
         public static final String SEPARATOR = "separator";
         public static final String ENTITY_DETAIL = "entityDetail";
+        public static final String PROFILE_EXPRESSION = "profileExpr";
+        public static final String FILE = "file";
     }
     
     public static final class Grid{

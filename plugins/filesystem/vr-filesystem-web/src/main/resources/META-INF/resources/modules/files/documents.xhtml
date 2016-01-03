@@ -72,7 +72,11 @@ and open the template in the editor.
                                                update=":listForm"
                                                />
                                 <!--<h:outputText value="# {i.name}" rendered="# {! i.file.directory}"/>-->
-                                <p:commandLink rendered="#{!i.file.directory}" disabled="#{!documentsCtrl.isEnabledButton('Download',i)}" value="#{i.name}" ajax="false">
+                                <p:commandLink rendered="#{!i.file.directory}" disabled="#{!documentsCtrl.isEnabledButton('Download',i)}" 
+                                               value="#{i.name}" 
+                                               ajax="false"
+                                               update=":listForm"
+                                               >
                                     <p:fileDownload value="#{documentsCtrl.getContent(i)}" />
                                 </p:commandLink>
                                 <!--<p:outputLabel rendered="# {!i.file.directory and !documentsCtrl.isEnabledButton('Download',i)}" value="#{i.name}"/>-->
@@ -84,6 +88,9 @@ and open the template in the editor.
                                 <h:outputText value="#{i.lastModifiedDate}" >
                                     <f:convertDateTime type="date" pattern="dd-MM-yyyy HH:mm"/>
                                 </h:outputText>
+                            </p:column>
+                            <p:column headerText="Téléch."  width="80">
+                                <h:outputText rendered="#{!i.file.directory}" value="#{i.downloads}" />
                             </p:column>
                         </p:dataTable>
                     </div>

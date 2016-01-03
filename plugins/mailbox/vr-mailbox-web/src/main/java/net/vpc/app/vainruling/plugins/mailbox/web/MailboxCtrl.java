@@ -23,12 +23,19 @@ import net.vpc.app.vainruling.api.web.UCtrlProvider;
 import net.vpc.app.vainruling.api.web.VRMenuDef;
 import net.vpc.app.vainruling.api.web.VRMenuDefFactory;
 import net.vpc.app.vainruling.api.web.ctrl.EditCtrlMode;
+import net.vpc.app.vainruling.api.web.obj.DialogResult;
+import net.vpc.app.vainruling.api.web.obj.PropertyView;
+import net.vpc.app.vainruling.api.web.obj.PropertyViewManager;
+import net.vpc.app.vainruling.api.web.obj.dialog.ProfileExprDialogCtrl;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
+import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxSent;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.UPA;
+import org.primefaces.event.SelectEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -40,6 +47,9 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     private static final Logger log = Logger.getLogger(MailboxCtrl.class.getName());
     private Model model = new Model();
+
+    @Autowired
+    private PropertyViewManager propertyViewManager;
 
     public void onNew() {
         getModel().setNewItem(new MailboxSent());
@@ -128,6 +138,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         }
         getModel().setFolder(config.folder);
         getModel().setSent(config.sent);
+        getModel().setMailboxMessageFormat(propertyViewManager.createPropertyView("mailboxMessageFormat", MailboxMessageFormat.class, null)[0]);
         onRefresh();
     }
 
@@ -202,6 +213,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     public void onSelect(Message r) {
         getModel().setCurrent(r);
         if (r != null && r.msg instanceof MailboxReceived) {
+            getModel().setMode(EditCtrlMode.UPDATE);
             MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
             MailboxReceived m = (MailboxReceived) r.msg;
             p.markRead(m.getId(), true);
@@ -256,11 +268,12 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         FacesUtils.clearMessages();
         MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
         getModel().getNewItem().setSender(VrApp.getBean(UserSession.class).getUser());
-        try{
-            p.sendLocalMail(getModel().getNewItem(), true);
+        try {
+            MailboxMessageFormat mailboxMessageFormat = (MailboxMessageFormat) getModel().getMailboxMessageFormat().getValue();
+            p.sendLocalMail(getModel().getNewItem(), mailboxMessageFormat == null ? null : mailboxMessageFormat.getId(), true);
             FacesUtils.addInfoMessage("Envoi réussi");
-        }catch(Exception e){
-            FacesUtils.addErrorMessage("Envoi impossible : "+e.getMessage());
+        } catch (Exception e) {
+            FacesUtils.addErrorMessage("Envoi impossible : " + e.getMessage());
         }
         getModel().setNewItem(new MailboxSent());
         getModel().setMode(EditCtrlMode.LIST);
@@ -297,6 +310,24 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
                     return true;
                 }
                 if ("Advanced".equals(buttonId)) {
+                    //check rights?
+                    return true;
+                }
+                return false;
+            }
+            case UPDATE: {
+                if ("Cancel".equals(buttonId)) {
+                    return true;
+                }
+                if ("Reply".equals(buttonId)) {
+                    //check rights?
+                    return true;
+                }
+                if ("Remove".equals(buttonId)) {
+                    //check rights?
+                    return true;
+                }
+                if ("Archive".equals(buttonId)) {
                     //check rights?
                     return true;
                 }
@@ -380,6 +411,37 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
+        }
+    }
+
+    public void openProfileExprDialog(String action) {
+        ProfileExprDialogCtrl.Config c = new ProfileExprDialogCtrl.Config();
+        c.setSourceId(action);
+        c.setUserInfo(action);
+        c.setTitle(action);
+        String e = null;
+        if ("to".equals(action)) {
+            e = getModel().getNewItem().getToProfiles();
+        } else if ("cc".equals(action)) {
+            e = getModel().getNewItem().getCcProfiles();
+        } else if ("bcc".equals(action)) {
+            e = getModel().getNewItem().getBccProfiles();
+        }
+        c.setExpression(e);
+        VrApp.getBean(ProfileExprDialogCtrl.class).openDialog(c);
+    }
+
+    public void onProfileExprDialogClosed(SelectEvent event) {
+        DialogResult o = (DialogResult) event.getObject();
+        if (o != null && o.getUserInfo() != null) {
+            String d = o.getUserInfo();
+            if ("to".equals(d)) {
+                getModel().getNewItem().setToProfiles((String) o.getValue());
+            } else if ("cc".equals(d)) {
+                getModel().getNewItem().setCcProfiles((String) o.getValue());
+            } else if ("bcc".equals(d)) {
+                getModel().getNewItem().setBccProfiles((String) o.getValue());
+            }
         }
     }
 
@@ -566,6 +628,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         private MailboxFolder folder = MailboxFolder.CURRENT;
         private boolean sent = false;
         private Message current;
+        private PropertyView mailboxMessageFormat;
         private MailboxSent newItem = new MailboxSent();
         private List<Row> inbox = new ArrayList<>();
         private EditCtrlMode mode = EditCtrlMode.LIST;
@@ -625,6 +688,14 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
         public void setSent(boolean sent) {
             this.sent = sent;
+        }
+
+        public PropertyView getMailboxMessageFormat() {
+            return mailboxMessageFormat;
+        }
+
+        public void setMailboxMessageFormat(PropertyView mailboxMessageFormat) {
+            this.mailboxMessageFormat = mailboxMessageFormat;
         }
 
     }

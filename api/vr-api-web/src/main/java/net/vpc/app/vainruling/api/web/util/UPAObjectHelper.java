@@ -19,6 +19,9 @@ import net.vpc.upa.UPAObject;
 public class UPAObjectHelper {
 
     public static Object findObjectProperty(UPAObject f, String property, String context, Object defaultValue) {
+        if(f==null){
+            return defaultValue;
+        }
         Properties p = f.getProperties();
         if (context != null && context.length() > 0 && p.containsKey(property + "@" + context)) {
             return p.getObject(property + "@" + context);

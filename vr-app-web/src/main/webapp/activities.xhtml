@@ -36,7 +36,7 @@
 
                                                        >
                                             <ui:repeat value="#{i.imageAttachments}" var="im">
-                                                <p:graphicImage value="#{im.path}" alt="#{im.name}" width="400"/>
+                                                <p:graphicImage value="#{jsfCtrl.urlr(im.path)}" alt="#{im.name}" width="400"/>
                                             </ui:repeat>
                                         </p:imageSwitch>
 
@@ -47,8 +47,8 @@
                                         <h:panelGrid columns="3" style="border: none;margin-top: 30px;" columnClasses="ui-grid-col-10">
                                             <ui:repeat value="#{i.attachments}" var="att">
                                                 <h:outputLink 
-                                                    value="#{att.path}" 
-                                                    styleClass="#{(att.style eq null or att.style eq '')?'hero-btn':att.style}"
+                                                    value="#{jsfCtrl.url(att.path)}" 
+                                                    styleClass="#{(att.style eq null or att.style eq '')?'vr-att-button':att.style}"
                                                     style="margin-right: 10px;line-height: 6;"
                                                     >
                                                     <h:outputText value="#{att.name}" />

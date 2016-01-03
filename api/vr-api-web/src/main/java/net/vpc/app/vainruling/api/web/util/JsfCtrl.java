@@ -7,7 +7,9 @@ package net.vpc.app.vainruling.api.web.util;
 
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
@@ -29,21 +31,87 @@ public class JsfCtrl {
     public JsfCtrl() {
     }
 
+    public <T> List<List<T>> groupListBy(int groupSize, List<T> anyList) {
+        List<List<T>> grouped = new ArrayList<>();
+        List<T> curr = new ArrayList<>();
+        for (int i = 0; i < anyList.size(); i++) {
+            if (curr.size() < groupSize) {
+                curr.add(anyList.get(i));
+            } else {
+                grouped.add(curr);
+                curr = new ArrayList<>();
+                curr.add(anyList.get(i));
+            }
+        }
+        if (curr.size() > 0) {
+            grouped.add(curr);
+        }
+        return grouped;
+    }
+
+    public String url(String path) {
+        if (path == null) {
+            path = "";
+        }
+        if (StringUtils.isEmpty(path)) {
+            return "";
+        }
+        if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("ftp://")) {
+            return path;
+        }
+        String prefix = getContext() + "/fs";
+        if (!path.startsWith("/")) {
+            prefix += "/";
+        }
+        return prefix + path;
+    }
+
+    /**
+     * relative url, no context prefixed
+     *
+     * @param path
+     * @return
+     */
+    public String urlr(String path) {
+        if (path == null) {
+            path = "";
+        }
+        if (StringUtils.isEmpty(path)) {
+            return "";
+        }
+        if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("ftp://")) {
+            return path;
+        }
+        String prefix = "/fs";
+        if (!path.startsWith("/")) {
+            prefix += "/";
+        }
+        return prefix + path;
+    }
+
+    public boolean isEmpty(Object... a) {
+        return str(a).trim().length() == 0;
+    }
+
     public String str(Object... a) {
         StringBuilder sb = new StringBuilder();
-        for (Object x : a) {
-            if (x != null) {
-                sb.append(String.valueOf(x));
+        if (a != null) {
+            for (Object x : a) {
+                if (x != null) {
+                    sb.append(String.valueOf(x));
+                }
             }
         }
         return sb.toString();
     }
 
     public String nvlstr(Object... a) {
-        for (Object x : a) {
-            String s = x == null ? "" : String.valueOf(x);
-            if (!StringUtils.isEmpty(s)) {
-                return s;
+        if (a != null) {
+            for (Object x : a) {
+                String s = x == null ? "" : String.valueOf(x);
+                if (!StringUtils.isEmpty(s)) {
+                    return s;
+                }
             }
         }
         return "";

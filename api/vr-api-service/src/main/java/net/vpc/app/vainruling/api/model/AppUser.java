@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.api.model;
 
 import java.sql.Timestamp;
 import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.PasswordStrategyType;
 import net.vpc.upa.UserFieldModifier;
@@ -177,4 +178,14 @@ public class AppUser {
         this.passwordAuto = passwordAuto;
     }
 
+    public static String getName(AppUser t) {
+        if(t.getContact()==null){
+            String log = t.getLogin();
+            if(StringUtils.isEmpty(log)){
+                return "Sans Nom";
+            }
+            return log;
+        }
+        return AppContact.getName(t.getContact());
+    }
 }

@@ -69,25 +69,32 @@ and open the template in the editor.
                                 rendered="#{objCtrl.model.actions.size() gt 0 and objCtrl.isEnabledButton(objCtrl.model.actions.get(0).key)}" 
                                 icon="#{objCtrl.model.actions.get(0).icon}" 
                                 styleClass="ui-ribbon-bigbutton" 
-                                action="#{objCtrl.onAction(objCtrl.model.actions.get(0).key)}"
-                                update="buttons :listForm :itemForm :itemForm :pageTitleForm"
-                                />
+                                ajax="true"
+                                actionListener="#{objCtrl.openActionDialog(objCtrl.model.actions.get(0).key)}"
+                                >
+                                <p:ajax event="dialogReturn" listener="#{objCtrl.onActionDialogClosed}" update="buttons :listForm :itemForm :itemForm :pageTitleForm" />
+
+                            </p:commandButton>
 
                             <p:commandButton value="#{objCtrl.model.actions.get(1).value}" 
                                              rendered="#{objCtrl.model.actions.size() gt 1 and objCtrl.isEnabledButton(objCtrl.model.actions.get(1).key)}" 
                                              icon="#{objCtrl.model.actions.get(1).icon}" 
                                              styleClass="ui-ribbon-bigbutton" 
-                                             action="#{objCtrl.onAction(objCtrl.model.actions.get(1).key)}"
-                                             update="buttons :listForm :itemForm :itemForm :pageTitleForm"
-                                             />
+                                             ajax="true"
+                                             actionListener="#{objCtrl.openActionDialog(objCtrl.model.actions.get(1).key)}"
+                                             >
+                                <p:ajax event="dialogReturn" listener="#{objCtrl.onActionDialogClosed}" update="buttons :listForm :itemForm :itemForm :pageTitleForm" />                            
+                            </p:commandButton>
 
                             <p:commandButton value="#{objCtrl.model.actions.get(2).value}" 
                                              rendered="#{objCtrl.model.actions.size() gt 2 and objCtrl.isEnabledButton(objCtrl.model.actions.get(2).key)}" 
                                              icon="#{objCtrl.model.actions.get(2).icon}" 
                                              styleClass="ui-ribbon-bigbutton" 
-                                             action="#{objCtrl.onAction(objCtrl.model.actions.get(2).key)}"
-                                             update="buttons :listForm :itemForm :itemForm :pageTitleForm"
-                                             />
+                                             ajax="true"
+                                             actionListener="#{objCtrl.openActionDialog(objCtrl.model.actions.get(2).key)}"
+                                             >
+                                <p:ajax event="dialogReturn" listener="#{objCtrl.onActionDialogClosed}" update="buttons :listForm :itemForm :itemForm :pageTitleForm" />                          
+                            </p:commandButton>
 
                             <!-- some crazy bug in PF cant help make this work (stackoverflow in dynaform)
                                 <ui:repeat value="# {objCtrl.model.actions}" var="aac">
@@ -118,8 +125,8 @@ and open the template in the editor.
                                              paginatorAlwaysVisible="false"
                                              paginator="true"
                                              paginatorPosition="bottom"
-                                             emptyMessage="Aucun résultat"
                                              rows="20"
+                                             emptyMessage="Aucun résultat"
                                              paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                              rowsPerPageTemplate="20,50,100,200,1000"
                                              rowStyleClass="#{objCtrl.rowStyle}"
@@ -207,7 +214,7 @@ and open the template in the editor.
                                                     mask="true"
                                                     />  
                                     </pe:dynaFormControl>  
-                                    
+
                                     <pe:dynaFormControl type="date" for="tdate" styleClass="calendar">  
                                         <p:calendar id="tdate" value="#{data.value}" 
                                                     required="#{data.required}" 
@@ -217,7 +224,7 @@ and open the template in the editor.
                                                     mask="true"
                                                     />  
                                     </pe:dynaFormControl>  
-                                    
+
                                     <pe:dynaFormControl type="time" for="ttime" styleClass="calendar">  
                                         <p:calendar id="ttime" value="#{data.value}" 
                                                     required="#{data.required}" 
@@ -228,7 +235,7 @@ and open the template in the editor.
                                                     mask="true"
                                                     />  
                                     </pe:dynaFormControl>  
-                                    
+
                                     <pe:dynaFormControl type="select" for="tselect" styleClass="select"> 
                                         <p:selectOneMenu id="tselect" value="#{data.selectedItem}" required="#{data.required}"  
                                                          disabled="#{data.disabled}" 
@@ -297,6 +304,41 @@ and open the template in the editor.
                                     <pe:dynaFormControl type="entityDetail">  
                                         <p:commandButton ajax="false" value="..." disabled="#{data.disabled}" action="#{vrMenuManager.gotoPage('obj', data.buildActionCommand())}"/>
                                     </pe:dynaFormControl>
+
+
+                                    <pe:dynaFormControl type="profileExpr" for="tprofileexpr" styleClass="select">  
+                                        <p:panelGrid columns="2" style="border-style: hidden" columnClasses="nopadding,nopadding">
+
+                                            <p:inputText id="tprofileexpr" value="#{data.value}" required="#{data.required}" disabled="#{data.disabled}" />  
+                                            <p:commandButton 
+                                                style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
+                                                ajax="true" value="" 
+                                                icon="fa fa-users"
+                                                actionListener="#{objCtrl.openPropertyViewDialog(data.componentId)}"
+                                                >
+                                                <p:ajax event="dialogReturn" listener="#{objCtrl.onPropertyViewDialogClosed}" update="tprofileexpr" />
+
+                                            </p:commandButton>
+                                        </p:panelGrid>
+                                    </pe:dynaFormControl>
+
+                                    <pe:dynaFormControl type="file" for="tfile" styleClass="select">  
+                                        <p:panelGrid columns="2" style="border-style: hidden;width: 100%" columnClasses="nopadding,nopadding">
+
+                                            <p:inputText id="tfile" value="#{data.value}" required="#{data.required}" disabled="#{data.disabled}" />  
+                                            <p:commandButton 
+                                                style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
+                                                ajax="true" value="" 
+                                                icon="fa fa-folder-open-o"
+                                                actionListener="#{objCtrl.openPropertyViewDialog(data.componentId)}"
+                                                >
+                                                <p:ajax event="dialogReturn" listener="#{objCtrl.onPropertyViewDialogClosed}" update="tfile" />
+
+                                            </p:commandButton>
+                                        </p:panelGrid>
+                                    </pe:dynaFormControl>
+
+
                                 </pe:dynaForm>
                             </div>
                         </h:panelGroup>  

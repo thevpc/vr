@@ -6,10 +6,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
-import net.vpc.lib.gomail.GoMail;
-import net.vpc.lib.gomail.GoMailDataSourceFactory;
-import net.vpc.lib.gomail.GoMailFormat;
-import net.vpc.lib.gomail.modules.GoMailModuleProcessor;
+import net.vpc.common.gomail.GoMail;
+import net.vpc.common.gomail.GoMailDataSourceFactory;
+import net.vpc.common.gomail.GoMailFormat;
+import net.vpc.common.gomail.modules.GoMailModuleProcessor;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,7 +31,7 @@ public class GoMailServiceTest {
             GoMail m = s.read(GoMailFormat.TEXT, new File(file));
             m.setSimulate(false);
 //            System.out.println(m);
-            s.sendExternalMail(m);
+            s.sendExternalMail(m,null,null);
         }
         catch (IOException ex) {
             Logger.getLogger(GoMailServiceTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -81,7 +81,7 @@ public class GoMailServiceTest {
 //                System.out.println("Why?");
 //            }
             //XMailProcessor p = new XMailProcessor();
-            service.sendExternalMail(m);
+            service.sendExternalMail(m,null,null);
         }
         catch (Exception ex) {
             Logger.getLogger(GoMailModuleProcessor.class.getName()).log(Level.SEVERE, null, ex);

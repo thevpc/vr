@@ -45,7 +45,8 @@ public class VrApp implements ApplicationContextAware {
         if (activateLog) {
             net.vpc.common.utils.LogUtils.configure(Level.FINE, "net.vpc");
         }
-        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("META-INF/stanalone-applicationContext.xml") {
+        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext
+        ("META-INF/stanalone-applicationContext.xml") {
             protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
                 getBeanFactory().registerScope("session", new SimpleThreadScope());
             }

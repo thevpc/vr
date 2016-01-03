@@ -6,12 +6,10 @@
 package net.vpc.app.vainruling.plugins.inbox.service;
 
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,34 +27,28 @@ import net.vpc.app.vainruling.api.Install;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.model.AppProfile;
 import net.vpc.app.vainruling.api.model.AppUser;
-import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
+import net.vpc.app.vainruling.plugins.inbox.service.model.EmailType;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxSent;
-import net.vpc.app.vainruling.plugins.inbox.service.model.RecipientType;
 import net.vpc.common.streams.InputStreamSource;
 import net.vpc.common.streams.OutputStreamSource;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import net.vpc.upa.types.DateTime;
-import net.vpc.vfs.VFile;
-import net.vpc.vfs.VirtualFileSystem;
-import net.vpc.lib.gomail.GoMail;
-import net.vpc.lib.gomail.GoMailBody;
-import net.vpc.lib.gomail.GoMailBodyContent;
-import net.vpc.lib.gomail.GoMailBodyList;
-import net.vpc.lib.gomail.GoMailBodyPath;
-import net.vpc.lib.gomail.GoMailBodyPosition;
-import net.vpc.lib.gomail.GoMailContext;
-import net.vpc.lib.gomail.GoMailDataSource;
-import net.vpc.lib.gomail.GoMailFormat;
-import net.vpc.lib.gomail.GoMailListener;
-import net.vpc.lib.gomail.dataource.StringsGoMailDataSource;
-import net.vpc.lib.gomail.modules.GoMailAgent;
-import net.vpc.lib.gomail.modules.GoMailModuleProcessor;
-import net.vpc.lib.gomail.modules.GoMailModuleSerializer;
+import net.vpc.common.vfs.VFile;
+import net.vpc.common.vfs.VirtualFileSystem;
+import net.vpc.common.gomail.GoMail;
+import net.vpc.common.gomail.GoMailDataSource;
+import net.vpc.common.gomail.GoMailFactory;
+import net.vpc.common.gomail.GoMailFormat;
+import net.vpc.common.gomail.GoMailListener;
+import net.vpc.common.gomail.dataource.StringsGoMailDataSource;
+import net.vpc.common.gomail.modules.GoMailAgent;
+import net.vpc.common.gomail.modules.GoMailModuleProcessor;
+import net.vpc.common.gomail.modules.GoMailModuleSerializer;
 import net.vpc.upa.Action;
 
 /**
@@ -74,7 +66,8 @@ public class MailboxPlugin {
     public static final String HEADER_CATEGORY = "header.X-App-Category";
     public static final String TYPE_HTML = "text/html";
 
-    public GoMailModuleProcessor processor = new GoMailModuleProcessor();
+    public GoMailFactory gomail = new GoMailFactory();
+//    public GoMailModuleProcessor externalMailProcessor = new GoMailModuleProcessor(new VrExternalMailAgent());
     public GoMailModuleSerializer serializer = new GoMailModuleSerializer();
 
     @Install
@@ -129,42 +122,51 @@ public class MailboxPlugin {
             public List<MailboxReceived> run() {
                 String maxCountQL = maxCount > 0 ? (" top " + maxCount + " ") : "";
                 String unreadOnlyQL = unreadOnly ? (" and u.read=false ") : "";
+                List<MailboxReceived> list = new ArrayList<>();
                 switch (folder) {
                     case CURRENT: {
                         if (userId >= 0) {
-                            return UPA.getPersistenceUnit()
+                            list = UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + " u from MailboxReceived u where u.ownerId=:userId and u.deleted=false and u.archived=false " + unreadOnlyQL + " order by u.sendTime desc")
                                     .setParameter("userId", userId).getEntityList();
                         } else {
-                            return UPA.getPersistenceUnit()
+                            list = UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + " u from MailboxReceived u where and u.deleted=false and u.archived=false " + unreadOnlyQL + " order by u.sendTime desc")
                                     .getEntityList();
                         }
+                        break;
                     }
                     case DELETED: {
                         if (userId >= 0) {
-                            return UPA.getPersistenceUnit()
+                            list = UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + "  u from MailboxReceived u where u.ownerId=:userId and u.deleted=true " + unreadOnlyQL + " order by u.sendTime desc")
                                     .setParameter("userId", userId).getEntityList();
                         } else {
-                            return UPA.getPersistenceUnit()
+                            list = UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + "  u from MailboxReceived u where u.deleted=true " + unreadOnlyQL + " order by u.sendTime desc")
                                     .setParameter("userId", userId).getEntityList();
                         }
+                        break;
                     }
                     case ARCHIVED: {
                         if (userId >= 0) {
-                            return UPA.getPersistenceUnit()
+                            list = UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + " u from MailboxReceived u where u.ownerId=:userId and u.deleted=false and u.archived=true " + unreadOnlyQL + " order by u.sendTime desc")
                                     .setParameter("userId", userId).getEntityList();
                         } else {
-                            return UPA.getPersistenceUnit()
+                            list = UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + " u from MailboxReceived u where u.deleted=false and u.archived=true " + unreadOnlyQL + " order by u.sendTime desc")
                                     .getEntityList();
                         }
+                        break;
                     }
                 }
-                return new ArrayList<>();
+                if (maxCount > 0) {
+                    while (list.size() > maxCount) {
+                        list.remove(list.size() - 1);
+                    }
+                }
+                return list;
             }
 
         }, null);
@@ -259,123 +261,98 @@ public class MailboxPlugin {
         }, null);
     }
 
-    public void sendLocalMail(GoMail email, final boolean persistOutbox) throws IOException {
-        sendExternalMail(email, null, null, new LocalMailAgent(email, persistOutbox));
-    }
+    public GoMail createGoMail(MailData data) throws IOException {
+        GoMail m = new GoMail();
 
-    private String bodyToString(GoMailBodyList body) {
-        StringBuilder contentStr = new StringBuilder();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
-        try {
-            writeGoMailBodyList(body, ps);
-        } catch (IOException ex) {
-            Logger.getLogger(MailboxPlugin.class.getName()).log(Level.SEVERE, null, ex);
+        prepareSender(m);
+        if (!data.isExternal()) {
+            m.from(data.getFrom());
         }
-        ps.flush();
-        contentStr.append(baos.toString());
-        return contentStr.toString();
+        MailboxMessageFormat mailTemplate = data.getTemplateId() == null
+                ? null
+                ://getInternalMailTemplate():
+                (MailboxMessageFormat) (UPA.getPersistenceUnit().findById(MailboxMessageFormat.class, data.getTemplateId()));
+        Integer userId = null;
+        if (data.getFrom() != null) {
+            AppUser au = VrApp.getBean(CorePlugin.class).findUser(data.getFrom());
+            userId = au == null ? null : au.getId();
+        }
+        if (userId == null) {
+            AppUser au = VrApp.getBean(CorePlugin.class).getUserSession().getUser();
+            userId = au == null ? null : au.getId();
+        }
+        prepareBody(
+                data.getSubject(),
+                data.getBody(),
+                m,
+                userId, mailTemplate);
+
+        prepareRecipients(m, data.getEmailType(), data.getTo(), data.getToFilter(), !data.isExternal());
+        if (!StringUtils.isEmpty(data.getCategory())) {
+            m.getProperties().setProperty("header.X-App-Category", data.getCategory());
+        }
+        return m;
     }
 
-    public void writeGoMailBodyList(GoMailBodyList f, OutputStream stream) throws IOException {
+    public void prepareRecipients(GoMail m, EmailType etype, String recipientProfiles, String filterExpression, boolean preferLogin) {
+        MailboxPlugin emailPlugin = VrApp.getBean(MailboxPlugin.class);
+        switch (etype) {
+            case TO: {
+                m.getProperties().setProperty(MailboxPlugin.HEADER_TO_PROFILES, recipientProfiles);
+                emailPlugin.prepareToAll(m, recipientProfiles, filterExpression, preferLogin);
+                break;
+            }
+            case TOEACH: {
+                emailPlugin.prepareToEach(m, recipientProfiles, filterExpression, preferLogin);
+                break;
+            }
+            case CC: {
+                m.getProperties().setProperty(MailboxPlugin.HEADER_CC_PROFILES, recipientProfiles);
+                emailPlugin.prepareCCAll(m, recipientProfiles, filterExpression, preferLogin);
+                break;
+            }
+            case BCC: {
+                m.getProperties().setProperty(MailboxPlugin.HEADER_BCC_PROFILES, recipientProfiles);
+                emailPlugin.prepareBCCAll(m, recipientProfiles, filterExpression, preferLogin);
+                break;
+            }
+        }
+    }
 
-        if (f != null) {
-            PrintStream out = (stream instanceof PrintStream) ? ((PrintStream) stream) : new PrintStream(stream);
-            for (GoMailBody b : f) {
-                if (b.getPosition() == GoMailBodyPosition.ATTACHMENT) {
-                    //ignore!
-                } else {
-                    if (b instanceof GoMailBodyPath) {
-                        //
-                    } else {
-                        GoMailBodyContent c = (GoMailBodyContent) b;
-                        if (b.getContentType().startsWith("text/")) {
-                            String s = new String(c.getByteArray());
-                            out.println();
-                            out.println(s);
-                        } else {
-                            //ignore
-                        }
+    public void sendLocalMail(GoMail email, final boolean persistOutbox, final boolean sendExternal) throws IOException {
+        sendMailByAgent(email, null, new GoMailListener() {
+            @Override
+            public void onBeforeSend(GoMail mail) {
+            }
+
+            @Override
+            public void onAfterSend(GoMail m) {
+                if (sendExternal) {
+                    try {
+                        GoMail m2 = m.copy();
+                        m2.setTo(createUsersEmails(m.to()));
+                        m2.setCc(createUsersEmails(m.cc()));
+                        m2.setBcc(createUsersEmails(m.bcc()));
+                        m2.setToeach(createUsersEmails(m.toeach()));
+                        sendExternalMail(m2, null, null);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }
-        }
 
+            @Override
+            public void onSendError(GoMail mail, Throwable exc) {
+
+            }
+        }, new VrLocalMailAgent(email, persistOutbox));
     }
 
-    private int sendLocalExpandedMail(GoMail email, MailboxSent fms) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        CorePlugin core = VrApp.getBean(CorePlugin.class);
-        int count = 0;
-        String contentStr = bodyToString(email.body());
-        String prio = email.getProperties().getProperty(MailboxPlugin.HEADER_PRIORITY);
-        String toProfiles = email.getProperties().getProperty(MailboxPlugin.HEADER_TO_PROFILES);
-        String ccProfiles = email.getProperties().getProperty(MailboxPlugin.HEADER_CC_PROFILES);
+    
 
-        AppUser fromUser = core.findUser(email.from());
-        HashSet<String> visitedUsers = new HashSet<String>();
-        String appCategory = email.getProperties().getProperty(MailboxPlugin.HEADER_CATEGORY);
-        for (String to : email.to()) {
-            if (!visitedUsers.contains(to)) {
-                visitedUsers.add(to);
-                MailboxReceived s = new MailboxReceived();
-                s.setSubject(email.subject());
-                s.setContent(contentStr);
-                s.setToProfiles(toProfiles);
-                s.setCcProfiles(ccProfiles);
-                s.setImportant(prio != null);
-                s.setSendTime(new DateTime());
-                s.setSender(fromUser);
-                s.setOwner(core.findUser(to));
-                s.setRecipientType(RecipientType.TO);
-                s.setCategory(appCategory);
-                s.setOutboxMessage(fms);
-                pu.persist(s);
-                count++;
-            }
-        }
-        for (String cc : email.cc()) {
-            if (!visitedUsers.contains(cc)) {
-                visitedUsers.add(cc);
-                MailboxReceived s = new MailboxReceived();
-                s.setSubject(email.subject());
-                s.setContent(contentStr);
-                s.setToProfiles(toProfiles);
-                s.setCcProfiles(ccProfiles);
-                s.setImportant(prio != null);
-                s.setSendTime(new DateTime());
-                s.setSender(fromUser);
-                s.setOwner(core.findUser(cc));
-                s.setRecipientType(RecipientType.CC);
-                s.setCategory(appCategory);
-                s.setOutboxMessage(fms);
-                pu.persist(s);
-                count++;
-            }
-        }
-        for (String cc : email.bcc()) {
-            if (!visitedUsers.contains(cc)) {
-                visitedUsers.add(cc);
-                MailboxReceived s = new MailboxReceived();
-                s.setSubject(email.subject());
-                s.setContent(contentStr);
-                s.setToProfiles(toProfiles);
-                s.setCcProfiles(ccProfiles);
-                s.setImportant(prio != null);
-                s.setSendTime(new DateTime());
-                s.setSender(fromUser);
-                s.setOwner(core.findUser(cc));
-                s.setRecipientType(RecipientType.BCC);
-                s.setCategory(appCategory);
-                s.setOutboxMessage(fms);
-                pu.persist(s);
-                count++;
-            }
-        }
-        return count;
-    }
-
-    public void sendLocalMail(MailboxSent message, boolean persistOutbox) throws IOException {
+    
+    
+    public void sendLocalMail(MailboxSent message, Integer templateId, boolean persistOutbox) throws IOException {
         GoMail m = new GoMail();
         m.from(message.getSender().getLogin());
         message.setSendTime(new DateTime());
@@ -402,53 +379,76 @@ public class MailboxPlugin {
             someSend = true;
         }
         if (StringUtils.isEmpty(message.getSubject())) {
-            throw new IllegalArgumentException("Aucune sujet");
+            throw new IllegalArgumentException("Empty Sujet");
         }
         if (StringUtils.isEmpty(message.getContent())) {
-            throw new IllegalArgumentException("Message vide");
+            throw new IllegalArgumentException("Empty Body");
         }
         if (!someSend) {
-            throw new IllegalArgumentException("Aucune destination");
+            throw new IllegalArgumentException("Missing destination");
         }
-        m.subject(message.getSubject());
-        m.body().add(message.getContent(), MailboxPlugin.TYPE_HTML, message.isTemplateMessage());
+        MailboxMessageFormat mailTemplate = null;
+        if (templateId != null) {
+            mailTemplate = getMailTemplate(templateId);
+        }
+        if (mailTemplate != null) {
+            prepareBody(message.getSubject(), message.getContent(), m, null, mailTemplate);
+        } else {
+            m.subject(message.getSubject());
+            m.body().add(message.getContent(), MailboxPlugin.TYPE_HTML, message.isTemplateMessage());
+        }
         m.setProperty(MailboxPlugin.HEADER_CATEGORY, message.getCategory());
         m.setProperty(MailboxPlugin.HEADER_TO_PROFILES, message.getToProfiles());
         m.setProperty(MailboxPlugin.HEADER_CC_PROFILES, message.getCcProfiles());
         if (persistOutbox) {
             UPA.getPersistenceUnit().persist(message);
         }
-        if (message.isExternalMessage()) {
-            try {
-                sendExternalMail(m);
-            } catch (Exception ex) {
-                Logger.getLogger(MailboxPlugin.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        sendLocalMail(m, false);
+//        if (message.isExternalMessage()) {
+//            try {
+//
+//                GoMail m2 = m.copy();
+//                m2.setTo(createUsersEmails(m.to()));
+//                m2.setCc(createUsersEmails(m.cc()));
+//                m2.setBcc(createUsersEmails(m.bcc()));
+//                m2.setToeach(createUsersEmails(m.toeach()));
+//                if (message.isTemplateMessage()) {
+//
+//                    MailboxMessageFormat mailTemplate = getExternalMailTemplate();
+//                    CorePlugin core = VrApp.getBean(CorePlugin.class);
+//                    prepareBody(
+//                            message.getSubject(),
+//                            message.getContent(),
+//                            m2,
+//                            message.getSender() == null
+//                                    ? core.getUserSession().getUser().getId()
+//                                    : message.getSender().getId(), mailTemplate);
+//
+//                }
+//                sendExternalMail(m2, null, null);
+//            } catch (Exception ex) {
+//                Logger.getLogger(MailboxPlugin.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
+        sendLocalMail(m, false, message.isExternalMessage());
     }
 
-    public void sendExternalMail(GoMail mail) throws IOException {
-        sendExternalMail(mail, null, null);
-    }
-
+//    public void sendExternalMail(GoMail mail) throws IOException {
+//        sendExternalMail(mail, null, null);
+//    }
     public void sendExternalMail(GoMail email, Properties roProperties, GoMailListener listener) throws IOException {
 //        email.setSimulate(true);
 
-        int count = processor.send(email, roProperties, listener);
+        int count = gomail.createProcessor(new VrExternalMailAgent()).send(email, roProperties, listener);
         if (count <= 0) {
-            throw new IllegalArgumentException("Aucun adresse valider pour envoyer");
+            throw new IllegalArgumentException("No valid Address");
         }
     }
 
-    public void sendExternalMail(GoMail email, Properties roProperties, GoMailListener listener, GoMailAgent agent) throws IOException {
-        GoMailModuleProcessor _processor = new GoMailModuleProcessor();
-        if (agent != null) {
-            _processor.setAgent(agent);
-        }
+    public void sendMailByAgent(GoMail email, Properties roProperties, GoMailListener listener, GoMailAgent agent) throws IOException {
+        GoMailModuleProcessor _processor = gomail.createProcessor(agent);
         int count = _processor.send(email, roProperties, listener);
         if (count <= 0) {
-            throw new IllegalArgumentException("Aucun adresse valider pour envoyer");
+            throw new IllegalArgumentException("No valid Address");
         }
     }
 
@@ -482,6 +482,42 @@ public class MailboxPlugin {
 
     public GoMail read(GoMailFormat format, InputStreamSource file) throws IOException {
         return serializer.read(format, file);
+    }
+
+    public Set<String> createUsersEmails(Set<String> recipientProfiles) {
+        Set<String> rows = new HashSet<>();
+        for (String t : recipientProfiles) {
+            if (t.contains("@")) {
+                rows.add(t);
+            } else {
+                rows.addAll(createUsersEmails(t));
+            }
+        }
+        return rows;
+    }
+
+    public Set<String> createUsersEmails(String recipientProfiles) {
+        Set<String> rows = new HashSet<>();
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        for (AppUser p : core.resolveUsersByProfileFilter(recipientProfiles)) {
+            String email = p.getContact() == null ? null : p.getContact().getEmail();
+            if (!StringUtils.isEmpty(email)) {
+                rows.add(email);
+            }
+        }
+        return rows;
+    }
+
+    public Set<String> createUsersLogins(String recipientProfiles) {
+        Set<String> rows = new HashSet<>();
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        for (AppUser p : core.resolveUsersByProfileFilter(recipientProfiles)) {
+            String login = p.getLogin();
+            if (!StringUtils.isEmpty(login)) {
+                rows.add(login);
+            }
+        }
+        return rows;
     }
 
     public GoMailDataSource createUsersEmailDatasource(String recipientProfiles) {
@@ -597,10 +633,15 @@ public class MailboxPlugin {
         }
         String emailContent = null;
         String emailSubject = null;
-        if (mailTemplate.isPreferFormattedText()) {
+        if (mailTemplate == null) {
+            emailContent = content;
+            emailSubject = subject;
+        } else if (mailTemplate.isPreferFormattedText()) {
             emailContent = mailTemplate.getFormattedBody().replace("${mail_body}", content);
+            emailSubject = mailTemplate.getSubject().replace("${mail_subject}", subject);
         } else {
             emailContent = mailTemplate.getPlainBody().replace("${mail_body}", content);
+            emailSubject = mailTemplate.getSubject().replace("${mail_subject}", subject);
         }
 
 //                    if (u != null) {
@@ -621,7 +662,6 @@ public class MailboxPlugin {
             m.getProperties().setProperty("from_gender", StringUtils.nonnull(u.getContact().getGender() == null ? null : u.getContact().getGender().getName()));
             m.getProperties().setProperty("from_department", StringUtils.nonnull(u.getDepartment() == null ? null : u.getDepartment().getName()));
         }
-        emailSubject = mailTemplate.getSubject().replace("${mail_subject}", subject);
         m.subject(emailSubject);
         m.body().add(emailContent, mailTemplate.isPreferFormattedText() ? "text/html" : "text/plain", true);
         boolean richText = mailTemplate.isPreferFormattedText();
@@ -653,45 +693,17 @@ public class MailboxPlugin {
         }
     }
 
-    private class LocalMailAgent implements GoMailAgent {
 
-        private GoMail email;
-        private MailboxSent fms;
-        boolean persistOutbox;
-        int total;
-
-        public LocalMailAgent(GoMail email, boolean persistOutbox) {
-            this.email = email;
-            this.persistOutbox = persistOutbox;
-        }
-
-        @Override
-        public int sendExpandedMail(GoMail mail, Properties roProperties, GoMailContext expr) throws IOException {
-
-            MailboxSent ms = null;
-            if (fms == null && persistOutbox) {
-                ms = new MailboxSent();
-                ms.setSubject(email.subject());
-                ms.setContent(bodyToString(email.body()));
-                String prio = email.getProperties().getProperty(MailboxPlugin.HEADER_PRIORITY);
-                ms.setImportant(prio != null);
-                ms.setToProfiles(email.getProperties().getProperty(MailboxPlugin.HEADER_TO_PROFILES));
-                ms.setCcProfiles(email.getProperties().getProperty(MailboxPlugin.HEADER_CC_PROFILES));
-                ms.setBccProfiles(email.getProperties().getProperty(MailboxPlugin.HEADER_BCC_PROFILES));
-                ms.setSender(email.from() == null ? null
-                        : email.from().contains("$")
-                                ? VrApp.getBean(UserSession.class).getUser()
-                                : VrApp.getBean(CorePlugin.class).findUser(email.from())
-                );
-                ms.setCategory(email.getProperties().getProperty(MailboxPlugin.HEADER_CATEGORY));
-                ms.setSendTime(new DateTime());
-                fms = ms;
-                PersistenceUnit pu = UPA.getPersistenceUnit();
-                pu.persist(ms);
-            }
-            int c = sendLocalExpandedMail(mail, fms);
-            total += c;
-            return c;
-        }
+    public MailboxMessageFormat getMailTemplate(int id) {
+        return UPA.getPersistenceUnit().findById(MailboxMessageFormat.class, id);
     }
+
+    public MailboxMessageFormat getExternalMailTemplate() {
+        return UPA.getPersistenceUnit().findByMainField(MailboxMessageFormat.class, "DefaultExternalMail");
+    }
+
+    public MailboxMessageFormat getInternalMailTemplate() {
+        return UPA.getPersistenceUnit().findByMainField(MailboxMessageFormat.class, "DefaultLocalMail");
+    }
+
 }

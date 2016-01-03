@@ -36,6 +36,14 @@ public class ArticlesItem {
     @Sequence
     private int id;
 
+    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Properties(
+            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.PROFILE_EXPRESSION))
+    private String recipientProfiles;
+
+    @Field(modifiers = UserFieldModifier.SUMMARY)
+    private ArticlesDisposition disposition;
+
     @Field(modifiers = UserFieldModifier.MAIN)
     private String subject;
 
@@ -44,16 +52,25 @@ public class ArticlesItem {
     @Field(max = "32000")
     private String content;
 
-    @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Attatchment"))
+    @Properties({
+        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Attatchment"),
+        @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
+        @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+    }
+    )
     @Field(max = "1024")
     private String linkURL;
 
+    @Properties({
+        @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
+        @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+    }
+    )
+    private String imageURL;
+    
     private String linkText;
 
     private String linkClassStyle;
-
-    private String imageURL;
 
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Flags"))
@@ -70,27 +87,13 @@ public class ArticlesItem {
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "SourceAndDestination"))
     private AppUser sender;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
-    private String recipientProfiles;
-
     @Field(modifiers = UserFieldModifier.SUMMARY,
             readAccessLevel = AccessLevel.PROTECTED
     )
     private String filterExpression;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY,
-            readAccessLevel = AccessLevel.PROTECTED
-    )
-    private EmailType emailType = EmailType.TOEACH;
-
-    @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "TimeAndLayout"))
-    @Field(modifiers = UserFieldModifier.SUMMARY
-    )
-    private DateTime sendTime;
-
     @Field(modifiers = UserFieldModifier.SUMMARY)
-    private ArticlesDisposition disposition;
+    private DateTime sendTime;
 
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
@@ -246,13 +249,4 @@ public class ArticlesItem {
     public void setFilterExpression(String filterExpression) {
         this.filterExpression = filterExpression;
     }
-
-    public EmailType getEmailType() {
-        return emailType;
-    }
-
-    public void setEmailType(EmailType emailType) {
-        this.emailType = emailType;
-    }
-
 }

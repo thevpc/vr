@@ -66,9 +66,9 @@ public class AppContact {
 
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
-    @Field(defaultValue = "true")
+    @Field(defaultValue = "true",modifiers = {UserFieldModifier.SUMMARY})
     private boolean enabled;
-    @Field(defaultValue = "false")
+    @Field(defaultValue = "false",modifiers = {UserFieldModifier.SUMMARY})
     private boolean deleted;
     private String deletedBy;
     private Timestamp deletedOn;
@@ -273,7 +273,7 @@ public class AppContact {
             s.append(t.getLastName().trim());
         }
         if (s.length() == 0) {
-            s.append("SANS NOM");
+            s.append("San Nom");
         }
         return s.toString();
     }

@@ -5,11 +5,14 @@
  */
 package net.vpc.app.vainruling.plugins.inbox.service.model;
 
+import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
+import net.vpc.upa.config.Properties;
+import net.vpc.upa.config.Property;
 import net.vpc.upa.config.Sequence;
 
 /**
@@ -25,14 +28,19 @@ public class MailboxMessageFormat {
     private int id;
     @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
     private String name;
+    @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
     private boolean preferFormattedText;
     @Field(max = "1024")
     private String subject;
     @Field(max = "20000")
+    @Property(name = UIConstants.FIELD_FORM_CONTROL,value = UIConstants.ControlType.TEXTAREA)
     private String plainBody;
     @Field(max = "30000")
+    @Property(name = UIConstants.FIELD_FORM_CONTROL,value = UIConstants.ControlType.TEXTAREA)
     private String formattedBody;
     @Field(max = "512")
+    @Properties({@Property(name = UIConstants.FIELD_FORM_CONTROL,value = UIConstants.ControlType.FILE),
+            @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")})
     private String footerEmbeddedImage;
 
     public MailboxMessageFormat() {

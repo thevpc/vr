@@ -14,6 +14,7 @@ import net.vpc.app.vainruling.api.web.OnPageLoad;
 import net.vpc.app.vainruling.api.web.UCtrl;
 import net.vpc.app.vainruling.api.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.model.PlanningData;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.common.strings.StringUtils;
@@ -74,9 +75,13 @@ public class TeacherPlanningCtrl extends AbstractPlanningCtrl {
                 getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), t.getContact().getFullName()));
             }
         }
-        int t=StringUtils.isEmpty(getModel().getTeacherId())?-1:Integer.parseInt(getModel().getTeacherId());
-        List<PlanningDay> plannings = p.loadTeacherPlanning(t);
-        updateModel(plannings);
+        int t = StringUtils.isEmpty(getModel().getTeacherId()) ? -1 : Integer.parseInt(getModel().getTeacherId());
+        PlanningData plannings = p.loadTeacherPlanning(t);
+        if (plannings == null) {
+            updateModel(new ArrayList<PlanningDay>());
+        } else {
+            updateModel(plannings.getDays());
+        }
     }
 
     @OnPageLoad

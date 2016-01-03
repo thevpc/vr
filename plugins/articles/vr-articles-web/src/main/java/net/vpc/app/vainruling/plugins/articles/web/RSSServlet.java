@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
-import net.vpc.vfs.VirtualFileSystem;
+import net.vpc.common.vfs.VirtualFileSystem;
 
 /**
  *

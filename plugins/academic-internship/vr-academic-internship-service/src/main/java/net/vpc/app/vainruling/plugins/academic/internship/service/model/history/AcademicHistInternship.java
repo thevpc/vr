@@ -5,9 +5,12 @@
  */
 package net.vpc.app.vainruling.plugins.academic.internship.service.model.history;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.api.model.AppDepartment;
 import net.vpc.app.vainruling.api.model.AppPeriod;
 import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipStatus;
+import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipType;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
@@ -39,8 +42,8 @@ public class AcademicHistInternship {
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
     private String mainDiscipline;
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
-    private AcademicStudent student;
-    private AcademicStudent secondStudent;
+    private String student;
+    private String secondStudent;
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
     private String supervisorName;
     private String secondSupervisorName;
@@ -52,6 +55,10 @@ public class AcademicHistInternship {
     private String companyMentorPhone;
     private String companyMentorSecondPhone;
     private String companyMentorOffice;
+    private AppDepartment department;
+    private AcademicProgram program;
+    private AcademicInternshipType internshipType;
+    private AcademicInternshipStatus internshipStatus;
     private String duration;
     private Date startDate;
     private Date endDate;
@@ -103,19 +110,19 @@ public class AcademicHistInternship {
         this.mainDiscipline = mainDiscipline;
     }
 
-    public AcademicStudent getStudent() {
+    public String getStudent() {
         return student;
     }
 
-    public void setStudent(AcademicStudent student) {
+    public void setStudent(String student) {
         this.student = student;
     }
 
-    public AcademicStudent getSecondStudent() {
+    public String getSecondStudent() {
         return secondStudent;
     }
 
-    public void setSecondStudent(AcademicStudent secondStudent) {
+    public void setSecondStudent(String secondStudent) {
         this.secondStudent = secondStudent;
     }
 
@@ -253,6 +260,38 @@ public class AcademicHistInternship {
 
     public void setChairExaminerName(String chairExaminerName) {
         this.chairExaminerName = chairExaminerName;
+    }
+
+    public AppDepartment getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(AppDepartment department) {
+        this.department = department;
+    }
+
+    public AcademicProgram getProgram() {
+        return program;
+    }
+
+    public void setProgram(AcademicProgram program) {
+        this.program = program;
+    }
+
+    public AcademicInternshipType getInternshipType() {
+        return internshipType;
+    }
+
+    public void setInternshipType(AcademicInternshipType internshipType) {
+        this.internshipType = internshipType;
+    }
+
+    public AcademicInternshipStatus getInternshipStatus() {
+        return internshipStatus;
+    }
+
+    public void setInternshipStatus(AcademicInternshipStatus internshipStatus) {
+        this.internshipStatus = internshipStatus;
     }
 
 }

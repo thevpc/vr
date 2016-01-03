@@ -14,9 +14,9 @@ import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.app.vainruling.api.web.util.JsfCtrl;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
-import net.vpc.vfs.VFS;
-import net.vpc.vfs.VFile;
-import net.vpc.vfs.VirtualFileSystem;
+import net.vpc.common.vfs.VFS;
+import net.vpc.common.vfs.VFile;
+import net.vpc.common.vfs.VirtualFileSystem;
 import org.primefaces.event.FileUploadEvent;
 
 /**

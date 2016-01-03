@@ -20,7 +20,7 @@ import net.vpc.app.vainruling.api.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
 import net.vpc.common.jsf.FacesUtils;
-import net.vpc.vfs.VFS;
+import net.vpc.common.vfs.VFS;
 import org.primefaces.event.FileUploadEvent;
 
 /**

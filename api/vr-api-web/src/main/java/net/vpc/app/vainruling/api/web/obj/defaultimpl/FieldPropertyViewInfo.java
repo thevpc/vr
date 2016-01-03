@@ -36,26 +36,36 @@ public class FieldPropertyViewInfo {
     public boolean disabled;
     public DataType dataType;
 
-    public static FieldPropertyViewInfo build(Field field, Map<String, Object> configuration) {
-        return new FieldPropertyViewInfo(field, configuration);
+    public static FieldPropertyViewInfo build(Field field, DataType dataType, Map<String, Object> configuration) {
+        return new FieldPropertyViewInfo(field, dataType, configuration);
     }
 
-    private FieldPropertyViewInfo(Field field, Map<String, Object> configuration) {
-        dataType = field.getDataType();
-        main = field.getModifiers().contains(FieldModifier.MAIN);
-        id = field.getModifiers().contains(FieldModifier.ID);
-        insert = field.getModifiers().contains(FieldModifier.PERSIST_DEFAULT);
-        insert_seq = field.getModifiers().contains(FieldModifier.PERSIST_SEQUENCE);
-        update = !id && field.getModifiers().contains(FieldModifier.UPDATE_DEFAULT);
-        nullable = dataType.isNullable();
+    private FieldPropertyViewInfo(Field field, DataType dataType, Map<String, Object> configuration) {
+        this.dataType = dataType != null ? dataType : field.getDataType();
+        if (field != null) {
+            main = field.getModifiers().contains(FieldModifier.MAIN);
+            id = field.getModifiers().contains(FieldModifier.ID);
+            insert = field.getModifiers().contains(FieldModifier.PERSIST_DEFAULT);
+            insert_seq = field.getModifiers().contains(FieldModifier.PERSIST_SEQUENCE);
+            update = !id && field.getModifiers().contains(FieldModifier.UPDATE_DEFAULT);
+        } else {
+            insert=true;
+            update=true;
+            //
+        }
+        nullable = dataType == null ? true : dataType.isNullable();
         ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
         listMode = objCtrl.getModel().getMode() == EditCtrlMode.LIST;
         insertMode = objCtrl.getModel().getMode() == EditCtrlMode.NEW;
         updateMode = objCtrl.getModel().getMode() == EditCtrlMode.UPDATE;
-        visible
-                = insertMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_CREATE, null, !insert_seq)
-                        : updateMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_UPDATE, null, !insert_seq)
-                                : true;
+        if (field != null) {
+            visible
+                    = insertMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_CREATE, null, !insert_seq)
+                            : updateMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_UPDATE, null, !insert_seq)
+                                    : true;
+        } else {
+            visible = true;
+        }
         boolean forceDisabled = configuration != null && configuration.get("disabled") != null && (Boolean.TRUE.equals(configuration.get("disabled")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("disabled"))));
         boolean forceInvisible = configuration != null && configuration.get("invisible") != null && (Boolean.TRUE.equals(configuration.get("disabled")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("invisible"))));
         disabled = forceDisabled;
@@ -78,7 +88,7 @@ public class FieldPropertyViewInfo {
         }
         boolean admin = VrApp.getBean(CorePlugin.class).isActualAdmin();
 
-        if (visible) {
+        if (visible && field != null) {
             AccessLevel rl = field.getReadAccessLevel();
             if (rl == AccessLevel.PRIVATE) {
                 visible = false;
@@ -87,7 +97,7 @@ public class FieldPropertyViewInfo {
             }
         }
 
-        if (updateMode) {
+        if (updateMode && field != null) {
             if (update) {
                 AccessLevel u = field.getUpdateAccessLevel();
                 if (u == AccessLevel.PRIVATE) {
@@ -98,7 +108,7 @@ public class FieldPropertyViewInfo {
             }
         }
 
-        if (insertMode) {
+        if (insertMode && field != null) {
             if (insert) {
                 AccessLevel u = field.getPersistAccessLevel();
                 if (u == AccessLevel.PRIVATE) {
