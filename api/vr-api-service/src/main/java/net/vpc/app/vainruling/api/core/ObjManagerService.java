@@ -24,6 +24,7 @@ import net.vpc.upa.RemoveOptions;
 import net.vpc.upa.UPA;
 import net.vpc.upa.expressions.And;
 import net.vpc.upa.expressions.Equals;
+import net.vpc.upa.expressions.Expression;
 import net.vpc.upa.expressions.Literal;
 import net.vpc.upa.expressions.UserExpression;
 import net.vpc.upa.expressions.Var;
@@ -62,7 +63,7 @@ public class ObjManagerService {
             DataType dt = pf.get(0).getDataType();
             if (dt instanceof EntityType) {
                 persist = entity.findById(id) == null;
-            } else if (pf.size()==1 && pf.get(0).getModifiers().contains(FieldModifier.PERSIST_SEQUENCE)) {
+            } else if (pf.size() == 1 && pf.get(0).getModifiers().contains(FieldModifier.PERSIST_SEQUENCE)) {
                 persist = Objects.equals(dt.getDefaultUnspecifiedValue(), id);
             } else {
                 persist = entity.findById(id) == null;
@@ -82,7 +83,9 @@ public class ObjManagerService {
     public void erase(String type, Object id) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(type);
-        trace.removed(pu.findById(type, id), entity.getParent().getPath(), Level.FINE);
+        if (trace.accept(entity)) {
+            trace.removed(pu.findById(type, id), entity.getParent().getPath(), Level.FINE);
+        }
         pu.remove(type, RemoveOptions.forId(id));
     }
 
@@ -118,7 +121,9 @@ public class ObjManagerService {
                     r.setDate("deletedOn", new Timestamp(System.currentTimeMillis()));
                 }
                 pu.merge(t);
-                trace.softremoved(pu.findById(type, id), entity.getParent().getPath(), Level.FINE);
+                if (trace.accept(entity)) {
+                    trace.softremoved(pu.findById(type, id), entity.getParent().getPath(), Level.FINE);
+                }
             }
         }
     }
@@ -136,42 +141,57 @@ public class ObjManagerService {
         return String.valueOf(entity.getBuilder().entityToRecord(obj, true).getObject(mf.getName()));
     }
 
-    public boolean isEntityAction(String type, String action, Object object) {
+//    public boolean isEntityAction(String type, String action, Object object) {
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        Entity entity = pu.getEntity(type);
+//        return VrApp.getBean(PluginManagerService.class).isEnabledEntityAction(entity.getEntityType(), action, object);
+//    }
+//
+//    public ActionInfo[] getEntityActionList(String type, Object object) {
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        Entity entity = pu.getEntity(type);
+//        return VrApp.getBean(PluginManagerService.class).getEntityActionList(entity.getEntityType(), object);
+//    }
+//    public Object invokeEntityAction(String type, String action, Object object, Object[] args) {
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        Entity entity = pu.getEntity(type);
+//        if ("Archive".equals(action)) {
+//            Object id = resolveId(object);
+//            Object t = pu.findById(type, id);
+//            if (t != null) {
+//                Record r = entity.getBuilder().entityToRecord(t, true);
+//                if (entity.containsField("archived")) {
+//                    r.setBoolean("archived", true);
+//                }
+////            Object old = pu.findById(type, id);
+//                pu.merge(t);
+//                trace.archived(pu.findById(type, id), entity.getParent().getPath(), Level.FINE);
+////            trace.updated(t, old, getClass(), Level.FINE);
+//            }
+//            return null;
+//        }
+//
+//        return VrApp.getBean(PluginManagerService.class).invokeEntityAction(entity.getEntityType(), action, object, args);
+//    }
+    public void archive(String type, Object object) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(type);
-        return VrApp.getBean(PluginManagerService.class).isEnabledEntityAction(entity.getEntityType(), action, object);
-    }
-
-    public ActionInfo[] getEntityActionList(String type, Object object) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(type);
-        return VrApp.getBean(PluginManagerService.class).getEntityActionList(entity.getEntityType(), object);
-    }
-
-    public Object invokeEntityAction(String type, String action, Object object, Object[] args) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(type);
-        if ("Archive".equals(action)) {
-            Object id = resolveId(object);
-            Object t = pu.findById(type, id);
-            if (t != null) {
-                Record r = entity.getBuilder().entityToRecord(t, true);
-                if (entity.containsField("archived")) {
-                    r.setBoolean("archived", true);
-                }
-//            Object old = pu.findById(type, id);
-                pu.merge(t);
-                trace.archived(pu.findById(type, id), entity.getParent().getPath(), Level.FINE);
-//            trace.updated(t, old, getClass(), Level.FINE);
+        Object id = resolveId(object);
+        Object t = pu.findById(type, id);
+        if (t != null) {
+            Record r = entity.getBuilder().entityToRecord(t, true);
+            if (entity.containsField("archived")) {
+                r.setBoolean("archived", true);
             }
-            return null;
+//            Object old = pu.findById(type, id);
+            pu.merge(t);
+            if (trace.accept(entity)) {
+                trace.archived(pu.findById(type, id), entity.getParent().getPath(), Level.FINE);
+            }
+//            trace.updated(t, old, getClass(), Level.FINE);
         }
 
-        return VrApp.getBean(PluginManagerService.class).invokeEntityAction(entity.getEntityType(), action, object, args);
-    }
-
-    public void archive(String type, Object id) {
-        invokeEntityAction(type, "Archive", id, null);
+//        invokeEntityAction(type, "Archive", object, null);
     }
 
     public Object find(Class type, Object id) {
@@ -205,18 +225,36 @@ public class ObjManagerService {
                 .getEntityList();
     }
 
-    public List<Object> findByFilter(String entityName, String criteria) {
+    public List<Object> findByFilter(String entityName, String criteria, ObjSearch objSearch) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         QueryBuilder q = pu
                 .createQueryBuilder(entityName)
                 .setEntityAlias("o")
                 .setOrder(entity.getListOrder());
+        Expression filterExpression = null;
         if (criteria != null) {
-            q.setExpression(new UserExpression(criteria));
+            filterExpression = new UserExpression(criteria);
         }
-        return q
-                .getEntityList();
+        if (objSearch != null) {
+            String c = objSearch.createPreProcessingExpression(entityName);
+            if (c != null) {
+                if (filterExpression == null) {
+                    filterExpression = new UserExpression(c);
+                } else {
+                    filterExpression = new And(filterExpression, new UserExpression(c));
+                }
+            }
+        }
+        if (filterExpression != null) {
+            q.setExpression(filterExpression);
+
+        }
+        List<Object> list = q.getEntityList();
+        if (objSearch != null) {
+            list = objSearch.filterList(list, entityName);
+        }
+        return list;
     }
 
     public List<Object> findAll(String type) {

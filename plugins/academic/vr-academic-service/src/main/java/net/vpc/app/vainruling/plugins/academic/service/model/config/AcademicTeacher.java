@@ -52,6 +52,15 @@ public class AcademicTeacher {
     private String uniqueCode;
     private String officeLocationNumber;
     private String officePhoneNumber;
+    private String otherNames;
+
+    @Field(max = "4000")
+    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    private String publicObservations;
+    @Field(max = "4000")
+    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    private String privateObservations;
+
     @Field(
             defaultValue = "false",
             updateAccessLevel = AccessLevel.PROTECTED,
@@ -68,7 +77,6 @@ public class AcademicTeacher {
             readAccessLevel = AccessLevel.PROTECTED
     )
     private Timestamp deletedOn;
-    private String otherNames;
 
     public int getId() {
         return id;
@@ -212,6 +220,22 @@ public class AcademicTeacher {
 
     public void setOtherNames(String otherNames) {
         this.otherNames = otherNames;
+    }
+
+    public String getPublicObservations() {
+        return publicObservations;
+    }
+
+    public void setPublicObservations(String publicObservations) {
+        this.publicObservations = publicObservations;
+    }
+
+    public String getPrivateObservations() {
+        return privateObservations;
+    }
+
+    public void setPrivateObservations(String privateObservations) {
+        this.privateObservations = privateObservations;
     }
 
 }

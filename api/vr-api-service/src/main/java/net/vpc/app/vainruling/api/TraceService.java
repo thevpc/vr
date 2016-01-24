@@ -16,11 +16,13 @@ import net.vpc.app.vainruling.api.model.AppUser;
 import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.upa.Action;
 import net.vpc.upa.Entity;
+import net.vpc.upa.EntityModifier;
 import net.vpc.upa.Field;
 import net.vpc.upa.InvokeContext;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.Record;
 import net.vpc.upa.UPA;
+import net.vpc.upa.VoidAction;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,6 +31,82 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TraceService {
+
+    private static final ThreadLocal<Integer> SILENCE = new ThreadLocal<>();
+
+    private static void enterSilence() {
+        Integer i = SILENCE.get();
+        if (i == null) {
+            SILENCE.set(1);
+        } else {
+            SILENCE.set(i + 1);
+        }
+    }
+
+    private static void exitSilence() {
+        Integer i = SILENCE.get();
+        if (i == null) {
+            //SILENCE.set(1);
+        } else {
+            SILENCE.set(i - 1);
+        }
+    }
+
+    public static boolean isSilenced() {
+        Integer i = SILENCE.get();
+        return (i == null) || (i.intValue() > 0);
+    }
+
+    public static Runnable makeSilenced(final Runnable r) {
+        return new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    enterSilence();
+                    r.run();
+                } finally {
+                    exitSilence();
+                }
+            }
+        };
+    }
+
+    public static <T> Action<T> makeSilenced(final Action<T> r) {
+        return new Action<T>() {
+
+            @Override
+            public T run() {
+                T t = null;
+                try {
+                    enterSilence();
+                    t = r.run();
+                } finally {
+                    exitSilence();
+                }
+                return t;
+            }
+        };
+    }
+
+    public static VoidAction makeSilenced(final VoidAction r) {
+        return new VoidAction() {
+
+            @Override
+            public void run() {
+                try {
+                    enterSilence();
+                    r.run();
+                } finally {
+                    exitSilence();
+                }
+            }
+        };
+    }
+    
+    public boolean accept(Entity entity) {
+        return !entity.getModifiers().contains(EntityModifier.SYSTEM)
+                && !entity.getEntityType().equals(AppTrace.class);
+    }
 
     private UserSession getUserSession() {
         try {
@@ -80,10 +158,13 @@ public class TraceService {
         String login = u == null ? "anonymous" : u.getLogin();
         int userId = u == null ? -1 : u.getId();
         String ip = us == null ? "" : us.getClientIpAddress();
-        trace(action, message, data, module, objectName, objectId, login, userId, level,ip);
+        trace(action, message, data, module, objectName, objectId, login, userId, level, ip);
     }
 
     public void trace(final String action, final String message, final String data, final String module, final String objectName, Object objectId, final String user, final int userId, final Level level, final String ip) {
+        if (isSilenced()) {
+            return;
+        }
         final PersistenceUnit pu = UPA.getPersistenceUnit();
         if (objectId instanceof Object[]) {
             objectId = Arrays.deepToString((Object[]) objectId);
@@ -91,7 +172,7 @@ public class TraceService {
             objectId = String.valueOf(objectId);
         }
         final Object objectId2 = objectId;
-        UPA.getContext().invokePrivileged(new Action<Object>() {
+        UPA.getContext().invokePrivileged(makeSilenced(new Action<Object>() {
 
             @Override
             public Object run() {
@@ -110,7 +191,7 @@ public class TraceService {
                         ip));
                 return null;
             }
-        }, new InvokeContext());
+        }));
     }
 
     public String dump(Object o) {

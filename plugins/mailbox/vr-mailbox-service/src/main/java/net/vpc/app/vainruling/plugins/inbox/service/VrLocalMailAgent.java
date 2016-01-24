@@ -27,6 +27,7 @@ import net.vpc.common.gomail.GoMailBodyList;
 import net.vpc.common.gomail.GoMailBodyPath;
 import net.vpc.common.gomail.GoMailBodyPosition;
 import net.vpc.common.gomail.GoMailContext;
+import net.vpc.common.gomail.modules.DefaultGoMailAgent;
 import net.vpc.common.gomail.modules.GoMailAgent;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
@@ -169,7 +170,7 @@ class VrLocalMailAgent implements GoMailAgent {
                     //
                 } else {
                     GoMailBodyContent c = (GoMailBodyContent) b;
-                    if (b.getContentType().startsWith("text/")) {
+                    if (DefaultGoMailAgent.isTextContentType(b.getContentType())) {
                         String s = new String(c.getByteArray());
                         out.println();
                         out.println(s);

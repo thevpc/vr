@@ -14,6 +14,13 @@ and open the template in the editor.
       >
 
     <h:head>
+        <script>
+            function vpcdoit() {
+                alert("hello");
+                processOnUpdate();
+            }
+
+        </script>
     </h:head>
 
     <h:body>
@@ -36,50 +43,71 @@ and open the template in the editor.
                     <!-- /.row -->
                     <div class="row">
                         <p:outputPanel id="buttons">
-                            <p:commandButton value="Rafr." rendered="#{objCtrl.isEnabledButton('Refresh')}" icon="fa fa-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{objCtrl.onRefresh}"  update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="Nouv." rendered="#{objCtrl.isEnabledButton('New')}" icon="fa fa-plus" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{objCtrl.onNew}"  update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="Enreg." rendered="#{objCtrl.isEnabledButton('Save')}"  icon="fa fa-save" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"  onclick="processOnSaveCurrent()"  update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="Supp." rendered="#{objCtrl.isEnabledButton('Remove')}" icon="fa fa-trash-o" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"   onclick="PF('confirmationDelete').show();" />
-                            <p:commandButton value="Arch." rendered="#{objCtrl.isEnabledButton('Archive')}" icon="fa fa-archive" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"  onclick="PF('confirmationArchive').show();"/>
+                            <p:commandButton value="Rafr." rendered="#{objCtrl.isEnabledButton('Refresh')}" icon="fa fa-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onRefresh}"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Nouv." rendered="#{objCtrl.isEnabledButton('New')}" icon="fa fa-plus" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onNew}"  update="buttons :listForm :itemForm :pageTitleForm"/>
 
-                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Assign')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{objCtrl.onAssignCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Unassign')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{objCtrl.onUnassignCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Done')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{objCtrl.onDoneCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Verify')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{objCtrl.onVerifyCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:splitButton value="Enreg." rendered="#{objCtrl.isEnabledButton('Save')}"  onclick="processOnSaveCurrent()"  update="buttons :listForm :itemForm :pageTitleForm" icon="ui-icon-disk" styleClass=" vr-toolbox-button">
+                                <p:menuitem value="Enregister et Fermer" onclick="processOnSaveCurrentAndClose()" ajax="true"  update="buttons :listForm :itemForm :pageTitleForm" icon="ui-icon-arrowrefresh-1-w" />
+                                <p:menuitem value="Enregistrer" onclick="processOnSaveCurrent()"  ajax="true" update="buttons :listForm :itemForm :pageTitleForm" icon="ui-icon-close" />
+                            </p:splitButton>
 
-                            <p:commandButton value="Cop." rendered="#{objCtrl.isEnabledButton('Copy')}" icon="fa fa-copy" styleClass="ui-ribbon-bigbutton vr-icon-aws"  update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="Coll." rendered="#{objCtrl.isEnabledButton('Paste')}" icon="fa fa-paste" styleClass="ui-ribbon-bigbutton vr-icon-aws"  update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="Coup." rendered="#{objCtrl.isEnabledButton('Cut')}" icon="fa fa-cut" styleClass="ui-ribbon-bigbutton vr-icon-aws"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:splitButton value="Cherch." rendered="#{objCtrl.isEnabledButton('Search')}"  icon="fa fa-search"  onclick="document.getElementById('listForm:processOnSimpleSearchLink').click();"  update="buttons :listForm :itemForm :pageTitleForm" styleClass=" vr-toolbox-button">
+                                <p:menuitem value="Recherche Simple" icon="fa fa-search" onclick="document.getElementById('listForm:processOnSimpleSearchLink').click();" ajax="true"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                                <p:separator />
+                                <p:menuitem value="Supprimer Filtres" icon="fa fa-search" onclick="processOnClearSearch()" ajax="true"  update="buttons :listForm :itemForm :pageTitleForm" />
+                            </p:splitButton>
 
-                            <p:commandButton value="impr." rendered="#{objCtrl.isEnabledButton('Print')}" icon="fa fa-print"  styleClass="ui-ribbon-bigbutton vr-icon-aws" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Supp." rendered="#{objCtrl.isEnabledButton('Remove')}" icon="fa fa-trash-o" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"   onclick="PF('confirmationDelete').show();" />
+                            <p:commandButton value="Arch." rendered="#{objCtrl.isEnabledButton('Archive')}" icon="fa fa-archive" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"  onclick="PF('confirmationArchive').show();"/>
 
-                            <p:commandButton value="imp." rendered="#{objCtrl.isEnabledButton('Import')}" icon="fa fa-cloud-upload"  styleClass="ui-ribbon-bigbutton vr-icon-aws" update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="csv" rendered="#{objCtrl.isEnabledButton('ExportCSV')}" icon="fa fa-file-text-o"  styleClass="ui-ribbon-bigbutton vr-icon-aws" update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="xls" rendered="#{objCtrl.isEnabledButton('ExportXls')}" icon="fa fa-file-excel-o"  styleClass="ui-ribbon-bigbutton vr-icon-aws" update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="pdf" rendered="#{objCtrl.isEnabledButton('ExportPdf')}" icon="fa fa-file-pdf-o"  styleClass="ui-ribbon-bigbutton vr-icon-aws" update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="Auth." rendered="#{objCtrl.isEnabledButton('Authorization')}" icon="fa fa-user-secret" styleClass="ui-ribbon-bigbutton vr-icon-aws" type="button"  update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="Trace" rendered="#{objCtrl.isEnabledButton('Log')}" icon="fa fa-backward" styleClass="ui-ribbon-bigbutton vr-icon-aws" type="button" update="buttons :listForm :itemForm :itemForm :pageTitleForm"/>  
+                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Assign')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onAssignCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Unassign')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onUnassignCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Done')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onDoneCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Verify')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onVerifyCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
+
+                            <p:commandButton value="Cop." rendered="#{objCtrl.isEnabledButton('Copy')}" icon="fa fa-copy" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Coll." rendered="#{objCtrl.isEnabledButton('Paste')}" icon="fa fa-paste" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Coup." rendered="#{objCtrl.isEnabledButton('Cut')}" icon="fa fa-cut" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"  update="buttons :listForm :itemForm :pageTitleForm"/>
+
+                            <p:commandButton value="impr." rendered="#{objCtrl.isEnabledButton('Print')}" icon="fa fa-print"  styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" update="buttons :listForm :itemForm :pageTitleForm"/>
+
+                            <p:commandButton value="imp." rendered="#{objCtrl.isEnabledButton('Import')}" icon="fa fa-cloud-upload"  styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="csv" rendered="#{objCtrl.isEnabledButton('ExportCSV')}" icon="fa fa-file-text-o"  styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="xls" rendered="#{objCtrl.isEnabledButton('ExportXls')}" icon="fa fa-file-excel-o"  styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="pdf" rendered="#{objCtrl.isEnabledButton('ExportPdf')}" icon="fa fa-file-pdf-o"  styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Auth." rendered="#{objCtrl.isEnabledButton('Authorization')}" icon="fa fa-user-secret" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" type="button"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton value="Trace" rendered="#{objCtrl.isEnabledButton('Log')}" icon="fa fa-backward" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" type="button" update="buttons :listForm :itemForm :itemForm :pageTitleForm"/>  
+                            <p:commandButton value="Liste" rendered="#{objCtrl.isEnabledButton('Cancel')}" icon="fa fa-arrow-left" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onCancelCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
                             <p:commandButton value="Retour" icon="fa fa-arrow-left" 
                                              action="#{vrMenuManager.goBack}" 
-                                             ajax="false" styleClass="ui-ribbon-bigbutton vr-icon-aws"/>  
+                                             ajax="false" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"/>  
 
 
+<!--                            <p:commandButton 
+                                value="#_{objCtrl.model.actions.get(0).value}" 
+                                rendered="#_{objCtrl.model.actions.size() gt 0 and objCtrl.isEnabledButton(objCtrl.model.actions.get(0).key)}" 
+                                icon="#_{objCtrl.model.actions.get(0).icon}" 
+                                styleClass="ui-ribbon-bigbutton  vr-icon-aws vr-toolbox-button" 
+                                ajax="true"
+                                actionListener="#_{objCtrl.openActionDialog(objCtrl.model.actions.get(0).key)}"
+                                >
+                                <p:ajax event="dialogReturn" listener="#_{objCtrl.onActionDialogClosed}" update="buttons :listForm :itemForm :itemForm :pageTitleForm" />
+
+                            </p:commandButton>-->
                             <p:commandButton 
                                 value="#{objCtrl.model.actions.get(0).value}" 
                                 rendered="#{objCtrl.model.actions.size() gt 0 and objCtrl.isEnabledButton(objCtrl.model.actions.get(0).key)}" 
                                 icon="#{objCtrl.model.actions.get(0).icon}" 
-                                styleClass="ui-ribbon-bigbutton" 
+                                styleClass="ui-ribbon-bigbutton  vr-icon-aws vr-toolbox-button" 
                                 ajax="true"
-                                actionListener="#{objCtrl.openActionDialog(objCtrl.model.actions.get(0).key)}"
+                                onclick="document.getElementById('listForm:processOpenActionDialog0').click();"
                                 >
-                                <p:ajax event="dialogReturn" listener="#{objCtrl.onActionDialogClosed}" update="buttons :listForm :itemForm :itemForm :pageTitleForm" />
-
                             </p:commandButton>
 
                             <p:commandButton value="#{objCtrl.model.actions.get(1).value}" 
                                              rendered="#{objCtrl.model.actions.size() gt 1 and objCtrl.isEnabledButton(objCtrl.model.actions.get(1).key)}" 
                                              icon="#{objCtrl.model.actions.get(1).icon}" 
-                                             styleClass="ui-ribbon-bigbutton" 
+                                             styleClass="ui-ribbon-bigbutton  vr-icon-aws vr-toolbox-button" 
                                              ajax="true"
                                              actionListener="#{objCtrl.openActionDialog(objCtrl.model.actions.get(1).key)}"
                                              >
@@ -89,7 +117,7 @@ and open the template in the editor.
                             <p:commandButton value="#{objCtrl.model.actions.get(2).value}" 
                                              rendered="#{objCtrl.model.actions.size() gt 2 and objCtrl.isEnabledButton(objCtrl.model.actions.get(2).key)}" 
                                              icon="#{objCtrl.model.actions.get(2).icon}" 
-                                             styleClass="ui-ribbon-bigbutton" 
+                                             styleClass="ui-ribbon-bigbutton  vr-icon-aws vr-toolbox-button" 
                                              ajax="true"
                                              actionListener="#{objCtrl.openActionDialog(objCtrl.model.actions.get(2).key)}"
                                              >
@@ -104,8 +132,6 @@ and open the template in the editor.
                                                  action="# {objCtrl.onAction(aac.key)}"
                                                  update="buttons :listForm :itemForm :itemForm :pageTitleForm"/>  
                             </ui:repeat>-->
-                            <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Cancel')}" icon="fa fa-arrow-left" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{objCtrl.onCancelCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
-
                         </p:outputPanel>
                     </div>
 
@@ -177,9 +203,19 @@ and open the template in the editor.
                     </p:outputPanel>
                     <p:remoteCommand name="processOnDeleteCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onDeleteCurrent()}"/>
                     <p:remoteCommand name="processOnArchiveCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onArchiveCurrent()}"/>
-                </h:form>
+                    <p:remoteCommand name="processOnSimpleSearch" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onSimpleSearch()}"/>
+                    <p:remoteCommand name="processOnClearSearch" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onClearSearch()}"/>
+                    <p:remoteCommand name="processOnUpdate" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onDoNothing()}"/>
 
-                <h:form id="itemForm" enctype="multipart/form-data" >
+                    <p:commandLink id="processOnSimpleSearchLink" action="#{objCtrl.onSimpleSearch()}">
+                        <p:ajax event="dialogReturn" listener="#{objCtrl.onSearchDialogClosed}" update=":listForm" />
+                    </p:commandLink>
+
+
+                    <p:commandButton style="display: none" id="processOpenActionDialog0" action="#{objCtrl.openActionDialog(objCtrl.model.actions.get(0).key)}">
+                        <p:ajax event="dialogReturn" listener="#{objCtrl.onActionDialogClosed}" update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm" />                            
+                    </p:commandButton>
+
                     <div class="row">
                         <p:spacer width="10" height="10" />
                     </div>
@@ -322,6 +358,22 @@ and open the template in the editor.
                                         </p:panelGrid>
                                     </pe:dynaFormControl>
 
+                                    <pe:dynaFormControl type="discipline" for="tdiscipline" styleClass="select">  
+                                        <p:panelGrid columns="2" style="border-style: hidden" columnClasses="nopadding,nopadding">
+
+                                            <p:inputText id="tdiscipline" value="#{data.value}" required="#{data.required}" disabled="#{data.disabled}" />  
+                                            <p:commandButton 
+                                                style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
+                                                ajax="true" value="" 
+                                                icon="fa fa-tags"
+                                                actionListener="#{objCtrl.openPropertyViewDialog(data.componentId)}"
+                                                >
+                                                <p:ajax event="dialogReturn" listener="#{objCtrl.onPropertyViewDialogClosed}" update="tdiscipline" />
+
+                                            </p:commandButton>
+                                        </p:panelGrid>
+                                    </pe:dynaFormControl>
+
                                     <pe:dynaFormControl type="file" for="tfile" styleClass="select">  
                                         <p:panelGrid columns="2" style="border-style: hidden;width: 100%" columnClasses="nopadding,nopadding">
 
@@ -344,7 +396,11 @@ and open the template in the editor.
                         </h:panelGroup>  
 
                     </p:outputPanel>
+                    <p:remoteCommand name="processOnSaveCurrentAndClose" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onSaveCurrentAndClose()}"/>
                     <p:remoteCommand name="processOnSaveCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onSaveCurrent()}"/>
+                </h:form>
+
+                <h:form id="itemForm" enctype="multipart/form-data" >
                 </h:form>
 
                 <h:outputScript id="dynaFormScript" target="body">  

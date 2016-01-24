@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.inbox.service;
 
+import java.util.Properties;
 import net.vpc.app.vainruling.plugins.inbox.service.model.EmailType;
 
 /**
@@ -22,6 +23,7 @@ public class MailData {
     private EmailType emailType;
     private Integer templateId;
     private boolean external;
+    private Properties properties = new Properties();
 
     public String getSubject() {
         return subject;
@@ -93,6 +95,14 @@ public class MailData {
 
     public void setExternal(boolean external) {
         this.external = external;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 
 }

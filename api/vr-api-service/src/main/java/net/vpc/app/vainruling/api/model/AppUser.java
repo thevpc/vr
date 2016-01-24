@@ -39,7 +39,6 @@ public class AppUser {
     @Password(strategyType = PasswordStrategyType.MD5)
     private String password;
 
-
     @Field(modifiers = {UserFieldModifier.MAIN})
     private AppContact contact;
     @Field(modifiers = {UserFieldModifier.SUMMARY})
@@ -67,11 +66,15 @@ public class AppUser {
 
     private Timestamp deletedOn;
 
+    @Field(defaultValue = "false", persistAccessLevel = AccessLevel.PROTECTED, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PROTECTED, modifiers = UserFieldModifier.SUMMARY
+    )
+    private boolean welcomeSent;
+
     /**
      * password field generated automatically, should be reset on some event
      * though
      */
-    @Field(persistAccessLevel = AccessLevel.PRIVATE, updateAccessLevel = AccessLevel.PRIVATE, readAccessLevel = AccessLevel.PRIVATE)
+    @Field(persistAccessLevel = AccessLevel.PROTECTED, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PROTECTED)
     private String passwordAuto;
 
     public int getId() {
@@ -179,13 +182,22 @@ public class AppUser {
     }
 
     public static String getName(AppUser t) {
-        if(t.getContact()==null){
+        if (t.getContact() == null) {
             String log = t.getLogin();
-            if(StringUtils.isEmpty(log)){
+            if (StringUtils.isEmpty(log)) {
                 return "Sans Nom";
             }
             return log;
         }
         return AppContact.getName(t.getContact());
     }
+
+    public boolean isWelcomeSent() {
+        return welcomeSent;
+    }
+
+    public void setWelcomeSent(boolean welcomeSent) {
+        this.welcomeSent = welcomeSent;
+    }
+
 }

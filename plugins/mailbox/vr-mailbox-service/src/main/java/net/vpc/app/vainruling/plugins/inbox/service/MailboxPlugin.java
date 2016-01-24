@@ -24,8 +24,14 @@ import net.vpc.app.vainruling.api.AppEntityExtendedPropertiesProvider;
 import net.vpc.app.vainruling.api.AppPlugin;
 import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.Install;
+import net.vpc.app.vainruling.api.Start;
+import net.vpc.app.vainruling.api.TraceService;
 import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.api.VrNotificationEvent;
+import net.vpc.app.vainruling.api.VrNotificationManager;
+import net.vpc.app.vainruling.api.VrNotificationSession;
 import net.vpc.app.vainruling.api.model.AppProfile;
+import net.vpc.app.vainruling.api.model.AppTrace;
 import net.vpc.app.vainruling.api.model.AppUser;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
 import net.vpc.app.vainruling.plugins.inbox.service.model.EmailType;
@@ -50,12 +56,13 @@ import net.vpc.common.gomail.modules.GoMailAgent;
 import net.vpc.common.gomail.modules.GoMailModuleProcessor;
 import net.vpc.common.gomail.modules.GoMailModuleSerializer;
 import net.vpc.upa.Action;
+import net.vpc.upa.VoidAction;
 
 /**
  *
  * @author vpc
  */
-@AppPlugin(version = "1.4", dependsOn = "fileSystemPlugin")
+@AppPlugin(version = "1.6", dependsOn = "fileSystemPlugin")
 public class MailboxPlugin {
 
 //    public void
@@ -64,11 +71,19 @@ public class MailboxPlugin {
     public static final String HEADER_CC_PROFILES = "header.X-App-CCProfiles";
     public static final String HEADER_BCC_PROFILES = "X-App-BcCProfiles";
     public static final String HEADER_CATEGORY = "header.X-App-Category";
-    public static final String TYPE_HTML = "text/html";
+    public static final String SEND_WELCOME_MAIL_QUEUE = "sendWelcomeMailQueue";
 
     public GoMailFactory gomail = new GoMailFactory();
 //    public GoMailModuleProcessor externalMailProcessor = new GoMailModuleProcessor(new VrExternalMailAgent());
     public GoMailModuleSerializer serializer = new GoMailModuleSerializer();
+
+    public MailboxPlugin() {
+    }
+
+    @Start
+    public void start() {
+        VrApp.getBean(VrNotificationManager.class).register(SEND_WELCOME_MAIL_QUEUE, SEND_WELCOME_MAIL_QUEUE, 200);
+    }
 
     @Install
     public void installService() {
@@ -91,6 +106,47 @@ public class MailboxPlugin {
                 core.addProfileRight(prof.getId(), "MailboxSent.Remove");
                 core.addProfileRight(prof.getId(), "MailboxSent.Navigate");
             }
+        }
+
+        MailboxMessageFormat w = getWelcomeTemplate();
+        if (w == null) {
+            w = new MailboxMessageFormat();
+            w.setName("WelcomeMail");
+            w.setSubject("[ENISo][II] Nouveau Compte : ${mail_subject}");
+            w.setPlainBody("${civility} ${firstName},\n"
+                    + " Un nouveau compte a été crée pour vous sur eniso.info, le site officiel du département informatique Industrielle de l'ENISo.\n"
+                    + " Ce compte vous permet d'être toujours informé sur les nouveautés du département et présente un espace indispensable\n"
+                    + " pour coordonner entre administration, enseignants, et élèves ingénieurs.\n"
+                    + " Merci donc de consulter régulièrement votre compte.\n"
+                    + " Vos paramètres de connection sont les suivants :\n"
+                    + "  + Identifiant : ${new_user_login}\n"
+                    + "  + Mot de passe : ${new_user_password}\n"
+                    + " Cordialement\n"
+                    + " ${from_fullName}\n"
+                    + " ${from_positionTitle1}\n"
+                    + " ${from_positionTitle2}\n"
+                    + " ${from_positionTitle3}");
+            w.setFormattedBody("<p>${civility} ${firstName},</p>\n"
+                    + " ${mail_body}\n"
+                    + " <p>Un nouveau compte a été crée pour vous sur eniso.info, le site officiel du département informatique Industrielle de l'ENISo.</p>"
+                    + " <p>Ce compte vous permet d'être toujours informé sur les nouveautés du département et présente un espace indispensable \n"
+                    + " pour coordonner entre administration, enseignants, et élèves ingénieurs .</p>\n"
+                    + " <p>Merci donc de consulter régulièrement votre compte.</p>\n"
+                    + " <p>Vos paramètres de connection sont les suivants :\n"
+                    + "  <ul>\n"
+                    + "  <li>Identifiant : ${new_user_login}</li>\n"
+                    + "  <li>Mot de passe : ${new_user_password}</li>\n"
+                    + "  </ul>\n"
+                    + "  </p>\n"
+                    + " <p>Cordialement,</p>\n"
+                    + " <p>${from_fullName}</p>\n"
+                    + " <p>${from_positionTitle1}</p>\n"
+                    + " <p>${from_positionTitle2}</p>\n"
+                    + " <p>${from_positionTitle3}</p>\n"
+                    + " <p>Restez connectés sur http://www.eniso.info </p>");
+            w.setFooterEmbeddedImage("/Config/VisualIdentity/Institution.jpg");
+            w.setPreferFormattedText(true);
+            UPA.getPersistenceUnit().persist(w);
         }
     }
 
@@ -263,7 +319,9 @@ public class MailboxPlugin {
 
     public GoMail createGoMail(MailData data) throws IOException {
         GoMail m = new GoMail();
-
+        if (data.getProperties() != null) {
+            m.getProperties().putAll(data.getProperties());
+        }
         prepareSender(m);
         if (!data.isExternal()) {
             m.from(data.getFrom());
@@ -296,6 +354,9 @@ public class MailboxPlugin {
 
     public void prepareRecipients(GoMail m, EmailType etype, String recipientProfiles, String filterExpression, boolean preferLogin) {
         MailboxPlugin emailPlugin = VrApp.getBean(MailboxPlugin.class);
+        if (etype == null) {
+            etype = EmailType.TOEACH;
+        }
         switch (etype) {
             case TO: {
                 m.getProperties().setProperty(MailboxPlugin.HEADER_TO_PROFILES, recipientProfiles);
@@ -316,6 +377,89 @@ public class MailboxPlugin {
                 emailPlugin.prepareBCCAll(m, recipientProfiles, filterExpression, preferLogin);
                 break;
             }
+        }
+    }
+
+    GoMailListener notifPusher = new GoMailListener() {
+        @Override
+        public void onBeforeSend(GoMail mail) {
+
+        }
+
+        @Override
+        public void onAfterSend(GoMail mail) {
+            VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_WELCOME_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject(), null, Level.INFO));
+        }
+
+        @Override
+        public void onSendError(GoMail mail, Throwable exc) {
+            VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_WELCOME_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject() + " : " + exc, null, Level.SEVERE));
+        }
+    };
+
+    public void sendWelcomeEmail(List<AppUser> users, boolean applyFilter) {
+        for (AppUser u : users) {
+            boolean ok = true;
+            if (applyFilter) {
+                if (u.isWelcomeSent() || u.isDeleted() || !u.isEnabled()) {
+                    ok = false;
+                }
+            }
+            if (ok) {
+                sendWelcomeEmail(u, null, notifPusher);
+            }
+        }
+    }
+
+    public void sendWelcomeEmail(boolean applyFilter) {
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        for (AppUser u : core.findUsers()) {
+            boolean ok = true;
+            if (applyFilter) {
+                if (u.isWelcomeSent() || u.isDeleted() || !u.isEnabled() || u.getConnexionCount() > 0) {
+                    ok = false;
+                }
+            }
+            if (ok) {
+                sendWelcomeEmail(u, null, notifPusher);
+            }
+        }
+    }
+
+    private void sendWelcomeEmail(final AppUser u, Properties roProperties, GoMailListener listener) {
+        try {
+            CorePlugin core = VrApp.getBean(CorePlugin.class);
+            MailData m = new MailData();
+            m.setExternal(true);
+            m.setTo(u.getLogin());
+            m.setSubject(u.getLogin());
+            m.setTemplateId(getWelcomeTemplate().getId());
+            m.setCategory("Welcome");
+            m.getProperties().setProperty("new_user_login", u.getLogin());
+            if (StringUtils.isEmpty(u.getPasswordAuto())) {
+                u.setPasswordAuto(core.resolvePasswordProposal(u.getContact()));
+                u.setPassword(u.getPasswordAuto());
+                UPA.getContext().invokePrivileged(TraceService.makeSilenced(new VoidAction() {
+                    @Override
+                    public void run() {
+                        UPA.getPersistenceUnit().merge(u);
+                    }
+                }));
+            }
+            m.getProperties().setProperty("new_user_password", u.getPasswordAuto());
+            GoMail email = createGoMail(m);
+            sendExternalMail(email, roProperties, listener);
+            u.setWelcomeSent(true);
+            //cancel auto password!
+            u.setPasswordAuto(null);
+            UPA.getContext().invokePrivileged(new VoidAction() {
+                @Override
+                public void run() {
+                    UPA.getPersistenceUnit().merge(u);
+                }
+            });
+        } catch (IOException ex) {
+            Logger.getLogger(MailboxPlugin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -348,10 +492,6 @@ public class MailboxPlugin {
         }, new VrLocalMailAgent(email, persistOutbox));
     }
 
-    
-
-    
-    
     public void sendLocalMail(MailboxSent message, Integer templateId, boolean persistOutbox) throws IOException {
         GoMail m = new GoMail();
         m.from(message.getSender().getLogin());
@@ -395,7 +535,7 @@ public class MailboxPlugin {
             prepareBody(message.getSubject(), message.getContent(), m, null, mailTemplate);
         } else {
             m.subject(message.getSubject());
-            m.body().add(message.getContent(), MailboxPlugin.TYPE_HTML, message.isTemplateMessage());
+            m.body().add(message.getContent(), GoMail.HTML_CONTENT_TYPE, message.isTemplateMessage());
         }
         m.setProperty(MailboxPlugin.HEADER_CATEGORY, message.getCategory());
         m.setProperty(MailboxPlugin.HEADER_TO_PROFILES, message.getToProfiles());
@@ -631,17 +771,31 @@ public class MailboxPlugin {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
             u = core.findUser(userId);
         }
+        if (content == null) {
+            content = "";
+        }
+        if (subject == null) {
+            subject = "";
+        }
         String emailContent = null;
         String emailSubject = null;
+        boolean richText = mailTemplate == null ? false : mailTemplate.isPreferFormattedText();
+        String footerEmbeddedImage = mailTemplate == null ? null : mailTemplate.getFooterEmbeddedImage();
         if (mailTemplate == null) {
             emailContent = content;
             emailSubject = subject;
         } else if (mailTemplate.isPreferFormattedText()) {
-            emailContent = mailTemplate.getFormattedBody().replace("${mail_body}", content);
-            emailSubject = mailTemplate.getSubject().replace("${mail_subject}", subject);
+            emailContent = mailTemplate.getFormattedBody() == null ? "" : mailTemplate.getFormattedBody().replace("${mail_body}", content);
+            emailSubject = mailTemplate.getSubject() == null ? "" : mailTemplate.getSubject().replace("${mail_subject}", subject);
         } else {
-            emailContent = mailTemplate.getPlainBody().replace("${mail_body}", content);
-            emailSubject = mailTemplate.getSubject().replace("${mail_subject}", subject);
+            emailContent = mailTemplate.getPlainBody() == null ? "" : mailTemplate.getPlainBody().replace("${mail_body}", content);
+            emailSubject = mailTemplate.getSubject() == null ? "" : mailTemplate.getSubject().replace("${mail_subject}", subject);
+        }
+        if (StringUtils.isEmpty(emailContent)) {
+            emailContent = "empty message";
+        }
+        if (StringUtils.isEmpty(emailSubject)) {
+            emailSubject = "no subject";
         }
 
 //                    if (u != null) {
@@ -663,11 +817,9 @@ public class MailboxPlugin {
             m.getProperties().setProperty("from_department", StringUtils.nonnull(u.getDepartment() == null ? null : u.getDepartment().getName()));
         }
         m.subject(emailSubject);
-        m.body().add(emailContent, mailTemplate.isPreferFormattedText() ? "text/html" : "text/plain", true);
-        boolean richText = mailTemplate.isPreferFormattedText();
+        m.body().add(emailContent, richText ? GoMail.HTML_CONTENT_TYPE : GoMail.TEXT_CONTENT_TYPE, true);
 
         if (richText) {
-            String footerEmbeddedImage = mailTemplate.getFooterEmbeddedImage();
             try {
 
                 if (u != null) {
@@ -676,11 +828,11 @@ public class MailboxPlugin {
                         VirtualFileSystem ufs = fs.getUserFileSystem(u.getLogin());
                         VirtualFileSystem allfs = fs.getFileSystem();
                         if (ufs.exists(footerEmbeddedImage)) {
-                            m.footer("<img src=\"cid:part1\" alt=\"ATTACHMENT\"/>", "text/html");
+                            m.footer("<img src=\"cid:part1\" alt=\"ATTACHMENT\"/>", GoMail.HTML_CONTENT_TYPE);
                             VFile img = ufs.get(footerEmbeddedImage);
                             m.attachment(img.readBytes(), img.probeContentType());
                         } else if (allfs.exists(footerEmbeddedImage)) {
-                            m.footer("<img src=\"cid:part1\" alt=\"ATTACHMENT\"/>", "text/html");
+                            m.footer("<img src=\"cid:part1\" alt=\"ATTACHMENT\"/>", GoMail.HTML_CONTENT_TYPE);
                             VFile img = allfs.get(footerEmbeddedImage);
                             m.attachment(img.readBytes(), img.probeContentType());
                         }
@@ -693,9 +845,12 @@ public class MailboxPlugin {
         }
     }
 
-
     public MailboxMessageFormat getMailTemplate(int id) {
         return UPA.getPersistenceUnit().findById(MailboxMessageFormat.class, id);
+    }
+
+    public MailboxMessageFormat getWelcomeTemplate() {
+        return UPA.getPersistenceUnit().findByMainField(MailboxMessageFormat.class, "WelcomeMail");
     }
 
     public MailboxMessageFormat getExternalMailTemplate() {

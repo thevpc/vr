@@ -186,8 +186,8 @@ and open the template in the editor.
                             <h1>Autres modules</h1>
                             <p:selectManyCheckbox id="basic" value="#{myCourseLoadCtrl.model.othersFilters}" layout="grid" columns="3">
                                 <p:ajax listener="#{myCourseLoadCtrl.onOthersFiltersChanged}" update="@all" />
-                                <f:selectItem itemLabel="Afficher autre modules Assignés" itemValue="assigned" />
-                                <f:selectItem itemLabel="Afficher autre modules Non Assignés" itemValue="non-assigned" />
+                                <f:selectItem itemLabel="Afficher autre modules Affectés" itemValue="assigned" />
+                                <f:selectItem itemLabel="Afficher autre modules Non Affectés" itemValue="non-assigned" />
                                 <f:selectItem itemLabel="Afficher autre modules Demandés" itemValue="intended" />
                                 <f:selectItem itemLabel="Afficher autre modules Non Demandés" itemValue="non-intended" />
                             </p:selectManyCheckbox>

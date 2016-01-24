@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.api;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -99,6 +100,11 @@ public class CorePlugin {
         return (AppUserType) pu.findByMainField(AppUserType.class, name);
     }
 
+    public AppUserType findUserType(int id) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return (AppUserType) pu.findById(AppUserType.class, id);
+    }
+
     public AppProfile findProfile(String profileName) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return (AppProfile) pu.findByMainField(AppProfile.class, profileName);
@@ -115,6 +121,138 @@ public class CorePlugin {
         r.setDescription(desc);
         pu.persist(r);
         return true;
+    }
+
+    public List<AppRightName>[] findProfileRightNamesDualList(int profileId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Map<String, AppRightName> allMap = new HashMap<>();
+        Map<String, AppRightName> existing = new HashMap<>();
+        List<AppRightName> oldRigths = pu.createQuery("Select u.`right` from AppProfileRight u where u.profileId=:profileId")
+                .setParameter("profileId", profileId)
+                .getEntityList();
+        List<AppRightName> allRigths = pu.createQuery("Select u from AppRightName u")
+                .getEntityList();
+        for (AppRightName r : allRigths) {
+            allMap.put(r.getName(), r);
+        }
+        for (AppRightName r : oldRigths) {
+            existing.put(r.getName(), r);
+            allMap.remove(r.getName());
+        }
+        List<AppRightName> in = new ArrayList<>(existing.values());
+        List<AppRightName> out = new ArrayList<>(allMap.values());
+        return new List[]{in, out};
+    }
+
+    public List<AppUser>[] findProfileUsersDualList(int profileId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Map<String, AppUser> allMap = new HashMap<>();
+        Map<String, AppUser> existing = new HashMap<>();
+        List<AppUser> oldRigths = pu.createQuery("Select u.user from AppUserProfileBinding u where u.profileId=:profileId")
+                .setParameter("profileId", profileId)
+                .getEntityList();
+        List<AppUser> allRigths = pu.createQuery("Select u from AppUser u")
+                .getEntityList();
+        for (AppUser r : allRigths) {
+            allMap.put(r.getLogin(), r);
+        }
+        for (AppUser r : oldRigths) {
+            existing.put(r.getLogin(), r);
+            allMap.remove(r.getLogin());
+        }
+        List<AppUser> in = new ArrayList<>(existing.values());
+        List<AppUser> out = new ArrayList<>(allMap.values());
+        return new List[]{in, out};
+    }
+
+    public int setProfileRights(int profileId, List<String> rightNames) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AppProfile p = pu.findById(AppProfile.class, profileId);
+        if (p == null) {
+            throw new IllegalArgumentException("Profile not found " + profileId);
+        }
+        List<AppProfileRight> oldRigths = pu.createQuery("Select u from AppProfileRight u where u.profileId=:profileId")
+                .setParameter("profileId", profileId)
+                .getEntityList();
+        Set<String> baseSet = new HashSet<String>();
+        Set<String> visitedSet = new HashSet<String>();
+        if (rightNames != null) {
+            baseSet.addAll(rightNames);
+        }
+        int modifications = 0;
+        for (AppProfileRight r : oldRigths) {
+            if (baseSet.contains(r.getRight().getName())) {
+                //ok
+            } else {
+                pu.remove(r);
+                modifications++;
+            }
+            visitedSet.add(r.getRight().getName());
+        }
+        for (String s : baseSet) {
+            if (!visitedSet.contains(s)) {
+                //this is new
+                AppRightName r = pu.findById(AppRightName.class, s);
+                if (r == null) {
+                    log.log(Level.SEVERE, "Right " + s + " not found");
+                } else {
+                    AppProfileRight pr = new AppProfileRight();
+                    pr.setProfile(p);
+                    pr.setRight(r);
+                    pu.persist(pr);
+                    modifications++;
+                }
+            }
+        }
+        return modifications;
+    }
+
+    public int setProfileUsers(int profileId, List<String> logins) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AppProfile p = pu.findById(AppProfile.class, profileId);
+        if (p == null) {
+            throw new IllegalArgumentException("Profile not found " + profileId);
+        }
+        List<AppUserProfileBinding> oldUserBindings = pu.createQuery("Select u from AppUserProfileBinding u where u.profileId=:profileId")
+                .setParameter("profileId", profileId)
+                .getEntityList();
+        List<AppUser> oldUsers = pu.createQuery("Select u from AppUser u")
+                .getEntityList();
+        Map<String, AppUser> usersByName = new HashMap<String, AppUser>();
+        for (AppUser u : oldUsers) {
+            usersByName.put(u.getLogin(), u);
+        }
+        Set<String> baseSet = new HashSet<String>();
+        Set<String> visitedSet = new HashSet<String>();
+        if (logins != null) {
+            baseSet.addAll(logins);
+        }
+        int modifications = 0;
+        for (AppUserProfileBinding r : oldUserBindings) {
+            if (baseSet.contains(r.getUser().getLogin())) {
+                //ok
+            } else {
+                pu.remove(r);
+                modifications++;
+            }
+            visitedSet.add(r.getUser().getLogin());
+        }
+        for (String s : baseSet) {
+            if (!visitedSet.contains(s)) {
+                //this is new
+                AppUser r = usersByName.get(s);
+                if (r == null) {
+                    log.log(Level.SEVERE, "User " + s + " not found");
+                } else {
+                    AppUserProfileBinding pr = new AppUserProfileBinding();
+                    pr.setProfile(p);
+                    pr.setUser(r);
+                    pu.persist(pr);
+                    modifications++;
+                }
+            }
+        }
+        return modifications;
     }
 
     public boolean addProfileRight(int profileId, String rightName) {
@@ -251,6 +389,10 @@ public class CorePlugin {
                 .getEntity();
     }
 
+    public AppDepartment findDepartment(int id) {
+        return UPA.getPersistenceUnit().findById(AppDepartment.class, id);
+    }
+
     public AppDepartment findDepartment(String code) {
         return UPA.getPersistenceUnit().
                 createQuery("Select a from AppDepartment a where a.code=:code or a.name=:code or a.name2=:code")
@@ -264,6 +406,14 @@ public class CorePlugin {
 
     public AppContact findContact(int id) {
         return (AppContact) UPA.getPersistenceUnit().findById(AppContact.class, id);
+    }
+
+    public AppCompany findCompany(int id) {
+        return (AppCompany) UPA.getPersistenceUnit().findById(AppCompany.class, id);
+    }
+
+    public List<AppCompany> findCompanies() {
+        return UPA.getPersistenceUnit().findAll(AppCompany.class);
     }
 
     public AppGender findGender(String t) {
@@ -934,6 +1084,34 @@ public class CorePlugin {
         return sb.toString().trim();
     }
 
+    public String resolvePasswordProposal(AppContact contact) {
+        String fn = contact.getFirstName();
+        String ln = contact.getLastName();
+        if (fn == null) {
+            fn = "";
+        }
+        if (ln == null) {
+            ln = "";
+        }
+        String fnlower = fn.toLowerCase();
+        String[] fns = fnlower.split(" ");
+        if (fns.length > 0 && fns[0].length() >= 3) {
+            String p = fns[0];
+            for (int i = 0; i < 4; i++) {
+                int x = (int) (Math.random() * 10);
+                p += x;
+            }
+            return p;
+        }
+//        if()
+        String p = fnlower.replace(" ", "");
+        for (int i = 0; i < 4; i++) {
+            int x = (int) (Math.random() * 10);
+            p += x;
+        }
+        return p;
+    }
+
     public String resolveLoginProposal(AppContact contact) {
         String fn = contact.getFirstName();
         String ln = contact.getLastName();
@@ -948,5 +1126,86 @@ public class CorePlugin {
 
     public void runThread(Runnable r) {
         new SpringThread(r).start();
+    }
+
+    public AppUser createUser(AppContact contact, int userTypeId, int departmentId, boolean attachToExistingUser, String[] defaultProfiles) {
+        AppUser u = findUserByContact(contact.getId());
+        if (u == null) {
+            String login = resolveLoginProposal(contact);
+            if (StringUtils.isEmpty(login)) {
+                login = "user";
+            }
+            String password = resolvePasswordProposal(contact);
+            u = findUser(login);
+            if (u != null && u.getContact() != null) {
+                if (u.getContact().getId() == contact.getId()) {
+                    //this is the same user !! ok
+                    return u;
+                }
+            }
+            if (!attachToExistingUser || (u != null && u.getContact() != null)) {
+                String y = String.valueOf(Calendar.getInstance().get(Calendar.YEAR) - 2000);
+                if (u != null) {
+                    u = findUser(login + y);
+                    if (u == null) {
+                        //ok
+                        login = login + y;
+                    } else {
+                        String chars = "abcdefghijklmnopqrstuvwxyz";
+                        for (int i = 0; i < chars.length(); i++) {
+                            u = findUser(login + y + chars.charAt(i));
+                            if (u == null) {
+                                login = login + y + chars.charAt(i);
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (u != null) {
+                    int index = 1;
+                    while (true) {
+                        u = findUser(login + y + "_" + index);
+                        if (u == null) {
+                            login = login + y + "_" + index;
+                            break;
+                        }
+                        index++;
+                    }
+                }
+                if (u != null) {
+                    throw new IllegalArgumentException("Unable to add new user");
+                }
+            }
+            AppUserType userType = findUserType(userTypeId);
+            AppDepartment userDepatment = findDepartment(userTypeId);
+            if (u == null) {
+                u = new AppUser();
+                u.setLogin(login);
+                u.setContact(contact);
+                String pwd = password;
+                u.setPassword(pwd);
+                u.setPasswordAuto(pwd);
+                u.setType(userType);
+                u.setDepartment(userDepatment);
+                u.setEnabled(true);
+                UPA.getPersistenceUnit().persist(u);
+            } else {
+                u.setContact(contact);
+                u.setType(userType);
+                UPA.getPersistenceUnit().merge(u);
+            }
+        }
+        if (defaultProfiles != null) {
+            for (String defaultProfile : defaultProfiles) {
+                if (!StringUtils.isEmpty(defaultProfile)) {
+                    userAddProfile(u.getId(), defaultProfile);
+                }
+            }
+        }
+        return u;
+    }
+
+    public String validateProfileName(String s) {
+        return s.replace("(", "_").replace(")", "_").replace("[", "_").replace("]", "_").replace("+", "_").replace("-", "_").replace(":", "_");
     }
 }

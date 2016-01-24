@@ -27,7 +27,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
         css = "fa-table",
         title = "Emploi par Groupe",
         url = "modules/academic/classplanning",
-        menu = "/Education",
+        menu = "/Education/Planning",
         securityKey = "Custom.Education.ClassPlanning"
 )
 @ManagedBean

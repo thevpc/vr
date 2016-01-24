@@ -23,6 +23,7 @@ public class GlobalAssignmentStat {
     private LoadValue value = new LoadValue();
     private LoadValue due = new LoadValue();
     private LoadValue extra = new LoadValue();
+    private LoadValue targetEquiv = new LoadValue();
 
     private LoadValue dueWeek = new LoadValue();
     private LoadValue valueWeek = new LoadValue();
@@ -158,9 +159,17 @@ public class GlobalAssignmentStat {
     public LoadValue getAvgExtraWeek() {
         return avgExtraWeek;
     }
-
+    
 //    public void setAvgExtraWeek(LoadValue avgExtraWeek) {
 //        this.avgExtraWeek = avgExtraWeek;
 //    }
+
+    public LoadValue getTargetEquiv() {
+        return targetEquiv;
+    }
+
+    public void setTargetEquiv(LoadValue targetEquiv) {
+        this.targetEquiv = targetEquiv;
+    }
 
 }

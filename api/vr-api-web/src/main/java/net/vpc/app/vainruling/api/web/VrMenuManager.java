@@ -14,6 +14,7 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.i18n.I18n;
+import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.api.util.Reflector;
 import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.app.vainruling.api.web.util.TreeDefinition;
@@ -249,6 +250,17 @@ public class VrMenuManager {
             bc.add(new BreadcrumbItem("", "", "", ""));
         }
         getModel().setBreadcrumb(bc);
+        UserSession s = VrApp.getContext().getBean(UserSession.class);
+        StringBuilder lvp = new StringBuilder();
+        for (BreadcrumbItem breadcrumbItem : bc) {
+            if (!StringUtils.isEmpty(breadcrumbItem.getTitle())) {
+                if (lvp.length() > 0) {
+                    lvp.append(", ");
+                }
+                lvp.append(breadcrumbItem.getTitle());
+            }
+        }
+        s.setLastVisitedPage(lvp.toString());
         if (StringUtils.isEmpty(url)) {
             return null;
         }

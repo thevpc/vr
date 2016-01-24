@@ -29,7 +29,7 @@ import net.vpc.common.strings.StringUtils;
         css = "fa-table",
         title = "Emploi par Enseignant",
         url = "modules/academic/teacherplanning",
-        menu = "/Education",
+        menu = "/Education/Planning",
         securityKey = "Custom.Education.TeacherPlanning"
 )
 @ManagedBean

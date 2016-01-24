@@ -30,10 +30,14 @@ public class AppCompany {
     private String name;
     @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
     private String name2;
+    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
     private String address;
-    private AppGovernorate governorate;
-    private AppSettlement settlement;
+    @Field(modifiers = UserFieldModifier.SUMMARY)
     private AppCountry country;
+    @Field(modifiers = UserFieldModifier.SUMMARY)
+    private AppGovernorate governorate;
+    @Field(modifiers = UserFieldModifier.SUMMARY)
+    private AppSettlement settlement;
     private AppIndustry industry;
     private String postalCode;
     private String phone;

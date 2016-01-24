@@ -5,6 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.stat;
 
+import java.text.DecimalFormat;
+
 /**
  *
  * @author vpc
@@ -20,17 +22,68 @@ public class LoadValue {
      * TP and PM in TP equivalent
      */
     private double tppm;
+    private double equivC;
+    private double equivTD;
 
     public LoadValue() {
     }
 
-    public LoadValue(double c, double td, double tp, double pm, double equiv, double tppm) {
+    public LoadValue(double c, double td, double tp, double pm, double equiv, double tppm, double equivC, double equivTD) {
         this.c = c;
         this.td = td;
         this.tp = tp;
         this.pm = pm;
         this.equiv = equiv;
         this.tppm = tppm;
+        this.equivC = equivC;
+        this.equivTD = equivTD;
+    }
+    private static final DecimalFormat f = new DecimalFormat("#0.000");
+    public static void main(String[] args) {
+        System.out.println(new LoadValue(15, 6, 15, 42, 66.3, 0, 0, 0).formatString());
+    }
+    private String formatF(double d){
+        double r = ((int)d);
+        if(r==d){
+            return String.valueOf((int)d);
+        }
+        return String.valueOf(d);
+    }
+    
+    public String formatString() {
+        StringBuilder b = new StringBuilder();
+        b.append(f.format(equiv));
+        boolean addSep = false;
+        if (c != 0 || td != 0 || tp != 0 || pm != 0) {
+            b.append("=");
+            if (c != 0) {
+                b.append(formatF(c)).append("C");
+                addSep = true;
+            }
+            if (td != 0) {
+                if (addSep) {
+                    b.append(",");
+                }
+                b.append(formatF(td)).append("TD");
+                addSep = true;
+            }
+            if (tp != 0) {
+                if (addSep) {
+                    b.append(",");
+                }
+                b.append(formatF(tp)).append("TP");
+                addSep = true;
+            }
+            if (pm != 0) {
+                if (addSep) {
+                    b.append(",");
+                }
+                b.append(pm).append("PM");
+                addSep = true;
+            }
+
+        }
+        return b.toString();
     }
 
     public LoadValue set(LoadValue o) {
@@ -40,6 +93,8 @@ public class LoadValue {
         pm = o.getPm();
         tppm = o.getTppm();
         equiv = o.getEquiv();
+        equivC = o.getEquivC();
+        equivTD = o.getEquivTD();
         return this;
     }
 
@@ -50,9 +105,11 @@ public class LoadValue {
         pm += o.getPm();
         tppm += o.getTppm();
         equiv += o.getEquiv();
+        equivC += o.getEquivC();
+        equivTD += o.getEquivTD();
         return this;
     }
-    
+
     public LoadValue mul(LoadValue o) {
         c *= o.getC();
         td *= o.getTd();
@@ -60,9 +117,11 @@ public class LoadValue {
         pm *= o.getPm();
         tppm *= o.getTppm();
         equiv *= o.getEquiv();
+        equivC *= o.getEquivC();
+        equivTD *= o.getEquivTD();
         return this;
     }
-    
+
     public LoadValue mul(double o) {
         c *= o;
         td *= o;
@@ -70,9 +129,11 @@ public class LoadValue {
         pm *= o;
         tppm *= o;
         equiv *= o;
+        equivC *= o;
+        equivTD *= o;
         return this;
     }
-    
+
     public LoadValue div(double o) {
         c /= o;
         td /= o;
@@ -80,6 +141,8 @@ public class LoadValue {
         pm /= o;
         tppm /= o;
         equiv /= o;
+        equivC /= o;
+        equivTD /= o;
         return this;
     }
 
@@ -90,11 +153,13 @@ public class LoadValue {
         pm -= o.getPm();
         tppm -= o.getTppm();
         equiv -= o.getEquiv();
+        equivC -= o.getEquivC();
+        equivTD -= o.getEquivTD();
         return this;
     }
 
     public LoadValue copy() {
-        return new LoadValue(c, td, tp, pm, equiv, tppm);
+        return new LoadValue(c, td, tp, pm, equiv, tppm, equivC, equivTD);
     }
 
     public double getC() {
@@ -151,10 +216,27 @@ public class LoadValue {
         return this;
     }
 
+    public LoadValue setEquivC(double equivC) {
+        this.equivC = equivC;
+        return this;
+    }
+
+    public LoadValue setEquivTD(double equivTD) {
+        this.equivTD = equivTD;
+        return this;
+    }
+
+    public double getEquivC() {
+        return equivC;
+    }
+
+    public double getEquivTD() {
+        return equivTD;
+    }
+
     @Override
     public String toString() {
         return "Value{" + "c=" + c + ", td=" + td + ", tp=" + tp + ", pm=" + pm + ", equiv=" + equiv + ", tppm=" + tppm + '}';
     }
-    
 
 }

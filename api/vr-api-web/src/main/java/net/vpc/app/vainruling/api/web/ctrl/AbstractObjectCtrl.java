@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.api.web.ctrl;
 
+import net.vpc.app.vainruling.api.core.ObjSearch;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -41,7 +42,6 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
         }
     }
 
-    
     public void reloadPage(String cmd) {
 
     }
@@ -155,7 +155,16 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
         private EditCtrlMode mode = EditCtrlMode.LIST;
         private T current;
         private String cmd;
+        private ObjSearch search;
         private List<T> list = new ArrayList<>();
+
+        public ObjSearch getSearch() {
+            return search;
+        }
+
+        public void setSearch(ObjSearch search) {
+            this.search = search;
+        }
 
         public String getCmd() {
             return cmd;

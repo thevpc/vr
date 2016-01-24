@@ -14,7 +14,7 @@ import net.vpc.upa.config.Path;
 import net.vpc.upa.config.Sequence;
 
 /**
- *
+ * Classe
  * @author vpc
  */
 @Entity(listOrder = "name")

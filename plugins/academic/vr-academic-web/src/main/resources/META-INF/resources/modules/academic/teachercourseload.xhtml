@@ -149,7 +149,7 @@ and open the template in the editor.
                                     <h:outputText value="#{i.assignment.coursePlan.program.name}-#{i.assignment.coursePlan.studentClass.name}" />
                                 </p:column>
                                 <p:column  headerText="Module">
-                                    <h:outputText styleClass="#{i.assigned?'vr-assigned-course':''}" value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" />
+                                    <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}" styleClass="#{i.assigned?'vr-assigned-course':''}" value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" />
                                 </p:column>
                                 <p:column headerText="C" width="5%">
                                     <h:outputText value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}" />
@@ -209,7 +209,7 @@ and open the template in the editor.
                                     <h:outputText value="#{i.assignment.coursePlan.program.name}-#{i.assignment.coursePlan.studentClass.name}" />
                                 </p:column>
                                 <p:column headerText="Module">
-                                    <h:outputText  styleClass="#{i.assigned?'vr-assigned-course':''}" value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" />
+                                    <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}" value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" styleClass="#{i.assigned?'vr-assigned-course':''}"/>
                                 </p:column>
                                 <p:column headerText="C" width="5%">
                                     <h:outputText value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}" />
@@ -241,12 +241,12 @@ and open the template in the editor.
                         <div class="table-responsive">
                             <h1>Autres modules</h1>
                             <p:selectManyCheckbox value="#{teacherCourseLoadCtrl.model.othersFilters}" 
-                                                  layout="grid" columns="6"
+                                                  layout="grid" columns="5"
                                                   style="font-size: x-small;margin-left: 20px;"
                                                   >
                                 <p:ajax listener="#{teacherCourseLoadCtrl.onOthersFiltersChanged}" update="@all"/>
-                                <f:selectItem  itemLabel="Modules Assignés" itemValue="assigned" />
-                                <f:selectItem itemLabel="Modules Non Assignés" itemValue="non-assigned" />
+                                <f:selectItem  itemLabel="Modules Affectés" itemValue="assigned" />
+                                <f:selectItem itemLabel="Modules Non Affectés" itemValue="non-assigned" />
                                 <f:selectItem itemLabel="Modules Demandés" itemValue="intended" />
                                 <f:selectItem itemLabel="Modules Non Demandés" itemValue="non-intended" />
                                 <f:selectItem itemLabel="Modules En Conflits" itemValue="conflict" />
@@ -288,7 +288,7 @@ and open the template in the editor.
                                     <h:outputText value="#{i.assignment.coursePlan.program.name}-#{i.assignment.coursePlan.studentClass.name}" />
                                 </p:column>
                                 <p:column headerText="Module" filterBy="#{i.assignment.coursePlan.name}">
-                                    <h:outputText styleClass="#{i.assigned?'vr-assigned-course':''}" value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" />
+                                    <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}" styleClass="#{i.assigned?'vr-assigned-course':''}" value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" />
                                 </p:column>
                                 <p:column headerText="C" width="5%">
                                     <h:outputText value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}" />

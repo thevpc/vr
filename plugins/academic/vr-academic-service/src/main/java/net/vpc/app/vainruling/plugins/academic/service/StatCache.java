@@ -14,6 +14,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSeme
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseIntent;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherSemestrialLoad;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
@@ -37,6 +38,7 @@ public class StatCache {
     private Map<Integer, List<AcademicCourseAssignment>> academicCourseAssignmentListByTeacherId;
     private List<AcademicTeacherSemestrialLoad> academicTeacherSemestrialLoadList;
     private Map<Integer, List<AcademicTeacherSemestrialLoad>> academicTeacherSemestrialLoadByTeacherIdMap;
+    private Map<String, AcademicTeacherDegree> academicTeacherDegreesByCodeMap;
     private List<AcademicSemester> academicSemesterList;
 
     public static <K, V> Map<K, V> toMap(List<V> entityList) {
@@ -128,7 +130,7 @@ public class StatCache {
         }
         return academicCourseIntentByTeacherId;
     }
-    
+
     public Map<Integer, List<AcademicCourseIntent>> getAcademicCourseIntentByAssignmentId() {
         if (academicCourseIntentByAssignmentId == null) {
             Map<Integer, List<AcademicCourseIntent>> m = new HashMap<Integer, List<AcademicCourseIntent>>();
@@ -145,7 +147,6 @@ public class StatCache {
         }
         return academicCourseIntentByAssignmentId;
     }
-    
 
     public Map<Integer, List<AcademicCourseAssignment>> getAcademicCourseAssignmentListByTeacherId() {
         if (academicCourseAssignmentListByTeacherId == null) {
@@ -180,8 +181,21 @@ public class StatCache {
         } else {
             List<AcademicCourseAssignment> list = getAcademicCourseAssignmentListByTeacherId().get(teacher);
             if (list == null) {
-                System.out.println("No assignments for teacherId=" + teacher + " : " + getAcademicTeacherMap().get(teacher));
+                AcademicTeacher tt = getAcademicTeacherMap().get(teacher);
+                if (tt != null) {
+                    if (!tt.isEnabled()) {
+                        //this is okkay!
+                    } else {
+                        System.out.println("No assignments for teacherId=" + teacher + " : " + tt);
+                    }
+                } else {
+                    System.out.println("No assignments for teacherId=" + teacher + " : " + tt);
+                }
             } else {
+                AcademicTeacher tt = getAcademicTeacherMap().get(teacher);
+                if (tt != null && !tt.isEnabled()) {
+                    System.out.println("Found assignments for teacherId=" + teacher + " : " + tt+" but he/she seems to be not enabled!");
+                }
                 for (AcademicCourseAssignment value : list) {
                     if (semester == null || (value.getCoursePlan().getSemester() != null && value.getCoursePlan().getSemester().getName().equals(semester))) {
                         m.add(value);
@@ -198,6 +212,19 @@ public class StatCache {
             academicTeacherSemestrialLoadList = p.findTeacherSemestrialLoads();
         }
         return academicTeacherSemestrialLoadList;
+    }
+
+    public Map<String, AcademicTeacherDegree> getAcademicTeacherDegreesByCodeMap() {
+        if (academicTeacherDegreesByCodeMap == null) {
+            Map<String, AcademicTeacherDegree> m = new HashMap<>();
+            AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
+
+            for (AcademicTeacherDegree d : p.findTeacherDegrees()) {
+                m.put(d.getCode(), d);
+            }
+            academicTeacherDegreesByCodeMap = m;
+        }
+        return academicTeacherDegreesByCodeMap;
     }
 
     public Map<Integer, List<AcademicTeacherSemestrialLoad>> getAcademicTeacherSemestrialLoadByTeacherIdMap() {
@@ -239,6 +266,7 @@ public class StatCache {
         }
         return m;
     }
+
     public List<AcademicCourseIntent> getAcademicCourseIntentByAssignmentAndSemester(Integer assignmentId, String semester) {
         List<AcademicCourseIntent> m = new ArrayList<>();
         if (assignmentId == null) {

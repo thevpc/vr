@@ -5,10 +5,12 @@
  */
 package net.vpc.app.vainruling.api.web.obj;
 
+import net.vpc.app.vainruling.api.core.ObjSimpleSearch;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import net.vpc.app.vainruling.api.ui.UIConstants;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,9 +28,11 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import net.vpc.app.vainruling.api.CorePlugin;
+import net.vpc.app.vainruling.api.EntityAction;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.core.ActionInfo;
 import net.vpc.app.vainruling.api.core.ObjManagerService;
+import net.vpc.app.vainruling.api.core.ObjSearch;
 import net.vpc.app.vainruling.api.i18n.I18n;
 import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.app.vainruling.api.web.BreadcrumbItem;
@@ -63,6 +67,7 @@ import net.vpc.upa.types.EnumType;
 import net.vpc.upa.types.IntType;
 import net.vpc.upa.types.StringType;
 import net.vpc.upa.types.TemporalType;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.extensions.model.dynaform.DynaFormControl;
 import org.primefaces.extensions.model.dynaform.DynaFormLabel;
@@ -88,6 +93,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     @Autowired
     private ObjManagerService objService;
+    @Autowired
+    private ActionDialogManager actionDialogManager;
     @Autowired
     private PropertyViewManager propertyViewManager;
     @Autowired
@@ -194,6 +201,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     if ("Refresh".equals(buttonId)) {
                         return true;
                     }
+                    if ("Search".equals(buttonId)) {
+                        return true;
+                    }
                     if ("New".equals(buttonId)) {
                         return UPA.getPersistenceUnit().getSecurityManager().isAllowedPersist(getEntity());
                     }
@@ -208,8 +218,10 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                                 .isAllowedUpdate(getEntity())
                                 && objService.isArchivable(getModel().getEntityName());
                     }
-                    if (objService.isEntityAction(getEntity().getName(), buttonId, null)) {
-                        return UPA.getPersistenceUnit().getSecurityManager().isAllowedKey(getEntity(), buttonId);
+
+                    ActionDialogAdapter e = actionDialogManager.findAction(buttonId);
+                    if (e != null) {
+                        return e.isEnabled(getEntity().getEntityType(), getModel().getMode(), null);
                     }
                     break;
                 }
@@ -219,6 +231,10 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                     if ("Cancel".equals(buttonId)) {
                         return true;
+                    }
+                    ActionDialogAdapter e = actionDialogManager.findAction(buttonId);
+                    if (e != null) {
+                        return e.isEnabled(getEntity().getEntityType(), getModel().getMode(), getModel().getCurrentObj());
                     }
                     break;
                 }
@@ -237,8 +253,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                                 .isAllowedUpdate(getEntity())
                                 && objService.isArchivable(getModel().getEntityName());
                     }
-                    if (objService.isEntityAction(getEntity().getName(), buttonId, getModel().getCurrentObj())) {
-                        return UPA.getPersistenceUnit().getSecurityManager().isAllowedKey(getEntity(), buttonId);
+                    ActionDialogAdapter e = actionDialogManager.findAction(buttonId);
+                    if (e != null) {
+                        return e.isEnabled(getEntity().getEntityType(), getModel().getMode(), getModel().getCurrentObj());
                     }
                     break;
                 }
@@ -250,6 +267,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
+    @Override
     public PModel getModel() {
         return (PModel) super.getModel();
     }
@@ -294,6 +312,31 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public void onSaveCurrent() {
+        enabledButtons.clear();
+        try {
+            currentViewToModel();
+            switch (getModel().getMode()) {
+                case NEW: {
+                    Object c = getModel().getCurrentObj();
+                    objService.save(c);
+                    onCancelCurrent();
+                    break;
+                }
+                case UPDATE: {
+                    Object c = getModel().getCurrentObj();
+                    objService.save(c);
+                    onCancelCurrent();
+                    break;
+                }
+            }
+            reloadPage();
+        } catch (RuntimeException ex) {
+            log.log(Level.SEVERE, "Error", ex);
+            throw ex;
+        }
+    }
+
+    public void onSaveCurrentAndClose() {
         enabledButtons.clear();
         try {
             currentViewToModel();
@@ -397,7 +440,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             }
             getModel().setCmd(cmd);
             setEntityName(cfg.entity);
-            List<Object> found = objService.findByFilter(getEntityName(), cfg.listFilter);
+            List<Object> found = objService.findByFilter(getEntityName(), cfg.listFilter, getModel().getSearch());
             List<ObjRow> filteredObjects = new ArrayList<>();
             Entity entity = getEntity();
             UPASecurityManager sm = entity.getPersistenceUnit().getSecurityManager();
@@ -434,7 +477,15 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         if (strId == null || strId.trim().length() == 0) {
             return null;
         }
-        return Convert.toInteger(strId);
+        //dont know why!
+        if (strId.equals("null")) {
+            return null;
+        }
+        try {
+            return Convert.toInteger(strId);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public Object getSortLayoutPropertyValue(Object o, String property) {
@@ -526,6 +577,25 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
         public void setEntityName(String entityName) {
             this.entityName = entityName;
+        }
+
+        public List getSelectedObjects() {
+            switch (getMode()) {
+                case UPDATE:
+                case NEW: {
+                    return Arrays.asList(getCurrentObj());
+                }
+                case LIST: {
+                    List all = new ArrayList();
+                    for (ObjRow objRow : getList()) {
+                        if (objRow.isSelected()) {
+                            all.add(objRow.getValue());
+                        }
+                    }
+                    return all;
+                }
+            }
+            return Collections.emptyList();
         }
 
         public Object getCurrentObj() {
@@ -656,13 +726,17 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     public void currentModelToView() {
         List<ObjFormAction> act = new ArrayList<>();
-        for (ActionInfo a : objService.getEntityActionList(getModel().getEntityName(), getModel().getCurrentObj())) {
+        for (ActionDialogAdapter a : actionDialogManager.findActionsByEntity(getModel().getEntityName())) {
             act.add(new ObjFormAction(a.getLabel(), a.getStyle(), a.getId()));
         }
+//        for (ActionInfo a : objService.getEntityActionList(getModel().getEntityName(), getModel().getCurrentObj())) {
+//            act.add(new ObjFormAction(a.getLabel(), a.getStyle(), a.getId()));
+//        }
         getModel().setActions(act);
         try {
+            Object currentObj = getModel().getCurrentObj();
             for (PropertyView property : properties) {
-                property.loadFrom(getModel().getCurrentObj());
+                property.loadFrom(currentObj);
             }
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
@@ -925,6 +999,41 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
+    public void fireEventSearchClosed() {
+        onRefresh();
+        RequestContext ctx = RequestContext.getCurrentInstance();
+        //Object obj
+        ctx.closeDialog(new DialogResult(null, null));
+//        String[] ids=new String[]{"listForm:listTable"};
+//        ctx.update(Arrays.asList(ids));
+//        ctx.execute("vpcdoit();");
+    }
+
+    public void onSimpleSearch() {
+        ObjSearch oldSearch = getModel().getSearch();
+        ObjSimpleSearch newSearch = null;
+        if (oldSearch instanceof ObjSimpleSearch) {
+            newSearch = (ObjSimpleSearch) oldSearch;
+        } else {
+            newSearch = new ObjSimpleSearch();
+        }
+        getModel().setSearch(newSearch);
+        Map<String, Object> options = new HashMap<String, Object>();
+        options.put("resizable", false);
+        options.put("draggable", false);
+        options.put("modal", true);
+        RequestContext.getCurrentInstance().openDialog("/modules/obj/objsimplesearchdialog", options, null);
+    }
+
+    public void onDoNothing() {
+//        System.out.println("do nothing");
+    }
+
+    public void onClearSearch() {
+        getModel().setSearch(null);
+        onRefresh();
+    }
+
     public void onCancelCurrent() {
         enabledButtons.clear();
         super.onCancelCurrent();
@@ -984,7 +1093,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             try {
                 currentViewToModel();
                 Object c = getModel().getCurrentObj();
-                objService.invokeEntityAction(getEntityName(), actionKey, c, args);
+                actionDialogManager.findAction(actionKey).invoke(getEntity().getEntityType(), c, args);
             } catch (RuntimeException ex) {
                 log.log(Level.SEVERE, "Error", ex);
                 throw ex;
@@ -1008,10 +1117,33 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     public void openActionDialog(String actionId) {
         if (actionId != null) {
-            ActionDialog ed = VrApp.getBean(ActionDialogManager.class).getActionDialog(actionId);
+            ActionDialogAdapter ed = VrApp.getBean(ActionDialogManager.class).findAction(actionId);
             if (ed != null) {
-                ed.openDialog(actionId, actionId);
-                return;
+                if (ed.isDialog()) {
+                    List<String> selected = new ArrayList<>();
+                    if (getModel().getMode() == EditCtrlMode.LIST) {
+                        for (ObjRow r : getModel().getList()) {
+                            if (r.isSelected()) {
+                                selected.add(String.valueOf(objService.resolveId(r.getValue())));
+                            }
+                        }
+                    } else if (getModel().getCurrentObj() != null) {
+                        selected.add(String.valueOf(objService.resolveId(getModel().getCurrentObj())));
+                    }
+                    currentViewToModel();
+                    ed.openDialog(actionId, selected);
+                    return;
+                } else {
+                    try {
+                        currentViewToModel();
+                        Object c = getModel().getCurrentObj();
+                        ed.invoke(getEntity().getEntityType(), c, null);
+                    } catch (RuntimeException ex) {
+                        log.log(Level.SEVERE, "Error", ex);
+                        throw ex;
+                    }
+                    return;
+                }
             }
         }
         onAction(actionId, null);
@@ -1032,6 +1164,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 ed.openDialog(p, p.getComponentId());
             }
         }
+    }
+
+    public void onSearchDialogClosed(SelectEvent event) {
+//        System.out.println("onSearchDialogClosed");
+//        onRefresh();
     }
 
     public void onPropertyViewDialogClosed(SelectEvent event) {

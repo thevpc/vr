@@ -75,7 +75,7 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
             }
         }
     }
-
+    
     @OnPageLoad
     @Override
     public void onRefresh(String cmd) {

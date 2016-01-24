@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+
+
+        <ui:composition template="/templates/template.xhtml">
+            <ui:define name="content">
+                <!--                <h:form id="buttonsForm">
+                
+                                     /.row 
+                                    <div class="row">
+                                        <p:outputLabel id="buttons">
+                                            <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                        </p:outputLabel>
+                                    </div>
+                
+                                </h:form>-->
+                <h:form id="listForm">
+                    <p:messages id="currentMessages"/>
+                    <div class="row">
+                        <p:selectOneMenu value="#{myInternshipBoardsCtrl.model.boardId}" style="margin-bottom: 20px;">
+                            <p:ajax listener="#{myInternshipBoardsCtrl.onUpdateBoard}" update="@all"/>
+                            <f:selectItem itemLabel="Selectionner Commission..." itemValue="" />
+                            <f:selectItems value="#{myInternshipBoardsCtrl.model.boards}" />
+                        </p:selectOneMenu>
+                        <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
+                    </div>
+                    <div class="row">
+                        <p:selectOneMenu value="#{myInternshipBoardsCtrl.model.internshipId}" style="margin-bottom: 20px;">
+                            <p:ajax listener="#{myInternshipBoardsCtrl.onUpdateInternship}" update="@all"/>
+                            <f:selectItem itemLabel="Selectionner Stage..." itemValue="" />
+                            <f:selectItems value="#{myInternshipBoardsCtrl.model.internships}" />
+                        </p:selectOneMenu>
+                        <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
+                    </div>
+
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="table-responsive">
+                            <p:tabView rendered="#{myInternshipBoardsCtrl.model.internship ne null}" >
+                                <p:tab title="Général">
+                                    <p:panelGrid id="reports" styleClass="noBorderGrid" style="border-style: none;border-width: 0px;">
+                                        <p:row>
+                                            <p:column ><p:outputLabel  value="Intitulé"/></p:column>
+                                            <p:column colspan="3"><p:inputText   style="width: 100%" value="#{myInternshipBoardsCtrl.model.internship.name}"  disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesDescr}"/></p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column colspan="4"><p:inputTextarea  rows="10" style="width: 100%" value="#{myInternshipBoardsCtrl.model.internship.description}"  disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesDescr}"/></p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column ><p:outputLabel value="Phase"/></p:column>
+                                            <p:column colspan="3">
+                                                <p:selectOneMenu value="#{myInternshipBoardsCtrl.model.internshipStatusId}" 
+                                                                 >
+                                                    <p:ajax listener="#{myInternshipBoardsCtrl.onUpdateInternshipStatus}" update="reports"/>
+                                                    <f:selectItem itemLabel="Selectionner..." itemValue="" />
+                                                    <f:selectItems value="#{myInternshipBoardsCtrl.model.internshipStatuses}" />
+                                                </p:selectOneMenu>                                                
+                                            </p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column ><p:outputLabel  value="Entreprise"/></p:column>
+                                            <p:column >
+                                                <p:selectOneMenu value="#{myInternshipBoardsCtrl.model.companyId}"  disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesDescr}">
+                                                    <p:ajax listener="#{myInternshipBoardsCtrl.onUpdateCompany}"/>
+                                                    <f:selectItem itemLabel="Selectionner Entreprise..." itemValue="" />
+                                                    <f:selectItems value="#{myInternshipBoardsCtrl.model.companies}" />
+                                                </p:selectOneMenu>
+                                            </p:column>
+                                            <p:column ><p:outputLabel  value="Autre"/></p:column>
+                                            <p:column><p:inputText  value="#{myInternshipBoardsCtrl.model.internship.companyOther}"  disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesDescr}"/></p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column ><p:outputLabel  value="Encadrant Entreprise"/></p:column>
+                                            <p:column colspan="2"><p:inputText   style="width: 100%" value="#{myInternshipBoardsCtrl.model.internship.companyMentorOther}"  disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesDescr}"/></p:column>
+                                            <p:column ><p:outputLabel  value="#{myInternshipBoardsCtrl.model.internship.companyMentor eq null? '' : myInternshipBoardsCtrl.model.internship.companyMentor.fullName}"/></p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column ><p:outputLabel  value="Email"/></p:column>
+                                            <p:column ><p:inputText   style="width: 100%" value="#{myInternshipBoardsCtrl.model.internship.companyMentorOtherEmail}"  disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesDescr}" /></p:column>
+                                            <p:column ><p:outputLabel  value="Téléphone"/></p:column>
+                                            <p:column ><p:inputText   style="width: 100%" value="#{myInternshipBoardsCtrl.model.internship.companyMentorOtherPhone}"  disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesDescr}" /></p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column ><p:outputLabel  value="Discipline"/></p:column>
+                                            <p:column colspan="3">
+                                                <p:inputText id="mainDiscipline"  style="width: 90%;" value="#{myInternshipBoardsCtrl.model.internship.mainDiscipline}" 
+                                                             disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesDescr}"
+                                                             />
+                                                <p:commandButton 
+                                                    style="width:5%;padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
+                                                    ajax="true" value="" 
+                                                    icon="fa fa-tags"
+                                                    actionListener="#{myInternshipBoardsCtrl.openDisciplineDialog}"
+                                                    disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesDescr}"
+                                                    >
+                                                    <p:ajax event="dialogReturn" listener="#{myInternshipBoardsCtrl.onDisciplineDialogClosed}" update="mainDiscipline" />
+                                                </p:commandButton>
+
+                                            </p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column ><p:outputLabel  value="Technologies"/></p:column>
+                                            <p:column  colspan="3"><p:inputText   style="width: 100%" 
+                                                                                  value="#{myInternshipBoardsCtrl.model.internship.technologies}" 
+                                                                                  disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesDescr}"
+                                                                                  /></p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column ><p:outputLabel  value="Type"/></p:column>
+                                            <p:column >
+                                                <p:selectOneMenu value="#{myInternshipBoardsCtrl.model.typeVariantId}"
+                                                                 disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesDescr}"
+                                                                 >
+                                                    <p:ajax listener="#{myInternshipBoardsCtrl.onUpdateVariant}"/>
+                                                    <f:selectItem itemLabel="Selectionner Type..." itemValue="" />
+                                                    <f:selectItems value="#{myInternshipBoardsCtrl.model.typeVariants}" />
+                                                </p:selectOneMenu>
+                                            </p:column>
+                                            <p:column ><p:outputLabel  value="Durée"/></p:column>
+                                            <p:column >
+                                                <p:selectOneMenu value="#{myInternshipBoardsCtrl.model.durationId}"
+                                                                 disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesDescr}"
+                                                                 >
+                                                    <p:ajax listener="#{myInternshipBoardsCtrl.onUpdateDuration}"/>
+                                                    <f:selectItem itemLabel="Selectionner Durée..." itemValue="" />
+                                                    <f:selectItems value="#{myInternshipBoardsCtrl.model.durations}" />
+                                                </p:selectOneMenu>
+                                            </p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column ><p:outputLabel  value="Le stage commence "/></p:column>
+                                            <p:column > 
+                                                <p:calendar value="#{myInternshipBoardsCtrl.model.internship.startDate}" 
+                                                            disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesDescr}"
+                                                            />
+                                            </p:column>
+                                            <p:column ><p:outputLabel  value="Et se termine "/></p:column>
+                                            <p:column > 
+                                                <p:calendar value="#{myInternshipBoardsCtrl.model.internship.endDate}" 
+                                                            disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesDescr}"
+                                                            />
+                                            </p:column>
+                                        </p:row>
+
+                                        <p:row>
+                                            <p:column ><p:outputLabel  value="Encadrement Ecole"/></p:column>
+                                            <p:column >
+                                                <p:selectOneMenu value="#{myInternshipBoardsCtrl.model.superviser1Id}" disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesSupervisors}">
+                                                    <p:ajax listener="#{myInternshipBoardsCtrl.onUpdateSupervisor}"/>
+                                                    <f:selectItem itemLabel="Selectionner Encadrement..." itemValue="" />
+                                                    <f:selectItems value="#{myInternshipBoardsCtrl.model.teachers}" />
+                                                </p:selectOneMenu>
+                                            </p:column>
+                                            <p:column >
+                                                <p:selectOneMenu rendered="#{myInternshipBoardsCtrl.model.internship.board.multipleSupervisers}" value="#{myInternshipBoardsCtrl.model.superviser2Id}" 
+                                                                 disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesSupervisors}"
+                                                                 >
+                                                    <p:ajax listener="#{myInternshipBoardsCtrl.onUpdateSupervisor}"/>
+                                                    <f:selectItem itemLabel="Selectionner Encadrement 2..." itemValue="" />
+                                                    <f:selectItems value="#{myInternshipBoardsCtrl.model.teachers}" />
+                                                </p:selectOneMenu>
+                                            </p:column>
+                                        </p:row>
+                                        <p:row rendered="#{myInternshipBoardsCtrl.model.internship ne null}">
+                                            <p:column ><p:outputLabel  value="Cahier des charges"/></p:column>
+                                            <p:column > 
+                                                <p:outputLabel rendered="#{jsfCtrl.isEmpty(myInternshipBoardsCtrl.model.internship.specFilePath)}" value="Non soumis"/>
+                                                <p:commandLink rendered="#{!jsfCtrl.isEmpty(myInternshipBoardsCtrl.model.internship.specFilePath)}" 
+                                                               value="télécharger" 
+                                                               ajax="false"
+                                                               >
+                                                    <p:fileDownload value="#{myInternshipBoardsCtrl.download('report1')}" />
+                                                </p:commandLink>
+                                            </p:column>
+                                            <p:column > 
+
+                                            </p:column>
+                                        </p:row>
+                                        <p:row rendered="#{myInternshipBoardsCtrl.model.internship ne null}">
+                                            <p:column ><p:outputLabel  value="Rapport mis parcours"/></p:column>
+                                            <p:column > 
+                                                <p:outputLabel rendered="#{jsfCtrl.isEmpty(myInternshipBoardsCtrl.model.internship.midTermReportFilePath)}" value="Non soumis"/>
+                                                <p:commandLink rendered="#{!jsfCtrl.isEmpty(myInternshipBoardsCtrl.model.internship.midTermReportFilePath)}" 
+                                                               value="télécharger" 
+                                                               ajax="false"
+                                                               >
+                                                    <p:fileDownload value="#{myInternshipBoardsCtrl.download('report2')}" />
+                                                </p:commandLink>
+                                            </p:column>
+                                            <p:column > 
+                                            </p:column>
+                                        </p:row>
+                                        <p:row rendered="#{myInternshipBoardsCtrl.model.internship ne null}">
+                                            <p:column ><p:outputLabel  value="Rapport final"/></p:column>
+                                            <p:column > 
+                                                <p:outputLabel rendered="#{jsfCtrl.isEmpty(myInternshipBoardsCtrl.model.internship.reportFilePath)}" value="Non soumis"/>
+                                                <p:commandLink rendered="#{!jsfCtrl.isEmpty(myInternshipBoardsCtrl.model.internship.reportFilePath)}" 
+                                                               value="télécharger" 
+                                                               ajax="false"
+                                                               >
+                                                    <p:fileDownload value="#{myInternshipBoardsCtrl.download('report3')}" />
+                                                </p:commandLink>
+                                            </p:column>
+                                            <p:column > 
+                                            </p:column>
+                                        </p:row>
+                                        <p:row rendered="#{myInternshipBoardsCtrl.model.internship ne null}">
+                                            <p:column ><p:outputLabel  value="Date Soutenance"/></p:column>
+                                            <p:column > 
+                                                <p:outputLabel value="#{myInternshipBoardsCtrl.model.internship.examDate eq null ? 'N/A': jsfCtrl.date(myInternshipBoardsCtrl.model.internship.examDate,'yyyy-MM-dd HH:mm')}"/>
+                                            </p:column>
+                                        </p:row>
+                                        <p:row rendered="#{myInternshipBoardsCtrl.model.internship ne null}">
+                                            <p:column ><p:outputLabel  value="President"/></p:column>
+                                            <p:column > 
+                                                <p:selectOneMenu value="#{myInternshipBoardsCtrl.model.chairExaminerId}" 
+                                                                 disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesEvaluators}"
+                                                                 >
+                                                    <p:ajax listener="#{myInternshipBoardsCtrl.onUpdateChairExaminer}"/>
+                                                    <f:selectItem itemLabel="Selectionner..." itemValue="" />
+                                                    <f:selectItems value="#{myInternshipBoardsCtrl.model.teachers}" />
+                                                </p:selectOneMenu>                                                
+                                            </p:column>
+                                        </p:row>
+                                        <p:row rendered="#{myInternshipBoardsCtrl.model.internship ne null}">
+                                            <p:column ><p:outputLabel  value="Rapporteur"/></p:column>
+                                            <p:column > 
+                                                <p:selectOneMenu value="#{myInternshipBoardsCtrl.model.firstExaminerId}" 
+                                                                 disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesEvaluators}"
+                                                                 >
+                                                    <p:ajax listener="#{myInternshipBoardsCtrl.onUpdateFirstExaminer}"/>
+                                                    <f:selectItem itemLabel="Selectionner..." itemValue="" />
+                                                    <f:selectItems value="#{myInternshipBoardsCtrl.model.teachers}" />
+                                                </p:selectOneMenu>                                                
+                                            </p:column>
+                                        </p:row>
+                                        <p:row rendered="#{myInternshipBoardsCtrl.model.internship ne null}">
+                                            <p:column ><p:outputLabel  value="Examinateur"/></p:column>
+                                            <p:column > 
+                                                <p:selectOneMenu value="#{myInternshipBoardsCtrl.model.secondExaminerId}" 
+                                                                 disabled="#{!myInternshipBoardsCtrl.model.internship.internshipStatus.boardUpdatesEvaluators}"
+                                                                 >
+                                                    <p:ajax listener="#{myInternshipBoardsCtrl.onUpdateSecondExaminer}"/>
+                                                    <f:selectItem itemLabel="Selectionner..." itemValue="" />
+                                                    <f:selectItems value="#{myInternshipBoardsCtrl.model.teachers}" />
+                                                </p:selectOneMenu>                                                
+                                            </p:column>
+                                        </p:row>
+                                    </p:panelGrid>
+                                </p:tab>
+                                <p:tab title="Observations" rendered="#{myInternshipBoardsCtrl.model.internship ne null}">    
+                                    <p:panelGrid styleClass="noBorderGrid" rendered="#{myInternshipBoardsCtrl.model.internship ne null}" style="border-style: none;border-width: 0px;width: 100%;">
+                                        <p:row>
+                                            <p:column colspan="4"><p:outputLabel  value="Remarques Etudiant"/></p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column colspan="4"><p:inputTextarea  rows="10" style="width: 100%" value="#{myInternshipBoardsCtrl.model.internship.studentObservations}" disabled="true"/></p:column>
+                                        </p:row>
+                                        <p:row >
+                                            <p:column colspan="4"><p:outputLabel  value="Remarques Administratives"/></p:column>
+                                        </p:row>
+                                        <p:row >
+                                            <p:column colspan="4"><p:inputTextarea  rows="10" style="width: 100%" value="#{myInternshipBoardsCtrl.model.internship.validationObservations}" /></p:column>
+                                        </p:row>
+                                        <p:row >
+                                            <p:column colspan="4"><p:outputLabel  value="Evaluation"/></p:column>
+                                        </p:row>
+                                        <p:row >
+                                            <p:column colspan="4"><p:inputTextarea  rows="10" style="width: 100%" value="#{myInternshipBoardsCtrl.model.internship.evaluationObservations}" /></p:column>
+                                        </p:row>
+                                    </p:panelGrid>
+                                </p:tab>
+                            </p:tabView>
+                        </div>
+                    </div>
+
+
+                    <div class="row" style="margin-top: 20px;margin-left: 20%;">
+                        <div class="table-responsive">
+                            <p:commandButton rendered="#{myInternshipBoardsCtrl.model.internship ne null}" value="Enregistrer" action="#{myInternshipBoardsCtrl.onSave}" update="currentMessages"/>
+                        </div>
+                    </div>
+
+                </h:form>
+
+
+
+            </ui:define>
+
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

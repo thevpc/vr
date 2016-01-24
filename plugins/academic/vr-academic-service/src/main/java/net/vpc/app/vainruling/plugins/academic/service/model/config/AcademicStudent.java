@@ -11,12 +11,14 @@ import net.vpc.app.vainruling.api.model.AppPeriod;
 import net.vpc.app.vainruling.api.model.AppContact;
 import net.vpc.app.vainruling.api.model.AppDepartment;
 import net.vpc.app.vainruling.api.model.AppUser;
+import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
+import net.vpc.upa.config.Property;
 import net.vpc.upa.config.Sequence;
 
 /**
@@ -33,14 +35,23 @@ public class AcademicStudent {
     @Field(modifiers = UserFieldModifier.MAIN)
     private AppContact contact;
     private String subscriptionNumber;
-    private AppDepartment department;
+    private AppDepartment department;    
+    private AppUser user;
     private AppPeriod firstSubscription;
+    private AppPeriod lastSubscription;
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     private AcademicClass lastClass1;
     private AcademicClass lastClass2;
     private AcademicClass lastClass3;
-    private AppUser user;
+    @Field(modifiers = {UserFieldModifier.SUMMARY})
     private AcademicStudentStage stage = AcademicStudentStage.ATTENDING;
+
+    @Field(max = "4000")
+    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    private String publicObservations;
+    @Field(max = "4000")
+    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    private String privateObservations;
 
     @Field(defaultValue = "false")
     private boolean deleted;
@@ -211,7 +222,7 @@ public class AcademicStudent {
 
     @Override
     public String toString() {
-        if(contact!=null){
+        if (contact != null) {
             return contact.toString();
         }
         return "AcademicStudent{" + "id=" + id + ", contact=" + contact + ", subscriptionNumber=" + subscriptionNumber + ", department=" + department + ", firstSubscription=" + firstSubscription + ", lastClass1=" + lastClass1 + ", lastClass2=" + lastClass2 + ", lastClass3=" + lastClass3 + ", user=" + user + ", deleted=" + deleted + ", deletedBy=" + deletedBy + ", deletedOn=" + deletedOn + '}';
@@ -225,4 +236,29 @@ public class AcademicStudent {
         this.stage = stage;
     }
 
+    public AppPeriod getLastSubscription() {
+        return lastSubscription;
+    }
+
+    public void setLastSubscription(AppPeriod lastSubscription) {
+        this.lastSubscription = lastSubscription;
+    }
+
+    public String getPublicObservations() {
+        return publicObservations;
+    }
+
+    public void setPublicObservations(String publicObservations) {
+        this.publicObservations = publicObservations;
+    }
+
+    public String getPrivateObservations() {
+        return privateObservations;
+    }
+
+    public void setPrivateObservations(String privateObservations) {
+        this.privateObservations = privateObservations;
+    }
+    
+    
 }

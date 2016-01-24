@@ -57,6 +57,7 @@ public final class UIConstants {
         public static final String SEPARATOR = "separator";
         public static final String ENTITY_DETAIL = "entityDetail";
         public static final String PROFILE_EXPRESSION = "profileExpr";
+        public static final String DISCIPLINE = "discipline";
         public static final String FILE = "file";
     }
     

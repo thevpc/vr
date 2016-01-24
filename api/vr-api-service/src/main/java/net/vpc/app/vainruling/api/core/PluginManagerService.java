@@ -11,11 +11,13 @@ package net.vpc.app.vainruling.api.core;
  */
 public interface PluginManagerService {
 
-    public Plugin[] getPlugins() ;
+    public Plugin[] getPlugins();
 
-    public ActionInfo[] getEntityActionList(Class entityType, Object obj) ;
+//    public EntityActionProcessor[] getEntityActionListProcessors(Class entityType, Object obj);
 
-    public <T> T invokeEntityAction(Class entityType, String actionName, Object obj,Object[] args) ;
+//    public ActionInfo[] getEntityActionList(Class entityType, Object obj);
 
-    public boolean isEnabledEntityAction(Class entityType, String actionName, Object obj) ;
+//    public <T> T invokeEntityAction(Class entityType, String actionName, Object obj, Object[] args);
+
+//    public boolean isEnabledEntityAction(Class entityType, String actionName, Object obj);
 }

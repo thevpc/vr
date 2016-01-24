@@ -431,6 +431,7 @@ public class XlsxLoadImporter {
         sp.setSkipRows(0);
         DataReader rows = sp.parse();
         int col = -1;
+        final int COL_DEPT = ++col;
         final int COL_NIN = ++col;
         final int COL_SUBSCRIPTION_NBR = ++col;
         final int COL_FIRST_NAME = ++col;
@@ -466,6 +467,7 @@ public class XlsxLoadImporter {
             String fs = core.validateName(Convert.toString(values[COL_FIRST_NAME]));
             String ln = core.validateName(Convert.toString(values[COL_LAST_NAME]));
             String nin = Convert.toString(values[COL_NIN]);
+            String dept = Convert.toString(values[COL_DEPT]);
             if (!StringUtils.isEmpty(nin) || !StringUtils.isEmpty(fs) || !StringUtils.isEmpty(ln)) {
                 AppContact contact = new AppContact();
                 contact.setNin(nin);
@@ -474,12 +476,17 @@ public class XlsxLoadImporter {
                 contact.setFullName(core.validateName(AppContact.getName(contact)));
                 String fs2 = Convert.toString(values[COL_FIRST_NAME2]);
                 contact = core.findOrCreateContact(contact);
+                AppDepartment depInstance = service.findDepartment(dept);
+                if (depInstance == null) {
+                    throw new NoSuchElementException("Department Not Found " + dept);
+                }
                 AcademicStudent oldAcademicStudent = service.findStudentByContact(contact.getId());
                 if (oldAcademicStudent != null) {
                     academicStudent = oldAcademicStudent;
                 } else {
                     academicStudent.setContact(contact);
                 }
+                academicStudent.setDepartment(depInstance);
                 String ln2 = Convert.toString(values[COL_LAST_NAME2]);
                 contact.setFirstName2(fs2);
                 contact.setLastName2(ln2);
@@ -533,7 +540,7 @@ public class XlsxLoadImporter {
                 }
 
                 contact.setEmail(Convert.toString(values[COL_EMAIL]));
-                contact.setPositionTitle1("Student "+Convert.toString(values[COL_CLASS]));
+                contact.setPositionTitle1("Student " + Convert.toString(values[COL_CLASS]));
 
                 service.update(contact);
                 academicStudent.setStage(AcademicStudentStage.ATTENDING);

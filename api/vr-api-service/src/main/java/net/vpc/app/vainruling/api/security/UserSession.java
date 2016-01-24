@@ -37,6 +37,7 @@ public class UserSession implements Serializable {
     private String lang;
     private String sessionId;
     private String clientIpAddress;
+    private String lastVisitedPage;
     private Locale locale;
     private Set<String> rights = new HashSet<>();
     private List<AppProfile> profiles = new ArrayList<>();
@@ -211,4 +212,12 @@ public class UserSession implements Serializable {
         this.rootUser = rootUser;
     }
 
+    public String getLastVisitedPage() {
+        return lastVisitedPage;
+    }
+
+    public void setLastVisitedPage(String lastVisitedPage) {
+        this.lastVisitedPage = lastVisitedPage;
+    }
+    
 }

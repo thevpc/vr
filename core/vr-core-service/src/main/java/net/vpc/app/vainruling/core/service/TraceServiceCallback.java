@@ -9,9 +9,7 @@ import net.vpc.app.vainruling.api.TraceService;
 import net.vpc.app.vainruling.api.VrApp;
 import java.util.List;
 import java.util.logging.Level;
-import net.vpc.app.vainruling.api.model.AppTrace;
 import net.vpc.upa.Entity;
-import net.vpc.upa.EntityModifier;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.callbacks.EntityListenerAdapter;
 import net.vpc.upa.callbacks.EntityListener;
@@ -31,16 +29,12 @@ public class TraceServiceCallback
         extends EntityListenerAdapter
         implements EntityListener {
 
-    protected boolean accept(Entity entity) {
-        return !entity.getModifiers().contains(EntityModifier.SYSTEM)
-                && !entity.getEntityType().equals(AppTrace.class);
-    }
-
     @Override
     public void onPrePersist(PersistEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
-        if (!accept(entity)) {
+        TraceService trace = getTraceService();
+        if (trace==null || !trace.accept(entity)) {
             return;
         }
     }
@@ -49,13 +43,11 @@ public class TraceServiceCallback
     public void onPersist(PersistEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
-        if (!accept(entity)) {
+        TraceService trace = getTraceService();
+        if (trace == null || !trace.accept(entity)) {
             return;
         }
-        TraceService trace = getTraceService();
-        if (trace != null) {
-            trace.inserted(event.getPersistedObject(), entity.getParent().getPath(), Level.FINE);
-        }
+        trace.inserted(event.getPersistedObject(), entity.getParent().getPath(), Level.FINE);
 
     }
 
@@ -73,7 +65,8 @@ public class TraceServiceCallback
     public void onPreUpdate(UpdateEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
-        if (!accept(entity)) {
+        TraceService trace = getTraceService();
+        if (trace == null || !trace.accept(entity)) {
             return;
         }
         Expression expr = event.getFilterExpression();
@@ -90,12 +83,12 @@ public class TraceServiceCallback
     public void onUpdate(UpdateEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
-        if (!accept(entity)) {
+        TraceService trace = getTraceService();
+        if (trace == null || !trace.accept(entity)) {
             return;
         }
         List old = event.getContext().getObject("updated_objects");
         if (old.size() == 1) {
-            TraceService trace = getTraceService();
             if (trace != null) {
                 trace.updated(event.getUpdatesObject(), old.get(0), entity.getParent().getPath(), Level.FINE);
             }

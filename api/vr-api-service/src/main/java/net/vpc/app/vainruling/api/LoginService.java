@@ -95,14 +95,16 @@ public class LoginService {
         if (user != null) {
             user.setConnexionCount(user.getConnexionCount() + 1);
             user.setLastConnexionDate(new DateTime());
-            UPA.getContext().invokePrivileged(new Action<Object>() {
+            UPA.getContext().invokePrivileged(
+                    TraceService.makeSilenced(
+                            new Action<Object>() {
 
-                @Override
-                public Object run() {
-                    UPA.getPersistenceUnit().merge(user);
-                    return null;
-                }
-            }, null);
+                        @Override
+                        public Object run() {
+                            UPA.getPersistenceUnit().merge(user);
+                            return null;
+                        }
+                    }), null);
             UserSession s = getUserSession();
             s.setDestroyed(false);
             VrApp.getBean(ActiveSessionsTracker.class).onCreate(s);
@@ -116,19 +118,17 @@ public class LoginService {
             AppUser user2 = findUser(login);
             if (user2 == null) {
                 trace.trace("login", "login not found. Failed as " + login + "/" + password, login + "/" + password, getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, -1, Level.SEVERE, s.getClientIpAddress());
+            } else if (user2.isDeleted() || !user2.isEnabled()) {
+                trace.trace("login", "invalid state. Failed as " + login + "/" + password, login + "/" + password
+                        + ". deleted=" + user2.isDeleted()
+                        + ". enabled=" + user2.isEnabled(), getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE, s.getClientIpAddress()
+                );
             } else {
-                if (user2.isDeleted() || !user2.isEnabled()) {
-                    trace.trace("login", "invalid state. Failed as " + login + "/" + password, login + "/" + password
-                            + ". deleted=" + user2.isDeleted()
-                            + ". enabled=" + user2.isEnabled(), getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE, s.getClientIpAddress()
-                    );
-                } else {
-                    trace.trace(
-                            "login", "invalid password. Failed as " + login + "/" + password, login + "/" + password,
-                            getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(),
-                            Level.SEVERE, s.getClientIpAddress()
-                    );
-                }
+                trace.trace(
+                        "login", "invalid password. Failed as " + login + "/" + password, login + "/" + password,
+                        getClass().getSimpleName(), null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(),
+                        Level.SEVERE, s.getClientIpAddress()
+                );
             }
         }
         return user;

@@ -59,18 +59,21 @@ and open the template in the editor.
                             <p:column headerText="Type">
                                 <h:outputText value="#{i.user.type}" />
                             </p:column>
-                            <p:column headerText="Time">
+                            <p:column headerText="Time" rendered="#{activeSessionsCtrl.model.admin}">
                                 <h:outputText value="#{i.connexionTime}" >
                                     <f:convertDateTime type="date" pattern="HH:mm:ss , dd MMM yyyy"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="Période">
+                            <p:column headerText="Période" rendered="#{activeSessionsCtrl.model.admin}">
                                 <h:outputText value="#{activeSessionsCtrl.connectionPeriod(i)}" />
                             </p:column>
-                            <p:column headerText="IP">
+                            <p:column headerText="Activité" rendered="#{activeSessionsCtrl.model.admin}">
+                                <h:outputText value="#{i.lastVisitedPage}" />
+                            </p:column>
+                            <p:column headerText="IP" rendered="#{activeSessionsCtrl.model.admin}">
                                 <h:outputText value="#{i.clientIpAddress}" />
                             </p:column>
-                            <p:column headerText="Lang">
+                            <p:column headerText="Lang" rendered="#{activeSessionsCtrl.model.admin}">
                                 <h:outputText value="#{i.locale}" />
                             </p:column>
                             <!--                            <p:column headerText="Flags">

@@ -22,7 +22,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.api.AppPlugin;
 import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.EntityAction;
 import net.vpc.app.vainruling.api.Install;
 import net.vpc.app.vainruling.api.ProfilePatternFilter;
 import net.vpc.app.vainruling.api.Start;
@@ -30,7 +29,6 @@ import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.VrNotificationEvent;
 import net.vpc.app.vainruling.api.VrNotificationManager;
 import net.vpc.app.vainruling.api.VrNotificationSession;
-import net.vpc.app.vainruling.api.core.PluginActionEvent;
 import net.vpc.app.vainruling.api.model.AppProfile;
 import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesDisposition;
@@ -250,12 +248,9 @@ public class ArticlesPlugin {
 //    public String[] findArticleActions(){
 //        return new String[]{"SendEmail"};
 //    }
-    @EntityAction(entityType = ArticlesItem.class, actionLabel = "email", actionStyle = "fa-envelope-o")
-    public void sendExternalMail(PluginActionEvent event) {
-        Object obj = event.getObject();
-        String config = (String) event.getArguments()[0];
-
-        if (obj == null || !(obj instanceof ArticlesItem)) {
+    
+    public void sendExternalMail(ArticlesItem obj,String config) {
+        if (obj == null) {
             return;
         }
         if (!UPA.getPersistenceGroup().getSecurityManager().isAllowedKey("Custom.Article.SendExternalEmail")) {
@@ -323,16 +318,13 @@ public class ArticlesPlugin {
         }
     }
 
-    @EntityAction(entityType = ArticlesItem.class, actionLabel = "inbox", actionStyle = "fa-envelope-square")
-    public void sendLocalMail(PluginActionEvent event) {
-        Object obj = event.getObject();
-        if (obj == null || !(obj instanceof ArticlesItem)) {
+    public void sendLocalMail(ArticlesItem obj,String config) {
+        if (obj == null ) {
             return;
         }
         if (!UPA.getPersistenceGroup().getSecurityManager().isAllowedKey("Custom.Article.SendInternalEmail")) {
             return;
         }
-        String config = (String) event.getArguments()[0];
         ArticlesItem a = (ArticlesItem) obj;
         SendExternalMailConfig c = VrHelper.parseJSONObject(config, SendExternalMailConfig.class);
         if (c == null) {
@@ -389,7 +381,7 @@ public class ArticlesPlugin {
                 entry.setLink(art.getContent().getLinkURL() == null ? feed.getLink() : art.getContent().getLinkURL());
                 entry.setPublishedDate(art.getContent().getSendTime());
                 description = new SyndContentImpl();
-                description.setType(MailboxPlugin.TYPE_HTML);
+                description.setType(GoMail.HTML_CONTENT_TYPE);
                 description.setValue(art.getContent().getContent());
                 entry.setDescription(description);
                 entry.setAuthor(art.getContent().getSender() == null ? null : art.getContent().getSender().getContact().getFullName());

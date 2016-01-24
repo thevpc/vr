@@ -37,7 +37,7 @@ import net.vpc.common.strings.StringUtils;
         css = "fa-table",
         title = "Mon Emploi du temps",
         url = "modules/academic/myplanninglist",
-        menu = "/Education",
+        menu = "/Education/Planning",
         securityKey = "Custom.Education.MyPlanning"
 )
 @ManagedBean

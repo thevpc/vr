@@ -23,6 +23,7 @@ public class GlobalStat {
     private int teachersPermanentCount;
     private int teachersTemporaryCount;
     private int teachersContractualCount;
+    private int teachersOtherCount;
     private int teachersAssistantTotalNeedCount;
     private int teachersAssistantRequestNeedCount;
     private int courseAssignmentCount;
@@ -37,6 +38,7 @@ public class GlobalStat {
      * contractuels basee sur la charge d'un assistant
      */
     private GlobalAssignmentStat neededRelative = new GlobalAssignmentStat();
+    private GlobalAssignmentStat missing = new GlobalAssignmentStat();
     private List<GlobalAssignmentStat> details = new ArrayList<>();
     private Map<String, GlobalAssignmentStat> detailsMap = new HashMap<>();
 
@@ -129,9 +131,9 @@ public class GlobalStat {
     }
 
     /**
-     * la charge nécessaire selon le du des enseignat permanent donc en gros
+     * la charge nécessaire selon le du des enseignant permanents donc en gros
      * combien on a besoin d'assistants pour ne plus recruter des contractuels
-     * et vacatires
+     * et vacataires
      *
      * @return
      */
@@ -151,4 +153,17 @@ public class GlobalStat {
         this.neededRelative = neededRelative;
     }
 
+    public int getTeachersOtherCount() {
+        return teachersOtherCount;
+    }
+
+    public void setTeachersOtherCount(int teachersOtherCount) {
+        this.teachersOtherCount = teachersOtherCount;
+    }
+
+    public GlobalAssignmentStat getMissing() {
+        return missing;
+    }
+    
+    
 }

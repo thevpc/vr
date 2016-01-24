@@ -40,53 +40,53 @@ public class DefaultPluginManagerService implements PluginManagerService {
         return plugins;
     }
 
-    public ActionInfo[] getEntityActionList(Class entityType, Object obj) {
-        List<ActionInfo> all = new ArrayList<ActionInfo>();
-        for (Plugin g : getPlugins()) {
-            try {
-                ActionInfo[] list = g.getEntityActionList(entityType, obj);
-                if (list != null) {
-                    all.addAll(Arrays.asList(list));
-                }
-            } catch (UnsupportedOperationException ee) {
-                //
-            }
-        }
-        return all.toArray(new ActionInfo[all.size()]);
-    }
+//    public ActionInfo[] getEntityActionList(Class entityType, Object obj) {
+//        List<ActionInfo> all = new ArrayList<ActionInfo>();
+//        for (Plugin g : getPlugins()) {
+//            try {
+//                ActionInfo[] list = g.getEntityActionList(entityType, obj);
+//                if (list != null) {
+//                    all.addAll(Arrays.asList(list));
+//                }
+//            } catch (UnsupportedOperationException ee) {
+//                //
+//            }
+//        }
+//        return all.toArray(new ActionInfo[all.size()]);
+//    }
 
-    public <T> T invokeEntityAction(Class entityType, String actionName, Object obj, Object[] args) {
-        for (Plugin g : getPlugins()) {
-            try {
-                return g.invokeEntityAction(entityType, actionName, obj, args);
-            } catch (UnsupportedOperationException ee) {
-                //
-            }
-        }
-        return null;
-    }
-
-    public boolean isEnabledEntityAction(Class entityType, String actionName, Object obj) {
-        for (Plugin g : getPlugins()) {
-            try {
-                boolean f = g.isEnabledEntityAction(entityType, actionName, obj);
-                if (!f) {
-                    return f;
-                }
-            } catch (UnsupportedOperationException ee) {
-                //
-            }
-        }
-        boolean ok = false;
-        for (ActionInfo a : getEntityActionList(entityType, obj)) {
-            if (a.getId().equals(actionName)) {
-                if (!a.isEnabled(obj)) {
-                    return false;
-                } else {
-                    ok = true;
-                }
-            }
-        }
-        return ok;
-    }
+//    public <T> T invokeEntityAction(Class entityType, String actionName, Object obj, Object[] args) {
+//        for (Plugin g : getPlugins()) {
+//            try {
+//                return g.invokeEntityAction(entityType, actionName, obj, args);
+//            } catch (UnsupportedOperationException ee) {
+//                //
+//            }
+//        }
+//        return null;
+//    }
+//
+//    public boolean isEnabledEntityAction(Class entityType, String actionName, Object obj) {
+//        for (Plugin g : getPlugins()) {
+//            try {
+//                boolean f = g.isEnabledEntityAction(entityType, actionName, obj);
+//                if (!f) {
+//                    return f;
+//                }
+//            } catch (UnsupportedOperationException ee) {
+//                //
+//            }
+//        }
+//        boolean ok = false;
+//        for (ActionInfo a : getEntityActionList(entityType, obj)) {
+//            if (a.getId().equals(actionName)) {
+//                if (!a.isEnabled(obj)) {
+//                    return false;
+//                } else {
+//                    ok = true;
+//                }
+//            }
+//        }
+//        return ok;
+//    }
 }

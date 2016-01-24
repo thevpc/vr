@@ -16,6 +16,7 @@
         <module>../plugins/academic/vr-academic-service</module>
         <module>../plugins/academic/vr-academic-web</module>
         <module>../plugins/academic-internship/vr-academic-internship-service</module>
+        <module>../plugins/academic-internship/vr-academic-internship-web</module>
         <module>../plugins/tasks/vr-tasks-service</module>
         <module>../plugins/tasks/vr-tasks-web</module>
         <module>../plugins/blog/vr-blog-service</module>

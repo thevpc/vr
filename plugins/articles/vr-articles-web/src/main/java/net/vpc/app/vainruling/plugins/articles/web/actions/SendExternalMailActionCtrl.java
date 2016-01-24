@@ -23,6 +23,7 @@ import net.vpc.app.vainruling.api.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.api.web.obj.PropertyView;
 import net.vpc.app.vainruling.api.web.obj.PropertyViewManager;
 import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
+import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
 import net.vpc.app.vainruling.plugins.inbox.service.model.EmailType;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
 import net.vpc.common.jsf.FacesUtils;
@@ -52,7 +53,6 @@ public class SendExternalMailActionCtrl {
 
         private String type;
         private String title;
-        private String userInfo;
 
         public String getType() {
             return type;
@@ -70,13 +70,7 @@ public class SendExternalMailActionCtrl {
             this.title = title;
         }
 
-        public String getUserInfo() {
-            return userInfo;
-        }
-
-        public void setUserInfo(String userInfo) {
-            this.userInfo = userInfo;
-        }
+      
 
     }
 
@@ -107,7 +101,7 @@ public class SendExternalMailActionCtrl {
     }
 
     public void onUpdate() {
-        System.out.println("on update SendExternalMailActionCtrl");
+//        System.out.println("on update SendExternalMailActionCtrl");
     }
 
     public void startExec() {
@@ -121,7 +115,8 @@ public class SendExternalMailActionCtrl {
 //            @Override
 //            public void run() {
         try {
-            VrApp.getBean(ObjCtrl.class).onAction("sendExternalMail", new Object[]{VrHelper.formatJSONObject(c)});
+            ArticlesItem obj = (ArticlesItem)VrApp.getBean(ObjCtrl.class).getModel().getCurrentObj();
+            VrApp.getBean(ArticlesPlugin.class).sendExternalMail(obj, VrHelper.formatJSONObject(c));
         } catch (Exception e) {
             FacesUtils.addErrorMessage(e.getMessage());
             e.printStackTrace();

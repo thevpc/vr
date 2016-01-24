@@ -286,7 +286,15 @@ and open the template in the editor.
                         <li class="dropdown">
                             <ui:fragment id="activeSessionsFragment">
                                 <div style="padding-right: 5px;">
-                                    <span class="badge vr-cnx-nbr">${activeSessionsCtrl.model.sessions.size()}</span> 
+                                    <span class="badge vr-cnx-nbr">
+                                        <h:commandLink 
+                                            style="text-decoration: none; color: white; padding : 0px;"
+                                                        rendered="#{userSession.admin}" 
+                                                       value="#{activeSessionsCtrl.model.sessions.size()}" 
+                                                       action="#{vrMenuManager.gotoPage('activeSessions', null)}"
+                                                       />
+                                        <h:outputText rendered="#{!userSession.admin}" value="${activeSessionsCtrl.model.sessions.size()}"/>
+                                    </span> 
                                     <!--<span class="vr-cnx-label">cnx</span>-->
                                 </div>
                             </ui:fragment>

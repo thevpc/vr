@@ -346,3 +346,20 @@ button.ui-button > span.ui-icon{
     border: solid 1px rgba(255,255,255,0.6);
     background-color: rgba(0,0,0,0.4);
 }
+.vr-toolbox-button{
+   font-weight: normal;
+   margin-right: 5px;
+}
+
+.vr-toolbox-button:hover{
+   font-weight: normal;
+   margin-right: 5px;
+}
+
+
+.noBorderGrid.ui-panelgrid>*>tr,
+.noBorderGrid.ui-panelgrid .ui-panelgrid-cell {
+    border: none;
+    border-width:0px;
+    border-style: none;
+}

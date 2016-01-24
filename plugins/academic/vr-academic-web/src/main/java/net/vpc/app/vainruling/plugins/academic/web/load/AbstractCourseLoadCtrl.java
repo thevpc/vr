@@ -23,10 +23,14 @@ import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.model.AppDepartment;
 import net.vpc.app.vainruling.api.model.AppUser;
 import net.vpc.app.vainruling.api.security.UserSession;
+import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.app.vainruling.api.web.OnPageLoad;
+import net.vpc.app.vainruling.api.web.VrMenuManager;
+import net.vpc.app.vainruling.api.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.plugins.academic.service.StatCache;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
 
 /**
  *
@@ -72,11 +76,24 @@ public abstract class AbstractCourseLoadCtrl {
         return all;
     }
 
+    public String gotoCourseAssignment(AcademicCourseAssignment a) {
+        if (a != null) {
+            ObjCtrl.Config c = new ObjCtrl.Config();
+            c.entity = "AcademicCourseAssignment";
+            c.id = String.valueOf(a.getId());
+            return VrApp.getBean(VrMenuManager.class).gotoPage("obj", VrHelper.formatJSONObject(c));
+        }
+        return null;
+    }
+
     public void onRefresh() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         List<SelectItem> allValidFilters = new ArrayList<>();
         for (AcademicSemester s : a.findSemesters()) {
             allValidFilters.add(new SelectItem("semester:" + s.getId(), s.getName()));
+        }
+        for (AcademicCourseType s : a.findCourseTypes()) {
+            allValidFilters.add(new SelectItem("courseType:" + s.getId(), s.getName()));
         }
         for (AcademicClass s : a.findAcademicClasses()) {
             allValidFilters.add(new SelectItem("class:" + s.getId(), s.getName()));
@@ -89,6 +106,7 @@ public abstract class AbstractCourseLoadCtrl {
         boolean intended = isFiltered("intended");
         boolean nonintended = isFiltered("non-intended");
         boolean conflict = isFiltered("conflict");
+        
         if (!assigned && !nonassigned) {
             assigned = true;
             nonassigned = true;
@@ -101,6 +119,7 @@ public abstract class AbstractCourseLoadCtrl {
         StatCache cache = new StatCache();
         final Set<Integer> semesterFilter = getFilters("semester");
         final Set<Integer> classFilter = getFilters("class");
+        final Set<Integer> courseTypeFilter = getFilters("courseType");
 
         reset();
 
@@ -145,6 +164,11 @@ public abstract class AbstractCourseLoadCtrl {
                 }
                 if (accepted && classFilter.size() > 0) {
                     if (!classFilter.contains(c.getAssignment().getCoursePlan().getStudentClass().getId())) {
+                        accepted = false;
+                    }
+                }
+                if (accepted && courseTypeFilter.size() > 0) {
+                    if (!courseTypeFilter.contains(c.getAssignment().getCourseType().getId())) {
                         accepted = false;
                     }
                 }
@@ -223,7 +247,7 @@ public abstract class AbstractCourseLoadCtrl {
 
     public boolean isAllowedUpdateMineIntents(Integer assignementId) {
         UserSession userSession = VrApp.getBean(UserSession.class);
-        if (userSession == null ) {
+        if (userSession == null) {
             return false;
         }
         AppUser user = userSession.getUser();
@@ -251,7 +275,7 @@ public abstract class AbstractCourseLoadCtrl {
                         }
                     }
                 }
-                d = (t.getCoursePlan()!=null && t.getCoursePlan().getStudentClass()!=null && t.getCoursePlan().getStudentClass().getProgram()!=null)?t.getCoursePlan().getStudentClass().getProgram().getDepartment():null;
+                d = (t.getCoursePlan() != null && t.getCoursePlan().getStudentClass() != null && t.getCoursePlan().getStudentClass().getProgram() != null) ? t.getCoursePlan().getStudentClass().getProgram().getDepartment() : null;
                 if (d != null) {
                     if (userSession.allowed("Custom.Education.CourseLoadUpdateIntents")) {
                         AppDepartment d2 = user.getDepartment();
@@ -267,7 +291,7 @@ public abstract class AbstractCourseLoadCtrl {
 
     public boolean isAllowedUpdateMineAssignments(Integer assignementId) {
         UserSession userSession = VrApp.getBean(UserSession.class);
-        if (userSession == null ) {
+        if (userSession == null) {
             return false;
         }
         AppUser user = userSession.getUser();
@@ -291,7 +315,7 @@ public abstract class AbstractCourseLoadCtrl {
                         }
                     }
                 }
-                d = (t.getCoursePlan()!=null && t.getCoursePlan().getStudentClass()!=null && t.getCoursePlan().getStudentClass().getProgram()!=null)?t.getCoursePlan().getStudentClass().getProgram().getDepartment():null;
+                d = (t.getCoursePlan() != null && t.getCoursePlan().getStudentClass() != null && t.getCoursePlan().getStudentClass().getProgram() != null) ? t.getCoursePlan().getStudentClass().getProgram().getDepartment() : null;
                 if (d != null) {
                     if (userSession.allowed("Custom.Education.CourseLoadUpdateAssignments")) {
                         AppDepartment d2 = userSession.getUser().getDepartment();

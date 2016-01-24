@@ -50,7 +50,7 @@ public class ProfileExprDialogCtrl {
         options.put("draggable", false);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/profileexprdialog", options, null);
+        RequestContext.getCurrentInstance().openDialog("/modules/obj/profileexprdialog", options, null);
 
     }
 

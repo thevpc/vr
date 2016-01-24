@@ -65,6 +65,7 @@ import net.vpc.app.vainruling.api.Start;
 import net.vpc.app.vainruling.api.TraceService;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.model.AppCivility;
+import net.vpc.app.vainruling.api.model.AppCompany;
 import net.vpc.app.vainruling.api.model.AppContact;
 import net.vpc.app.vainruling.api.model.AppDepartment;
 import net.vpc.app.vainruling.api.model.AppGender;
@@ -165,10 +166,15 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         teacher_stat.setTeacher(teacher);
         AcademicTeacherDegree degree = teacher_stat.getTeacher().getDegree();
         teacher_stat.getDueWeek().setEquiv(degree == null ? 0 : degree.getValueDU());
+
         boolean hasDU = teacher_stat.getDueWeek().getEquiv() > 0;
         if (!hasDU) {
             teacher_stat.getDueWeek().setEquiv(0);
+            teacher_stat.getDueWeek().setEquivC(0);
+            teacher_stat.getDueWeek().setEquivTD(0);
             teacher_stat.getDue().setEquiv(0);
+            teacher_stat.getDue().setEquivC(0);
+            teacher_stat.getDue().setEquivTD(0);
         }
         if (findTeacherSemestrialLoads == null) {
             findTeacherSemestrialLoads = cache.getAcademicTeacherSemestrialLoadByTeacherIdMap().get(teacherId);
@@ -304,7 +310,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             cache = new StatCache();
         }
         AcademicCourseAssignment module = cache.getAcademicCourseAssignmentMap().get(courseAssignmentId);
-        LoadValue mod_val = new LoadValue(module.getValueC(), module.getValueTD(), module.getValueTP(), module.getValuePM(), 0, 0);
+        LoadValue mod_val = new LoadValue(module.getValueC(), module.getValueTD(), module.getValueTP(), module.getValuePM(), 0, 0, 0, 0);
         ModuleStat ms = new ModuleStat();
         ms.setModule(module);
         List<AcademicSemester> semesters = cache.getAcademicSemesterList();
@@ -351,6 +357,11 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public double evalValueEquiv(LoadValue value, String degree) {
         AcademicTeacherDegree dd = findTeacherDegree(degree);
         return evalValueEquiv(value, dd);
+    }
+
+    public void updateEquivCandTP(LoadValue v, StatCache cache) {
+        v.setEquivC(evalValueEquiv(v, cache.getAcademicTeacherDegreesByCodeMap().get("P")));
+        v.setEquivTD(evalValueEquiv(v, cache.getAcademicTeacherDegreesByCodeMap().get("MA")));
     }
 
     public double evalValueEquiv(LoadValue v, AcademicTeacherDegree dd) {
@@ -795,6 +806,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 }
             }
         }
+        AcademicTeacherSituation Contractuel = findTeacherSituation("Contractuel");
+        AcademicTeacherSituation Permanent = findTeacherSituation("Permanent");
+        AcademicTeacherSituation Vacataire = findTeacherSituation("Vacataire");
+        AcademicTeacherDegree assistant = findTeacherDegree("A");
 
         List<AcademicCoursePlan> coursePlans = findCoursePlans();
         List<AcademicCourseAssignment> courseAssignments = cache.getAcademicCourseAssignmentList();
@@ -804,27 +819,28 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             AcademicSemester semester = value.getCoursePlan().getSemester();
             double grp = value.getGroupCount();
             double shr = value.getShareCount();
-            s.getAssignment(semester, null, null).getTargetAssignments().add(new LoadValue(
+            LoadValue loadValue = new LoadValue(
                     value.getValueC() * grp * shr,
                     value.getValueTD() * grp * shr,
                     value.getValueTP() * grp * shr,
                     value.getValuePM() * grp * shr,
-                    0, 0
-            ));
-            s.getAssignment(null, null, null).getTargetAssignments().add(new LoadValue(
-                    value.getValueC() * grp * shr,
-                    value.getValueTD() * grp * shr,
-                    value.getValueTP() * grp * shr,
-                    value.getValuePM() * grp * shr,
-                    0, 0
-            ));
+                    0, 0, 0, 0
+            );
+            double g = evalValueEquiv(loadValue, assistant);
+            loadValue.setEquiv(g);
+            if (value.getTeacher() == null) {
+                s.getAssignment(semester, null, null).getMissingAssignments().add(loadValue);
+                s.getAssignment(null, null, null).getMissingAssignments().add(loadValue);
+            }
+            s.getAssignment(semester, null, null).getTargetAssignments().add(loadValue);
+            s.getAssignment(null, null, null).getTargetAssignments().add(loadValue);
         }
-        GlobalAssignmentStat a = s.getAssignment(null, null, null);
-        a.getMissingAssignments().set(a.getTargetAssignments()).substruct(a.getValue());
-        for (AcademicSemester sem : findSemesters) {
-            a = s.getAssignment(sem, null, null);
-            a.getMissingAssignments().set(a.getTargetAssignments()).substruct(a.getValue());
-        }
+//        GlobalAssignmentStat a = s.getAssignment(null, null, null);
+//        a.getMissingAssignments().set(a.getTargetAssignments()).substruct(a.getValue());
+//        for (AcademicSemester sem : findSemesters) {
+//            a = s.getAssignment(sem, null, null);
+////            a.getMissingAssignments().set(a.getTargetAssignments()).substruct(a.getValue());
+//        }
         s.getAssignments().sort(new Comparator<GlobalAssignmentStat>() {
 
             @Override
@@ -868,47 +884,79 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             }
 
         });
-        AcademicTeacherSituation Contractuel = findTeacherSituation("Contractuel");
-        AcademicTeacherSituation Permanent = findTeacherSituation("Permanent");
-        AcademicTeacherSituation Vacataire = findTeacherSituation("Vacataire");
         s.setTeachersCount(s.getTotalAssignment().getTeachersCount());
-        AcademicTeacherDegree assistant = findTeacherDegree("A");
         GlobalAssignmentStat vacataireAssignment = s.getAssignment(null, Vacataire, null);
 
         s.setTeachersTemporaryCount(vacataireAssignment.getTeachersCount());
         GlobalAssignmentStat contractuelAssignment = s.getAssignment(null, Contractuel, null);
         s.setTeachersContractualCount(contractuelAssignment.getTeachersCount());
         s.setTeachersPermanentCount(s.getAssignment(null, Permanent, null).getTeachersCount());
+
+        s.setTeachersOtherCount(s.getTeachersCount() - s.getTeachersPermanentCount() - s.getTeachersTemporaryCount() - s.getTeachersContractualCount());
         GlobalAssignmentStat ta = s.getTotalAssignment();
 
         GlobalAssignmentStat neededRelative = s.getNeededRelative();
-        neededRelative
-                .getExtra()
-                .add(ta.getMissingAssignments());
-        neededRelative
-                .getExtraWeek()
-                .add(ta.getMissingAssignments().copy().div(maxWeeks));
-        neededRelative.setTeachersCount((int) Math.ceil(
-                evalValueEquiv(neededRelative.getExtra(), assistant)
-                / assistant.getValueDU()
-        )
-        );
+//        neededRelative
+//                .getExtra()
+//                .add(ta.getMissingAssignments());
+//        neededRelative
+//                .getExtraWeek()
+//                .add(ta.getMissingAssignments().copy().div(maxWeeks));
+//        neededRelative.setTeachersCount((int) Math.ceil(
+//                evalValueEquiv(neededRelative.getExtra(), assistant)
+//                / assistant.getValueDU()
+//        )
+//        );
 
         //calcul de la charge nécessaire selon le du des enseignant permanents
-        //donc en gros combien on a besoin d'assistants pour ne plus recruter des contractuels et vacatires
+        //donc en gros combien on a besoin d'assistants pour ne plus recruter des contractuels et vacataires
         GlobalAssignmentStat neededByDue = s.getNeededAbsolute();
-        double duAssistant = evalValueEquiv(s.getAssignment(null, Permanent, null).getDue(), assistant);
-        double targetAssistant = evalValueEquiv(s.getTotalAssignment().getTargetAssignments(), assistant);
-        neededByDue.getValue().setEquiv(duAssistant);
-        neededByDue.getExtra().setEquiv(targetAssistant - duAssistant);
-        neededByDue.getValueWeek().setEquiv(neededByDue.getValue().getEquiv() / maxWeeks);
-        neededByDue.getExtraWeek().setEquiv(neededByDue.getValueWeek().getEquiv() / maxWeeks);
+        double permEquivDu = s.getAssignment(null, Permanent, null).getDue().getEquiv();
+        double permEquivTot = s.getAssignment(null, Permanent, null).getValue().getEquiv();
+
+//        double contrEquivDu=s.getAssignment(null, Contractuel, null).getDue().getEquiv();
+        double contrEquivTot = s.getAssignment(null, Contractuel, null).getValue().getEquiv();
+        double vacEquivTot = s.getAssignment(null, Vacataire, null).getValue().getEquiv();
+        double missingAss = ta.getMissingAssignments().getEquiv();
+
+        neededByDue.getValue().setEquiv(permEquivTot - permEquivDu + contrEquivTot + vacEquivTot + missingAss);
+        neededByDue.getValueWeek().setEquiv(neededByDue.getValue().getEquiv() / maxWeeks / findSemesters().size());
         neededByDue.setTeachersCount(
                 (int) Math.ceil(
-                        neededByDue.getExtra().getEquiv() / assistant.getValueDU()
+                        neededByDue.getValueWeek().getEquiv() / assistant.getValueDU()
                 )
         );
 
+        neededRelative.getValue().setEquiv(contrEquivTot + vacEquivTot + missingAss);
+        neededRelative.getValueWeek().setEquiv(neededRelative.getValue().getEquiv() / maxWeeks / findSemesters().size());
+        neededRelative.setTeachersCount(
+                (int) Math.ceil(
+                        neededRelative.getValueWeek().getEquiv() / assistant.getValueDU()
+                )
+        );
+
+        double contratMiss = 6;
+        GlobalAssignmentStat missingStat = s.getMissing();
+        missingStat.getValue().set(ta.getMissingAssignments());
+        missingStat.getValueWeek().set(missingStat.getValue()).div(maxWeeks * findSemesters().size());
+        missingStat.setTeachersCount(
+                (int) Math.ceil(
+                        missingStat.getValueWeek().getEquiv() / contratMiss
+                )
+        );
+
+//        double duAssistant = evalValueEquiv(s.getAssignment(null, Permanent, null).getDue(), assistant);
+//        double targetAssistant = evalValueEquiv(s.getTotalAssignment().getTargetAssignments(), assistant);
+//        neededByDue.getValue().setEquiv(duAssistant);
+//        neededByDue.getTargetEquiv().setEquiv(targetAssistant);
+//        neededByDue.getExtra().setEquiv(targetAssistant - duAssistant);
+//        neededByDue.getValueWeek().setEquiv(neededByDue.getValue().getEquiv() / maxWeeks);
+//        neededByDue.getExtraWeek().setEquiv(neededByDue.getValueWeek().getEquiv() / maxWeeks);
+//        neededByDue.setTeachersCount(
+//                (int) Math.ceil(
+//                        neededByDue.getExtra().getEquiv() / assistant.getValueDU()
+//                )
+//        );
         return s;
     }
 
@@ -1116,7 +1164,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         log.log(Level.FINE, "generateCourseListLoadsFile in {0}", new Object[]{ch.stop()});
     }
 
-    public AcademicTeacher findHeadOfDepartment(int depId) throws IOException {
+    public AcademicTeacher findHeadOfDepartment(int depId) {
         for (AppUser u : core.findUsersByProfile(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT)) {
             if (u.getDepartment() != null && u.getDepartment().getId() == depId) {
                 return findTeacherByUser(u.getId());
@@ -1581,6 +1629,12 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public List<AcademicCourseGroup> findCourseGroups() {
         return UPA.getPersistenceUnit().
                 createQuery("Select a from AcademicCourseGroup a")
+                .getEntityList();
+    }
+
+    public List<AcademicDiscipline> findDisciplines() {
+        return UPA.getPersistenceUnit().
+                createQuery("Select a from AcademicDiscipline a")
                 .getEntityList();
     }
 
@@ -2330,87 +2384,22 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public void addUserForTeacher(AcademicTeacher academicTeacher) {
-        AppUser u = core.findUserByContact(academicTeacher.getContact().getId());
-        if (u == null) {
-            String login = core.resolveLoginProposal(academicTeacher.getContact());
-            u = core.findUser(login);
-            AppUserType teacherType = VrApp.getBean(CorePlugin.class).findUserType("Teacher");
-            if (u == null) {
-                u = new AppUser();
-                u.setLogin(login);
-                u.setContact(academicTeacher.getContact());
-                String pwd = academicTeacher.getContact().getFirstName().toLowerCase() + "1243";
-                u.setPassword(pwd);
-                u.setPasswordAuto(pwd);
-                u.setType(teacherType);
-                u.setDepartment(academicTeacher.getDepartment());
-                u.setEnabled(true);
-                UPA.getPersistenceUnit().persist(u);
-            } else {
-                u.setContact(academicTeacher.getContact());
-                u.setType(teacherType);
-                UPA.getPersistenceUnit().merge(u);
-            }
-            academicTeacher.setUser(u);
-            UPA.getPersistenceUnit().merge(academicTeacher);
-        }
-        core.userAddProfile(u.getId(), "Teacher");
+        AppUserType teacherType = VrApp.getBean(CorePlugin.class).findUserType("Teacher");
+        AppUser u = core.createUser(academicTeacher.getContact(), teacherType.getId(), academicTeacher.getDepartment().getId(), false, new String[]{"Teacher"});
+        academicTeacher.setUser(u);
+        UPA.getPersistenceUnit().merge(academicTeacher);
     }
 
     public boolean addUserForStudent(AcademicStudent academicStudent) {
-        AppUser u = core.findUserByContact(academicStudent.getContact().getId());
-        if (u == null) {
-            String login = core.resolveLoginProposal(academicStudent.getContact());
-            if (StringUtils.isEmpty(login)) {
-                return false;
-            }
-            u = core.findUser(login);
-            if (u != null) {
-                //check if already bound to another contact!
-                AppContact otherContact = u.getContact();
-                AppContact myContact = academicStudent.getContact();
-                if (otherContact != null && myContact != null && otherContact.getId() != myContact.getId()) {
-                    //two students with the same name?
-                    int index = 2;
-                    while (true) {
-                        AppUser u2 = core.findUser(login + index);
-                        if (u2 != null) {
-                            u = u2;
-                            login = login + index;
-                            break;
-                        }
-                        index++;
-                    }
-                }
-            }
-            AppUserType studentType = VrApp.getBean(CorePlugin.class).findUserType("Student");
-            if (u == null) {
-                u = new AppUser();
-
-                u.setLogin(login);
-                u.setContact(academicStudent.getContact());
-                String pwd = academicStudent.getContact().getFirstName().toLowerCase() + "7788";
-                u.setPassword(pwd);
-                u.setPasswordAuto(pwd);
-                u.setType(studentType);
-                u.setDepartment(academicStudent.getDepartment());
-                u.setEnabled(true);
-                UPA.getPersistenceUnit().persist(u);
-            } else {
-                u.setContact(academicStudent.getContact());
-                u.setType(studentType);
-                UPA.getPersistenceUnit().merge(u);
-            }
-            academicStudent.setUser(u);
-            UPA.getPersistenceUnit().merge(academicStudent);
-        }
-
-        core.userAddProfile(u.getId(), "Student");
+        AppUserType teacherType = VrApp.getBean(CorePlugin.class).findUserType("Student");
+        AppUser u = core.createUser(academicStudent.getContact(), teacherType.getId(), academicStudent.getDepartment().getId(), false, new String[]{"Student"});
+        academicStudent.setUser(u);
+        UPA.getPersistenceUnit().merge(academicStudent);
 
         for (AcademicClass c : new AcademicClass[]{academicStudent.getLastClass1(), academicStudent.getLastClass2(), academicStudent.getLastClass3()}) {
             if (c != null) {
                 String s = c.getName();
-                s = s.replace("(", "_").replace(")", "_").replace("+", "_").replace("+", "_");
+                s = core.validateProfileName(s);
                 AppProfile p = core.findOrCreateProfile(s);
                 core.userAddProfile(u.getId(), p.getName());
             }
@@ -2418,7 +2407,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             AcademicProgram pr = academicStudent.getLastClass1() == null ? null : academicStudent.getLastClass1().getProgram();
             if (pr != null) {
                 String s = pr.getName();
-                s = s.replace("(", "_").replace(")", "_").replace("+", "_").replace("+", "_");
+                s = core.validateProfileName(s);
                 AppProfile p = core.findOrCreateProfile(s);
                 core.userAddProfile(u.getId(), p.getName());
             }
@@ -2426,7 +2415,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         AppDepartment d = academicStudent.getDepartment();
         if (d != null) {
             String s = d.getName();
-            s = s.replace("(", "_").replace(")", "_").replace("+", "_").replace("+", "_");
+            s = core.validateProfileName(s);
             AppProfile p = core.findOrCreateProfile(s);
             core.userAddProfile(u.getId(), p.getName());
         }
@@ -2493,13 +2482,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             a.setSnapshotName(null);
         }
         UPA.getPersistenceUnit().persist(t);
-    }
-
-    public static void main(String[] args) {
-//        AcademicPlugin a = new AcademicPlugin();
-//        for (PlanningDay loadTeacherPlanning : a.loadTeacherPlanning("Taha Ben Salah")) {
-//            System.out.println(loadTeacherPlanning);
-//        }
     }
 
     public List<String> loadStudentPlanningListNames() {

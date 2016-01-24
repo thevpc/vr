@@ -27,6 +27,8 @@ public class AcademicInternshipType {
     @Field(modifiers = UserFieldModifier.MAIN)
     private String name;
 
+    @Field(defaultValue = "false")
+
     public int getId() {
         return id;
     }
@@ -42,5 +44,4 @@ public class AcademicInternshipType {
     public void setName(String name) {
         this.name = name;
     }
-
 }

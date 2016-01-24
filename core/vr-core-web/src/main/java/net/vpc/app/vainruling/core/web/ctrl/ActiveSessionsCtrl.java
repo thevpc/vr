@@ -17,6 +17,7 @@ import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.api.web.UCtrl;
 import net.vpc.app.vainruling.api.ActiveSessionsTracker;
+import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.PollAware;
 import net.vpc.app.vainruling.api.model.AppUserType;
 import net.vpc.app.vainruling.api.web.OnPageLoad;
@@ -34,7 +35,7 @@ import net.vpc.common.utils.Chronometer;
 )
 @ManagedBean
 @ApplicationScoped
-public class ActiveSessionsCtrl implements PollAware{
+public class ActiveSessionsCtrl implements PollAware {
 
     private final Model model = new Model();
 
@@ -63,6 +64,7 @@ public class ActiveSessionsCtrl implements PollAware{
                 ArrayList<TypeStat> sli = new ArrayList<TypeStat>(stats.values());
                 Collections.sort(sli);
                 getModel().setTypeStats(sli);
+                getModel().setAdmin(VrApp.getBean(CorePlugin.class).isActualAdmin());
             } finally {
                 model.updating = false;
             }
@@ -117,6 +119,7 @@ public class ActiveSessionsCtrl implements PollAware{
         private List<UserSession> sessions = new ArrayList<>();
         private List<TypeStat> typeStats = new ArrayList<>();
         private boolean updating = false;
+        private boolean admin = false;
 
         public List<UserSession> getSessions() {
             return sessions;
@@ -142,12 +145,20 @@ public class ActiveSessionsCtrl implements PollAware{
             this.updating = updating;
         }
 
+        public boolean isAdmin() {
+            return admin;
+        }
+
+        public void setAdmin(boolean admin) {
+            this.admin = admin;
+        }
+
     }
 
     public void onPoll() {
         onUpdate();
     }
-    
+
     public void onUpdate() {
         onRefresh();
     }
