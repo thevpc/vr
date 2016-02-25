@@ -6,11 +6,13 @@
 package net.vpc.app.vainruling.api.model;
 
 import java.util.Objects;
+import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
+import net.vpc.upa.config.Property;
 
 /**
  *
@@ -24,6 +26,7 @@ public class AppRightName {
     @Field(modifiers = {UserFieldModifier.MAIN})
     private String name;
     @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
     private String description;
 
     public String getName() {

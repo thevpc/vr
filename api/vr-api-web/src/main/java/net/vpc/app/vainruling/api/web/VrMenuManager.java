@@ -367,7 +367,6 @@ public class VrMenuManager {
         public List<VRMenuDef> getMenuCtrl() {
             return menuCtrl;
         }
-
     }
 
     public List<VRMenuDef> resolveAutowiredCustomMenusByCtrl() {

@@ -74,6 +74,7 @@ public class AcademicTeacherCV {
     private String socialURL4;
     private String rssURL;
     @Field(defaultValue = "0",modifiers = {UserFieldModifier.SUMMARY}
+            ,persistAccessLevel = AccessLevel.PROTECTED
             ,updateAccessLevel = AccessLevel.PROTECTED
             ,readAccessLevel = AccessLevel.PUBLIC
     )

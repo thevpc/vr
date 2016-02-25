@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.plugins.filesystem.web.files;
 
 import java.util.Date;
+import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.common.vfs.VFile;
 
 /**
@@ -13,18 +14,70 @@ import net.vpc.common.vfs.VFile;
  * @author vpc
  */
 public class VFileInfo implements Comparable<VFileInfo> {
-    
+
     private String name;
     private String css;
+    private String desc;
     VFile file;
     private boolean selected;
     private long downloads;
 
-    public VFileInfo(String name, VFile file, String css, long downloads) {
+    public VFileInfo(String name, VFile file, String css, long downloads, String desc) {
         this.name = name;
         this.file = file;
         this.css = css;
         this.downloads = downloads;
+        this.desc = desc;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public long length() {
+        if (file.isFile()) {
+            return file.length();
+        }
+        if (file.isDirectory()) {
+            VFile[] files = file.listFiles();
+            return files == null ? 0 : files.length;
+        }
+        return 0;
+    }
+
+    public String lengthDesc() {
+        if (file.isFile()) {
+            return VrHelper.formatFileSize(file.length());
+        }
+        if (file.isDirectory()) {
+            VFile[] files = file.listFiles();
+            int f = 0;
+            int d = 0;
+            if (files != null) {
+                for (VFile ff : files) {
+                    if (ff.isDirectory()) {
+                        d++;
+                    } else {
+                        f++;
+                    }
+                }
+            }
+            if (f == 0 && d == 0) {
+                return "vide";
+            }
+            StringBuilder sb = new StringBuilder();
+            if (d > 0) {
+                sb.append(d).append(" rep.");
+            }
+            if (f > 0) {
+                if (sb.length() > 0) {
+                    sb.append(", ");
+                }
+                sb.append(f).append(" fich.");
+            }
+            return sb.toString();
+        }
+        return "";
     }
 
     public boolean isSelected() {
@@ -78,5 +131,5 @@ public class VFileInfo implements Comparable<VFileInfo> {
     public void setDownloads(long downloads) {
         this.downloads = downloads;
     }
-    
+
 }

@@ -399,9 +399,44 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
             FileSystemPlugin fsp = VrApp.getBean(FileSystemPlugin.class);
             downloads = fsp.getDownloadsCount(file);
         }
-        return new VFileInfo(name, file, css, downloads);
+        String desc = "<Dossier Parent>".equals(name) ? "" : evalVFileDesc(file);
+        return new VFileInfo(name, file, css, downloads, desc);
     }
 
+    public static String evalVFileDesc(VFile file) {
+        if (file.isFile()) {
+            return VrHelper.formatFileSize(file.length());
+        }
+        if (file.isDirectory()) {
+            VFile[] files = file.listFiles();
+            int f = 0;
+            int d = 0;
+            if (files != null) {
+                for (VFile ff : files) {
+                    if (ff.isDirectory()) {
+                        d++;
+                    } else {
+                        f++;
+                    }
+                }
+            }
+            if (f == 0 && d == 0) {
+                return "vide";
+            }
+            StringBuilder sb = new StringBuilder();
+            if (d > 0) {
+                sb.append(d).append(" rep.");
+            }
+            if (f > 0) {
+                if (sb.length() > 0) {
+                    sb.append(", ");
+                }
+                sb.append(f).append(" fich.");
+            }
+            return sb.toString();
+        }
+        return "";
+    }
 
     public Model getModel() {
         return model;

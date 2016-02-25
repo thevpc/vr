@@ -319,17 +319,17 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 case NEW: {
                     Object c = getModel().getCurrentObj();
                     objService.save(c);
-                    onCancelCurrent();
+//                    onCancelCurrent();
                     break;
                 }
                 case UPDATE: {
                     Object c = getModel().getCurrentObj();
                     objService.save(c);
-                    onCancelCurrent();
+//                    onCancelCurrent();
                     break;
                 }
             }
-            reloadPage();
+//            reloadPage();
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;

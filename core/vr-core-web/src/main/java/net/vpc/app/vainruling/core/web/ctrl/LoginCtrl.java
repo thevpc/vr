@@ -65,6 +65,7 @@ public class LoginCtrl {
         return null;
     }
 
+  
     public String dologin() {
         VRWebHelper.prepareUserSession();
         AppUser u = loginService.login(getModel().getLogin(), getModel().getPassword());

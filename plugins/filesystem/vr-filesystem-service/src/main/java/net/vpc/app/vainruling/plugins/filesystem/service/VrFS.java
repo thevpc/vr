@@ -27,7 +27,12 @@ public class VrFS extends FileACLVirtualFileSystem {
 
     @Override
     public boolean isActualAdmin() {
-        return VrApp.getBean(CorePlugin.class).isActualAdmin();
+        try {
+            return VrApp.getBean(CorePlugin.class).isActualAdmin();
+        } catch (Exception e) {
+            //session not yet created!
+            return true;
+        }
     }
 
     @Override

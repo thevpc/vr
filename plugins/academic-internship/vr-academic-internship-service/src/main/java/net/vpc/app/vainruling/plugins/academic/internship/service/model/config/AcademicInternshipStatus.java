@@ -33,6 +33,7 @@ public class AcademicInternshipStatus {
     private String name;
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicInternshipType internshipType;
+    @Field(max = "4000")
     @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
     private String description;
 
@@ -55,17 +56,22 @@ public class AcademicInternshipStatus {
     @Properties({
         @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Rapports")}
     )
+    
     @Field(defaultValue = "false")
     private boolean enabledReport1;
-    @Field(defaultValue = "false")
-    private boolean enabledReport2;
-    @Field(defaultValue = "false")
-    private boolean enabledReport3;
 
     @Field(defaultValue = "false")
     private boolean studentUpdatesReport1;
+
+    @Field(defaultValue = "false")
+    private boolean enabledReport2;
+    
     @Field(defaultValue = "false")
     private boolean studentUpdatesReport2;
+
+    @Field(defaultValue = "false")
+    private boolean enabledReport3;
+
     @Field(defaultValue = "false")
     private boolean studentUpdatesReport3;
 
@@ -77,7 +83,13 @@ public class AcademicInternshipStatus {
     private boolean studentSeesEvaluators;
 
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Commission")}
+        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Enseignants")}
+    )
+    @Field(defaultValue = "false")
+    private boolean supervisorRequestable;
+    
+    @Properties({
+        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Comité")}
     )
     @Field(defaultValue = "false")
     private boolean boardUpdatesDescr;
@@ -238,4 +250,12 @@ public class AcademicInternshipStatus {
         this.boardUpdatesEvaluators = boardUpdatesEvaluators;
     }
 
+    public boolean isSupervisorRequestable() {
+        return supervisorRequestable;
+    }
+
+    public void setSupervisorRequestable(boolean supervisorRequestable) {
+        this.supervisorRequestable = supervisorRequestable;
+    }
+    
 }

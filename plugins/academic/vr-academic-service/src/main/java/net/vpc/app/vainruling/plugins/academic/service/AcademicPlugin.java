@@ -65,7 +65,6 @@ import net.vpc.app.vainruling.api.Start;
 import net.vpc.app.vainruling.api.TraceService;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.model.AppCivility;
-import net.vpc.app.vainruling.api.model.AppCompany;
 import net.vpc.app.vainruling.api.model.AppContact;
 import net.vpc.app.vainruling.api.model.AppDepartment;
 import net.vpc.app.vainruling.api.model.AppGender;
@@ -113,7 +112,7 @@ import org.w3c.dom.NodeList;
  *
  * @author vpc
  */
-@AppPlugin(version = "1.8", dependsOn = {"fileSystemPlugin", "commonModel"})
+@AppPlugin(version = "1.9", dependsOn = {"fileSystemPlugin", "commonModel"})
 public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     private static final Logger log = Logger.getLogger(AcademicPlugin.class.getName());
@@ -1188,7 +1187,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             prefix = "row(" + (int) inc.inc("x") + ").";
             fillCourseAssignementPlanProps(c, p, prefix);
         }
-        String year = (String) core.getOrCreateAppPropertyValue("academicPlugin.year", null, "2015-2016");
+        String year = (String) core.findAppConfig().getMainPeriod().getName();
         String version = (String) core.getOrCreateAppPropertyValue("academicPlugin.import.version", null, "v01");
         p.put("version", version);
         p.put("year", year);
@@ -1700,7 +1699,12 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public AcademicTeacher findTeacher(int t) {
-        return (AcademicTeacher) UPA.getPersistenceUnit().findById(AcademicTeacher.class, t);
+        return (AcademicTeacher) UPA.getPersistenceUnit()
+                .createQuery("Select u from AcademicTeacher u where u.id=:id")
+                .setParameter("id", t)
+                                .setHint("navigationDepth", 5)
+                .getEntity();
+//                .findById(AcademicTeacher.class, t);
     }
 
     public AcademicStudent findStudent(int t) {
@@ -2141,6 +2145,21 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return ok;
     }
 
+    public List<String> parseWords(String value) {
+        if (value == null) {
+            value = "";
+        }
+        List<String> ok = new ArrayList<>();
+        for (String n : value.split(",|;| ")) {
+            String[] cn = codeAndName(n);
+            String code = cn[0].toLowerCase();
+            if (!StringUtils.isEmpty(code)) {
+                ok.add(code);
+            }
+        }
+        return ok;
+    }
+
     public AcademicTeacher getCurrentTeacher() {
         UserSession sm = VrApp.getBean(UserSession.class);
         AppUser user = (sm == null) ? null : sm.getUser();
@@ -2166,6 +2185,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     @Install
     public void installService() {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
         core.createRight("Custom.Education.CourseLoadUpdateIntents", "Mettre à jours les voeux de autres");
         core.createRight("Custom.Education.CourseLoadUpdateAssignments", "Mettre à jours les affectations");
         core.createRight("Custom.Education.AllTeachersCourseLoad", "Charge tous enseignats");
@@ -2190,10 +2210,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         studentType.setName("Student");
         studentType = core.findOrCreate(studentType);
 
-        AppProfile teacherProfile;
-        teacherProfile = new AppProfile();
-        teacherProfile.setName("Teacher");
-        teacherProfile = core.findOrCreate(teacherProfile);
+        AppProfile teacherProfile = core.findOrCreateCustomProfile("Teacher", "UserType");
 
         core.addProfileRight(teacherProfile.getId(), "Custom.Education.MyCourseLoad");
         core.addProfileRight(teacherProfile.getId(), "AcademicCourseIntent.Persist");
@@ -2211,17 +2228,12 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             core.addProfileRight(teacherProfile.getId(), readOnlyEntity + ".Navigate");
             core.addProfileRight(teacherProfile.getId(), readOnlyEntity + ".DefaultEditor");
         }
-        AppProfile studentProfile;
-        studentProfile = new AppProfile();
-        studentProfile.setName("Student");
-        studentProfile = core.findOrCreate(studentProfile);
+        AppProfile studentProfile = core.findOrCreateCustomProfile("Student", "UserType");
 
         core.addProfileRight(studentProfile.getId(), "Custom.FileSystem.MyFileSystem");
 
         AppProfile headOfDepartment;
-        headOfDepartment = new AppProfile();
-        headOfDepartment.setName(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT);
-        headOfDepartment = core.findOrCreate(headOfDepartment);
+        headOfDepartment = core.findOrCreateCustomProfile(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT, "UserType");
 
         core.addProfileRight(headOfDepartment.getId(), "Custom.Education.TeacherCourseLoad");
         core.addProfileRight(headOfDepartment.getId(), "Custom.Education.GlobalStat");
@@ -2239,10 +2251,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             core.addProfileRight(headOfDepartment.getId(), ee.getAbsoluteName() + ".DefaultEditor");
         }
 
-        AppProfile directorOfStudies;
-        directorOfStudies = new AppProfile();
-        directorOfStudies.setName("DirectorOfStudies");
-        directorOfStudies = core.findOrCreate(directorOfStudies);
+        AppProfile directorOfStudies = core.findOrCreateProfile("DirectorOfStudies");
+        directorOfStudies.setCustom(true);
+        directorOfStudies.setCustomType("UserType");
+        pu.merge(directorOfStudies);
 
         core.addProfileRight(directorOfStudies.getId(), "Custom.Education.TeacherCourseLoad");
         core.addProfileRight(directorOfStudies.getId(), "Custom.Education.GlobalStat");
@@ -2255,10 +2267,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             core.addProfileRight(directorOfStudies.getId(), ee.getAbsoluteName() + ".DefaultEditor");
         }
 
-        AppProfile director;
-        director = new AppProfile();
-        director.setName("Director");
-        director = core.findOrCreate(director);
+        AppProfile director = core.findOrCreateCustomProfile("Director", "UserType");
 
         core.addProfileRight(director.getId(), "Custom.Education.TeacherCourseLoad");
         core.addProfileRight(director.getId(), "Custom.Education.GlobalStat");
@@ -2292,7 +2301,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public void importTeachingLoad() {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         try {
-            String year = (String) core.getOrCreateAppPropertyValue("academicPlugin.year", null, "2015-2016");
+            String year = (String) core.findAppConfig().getMainPeriod().getName();
             String version = (String) core.getOrCreateAppPropertyValue("academicPlugin.import.version", null, "v01");
             String dir = (String) core.getOrCreateAppPropertyValue("academicPlugin.import.configFolder", null, "/Config/Import/${year}");
             Map<String, String> vars = new HashMap<>();
@@ -2320,7 +2329,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public void generateTeachingLoad() {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         try {
-            String year = (String) core.getOrCreateAppPropertyValue("academicPlugin.year", null, "2015-2016");
+            String year = (String) core.findAppConfig().getMainPeriod().getName();
             String version = (String) core.getOrCreateAppPropertyValue("academicPlugin.import.version", null, "v01");
             String dir = (String) core.getOrCreateAppPropertyValue("academicPlugin.import.configFolder", null, "/Config/Import/import/${year}");
             String namePattern = (String) core.getOrCreateAppPropertyValue("academicPlugin.import.namePattern", null, "*-eniso-ii-${year}-${version}");
@@ -2395,12 +2404,11 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         AppUser u = core.createUser(academicStudent.getContact(), teacherType.getId(), academicStudent.getDepartment().getId(), false, new String[]{"Student"});
         academicStudent.setUser(u);
         UPA.getPersistenceUnit().merge(academicStudent);
-
         for (AcademicClass c : new AcademicClass[]{academicStudent.getLastClass1(), academicStudent.getLastClass2(), academicStudent.getLastClass3()}) {
             if (c != null) {
                 String s = c.getName();
                 s = core.validateProfileName(s);
-                AppProfile p = core.findOrCreateProfile(s);
+                AppProfile p = core.findOrCreateCustomProfile(s, "AcademicClass");
                 core.userAddProfile(u.getId(), p.getName());
             }
 
@@ -2408,7 +2416,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             if (pr != null) {
                 String s = pr.getName();
                 s = core.validateProfileName(s);
-                AppProfile p = core.findOrCreateProfile(s);
+                AppProfile p = core.findOrCreateCustomProfile(s, "AcademicClass");
                 core.userAddProfile(u.getId(), p.getName());
             }
         }
@@ -2416,7 +2424,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (d != null) {
             String s = d.getName();
             s = core.validateProfileName(s);
-            AppProfile p = core.findOrCreateProfile(s);
+            AppProfile p = core.findOrCreateCustomProfile(s, "Department");
             core.userAddProfile(u.getId(), p.getName());
         }
 
@@ -2487,7 +2495,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public List<String> loadStudentPlanningListNames() {
         TreeSet<String> all = new TreeSet<>();
 
-        VFile[] emploisFiles = fileSystemPlugin.getProfileFileSystem("Teacher").get("/EmploiDuTemps").listFiles(new VFileFilter() {
+        VFile[] emploisFiles = getEmploiFolder().listFiles(new VFileFilter() {
 
             @Override
             public boolean accept(VFile pathname) {
@@ -2523,6 +2531,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             }
         }
         return new ArrayList<>(all);
+    }
+
+    private VFile getEmploiFolder() {
+        return fileSystemPlugin.getProfileFileSystem("DirectorOfStudies").get("/Emplois");
     }
 
     private PlanningData parsePlanningDataXML(Node planningNode) {
@@ -2654,7 +2666,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 nameMapping.put(s, n2);
             }
         }
-        VFile[] emploisFiles = fileSystemPlugin.getProfileFileSystem("Teacher").get("/EmploiDuTemps").listFiles(new VFileFilter() {
+        VFile[] emploisFiles = getEmploiFolder().listFiles(new VFileFilter() {
 
             @Override
             public boolean accept(VFile pathname) {
@@ -2703,7 +2715,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (StringUtils.isEmpty(uniformClassName)) {
             return null;
         }
-        VFile[] emploisFiles = fileSystemPlugin.getProfileFileSystem("Teacher").get("/EmploiDuTemps").listFiles(new VFileFilter() {
+        VFile[] emploisFiles = getEmploiFolder().listFiles(new VFileFilter() {
 
             @Override
             public boolean accept(VFile pathname) {
@@ -2807,7 +2819,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 teacherNames.add(s);
             }
         }
-        VFile[] emploisFiles = fileSystemPlugin.getProfileFileSystem("Teacher").get("/EmploiDuTemps").listFiles(new VFileFilter() {
+        VFile[] emploisFiles = getEmploiFolder().listFiles(new VFileFilter() {
 
             @Override
             public boolean accept(VFile pathname) {
@@ -2902,5 +2914,131 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             name = "Teacher #" + t.getId();
         }
         return (name);
+    }
+
+    public void validateAcademicData() {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        for (AcademicStudent s : findStudents()) {
+            AppUser u = s.getUser();
+            if (u != null && u.getContact() != null) {
+                List<AppProfile> oldProfiles = core.findProfilesByUser(u.getId());
+                HashSet<Integer> goodProfiles = new HashSet<>();
+
+                {
+                    AppDepartment d = u.getDepartment();
+                    if (d != null) {
+                        String n = core.validateProfileName(d.getCode());
+                        AppProfile p = core.findOrCreateCustomProfile(n, "Department");
+                        goodProfiles.add(p.getId());
+                    }
+                }
+                {
+                    AppProfile p = core.findOrCreateCustomProfile("Student", "UserType");
+                    goodProfiles.add(p.getId());
+                }
+
+                TreeSet<String> classNames = new TreeSet<>();
+                for (AcademicClass ac : new AcademicClass[]{s.getLastClass1(), s.getLastClass2(), s.getLastClass3()}) {
+                    if (ac != null) {
+                        String n = core.validateProfileName(ac.getName());
+                        classNames.add(n);
+                        AppProfile p = core.findOrCreateCustomProfile(n, "AcademicClass");
+                        goodProfiles.add(p.getId());
+
+                        AcademicProgram pr = ac.getProgram();
+                        if (pr != null) {
+                            n = core.validateProfileName(ac.getName());
+                            p = core.findOrCreateCustomProfile(n, "AcademicProgram");
+                            goodProfiles.add(p.getId());
+                        }
+                    }
+                }
+                StringBuilder goodSuffix = new StringBuilder();
+                for (String cn : classNames) {
+                    if (goodSuffix.length() > 0) {
+                        goodSuffix.append("/");
+                    }
+                    goodSuffix.append(cn);
+                }
+                u.getContact().setPositionSuffix(goodSuffix.toString());
+                pu.merge(u.getContact());
+                for (AppProfile p : oldProfiles) {
+                    if (goodProfiles.contains(p.getId())) {
+                        goodProfiles.remove(p.getId());
+                        //ok
+                    } else if (p.isCustom() && ("Department".equals(p.getName()) || "AcademicClass".equals(p.getName()) || "AcademicProgram".equals(p.getName()))) {
+                        core.userRemoveProfile(u.getId(), p.getId());
+                    }
+                }
+                for (Integer toAdd : goodProfiles) {
+                    core.userAddProfile(u.getId(), toAdd);
+                }
+            }
+        }
+        StatCache statCache = new StatCache();
+        for (AcademicTeacher s : findTeachers()) {
+            AppUser u = s.getUser();
+            if (u != null && u.getContact() != null) {
+                List<AppProfile> oldProfiles = core.findProfilesByUser(u.getId());
+                HashSet<Integer> goodProfiles = new HashSet<>();
+                String depCode = null;
+                {
+                    AppDepartment d = u.getDepartment();
+                    if (d != null) {
+                        String n = core.validateProfileName(d.getCode());
+                        depCode = d.getCode();
+                        AppProfile p = core.findOrCreateCustomProfile(n, "Department");
+                        goodProfiles.add(p.getId());
+                    }
+                }
+                {
+                    AppProfile p = core.findOrCreateCustomProfile("Teacher", "UserType");
+                    goodProfiles.add(p.getId());
+                }
+                //find classes teached by  teacher
+                for (AcademicCourseAssignment a : findCourseAssignments(s.getId(), null, false, statCache)) {
+                    String n = core.validateProfileName(a.getCoursePlan().getProgram().getName());
+                    AppProfile p = core.findOrCreateCustomProfile(n, "AcademicProgram");
+                    goodProfiles.add(p.getId());
+
+                    n = a.getCoursePlan().getStudentClass().getName();
+                    p = core.findOrCreateCustomProfile(n, "AcademicClass");
+                    goodProfiles.add(p.getId());
+                }
+                boolean perm = false;
+                for (AppProfile op : oldProfiles) {
+                    if ("Permanent".equals(op.getName())) {
+                        perm = true;
+                        break;
+                    }
+                }
+
+                String degreeCode = s.getDegree() == null ? null : s.getDegree().getCode();
+                StringBuilder goodSuffix = new StringBuilder();
+                goodSuffix.append("Ens.");
+                if (perm) {
+                    goodSuffix.append(" ").append("Perm");
+                }
+                if (degreeCode != null) {
+                    goodSuffix.append(" ").append(degreeCode);
+                }
+                if (depCode != null) {
+                    goodSuffix.append(" ").append(depCode);
+                }
+                u.getContact().setPositionSuffix(goodSuffix.toString());
+                pu.merge(u.getContact());
+                for (AppProfile p : oldProfiles) {
+                    if (goodProfiles.contains(p.getId())) {
+                        goodProfiles.remove(p.getId());
+                        //ok
+                    } else if (p.isCustom() && ("Department".equals(p.getName()) || "AcademicClass".equals(p.getName()) || "AcademicProgram".equals(p.getName()))) {
+                        core.userRemoveProfile(u.getId(), p.getId());
+                    }
+                }
+                for (Integer toAdd : goodProfiles) {
+                    core.userAddProfile(u.getId(), toAdd);
+                }
+            }
+        }
     }
 }

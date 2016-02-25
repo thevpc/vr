@@ -33,6 +33,7 @@ import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxSent;
 import net.vpc.common.jsf.FacesUtils;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UPA;
 import org.primefaces.event.SelectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -279,14 +280,24 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         getModel().setMode(EditCtrlMode.LIST);
         onRefresh();
     }
-
+    
+    public String evalProfileMinusLogin(String profile,String login){
+        if(StringUtils.isEmpty(login) || StringUtils.isEmpty(login)){
+            return "";
+        }
+        if(profile.trim().equals(login)){
+            return "";
+        }
+        return "("+profile+")-"+login;
+    }
     public void onReply() {
         FacesUtils.clearMessages();
         MailboxSent s = new MailboxSent();
         Message current = getModel().getCurrent();
         if (current != null && current.recieved) {
             MailboxReceived r = (MailboxReceived) current.msg;
-            s.setToProfiles("" + r.getSender().getLogin() + ",((" + r.getToProfiles() + ")-" + r.getOwner().getLogin() + ")");
+            String ee = evalProfileMinusLogin(r.getToProfiles(), r.getOwner().getLogin());
+            s.setToProfiles("" + r.getSender().getLogin() + (StringUtils.isEmpty(ee)?"":",("+ee+")"));
             s.setCcProfiles(r.getCcProfiles());
             s.setSubject("RE:" + r.getSubject());
             getModel().setNewItem(s);

@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.api.model;
 
+import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.upa.RelationshipType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
@@ -12,6 +13,7 @@ import net.vpc.upa.config.Field;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.ManyToOne;
 import net.vpc.upa.config.Path;
+import net.vpc.upa.config.Property;
 import net.vpc.upa.config.Sequence;
 
 /**
@@ -32,7 +34,8 @@ public class AppProfileRight {
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AppProfile profile;
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Field(max = "4000")
+    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
     private String description;
 
     public int getId() {

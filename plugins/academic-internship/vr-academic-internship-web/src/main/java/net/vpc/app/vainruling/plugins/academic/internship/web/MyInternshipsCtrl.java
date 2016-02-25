@@ -223,6 +223,11 @@ public class MyInternshipsCtrl {
         return a.getCurrentStudent() != null;
     }
 
+    public boolean isTeacher() {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        return a.getCurrentTeacher() != null;
+    }
+
     public AcademicStudent getCurrentStudent() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         return a.getCurrentStudent();
@@ -298,7 +303,7 @@ public class MyInternshipsCtrl {
 
     public void onUpdateSupervisor() {
         if (getModel().getInternship() != null) {
-            if (getModel().getInternship().getInternshipStatus().isStudentUpdatesSupervisors()) {
+            if (isUpdatesSupervisors()) {
                 AcademicTeacher s1 = getSelectedTeacher(getModel().getSuperviser1Id());
                 getModel().getInternship().setSupervisor(s1);
                 AcademicTeacher s2 = getSelectedTeacher(getModel().getSuperviser2Id());
@@ -307,9 +312,71 @@ public class MyInternshipsCtrl {
         }
     }
 
+    public boolean isUpdatesDescr() {
+        if (isStudent()) {
+            if (!getModel().getInternship().getInternshipStatus().isStudentUpdatesDescr()) {
+                return false;
+            }
+            return true;
+        }
+        if (isTeacher()) {
+            if (!getModel().getInternship().getInternshipStatus().isBoardUpdatesDescr()) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isUpdatesSupervisors() {
+        if (isStudent()) {
+            if (!getModel().getInternship().getInternshipStatus().isStudentUpdatesSupervisors()) {
+                return false;
+            }
+            return true;
+        }
+        if (isTeacher()) {
+            if (!getModel().getInternship().getInternshipStatus().isBoardUpdatesSupervisors()) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isUpdatesReport1() {
+        if (isStudent()) {
+            if (!getModel().getInternship().getInternshipStatus().isStudentUpdatesReport1()) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isUpdatesReport2() {
+        if (isStudent()) {
+            if (!getModel().getInternship().getInternshipStatus().isStudentUpdatesReport2()) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isUpdatesReport3() {
+        if (isStudent()) {
+            if (!getModel().getInternship().getInternshipStatus().isStudentUpdatesReport3()) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
     public void onUpdateVariant() {
         if (getModel().getInternship() != null) {
-            if (getModel().getInternship().getInternshipStatus().isStudentUpdatesDescr()) {
+            if (isUpdatesDescr()) {
                 AcademicInternshipVariant s1 = getSelectedInternshipVariant(getModel().getTypeVariantId());
                 getModel().getInternship().setInternshipVariant(s1);
             }
@@ -318,7 +385,7 @@ public class MyInternshipsCtrl {
 
     public void onUpdateDuration() {
         if (getModel().getInternship() != null) {
-            if (getModel().getInternship().getInternshipStatus().isStudentUpdatesDescr()) {
+            if (isUpdatesDescr()) {
                 AcademicInternshipDuration s1 = getSelectedInternshipDuration(getModel().getDurationId());
                 getModel().getInternship().setDuration(s1);
             }
@@ -384,11 +451,41 @@ public class MyInternshipsCtrl {
                 AcademicStudent s = t.getStudent();
                 AcademicPlugin pp = VrApp.getBean(AcademicPlugin.class);
                 String sname = pp.getValidName(s);
-                n = (t.getBoard()==null?"?":t.getBoard().getName()) + "-" + t.getCode() + "-" + sname + "-" + t.getName();
+                n = (t.getBoard() == null ? "?" : t.getBoard().getName()) + "-" + t.getCode() + "-" + sname + "-" + t.getName();
             } else {
-                n = (t.getBoard()==null?"?":t.getBoard().getName()) + "-" + t.getCode() + "-" + t.getName();
+                n = (t.getBoard() == null ? "?" : t.getBoard().getName()) + "-" + t.getCode() + "-" + t.getName();
             }
             getModel().getInternships().add(new SelectItem(String.valueOf(t.getId()), n));
+        }
+
+        if (getModel().getInternship() != null && getModel().getInternship().getCompany() != null) {
+            getModel().setCompanyId(String.valueOf(getModel().getInternship().getCompany().getId()));
+        } else {
+            getModel().setCompanyId(null);
+        }
+
+        if (getModel().getInternship() != null && getModel().getInternship().getDuration() != null) {
+            getModel().setDurationId(String.valueOf(getModel().getInternship().getDuration().getId()));
+        } else {
+            getModel().setDurationId(null);
+        }
+
+        if (getModel().getInternship() != null && getModel().getInternship().getSupervisor() != null) {
+            getModel().setSuperviser1Id(String.valueOf(getModel().getInternship().getSupervisor().getId()));
+        } else {
+            getModel().setSuperviser1Id(null);
+        }
+
+        if (getModel().getInternship() != null && getModel().getInternship().getSecondSupervisor() != null) {
+            getModel().setSuperviser2Id(String.valueOf(getModel().getInternship().getSecondSupervisor().getId()));
+        } else {
+            getModel().setSuperviser2Id(null);
+        }
+
+        if (getModel().getInternship() != null && getModel().getInternship().getInternshipVariant() != null) {
+            getModel().setTypeVariantId(String.valueOf(getModel().getInternship().getInternshipVariant().getId()));
+        } else {
+            getModel().setTypeVariantId(null);
         }
 
         if (getModel().getInternship() != null && getModel().getInternship().getBoard() != null) {
@@ -510,5 +607,37 @@ public class MyInternshipsCtrl {
         if (o != null) {
             getModel().getInternship().setMainDiscipline((String) o.getValue());
         }
+    }
+
+    public static class InternshipInfo {
+
+        private AcademicInternship internship;
+        private String intents;
+        private String intentsId;
+
+        public AcademicInternship getInternship() {
+            return internship;
+        }
+
+        public void setInternship(AcademicInternship internship) {
+            this.internship = internship;
+        }
+
+        public String getIntents() {
+            return intents;
+        }
+
+        public void setIntents(String intents) {
+            this.intents = intents;
+        }
+
+        public String getIntentsId() {
+            return intentsId;
+        }
+
+        public void setIntentsId(String intentsId) {
+            this.intentsId = intentsId;
+        }
+
     }
 }

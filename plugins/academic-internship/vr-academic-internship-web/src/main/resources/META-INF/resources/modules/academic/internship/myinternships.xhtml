@@ -59,8 +59,10 @@ and open the template in the editor.
                                             <p:column colspan="4"><p:inputTextarea  rows="10" style="width: 100%" value="#{myInternshipsCtrl.model.internship.description}" disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/></p:column>
                                         </p:row>
                                         <p:row>
-                                            <p:column ><p:outputLabel value="Phase"/></p:column>
-                                            <p:column colspan="3"><p:outputLabel style="color: darkseagreen;" value="#{myInternshipsCtrl.model.internship.internshipStatus.name}"/></p:column>
+                                            <p:column ><p:outputLabel value="Etape"/></p:column>
+                                            <p:column ><p:outputLabel style="color: darkseagreen;" value="#{myInternshipsCtrl.model.internship.internshipStatus.name}"/></p:column>
+                                            <p:column ><p:outputLabel  value="Code"/></p:column>
+                                            <p:column ><p:outputLabel   value="#{myInternshipsCtrl.model.internship.code}"  /></p:column>
                                         </p:row>
                                         <p:row>
                                             <p:column ><p:outputLabel  value="Entreprise"/></p:column>
@@ -217,6 +219,12 @@ and open the template in the editor.
                                             </p:column>
                                         </p:row>
                                         <p:row rendered="#{myInternshipsCtrl.model.teacher or (myInternshipsCtrl.model.student and myInternshipsCtrl.model.internship.internshipStatus.studentSeesEvaluators)}">
+                                            <p:column ><p:outputLabel  value="Salle Soutenance"/></p:column>
+                                            <p:column > 
+                                                <p:outputLabel value="#{myInternshipsCtrl.model.internship.examLocation}"/>
+                                            </p:column>
+                                        </p:row>
+                                        <p:row rendered="#{myInternshipsCtrl.model.teacher or (myInternshipsCtrl.model.student and myInternshipsCtrl.model.internship.internshipStatus.studentSeesEvaluators)}">
                                             <p:column ><p:outputLabel  value="President"/></p:column>
                                             <p:column > 
                                                 <p:outputLabel value="#{myInternshipsCtrl.model.internship.chairExaminer eq null ? '' : myInternshipsCtrl.model.internship.chairExaminer.contact.fullName}"/>
@@ -268,7 +276,6 @@ and open the template in the editor.
                             <p:commandButton rendered="#{myInternshipsCtrl.model.internship ne null}" value="Enregistrer" action="#{myInternshipsCtrl.onSave}" update="currentMessages"/>
                         </div>
                     </div>
-
                 </h:form>
 
 

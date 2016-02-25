@@ -5,11 +5,13 @@
  */
 package net.vpc.app.vainruling.api.model;
 
+import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
+import net.vpc.upa.config.Property;
 import net.vpc.upa.config.Sequence;
 
 /**
@@ -28,7 +30,18 @@ public class AppProfile {
     private String name;
     private String name2;
     private String name3;
+    @Field(max = "4000")
+    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
     private String description;
+    /**
+     * custom profiles are managed by application
+     */
+    @Field(defaultValue = "false")
+    private boolean custom;
+    /**
+     * custom profiles type depends on creator plugin
+     */
+    private String customType;
 
     public int getId() {
         return id;
@@ -78,4 +91,20 @@ public class AppProfile {
         this.code = code;
     }
 
+    public boolean isCustom() {
+        return custom;
+    }
+
+    public void setCustom(boolean custom) {
+        this.custom = custom;
+    }
+
+    public String getCustomType() {
+        return customType;
+    }
+
+    public void setCustomType(String customType) {
+        this.customType = customType;
+    }
+    
 }

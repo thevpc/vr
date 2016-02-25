@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.api.util;
 
 import com.google.gson.Gson;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -20,6 +21,7 @@ import net.vpc.upa.types.StringType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 
 /**
  *
@@ -53,6 +55,38 @@ public class VrHelper {
         return Jsoup.parse(html == null ? "" : html).text();
     }
 
+    private static final DecimalFormat FILE_SIZE_FORMAT = new DecimalFormat("0.0");
+
+    public static String formatFileSize(Number value) {
+        final int KO = 1024;
+        final int MO = KO * KO;
+        final int GO = KO * MO;
+        final int TO = KO * GO;
+        if (value == null) {
+            return "";
+        }
+        long b = ((Number) value).longValue();
+        if (b < 0) {
+            return "??" + b;
+        }
+        if (b == 0) {
+            return "0";
+        }
+        if (b < KO) {
+            return b + " b";
+        }
+        if (b < (MO)) {
+            return FILE_SIZE_FORMAT.format((((double) b) / KO)) + " Kb";
+        }
+        if (b < (GO)) {
+            return FILE_SIZE_FORMAT.format((((double) b) / MO)) + " Mb";
+        }
+        if (b < (TO)) {
+            return FILE_SIZE_FORMAT.format((((double) b) / GO)) + " Gb";
+        }
+        return FILE_SIZE_FORMAT.format((((double) b) / TO)) + " Tb";
+    }
+
     public static String extratPureHTML(String html) {
         if (html == null) {
             html = "";
@@ -71,7 +105,11 @@ public class VrHelper {
                 e.attributes().remove("style");
             }
         }
-        return d.html();
+        StringBuilder sb=new StringBuilder();
+        for (Node cc : d.body().childNodes()) {
+            sb.append(cc);
+        }
+        return sb.toString();
     }
 
     public static String getRelativeDateMessage(Date dte, Locale loc) {

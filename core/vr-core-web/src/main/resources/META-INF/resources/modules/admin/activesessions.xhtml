@@ -24,21 +24,17 @@ and open the template in the editor.
                     <p:commandButton style="margin-bottom: 20px" value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{activeSessionsCtrl.onRefresh}"  update=":listForm"/>
 
                     <div class="row">
-                        <p:dataTable id="activeSessionsStatTable" var="i" value="#{activeSessionsCtrl.model.typeStats}" class="table table-bordered table-hover"
-                                     paginatorAlwaysVisible="false"
-                                     paginator="true"
-                                     paginatorPosition="bottom"
-                                     rows="20"
-                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                     rowsPerPageTemplate="20,50,100,200,1000"
-                                     >
-                            <p:column headerText="Type Utilisateur">
-                                <h:outputText value="#{i.type}" />
-                            </p:column>
-                            <p:column headerText="Sessions Actives">
-                                <h:outputText value="#{i.count}" />
-                            </p:column>
-                        </p:dataTable>
+
+                        <table>
+                            <tr>
+                                <td>
+                                    <p:chart rendered="#{activeSessionsCtrl.model.donut1 ne null}" type="donut" model="#{activeSessionsCtrl.model.donut1}" style="width:400px;height:300px" />
+                                </td>
+                                <td>
+                                    <p:chart rendered="#{activeSessionsCtrl.model.donut2 ne null}" type="donut" model="#{activeSessionsCtrl.model.donut2}" style="width:400px;height:300px" />
+                                </td>
+                            </tr>
+                        </table>                            
                     </div>
 
                     <div class="row">
@@ -56,10 +52,13 @@ and open the template in the editor.
                             <p:column headerText="Nom">
                                 <h:outputText value="#{i.user.contact.fullName}" />
                             </p:column>
+                            <p:column headerText="Position">
+                                <h:outputText value="#{i.user.contact.positionSuffix}" />
+                            </p:column>
                             <p:column headerText="Type">
                                 <h:outputText value="#{i.user.type}" />
                             </p:column>
-                            <p:column headerText="Time" rendered="#{activeSessionsCtrl.model.admin}">
+                            <p:column headerText="Connexion" rendered="#{activeSessionsCtrl.model.admin}">
                                 <h:outputText value="#{i.connexionTime}" >
                                     <f:convertDateTime type="date" pattern="HH:mm:ss , dd MMM yyyy"/>
                                 </h:outputText>
@@ -81,7 +80,7 @@ and open the template in the editor.
                                                         </p:column>-->
                         </p:dataTable>
                     </div>
-                    <p:poll interval="15" listener="#{activeSessionsCtrl.onUpdate}" update="activeSessionsTable activeSessionsStatTable" />
+                    <p:poll interval="15" listener="#{activeSessionsCtrl.onUpdate}" update=":listForm" />
                 </h:form>
             </ui:define>
 

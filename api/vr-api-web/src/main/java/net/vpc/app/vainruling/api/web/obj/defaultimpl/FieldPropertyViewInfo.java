@@ -106,6 +106,9 @@ public class FieldPropertyViewInfo {
                     update = admin;
                 }
             }
+            if(!update){
+                disabled=true;
+            }
         }
 
         if (insertMode && field != null) {
@@ -116,6 +119,9 @@ public class FieldPropertyViewInfo {
                 } else if (u == AccessLevel.PROTECTED) {
                     insert = admin;
                 }
+            }
+            if(!insert){
+                disabled=true;
             }
         }
     }

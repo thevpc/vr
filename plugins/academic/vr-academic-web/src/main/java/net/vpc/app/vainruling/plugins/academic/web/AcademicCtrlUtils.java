@@ -5,6 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.academic.web;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.web.util.JsfCtrl;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
@@ -48,11 +50,43 @@ public class AcademicCtrlUtils {
         return "/fs/" + virtualAbsolutePath;
     }
 
+    public static VFile getTeacherAbsoluteFile(int id, String ... path) {
+        VFile[] p = getTeacherAbsoluteFiles(id, path);
+        if(p.length==0){
+            return null;
+        }
+        return p[0];
+    }
+    
+    public static VFile[] getTeacherAbsoluteFiles(int id, String[] path) {
+        AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
+        AcademicTeacher t = ap.findTeacher(id);
+        FileSystemPlugin fs = VrApp.getBean(FileSystemPlugin.class);
+        List<VFile> files = new ArrayList<VFile>();
+        if (t != null && t.getUser() != null) {
+            VFile userFolder = fs.getUserFolder(t.getUser().getLogin());
+            VFile profileFolder = fs.getProfileFolder("Teacher");
+            for (String p : path) {
+                VFile ff = userFolder.get(p);
+                if (ff.exists()) {
+                    files.add(ff);
+                }
+            }
+            for (String p : path) {
+                VFile ff = profileFolder.get(p);
+                if (ff.exists()) {
+                    files.add(ff);
+                }
+            }
+        }
+        return files.toArray(new VFile[files.size()]);
+    }
+
     public static VFile getTeacherAbsoluteFile(int id, String path) {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = ap.findTeacher(id);
         FileSystemPlugin fs = VrApp.getBean(FileSystemPlugin.class);
-        if (t != null && t.getUser()!=null) {
+        if (t != null && t.getUser() != null) {
             VFile thisTeacherPhoto = fs.getUserFolder(t.getUser().getLogin()).get(path);
             if (thisTeacherPhoto.exists()) {
                 return thisTeacherPhoto;

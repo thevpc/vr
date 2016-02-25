@@ -26,6 +26,7 @@ public class PublicIndexCtrl {
 
     @OnPageLoad
     public void onLoad() {
+        VrApp.getBean(VrMenuManager.class).getModel().setCurrentPageId("welcome");
         VrApp.getBean(VrMenuManager.class).setPageCtrl("index");
     }
 }

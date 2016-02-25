@@ -107,10 +107,10 @@ public class DocumentsDialogCtrl {
     }
 
     public void fireEventExtraDialogClosed() {
-        StringBuilder sb=new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (VFileInfo file : getModel().getFiles()) {
             if (file.isSelected()) {
-                if(sb.length()>0){
+                if (sb.length() > 0) {
                     sb.append(";");
                 }
                 sb.append(file.getFile().getBaseFile("vrfs").getPath());
@@ -294,7 +294,8 @@ public class DocumentsDialogCtrl {
             FileSystemPlugin fsp = VrApp.getBean(FileSystemPlugin.class);
             downloads = fsp.getDownloadsCount(file);
         }
-        return new VFileInfo(name, file, css, downloads);
+        String desc = "<Dossier Parent>".equals(name) ? "" : DocumentsCtrl.evalVFileDesc(file);
+        return new VFileInfo(name, file, css, downloads, desc);
     }
 
     public Model getModel() {

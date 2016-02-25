@@ -148,6 +148,25 @@ public class JsfCtrl {
         return sb.toString();
     }
 
+    public String strcatsep(String sep, Object... a) {
+        if (StringUtils.isEmpty(sep)) {
+            sep = " ";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (Object x : a) {
+            if (x != null) {
+                String v = (x instanceof String) ? ((String) x) : String.valueOf(x);
+                if (!StringUtils.isEmpty(v)) {
+                    if (sb.length() > 0) {
+                        sb.append(sep);
+                    }
+                    sb.append(v);
+                }
+            }
+        }
+        return sb.toString();
+    }
+
     public String fstr(String format, Object... a) {
         UserSession s = null;
         s = VrApp.getBean(UserSession.class);

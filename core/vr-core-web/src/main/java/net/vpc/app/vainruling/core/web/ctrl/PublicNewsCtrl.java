@@ -26,6 +26,7 @@ public class PublicNewsCtrl {
 
     @OnPageLoad
     public void onLoad() {
+        VrApp.getBean(VrMenuManager.class).getModel().setCurrentPageId("news");
         VrApp.getBean(VrMenuManager.class).setPageCtrl("news");
     }
 }

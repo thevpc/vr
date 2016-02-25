@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.plugins.filesystem.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.api.AppPlugin;
@@ -61,7 +62,7 @@ public class FileSystemPlugin {
 
         );
         nativeFileSystemPath = path;
-        fileSystem = new VrFS().subfs(path,"vrfs");
+        fileSystem = new VrFS().subfs(path, "vrfs");
         fileSystem.get("/").mkdirs();
     }
 
@@ -146,17 +147,35 @@ public class FileSystemPlugin {
         if (u != null) {
             VFile home = getUserFolder(login);
             final VirtualFileSystem me = fileSystem.subfs(home.getPath());
-            MountableFS mfs = VFS.createMountableFS("user:"+login);
+            MountableFS mfs = VFS.createMountableFS("user:" + login);
             try {
                 mfs.mount("/MyDocuments", me);
-                for (AppProfile p : core.findProfilesByUser(u.getId())) {
-                    if(CorePlugin.PROFILE_ADMIN.equals(p.getName())){
+                List<AppProfile> profiles = core.findProfilesByUser(u.getId());
+                for (AppProfile p : profiles) {
+                    if (CorePlugin.PROFILE_ADMIN.equals(p.getName())) {
                         //this is admin
                         mfs.mount("/All", fileSystem);
                     }
                 }
-                for (AppProfile p : core.findProfilesByUser(u.getId())) {
-                    mfs.mount("/" + p.getName() + "Documents", getProfileFileSystem(p.getName()));
+                VrFSTable t = new VrFSTable();
+                try {
+                    if (fileSystem.exists("/Config/fstab")) {
+                        t.load(fileSystem.getInputStream("/Config/fstab"));
+                    }
+                } catch (Exception exx) {
+                    //ignore it
+                }
+                for (AppProfile p : profiles) {
+                    String profileMountPoint = "/" + p.getName() + " Documents";
+                    mfs.mount(profileMountPoint, getProfileFileSystem(p.getName(), t));
+                }
+                for (VrFSEntry e : t.getEntries(login, "User")) {
+                    mfs.mount("/" + e.getMountPoint(), fileSystem.subfs(e.getLinkPath()));
+                }
+                for (VrFSEntry e : t.getEntriesByType("Profile")) {
+                    if (core.isComplexProfileExpr(e.getFilterName())) {
+                        mfs.mount("/" + e.getMountPoint(), fileSystem.subfs(e.getLinkPath()));
+                    }
                 }
             } catch (IOException ex) {
                 Logger.getLogger(CorePlugin.class.getName()).log(Level.SEVERE, null, ex);
@@ -168,6 +187,10 @@ public class FileSystemPlugin {
     }
 
     public VirtualFileSystem getProfileFileSystem(String profileName) {
+        return getProfileFileSystem(profileName, null);
+    }
+
+    public VirtualFileSystem getProfileFileSystem(String profileName, VrFSTable t) {
         AppProfile u = core.findProfileByName(profileName);
         if (u != null) {
             final String path = "/Documents/ByProfile/" + profileName;
@@ -182,8 +205,32 @@ public class FileSystemPlugin {
                 }
 
             }, null);
-
-            return fileSystem.subfs(path);
+            VirtualFileSystem pfs = fileSystem.subfs(path);
+            MountableFS mfs = null;
+            try {
+                if (t == null) {
+                    t = new VrFSTable();
+                    try {
+                        if (fileSystem.exists("/Config/fstab")) {
+                            t.load(fileSystem.getInputStream("/Config/fstab"));
+                        }
+                    } catch (Exception exx) {
+                        //ignore it
+                    }
+                }
+                mfs = VFS.createMountableFS("profile:" + profileName);
+                mfs.mount("/", pfs);
+                for (VrFSEntry e : t.getEntries(profileName, "Profile")) {
+                    mfs.mount("/" + e.getMountPoint(), fileSystem.subfs(e.getLinkPath()));
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(CorePlugin.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (mfs == null) {
+                return pfs;
+            }
+            VFile[] all = mfs.listFiles("/");
+            return mfs;
         } else {
             return VFS.createEmptyFS();
         }
@@ -198,7 +245,7 @@ public class FileSystemPlugin {
 
             @Override
             public Long run() {
-                VirtualFileACL a = (VirtualFileACL) getFileSystem().getACL(file.getPath());
+                VirtualFileACL a = file.getACL();
                 String d = a.getProperty("downloads");
                 if (d == null) {
                     d = "0";
@@ -220,7 +267,7 @@ public class FileSystemPlugin {
 
             @Override
             public Object run() {
-                VirtualFileACL a = (VirtualFileACL) getFileSystem().getACL(file.getPath());
+                VirtualFileACL a = file.getACL();
                 if (!a.isReadOnly()) {
                     String d = a.getProperty("downloads");
                     if (d == null) {

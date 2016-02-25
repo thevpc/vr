@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.web.ctrl;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -83,7 +84,13 @@ public class AppSecurityFilter implements Filter {
 //            }
         }
         if (acceptRequest) {
-            chain.doFilter(request, response);
+            try{
+                chain.doFilter(request, response);
+            }catch(Exception e){
+                log.log(Level.SEVERE,"Unhandled Error",e);
+//                HttpServletResponse res = (HttpServletResponse) response;
+//                res.sendError(500);
+            }
         } else {
             HttpServletResponse res = (HttpServletResponse) response;
             res.sendRedirect(req.getContextPath());

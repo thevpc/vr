@@ -11,6 +11,7 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
+import net.vpc.upa.config.Formula;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
 import net.vpc.upa.config.Properties;
@@ -36,10 +37,14 @@ public class AppContact {
 
     private AppCivility civility;
 
-    @Field(modifiers = {UserFieldModifier.MAIN})
     private String fullName;
     private String firstName;
     private String lastName;
+    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Formula(value = "concat(this.fullName,' - ',this.positionSuffix)")
+    private String fullTitle;
+
+    private String positionSuffix;
 
     @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
     private String fullName2;
@@ -58,17 +63,21 @@ public class AppContact {
     private String phone2;
     private String phone3;
 
+
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     private String positionTitle1;
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     private String positionTitle2;
     private String positionTitle3;
+    @Field(max = "4000")
+    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
+    private String description;
 
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
-    @Field(defaultValue = "true",modifiers = {UserFieldModifier.SUMMARY})
+    @Field(defaultValue = "true", modifiers = {UserFieldModifier.SUMMARY})
     private boolean enabled;
-    @Field(defaultValue = "false",modifiers = {UserFieldModifier.SUMMARY})
+    @Field(defaultValue = "false", modifiers = {UserFieldModifier.SUMMARY})
     private boolean deleted;
     private String deletedBy;
     private Timestamp deletedOn;
@@ -299,4 +308,28 @@ public class AppContact {
         return s.toString();
     }
 
+    public String getFullTitle() {
+        return fullTitle;
+    }
+
+    public void setFullTitle(String fullTitle) {
+        this.fullTitle = fullTitle;
+    }
+
+    public String getPositionSuffix() {
+        return positionSuffix;
+    }
+
+    public void setPositionSuffix(String positionSuffix) {
+        this.positionSuffix = positionSuffix;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
 }

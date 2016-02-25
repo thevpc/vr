@@ -29,31 +29,31 @@ and open the template in the editor.
                     </p:confirmDialog>
 
                     <div class="row">
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Refresh')}" style="margin-bottom: 20px" value="Rafr." icon="fa-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Save')}" style="margin-bottom: 20px" value="Enr." icon="fa-save" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onSave}"  update=":listForm"/>
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFolder')}" style="margin-bottom: 20px" value="Nouv Rep." icon="fa-folder-o" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onNewFolder}"  update=":listForm"/>
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFile')}" style="margin-bottom: 20px" value="Nouv Fichier." icon="fa-file-o" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onNewFile}"  update=":listForm"/>
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Upload')}" style="margin-bottom: 20px" value="Upl." icon="fa-cloud-upload" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onUpload}"  update=":listForm"/>
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Remove')}" style="margin-bottom: 20px" value="Suppr." icon="fa-trash-o" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"  onclick="PF('confirmationDelete').show();" />
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Cancel')}" style="margin-bottom: 20px" value="Ann." icon="fa-arrow-left" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onCancel}"  update=":listForm"/>
-                    <p:fileUpload rendered="#{documentsCtrl.model.area.equals('Upload')}" multiple="true" 
-                                  fileUploadListener="#{documentsCtrl.handleNewFile}" 
-                                  dragDropSupport="true"
-                                  label="ajouter fichiers" 
-                                  mode="advanced" 
-                                  auto="true" 
-                                  skinSimple="true"
-                                  uploadLabel="Téléverser"
-                                  cancelLabel="Annuler"
-                                  update=":listForm"
-                                  />
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Refresh')}" style="margin-bottom: 20px" value="Rafr." icon="fa-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onRefresh}"  update=":listForm"/>
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Save')}" style="margin-bottom: 20px" value="Enr." icon="fa-save" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onSave}"  update=":listForm"/>
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFolder')}" style="margin-bottom: 20px" value="Nouv Rep." icon="fa-folder-o" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onNewFolder}"  update=":listForm"/>
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFile')}" style="margin-bottom: 20px" value="Nouv Fichier." icon="fa-file-o" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onNewFile}"  update=":listForm"/>
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Upload')}" style="margin-bottom: 20px" value="Upl." icon="fa-cloud-upload" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onUpload}"  update=":listForm"/>
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Remove')}" style="margin-bottom: 20px" value="Suppr." icon="fa-trash-o" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"  onclick="PF('confirmationDelete').show();" />
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Cancel')}" style="margin-bottom: 20px" value="Ann." icon="fa-arrow-left" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{documentsCtrl.onCancel}"  update=":listForm"/>
+                        <p:fileUpload rendered="#{documentsCtrl.model.area.equals('Upload')}" multiple="true" 
+                                      fileUploadListener="#{documentsCtrl.handleNewFile}" 
+                                      dragDropSupport="true"
+                                      label="ajouter fichiers" 
+                                      mode="advanced" 
+                                      auto="true" 
+                                      skinSimple="true"
+                                      uploadLabel="Téléverser"
+                                      cancelLabel="Annuler"
+                                      update=":listForm"
+                                      />
                     </div>
                     <div class="row">
                         <p:panel id="newFilePanel" rendered="#{documentsCtrl.model.area.equals('NewFile') or documentsCtrl.model.area.equals('NewFolder')}" style="border-style: none">
                             <p:outputLabel value="Intitulé"/>
                             <p:inputText value="#{documentsCtrl.model.newName}"/>
                         </p:panel>
-                        <p:dataTable var="i" value="#{documentsCtrl.model.files}" class="table table-bordered table-hover"
+                        <p:dataTable id="filesTable" var="i" value="#{documentsCtrl.model.files}" class="table table-bordered table-hover"
                                      paginatorAlwaysVisible="false"
                                      paginator="true"
                                      paginatorPosition="bottom"
@@ -75,7 +75,8 @@ and open the template in the editor.
                                 <p:commandLink rendered="#{!i.file.directory}" disabled="#{!documentsCtrl.isEnabledButton('Download',i)}" 
                                                value="#{i.name}" 
                                                ajax="false"
-                                               update=":listForm"
+                                               update="filesTable"
+                                               onclick="PrimeFaces.monitorDownload(null, updateFilesTable)"
                                                >
                                     <p:fileDownload value="#{documentsCtrl.getContent(i)}" />
                                 </p:commandLink>
@@ -83,6 +84,7 @@ and open the template in the editor.
                             </p:column>
                             <p:column headerText="Taille" width="100">
                                 <h:outputText rendered="#{!i.file.directory}" value="#{i.file.length()}" converter="fileSizeConverter"/>
+                                <h:outputText rendered="#{i.file.directory}" value="#{i.desc}"/>
                             </p:column>
                             <p:column headerText="Modification" width="150">
                                 <h:outputText value="#{i.lastModifiedDate}" >
@@ -95,7 +97,7 @@ and open the template in the editor.
                         </p:dataTable>
                     </div>
                     <p:remoteCommand name="processOnDeleteCurrent" process="@form" update=":listForm " action="#{documentsCtrl.onRemove()}"/>
-
+                    <p:remoteCommand name="updateFilesTable" update="filesTable"/>
                 </h:form>
             </ui:define>
 

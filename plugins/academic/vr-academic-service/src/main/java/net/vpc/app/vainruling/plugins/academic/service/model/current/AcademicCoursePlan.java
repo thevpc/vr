@@ -19,8 +19,8 @@ import net.vpc.upa.config.Property;
 import net.vpc.upa.config.Sequence;
 
 /**
- * cours (dans un plan d'études)
- * Module
+ * cours (dans un plan d'études) Module
+ *
  * @author vpc
  */
 @Entity(listOrder = "name")
@@ -31,38 +31,39 @@ public class AcademicCoursePlan {
     @Sequence
 
     private int id;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Field(defaultValue = "?")
+    private String code;
     private String name;
     @Field(modifiers = {UserFieldModifier.MAIN})
     @Formula(
-            value="concat((select a.name from AcademicCourseLevel a where a.id=this.courseLevelId),'-',this.name)",
-            type = {FormulaType.PERSIST,FormulaType.UPDATE}
-            
-            )
+            value = "concat((select a.name from AcademicCourseLevel a where a.id=this.courseLevelId),'-',Coalesce(this.code,'X'),'-',this.name)",
+            type = {FormulaType.PERSIST, FormulaType.UPDATE}
+    )
     private String fullName;
 
     private String name2;
-    
+
+
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
     private AcademicProgram program;
-    
+
     private String discipline;
-    
+
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     private AcademicClass studentClass;
-    
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+
+    @Field()
     private AcademicCourseLevel courseLevel;
-    
+
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
     private AcademicSemester semester;
-    
+
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
@@ -340,6 +341,12 @@ public class AcademicCoursePlan {
         this.roomConstraintsTP = roomConstraintsTP;
     }
 
-   
-    
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
 }

@@ -71,7 +71,7 @@ public class TeachersLoadTest {
     public void runGenerate() {
         AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        core.setAppProperty("academicPlugin.year", null, "2014-2015");
+//        core.setAppProperty("academicPlugin.year", null, "2014-2015");
         core.setAppProperty("academicPlugin.import.version", null, "21bis");
 //        s.resetTeachers();
         s.resetModuleTeaching();
@@ -87,7 +87,7 @@ public class TeachersLoadTest {
             String outputFolder = "/home/vpc/Data/eniso/teaching-load/${year}/generated/${version}";
 
             CorePlugin core = VrApp.getBean(CorePlugin.class);
-            core.setAppProperty("academicPlugin.year", null, year);
+//            core.setAppProperty("academicPlugin.year", null, year);
             core.setAppProperty("academicPlugin.import.version", null, version);
             core.setAppProperty("academicPlugin.import.configFolder", null, inputFolder);
             core.setAppProperty("academicPlugin.import.outputFolder", null, outputFolder);

@@ -19,11 +19,13 @@ import java.util.Set;
 import java.util.logging.Level;
 import net.vpc.app.vainruling.api.model.AppCivility;
 import net.vpc.app.vainruling.api.model.AppCompany;
+import net.vpc.app.vainruling.api.model.AppConfig;
 import net.vpc.app.vainruling.api.model.AppContact;
 import net.vpc.app.vainruling.api.model.AppCountry;
 import net.vpc.app.vainruling.api.model.AppDepartment;
 import net.vpc.app.vainruling.api.model.AppGender;
 import net.vpc.app.vainruling.api.model.AppIndustry;
+import net.vpc.app.vainruling.api.model.AppPeriod;
 import net.vpc.app.vainruling.api.model.AppUser;
 import net.vpc.app.vainruling.api.model.AppProfile;
 import net.vpc.app.vainruling.api.model.AppProfileRight;
@@ -49,7 +51,7 @@ import org.springframework.context.ApplicationContext;
  *
  * @author vpc
  */
-@AppPlugin(version = "1.5")
+@AppPlugin(version = "1.8")
 public class CorePlugin {
 
     private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePlugin.class.getName());
@@ -105,9 +107,9 @@ public class CorePlugin {
         return (AppUserType) pu.findById(AppUserType.class, id);
     }
 
-    public AppProfile findProfile(String profileName) {
+    public AppProfile findProfile(int profileId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return (AppProfile) pu.findByMainField(AppProfile.class, profileName);
+        return (AppProfile) pu.findById(AppProfile.class, profileId);
     }
 
     public boolean createRight(String rightName, String desc) {
@@ -280,6 +282,19 @@ public class CorePlugin {
         return false;
     }
 
+    public boolean userRemoveProfile(int userId, int profileId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AppUserProfileBinding old = pu.createQuery("Select u from AppUserProfileBinding  u where u.userId=:userId and u.profileId=:profileId")
+                .setParameter("userId", userId)
+                .setParameter("profileId", profileId)
+                .getEntity();
+        if (old != null) {
+            pu.remove(old);
+            return true;
+        }
+        return false;
+    }
+
     public boolean userAddProfile(int userId, String profileName) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (pu.createQuery("Select u.profile from AppUserProfileBinding  u where u.userId=:userId and u.profile.name=:name")
@@ -303,6 +318,27 @@ public class CorePlugin {
         return false;
     }
 
+    public boolean userAddProfile(int userId, int profileId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AppUserProfileBinding b = pu.createQuery("Select u from AppUserProfileBinding  u where u.userId=:userId and u.profileId=:profileId")
+                .setParameter("userId", userId)
+                .setParameter("profileId", profileId)
+                .getEntity();
+        if (b == null) {
+            AppUser u = findUser(userId);
+            if (u == null) {
+                throw new IllegalArgumentException("Unknown User " + userId);
+            }
+            AppProfile p = findProfile(profileId);
+            if (p == null) {
+                throw new IllegalArgumentException("Unknown Profile " + profileId);
+            }
+            pu.persist(new AppUserProfileBinding(u, p));
+            return true;
+        }
+        return false;
+    }
+
     public boolean userHasProfile(int userId, String profileName) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return !pu.createQuery("Select u.profile from AppUserProfileBinding  u where u.userId=:userId and u.profile.name=:name")
@@ -319,6 +355,23 @@ public class CorePlugin {
                 .setParameter("userId", userId)
                 .getValueList(0);
         return new HashSet<>(rights);
+    }
+
+    public AppProfile findOrCreateCustomProfile(String profileName, String customType) {
+        AppProfile p = findProfileByName(profileName);
+        if (p == null) {
+            p = new AppProfile();
+            p.setName(profileName);
+            p.setCustom(true);
+            p.setCustomType(customType);
+            UPA.getPersistenceUnit().persist(p);
+        } else if (!p.isCustom()) {
+            //force to custom
+            p.setCustom(true);
+            p.setCustomType(customType);
+            UPA.getPersistenceUnit().merge(p);
+        }
+        return p;
     }
 
     public AppProfile findOrCreateProfile(String profileName) {
@@ -409,7 +462,20 @@ public class CorePlugin {
     }
 
     public AppCompany findCompany(int id) {
-        return (AppCompany) UPA.getPersistenceUnit().findById(AppCompany.class, id);
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return (AppCompany) pu.createQuery("Select u from AppCompany u where u.id=:id").setParameter("id", id)
+                .setHint("navigationDepth", 3)
+                .getEntity();
+//        return (AppCompany) pu.findById(AppCompany.class, id);
+    }
+
+    public AppCompany findCompany(String name) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return (AppCompany) pu.createQuery("Select u from AppCompany u where u.name=:name").setParameter("name", name)
+                .setHint("navigationDepth", 3)
+                .getEntity();
+//
+//        return (AppCompany) UPA.getPersistenceUnit().findByMainField(AppCompany.class, name);
     }
 
     public List<AppCompany> findCompanies() {
@@ -471,6 +537,9 @@ public class CorePlugin {
         d.adminProfile = new AppProfile();
         d.adminProfile.setName("Admin");
         d.adminProfile = findOrCreate(d.adminProfile);
+        d.adminProfile.setCustom(true);
+        d.adminProfile.setCustomType("Profile");
+        pu.merge(d.adminProfile);
 
         d.adminType = new AppUserType();
         d.adminType.setName("Admin");
@@ -495,7 +564,7 @@ public class CorePlugin {
         adminContact.setCivility(d.civilities.get(0));
         adminContact.setGender(d.genders.get(0));
         adminContact.setEmail("admin@vr.net");
-        adminContact = findOrCreate(adminContact, "nin");
+        adminContact = findOrCreate(adminContact, "firstName");
 
         AppUser uu = new AppUser();
         d.admin = uu;
@@ -521,6 +590,17 @@ public class CorePlugin {
             }
             d.departments.add(c);
         }
+        AppConfig mainConfig = new AppConfig();
+        mainConfig.setId(1);
+        mainConfig.setMainCompany(eniso);
+        mainConfig.setMainPeriod(new AppPeriod("2015-2016"));
+        findOrCreate(mainConfig,"id");
+        validateRightsDefinitions();
+    }
+
+    @Start
+    protected void validateRightsDefinitions() {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
         for (Entity entity : pu.getEntities()) {
             if (!entity.isSystem()) {
                 EntityShield s = entity.getShield();
@@ -575,6 +655,7 @@ public class CorePlugin {
                 }
             }
         }
+        createRight("Custom.Admin.Passwd", "Custom.Admin.Passwd");
     }
 
     public <T> T findOrCreate(T o) {
@@ -1030,7 +1111,13 @@ public class CorePlugin {
     }
 
     public boolean isActualAdmin() {
-        UserSession us = VrApp.getBean(UserSession.class);
+        UserSession us = null;
+        try {
+            us = VrApp.getBean(UserSession.class);
+        } catch (Exception e) {
+            //session not yet created!
+            return true;
+        }
         UserPrincipal up = UPA.getPersistenceUnit().getUserPrincipal();
         if (up != null) {
             if (up.getName().equals("<internal>")) {
@@ -1128,6 +1215,13 @@ public class CorePlugin {
         new SpringThread(r).start();
     }
 
+    public AppConfig findAppConfig(){
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AppConfig c = pu.findById(AppConfig.class, 1);
+        //should exist;
+        return c;
+    }
+    
     public AppUser createUser(AppContact contact, int userTypeId, int departmentId, boolean attachToExistingUser, String[] defaultProfiles) {
         AppUser u = findUserByContact(contact.getId());
         if (u == null) {
@@ -1177,7 +1271,7 @@ public class CorePlugin {
                 }
             }
             AppUserType userType = findUserType(userTypeId);
-            AppDepartment userDepatment = findDepartment(userTypeId);
+            AppDepartment userDepatment = findDepartment(departmentId);
             if (u == null) {
                 u = new AppUser();
                 u.setLogin(login);
@@ -1205,7 +1299,88 @@ public class CorePlugin {
         return u;
     }
 
+    public boolean isComplexProfileExpr(String s) {
+        for (char c : s.toCharArray()) {
+            switch (c) {
+                case '(':
+                case ')':
+                case '[':
+                case ']':
+                case '+':
+                case '-':
+                case '_':
+                case ':':
+                case ',':
+                case ';':
+                case ' ':
+                case '&':
+                case '|': {
+                    return true;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
+        return false;
+    }
+
     public String validateProfileName(String s) {
-        return s.replace("(", "_").replace(")", "_").replace("[", "_").replace("]", "_").replace("+", "_").replace("-", "_").replace(":", "_");
+        StringBuilder sb = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            switch (c) {
+                case '(':
+                case ')':
+                case '[':
+                case ']':
+                case '+':
+                case '-':
+                case '_':
+                case ':':
+                case ',':
+                case ';':
+                case ' ':
+                case '&':
+                case '|': {
+                    sb.append("_");
+                    break;
+                }
+                default: {
+                    sb.append(c);
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    public void passwd(String login, String oldPassword, String newPassword) {
+        if (newPassword == null) {
+            newPassword = "";
+        }
+        if (newPassword.trim().length() == 0) {
+            throw new RuntimeException("Mot de passe trop court");
+        }
+        if (newPassword.length() == 5) {
+            throw new RuntimeException("Mot de passe trop court");
+        }
+        if (StringUtils.isEmpty(login)) {
+            login = getActualLogin();
+        }
+        if (isActualAdmin()) {
+            AppUser u = findUser(login);
+            if (u == null) {
+                throw new RuntimeException("User not found " + login);
+            }
+
+            u.setPassword(newPassword);
+            UPA.getPersistenceUnit().merge(u);
+        } else {
+            AppUser u = findUser(login, oldPassword);
+            if (u == null) {
+                throw new RuntimeException("Invalid User or Password for " + login);
+            }
+            u.setPassword(newPassword);
+            UPA.getPersistenceUnit().merge(u);
+        }
     }
 }

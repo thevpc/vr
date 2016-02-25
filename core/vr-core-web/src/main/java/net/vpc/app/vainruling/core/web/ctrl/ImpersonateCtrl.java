@@ -14,7 +14,7 @@ import net.vpc.app.vainruling.api.web.UCtrl;
  * @author vpc
  */
 @UCtrl(
-        title = "Switch User",
+        title = "Changer Utilisateur",
         url = "modules/admin/impersonate",
         menu = "/Admin",
         securityKey = "Custom.Admin.Impersonate"

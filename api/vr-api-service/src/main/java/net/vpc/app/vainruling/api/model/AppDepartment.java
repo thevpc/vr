@@ -34,7 +34,7 @@ public class AppDepartment {
     private String name3;
     @Hierarchy
     private AppDepartment parent;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Field(modifiers = UserFieldModifier.SUMMARY,max = "4000")
     @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
     private String description;
 

@@ -44,6 +44,7 @@ public class AppCompany {
     private String fax;
     private String mainContact;
     private String mainContactAddress;
+    private String mainWebSite;
 
     public int getId() {
         return id;
@@ -149,4 +150,12 @@ public class AppCompany {
         this.mainContactAddress = mainContactAddress;
     }
 
+    public String getMainWebSite() {
+        return mainWebSite;
+    }
+
+    public void setMainWebSite(String mainWebSite) {
+        this.mainWebSite = mainWebSite;
+    }
+    
 }

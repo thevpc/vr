@@ -21,6 +21,7 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.vfs.VFS;
+import net.vpc.upa.UPA;
 import org.primefaces.event.FileUploadEvent;
 
 /**
@@ -97,4 +98,15 @@ public class AcademicAdminToolsCtrl {
         }
     }
 
+    public void updateData() {
+        try {
+            AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
+            p.validateAcademicData();
+            UPA.getPersistenceUnit().updateFormulas();
+            FacesUtils.addInfoMessage("Successful Operation");
+        } catch (Exception ex) {
+            Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            FacesUtils.addErrorMessage(ex.getMessage());
+        }
+    }
 }

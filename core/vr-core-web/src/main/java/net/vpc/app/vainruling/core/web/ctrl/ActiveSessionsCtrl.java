@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.faces.bean.ApplicationScoped;
@@ -19,9 +20,14 @@ import net.vpc.app.vainruling.api.web.UCtrl;
 import net.vpc.app.vainruling.api.ActiveSessionsTracker;
 import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.PollAware;
+import net.vpc.app.vainruling.api.model.AppContact;
+import net.vpc.app.vainruling.api.model.AppUser;
 import net.vpc.app.vainruling.api.model.AppUserType;
 import net.vpc.app.vainruling.api.web.OnPageLoad;
+import net.vpc.app.vainruling.api.web.util.ChartUtils;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.common.utils.Chronometer;
+import org.primefaces.model.chart.DonutChartModel;
 
 /**
  *
@@ -50,14 +56,21 @@ public class ActiveSessionsCtrl implements PollAware {
                 List<UserSession> list = VrApp.getBean(ActiveSessionsTracker.class).getOrderedActiveSessions();
                 Map<Integer, TypeStat> stats = new HashMap<Integer, TypeStat>();
                 for (UserSession i : list) {
-                    AppUserType t = i.getUser().getType();
-                    if (t != null) {
-                        TypeStat s = stats.get(t.getId());
-                        if (s == null) {
-                            s = new TypeStat(t.getId(), t.getName(), 0);
-                            stats.put(t.getId(), s);
+                    if (i != null && i.getUser() != null) {
+                        AppUserType t = i.getUser().getType();
+                        if (t != null) {
+                            TypeStat s = stats.get(t.getId());
+                            if (s == null) {
+                                s = new TypeStat(t.getId(), t.getName(), 0);
+                                stats.put(t.getId(), s);
+                            }
+                            s.count++;
                         }
-                        s.count++;
+                    } else if (i != null && i.getUser() == null) {
+                        AppUser uu = new AppUser();
+                        uu.setId(-1);
+                        uu.setLogin("<anonymous>");
+                        i.setUser(uu);
                     }
                 }
                 getModel().setSessions(list);
@@ -65,6 +78,65 @@ public class ActiveSessionsCtrl implements PollAware {
                 Collections.sort(sli);
                 getModel().setTypeStats(sli);
                 getModel().setAdmin(VrApp.getBean(CorePlugin.class).isActualAdmin());
+
+                {
+                    getModel().setDonut1(null);
+                    DonutChartModel d = new DonutChartModel();
+                    d.setTitle("Utilisateur");
+                    d.setLegendPosition("e");
+                    d.setSliceMargin(2);
+                    d.setShowDataLabels(true);
+                    d.setDataFormat("value");
+                    d.setShadow(true);
+                    getModel().setDonut1(d);
+                    Map<String, Number> circle1 = new LinkedHashMap<String, Number>();
+                    Map<String, Number> circle2 = new LinkedHashMap<String, Number>();
+                    for (Map.Entry<Integer, TypeStat> entry : stats.entrySet()) {
+                        circle1.put(entry.getValue().getType(), entry.getValue().getCount());
+                    }
+                    for (UserSession i : list) {
+                        if (i != null && i.getUser() != null && i.getUser().getContact() != null) {
+                            AppContact c = i.getUser().getContact();
+                            if (!StringUtils.isEmpty(c.getPositionSuffix())) {
+                                ChartUtils.incKey(circle2, c.getPositionSuffix());
+                            }
+                        }
+                    }
+                    ChartUtils.reverseSortCount(circle1);
+                    ChartUtils.reverseSortCount(circle2);
+                    ChartUtils.mergeMapKeys(circle1, circle2);
+                    d.addCircle(circle1);
+                    d.addCircle(circle2);
+                }
+                {
+                    getModel().setDonut2(null);
+                    DonutChartModel d = new DonutChartModel();
+                    d.setTitle("Langue/Page");
+                    d.setLegendPosition("e");
+                    d.setSliceMargin(2);
+                    d.setShowDataLabels(true);
+                    d.setDataFormat("value");
+                    d.setShadow(true);
+                    getModel().setDonut2(d);
+                    Map<String, Number> circle1 = new LinkedHashMap<String, Number>();
+                    Map<String, Number> circle2 = new LinkedHashMap<String, Number>();
+                    for (UserSession i : list) {
+                        if (i.getLocale() != null) {
+                            if (!StringUtils.isEmpty(i.getLocale().getLanguage())) {
+                                ChartUtils.incKey(circle1, i.getLocale().getLanguage());
+                            }
+                        }
+                        if (!StringUtils.isEmpty(i.getLastVisitedPage())) {
+                            ChartUtils.incKey(circle2, i.getLastVisitedPage());
+                        }
+                    }
+                    ChartUtils.reverseSortCount(circle1);
+                    ChartUtils.reverseSortCount(circle2,12,null);
+                    ChartUtils.mergeMapKeys(circle1, circle2);
+                    d.addCircle(circle1);
+                    d.addCircle(circle2);
+                }
+
             } finally {
                 model.updating = false;
             }
@@ -120,6 +192,8 @@ public class ActiveSessionsCtrl implements PollAware {
         private List<TypeStat> typeStats = new ArrayList<>();
         private boolean updating = false;
         private boolean admin = false;
+        private DonutChartModel donut1;
+        private DonutChartModel donut2;
 
         public List<UserSession> getSessions() {
             return sessions;
@@ -151,6 +225,22 @@ public class ActiveSessionsCtrl implements PollAware {
 
         public void setAdmin(boolean admin) {
             this.admin = admin;
+        }
+
+        public DonutChartModel getDonut1() {
+            return donut1;
+        }
+
+        public void setDonut1(DonutChartModel donut1) {
+            this.donut1 = donut1;
+        }
+
+        public DonutChartModel getDonut2() {
+            return donut2;
+        }
+
+        public void setDonut2(DonutChartModel donut2) {
+            this.donut2 = donut2;
         }
 
     }

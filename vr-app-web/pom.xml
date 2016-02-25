@@ -16,12 +16,6 @@
     
     <dependencies>
 
-        <!-- .................................................................. -->
-<!--        <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins</groupId>
-            <artifactId>vr-ezp-web</artifactId>
-            <version>1.0</version>
-        </dependency>-->
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
@@ -81,6 +75,12 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins</groupId>
             <artifactId>vr-dev-toolbox-web</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.plugins.templates</groupId>
+            <artifactId>ui-template-infusion-web</artifactId>
             <version>1.0</version>
         </dependency>
 

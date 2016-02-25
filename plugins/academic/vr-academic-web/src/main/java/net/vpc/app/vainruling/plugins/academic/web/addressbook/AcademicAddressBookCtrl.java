@@ -10,8 +10,12 @@ import java.util.List;
 import java.util.Objects;
 import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.api.model.AppContact;
+import net.vpc.app.vainruling.api.model.AppGender;
+import net.vpc.app.vainruling.api.web.OnPageLoad;
 import net.vpc.app.vainruling.api.web.UCtrl;
 import net.vpc.app.vainruling.api.web.UPathItem;
+import net.vpc.app.vainruling.api.web.VrMenuManager;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
@@ -20,6 +24,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 import net.vpc.app.vainruling.plugins.academic.service.model.content.AcademicTeacherCV;
 import net.vpc.app.vainruling.plugins.academic.web.AcademicCtrlUtils;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.vfs.VFile;
 
 /**
  *
@@ -99,9 +104,9 @@ public class AcademicAddressBookCtrl {
                             Contact ct = new Contact();
                             ct.setName(t.getContact().getFullName());
                             if (t.getDepartment() != null) {
-                                ct.getTitles().add(t.getDepartment().getName());
+                                ct.getTitles().add("Dept. " + t.getDepartment().getName());
                             }
-                            ct.getTitles().add(t.getDegree().getName() + ", " + t.getSituation().getName());
+                            ct.getTitles().add((t.getDegree()==null?"?":t.getDegree().getName()) + ", " + (t.getSituation()==null?"?":t.getSituation().getName()));
 
                             if (!StringUtils.isEmpty(t.getDiscipline())) {
                                 ct.getTitles().add(t.getDiscipline());
@@ -110,6 +115,9 @@ public class AcademicAddressBookCtrl {
                             AcademicTeacherCV cv = ap.findOrCreateAcademicTeacherCV(t.getId());
                             if (!StringUtils.isEmpty(cv.getTitle1())) {
                                 ct.getTitles().add(cv.getTitle1());
+                            }
+                            if (!StringUtils.isEmpty(t.getContact().getEmail())) {
+                                ct.getTitles().add(t.getContact().getEmail());
                             }
                             ct.setUrlCommand("teacherCurriculum");
                             ct.setUrlArgs("{teacherId:'" + t.getId() + "'}");
@@ -134,6 +142,9 @@ public class AcademicAddressBookCtrl {
                             if (t.getLastClass3() != null) {
                                 ct.getTitles().add(t.getLastClass3().getName());
                             }
+                            if (!StringUtils.isEmpty(t.getContact().getEmail())) {
+                                ct.getTitles().add(t.getContact().getEmail());
+                            }
                             ct.setUrlCommand("");
                             cc.add(ct);
                         }
@@ -143,7 +154,7 @@ public class AcademicAddressBookCtrl {
                         if (t.getStudent().getContact().getFullName().toLowerCase().contains(q.toLowerCase())) {
                             Contact ct = new Contact();
                             ct.setName(t.getStudent().getContact().getFullName());
-                            if (t.getStudent().getStage()==AcademicStudentStage.GRADUATED) {
+                            if (t.getStudent().getStage() == AcademicStudentStage.GRADUATED) {
                                 ct.getTitles().add("Graduated on " + t.getGraduationDate());
                             } else {
                                 ct.getTitles().add("Eliminated");
@@ -166,6 +177,9 @@ public class AcademicAddressBookCtrl {
                             if (t.getLastJobCompany() != null) {
                                 ct.getTitles().add("@ " + t.getLastJobCompany().getName());
                             }
+                            if (!StringUtils.isEmpty(t.getStudent().getContact().getEmail())) {
+                                ct.getTitles().add(t.getStudent().getContact().getEmail());
+                            }
                             ct.setUrlCommand("");
                             cc.add(ct);
                         }
@@ -178,13 +192,42 @@ public class AcademicAddressBookCtrl {
         getModel().setList(cc);
     }
 
-     public String findTeacherPhoto(int id) {
+    public String findTeacherPhoto(int id) {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = ap.findTeacher(id);
-        String photo = t == null ? null : AcademicCtrlUtils.getTeacherAppWebPath(t.getId(), "WebSite/photo.jpg");
+        AppContact c = t.getContact();
+        boolean female = false;
+        if (c != null) {
+            AppGender g = c.getGender();
+            if (g != null) {
+                if ("F".equals(g.getCode())) {
+                    female = true;
+                }
+            }
+        }
+        List<String> paths = new ArrayList<>();
+        for (String p : new String[]{"WebSite/me.png", "WebSite/me.jpg", "WebSite/me.gif"}) {
+            paths.add(p);
+        }
+        if (female) {
+            for (String p : new String[]{"WebSite/she.png", "WebSite/she.jpg", "WebSite/she.gif"}) {
+                paths.add(p);
+            }
+        } else {
+            for (String p : new String[]{"WebSite/he.png", "WebSite/he.jpg", "WebSite/he.gif"}) {
+                paths.add(p);
+            }
+        }
+        for (String p : new String[]{"WebSite/photo.png", "WebSite/photo.jpg", "WebSite/photo.gif"}) {
+            paths.add(p);
+        }
+
+        VFile file = AcademicCtrlUtils.getTeacherAbsoluteFile(t.getId(), paths.toArray(new String[paths.size()]));
+
+        String photo = (t == null || file == null) ? null : AcademicCtrlUtils.getAppWebPath(file.getPath());
         return photo;
     }
-     
+
     public class Model {
 
         private String lastQuery;

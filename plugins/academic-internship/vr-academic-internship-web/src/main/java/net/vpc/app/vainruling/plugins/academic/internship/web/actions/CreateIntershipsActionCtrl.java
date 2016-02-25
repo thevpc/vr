@@ -39,9 +39,9 @@ public class CreateIntershipsActionCtrl {
         getModel().setInternship(internship);
 
         if (internship.getBoard()== null) {
-            getModel().setMessage("Merci de preciser la commission");
+            getModel().setMessage("Merci de preciser le Comité");
         } else if (internship.getInternshipStatus() == null) {
-            getModel().setMessage("Merci de preciser la phase");
+            getModel().setMessage("Merci de preciser l'étape");
         }else{
             getModel().setDisabled(false);
         }

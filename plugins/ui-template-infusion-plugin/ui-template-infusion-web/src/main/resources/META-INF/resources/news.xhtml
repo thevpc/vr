@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" 
+      xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+    <h:head>
+    </h:head>
+    <h:body>
+        <ui:composition template="/templates/public-template.xhtml">
+            <ui:define name="row1">
+
+            </ui:define>
+            <ui:define name="row2">
+
+            </ui:define>
+            <ui:define name="row3">
+                <div class="text-inter">
+                    <div class="container">
+                        <div class="row">
+                            <h1>News</h1>
+                        </div>
+                        <ui:repeat value="#{jsfCtrl.groupListBy(2,articlesCtrl.news)}" var="subList">
+                            <div class="row">
+                                <ui:repeat value="#{subList}" var="i" varStatus="istat">
+                                    <div class="col-md-6" style="text-align: justify;text-justify: inter-word;color: #929da5;">
+                                        <h3>#{i.content.subject}</h3>
+                                        <p:imageSwitch effect="zoom" slideshowAuto="true" style="float: left; 
+                                                       margin-right: 10px; 
+                                                       margin-bottom: 10px;
+                                                       ">
+                                            <ui:repeat value="#{i.imageAttachments}" var="im">
+                                                <p:graphicImage value="#{jsfCtrl.url(im.path)}" alt="#{im.name}" width="400" height="200"/>
+                                            </ui:repeat>
+                                        </p:imageSwitch>
+
+                                        <p>
+                                            <h:outputText value="#{jsfCtrl.pureHtml(i.content.content)}" escape="false"/>
+                                        </p>
+                                        <ui:repeat value="#{i.attachments}" var="att">
+                                            <h:outputLink 
+                                                value="#{jsfCtrl.url(att.path)}" 
+                                                styleClass="#{(att.style eq null or att.style eq '')?'vr-att-button':att.style}"
+                                                style="margin-right: 10px;line-height: 6;"
+                                                >
+                                                <h:outputText value="#{att.name}" />
+                                            </h:outputLink>
+                                        </ui:repeat>
+                                        <p:separator style="border-color: #63C6AE;"/>
+                                        <p style="margin-top: 0px;">
+                                            <h:outputText style="float: right; margin-right: 10px;" value="by #{i.content.sender.contact.fullName}, #{jsfCtrl.date(i.content.sendTime,jsfCtrl.getLocale('en'))}"/>
+                                        </p>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </ui:repeat>
+                    </div>
+                </div>
+                <div class="shadow"></div>
+            </ui:define>
+            <ui:define name="row4">
+
+            </ui:define>
+            <ui:define name="row5">
+
+            </ui:define>
+            <!--            <ui:define name="row6">
+            
+                        </ui:define>-->
+            <!--            <ui:define name="row7">
+            
+                        </ui:define>-->
+        </ui:composition>
+    </h:body>
+</html>

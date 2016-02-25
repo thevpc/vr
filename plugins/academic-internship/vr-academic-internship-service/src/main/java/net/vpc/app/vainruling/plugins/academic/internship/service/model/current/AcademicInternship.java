@@ -11,7 +11,6 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 import net.vpc.app.vainruling.api.model.AppCompany;
 import net.vpc.app.vainruling.api.model.AppContact;
 import net.vpc.app.vainruling.api.ui.UIConstants;
-import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipBoard;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipDuration;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipStatus;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipVariant;
@@ -73,6 +72,7 @@ public class AcademicInternship {
     private AcademicTeacher secondSupervisor;
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
     private AppCompany company;
+    @Field(modifiers = UserFieldModifier.SUMMARY)
     private String companyOther;
     private AppContact companyMentor;
     private String companyMentorOther;
@@ -106,6 +106,7 @@ public class AcademicInternship {
     @Field(max = "4000")
     private AcademicTeacher chairExaminer;
     private Timestamp examDate;
+    private String examLocation;
 
     @Properties({
         @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace")}
@@ -408,4 +409,11 @@ public class AcademicInternship {
         this.lastUpdateTime = lastUpdateTime;
     }
 
+    public String getExamLocation() {
+        return examLocation;
+    }
+
+    public void setExamLocation(String examLocation) {
+        this.examLocation = examLocation;
+    }
 }

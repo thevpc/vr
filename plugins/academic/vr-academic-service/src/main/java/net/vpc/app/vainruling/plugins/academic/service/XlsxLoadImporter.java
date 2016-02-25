@@ -451,7 +451,7 @@ public class XlsxLoadImporter {
         for (AcademicClass cls : service.findAcademicClasses()) {
             String s = cls.getName();
             s = s.replace("(", "_").replace(")", "_").replace("+", "_").replace("+", "_");
-            AppProfile p = core.findOrCreateProfile(cls.getName());
+            AppProfile p = core.findOrCreateCustomProfile(cls.getName(), "AcademicClass");
             profiles.put(s, p);
             profiles.put(cls.getName(), p);
         }
@@ -540,7 +540,9 @@ public class XlsxLoadImporter {
                 }
 
                 contact.setEmail(Convert.toString(values[COL_EMAIL]));
+                contact.setPositionSuffix(Convert.toString(values[COL_CLASS]));
                 contact.setPositionTitle1("Student " + Convert.toString(values[COL_CLASS]));
+                contact.setEnabled(true);
 
                 service.update(contact);
                 academicStudent.setStage(AcademicStudentStage.ATTENDING);

@@ -30,7 +30,8 @@ public class Todo {
     private int id;
     @Field(modifiers = UserFieldModifier.MAIN)
     private String name;
-    @Property(name = UIConstants.FIELD_FORM_CONTROL,value = UIConstants.ControlType.TEXTAREA)
+    @Field(max = "4000")
+    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
     private String description;
     private Timestamp creationTime;
     private Timestamp startTime;

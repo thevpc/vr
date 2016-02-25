@@ -78,7 +78,20 @@ public class ArticlesPlugin {
             public List<FullArticle> run() {
                 List<FullArticle> all = new ArrayList<>();
                 for (ArticlesItem a : findArticlesByUserAndCategory(login, disposition)) {
-                    FullArticle f = new FullArticle(a, findArticlesFiles(a.getId()));
+                    String aname = a.getLinkText();
+                    String aurl = a.getLinkURL();
+                    String acss = a.getLinkClassStyle();
+                    List<ArticlesFile> att = new ArrayList<>();
+                    if(!StringUtils.isEmpty(aname) || !StringUtils.isEmpty(aurl)){
+                        ArticlesFile baseArt=new ArticlesFile();
+                        baseArt.setId(-1);
+                        baseArt.setName(StringUtils.isEmpty(aname)?"NoName":aname);
+                        baseArt.setPath(aurl);
+                        baseArt.setStyle(acss);
+                        att.add(baseArt);
+                    }
+                    att.addAll(findArticlesFiles(a.getId()));
+                    FullArticle f = new FullArticle(a, att);
                     all.add(f);
                 }
                 return all;

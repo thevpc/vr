@@ -29,7 +29,7 @@
         <module>../plugins/articles/vr-articles-web</module>
         <module>../plugins/dev-toolbox/vr-dev-toolbox-service</module>
         <module>../plugins/dev-toolbox/vr-dev-toolbox-web</module>
-
+        <module>../plugins/ui-template-infusion-plugin/ui-template-infusion-web</module>
         <module>../core/vr-core-service</module>
         <module>../core/vr-core-web</module>
         <module>../vr-app-service</module>

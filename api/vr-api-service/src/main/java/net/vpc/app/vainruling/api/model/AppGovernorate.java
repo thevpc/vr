@@ -29,7 +29,18 @@ public class AppGovernorate {
     private String name;
     private String name2;
     private String name3;
+    @Field(modifiers = {UserFieldModifier.SUMMARY})
     private AppCountry country;
+    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    private AppCountryRegion region;
+
+    public AppCountryRegion getRegion() {
+        return region;
+    }
+
+    public void setRegion(AppCountryRegion region) {
+        this.region = region;
+    }
 
     public AppCountry getCountry() {
         return country;

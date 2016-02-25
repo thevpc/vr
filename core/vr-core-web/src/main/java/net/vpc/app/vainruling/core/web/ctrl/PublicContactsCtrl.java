@@ -26,6 +26,7 @@ public class PublicContactsCtrl {
 
     @OnPageLoad
     public void onLoad() {
-        VrApp.getBean(VrMenuManager.class).setPageCtrl("contact");
+        VrApp.getBean(VrMenuManager.class).getModel().setCurrentPageId("contacts");
+        VrApp.getBean(VrMenuManager.class).setPageCtrl("contacts");
     }
 }
