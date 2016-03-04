@@ -61,45 +61,38 @@ and open the template in the editor.
                                         </div>-->
                     <p:tabView>
                         <p:tab title="Stats">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut1 ne null}" type="donut" model="#{internshipBoardsStatsCtrl.model.donut1}" style="width:400px;height:300px" />
-                                    </td>
-                                    <td>
-                                        <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut3 ne null}" type="donut" model="#{internshipBoardsStatsCtrl.model.donut3}" style="width:400px;height:300px" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <p:chart rendered="#{internshipBoardsStatsCtrl.model.pie1 ne null}" type="pie" model="#{internshipBoardsStatsCtrl.model.pie1}" style="width:400px;height:300px" />
-                                    </td>
-                                    <td>
-                                        <p:chart rendered="#{internshipBoardsStatsCtrl.model.pie2 ne null}" type="pie" model="#{internshipBoardsStatsCtrl.model.pie2}" style="width:400px;height:300px" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut5 ne null}" type="donut" model="#{internshipBoardsStatsCtrl.model.donut5}" style="width:400px;height:300px" />
-                                    </td>
-                                    <td>
-                                        <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut2 ne null}" type="donut" model="#{internshipBoardsStatsCtrl.model.donut2}" style="width:400px;height:300px" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <p:chart rendered="#{internshipBoardsStatsCtrl.model.bar1 ne null}" type="bar" model="#{internshipBoardsStatsCtrl.model.bar1}" style="width:800px;height:300px" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut4 ne null}" type="donut" model="#{internshipBoardsStatsCtrl.model.donut4}" style="width:400px;height:300px" />
-                                    </td>
-                                    <td>
-                                    </td>
-
-                                </tr>
-                            </table>                            
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut1 ne null}" type="donut" model="#{internshipBoardsStatsCtrl.model.donut1}" style="width:400px;height:300px" />
+                                </div>
+                                <div class="col-lg-6">
+                                    <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut3 ne null}" type="donut" model="#{internshipBoardsStatsCtrl.model.donut3}" style="width:400px;height:300px" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <p:chart rendered="#{internshipBoardsStatsCtrl.model.pie1 ne null}" type="pie" model="#{internshipBoardsStatsCtrl.model.pie1}" style="width:400px;height:300px" />
+                                </div>
+                                <div class="col-lg-6">
+                                    <p:chart rendered="#{internshipBoardsStatsCtrl.model.pie2 ne null}" type="pie" model="#{internshipBoardsStatsCtrl.model.pie2}" style="width:400px;height:300px" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut5 ne null}" type="donut" model="#{internshipBoardsStatsCtrl.model.donut5}" style="width:400px;height:300px" />
+                                </div>
+                                <div class="col-lg-6">
+                                    <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut2 ne null}" type="donut" model="#{internshipBoardsStatsCtrl.model.donut2}" style="width:400px;height:300px" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <p:chart rendered="#{internshipBoardsStatsCtrl.model.bar1 ne null}" type="bar" model="#{internshipBoardsStatsCtrl.model.bar1}" style="width:800px;height:300px" />
+                                </div>
+                                <div class="col-lg-6">
+                                    <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut4 ne null}" type="donut" model="#{internshipBoardsStatsCtrl.model.donut4}" style="width:400px;height:300px" />
+                                </div>
+                            </div>
                         </p:tab>
                         <p:tab title="Encadrements">
                             <div class="row">

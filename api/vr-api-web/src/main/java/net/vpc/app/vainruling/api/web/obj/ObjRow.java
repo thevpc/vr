@@ -16,6 +16,7 @@ public class ObjRow {
     private boolean selected;
     private boolean selectable = true;
     private Object value;
+    private int rowPos;
 
     public ObjRow(Object value) {
         this.value = value;
@@ -61,4 +62,12 @@ public class ObjRow {
         this.selectable = selectable;
     }
 
+    public int getRowPos() {
+        return rowPos;
+    }
+
+    public void setRowPos(int rowPos) {
+        this.rowPos = rowPos;
+    }
+    
 }

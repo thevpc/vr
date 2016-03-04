@@ -6,9 +6,11 @@
 package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
 import net.vpc.common.strings.StringUtils;
+import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
+import net.vpc.upa.config.Formula;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
 import net.vpc.upa.config.Sequence;
@@ -26,8 +28,14 @@ public class AcademicCourseGroup {
     @Sequence
 
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN})
     private String name;
+
+    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Formula(
+            value = "concat((select a.name from AcademicCourseLevel a where a.id=this.courseLevelId),'-',Coalesce(this.name,'X'))",
+            type = {FormulaType.PERSIST, FormulaType.UPDATE}
+    )
+    private String fullName;
 
     private AcademicCourseLevel courseLevel;
 
@@ -66,6 +74,14 @@ public class AcademicCourseGroup {
     @Override
     public String toString() {
         return StringUtils.nonnull(name);
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
 }

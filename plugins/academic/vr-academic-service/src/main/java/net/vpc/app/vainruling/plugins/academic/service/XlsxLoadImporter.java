@@ -449,10 +449,8 @@ public class XlsxLoadImporter {
         Map<String, AppGender> genders = new HashMap<>();
         Map<String, AppProfile> profiles = new HashMap<>();
         for (AcademicClass cls : service.findAcademicClasses()) {
-            String s = cls.getName();
-            s = s.replace("(", "_").replace(")", "_").replace("+", "_").replace("+", "_");
             AppProfile p = core.findOrCreateCustomProfile(cls.getName(), "AcademicClass");
-            profiles.put(s, p);
+            profiles.put(p.getCode(), p);
             profiles.put(cls.getName(), p);
         }
         for (AppGender g : core.findGenders()) {

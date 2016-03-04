@@ -25,16 +25,12 @@ and open the template in the editor.
 
                     <div class="row">
 
-                        <table>
-                            <tr>
-                                <td>
-                                    <p:chart rendered="#{activeSessionsCtrl.model.donut1 ne null}" type="donut" model="#{activeSessionsCtrl.model.donut1}" style="width:400px;height:300px" />
-                                </td>
-                                <td>
-                                    <p:chart rendered="#{activeSessionsCtrl.model.donut2 ne null}" type="donut" model="#{activeSessionsCtrl.model.donut2}" style="width:400px;height:300px" />
-                                </td>
-                            </tr>
-                        </table>                            
+                        <div class="col-lg-6">
+                            <p:chart rendered="#{activeSessionsCtrl.model.donut1 ne null}" type="donut" model="#{activeSessionsCtrl.model.donut1}" style="width:400px;height:300px" />
+                        </div>
+                        <div class="col-lg-6">
+                            <p:chart rendered="#{activeSessionsCtrl.model.donut2 ne null}" type="donut" model="#{activeSessionsCtrl.model.donut2}" style="width:400px;height:300px" />
+                        </div>
                     </div>
 
                     <div class="row">
@@ -50,20 +46,17 @@ and open the template in the editor.
                                 <h:outputText value="#{i.user.login}" />
                             </p:column>
                             <p:column headerText="Nom">
-                                <h:outputText value="#{i.user.contact.fullName}" />
-                            </p:column>
-                            <p:column headerText="Position">
-                                <h:outputText value="#{i.user.contact.positionSuffix}" />
+                                <h:outputText value="#{i.user.contact.fullTitle}" />
                             </p:column>
                             <p:column headerText="Type">
                                 <h:outputText value="#{i.user.type}" />
                             </p:column>
-                            <p:column headerText="Connexion" rendered="#{activeSessionsCtrl.model.admin}">
-                                <h:outputText value="#{i.connexionTime}" >
+<!--                            <p:column headerText="Connexion" rendered="# {activeSessionsCtrl.model.admin}">
+                                <h:outputText value="# {i.connexionTime}" >
                                     <f:convertDateTime type="date" pattern="HH:mm:ss , dd MMM yyyy"/>
                                 </h:outputText>
-                            </p:column>
-                            <p:column headerText="Période" rendered="#{activeSessionsCtrl.model.admin}">
+                            </p:column>-->
+                            <p:column headerText="Durée" rendered="#{activeSessionsCtrl.model.admin}">
                                 <h:outputText value="#{activeSessionsCtrl.connectionPeriod(i)}" />
                             </p:column>
                             <p:column headerText="Activité" rendered="#{activeSessionsCtrl.model.admin}">

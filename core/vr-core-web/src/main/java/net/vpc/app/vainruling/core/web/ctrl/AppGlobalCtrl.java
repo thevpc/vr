@@ -11,6 +11,8 @@ import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.api.web.ctrl.BasePageCtrl;
 import net.vpc.common.utils.Chronometer;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 /**
  *
@@ -18,6 +20,8 @@ import net.vpc.common.utils.Chronometer;
  */
 @ManagedBean
 @ApplicationScoped
+@Controller
+@Scope("singleton")
 public class AppGlobalCtrl extends BasePageCtrl {
 
     private Model model = new Model();

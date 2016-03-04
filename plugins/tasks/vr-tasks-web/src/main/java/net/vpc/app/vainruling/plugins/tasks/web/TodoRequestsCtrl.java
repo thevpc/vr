@@ -183,7 +183,7 @@ public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {
 
     @OnPageLoad
     @Override
-    public void reloadPage(String cmd) {
+    public void reloadPage(String cmd, boolean ustomization) {
         getModel().setTodoLists(todoService.findTodoListsByInitiator(null));
         ArrayList<SelectItem> st = new ArrayList<SelectItem>();
         for (TodoList s : getModel().getTodoLists()) {

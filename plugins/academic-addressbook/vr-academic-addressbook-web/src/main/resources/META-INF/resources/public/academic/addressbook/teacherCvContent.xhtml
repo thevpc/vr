@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>#{teacherCurriculumContentCtrl.model.teacher.contact.fullName}</title>
+        <meta charset="utf-8"/>
+        <meta name="author" content="vpc"/>
+        <meta name="description" content="ENISo's people"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+        <link rel="stylesheet" type="text/css" href="${jsfCtrl.context}/fs/Site/wplugins/magnetic/css/reset.css"/>
+        <link rel="stylesheet" type="text/css" href="${jsfCtrl.context}/fs/Site/wplugins/magnetic/css/main.css"/>
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Tangerine"/>
+        <script type="text/javascript" src="${jsfCtrl.context}/fs/Site/wplugins/magnetic/js/jquery.js"></script>
+        <script type="text/javascript" src="${jsfCtrl.context}/fs/Site/wplugins/magnetic/js/main.js"></script>
+        <link rel="shortcut icon" href="${jsfCtrl.context}/images/app-icon.png" type="image/png" />
+        <script src="${jsfCtrl.context}/fs/Site/js/analytics.js"></script>
+    </h:head>
+    <h:body>
+
+        <header>
+            <div class="vr-top">
+                <a href="/"><img class="navbar-brand" style="margin-top: 5px;height: 40px;" src="${jsfCtrl.context}/images/app-icon.png" alt="VR ENISo" height="30"/></a>
+            </div>
+
+            <div class="logo">
+                <a href="#" class="vr-contact">${teacherCurriculumContentCtrl.model.teacher.contact.fullName}</a>
+            </div><!-- end logo -->
+            <ul style="list-style-type: none;font-family: 'Anivers', serif;">
+                <li>#{teacherCurriculumContentCtrl.model.teacherCV.title1}</li>
+                <li>#{teacherCurriculumContentCtrl.model.teacherCV.title2}</li>
+                <li>#{teacherCurriculumContentCtrl.model.teacherCV.title3}</li>
+            </ul>
+            <div id="menu_icon">
+            </div>
+            <h:form>
+                <nav>
+                    <ul>
+                        <li ><a href="teacherCvIndex.xhtml" >Home</a></li>
+                        <li ><h:commandLink action="#{vrMenuManager.gotoPage('teacherCurriculumContent', jsfCtrl.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'about\'}'))}">About me</h:commandLink></li>
+                        <li ><a href="teacherCvContact.xhtml">Contact me</a></li>
+                        <li ><a href="${jsfCtrl.context}/faces/contacts.xhtml">Teachers Directory</a></li>
+                        <li ><a href="#{jsfCtrl.nvl(teacherCurriculumContentCtrl.model.teacherCV.wwwURL,'#')}">Personal Web Site</a></li>
+                    </ul>
+                </nav><!-- end navigation menu -->
+            </h:form>
+
+            <div class="footer clearfix">
+                <ul class="social clearfix">
+                    <li><a href="#{jsfCtrl.nvl(teacherCurriculumContentCtrl.model.teacherCV.socialURL1,'#')}" class="fb" data-title="Facebook"></a></li>
+                    <li><a href="#{jsfCtrl.nvl(teacherCurriculumContentCtrl.model.teacherCV.socialURL2,'#')}" class="google" data-title="Google +"></a></li>
+                    <li><a href="#{jsfCtrl.nvl(teacherCurriculumContentCtrl.model.teacherCV.socialURL3,'#')}" class="linkedin" data-title="LinkedIn"></a></li>
+                    <li><a href="#{jsfCtrl.nvl(teacherCurriculumContentCtrl.model.teacherCV.socialURL4,'#')}" class="twitter" data-title="Twitter"></a></li>
+                    <li><a href="#{jsfCtrl.nvl(teacherCurriculumContentCtrl.model.teacherCV.rssURL,'#')}" class="rss" data-title="RSS"></a></li>
+                </ul><!-- end social -->
+
+                <div class="rights">
+                    <!--<p>Copyright © 2014 magnetic.</p>-->
+                    <!--<p>Template by <a href="">Pixelhint.com</a></p>-->
+                </div><!-- end rights -->
+            </div ><!-- end footer -->
+        </header><!-- end header -->
+        <h:form>
+            <section class="main clearfix">
+
+                <section class="top">	
+                    <div class="wrapper content_header clearfix">
+                        <div class="work_nav">
+
+                            <ul class="btn clearfix">
+                                <li><h:commandLink action="#{teacherCurriculumContentCtrl.gotoPrevious}" class="previous">
+                                        <!--<a href="#" class="previous" data-title="Previous"></a>-->
+                                    </h:commandLink>
+                                </li>
+                                <li>
+                                    <a href="teacherCvIndex.xhtml" class="grid" data-title="Home"></a>
+                                </li>
+                                <li>
+                                    <h:commandLink action="#{teacherCurriculumContentCtrl.gotoNext}"  class="next">
+                                        <!--<a href="#" class="next" data-title="Next"></a>-->
+                                    </h:commandLink>
+                                </li>
+                            </ul>							
+
+                        </div><!-- end work_nav -->
+                        <h1 class="title">#{teacherCurriculumContentCtrl.model.contentTitle}</h1>
+                    </div>		
+                </section><!-- end top -->
+
+                <section class="wrapper">
+                    <div class="content">
+                        <h:outputLabel escape="false" value="#{teacherCurriculumContentCtrl.model.contentText}"/>
+                        <!--                    <p>Nunc pellentesque mauris ut magna pulvinar, quis fermentum tellus pulvinar. Curabitur ut fermentum quam. Nam tincidunt sagittis neque in elementum. Fusce convallis cursus porta. Curabitur dapibus pretium leo, at laoreet magna ullamcorper ac. Integer quam nulla, fringilla ac imperdiet at, consequat vel leo. Quisque non semper justo, eu aliquam velit. Pellentesque rhoncus, quam ac fringilla euismod, ligula diam congue orci, id cursus dui velit quis ligula.</p>
+                        
+                        
+                                            <h2>Nulla nec pellentesque tempus, ipsum arcu aliquam tortor.</h2>
+                        
+                                            <p>vel tempus libero diam vel arcu. Etiam id tincidunt tortor. Nam auctor consequat quam, vel mattis dui laoreet a. Nunc condimentum iaculis tortor, id eleifend nulla mattis lobortis. Pellentesque semper blandit odio, id tempor lorem imperdiet eu. Ut sagittis sagittis consectetur ,Maecenas eget risus eros. Nunc venenatis ante a rutrum cursus.</p>
+                        
+                                            <h2>Quisque non semper justo</h2>
+                        
+                                            <p>Commodo at blandit vitae, placerat in sem. Morbi ornare nec felis in euismod. Suspendisse vulputate orci ultrices enim facilisis, vel lobortis magna rhoncus. Integer mattis at elit vitae adipiscing. Cras imperdiet cursus nunc quis ullamcorper.</p>
+                        
+                                            <p>vel tempus libero diam vel arcu. Etiam id tincidunt tortor. Nam auctor consequat quam, vel mattis dui laoreet a. Nunc condimentum iaculis tortor, id eleifend nulla mattis lobortis. Pellentesque semper blandit odio, id tempor lorem imperdiet eu. Ut sagittis sagittis consectetur ,Maecenas eget risus eros. Nunc venenatis ante a rutrum cursus.</p>
+                        
+                        
+                                            <p>Commodo at blandit vitae, placerat in sem. Morbi ornare nec felis in euismod. Suspendisse vulputate orci ultrices enim facilisis, vel lobortis magna rhoncus. Integer mattis at elit vitae adipiscing. Cras imperdiet cursus nunc quis ullamcorper.</p>
+                        
+                        
+                                            <h1>H1 : Quisque non semper justo</h1>
+                                            <h2>H2 : Quisque non semper justo</h2>
+                                            <h3>H3 : Quisque non semper justo</h3>
+                                            <h4>H4 : Quisque non semper justo</h4>
+                                            <h5>H5 : Quisque non semper justo</h5>
+                                            <h6>H6 : Quisque non semper justo</h6>-->
+                    </div><!-- end content -->
+                </section>
+            </section><!-- end main -->
+        </h:form>
+    </h:body>
+</html>

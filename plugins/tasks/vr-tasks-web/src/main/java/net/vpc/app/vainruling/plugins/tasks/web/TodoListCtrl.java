@@ -67,14 +67,14 @@ public class TodoListCtrl extends AbstractObjectCtrl<TodoList> {
         todoService.saveTodoList(c);
         onCancelCurrent();
         getModel().setMode(EditCtrlMode.LIST);
-        reloadPage();
+        reloadPage(true);
     }
 
     public void onDeleteCurrent() {
         TodoList c = getModel().getCurrent();
         todoService.removeTodoList(c.getId());
         getModel().setMode(EditCtrlMode.LIST);
-        reloadPage();
+        reloadPage(true);
     }
 
 //    public void onArchiveCurrent() {
@@ -97,7 +97,7 @@ public class TodoListCtrl extends AbstractObjectCtrl<TodoList> {
 
     @OnPageLoad
     @Override
-    public void reloadPage(String cmd) {
+    public void reloadPage(String cmd, boolean enableCustomization) {
         getModel().setCmd(cmd);
         getModel().setList(todoService.findTodoListsByResp(null));
         getModel().setCurrent(delegated_newInstance());

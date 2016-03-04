@@ -40,12 +40,16 @@ public class AcademicCourseAssignment {
 
     @Field(modifiers = {UserFieldModifier.MAIN})
     @Formula(
-            value = "concat((select a.fullName from AcademicCoursePlan a where a.id=this.coursePlanId),'-',(select a.name from AcademicCourseType a where a.id=this.courseTypeId))",
+            value = "concat((select a.fullName from AcademicCoursePlan a where a.id=this.coursePlanId),'-',Coalesce((select a.Name from AcademicClass a where a.id=this.subClassId),'?'),'-',(select a.name from AcademicCourseType a where a.id=this.courseTypeId))",
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String fullName;
 
     private String name2;
+
+    @Field(modifiers = UserFieldModifier.SUMMARY)
+    private AcademicClass subClass;
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
@@ -230,6 +234,14 @@ public class AcademicCourseAssignment {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public AcademicClass getSubClass() {
+        return subClass;
+    }
+
+    public void setSubClass(AcademicClass subClass) {
+        this.subClass = subClass;
     }
 
 }

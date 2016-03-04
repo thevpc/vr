@@ -10,8 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.web.VrMenuManager;
+import net.vpc.app.vainruling.api.core.ObjFieldSelection;
 
 /**
  *
@@ -32,17 +31,20 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
 
     protected abstract T delegated_newInstance();
 
-//    @PostConstruct
     public void reloadPage() {
+        reloadPage(true);
+    }
+        
+    public void reloadPage(boolean enableCustomization) {
         try {
-            reloadPage(getModel().getCmd());
+            reloadPage(getModel().getCmd(), enableCustomization);
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
         }
     }
 
-    public void reloadPage(String cmd) {
+    public void reloadPage(String cmd, boolean enableCustomization) {
 
     }
 
@@ -61,7 +63,7 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
     }
 
     public void onRefresh() {
-        reloadPage();
+        reloadPage(true);
     }
 
     public void onSelect(Object o) {
@@ -156,6 +158,7 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
         private T current;
         private String cmd;
         private ObjSearch search;
+        private ObjFieldSelection fieldSelection;
         private List<T> list = new ArrayList<>();
 
         public ObjSearch getSearch() {
@@ -164,6 +167,14 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
 
         public void setSearch(ObjSearch search) {
             this.search = search;
+        }
+
+        public ObjFieldSelection getFieldSelection() {
+            return fieldSelection;
+        }
+
+        public void setFieldSelection(ObjFieldSelection fieldSelection) {
+            this.fieldSelection = fieldSelection;
         }
 
         public String getCmd() {

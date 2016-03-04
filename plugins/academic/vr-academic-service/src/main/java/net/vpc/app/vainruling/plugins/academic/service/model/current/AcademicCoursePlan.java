@@ -85,13 +85,17 @@ public class AcademicCoursePlan {
     )
     private double valuePM;
     private double valueTPPM;
+    @Field(defaultValue = "0")
+    private double credits;
+    @Field(defaultValue = "0")
+    private double ects;
 //    private double valueDU;
     //Unite enseignement/UE
 //    @Field(modifiers = {UserFieldModifier.SUMMARY})
     private AcademicCourseGroup courseGroup;
     private int position;
-    private int groupCountC = 0;
-    private int groupCountTD = 0;
+    private int groupCountC = 1;
+    private int groupCountTD = 1;
     private int groupCountTP = 0;
     private int groupCountPM = 0;
     private int groupCountTPPM = 0;
@@ -100,7 +104,7 @@ public class AcademicCoursePlan {
     private int weeksTP = 0;
     private int weeksPM = 0;
     private int weeksTPPM = 0;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    //@Field(modifiers = UserFieldModifier.SUMMARY)
     private String roomConstraintsC;
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private String roomConstraintsTP;
@@ -348,5 +352,22 @@ public class AcademicCoursePlan {
     public void setCode(String code) {
         this.code = code;
     }
+
+    public double getCredits() {
+        return credits;
+    }
+
+    public void setCredits(double credits) {
+        this.credits = credits;
+    }
+
+    public double getEcts() {
+        return ects;
+    }
+
+    public void setEcts(double ects) {
+        this.ects = ects;
+    }
+    
 
 }

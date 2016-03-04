@@ -59,6 +59,31 @@
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins</groupId>
+            <artifactId>vr-academic-addressbook-web</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.plugins</groupId>
+            <artifactId>vr-academic-report-web</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.plugins</groupId>
+            <artifactId>vr-academic-planning-web</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.plugins</groupId>
+            <artifactId>vr-academic-eval-web</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.plugins</groupId>
+            <artifactId>vr-academic-perf-eval-web</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.plugins</groupId>
             <artifactId>vr-filesystem-web</artifactId>
             <version>1.0</version>
         </dependency>

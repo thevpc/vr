@@ -17,6 +17,16 @@
         <module>../plugins/academic/vr-academic-web</module>
         <module>../plugins/academic-internship/vr-academic-internship-service</module>
         <module>../plugins/academic-internship/vr-academic-internship-web</module>
+        <module>../plugins/academic-addressbook/vr-academic-addressbook-service</module>
+        <module>../plugins/academic-addressbook/vr-academic-addressbook-web</module>
+        <module>../plugins/academic-report/vr-academic-report-service</module>
+        <module>../plugins/academic-report/vr-academic-report-web</module>
+        <module>../plugins/academic-planning/vr-academic-planning-service</module>
+        <module>../plugins/academic-planning/vr-academic-planning-web</module>
+        <module>../plugins/academic-perf-eval/vr-academic-perf-eval-service</module>
+        <module>../plugins/academic-perf-eval/vr-academic-perf-eval-web</module>
+        <module>../plugins/academic-eval/vr-academic-eval-service</module>
+        <module>../plugins/academic-eval/vr-academic-eval-web</module>
         <module>../plugins/tasks/vr-tasks-service</module>
         <module>../plugins/tasks/vr-tasks-web</module>
         <module>../plugins/blog/vr-blog-service</module>

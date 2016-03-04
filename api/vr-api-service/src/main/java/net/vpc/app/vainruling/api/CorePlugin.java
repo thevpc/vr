@@ -295,20 +295,21 @@ public class CorePlugin {
         return false;
     }
 
-    public boolean userAddProfile(int userId, String profileName) {
+    public boolean userAddProfile(int userId, String profileCode) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (pu.createQuery("Select u.profile from AppUserProfileBinding  u where u.userId=:userId and u.profile.name=:name")
                 .setParameter("userId", userId)
-                .setParameter("name", profileName)
+                .setParameter("name", profileCode)
                 .isEmpty()) {
             AppUser u = findUser(userId);
             if (u == null) {
                 throw new IllegalArgumentException("Unknown User " + userId);
             }
-            AppProfile p = findProfileByName(profileName);
+            AppProfile p = findProfileByCode(profileCode);
             if (p == null) {
                 p = new AppProfile();
-                p.setName(profileName);
+                p.setName(profileCode);
+                p.setCode(profileCode);
                 pu.persist(p);
             }
 
@@ -357,11 +358,12 @@ public class CorePlugin {
         return new HashSet<>(rights);
     }
 
-    public AppProfile findOrCreateCustomProfile(String profileName, String customType) {
-        AppProfile p = findProfileByName(profileName);
+    public AppProfile findOrCreateCustomProfile(String profileCode, String customType) {
+        AppProfile p = findProfileByCode(profileCode);
         if (p == null) {
             p = new AppProfile();
-            p.setName(profileName);
+            p.setName(profileCode);
+            p.setCode(profileCode);
             p.setCustom(true);
             p.setCustomType(customType);
             UPA.getPersistenceUnit().persist(p);
@@ -387,6 +389,12 @@ public class CorePlugin {
     public AppProfile findProfileByName(String profileName) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQueryBuilder(AppProfile.class).addAndField("name", profileName)
+                .getEntity();
+
+    }
+    public AppProfile findProfileByCode(String profileCode) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQueryBuilder(AppProfile.class).addAndField("code", profileCode)
                 .getEntity();
 
     }

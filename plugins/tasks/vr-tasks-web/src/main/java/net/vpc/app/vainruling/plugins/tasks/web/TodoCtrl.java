@@ -190,7 +190,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
                 break;
             }
         }
-        reloadPage();
+        reloadPage(true);
         getModel().setMode(EditCtrlMode.LIST);
     }
 
@@ -209,7 +209,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
 
     @OnPageLoad
     @Override
-    public void reloadPage(String cmd) {
+    public void reloadPage(String cmd, boolean ustomization) {
         if (!StringUtils.isEmpty(cmd)) {
             getModel().setListName(cmd);
             getModel().setCmd(cmd);

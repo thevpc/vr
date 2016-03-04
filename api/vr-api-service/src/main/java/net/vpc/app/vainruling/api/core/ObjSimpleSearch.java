@@ -5,12 +5,10 @@
  */
 package net.vpc.app.vainruling.api.core;
 
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
@@ -28,6 +26,12 @@ public class ObjSimpleSearch extends ObjSearch {
 
     public ObjSimpleSearch() {
         super("expr");
+    }
+
+    public ObjSimpleSearch(String expression) {
+        super("expr");
+        this.expression = expression;
+        setExpression(expression);
     }
 
     public String getExpression() {

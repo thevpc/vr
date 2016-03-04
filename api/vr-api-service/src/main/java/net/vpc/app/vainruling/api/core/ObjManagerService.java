@@ -225,6 +225,30 @@ public class ObjManagerService {
                 .getEntityList();
     }
 
+    public long findCountByFilter(String entityName, String criteria, ObjSearch objSearch) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        String qq = "Select count(1) from "+entityName+" o ";
+        Expression filterExpression = null;
+        if (criteria != null) {
+            filterExpression = new UserExpression(criteria);
+        }
+        if (objSearch != null) {
+            String c = objSearch.createPreProcessingExpression(entityName);
+            if (c != null) {
+                if (filterExpression == null) {
+                    filterExpression = new UserExpression(c);
+                } else {
+                    filterExpression = new And(filterExpression, new UserExpression(c));
+                }
+            }
+        }
+        if (filterExpression != null) {
+            qq+=" where "+filterExpression;
+        }
+        Number nn=(Number)pu.createQuery(qq).getSingleValue();
+        return nn.longValue();
+    }
+
     public List<Object> findByFilter(String entityName, String criteria, ObjSearch objSearch) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);

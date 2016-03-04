@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,7 +80,6 @@ import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningHour;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.content.AcademicTeacherCV;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.GlobalAssignmentStat;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.GlobalStat;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
@@ -1534,6 +1534,14 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return UPA.getPersistenceUnit().findAll(AcademicTeacherSituation.class);
     }
 
+    public Map<Integer, AcademicClass> findAcademicClassesMap() {
+        HashMap<Integer, AcademicClass> _allClasses = new HashMap<>();
+        for (AcademicClass a : findAcademicClasses()) {
+            _allClasses.put(a.getId(), a);
+        }
+        return _allClasses;
+    }
+
     public List<AcademicClass> findAcademicClasses() {
         return UPA.getPersistenceUnit().findAll(AcademicClass.class);
     }
@@ -1702,7 +1710,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return (AcademicTeacher) UPA.getPersistenceUnit()
                 .createQuery("Select u from AcademicTeacher u where u.id=:id")
                 .setParameter("id", t)
-                                .setHint("navigationDepth", 5)
+                .setHint("navigationDepth", 5)
                 .getEntity();
 //                .findById(AcademicTeacher.class, t);
     }
@@ -1711,37 +1719,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return (AcademicStudent) UPA.getPersistenceUnit().findById(AcademicStudent.class, t);
     }
 
-    public void updateViewsCounterforTeacherCV(int t) {
-        AcademicTeacherCV cv = findOrCreateAcademicTeacherCV(t);
-        if (cv != null) {
-            cv.setViewsCounter(cv.getViewsCounter() + 1);
-            UPA.getPersistenceUnit().merge(cv);
-        }
-    }
-
-    public AcademicTeacherCV findOrCreateAcademicTeacherCV(final int t) {
-        return UPA.getContext().invokePrivileged(new Action<AcademicTeacherCV>() {
-
-            @Override
-            public AcademicTeacherCV run() {
-                PersistenceUnit pu = UPA.getPersistenceUnit();
-                AcademicTeacherCV a = (AcademicTeacherCV) pu.createQuery("Select u from AcademicTeacherCV u where u.teacherId=:id")
-                        .setParameter("id", t).getEntity();
-                if (a != null) {
-                    return a;
-                }
-                //check teacher
-                AcademicTeacher teacher = findTeacher(t);
-                if (teacher != null) {
-                    final AcademicTeacherCV cv = new AcademicTeacherCV();
-                    cv.setTeacher(teacher);
-                    UPA.getPersistenceUnit().persist(cv);
-                    return cv;
-                }
-                return null;
-            }
-        }, null);
-    }
 
     public List<AcademicCourseAssignment> findCourseAssignments() {
         return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a order by a.coursePlan.semester.code,a.coursePlan.program.name,a.name,a.courseType.name")
@@ -2409,7 +2386,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 String s = c.getName();
                 s = core.validateProfileName(s);
                 AppProfile p = core.findOrCreateCustomProfile(s, "AcademicClass");
-                core.userAddProfile(u.getId(), p.getName());
+                core.userAddProfile(u.getId(), p.getCode());
             }
 
             AcademicProgram pr = academicStudent.getLastClass1() == null ? null : academicStudent.getLastClass1().getProgram();
@@ -2417,7 +2394,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 String s = pr.getName();
                 s = core.validateProfileName(s);
                 AppProfile p = core.findOrCreateCustomProfile(s, "AcademicClass");
-                core.userAddProfile(u.getId(), p.getName());
+                core.userAddProfile(u.getId(), p.getCode());
             }
         }
         AppDepartment d = academicStudent.getDepartment();
@@ -2425,7 +2402,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             String s = d.getName();
             s = core.validateProfileName(s);
             AppProfile p = core.findOrCreateCustomProfile(s, "Department");
-            core.userAddProfile(u.getId(), p.getName());
+            core.userAddProfile(u.getId(), p.getCode());
         }
 
         return true;
@@ -2492,377 +2469,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         UPA.getPersistenceUnit().persist(t);
     }
 
-    public List<String> loadStudentPlanningListNames() {
-        TreeSet<String> all = new TreeSet<>();
-
-        VFile[] emploisFiles = getEmploiFolder().listFiles(new VFileFilter() {
-
-            @Override
-            public boolean accept(VFile pathname) {
-                return pathname.getName().toLowerCase().endsWith("_subgroups.xml");
-            }
-        });
-        VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
-        if (p != null && p.exists()) {
-            try {
-
-                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                Document doc = dBuilder.parse(p.getInputStream());
-                //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-                doc.getDocumentElement().normalize();
-
-                NodeList nList = doc.getElementsByTagName("Subgroup");
-
-                for (int temp = 0; temp < nList.getLength(); temp++) {
-
-                    Node nNode = nList.item(temp);
-
-//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-                        Element eElement = (Element) nNode;
-                        String tn = eElement.getAttribute("name");
-                        all.add(tn);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return new ArrayList<>(all);
-    }
-
-    private VFile getEmploiFolder() {
-        return fileSystemPlugin.getProfileFileSystem("DirectorOfStudies").get("/Emplois");
-    }
-
-    private PlanningData parsePlanningDataXML(Node planningNode) {
-//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
-        if (planningNode.getNodeType() == Node.ELEMENT_NODE) {
-
-            Element eElement = (Element) planningNode;
-            String tn = eElement.getAttribute("name");
-            PlanningData p2 = new PlanningData();
-            p2.setPlanningName(tn.trim());
-            p2.setDays(new ArrayList<PlanningDay>());
-            NodeList days = eElement.getElementsByTagName("Day");
-            for (int di = 0; di < days.getLength(); di++) {
-                Node dayNode = days.item(di);
-                PlanningDay dd = parsePlanningDayXML(dayNode);
-                if (dd != null) {
-                    p2.getDays().add(dd);
-                }
-            }
-            while (p2.getDays().size() < 6) {
-                PlanningDay d = new PlanningDay();
-                d.setDayName("Day " + p2.getDays().size());
-                p2.getDays().add(d);
-            }
-            return p2;
-        }
-        return null;
-    }
-
-    private PlanningDay parsePlanningDayXML(Node dayNode) {
-        if (dayNode.getNodeType() == Node.ELEMENT_NODE) {
-            Element dayElement = (Element) dayNode;
-            PlanningDay planningDay = new PlanningDay();
-            planningDay.setDayName(dayElement.getAttribute("name"));
-            List<PlanningHour> planningHours = new ArrayList<>();
-            NodeList hours = dayElement.getElementsByTagName("Hour");
-            for (int hi = 0; hi < hours.getLength(); hi++) {
-                Node hourNode = hours.item(hi);
-                PlanningHour ph = parsePlanningHourXML(hourNode);
-                if (ph != null) {
-                    planningHours.add(ph);
-                }
-
-            }
-            planningDay.setHours(planningHours);
-
-            if (planningDay.getHours() == null || planningDay.getHours().size() < 5) {
-                List<PlanningHour> all = new ArrayList<>();
-                if (planningDay.getHours() != null) {
-                    all.addAll((planningDay.getHours()));
-                }
-                while (all.size() < 5) {
-                    PlanningHour dd = new PlanningHour();
-                    dd.setHour("H #" + all.size());
-                    all.add(dd);
-                }
-                planningDay.setHours(all);
-            }
-
-            return (planningDay);
-        }
-        return null;
-    }
-
-    private PlanningHour parsePlanningHourXML(Node hourNode) {
-        if (hourNode.getNodeType() == Node.ELEMENT_NODE) {
-            Element hourElement = (Element) hourNode;
-            PlanningHour ph = new PlanningHour();
-            ph.setHour(hourElement.getAttribute("name"));
-            NodeList childNodes = hourElement.getChildNodes();
-            for (int ci = 0; ci < childNodes.getLength(); ci++) {
-                Node cNode = childNodes.item(ci);
-                if (cNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element cElement = (Element) cNode;
-                    if ("Activity_Tag".equals(cElement.getNodeName())) {
-                        ph.setActivity(cElement.getAttribute("name"));
-                    } else if ("Students".equals(cElement.getNodeName())) {
-                        ph.setStudents(cElement.getAttribute("name"));
-                    } else if ("Teacher".equals(cElement.getNodeName())) {
-                        ph.setTeacher(cElement.getAttribute("name"));
-                    } else if ("Subject".equals(cElement.getNodeName())) {
-                        ph.setSubject(cElement.getAttribute("name"));
-                    } else if ("Room".equals(cElement.getNodeName())) {
-                        ph.setRoom(cElement.getAttribute("name"));
-                    }
-                }
-            }
-            String actor = "";
-            if (!StringUtils.isEmpty(ph.getStudents())) {
-                if (actor.length() > 0) {
-                    actor += " / ";
-                }
-                actor += ph.getStudents();
-            }
-            if (!StringUtils.isEmpty(ph.getTeacher())) {
-                if (actor.length() > 0) {
-                    actor += " / ";
-                }
-                actor += ph.getTeacher();
-            }
-            ph.setActor(actor);
-            return (ph);
-        }
-        return null;
-    }
-
-    public List<PlanningData> loadStudentPlanningList(int studentId) {
-        AcademicStudent student = findStudent(studentId);
-        List<PlanningData> list = new ArrayList<>();
-        HashMap<String, String> nameMapping = new HashMap<>();
-        if (student.getLastClass1() != null) {
-            String n2 = student.getLastClass1().getName().trim().toLowerCase();
-            nameMapping.put(n2, n2);
-            for (String s : splitOtherNames(student.getLastClass1().getOtherNames())) {
-                nameMapping.put(s, n2);
-            }
-        }
-        if (student.getLastClass2() != null) {
-            String n2 = student.getLastClass2().getName().trim().toLowerCase();
-            nameMapping.put(n2, n2);
-            for (String s : splitOtherNames(student.getLastClass2().getOtherNames())) {
-                nameMapping.put(s, n2);
-            }
-        }
-        if (student.getLastClass3() != null) {
-            String n2 = student.getLastClass3().getName().trim().toLowerCase();
-            nameMapping.put(n2, n2);
-            for (String s : splitOtherNames(student.getLastClass3().getOtherNames())) {
-                nameMapping.put(s, n2);
-            }
-        }
-        VFile[] emploisFiles = getEmploiFolder().listFiles(new VFileFilter() {
-
-            @Override
-            public boolean accept(VFile pathname) {
-                return pathname.getName().toLowerCase().endsWith("_subgroups.xml");
-            }
-        });
-        VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
-        if (p != null && p.exists()) {
-            try {
-
-                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                Document doc = dBuilder.parse(p.getInputStream());
-                //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-                doc.getDocumentElement().normalize();
-
-                NodeList nList = doc.getElementsByTagName("Subgroup");
-
-                for (int temp = 0; temp < nList.getLength(); temp++) {
-
-                    Node nNode = nList.item(temp);
-
-//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-                        Element eElement = (Element) nNode;
-                        String tn = eElement.getAttribute("name");
-                        if (nameMapping.containsKey(tn.trim().toLowerCase())) {
-                            PlanningData p2 = parsePlanningDataXML(nNode);
-                            if (p2 != null) {
-                                p2.setPlanningUniformName(nameMapping.get(tn.trim().toLowerCase()));
-                                list.add(p2);
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return list;
-    }
-
-    public PlanningData loadClassPlanning(String className) {
-        String uniformClassName = className == null ? "" : className.toLowerCase().trim();
-        if (StringUtils.isEmpty(uniformClassName)) {
-            return null;
-        }
-        VFile[] emploisFiles = getEmploiFolder().listFiles(new VFileFilter() {
-
-            @Override
-            public boolean accept(VFile pathname) {
-                return pathname.getName().toLowerCase().endsWith("_subgroups.xml");
-            }
-        });
-        VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
-        if (p != null && p.exists()) {
-            try {
-
-                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                Document doc = dBuilder.parse(p.getInputStream());
-                //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-                doc.getDocumentElement().normalize();
-
-                NodeList nList = doc.getElementsByTagName("Subgroup");
-
-                for (int temp = 0; temp < nList.getLength(); temp++) {
-
-                    Node nNode = nList.item(temp);
-
-//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-                        Element eElement = (Element) nNode;
-                        String tn = eElement.getAttribute("name");
-                        if (uniformClassName.equals(tn.trim().toLowerCase())) {
-                            PlanningData p2 = parsePlanningDataXML(nNode);
-                            return p2;
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-    private Set<String> splitOtherNames(String value) {
-        Set<String> all = new HashSet<>();
-        if (value != null) {
-            for (String s : value.split(",|;")) {
-                if (s.trim().length() > 0) {
-                    all.add(s.trim().toLowerCase());
-                }
-            }
-        }
-        return all;
-    }
-
-    public List<PlanningData> loadUserPlannings(int userId) {
-        AppUser uuu = core.findUser(userId);
-        List<PlanningData> list = new ArrayList<>();
-        if (uuu == null) {
-            return list;
-        }
-//        String teacherName = uuu == null ? "" : uuu.getContact().getFullName();
-        VFile p = fileSystemPlugin.getUserFolder(uuu.getLogin()).get("/myplanning.xml");
-        if (p != null && p.exists()) {
-            try {
-
-                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                Document doc = dBuilder.parse(p.getInputStream());
-                //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-                doc.getDocumentElement().normalize();
-
-                NodeList nList = doc.getElementsByTagName("User");
-
-                for (int temp = 0; temp < nList.getLength(); temp++) {
-
-                    Node nNode = nList.item(temp);
-
-//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-                        Element eElement = (Element) nNode;
-                        PlanningData d = parsePlanningDataXML(nNode);
-                        if (d != null) {
-                            list.add(d);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return list;
-    }
-
-    public PlanningData loadTeacherPlanning(int teacherId) {
-        AcademicTeacher teacher = findTeacher(teacherId);
-
-        String teacherName = teacher == null ? "" : teacher.getContact().getFullName();
-        HashSet<String> teacherNames = new HashSet<>();
-        teacherNames.add(teacherName.toLowerCase());
-        if (teacher != null) {
-            for (String s : splitOtherNames(teacher.getOtherNames())) {
-                teacherNames.add(s);
-            }
-        }
-        VFile[] emploisFiles = getEmploiFolder().listFiles(new VFileFilter() {
-
-            @Override
-            public boolean accept(VFile pathname) {
-                return pathname.getName().toLowerCase().endsWith("_teachers.xml");
-            }
-        });
-        VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
-        if (p != null && p.exists()) {
-            try {
-
-                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                Document doc = dBuilder.parse(p.getInputStream());
-                //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-                doc.getDocumentElement().normalize();
-
-                NodeList nList = doc.getElementsByTagName("Teacher");
-
-                for (int temp = 0; temp < nList.getLength(); temp++) {
-
-                    Node nNode = nList.item(temp);
-
-//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-                        Element eElement = (Element) nNode;
-                        String tn = eElement.getAttribute("name");
-                        if (teacherNames.contains(tn.trim().toLowerCase().trim())) {
-                            PlanningData dd = parsePlanningDataXML(nNode);
-                            if (dd != null) {
-                                dd.setPlanningUniformName(teacherName);
-                                return dd;
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
     @Override
     public Map<String, Object> getExtendedPropertyValues(Object o) {
         if (o instanceof AppUser) {
@@ -2916,8 +2522,66 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return (name);
     }
 
+    public List<AcademicClass> findAcademicUpHierarchyList(AcademicClass[] classes, Map<Integer, AcademicClass> allClasses) {
+        HashSet<Integer> visited = new HashSet<>();
+        if (allClasses == null) {
+            allClasses = findAcademicClassesMap();
+        }
+        List<AcademicClass> result = new ArrayList<>();
+        Stack<Integer> stack = new Stack<>();
+        for (AcademicClass c : classes) {
+            if (c != null) {
+                stack.push(c.getId());
+            }
+        }
+        while (!stack.isEmpty()) {
+            int i = stack.pop();
+            if (!visited.contains(i)) {
+                AcademicClass c = allClasses.get(i);
+                if (c != null) {
+                    result.add(c);
+                    AcademicClass p = c.getParent();
+                    if (p != null) {
+                        stack.push(p.getId());
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public List<AcademicClass> findAcademicDownHierarchyList(AcademicClass[] classes, Map<Integer, AcademicClass> allClasses) {
+        HashSet<Integer> visited = new HashSet<>();
+        if (allClasses == null) {
+            allClasses = findAcademicClassesMap();
+        }
+        List<AcademicClass> result = new ArrayList<>();
+        Stack<Integer> stack = new Stack<>();
+        for (AcademicClass c : classes) {
+            if (c != null) {
+                stack.push(c.getId());
+            }
+        }
+        while (!stack.isEmpty()) {
+            int i = stack.pop();
+            if (!visited.contains(i)) {
+                AcademicClass c = allClasses.get(i);
+                if (c != null) {
+                    result.add(c);
+                    for (AcademicClass p : allClasses.values()) {
+                        if (p.getParent() != null && p.getParent().getId() == c.getId()) {
+                            stack.push(p.getId());
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     public void validateAcademicData() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
+        Map<Integer, AcademicClass> academicClasses = findAcademicClassesMap();
         for (AcademicStudent s : findStudents()) {
             AppUser u = s.getUser();
             if (u != null && u.getContact() != null) {
@@ -2938,10 +2602,18 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 }
 
                 TreeSet<String> classNames = new TreeSet<>();
-                for (AcademicClass ac : new AcademicClass[]{s.getLastClass1(), s.getLastClass2(), s.getLastClass3()}) {
+                AcademicClass[] clsArr = new AcademicClass[]{s.getLastClass1(), s.getLastClass2(), s.getLastClass3()};
+                for (AcademicClass ac : clsArr) {
                     if (ac != null) {
                         String n = core.validateProfileName(ac.getName());
                         classNames.add(n);
+                    }
+                }
+                for (AcademicClass ac : findAcademicUpHierarchyList(clsArr, academicClasses)) {
+                    if (ac != null) {
+                        String n = core.validateProfileName(ac.getName());
+                        //ignore inherited profiles in suffix
+//                        classNames.add(n);
                         AppProfile p = core.findOrCreateCustomProfile(n, "AcademicClass");
                         goodProfiles.add(p.getId());
 
@@ -2996,15 +2668,37 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     goodProfiles.add(p.getId());
                 }
                 //find classes teached by  teacher
+                List<AcademicClass> myClasses = new ArrayList<>();
+                Set<String> myPrograms = new HashSet<>();
                 for (AcademicCourseAssignment a : findCourseAssignments(s.getId(), null, false, statCache)) {
-                    String n = core.validateProfileName(a.getCoursePlan().getProgram().getName());
+                    myPrograms.add(a.getCoursePlan().getProgram().getName());
+                    myClasses.add(a.getSubClass());
+                    myClasses.add(a.getCoursePlan().getStudentClass());
+                }
+
+                for (AcademicClass ac : findAcademicUpHierarchyList(myClasses.toArray(new AcademicClass[myClasses.size()]), academicClasses)) {
+                    if (ac != null) {
+                        String n = core.validateProfileName(ac.getName());
+                        //ignore inherited profiles in suffix
+//                        classNames.add(n);
+                        AppProfile p = core.findOrCreateCustomProfile(n, "AcademicClass");
+                        goodProfiles.add(p.getId());
+
+                        AcademicProgram pr = ac.getProgram();
+                        if (pr != null) {
+                            myPrograms.add(pr.getName());
+                        }
+                    }
+                }
+                for (String myProgram : myPrograms) {
+                    String n = core.validateProfileName(myProgram);
                     AppProfile p = core.findOrCreateCustomProfile(n, "AcademicProgram");
                     goodProfiles.add(p.getId());
-
-                    n = a.getCoursePlan().getStudentClass().getName();
-                    p = core.findOrCreateCustomProfile(n, "AcademicClass");
-                    goodProfiles.add(p.getId());
                 }
+
+//                                    n = a.getCoursePlan().getStudentClass().getName();
+//                    p = core.findOrCreateCustomProfile(n, "AcademicClass");
+//                    goodProfiles.add(p.getId());
                 boolean perm = false;
                 for (AppProfile op : oldProfiles) {
                     if ("Permanent".equals(op.getName())) {

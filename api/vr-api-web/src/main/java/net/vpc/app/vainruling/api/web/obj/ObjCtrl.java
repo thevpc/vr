@@ -28,11 +28,11 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.EntityAction;
 import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.core.ActionInfo;
+import net.vpc.app.vainruling.api.core.ObjFieldSelection;
 import net.vpc.app.vainruling.api.core.ObjManagerService;
 import net.vpc.app.vainruling.api.core.ObjSearch;
+import net.vpc.app.vainruling.api.core.ObjFieldFieldSelection;
 import net.vpc.app.vainruling.api.i18n.I18n;
 import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.app.vainruling.api.web.BreadcrumbItem;
@@ -207,11 +207,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     if ("New".equals(buttonId)) {
                         return UPA.getPersistenceUnit().getSecurityManager().isAllowedPersist(getEntity());
                     }
-                    if ("Cancel".equals(buttonId)) {
+                    if ("List".equals(buttonId)) {
                         return false;
                     }
                     if ("Remove".equals(buttonId)) {
                         return UPA.getPersistenceUnit().getSecurityManager().isAllowedRemove(getEntity());
+                    }
+                    if ("Advanced".equals(buttonId)) {
+                        return isEnabledButton("Archive");
                     }
                     if ("Archive".equals(buttonId)) {
                         return UPA.getPersistenceUnit().getSecurityManager()
@@ -229,7 +232,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     if ("Save".equals(buttonId)) {
                         return UPA.getPersistenceUnit().getSecurityManager().isAllowedPersist(getEntity());
                     }
-                    if ("Cancel".equals(buttonId)) {
+                    if ("List".equals(buttonId)) {
                         return true;
                     }
                     ActionDialogAdapter e = actionDialogManager.findAction(buttonId);
@@ -242,7 +245,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     if ("Save".equals(buttonId)) {
                         return UPA.getPersistenceUnit().getSecurityManager().isAllowedUpdate(getEntity());
                     }
-                    if ("Cancel".equals(buttonId)) {
+                    if ("List".equals(buttonId)) {
                         return true;
                     }
                     if ("Remove".equals(buttonId)) {
@@ -252,6 +255,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                         return UPA.getPersistenceUnit().getSecurityManager()
                                 .isAllowedUpdate(getEntity())
                                 && objService.isArchivable(getModel().getEntityName());
+                    }
+                    if ("Advanced".equals(buttonId)) {
+                        return isEnabledButton("Archive");
                     }
                     ActionDialogAdapter e = actionDialogManager.findAction(buttonId);
                     if (e != null) {
@@ -354,7 +360,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     break;
                 }
             }
-            reloadPage();
+            reloadPage(true);
             updateMode(EditCtrlMode.LIST);
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
@@ -373,13 +379,13 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                         count++;
                     }
                 }
-                reloadPage();
+                reloadPage(true);
             } else {
                 currentViewToModel();
                 Object c = getModel().getCurrentObj();
                 objService.remove(getEntityName(), objService.resolveId(c));
                 count++;
-                reloadPage();
+                reloadPage(true);
                 updateMode(EditCtrlMode.LIST);
             }
             if (count == 0) {
@@ -404,7 +410,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                         count++;
                     }
                 }
-                reloadPage();
+                reloadPage(true);
             } else {
                 currentViewToModel();
                 Object c = getModel().getCurrentObj();
@@ -424,22 +430,50 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     @OnPageLoad
+    public void onPageLoad(String cmd) {
+        reloadPage(cmd, false);
+    }
+
     @Override
-    public void reloadPage(String cmd) {
+    public void reloadPage(String cmd, boolean enableCustomization) {
         enabledButtons.clear();
+        ObjSearch oldSearch = getModel().getSearch();
+        ObjFieldSelection oldFieldSelection = getModel().getFieldSelection();
+        Set<String> oldDisabledFields = getModel().getDisabledFields();
+        String oldEntityName = getModel().getEntityName();
+        getModel().setSearch(null);
+        getModel().setFieldSelection(null);
         try {
             Config cfg = VrHelper.parseJSONObject(cmd, Config.class);
             getModel().setConfig(cfg);
-            getModel().setDisabledFields(new HashSet<String>());
-            if (cfg.disabledFields != null) {
-                for (String disabledField : cfg.disabledFields) {
-                    if (!StringUtils.isEmpty(disabledField)) {
-                        getModel().getDisabledFields().add(disabledField);
-                    }
-                }
-            }
             getModel().setCmd(cmd);
             setEntityName(cfg.entity);
+            if (oldEntityName == null || !oldEntityName.equals(cfg.entity)) {
+                oldSearch = null;
+                oldFieldSelection = null;
+                oldDisabledFields = null;
+            }
+            if (enableCustomization) {
+                getModel().setDisabledFields(oldDisabledFields);
+                getModel().setFieldSelection(oldFieldSelection);
+                getModel().setSearch(oldSearch);
+            } else {
+                getModel().setDisabledFields(new HashSet<String>());
+
+                if (cfg.disabledFields != null) {
+                    for (String disabledField : cfg.disabledFields) {
+                        if (!StringUtils.isEmpty(disabledField)) {
+                            getModel().getDisabledFields().add(disabledField);
+                        }
+                    }
+                }
+                if (cfg.selectedFields != null) {
+                    getModel().setFieldSelection(new ObjFieldFieldSelection(getEntity(), cfg.selectedFields));
+                }
+                if (cfg.searchExpr != null) {
+                    getModel().setSearch(new ObjSimpleSearch(cfg.searchExpr));
+                }
+            }
             List<Object> found = objService.findByFilter(getEntityName(), cfg.listFilter, getModel().getSearch());
             List<ObjRow> filteredObjects = new ArrayList<>();
             Entity entity = getEntity();
@@ -450,11 +484,16 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     ObjRow r = new ObjRow(o);
                     r.setRead(sm.isAllowedLoad(entity, id, o));
                     r.setWrite(sm.isAllowedUpdate(entity, id, o));
+                    r.setRowPos(filteredObjects.size());
                     filteredObjects.add(r);
                 }
             }
             getModel().setList(filteredObjects);
             if (cfg.id == null || cfg.id.trim().length() == 0) {
+                updateMode(EditCtrlMode.LIST);
+                getModel().setCurrent(null);
+            } else if (enableCustomization && getModel().getMode() == EditCtrlMode.LIST) {
+                //do nothing
                 updateMode(EditCtrlMode.LIST);
                 getModel().setCurrent(null);
             } else {
@@ -463,6 +502,15 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 ObjRow r = new ObjRow(curr);
                 r.setRead(sm.isAllowedLoad(entity, eid, curr));
                 r.setWrite(sm.isAllowedUpdate(entity, eid, curr));
+                r.setRowPos(-1);
+                //now should try finding row pos
+                for (ObjRow filteredObject : filteredObjects) {
+                    Object id1 = getEntity().getBuilder().entityToId(filteredObject.getValue());
+                    if (id1.equals(eid)) {
+                        r.setRowPos(filteredObject.getRowPos());
+                        break;
+                    }
+                }
                 getModel().setCurrent(r);
                 updateMode(EditCtrlMode.UPDATE);
                 currentModelToView();
@@ -655,10 +703,13 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 r.setRead(true);
                 r.setWrite(true);
                 r.setSelected(false);
+                r.setRowPos(-1);
 
                 return r;
             }
-            return new ObjRow(new Object());
+            ObjRow r = new ObjRow(new Object());
+            r.setRowPos(-1);
+            return r;
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
@@ -790,7 +841,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             columns.clear();
             properties.clear();
             boolean adm = VrApp.getBean(CorePlugin.class).isActualAdmin();
-            for (Field field : ot.getFields(Fields.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY))) {
+
+            List<Field> fields = new ArrayList<Field>();
+            if (getModel().getFieldSelection() == null) {
+                fields = ot.getFields(Fields.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY));
+            } else {
+                fields = getModel().getFieldSelection().getVisibleFields();
+            }
+            for (Field field : fields) {
                 AccessLevel ral = field.getReadAccessLevel();
                 if (ral == AccessLevel.PRIVATE) {
                     continue;
@@ -980,6 +1038,38 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
+    public boolean isEnabledSelectNext() {
+        ObjRow objRow = getModel().getCurrent();
+        if (objRow != null && objRow.getRowPos() >= 0 && objRow.getRowPos() + 1 < getModel().getList().size()) {
+            return true;
+        }
+        return false;
+    }
+
+    public void onSelectNext() {
+        ObjRow objRow = getModel().getCurrent();
+        if (objRow != null && objRow.getRowPos() >= 0 && objRow.getRowPos() + 1 < getModel().getList().size()) {
+            getModel().setCurrent(getModel().getList().get(objRow.getRowPos() + 1));
+            onSelectCurrent();
+        }
+    }
+
+    public boolean isEnabledSelectPrevious() {
+        ObjRow objRow = getModel().getCurrent();
+        if (objRow != null && objRow.getRowPos() > 0 && getModel().getList().size() > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public void onSelectPrevious() {
+        ObjRow objRow = getModel().getCurrent();
+        if (objRow != null && objRow.getRowPos() > 0 && getModel().getList().size() > 0) {
+            getModel().setCurrent(getModel().getList().get(objRow.getRowPos() - 1));
+            onSelectCurrent();
+        }
+    }
+
     @Override
     public void onSelectCurrent() {
         enabledButtons.clear();
@@ -994,7 +1084,20 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         if (getModel().getCurrent() != null) {
             Config cfg = new Config();
             cfg.entity = getEntityName();
-            cfg.id = String.valueOf(getEntity().getBuilder().entityToId(getModel().getCurrent().getValue()));
+            Object curr = getModel().getCurrent() == null ? null : getEntity().getBuilder().entityToId(getModel().getCurrent().getValue());
+            cfg.id = curr == null ? null : String.valueOf(curr);
+            if (getModel().getFieldSelection() != null) {
+                ArrayList<String> all = new ArrayList<>();
+                for (Field f : getModel().getFieldSelection().getVisibleFields()) {
+                    all.add(f.getName());
+                }
+                cfg.selectedFields = all.toArray(new String[all.size()]);
+            }
+            if (getModel().getSearch() != null) {
+                if (getModel().getSearch() instanceof ObjSimpleSearch) {
+                    cfg.searchExpr = ((ObjSimpleSearch) getModel().getSearch()).getExpression();
+                }
+            }
             menu.pushHistory("obj", cfg);
         }
     }
@@ -1025,12 +1128,31 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         RequestContext.getCurrentInstance().openDialog("/modules/obj/objsimplesearchdialog", options, null);
     }
 
+    public void onSimpleFieldSelection() {
+        ObjFieldSelection oldSearch = getModel().getFieldSelection();
+        if (oldSearch == null) {
+            oldSearch = new ObjFieldFieldSelection();
+        }
+        getModel().setFieldSelection(oldSearch);
+        oldSearch.prepare(getEntity());
+        Map<String, Object> options = new HashMap<String, Object>();
+        options.put("resizable", false);
+        options.put("draggable", false);
+        options.put("modal", true);
+        RequestContext.getCurrentInstance().openDialog("/modules/obj/objsimplefieldseldialog", options, null);
+    }
+
     public void onDoNothing() {
 //        System.out.println("do nothing");
     }
 
     public void onClearSearch() {
         getModel().setSearch(null);
+        onRefresh();
+    }
+
+    public void onClearFieldSelection() {
+        getModel().setFieldSelection(null);
         onRefresh();
     }
 
@@ -1060,6 +1182,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         public String listFilter;
         public Map<String, String> values;
         public String[] disabledFields;
+        public String[] selectedFields;
+        public String searchExpr;
     }
 
     public boolean filterByProperty(Object value, Object filter, Locale locale) {

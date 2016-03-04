@@ -9,6 +9,7 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
+import net.vpc.upa.config.Hierarchy;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
 import net.vpc.upa.config.Sequence;
@@ -28,6 +29,10 @@ public class AcademicClass {
     private String name;
     private String name2;
     private String otherNames;
+    @Hierarchy
+    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    private AcademicClass parent;
+
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     private AcademicProgram program;
 
@@ -83,5 +88,14 @@ public class AcademicClass {
     public void setOtherNames(String otherNames) {
         this.otherNames = otherNames;
     }
+
+    public AcademicClass getParent() {
+        return parent;
+    }
+
+    public void setParent(AcademicClass parent) {
+        this.parent = parent;
+    }
+    
 
 }

@@ -43,22 +43,29 @@ and open the template in the editor.
                     <!-- /.row -->
                     <div class="row">
                         <p:outputPanel id="buttons">
-                            <p:commandButton value="Rafr." rendered="#{objCtrl.isEnabledButton('Refresh')}" icon="fa fa-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onRefresh}"  update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="Nouv." rendered="#{objCtrl.isEnabledButton('New')}" icon="fa fa-plus" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onNew}"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton  title="Actualiser" rendered="#{objCtrl.isEnabledButton('Refresh')}" icon="fa fa-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onRefresh}"  update="buttons :listForm :itemForm :pageTitleForm" alt=""/>
+                            <p:commandButton title="Nouveau" rendered="#{objCtrl.isEnabledButton('New')}" icon="fa fa-plus" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onNew}"  update="buttons :listForm :itemForm :pageTitleForm"/>
 
-                            <p:splitButton value="Enreg." rendered="#{objCtrl.isEnabledButton('Save')}"  onclick="processOnSaveCurrent()"  update="buttons :listForm :itemForm :pageTitleForm" icon="ui-icon-disk" styleClass=" vr-toolbox-button">
+                            <p:splitButton title="Enregistrer" rendered="#{objCtrl.isEnabledButton('Save')}"  onclick="processOnSaveCurrent()"  update="buttons :listForm :itemForm :pageTitleForm" icon="fa fa-save" styleClass=" vr-toolbox-button">
                                 <p:menuitem value="Enregister et Fermer" onclick="processOnSaveCurrentAndClose()" ajax="true"  update="buttons :listForm :itemForm :pageTitleForm" icon="ui-icon-arrowrefresh-1-w" />
                                 <p:menuitem value="Enregistrer" onclick="processOnSaveCurrent()"  ajax="true" update="buttons :listForm :itemForm :pageTitleForm" icon="ui-icon-close" />
                             </p:splitButton>
 
-                            <p:splitButton value="Cherch." rendered="#{objCtrl.isEnabledButton('Search')}"  icon="fa fa-search"  onclick="document.getElementById('listForm:processOnSimpleSearchLink').click();"  update="buttons :listForm :itemForm :pageTitleForm" styleClass=" vr-toolbox-button">
-                                <p:menuitem value="Recherche Simple" icon="fa fa-search" onclick="document.getElementById('listForm:processOnSimpleSearchLink').click();" ajax="true"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton title="Supprimer" rendered="#{objCtrl.isEnabledButton('Remove')}" icon="fa fa-trash-o" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"   onclick="PF('confirmationDelete').show();" />
+
+                            <p:splitButton title="Chercher" rendered="#{objCtrl.isEnabledButton('Search')}"  icon="fa fa-search"  onclick="document.getElementById('listForm:processOnSimpleSearchLink').click();"  update="buttons :listForm :itemForm :pageTitleForm" styleClass=" vr-toolbox-button">
+                                <p:menuitem value="Recherche Simple" icon="" onclick="document.getElementById('listForm:processOnSimpleSearchLink').click();" ajax="true"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                                <p:menuitem value="Annuler Recherche" icon="ui-icon-close" onclick="processOnClearSearch()" ajax="true"  update="buttons :listForm :itemForm :pageTitleForm" />
                                 <p:separator />
-                                <p:menuitem value="Supprimer Filtres" icon="fa fa-search" onclick="processOnClearSearch()" ajax="true"  update="buttons :listForm :itemForm :pageTitleForm" />
+                                <p:menuitem value="Sél. Propriétés" icon="" onclick="document.getElementById('listForm:processOnSimpleFieldSelectionLink').click();" ajax="true"  update="buttons :listForm :itemForm :pageTitleForm"/>
+                                <p:menuitem value="Reini. Propriétés" icon="ui-icon-close" onclick="processOnClearFieldSelection()" ajax="true"  update="buttons :listForm :itemForm :pageTitleForm" />
                             </p:splitButton>
 
-                            <p:commandButton value="Supp." rendered="#{objCtrl.isEnabledButton('Remove')}" icon="fa fa-trash-o" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"   onclick="PF('confirmationDelete').show();" />
-                            <p:commandButton value="Arch." rendered="#{objCtrl.isEnabledButton('Archive')}" icon="fa fa-archive" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"  onclick="PF('confirmationArchive').show();"/>
+
+                            <p:splitButton rendered="#{objCtrl.isEnabledButton('Advanced')}" title="Avancé" icon="fa fa-compass" styleClass=" vr-toolbox-button">
+                                <p:menuitem rendered="#{objCtrl.isEnabledButton('Archive')}" value="Archiver" icon="fa fa-archive" onclick="PF('confirmationArchive').show();" ajax="true"/>
+                                <p:separator />
+                            </p:splitButton>
 
                             <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Assign')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onAssignCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
                             <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Unassign')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onUnassignCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
@@ -77,23 +84,38 @@ and open the template in the editor.
                             <p:commandButton value="pdf" rendered="#{objCtrl.isEnabledButton('ExportPdf')}" icon="fa fa-file-pdf-o"  styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" update="buttons :listForm :itemForm :pageTitleForm"/>
                             <p:commandButton value="Auth." rendered="#{objCtrl.isEnabledButton('Authorization')}" icon="fa fa-user-secret" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" type="button"  update="buttons :listForm :itemForm :pageTitleForm"/>
                             <p:commandButton value="Trace" rendered="#{objCtrl.isEnabledButton('Log')}" icon="fa fa-backward" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" type="button" update="buttons :listForm :itemForm :itemForm :pageTitleForm"/>  
-                            <p:commandButton value="Liste" rendered="#{objCtrl.isEnabledButton('Cancel')}" icon="fa fa-arrow-left" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onCancelCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
-                            <p:commandButton value="Retour" icon="fa fa-arrow-left" 
+                            <p:commandButton title="Liste" rendered="#{objCtrl.isEnabledButton('List')}" icon="fa fa-list-ol" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onCancelCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
+
+                            <p:commandButton title="Precédant" icon="fa fa-angle-left" 
+                                             action="#{objCtrl.onSelectPrevious}" 
+                                             rendered="#{objCtrl.enabledSelectPrevious}"
+                                             ajax="true" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
+                                             update="buttons :listForm :itemForm :pageTitleForm"
+                                             />  
+
+                            <p:commandButton title="Suivant" icon="fa fa-angle-right" 
+                                             action="#{objCtrl.onSelectNext}" 
+                                             rendered="#{objCtrl.enabledSelectNext}"
+                                             ajax="true" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
+                                             update="buttons :listForm :itemForm :pageTitleForm"
+                                             />  
+
+                            <p:commandButton title="Retour" icon="fa fa-history" 
                                              action="#{vrMenuManager.goBack}" 
                                              ajax="false" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"/>  
 
 
-<!--                            <p:commandButton 
-                                value="#_{objCtrl.model.actions.get(0).value}" 
-                                rendered="#_{objCtrl.model.actions.size() gt 0 and objCtrl.isEnabledButton(objCtrl.model.actions.get(0).key)}" 
-                                icon="#_{objCtrl.model.actions.get(0).icon}" 
-                                styleClass="ui-ribbon-bigbutton  vr-icon-aws vr-toolbox-button" 
-                                ajax="true"
-                                actionListener="#_{objCtrl.openActionDialog(objCtrl.model.actions.get(0).key)}"
-                                >
-                                <p:ajax event="dialogReturn" listener="#_{objCtrl.onActionDialogClosed}" update="buttons :listForm :itemForm :itemForm :pageTitleForm" />
-
-                            </p:commandButton>-->
+                            <!--                            <p:commandButton 
+                                                            value="#_{objCtrl.model.actions.get(0).value}" 
+                                                            rendered="#_{objCtrl.model.actions.size() gt 0 and objCtrl.isEnabledButton(objCtrl.model.actions.get(0).key)}" 
+                                                            icon="#_{objCtrl.model.actions.get(0).icon}" 
+                                                            styleClass="ui-ribbon-bigbutton  vr-icon-aws vr-toolbox-button" 
+                                                            ajax="true"
+                                                            actionListener="#_{objCtrl.openActionDialog(objCtrl.model.actions.get(0).key)}"
+                                                            >
+                                                            <p:ajax event="dialogReturn" listener="#_{objCtrl.onActionDialogClosed}" update="buttons :listForm :itemForm :itemForm :pageTitleForm" />
+                            
+                                                        </p:commandButton>-->
                             <p:commandButton 
                                 value="#{objCtrl.model.actions.get(0).value}" 
                                 rendered="#{objCtrl.model.actions.size() gt 0 and objCtrl.isEnabledButton(objCtrl.model.actions.get(0).key)}" 
@@ -205,9 +227,15 @@ and open the template in the editor.
                     <p:remoteCommand name="processOnArchiveCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onArchiveCurrent()}"/>
                     <p:remoteCommand name="processOnSimpleSearch" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onSimpleSearch()}"/>
                     <p:remoteCommand name="processOnClearSearch" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onClearSearch()}"/>
+                    <p:remoteCommand name="processOnSimpleFieldSelection" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onSimpleFieldSelection()}"/>
+                    <p:remoteCommand name="processOnClearFieldSelection" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onClearFieldSelection()}"/>
+
                     <p:remoteCommand name="processOnUpdate" process="@form" update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onDoNothing()}"/>
 
                     <p:commandLink id="processOnSimpleSearchLink" action="#{objCtrl.onSimpleSearch()}">
+                        <p:ajax event="dialogReturn" listener="#{objCtrl.onSearchDialogClosed}" update=":listForm" />
+                    </p:commandLink>
+                    <p:commandLink id="processOnSimpleFieldSelectionLink" action="#{objCtrl.onSimpleFieldSelection()}">
                         <p:ajax event="dialogReturn" listener="#{objCtrl.onSearchDialogClosed}" update=":listForm" />
                     </p:commandLink>
 
@@ -337,8 +365,8 @@ and open the template in the editor.
                                             <p:separator/>  
                                         </h:panelGrid>  
                                     </pe:dynaFormControl>
-                                    <pe:dynaFormControl type="entityDetail">  
-                                        <p:commandButton ajax="false" value="..." disabled="#{data.disabled}" action="#{vrMenuManager.gotoPage('obj', data.buildActionCommand())}"/>
+                                    <pe:dynaFormControl type="entityDetail">   
+                                        <p:commandButton ajax="false" value="#{data.evalCount()}" disabled="#{data.disabled}" action="#{vrMenuManager.gotoPage('obj', data.buildActionCommand())}"/>
                                     </pe:dynaFormControl>
 
 

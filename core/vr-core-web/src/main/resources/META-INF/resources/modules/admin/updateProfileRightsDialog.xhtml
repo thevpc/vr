@@ -51,13 +51,12 @@ and open the template in the editor.
                 <p:pickList value="#{updateProfileRightsActionCtrl.model.values}" var="v" effect="bounce"
                             itemValue="#{v.name}" itemLabel="#{v.name}" 
                             showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
-                            >
+                             >
 
                     <f:facet name="sourceCaption">Disponibles</f:facet>
                     <f:facet name="targetCaption">Affectés</f:facet>
 
-                </p:pickList>
-
+              
                 <p:separator/>
 
                 <p:commandButton value="Enregistrer" actionListener="#{updateProfileRightsActionCtrl.save}" 
