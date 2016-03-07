@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.i18n.I18n;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
 import net.vpc.common.gomail.GoMail;
 import net.vpc.common.gomail.GoMailBodyPosition;
 import net.vpc.upa.Action;
@@ -36,6 +37,8 @@ public class I18nChecker {
 
             @Override
             public Object run() {
+                AcademicFeedback f=new AcademicFeedback();
+                UPA.getPersistenceUnit().persist(f);
 //                for (Object o : UPA.getPersistenceUnit().findAll(AcademicInternship.class)) {
 //                    System.out.println(o);
 //                }

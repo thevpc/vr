@@ -447,7 +447,7 @@ public class AcademicInternshipPlugin {
             validCodes.add(vc.getCode());
         }
 
-        for (AppUser appUser : core.resolveUsersByProfileFilter(studentProfiles)) {
+        for (AppUser appUser : core.findUsersByProfileFilter(studentProfiles)) {
             AcademicStudent student = acad.findStudentByUser(appUser.getId());
             if (student != null) {
                 AcademicInternship i = pu.createQuery("Select u from AcademicInternship u where "

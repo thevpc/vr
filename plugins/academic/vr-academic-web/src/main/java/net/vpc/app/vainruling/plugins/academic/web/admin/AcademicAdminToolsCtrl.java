@@ -100,8 +100,8 @@ public class AcademicAdminToolsCtrl {
 
     public void updateData() {
         try {
-            AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-            p.validateAcademicData();
+//            AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
+//            p.validateAcademicData();
             UPA.getPersistenceUnit().updateFormulas();
             FacesUtils.addInfoMessage("Successful Operation");
         } catch (Exception ex) {

@@ -123,7 +123,7 @@ public class ProfileExprDialogCtrl {
 
     public void revalidateUsersList() {
         String e = getModel().getExpression();
-        getModel().setUsers(core.resolveUsersByProfileFilter(e));
+        getModel().setUsers(core.findUsersByProfileFilter(e));
     }
 
     public Model getModel() {

@@ -639,7 +639,7 @@ public class MailboxPlugin {
     public Set<String> createUsersEmails(String recipientProfiles) {
         Set<String> rows = new HashSet<>();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        for (AppUser p : core.resolveUsersByProfileFilter(recipientProfiles)) {
+        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles)) {
             String email = p.getContact() == null ? null : p.getContact().getEmail();
             if (!StringUtils.isEmpty(email)) {
                 rows.add(email);
@@ -651,7 +651,7 @@ public class MailboxPlugin {
     public Set<String> createUsersLogins(String recipientProfiles) {
         Set<String> rows = new HashSet<>();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        for (AppUser p : core.resolveUsersByProfileFilter(recipientProfiles)) {
+        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles)) {
             String login = p.getLogin();
             if (!StringUtils.isEmpty(login)) {
                 rows.add(login);
@@ -676,7 +676,7 @@ public class MailboxPlugin {
         }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         List<String[]> rows = new ArrayList<>();
-        for (AppUser p : core.resolveUsersByProfileFilter(recipientProfiles)) {
+        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles)) {
             String email = p.getContact().getEmail();
             if (!StringUtils.isEmpty(email)) {
                 Map<String, Object> allValues = new HashMap<>();

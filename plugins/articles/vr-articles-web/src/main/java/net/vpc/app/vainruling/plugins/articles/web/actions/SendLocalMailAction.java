@@ -8,10 +8,8 @@ package net.vpc.app.vainruling.plugins.articles.web.actions;
 import java.util.List;
 import net.vpc.app.vainruling.api.EntityAction;
 import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.app.vainruling.api.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.api.web.obj.ActionDialog;
-import net.vpc.app.vainruling.api.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
 

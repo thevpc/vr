@@ -307,6 +307,9 @@ public class CorePlugin {
             }
             AppProfile p = findProfileByCode(profileCode);
             if (p == null) {
+                p = findProfileByName(profileCode);
+            }
+            if (p == null) {
                 p = new AppProfile();
                 p.setName(profileCode);
                 p.setCode(profileCode);
@@ -361,6 +364,9 @@ public class CorePlugin {
     public AppProfile findOrCreateCustomProfile(String profileCode, String customType) {
         AppProfile p = findProfileByCode(profileCode);
         if (p == null) {
+            p = findProfileByName(profileCode);
+        }
+        if (p == null) {
             p = new AppProfile();
             p.setName(profileCode);
             p.setCode(profileCode);
@@ -371,6 +377,14 @@ public class CorePlugin {
             //force to custom
             p.setCustom(true);
             p.setCustomType(customType);
+            UPA.getPersistenceUnit().merge(p);
+        }
+        if(StringUtils.isEmpty(p.getCode())){
+            p.setCode(p.getName());
+            UPA.getPersistenceUnit().merge(p);
+        }
+        if(StringUtils.isEmpty(p.getName())){
+            p.setCode(p.getCode());
             UPA.getPersistenceUnit().merge(p);
         }
         return p;
@@ -392,6 +406,7 @@ public class CorePlugin {
                 .getEntity();
 
     }
+
     public AppProfile findProfileByCode(String profileCode) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQueryBuilder(AppProfile.class).addAndField("code", profileCode)
@@ -602,7 +617,7 @@ public class CorePlugin {
         mainConfig.setId(1);
         mainConfig.setMainCompany(eniso);
         mainConfig.setMainPeriod(new AppPeriod("2015-2016"));
-        findOrCreate(mainConfig,"id");
+        findOrCreate(mainConfig, "id");
         validateRightsDefinitions();
     }
 
@@ -798,7 +813,7 @@ public class CorePlugin {
 //        }
 //        return Collections.EMPTY_LIST;
 //    }
-    public List<AppUser> resolveUsersByProfileFilter(String profilePattern) {
+    public List<AppUser> findUsersByProfileFilter(String profilePattern) {
         //check if pattern contains where clause!
         ProfileFilterExpression ee = new ProfileFilterExpression(profilePattern);
         ProfileFilterExpression profilesOnlyExpr = new ProfileFilterExpression(ee.getProfileListExpression(), null);
@@ -911,31 +926,31 @@ public class CorePlugin {
         }
         String t = p.getPropertyType();
         String v = p.getPropertyValue();
-        if ("null".equals(t)) {
+        if ("null".equalsIgnoreCase(t)) {
             return null;
         }
-        if ("string".equals(t)) {
+        if ("string".equalsIgnoreCase(t)) {
             return v;
         }
-        if ("int".equals(t)) {
+        if ("int".equalsIgnoreCase(t)) {
             if (v.isEmpty()) {
                 return null;
             }
             return Integer.valueOf(v);
         }
-        if ("long".equals(t)) {
+        if ("long".equalsIgnoreCase(t)) {
             if (v.isEmpty()) {
                 return null;
             }
             return Long.valueOf(v);
         }
-        if ("double".equals(t)) {
+        if ("double".equalsIgnoreCase(t)) {
             if (v.isEmpty()) {
                 return null;
             }
             return Double.valueOf(v);
         }
-        if ("boolean".equals(t)) {
+        if ("boolean".equalsIgnoreCase(t)) {
             if (v.isEmpty()) {
                 return null;
             }
@@ -1223,13 +1238,13 @@ public class CorePlugin {
         new SpringThread(r).start();
     }
 
-    public AppConfig findAppConfig(){
+    public AppConfig findAppConfig() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AppConfig c = pu.findById(AppConfig.class, 1);
         //should exist;
         return c;
     }
-    
+
     public AppUser createUser(AppContact contact, int userTypeId, int departmentId, boolean attachToExistingUser, String[] defaultProfiles) {
         AppUser u = findUserByContact(contact.getId());
         if (u == null) {

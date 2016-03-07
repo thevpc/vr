@@ -13,11 +13,14 @@ import net.vpc.app.vainruling.api.model.AppDepartment;
 import net.vpc.app.vainruling.api.model.AppUser;
 import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
+import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
+import net.vpc.upa.config.Formula;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
+import net.vpc.upa.config.Properties;
 import net.vpc.upa.config.Property;
 import net.vpc.upa.config.Sequence;
 
@@ -35,7 +38,7 @@ public class AcademicStudent {
     @Field(modifiers = UserFieldModifier.MAIN)
     private AppContact contact;
     private String subscriptionNumber;
-    private AppDepartment department;    
+    private AppDepartment department;
     private AppUser user;
     private AppPeriod firstSubscription;
     private AppPeriod lastSubscription;
@@ -52,6 +55,13 @@ public class AcademicStudent {
     @Field(max = "4000")
     @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
     private String privateObservations;
+
+    @Properties(
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+    @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
+    private Timestamp creationDate;
+    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    private Timestamp updateDate;
 
     @Field(defaultValue = "false")
     private boolean deleted;
@@ -259,6 +269,21 @@ public class AcademicStudent {
     public void setPrivateObservations(String privateObservations) {
         this.privateObservations = privateObservations;
     }
-    
-    
+
+    public Timestamp getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Timestamp creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Timestamp getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Timestamp updateDate) {
+        this.updateDate = updateDate;
+    }
+
 }

@@ -72,7 +72,7 @@ public class TeachersLoadTest {
         AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
         CorePlugin core = VrApp.getBean(CorePlugin.class);
 //        core.setAppProperty("academicPlugin.year", null, "2014-2015");
-        core.setAppProperty("academicPlugin.import.version", null, "21bis");
+        core.setAppProperty("AcademicPlugin.import.version", null, "21bis");
 //        s.resetTeachers();
         s.resetModuleTeaching();
         s.importTeachingLoad();
@@ -88,9 +88,9 @@ public class TeachersLoadTest {
 
             CorePlugin core = VrApp.getBean(CorePlugin.class);
 //            core.setAppProperty("academicPlugin.year", null, year);
-            core.setAppProperty("academicPlugin.import.version", null, version);
-            core.setAppProperty("academicPlugin.import.configFolder", null, inputFolder);
-            core.setAppProperty("academicPlugin.import.outputFolder", null, outputFolder);
+            core.setAppProperty("AcademicPlugin.import.version", null, version);
+            core.setAppProperty("AcademicPlugin.import.configFolder", null, inputFolder);
+            core.setAppProperty("AcademicPlugin.import.outputFolder", null, outputFolder);
 
             AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
             s.generateTeachingLoad();

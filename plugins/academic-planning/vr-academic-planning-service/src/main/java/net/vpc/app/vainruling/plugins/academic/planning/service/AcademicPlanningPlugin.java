@@ -15,6 +15,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import net.vpc.app.vainruling.api.AppPlugin;
 import net.vpc.app.vainruling.api.CorePlugin;
+import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.model.AppUser;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningData;
@@ -22,10 +23,13 @@ import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningHour;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VFileFilter;
+import net.vpc.upa.Action;
+import net.vpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -142,7 +146,22 @@ public class AcademicPlanningPlugin {
     }
 
     private VFile getEmploiFolder() {
-        return fileSystemPlugin.getProfileFileSystem("DirectorOfStudies").get("/Emplois");
+        final String academicPlanningPluginPlanningRoot = "AcademicPlanningPlugin.PlanningRoot";
+        Object t = core.getAppPropertyValue(academicPlanningPluginPlanningRoot, null);
+        String ts = StringUtils.nonnull(t);
+        if (ts.trim().length() > 0) {
+            return fileSystemPlugin.getFileSystem().get(ts);
+        } else {
+            final String defaultPath = fileSystemPlugin.getProfileFileSystem("DirectorOfStudies").get("/Emplois").getBaseFile("vrfs").getPath();
+            t = UPA.getContext().invokePrivileged(new Action<Object>(){
+                @Override
+                public Object run() {
+                    return core.getOrCreateAppPropertyValue(academicPlanningPluginPlanningRoot, null, defaultPath);
+                }
+                
+            });
+            return fileSystemPlugin.getFileSystem().get(StringUtils.nonnull(t));
+        }
     }
 
     private PlanningData parsePlanningDataXML(Node planningNode) {
@@ -253,25 +272,15 @@ public class AcademicPlanningPlugin {
         AcademicStudent student = academicPlugin.findStudent(studentId);
         List<PlanningData> list = new ArrayList<>();
         HashMap<String, String> nameMapping = new HashMap<>();
-        if (student.getLastClass1() != null) {
-            String n2 = student.getLastClass1().getName().trim().toLowerCase();
+        AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
+        List<AcademicClass> allCls = ap.findAcademicDownHierarchyList(new AcademicClass[]{student.getLastClass1(), student.getLastClass2(), student.getLastClass3()}, null);
+        for (AcademicClass ac : allCls) {
+            String n2 = ac.getName().trim().toLowerCase();
             nameMapping.put(n2, n2);
-            for (String s : splitOtherNames(student.getLastClass1().getOtherNames())) {
-                nameMapping.put(s, n2);
-            }
-        }
-        if (student.getLastClass2() != null) {
-            String n2 = student.getLastClass2().getName().trim().toLowerCase();
-            nameMapping.put(n2, n2);
-            for (String s : splitOtherNames(student.getLastClass2().getOtherNames())) {
-                nameMapping.put(s, n2);
-            }
-        }
-        if (student.getLastClass3() != null) {
-            String n2 = student.getLastClass3().getName().trim().toLowerCase();
-            nameMapping.put(n2, n2);
-            for (String s : splitOtherNames(student.getLastClass3().getOtherNames())) {
-                nameMapping.put(s, n2);
+            for (String s : splitOtherNames(ac.getOtherNames())) {
+                if (!nameMapping.containsKey(s)) {
+                    nameMapping.put(s, n2);
+                }
             }
         }
         VFile[] emploisFiles = getEmploiFolder().listFiles(new VFileFilter() {

@@ -5,12 +5,16 @@
  */
 package net.vpc.app.vainruling.api.model;
 
+import java.sql.Timestamp;
 import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
+import net.vpc.upa.config.Formula;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
+import net.vpc.upa.config.Properties;
 import net.vpc.upa.config.Property;
 import net.vpc.upa.config.Sequence;
 
@@ -42,6 +46,13 @@ public class AppProfile {
      * custom profiles type depends on creator plugin
      */
     private String customType;
+
+    @Properties(
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+    @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
+    private Timestamp creationDate;
+    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    private Timestamp updateDate;
 
     public int getId() {
         return id;
@@ -106,5 +117,21 @@ public class AppProfile {
     public void setCustomType(String customType) {
         this.customType = customType;
     }
-    
+
+    public Timestamp getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Timestamp creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Timestamp getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Timestamp updateDate) {
+        this.updateDate = updateDate;
+    }
+
 }

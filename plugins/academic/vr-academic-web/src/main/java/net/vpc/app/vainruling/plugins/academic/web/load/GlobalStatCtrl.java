@@ -26,7 +26,7 @@ import org.primefaces.model.chart.PieChartModel;
         breadcrumb = {
             @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
-        title = "Charge Globale",
+        title = "Stats Charge",
         url = "modules/academic/globalstat",
         menu = "/Education/Load",
         securityKey = "Custom.Education.GlobalStat"

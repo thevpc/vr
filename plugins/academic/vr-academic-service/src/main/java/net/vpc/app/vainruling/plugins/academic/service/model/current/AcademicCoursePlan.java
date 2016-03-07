@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
+import java.sql.Timestamp;
 import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.upa.FormulaType;
@@ -108,6 +109,13 @@ public class AcademicCoursePlan {
     private String roomConstraintsC;
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private String roomConstraintsTP;
+
+    @Properties(
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+    @Formula(value = "CurrentTimestamp()",type = FormulaType.PERSIST)
+    private Timestamp creationDate;
+    @Formula(value = "CurrentTimestamp()",type = {FormulaType.PERSIST,FormulaType.UPDATE})
+    private Timestamp updateDate;
 
     public int getId() {
         return id;
@@ -368,6 +376,23 @@ public class AcademicCoursePlan {
     public void setEcts(double ects) {
         this.ects = ects;
     }
+
+    public Timestamp getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Timestamp creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Timestamp getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Timestamp updateDate) {
+        this.updateDate = updateDate;
+    }
     
 
+    
 }

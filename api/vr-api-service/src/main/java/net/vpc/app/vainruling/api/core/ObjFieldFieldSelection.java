@@ -44,6 +44,7 @@ public class ObjFieldFieldSelection extends ObjFieldSelection {
 
     @Override
     public void prepare(Entity entity) {
+        setEntity(entity);
         Entity old = getEntity();
         Set<String> oldSelection = new HashSet<>();
         if (old == null || !old.getName().equals(entity.getName())) {

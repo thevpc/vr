@@ -29,14 +29,19 @@ and open the template in the editor.
                     </p:confirmDialog>
 
                     <!-- /.row -->
-<!--                    <div class="row">
-                        <p:outputLabel id="buttons">
-                            <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {allTeachersCourseLoadCtrl.onRefresh}"  update=":listForm"/>
-                        </p:outputLabel>
-                    </div>-->
+                    <!--                    <div class="row">
+                                            <p:outputLabel id="buttons">
+                                                <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {allTeachersCourseLoadCtrl.onRefresh}"  update=":listForm"/>
+                                            </p:outputLabel>
+                                        </div>-->
 
 
                     <!-- /.row -->
+                </h:form>
+                <h:form id="genForm">
+                    <p:growl id="growl" showDetail="true" sticky="true" />  
+                    <p:commandButton value="Generate Teaching Load" actionListener="#{allTeachersCourseLoadCtrl.generateTeachingLoad}" update="growl"/>
+                    <p:separator/>
                 </h:form>
                 <h:form id="listForm">
 

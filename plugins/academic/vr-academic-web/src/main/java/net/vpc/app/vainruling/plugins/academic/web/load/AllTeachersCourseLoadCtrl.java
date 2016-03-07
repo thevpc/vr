@@ -8,6 +8,8 @@ package net.vpc.app.vainruling.plugins.academic.web.load;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherStat;
@@ -17,6 +19,8 @@ import net.vpc.app.vainruling.api.web.UCtrl;
 import net.vpc.app.vainruling.api.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.StatCache;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherSemesterStat;
+import net.vpc.app.vainruling.plugins.academic.web.admin.AcademicAdminToolsCtrl;
+import net.vpc.common.jsf.FacesUtils;
 
 /**
  *
@@ -84,7 +88,6 @@ public class AllTeachersCourseLoadCtrl {
         public void setRefreshFilter(String[] refreshFilter) {
             this.refreshFilter = refreshFilter;
         }
-        
 
         public void setFilters(String[] filters) {
             this.filters = (filters == null || filters.length == 0) ? defaultFilters : filters;
@@ -123,7 +126,7 @@ public class AllTeachersCourseLoadCtrl {
         }
         return Arrays.asList(f).indexOf(s) >= 0;
     }
-    
+
     public boolean containsRefreshFilter(String s) {
         String[] f = getModel().getRefreshFilter();
         return Arrays.asList(f).indexOf(s) >= 0;
@@ -132,8 +135,20 @@ public class AllTeachersCourseLoadCtrl {
     public void onFiltersChanged() {
         //onRefresh();
     }
-    
+
     public void onRefreshFiltersChanged() {
         onRefresh();
+    }
+
+    public void generateTeachingLoad() {
+        try {
+            AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
+            p.generateTeachingLoad();
+            FacesUtils.addInfoMessage("Successful Operation");
+        } catch (Exception ex) {
+            Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            FacesUtils.addErrorMessage(ex.getMessage());
+        }
+
     }
 }

@@ -23,8 +23,6 @@ import java.util.Stack;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import jxl.write.WritableSheet;
@@ -75,9 +73,6 @@ import net.vpc.app.vainruling.api.model.AppUserType;
 import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.api.util.ExcelTemplate;
 import net.vpc.app.vainruling.api.util.NamedDoubles;
-import net.vpc.app.vainruling.plugins.academic.service.model.PlanningData;
-import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
-import net.vpc.app.vainruling.plugins.academic.service.model.PlanningHour;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.GlobalAssignmentStat;
@@ -88,7 +83,6 @@ import net.vpc.common.strings.MapStringConverter;
 import net.vpc.common.strings.StringComparator;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.utils.Chronometer;
-import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import net.vpc.upa.expressions.Order;
@@ -96,17 +90,12 @@ import net.vpc.upa.expressions.Var;
 import net.vpc.upa.types.DateTime;
 import net.vpc.common.vfs.VFS;
 import net.vpc.common.vfs.VFile;
-import net.vpc.common.vfs.VFileFilter;
 import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.common.vfs.impl.NativeVFS;
 import net.vpc.common.vfs.impl.VZipOptions;
 import net.vpc.common.vfs.impl.VZipUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.PropertyPlaceholderHelper;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  *
@@ -575,8 +564,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 AcademicCourseAssignment a2 = o2.getAssignment();
 //                String s1 = a1.getCoursePlan().getName();
 //                String s2 = a2.getCoursePlan().getName();
-                String s1 = a1.getFullName();
-                String s2 = a2.getFullName();
+                String s1 = StringUtils.nonnull(a1.getFullName());
+                String s2 = StringUtils.nonnull(a2.getFullName());
                 return s1.compareTo(s2);
             }
         });
@@ -1188,7 +1177,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             fillCourseAssignementPlanProps(c, p, prefix);
         }
         String year = (String) core.findAppConfig().getMainPeriod().getName();
-        String version = (String) core.getOrCreateAppPropertyValue("academicPlugin.import.version", null, "v01");
+        String version = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01");
         p.put("version", version);
         p.put("year", year);
         writeVars(p, output);
@@ -1488,6 +1477,48 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return UPA.getPersistenceUnit().createQuery("Select u from AcademicStudent u where u.deleted=false").getEntityList();
     }
 
+    public List<AcademicStudent> findStudents(String studentProfileFilter) {
+        List<AcademicStudent> base = findStudents();
+        if (!StringUtils.isEmpty(studentProfileFilter)) {
+            List<AcademicStudent> goodStudents = new ArrayList<>();
+            HashSet<Integer> goodUsers = new HashSet<Integer>();
+            List<AppUser> users = VrApp.getBean(CorePlugin.class).findUsersByProfileFilter(studentProfileFilter);
+            for (AppUser user : users) {
+                goodUsers.add(user.getId());
+            }
+            for (AcademicStudent s : base) {
+                AppUser u = s.getUser();
+                if (u != null && goodUsers.contains(u.getId())) {
+                    goodStudents.add(s);
+                }
+            }
+            return goodStudents;
+        } else {
+            return base;
+        }
+    }
+
+    public List<AcademicTeacher> findTeachers(String teacherProfileFilter) {
+        List<AcademicTeacher> base = findTeachers();
+        if (!StringUtils.isEmpty(teacherProfileFilter)) {
+            List<AcademicTeacher> goodTeachers = new ArrayList<>();
+            HashSet<Integer> goodUsers = new HashSet<Integer>();
+            List<AppUser> users = VrApp.getBean(CorePlugin.class).findUsersByProfileFilter(teacherProfileFilter);
+            for (AppUser user : users) {
+                goodUsers.add(user.getId());
+            }
+            for (AcademicTeacher s : base) {
+                AppUser u = s.getUser();
+                if (u != null && goodUsers.contains(u.getId())) {
+                    goodTeachers.add(s);
+                }
+            }
+            return goodTeachers;
+        } else {
+            return base;
+        }
+    }
+
     public List<AcademicFormerStudent> findGraduatedStudents() {
         return UPA.getPersistenceUnit().createQuery("Select u from AcademicFormerStudent u where u.deleted=false and u.graduated=true").getEntityList();
     }
@@ -1719,7 +1750,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return (AcademicStudent) UPA.getPersistenceUnit().findById(AcademicStudent.class, t);
     }
 
-
     public List<AcademicCourseAssignment> findCourseAssignments() {
         return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a order by a.coursePlan.semester.code,a.coursePlan.program.name,a.name,a.courseType.name")
                 .setHint("navigationDepth", 5)
@@ -1735,6 +1765,11 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.coursePlanId=:v")
                 .setParameter("v", planId).getEntityList();
     }
+    
+    public List<AcademicCourseAssignment> findCourseAssignmentsByClass(int classId) {
+        return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.subClassId=:v or a.coursePlan.studentClassId=:v")
+                .setParameter("v", classId).getEntityList();
+    }
 
     public List<AcademicTeacherSemestrialLoad> findTeacherSemestrialLoads(int teacherId) {
         return UPA.getPersistenceUnit().createQuery("Select a from AcademicTeacherSemestrialLoad a where a.teacherId=:t")
@@ -1747,13 +1782,13 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 .getEntityList();
     }
 
-    public AcademicClass findStudentClass(String t) {
+    public AcademicClass findAcademicClass(String t) {
         return UPA.getPersistenceUnit().createQuery("Select a from AcademicClass a where a.name=:t")
                 .setParameter("t", t)
                 .getEntity();
     }
 
-    public AcademicClass findStudentClass(int programId, String t) {
+    public AcademicClass findAcademicClass(int programId, String t) {
         return UPA.getPersistenceUnit().createQuery("Select a from AcademicClass a where a.name=:t and a.programId=:programId")
                 .setParameter("t", t)
                 .setParameter("programId", programId)
@@ -2279,8 +2314,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         try {
             String year = (String) core.findAppConfig().getMainPeriod().getName();
-            String version = (String) core.getOrCreateAppPropertyValue("academicPlugin.import.version", null, "v01");
-            String dir = (String) core.getOrCreateAppPropertyValue("academicPlugin.import.configFolder", null, "/Config/Import/${year}");
+            String version = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01");
+            String dir = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.configFolder", null, "/Config/Import/${year}");
             Map<String, String> vars = new HashMap<>();
             vars.put("home", System.getProperty("user.home"));
             vars.put("year", year);
@@ -2307,9 +2342,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         try {
             String year = (String) core.findAppConfig().getMainPeriod().getName();
-            String version = (String) core.getOrCreateAppPropertyValue("academicPlugin.import.version", null, "v01");
-            String dir = (String) core.getOrCreateAppPropertyValue("academicPlugin.import.configFolder", null, "/Config/Import/import/${year}");
-            String namePattern = (String) core.getOrCreateAppPropertyValue("academicPlugin.import.namePattern", null, "*-eniso-ii-${year}-${version}");
+            String version = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01");
+            String dir = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.configFolder", null, "/Config/Import/import/${year}");
+            String namePattern = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.namePattern", null, "*-eniso-ii-${year}-${version}");
             Map<String, String> vars = new HashMap<>();
             vars.put("home", System.getProperty("user.home"));
             vars.put("year", year);
@@ -2584,12 +2619,38 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         Map<Integer, AcademicClass> academicClasses = findAcademicClassesMap();
         for (AcademicStudent s : findStudents()) {
             AppUser u = s.getUser();
-            if (u != null && u.getContact() != null) {
-                List<AppProfile> oldProfiles = core.findProfilesByUser(u.getId());
+            AppContact c = s.getContact();
+            AppDepartment d = s.getDepartment();
+
+            if (c == null && u != null) {
+                c = u.getContact();
+            }
+            if (d == null && u != null) {
+                d = u.getDepartment();
+            }
+            if (s.getDepartment() == null && d != null) {
+                s.setDepartment(d);
+                UPA.getPersistenceUnit().merge(s);
+            }
+            if (s.getContact() == null && c != null) {
+                s.setContact(c);
+                UPA.getPersistenceUnit().merge(s);
+            }
+            if (u != null) {
+
+                if (u.getDepartment() == null && d != null) {
+                    u.setDepartment(d);
+                    UPA.getPersistenceUnit().merge(u);
+                }
+                if (u.getContact() == null && c != null) {
+                    u.setContact(c);
+                    UPA.getPersistenceUnit().merge(u);
+                }
+            }
+            if (c != null) {
                 HashSet<Integer> goodProfiles = new HashSet<>();
 
                 {
-                    AppDepartment d = u.getDepartment();
                     if (d != null) {
                         String n = core.validateProfileName(d.getCode());
                         AppProfile p = core.findOrCreateCustomProfile(n, "Department");
@@ -2632,30 +2693,60 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     }
                     goodSuffix.append(cn);
                 }
-                u.getContact().setPositionSuffix(goodSuffix.toString());
-                pu.merge(u.getContact());
-                for (AppProfile p : oldProfiles) {
-                    if (goodProfiles.contains(p.getId())) {
-                        goodProfiles.remove(p.getId());
-                        //ok
-                    } else if (p.isCustom() && ("Department".equals(p.getName()) || "AcademicClass".equals(p.getName()) || "AcademicProgram".equals(p.getName()))) {
-                        core.userRemoveProfile(u.getId(), p.getId());
+                c.setPositionSuffix(goodSuffix.toString());
+                pu.merge(c);
+
+                if (u != null) {
+                    List<AppProfile> oldProfiles = core.findProfilesByUser(u.getId());
+                    for (AppProfile p : oldProfiles) {
+                        if (goodProfiles.contains(p.getId())) {
+                            goodProfiles.remove(p.getId());
+                            //ok
+                        } else if (p.isCustom() && ("Department".equals(p.getName()) || "AcademicClass".equals(p.getName()) || "AcademicProgram".equals(p.getName()))) {
+                            core.userRemoveProfile(u.getId(), p.getId());
+                        }
                     }
-                }
-                for (Integer toAdd : goodProfiles) {
-                    core.userAddProfile(u.getId(), toAdd);
+                    for (Integer toAdd : goodProfiles) {
+                        core.userAddProfile(u.getId(), toAdd);
+                    }
                 }
             }
         }
         StatCache statCache = new StatCache();
         for (AcademicTeacher s : findTeachers()) {
             AppUser u = s.getUser();
-            if (u != null && u.getContact() != null) {
-                List<AppProfile> oldProfiles = core.findProfilesByUser(u.getId());
+            AppContact c = s.getContact();
+            AppDepartment d = s.getDepartment();
+
+            if (c == null && u != null) {
+                c = u.getContact();
+            }
+            if (d == null && u != null) {
+                d = u.getDepartment();
+            }
+            if (s.getDepartment() == null && d != null) {
+                s.setDepartment(d);
+                UPA.getPersistenceUnit().merge(s);
+            }
+            if (s.getContact() == null && c != null) {
+                s.setContact(c);
+                UPA.getPersistenceUnit().merge(s);
+            }
+            if (u != null) {
+
+                if (u.getDepartment() == null && d != null) {
+                    u.setDepartment(d);
+                    UPA.getPersistenceUnit().merge(u);
+                }
+                if (u.getContact() == null && c != null) {
+                    u.setContact(c);
+                    UPA.getPersistenceUnit().merge(u);
+                }
+            }
+            if (c != null) {
                 HashSet<Integer> goodProfiles = new HashSet<>();
                 String depCode = null;
                 {
-                    AppDepartment d = u.getDepartment();
                     if (d != null) {
                         String n = core.validateProfileName(d.getCode());
                         depCode = d.getCode();
@@ -2700,6 +2791,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //                    p = core.findOrCreateCustomProfile(n, "AcademicClass");
 //                    goodProfiles.add(p.getId());
                 boolean perm = false;
+                List<AppProfile> oldProfiles = u == null ? new ArrayList<AppProfile>() : core.findProfilesByUser(u.getId());
                 for (AppProfile op : oldProfiles) {
                     if ("Permanent".equals(op.getName())) {
                         perm = true;
@@ -2719,20 +2811,32 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 if (depCode != null) {
                     goodSuffix.append(" ").append(depCode);
                 }
-                u.getContact().setPositionSuffix(goodSuffix.toString());
-                pu.merge(u.getContact());
-                for (AppProfile p : oldProfiles) {
-                    if (goodProfiles.contains(p.getId())) {
-                        goodProfiles.remove(p.getId());
-                        //ok
-                    } else if (p.isCustom() && ("Department".equals(p.getName()) || "AcademicClass".equals(p.getName()) || "AcademicProgram".equals(p.getName()))) {
-                        core.userRemoveProfile(u.getId(), p.getId());
+                c.setPositionSuffix(goodSuffix.toString());
+                pu.merge(c);
+
+                if (u != null) {
+                    for (AppProfile p : oldProfiles) {
+                        if (goodProfiles.contains(p.getId())) {
+                            goodProfiles.remove(p.getId());
+                            //ok
+                        } else if (p.isCustom() && ("Department".equals(p.getName()) || "AcademicClass".equals(p.getName()) || "AcademicProgram".equals(p.getName()))) {
+                            core.userRemoveProfile(u.getId(), p.getId());
+                        }
                     }
-                }
-                for (Integer toAdd : goodProfiles) {
-                    core.userAddProfile(u.getId(), toAdd);
+                    for (Integer toAdd : goodProfiles) {
+                        core.userAddProfile(u.getId(), toAdd);
+                    }
                 }
             }
         }
+    }
+
+    public List<AcademicClass> findStudentClasses(int studentId) {
+        AcademicStudent student = findStudent(studentId);
+        if(student==null){
+            return Collections.EMPTY_LIST;
+        }
+        return findAcademicDownHierarchyList(new AcademicClass[]{student.getLastClass1(), student.getLastClass2(), student.getLastClass3()}, null);
+
     }
 }

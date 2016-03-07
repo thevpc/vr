@@ -21,7 +21,6 @@ import net.vpc.app.vainruling.api.VrNotificationSession;
 import net.vpc.app.vainruling.api.model.AppUser;
 import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.app.vainruling.api.web.obj.ObjCtrl;
-import net.vpc.app.vainruling.api.web.obj.PropertyViewManager;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -43,8 +42,6 @@ public class SendWelcomeMailActionCtrl {
     @Autowired
     private CorePlugin core;
     private Model model = new Model();
-    @Autowired
-    private PropertyViewManager propertyViewManager;
 
     public static class Config {
 

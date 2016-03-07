@@ -461,12 +461,28 @@ public class XlsxLoadImporter {
             DataRow row = rows.readRow();
             Object[] values = row.getValues();
 //            if (!"x".equalsIgnoreCase(Convert.toString(values[8]))) {
-            AcademicStudent academicStudent = new AcademicStudent();
             String fs = core.validateName(Convert.toString(values[COL_FIRST_NAME]));
             String ln = core.validateName(Convert.toString(values[COL_LAST_NAME]));
             String nin = Convert.toString(values[COL_NIN]);
             String dept = Convert.toString(values[COL_DEPT]);
             if (!StringUtils.isEmpty(nin) || !StringUtils.isEmpty(fs) || !StringUtils.isEmpty(ln)) {
+
+                AppDepartment depInstance = service.findDepartment(dept);
+                if (depInstance == null) {
+                    throw new NoSuchElementException("Department Not Found " + dept);
+                }
+                String periodName = Convert.toString(values[COL_YEAR1]);
+
+                AppPeriod period = common.findPeriod(periodName);
+                if (period == null) {
+                    throw new NoSuchElementException("Period Not Found " + periodName);
+                }
+
+                AcademicClass level = service.findAcademicClass(Convert.toString(values[COL_CLASS]));
+                if (level == null) {
+                    throw new NoSuchElementException("CourseLevel Not Found " + Convert.toString(values[COL_CLASS]));
+                }
+
                 AppContact contact = new AppContact();
                 contact.setNin(nin);
                 contact.setFirstName(fs);
@@ -474,14 +490,12 @@ public class XlsxLoadImporter {
                 contact.setFullName(core.validateName(AppContact.getName(contact)));
                 String fs2 = Convert.toString(values[COL_FIRST_NAME2]);
                 contact = core.findOrCreateContact(contact);
-                AppDepartment depInstance = service.findDepartment(dept);
-                if (depInstance == null) {
-                    throw new NoSuchElementException("Department Not Found " + dept);
-                }
+                AcademicStudent academicStudent = null;
                 AcademicStudent oldAcademicStudent = service.findStudentByContact(contact.getId());
                 if (oldAcademicStudent != null) {
                     academicStudent = oldAcademicStudent;
                 } else {
+                    academicStudent = new AcademicStudent();
                     academicStudent.setContact(contact);
                 }
                 academicStudent.setDepartment(depInstance);
@@ -490,18 +504,8 @@ public class XlsxLoadImporter {
                 contact.setLastName2(ln2);
                 contact.setFullName2(AppContact.getName2(contact));
                 contact.setPhone1(Convert.toString(values[COL_GSM]));
-                String periodName = Convert.toString(values[COL_YEAR1]);
-
-                AppPeriod period = common.findPeriod(periodName);
-                if (period == null) {
-                    throw new NoSuchElementException("Period Not Found " + periodName);
-                }
                 academicStudent.setFirstSubscription(period);
 
-                AcademicClass level = service.findStudentClass(Convert.toString(values[COL_CLASS]));
-                if (level == null) {
-                    throw new NoSuchElementException("CourseLevel Not Found " + Convert.toString(values[COL_CLASS]));
-                }
                 academicStudent.setLastClass1(level);
                 if (level.getProgram() != null) {
                     academicStudent.setDepartment(level.getProgram().getDepartment());
@@ -510,12 +514,14 @@ public class XlsxLoadImporter {
                     String stringVal = Convert.toString(values[COL_GENDER]);
                     AppGender v = genders.get(stringVal.toUpperCase());
                     if (v == null) {
-                        v = new AppGender();
-                        v.setName(stringVal);
-                        service.add(v);
-                        genders.put(stringVal.toUpperCase(), v);
+//                        v = new AppGender();
+//                        v.setName(stringVal);
+//                        service.add(v);
+//                        genders.put(stringVal.toUpperCase(), v);
                     }
-                    contact.setGender(v);
+                    if (contact.getGender() == null) {
+                        contact.setGender(v);
+                    }
                 }
                 academicStudent.setSubscriptionNumber(Convert.toString(values[COL_SUBSCRIPTION_NBR]));
                 {
@@ -530,11 +536,13 @@ public class XlsxLoadImporter {
                     }
                     AppCivility v = service.findCivility(stringVal);
                     if (v == null) {
-                        v = new AppCivility();
-                        v.setName(stringVal);
-                        service.add(v);
+//                        v = new AppCivility();
+//                        v.setName(stringVal);
+//                        service.add(v);
                     }
-                    contact.setCivility(v);
+                    if (contact.getCivility()== null) {
+                        contact.setCivility(v);
+                    }
                 }
 
                 contact.setEmail(Convert.toString(values[COL_EMAIL]));
@@ -665,7 +673,7 @@ public class XlsxLoadImporter {
                         if (PlatformTypes.isInteger(stringVal)) {
                             goodName = program.getName() + stringVal;
                         }
-                        studentClass = service.findStudentClass(program.getId(), goodName);
+                        studentClass = service.findAcademicClass(program.getId(), goodName);
                         if (studentClass == null) {
                             studentClass = new AcademicClass();
                             studentClass.setName(goodName);
