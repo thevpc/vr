@@ -1581,6 +1581,15 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return UPA.getPersistenceUnit().findAll(AcademicCourseLevel.class);
     }
 
+    public AcademicCourseLevel findCourseLevels(int academicClassId, int semesterId) {
+        return UPA.getPersistenceUnit().createQuery("Select x from AcademicCourseLevel x where "
+                + " x.academicClassId=:academicClassId"
+                + " and x.semesterId=:semesterId"
+        ).setParameter("academicClassId", academicClassId)
+                .setParameter("semesterId", semesterId)
+                .getEntity();
+    }
+
     public List<AcademicSemester> findSemesters() {
         return UPA.getPersistenceUnit().createQueryBuilder(AcademicSemester.class).setOrder(new Order().addOrder(new Var("name"), true))
                 .getEntityList();
@@ -1649,13 +1658,12 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 .getEntity();
     }
 
-    public AcademicCourseLevel findCourseLevel(String name) {
-        return UPA.getPersistenceUnit().
-                createQuery("Select a from AcademicCourseLevel a where a.name=:name")
-                .setParameter("name", name)
-                .getEntity();
-    }
-
+//    public AcademicCourseLevel findCourseLevel(String name) {
+//        return UPA.getPersistenceUnit().
+//                createQuery("Select a from AcademicCourseLevel a where a.name=:name")
+//                .setParameter("name", name)
+//                .getEntity();
+//    }
     public AcademicCourseGroup findCourseGroup(int courseLevelId, String name) {
         return UPA.getPersistenceUnit().
                 createQuery("Select a from AcademicCourseGroup a where a.name=:name and a.courseLevelId=:courseLevelId")
@@ -1765,7 +1773,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.coursePlanId=:v")
                 .setParameter("v", planId).getEntityList();
     }
-    
+
     public List<AcademicCourseAssignment> findCourseAssignmentsByClass(int classId) {
         return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.subClassId=:v or a.coursePlan.studentClassId=:v")
                 .setParameter("v", classId).getEntityList();
@@ -2617,6 +2625,18 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public void validateAcademicData() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Map<Integer, AcademicClass> academicClasses = findAcademicClassesMap();
+        
+        //should remove me!
+        for (AcademicCoursePlan s : findCoursePlans()) {
+            if (s.getStudentClass() != null && s.getSemester() != null) {
+                AcademicCourseLevel lvl = findCourseLevels(s.getStudentClass().getId(), s.getSemester().getId());
+                if (lvl != null) {
+                    s.setCourseLevel(lvl);
+                    pu.merge(s);
+                }
+            }
+        }
+        
         for (AcademicStudent s : findStudents()) {
             AppUser u = s.getUser();
             AppContact c = s.getContact();
@@ -2833,7 +2853,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     public List<AcademicClass> findStudentClasses(int studentId) {
         AcademicStudent student = findStudent(studentId);
-        if(student==null){
+        if (student == null) {
             return Collections.EMPTY_LIST;
         }
         return findAcademicDownHierarchyList(new AcademicClass[]{student.getLastClass1(), student.getLastClass2(), student.getLastClass3()}, null);

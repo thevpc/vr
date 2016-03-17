@@ -24,7 +24,7 @@ import net.vpc.upa.config.Sequence;
  * @author vpc
  */
 @Entity
-@Path("Education/HomeWork")
+@Path("Education/Eval")
 public class AcademicReport {
 
     @Id @Sequence

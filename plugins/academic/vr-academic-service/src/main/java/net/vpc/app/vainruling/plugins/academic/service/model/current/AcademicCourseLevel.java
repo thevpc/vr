@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
 import java.sql.Timestamp;
 import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
@@ -32,10 +33,17 @@ public class AcademicCourseLevel {
     @Sequence
 
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN})
     private String name;
+    @Formula("concat(this.academicClass.name,'-',this.semester.code)")
+    @Field(modifiers = {UserFieldModifier.MAIN})
+    private String fullName;
     @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Deprecated
     private AcademicProgram program;
+    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    private AcademicClass academicClass;
+    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    private AcademicSemester semester;
 
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
@@ -52,10 +60,12 @@ public class AcademicCourseLevel {
         this.name = name;
     }
 
+    @Deprecated
     public AcademicProgram getProgram() {
         return program;
     }
 
+    @Deprecated
     public void setProgram(AcademicProgram program) {
         this.program = program;
     }
@@ -95,6 +105,30 @@ public class AcademicCourseLevel {
 
     public void setUpdateDate(Timestamp updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public AcademicClass getAcademicClass() {
+        return academicClass;
+    }
+
+    public void setAcademicClass(AcademicClass academicClass) {
+        this.academicClass = academicClass;
+    }
+
+    public AcademicSemester getSemester() {
+        return semester;
+    }
+
+    public void setSemester(AcademicSemester semester) {
+        this.semester = semester;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
 }

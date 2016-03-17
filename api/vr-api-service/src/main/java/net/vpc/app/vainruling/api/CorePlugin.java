@@ -379,11 +379,11 @@ public class CorePlugin {
             p.setCustomType(customType);
             UPA.getPersistenceUnit().merge(p);
         }
-        if(StringUtils.isEmpty(p.getCode())){
+        if (StringUtils.isEmpty(p.getCode())) {
             p.setCode(p.getName());
             UPA.getPersistenceUnit().merge(p);
         }
-        if(StringUtils.isEmpty(p.getName())){
+        if (StringUtils.isEmpty(p.getName())) {
             p.setCode(p.getCode());
             UPA.getPersistenceUnit().merge(p);
         }
@@ -715,6 +715,14 @@ public class CorePlugin {
 
     private InSetEvaluator createProfilesEvaluator(final Set<String> profiles) {
         return new InSetEvaluator(profiles);
+    }
+
+    public boolean userMatchesProfileFilter(int userId, String profileExpr) {
+        return userMatchesProfileFilter(userId, null, profileExpr, null);
+    }
+
+    public boolean userMatchesProfileFilter(String userLogin, String profileExpr) {
+        return userMatchesProfileFilter(null, userLogin, profileExpr, null);
     }
 
     public boolean userMatchesProfileFilter(Integer userId, String login, String profile, String whereClause) {

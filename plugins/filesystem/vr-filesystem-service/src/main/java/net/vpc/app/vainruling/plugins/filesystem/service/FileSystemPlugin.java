@@ -174,7 +174,9 @@ public class FileSystemPlugin {
                 }
                 for (VrFSEntry e : t.getEntriesByType("Profile")) {
                     if (core.isComplexProfileExpr(e.getFilterName())) {
-                        mfs.mount("/" + e.getMountPoint(), fileSystem.subfs(e.getLinkPath()));
+                        if (core.userMatchesProfileFilter(u.getId(), e.getFilterName())) {
+                            mfs.mount("/" + e.getMountPoint(), fileSystem.subfs(e.getLinkPath()));
+                        }
                     }
                 }
             } catch (IOException ex) {

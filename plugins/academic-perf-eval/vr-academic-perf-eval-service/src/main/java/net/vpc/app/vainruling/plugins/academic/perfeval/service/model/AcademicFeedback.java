@@ -38,8 +38,7 @@ public class AcademicFeedback {
     @Field(defaultValue = "true")
     private boolean validated;
     private boolean archived;
-    private boolean removeMe;
-
+    
     public int getId() {
         return id;
     }
@@ -95,13 +94,4 @@ public class AcademicFeedback {
     public void setModel(AcademicFeedbackModel model) {
         this.model = model;
     }
-
-    public boolean isRemoveMe() {
-        return removeMe;
-    }
-
-    public void setRemoveMe(boolean removeMe) {
-        this.removeMe = removeMe;
-    }
-
 }

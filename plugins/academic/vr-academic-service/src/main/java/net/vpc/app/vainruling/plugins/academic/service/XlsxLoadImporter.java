@@ -37,6 +37,8 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTea
 import net.vpc.app.vainruling.api.TraceService;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.model.AppCivility;
+import net.vpc.app.vainruling.api.model.AppCompany;
+import net.vpc.app.vainruling.api.model.AppConfig;
 import net.vpc.app.vainruling.api.model.AppContact;
 import net.vpc.app.vainruling.api.model.AppDepartment;
 import net.vpc.app.vainruling.api.model.AppGender;
@@ -294,6 +296,8 @@ public class XlsxLoadImporter {
         final int COL_LAST_NAME2 = 13;
         CorePlugin core = VrApp.getBean(CorePlugin.class);
 //        final AppUserType teacherType = VRApp.getBean(CorePlugin.class).findUserType("Teacher");
+        AppConfig appConfig = core.findAppConfig();
+        AppCompany mainCompany = appConfig==null?null:appConfig.getMainCompany();
         long count = 0;
         while (rows.hasNext()) {
             DataRow row = rows.readRow();
@@ -310,6 +314,7 @@ public class XlsxLoadImporter {
                 contact.setLastName(ln);
                 contact.setFullName(core.validateName(AppContact.getName(contact)));
                 contact = core.findOrCreateContact(contact);
+                contact.setCompany(mainCompany);
                 AcademicTeacher oldAcademicTeacher = service.findTeacherByContact(contact.getId());
                 if (oldAcademicTeacher != null) {
                     academicTeacher = oldAcademicTeacher;
@@ -448,6 +453,8 @@ public class XlsxLoadImporter {
         CommonModelPlugin common = VrApp.getBean(CommonModelPlugin.class);
         Map<String, AppGender> genders = new HashMap<>();
         Map<String, AppProfile> profiles = new HashMap<>();
+        AppConfig appConfig = core.findAppConfig();
+        AppCompany mainCompany = appConfig==null?null:appConfig.getMainCompany();
         for (AcademicClass cls : service.findAcademicClasses()) {
             AppProfile p = core.findOrCreateCustomProfile(cls.getName(), "AcademicClass");
             profiles.put(p.getCode(), p);
@@ -549,6 +556,7 @@ public class XlsxLoadImporter {
                 contact.setPositionSuffix(Convert.toString(values[COL_CLASS]));
                 contact.setPositionTitle1("Student " + Convert.toString(values[COL_CLASS]));
                 contact.setEnabled(true);
+                contact.setCompany(mainCompany);
 
                 service.update(contact);
                 academicStudent.setStage(AcademicStudentStage.ATTENDING);

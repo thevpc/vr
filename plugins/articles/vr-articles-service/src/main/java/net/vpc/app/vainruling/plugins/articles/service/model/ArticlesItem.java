@@ -61,16 +61,17 @@ public class ArticlesItem {
     @Field(max = "1024")
     private String linkURL;
 
+    
+    private String linkText;
+
+    private String linkClassStyle;
+
     @Properties({
         @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
         @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
     }
     )
     private String imageURL;
-    
-    private String linkText;
-
-    private String linkClassStyle;
 
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Flags"))

@@ -18,7 +18,7 @@ import net.vpc.upa.config.Sequence;
  * @author vpc
  */
 @Entity(listOrder = "propertyName")
-@Path("Education/HomeWork")
+@Path("Education/Eval")
 public class AcademicReportProperty {
 
     @Id

@@ -38,7 +38,8 @@ public class I18nChecker {
             @Override
             public Object run() {
                 AcademicFeedback f=new AcademicFeedback();
-                UPA.getPersistenceUnit().persist(f);
+                UPA.getPersistenceUnit().updateFormulas();
+//                UPA.getPersistenceUnit().persist(f);
 //                for (Object o : UPA.getPersistenceUnit().findAll(AcademicInternship.class)) {
 //                    System.out.println(o);
 //                }

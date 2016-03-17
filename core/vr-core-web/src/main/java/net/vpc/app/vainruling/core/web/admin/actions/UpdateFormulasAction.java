@@ -30,7 +30,7 @@ public class UpdateFormulasAction implements ActionDialog{
     
     @Override
     public boolean isEnabled(Class entityType, EditCtrlMode mode, Object value) {
-        return value != null;
+        return true;//value != null;
     }
 
     @Override

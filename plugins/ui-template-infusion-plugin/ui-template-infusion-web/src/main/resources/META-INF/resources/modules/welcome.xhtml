@@ -53,11 +53,6 @@ and open the template in the editor.
                             <p:panel header="#{a.content.subject}" footer="écrit par #{(a.content.sender eq null)?'//inconnu//':a.content.sender.contact.fullName} #{(a.content.sendTime eq null)?'' : (jsfCtrl.str(' - (le ',jsfCtrl.date(a.content.sendTime,'dd MMM yyyy à HH:mm') ,')'))}" style="margin-bottom:20px">
                                 <h:panelGrid columns="1" cellpadding="10">
                                     <h:outputText value="#{a.content.content}" escape="false"/>
-                                    <h:outputLink rendered="#{a.content.linkText ne null and a.content.linkText ne ''}" 
-                                                  value="#{a.content.linkURL}" 
-                                                  styleClass="#{(a.content.linkClassStyle eq null or a.content.linkClassStyle eq '')?'btn  btn-default':a.content.linkClassStyle}">
-                                        <h:outputText value="#{a.content.linkText}" />
-                                    </h:outputLink>
                                     <p:outputPanel rendered="#{a.attachments.size() ne 0}">
                                         <ui:repeat value="#{a.attachments}" var="att">
                                             <h:outputLink 

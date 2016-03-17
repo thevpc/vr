@@ -8,7 +8,9 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStud
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
 import net.vpc.upa.Entity;
+import net.vpc.upa.MissingStrategy;
 import net.vpc.upa.Section;
+import net.vpc.upa.callbacks.DefinitionListenerAdapter;
 import net.vpc.upa.callbacks.EntityEvent;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.config.OnCreate;
@@ -18,18 +20,21 @@ import net.vpc.upa.types.BooleanType;
  * @author Taha BEN SALAH <taha.bensalah@gmail.com>
  */
 @Callback
-public class AcademicPerfEvalFeature {
+public class AcademicPerfEvalFeature extends DefinitionListenerAdapter {
 
     @OnCreate
-    public void entityAdded(EntityEvent event) {
+    @Override
+    public void onPreCreateEntity(EntityEvent event) {
         Entity entity = event.getEntity();
         String entityName = entity.getName();
         if (entityName.equals(AcademicTeacher.class.getSimpleName())
                 || entityName.equals(AcademicCoursePlan.class.getSimpleName())
                 || entityName.equals(AcademicStudent.class.getSimpleName())) {
-            Section tracking = entity.addSection("Eval");
-            tracking.addField("allowCourseFeedback", null, null, BooleanType.BOOLEAN)
-                    .setDefaultObject(!entityName.equals(AcademicTeacher.class.getSimpleName()));
+            if (entity.findField("allowCourseFeedback") == null) {
+                Section tracking = entity.getSection("Eval",MissingStrategy.CREATE);
+                tracking.addField("allowCourseFeedback", null, null, BooleanType.BOOLEAN)
+                        .setDefaultObject(!entityName.equals(AcademicTeacher.class.getSimpleName()));
+            }
         }
     }
 }
