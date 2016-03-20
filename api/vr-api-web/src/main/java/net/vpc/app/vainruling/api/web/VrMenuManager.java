@@ -17,6 +17,7 @@ import net.vpc.app.vainruling.api.i18n.I18n;
 import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.api.util.Reflector;
 import net.vpc.app.vainruling.api.util.VrHelper;
+import net.vpc.app.vainruling.api.web.util.JsfCtrl;
 import net.vpc.app.vainruling.api.web.util.TreeDefinition;
 //import net.vpc.app.vainruling.tasks.TaskPlugin;
 //import net.vpc.app.vainruling.tasks.model.TodoList;
@@ -317,7 +318,8 @@ public class VrMenuManager {
 //        return "modules/todo/todo.xhtml";
 //    }
     public String path(String p) {
-        return "/faces/" + p + "?faces-redirect=true";
+        String r = VrApp.getBean(JsfCtrl.class).getFacesContextPrefix();
+        return "/" + r + "/" + p + "?faces-redirect=true";
     }
 
     public Model getModel() {

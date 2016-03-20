@@ -41,7 +41,7 @@
                         <li ><a href="teacherCvIndex.xhtml" >Home</a></li>
                         <li ><h:commandLink action="#{vrMenuManager.gotoPage('teacherCurriculumContent', jsfCtrl.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'about\'}'))}">About me</h:commandLink></li>
                         <li ><a href="teacherCvContact.xhtml">Contact me</a></li>
-                        <li ><a href="${jsfCtrl.context}/faces/contacts.xhtml">Teachers Directory</a></li>
+                        <li ><a href="${jsfCtrl.facesContext}/contacts.xhtml">Teachers Directory</a></li>
                         <li ><a href="#{jsfCtrl.nvl(teacherCurriculumContentCtrl.model.teacherCV.wwwURL,'#')}">Personal Web Site</a></li>
                     </ul>
                 </nav><!-- end navigation menu -->

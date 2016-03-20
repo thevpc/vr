@@ -33,14 +33,14 @@ public class I18nChecker {
     public static void main(String[] args) {
 
         VrAppTest.runStandalone();
-//        int count = checkI18n();
+        int count = checkI18n();
 //        System.out.println(count + " Missing resources!");
         UPA.getContext().invokePrivileged(new Action<Object>() {
 
             @Override
             public Object run() {
                 AcademicFeedback f=new AcademicFeedback();
-//                UPA.getPersistenceUnit().updateFormulas();
+                UPA.getPersistenceUnit().updateFormulas();
                 Record rr = UPA.getPersistenceUnit().findRecordById(AcademicCoursePlan.class, 121);
                 System.out.println(rr.getObject("fullName"));
 //                UPA.getPersistenceUnit().persist(f);

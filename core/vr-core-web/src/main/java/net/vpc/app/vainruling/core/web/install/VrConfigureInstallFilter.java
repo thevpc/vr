@@ -19,12 +19,13 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.api.web.util.JsfCtrl;
 
 /**
  *
  * @author vpc
  */
-@WebFilter(filterName = "VrConfigureInstallFilter", urlPatterns = {"/","/index.xhtml"})
+@WebFilter(filterName = "VrConfigureInstallFilter", urlPatterns = {"/", "/index.xhtml"})
 public class VrConfigureInstallFilter implements Filter {
 
     private static final boolean debug = true;
@@ -130,7 +131,13 @@ public class VrConfigureInstallFilter implements Filter {
             }
             if (v.isMandatoryConfig(httpRequest.getServletContext())) {
                 HttpServletResponse httpResponse = (HttpServletResponse) response;
-                httpResponse.sendRedirect(httpRequest.getContextPath() + "/faces/private/install.xhtml");
+                String r = "r";
+                try{
+                    r=VrApp.getBean(JsfCtrl.class).getFacesContextPrefix();
+                }catch(Exception e){
+                    //ignore
+                }
+                httpResponse.sendRedirect(httpRequest.getContextPath() + "/"+r+"/private/install.xhtml");
                 return;
             }
         }
@@ -147,7 +154,6 @@ public class VrConfigureInstallFilter implements Filter {
         }
 
 //        doAfterProcessing(request, response);
-
         // If there was a problem, we want to rethrow it if it is
         // a known type, otherwise log it.
         if (problem != null) {

@@ -247,6 +247,13 @@ public class JsfCtrl {
         return VrHelper.extratPureHTML(value);
     }
 
+    public String getFacesContextPrefix() {
+        return "r";
+    }
+    
+    public String getFacesContext() {
+        return getContext()+"/"+getFacesContextPrefix();
+    }
     public String getContext() {
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         return req.getContextPath();

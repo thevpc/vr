@@ -28,7 +28,7 @@ import net.vpc.upa.types.DateTime;
 @Properties(
         //i is a ObjRow!
         @Property(name = UIConstants.Grid.ROW_STYLE,
-                value = "(i.value.deleted or i.value.archived or i.value.disposition eq null) ?'vr-row-not-relevant':''")
+                value = "(i.object.deleted or i.object.archived or i.object.disposition eq null) ?'vr-row-not-relevant':''")
 )
 public class ArticlesItem {
 
@@ -61,7 +61,6 @@ public class ArticlesItem {
     @Field(max = "1024")
     private String linkURL;
 
-    
     private String linkText;
 
     private String linkClassStyle;

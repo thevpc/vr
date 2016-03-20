@@ -127,7 +127,7 @@ and open the template in the editor.
                                 <ui:repeat id="inboxList" value="#{mailboxPreviewCtrl.model.inbox}" var="i">
                                     <ui:fragment>
                                         <li>
-                                            <h:commandLink action="#{vrMenuManager.gotoPage('mailbox', '')}">
+                                            <h:outputLink value="/p/mailbox">
                                                 <div>
                                                     <strong>#{i.from}</strong>
                                                     <span class="pull-right text-muted">
@@ -137,7 +137,7 @@ and open the template in the editor.
                                                 <div>
                                                     #{i.text}
                                                 </div>
-                                            </h:commandLink>
+                                            </h:outputLink>
                                         </li>
                                         <li class="divider"></li>
                                     </ui:fragment>
@@ -151,8 +151,9 @@ and open the template in the editor.
                                 </ui:fragment>
                                 <ui:fragment id="inboxCount0" rendered="#{mailboxPreviewCtrl.model.inbox.size() eq 0}">
                                     <li>
-                                        <h:commandLink styleClass="text-center" style="font-size: x-small" value="Aucun message non lu"  action="#{vrMenuManager.gotoPage('mailbox', '')}">
-                                        </h:commandLink>
+                                        <h:outputLink  styleClass="text-center" style="font-size: x-small" value="/p/mailbox">
+                                            Aucun message non lu 
+                                        </h:outputLink>
                                     </li>
                                 </ui:fragment>
                             </ul>
@@ -393,7 +394,7 @@ and open the template in the editor.
                                 </li>
 
                                 <!--                                <li>
-                                                                    <a href="$ {jsfCtrl.context}/faces/modules/dashboard/dashboard.xhtml"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                                                                    <a href="$ {jsfCtrl.facesContext}/modules/dashboard/dashboard.xhtml"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                                                                     <ul class="nav nav-second-level">
                                                                         <li>
                                                                             <p:commandLink ajax="false" action="# {vrMenuManager.gotoPage('obj', 'EquipmentTypeGroup')}">
@@ -413,9 +414,9 @@ and open the template in the editor.
                                                     <ul class="nav nav-third-level">
                                                         <ui:repeat value="#{p1.leafs}" var="p2">
                                                             <li>
-                                                                <p:commandLink ajax="false" action="#{vrMenuManager.gotoPage(p2.type, p2.command)}">
+                                                                <h:outputLink value="#{p2.prettyURL}">
                                                                     <h:outputText class="fa"  value="      ${p2.name}" />
-                                                                </p:commandLink>                                        
+                                                                </h:outputLink>                                        
                                                             </li>
                                                         </ui:repeat>
                                                     </ul>
@@ -423,9 +424,10 @@ and open the template in the editor.
                                             </ui:repeat>
                                             <ui:repeat value="#{p0.leafs}" var="p1">
                                                 <li>
-                                                    <p:commandLink ajax="false" action="#{vrMenuManager.gotoPage(p1.type, p1.command)}">
+
+                                                    <h:outputLink value="#{p1.prettyURL}">
                                                         <h:outputText  value="      ${p1.name}" />
-                                                    </p:commandLink>                                        
+                                                    </h:outputLink>                                        
                                                 </li>
                                             </ui:repeat>
                                         </ul>
@@ -433,9 +435,9 @@ and open the template in the editor.
                                 </ui:repeat>
                                 <ui:repeat value="#{vrMenuManager.menuTree.leafs}" var="p1">
                                     <li>
-                                        <p:commandLink ajax="false" action="#{vrMenuManager.gotoPage(p1.type, p1.command)}">
+                                        <h:outputLink value="#{p1.prettyURL}">
                                             <h:outputText  value="      ${p1.name}" />
-                                        </p:commandLink>                                        
+                                        </h:outputLink>                                        
                                     </li>
                                 </ui:repeat>
 

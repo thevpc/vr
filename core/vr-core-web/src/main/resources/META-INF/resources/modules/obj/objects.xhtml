@@ -204,15 +204,15 @@ and open the template in the editor.
                                                                                    filterFunction="# {objCtrl.filterByProperty}"-->
                                     <p:columns value="#{objCtrl.columns}" 
                                                var="column" columnIndexVar="colIndex" 
-                                               sortBy="#{objCtrl.getSortLayoutPropertyValue(i.value,column.property)}" 
+                                               sortBy="#{objCtrl.getSortLayoutPropertyValue(i.record,column.property)}" 
                                                style="#{objCtrl.getPropertyColumnStyle(column.property)}"
                                                >
                                         <f:facet name="header">
                                             <h:outputText value="#{column.header}" />
                                         </f:facet>
-                                        <h:outputText rendered="#{column.type eq 'text'}" value="#{objCtrl.getLayoutPropertyValue(i.value,column.property)}" />
+                                        <h:outputText rendered="#{column.type eq 'text'}" value="#{objCtrl.getLayoutPropertyValue(i.record,column.property)}" />
                                         <h:selectBooleanCheckbox rendered="#{column.type eq 'checkbox'}"  disabled="true" 
-                                                                 value="#{objCtrl.getLayoutPropertyValue(i.value,column.property)}" />
+                                                                 value="#{objCtrl.getLayoutPropertyValue(i.record,column.property)}" />
                                     </p:columns>
                                     <f:facet name="footer">
                                         <p:outputLabel value="Total #{objCtrl.model.list.size()}"/>
@@ -328,6 +328,7 @@ and open the template in the editor.
                                                 style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
                                                 ajax="false" value="" 
                                                 icon="fa fa-eye"
+                                                disabled="#{data.disabledNavigation}" 
                                                 action="#{vrMenuManager.gotoPage('obj', data.buildActionCommand())}"/>
                                         </p:panelGrid>
                                     </pe:dynaFormControl>
@@ -343,6 +344,7 @@ and open the template in the editor.
                                                 style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
                                                 ajax="false" value="" 
                                                 icon="fa fa-eye"
+                                                disabled="#{data.disabledNavigation}" 
                                                 action="#{vrMenuManager.gotoPage('obj', data.buildActionCommand())}"/>
                                         </p:panelGrid>
                                     </pe:dynaFormControl>

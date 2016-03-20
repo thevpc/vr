@@ -17,11 +17,13 @@ public class ObjRow {
     private boolean write;
     private boolean selected;
     private boolean selectable = true;
-    private Record value;
+    private Record record;
+    private Object object;
     private int rowPos;
 
-    public ObjRow(Record value) {
-        this.value = value;
+    public ObjRow(Record value, Object obj) {
+        this.record = value;
+        this.object = obj;
     }
 
     public boolean isRead() {
@@ -48,12 +50,12 @@ public class ObjRow {
         this.selected = selected;
     }
 
-    public Record getValue() {
-        return value;
+    public Record getRecord() {
+        return record;
     }
 
-    public void setValue(Record value) {
-        this.value = value;
+    public void setRecord(Record record) {
+        this.record = record;
     }
 
     public boolean isSelectable() {
@@ -71,5 +73,13 @@ public class ObjRow {
     public void setRowPos(int rowPos) {
         this.rowPos = rowPos;
     }
-    
+
+    public Object getObject() {
+        return object;
+    }
+
+    public void setObject(Object object) {
+        this.object = object;
+    }
+
 }

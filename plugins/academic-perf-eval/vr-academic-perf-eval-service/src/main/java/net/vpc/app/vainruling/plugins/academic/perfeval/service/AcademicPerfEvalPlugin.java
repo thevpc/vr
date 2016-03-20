@@ -48,6 +48,7 @@ public class AcademicPerfEvalPlugin {
                 + " order by f.name"
         )
                 .setParameter("studentId", studentId)
+                .setHint("navigationDepth", 3)
                 .getEntityList();
     }
 

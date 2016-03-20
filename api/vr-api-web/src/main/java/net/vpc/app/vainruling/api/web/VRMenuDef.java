@@ -5,9 +5,14 @@
  */
 package net.vpc.app.vainruling.api.web;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -30,6 +35,18 @@ public class VRMenuDef {
         this.command = command;
         this.securityKey = securityKey;
         this.icon = icon;
+    }
+
+    public String getPrettyURL() {
+        String p = "/vr/p/" + type;
+        if (!net.vpc.common.strings.StringUtils.isEmpty(command)) {
+            try {
+                p += "?a=" + URLEncoder.encode(command, "UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(VRMenuDef.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return p;
     }
 
     public String getIcon() {
@@ -140,5 +157,5 @@ public class VRMenuDef {
     public String toString() {
         return "VRMenuDef{" + "name=" + name + ", path=" + path + ", type=" + type + ", command=" + command + ", securityKey=" + securityKey + ", icon=" + icon + '}';
     }
-    
+
 }

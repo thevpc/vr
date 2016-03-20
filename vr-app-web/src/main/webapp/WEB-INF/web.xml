@@ -60,7 +60,7 @@
     </listener>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
-        <url-pattern>/faces/*</url-pattern>
+        <url-pattern>/r/*</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
@@ -68,7 +68,7 @@
         </session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>faces/index.xhtml</welcome-file>
+        <welcome-file>r/index.xhtml</welcome-file>
     </welcome-file-list>
     <error-page>
         <exception-type>javax.faces.application.ViewExpiredException</exception-type>

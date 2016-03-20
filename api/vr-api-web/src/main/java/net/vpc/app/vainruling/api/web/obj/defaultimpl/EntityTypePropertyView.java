@@ -16,6 +16,7 @@ import net.vpc.upa.EntityBuilder;
 import net.vpc.upa.Field;
 import net.vpc.upa.KeyType;
 import net.vpc.upa.Relationship;
+import net.vpc.upa.UPA;
 import net.vpc.upa.types.DataType;
 import net.vpc.upa.types.EntityType;
 
@@ -26,6 +27,7 @@ import net.vpc.upa.types.EntityType;
 public class EntityTypePropertyView extends FieldPropertyView {
 
     private String actionCommand;
+    private Entity entity;
 
     public EntityTypePropertyView(String componentId, Field field, DataType dataType, String ctrlType, PropertyViewManager manager) {
         super(componentId, field, dataType, ctrlType, manager);
@@ -33,15 +35,18 @@ public class EntityTypePropertyView extends FieldPropertyView {
         if (dt == null) {
             dt = field.getDataType();
         }
-        Entity e=null;
         if (dt instanceof EntityType) {
             EntityType entityType = (EntityType) dt;
             Relationship relation = entityType.getRelationship();
-            e=relation.getTargetEntity();
-        }else if(dt instanceof KeyType){
-            e=((KeyType)dt).getEntity();
+            entity = relation.getTargetEntity();
+        } else if (dt instanceof KeyType) {
+            entity = ((KeyType) dt).getEntity();
         }
-        setActionCommand("{entity:\"" + e.getName() + "\",id:\"${ID}\"}");
+        setActionCommand("{entity:\"" + entity.getName() + "\",id:\"${ID}\"}");
+    }
+
+    public boolean isDisabledNavigation() {
+        return !UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(entity);
     }
 
     public String buildActionCommand() {
@@ -59,7 +64,7 @@ public class EntityTypePropertyView extends FieldPropertyView {
     }
 
     public Entity getMasterEntity() {
-        Entity e=null;
+        Entity e = null;
         DataType dt = getDataType();
         if (dt == null) {
             dt = getField().getDataType();
@@ -67,12 +72,12 @@ public class EntityTypePropertyView extends FieldPropertyView {
         if (dt instanceof EntityType) {
             EntityType entityType = (EntityType) dt;
             Relationship relation = entityType.getRelationship();
-            e=relation.getTargetEntity();
-        }else if(dt instanceof KeyType){
-            e=((KeyType)dt).getEntity();
+            e = relation.getTargetEntity();
+        } else if (dt instanceof KeyType) {
+            e = ((KeyType) dt).getEntity();
         }
         return e;
-        
+
 //        return getEntityType().getRelationship().getTargetRole().getEntity();
     }
 
