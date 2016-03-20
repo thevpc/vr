@@ -39,10 +39,10 @@ public class AcademicPerfEvalPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.findById(AcademicFeedback.class, feedbackId);
     }
-    
+
     public List<AcademicFeedback> findStudentFeedbacks(int studentId, Boolean validated, Boolean archived) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery("Select f from AcademicFeedback f where f.studentId:=studentId "
+        return pu.createQuery("Select f from AcademicFeedback f where f.studentId= :studentId "
                 + (validated != null ? (" and f.validated=" + validated) : "")
                 + (archived != null ? (" and f.archived=" + archived) : "")
                 + " order by f.name"
@@ -53,21 +53,21 @@ public class AcademicPerfEvalPlugin {
 
     public List<AcademicFeedbackResponse> findStudentFeedbackResponses(int feedbackId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery("Select f from AcademicFeedbackResponse f where f.feedbackId:=feedbackId order by f.position")
+        return pu.createQuery("Select f from AcademicFeedbackResponse f where f.feedbackId=:feedbackId")
                 .setParameter("feedbackId", feedbackId)
                 .getEntityList();
     }
-    
-    public List<AcademicFeedbackResponse> findStudentFeedbackResponsesByGroup(int feedbackId,int groupId) {
+
+    public List<AcademicFeedbackResponse> findStudentFeedbackResponsesByGroup(int feedbackId, int groupId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery("Select f from AcademicFeedbackResponse f where f.feedbackId:=feedbackId  and f.parentId:=parentId order by f.position")
+        return pu.createQuery("Select f from AcademicFeedbackResponse f where f.feedbackId=:feedbackId  and f.parentId=:parentId")
                 .setParameter("parentId", groupId)
                 .getEntityList();
     }
 
     public List<AcademicFeedbackGroup> findStudentFeedbackGroups(int feedbackModelId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery("Select f from AcademicFeedbackGroup f where f.modelId:=modelId order by f.position")
+        return pu.createQuery("Select f from AcademicFeedbackGroup f where f.modelId=:modelId order by f.position")
                 .setParameter("modelId", feedbackModelId)
                 .getEntityList();
     }
@@ -93,39 +93,42 @@ public class AcademicPerfEvalPlugin {
                 for (AcademicClass c : classes) {
                     List<AcademicCourseAssignment> assignements = a.findCourseAssignmentsByClass(c.getId());
                     for (AcademicCourseAssignment assignement : assignements) {
-                        AcademicTeacher t = assignement.getTeacher();
-                        if (t != null) {
-                            allowCourseFeedback = pu.createQuery("Select u.allowCourseFeedback from AcademicTeacher u where u.id=:id")
-                                    .setParameter("id", t.getId())
-                                    .getBoolean();
-                            if (allowCourseFeedback) {
-                                //AcademicCoursePlan   
-                                AcademicCoursePlan cp = assignement.getCoursePlan();
-                                if (cp != null) {
-                                    allowCourseFeedback = pu.createQuery("Select u.allowCourseFeedback from AcademicCoursePlan u where u.id=:id")
-                                            .setParameter("id", cp.getId())
-                                            .getBoolean();
+                        if (!"PFE-PFE".equals(assignement.getName())) {
+                            AcademicTeacher t = assignement.getTeacher();
+                            if (t != null) {
+                                allowCourseFeedback = pu.createQuery("Select u.allowCourseFeedback from AcademicTeacher u where u.id=:id")
+                                        .setParameter("id", t.getId())
+                                        .getBoolean();
+                                if (allowCourseFeedback) {
+                                    //AcademicCoursePlan   
+                                    AcademicCoursePlan cp = assignement.getCoursePlan();
+                                    if (cp != null) {
+                                        allowCourseFeedback = pu.createQuery("Select u.allowCourseFeedback from AcademicCoursePlan u where u.id=:id")
+                                                .setParameter("id", cp.getId())
+                                                .getBoolean();
 
-                                    if (allowCourseFeedback) {
-                                        //check if feedback is still there:
-                                        AcademicFeedback f = pu.createQuery("Select f from AcademicFeedback f where f.courseId=:assignementId and f.studentId:=studentId")
-                                                .setParameter("assignementId", assignement.getId())
-                                                .setParameter("studentId", s.getId())
-                                                .getEntity();
-                                        if (f == null) {
-                                            //okkay now generate it
-                                            f = new AcademicFeedback();
-                                            f.setArchived(false);
-                                            f.setCourse(assignement);
-                                            f.setStudent(s);
-                                            pu.persist(f);
+                                        if (allowCourseFeedback) {
+                                            //check if feedback is still there:
+                                            AcademicFeedback f = pu.createQuery("Select f from AcademicFeedback f where f.courseId=:assignementId and f.studentId=:studentId")
+                                                    .setParameter("assignementId", assignement.getId())
+                                                    .setParameter("studentId", s.getId())
+                                                    .getEntity();
+                                            if (f == null) {
+                                                //okkay now generate it
+                                                f = new AcademicFeedback();
+                                                f.setArchived(false);
+                                                f.setCourse(assignement);
+                                                f.setStudent(s);
+                                                f.setModel(academicFeedbackModel);
+                                                pu.persist(f);
 
-                                            for (AcademicFeedbackQuestion q : academicFeedbackQuestions) {
-                                                AcademicFeedbackResponse r = new AcademicFeedbackResponse();
-                                                r.setFeedback(f);
-                                                r.setQuestion(q);
-                                                r.setValid(false);
-                                                pu.persist(r);
+                                                for (AcademicFeedbackQuestion q : academicFeedbackQuestions) {
+                                                    AcademicFeedbackResponse r = new AcademicFeedbackResponse();
+                                                    r.setFeedback(f);
+                                                    r.setQuestion(q);
+                                                    r.setValid(false);
+                                                    pu.persist(r);
+                                                }
                                             }
                                         }
                                     }

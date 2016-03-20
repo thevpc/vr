@@ -11,11 +11,13 @@ import java.util.List;
 import java.util.logging.Level;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.callbacks.EntityListenerAdapter;
-import net.vpc.upa.callbacks.EntityListener;
 import net.vpc.upa.callbacks.PersistEvent;
 import net.vpc.upa.callbacks.UpdateEvent;
 import net.vpc.upa.config.Callback;
+import net.vpc.upa.config.OnPersist;
+import net.vpc.upa.config.OnPrePersist;
+import net.vpc.upa.config.OnPreUpdate;
+import net.vpc.upa.config.OnUpdate;
 import net.vpc.upa.expressions.Expression;
 import net.vpc.upa.expressions.Var;
 import net.vpc.upa.expressions.IdEnumerationExpression;
@@ -25,21 +27,19 @@ import net.vpc.upa.expressions.IdEnumerationExpression;
  * @author vpc
  */
 @Callback
-public class TraceServiceCallback
-        extends EntityListenerAdapter
-        implements EntityListener {
+public class TraceServiceCallback {
 
-    @Override
+    @OnPrePersist
     public void onPrePersist(PersistEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
         TraceService trace = getTraceService();
-        if (trace==null || !trace.accept(entity)) {
+        if (trace == null || !trace.accept(entity)) {
             return;
         }
     }
 
-    @Override
+    @OnPersist
     public void onPersist(PersistEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
@@ -61,7 +61,7 @@ public class TraceServiceCallback
         return trace;
     }
 
-    @Override
+    @OnPreUpdate
     public void onPreUpdate(UpdateEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
@@ -79,7 +79,7 @@ public class TraceServiceCallback
         event.getContext().setObject("updated_objects", old);
     }
 
-    @Override
+    @OnUpdate
     public void onUpdate(UpdateEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();

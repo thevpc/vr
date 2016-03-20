@@ -326,7 +326,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 AcademicSemester ss = semesters.get(i);
                 ModuleSemesterStat s = new ModuleSemesterStat();
                 s.setSemester(ss);
-                if (module.getCoursePlan().getSemester().getName().equals(ss.getName())) {
+                if (module.getCoursePlan().getCourseLevel().getSemester().getName().equals(ss.getName())) {
                     s.getValue().set(mod_val.copy().mul(module.getGroupCount() * module.getShareCount()));
                     s.setValueEffWeek(module.getValueEffWeek() * module.getGroupCount() * module.getShareCount());
                     s.getValue().setEquiv(evalValueEquiv(s.getValue(), tal.getDegree()));
@@ -460,7 +460,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 .getEntityList();
         List<AcademicCourseIntent> m = new ArrayList<>();
         for (AcademicCourseIntent value : intents) {
-            if (semester == null || (value.getAssignment().getCoursePlan().getSemester() != null && value.getAssignment().getCoursePlan().getSemester().getName().equals(semester))) {
+            if (semester == null || (value.getAssignment().getCoursePlan().getCourseLevel().getSemester() != null 
+                    && value.getAssignment().getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
                 m.add(value);
             }
         }
@@ -484,7 +485,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
         List<AcademicCourseIntent> m = new ArrayList<>();
         for (AcademicCourseIntent value : intents) {
-            if (semester == null || (value.getAssignment().getCoursePlan().getSemester() != null && value.getAssignment().getCoursePlan().getSemester().getName().equals(semester))) {
+            if (semester == null || (value.getAssignment().getCoursePlan().getCourseLevel().getSemester() != null 
+                    && value.getAssignment().getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
                 m.add(value);
             }
         }
@@ -804,7 +806,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         s.setCoursePlanCount(coursePlans.size());
         s.setCourseAssignmentCount(courseAssignments.size());
         for (AcademicCourseAssignment value : courseAssignments) {
-            AcademicSemester semester = value.getCoursePlan().getSemester();
+            AcademicSemester semester = value.getCoursePlan().getCourseLevel().getSemester();
             double grp = value.getGroupCount();
             double shr = value.getShareCount();
             LoadValue loadValue = new LoadValue(
@@ -1143,7 +1145,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //            prefix = prefix+"(" + (int)inc.inc(prefix) + ").";
 //            fillCoursePlanProps(c, p, prefix);
 
-            prefix = c.getProgram().getName() + "." + c.getCourseLevel().getName();
+            prefix = c.getCourseLevel().getAcademicClass().getProgram().getName() + "." + c.getCourseLevel().getName();
             prefix = prefix + "(" + (int) inc.inc(prefix) + ").";
             fillCoursePlanProps(c, p, prefix);
         }
@@ -1232,9 +1234,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             }
             p.put(prefix + "roomConstraints", s.toString());
         }
-        p.put(prefix + "sem.code", c.getCoursePlan().getSemester().getCode());
-        p.put(prefix + "sem.name", c.getCoursePlan().getSemester().getName());
-        p.put(prefix + "sem.name2", c.getCoursePlan().getSemester().getName2());
+        p.put(prefix + "sem.code", c.getCoursePlan().getCourseLevel().getSemester().getCode());
+        p.put(prefix + "sem.name", c.getCoursePlan().getCourseLevel().getSemester().getName());
+        p.put(prefix + "sem.name2", c.getCoursePlan().getCourseLevel().getSemester().getName2());
         p.put(prefix + "ue", c.getCoursePlan().getCourseGroup() == null ? "" : c.getCoursePlan().getCourseGroup().getName());
         p.put(prefix + "lvl", c.getCoursePlan().getCourseLevel().getName());
         p.put(prefix + "grp", c.getGroupCount());
@@ -1261,13 +1263,13 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         p.put(prefix + "w1.pm", c.getValuePM() / wpm);
         p.put(prefix + "w1.tppm", c.getCoursePlan().getValueTPPM() / wtppm);
 
-        p.put(prefix + "class.name", c.getCoursePlan().getStudentClass().getName());
-        p.put(prefix + "class.name2", c.getCoursePlan().getStudentClass().getName2());
-        p.put(prefix + "program.name", c.getCoursePlan().getProgram().getName());
-        p.put(prefix + "program.name2", c.getCoursePlan().getProgram().getName2());
-        p.put(prefix + "department.code", c.getCoursePlan().getProgram().getDepartment().getCode());
-        p.put(prefix + "department.name", c.getCoursePlan().getProgram().getDepartment().getName());
-        p.put(prefix + "department.name2", c.getCoursePlan().getProgram().getDepartment().getName2());
+        p.put(prefix + "class.name", c.getCoursePlan().getCourseLevel().getAcademicClass().getName());
+        p.put(prefix + "class.name2", c.getCoursePlan().getCourseLevel().getAcademicClass().getName2());
+        p.put(prefix + "program.name", c.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getName());
+        p.put(prefix + "program.name2", c.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getName2());
+        p.put(prefix + "department.code", c.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment().getCode());
+        p.put(prefix + "department.name", c.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment().getName());
+        p.put(prefix + "department.name2", c.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment().getName2());
         p.put(prefix + "teacher.name", c.getTeacher() == null ? null : getValidName(c.getTeacher()));
         p.put(prefix + "teacher.name2", (c.getTeacher() == null || c.getTeacher().getContact() == null) ? null : c.getTeacher().getContact().getFullName2());
         p.put(prefix + "teacher.discipline", c.getTeacher() == null ? null : c.getTeacher().getDiscipline());
@@ -1299,9 +1301,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
         p.put(prefix + "name", c.getName());
         p.put(prefix + "name2", c.getName2());
-        p.put(prefix + "sem.code", c.getSemester().getCode());
-        p.put(prefix + "sem.name", c.getSemester().getName());
-        p.put(prefix + "sem.name2", c.getSemester().getName2());
+        p.put(prefix + "sem.code", c.getCourseLevel().getSemester().getCode());
+        p.put(prefix + "sem.name", c.getCourseLevel().getSemester().getName());
+        p.put(prefix + "sem.name2", c.getCourseLevel().getSemester().getName2());
         p.put(prefix + "ue", c.getCourseGroup() == null ? "" : c.getCourseGroup().getName());
         p.put(prefix + "lvl", c.getCourseLevel().getName());
         p.put(prefix + "c.grp", c.getGroupCountC());
@@ -1326,12 +1328,12 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         p.put(prefix + "w1.pm", c.getValuePM() / wpm);
         p.put(prefix + "w1.tppm", c.getValueTPPM() / wtppm);
 
-        p.put(prefix + "class.name", c.getStudentClass().getName());
-        p.put(prefix + "class.name2", c.getStudentClass().getName2());
-        p.put(prefix + "program.name", c.getProgram().getName());
-        p.put(prefix + "class.name2", c.getProgram().getName2());
-        p.put(prefix + "department.name", c.getProgram().getDepartment().getName());
-        p.put(prefix + "department.name2", c.getProgram().getDepartment().getName2());
+        p.put(prefix + "class.name", c.getCourseLevel().getAcademicClass().getName());
+        p.put(prefix + "class.name2", c.getCourseLevel().getAcademicClass().getName2());
+        p.put(prefix + "program.name", c.getCourseLevel().getAcademicClass().getProgram().getName());
+        p.put(prefix + "class.name2", c.getCourseLevel().getAcademicClass().getProgram().getName2());
+        p.put(prefix + "department.name", c.getCourseLevel().getAcademicClass().getProgram().getDepartment().getName());
+        p.put(prefix + "department.name2", c.getCourseLevel().getAcademicClass().getProgram().getDepartment().getName2());
     }
 
 //    protected void generatePrintableTeacherListLoadFile(int yearId, Integer[] teacherIds, String semester, String template, String output) throws IOException {
@@ -1399,10 +1401,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     p.put(modulePrefix + ".sh", iformat(m.getShareCount()));
                     p.put(modulePrefix + ".grpsh", iformat(m.getGroupCount() * m.getShareCount()));
                     AcademicCoursePlan coursePlan = m.getCoursePlan();
-                    p.put(modulePrefix + ".class", StringUtils.nonnull(coursePlan.getStudentClass()));
+                    p.put(modulePrefix + ".class", StringUtils.nonnull(coursePlan.getCourseLevel().getAcademicClass()));
                     p.put(modulePrefix + ".level", StringUtils.nonnull(coursePlan.getCourseLevel()));
                     p.put(modulePrefix + ".type", StringUtils.nonnull(m.getCourseType()));
-                    p.put(modulePrefix + ".program", StringUtils.nonnull(coursePlan.getProgram()));
+                    p.put(modulePrefix + ".program", StringUtils.nonnull(coursePlan.getCourseLevel().getAcademicClass().getProgram()));
                     moduleIndex++;
                 }
             }
@@ -1581,7 +1583,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return UPA.getPersistenceUnit().findAll(AcademicCourseLevel.class);
     }
 
-    public AcademicCourseLevel findCourseLevels(int academicClassId, int semesterId) {
+    public AcademicCourseLevel findCourseLevel(int academicClassId, int semesterId) {
         return UPA.getPersistenceUnit().createQuery("Select x from AcademicCourseLevel x where "
                 + " x.academicClassId=:academicClassId"
                 + " and x.semesterId=:semesterId"
@@ -1620,7 +1622,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     public AcademicCoursePlan findCoursePlan(int studentClassId, int semesterId, String courseName) {
         return UPA.getPersistenceUnit().
-                createQuery("Select a from AcademicCoursePlan a where a.name=:courseName and a.semesterId=:semesterId and a.studentClassId=:studentClassId")
+                createQuery("Select a from AcademicCoursePlan a where a.name=:courseName and a.semesterId=:semesterId and a.courseLevel.academicClassId=:studentClassId")
                 .setParameter("courseName", courseName)
                 .setParameter("semesterId", semesterId)
                 .setParameter("studentClassId", studentClassId)
@@ -1759,13 +1761,14 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public List<AcademicCourseAssignment> findCourseAssignments() {
-        return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a order by a.coursePlan.semester.code,a.coursePlan.program.name,a.name,a.courseType.name")
+        return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a order by a.coursePlan.courseLevel.semester.code,a.coursePlan.courseLevel.academicClass.program.name,a.name,a.courseType.name")
                 .setHint("navigationDepth", 5)
                 .getEntityList();
     }
 
     public List<AcademicCoursePlan> findCoursePlans() {
         return UPA.getPersistenceUnit().createQuery("Select a from AcademicCoursePlan a")
+                .setHint("navigationDepth", 5)
                 .getEntityList();
     }
 
@@ -1775,7 +1778,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public List<AcademicCourseAssignment> findCourseAssignmentsByClass(int classId) {
-        return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.subClassId=:v or a.coursePlan.studentClassId=:v")
+        return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.subClassId=:v or a.coursePlan.courseLevel.academicClassId=:v")
                 .setParameter("v", classId).getEntityList();
     }
 
@@ -1905,7 +1908,11 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public AcademicCoursePlan findCoursePlan(int id) {
-        return (AcademicCoursePlan) UPA.getPersistenceUnit().findById(AcademicCoursePlan.class, id);
+        return (AcademicCoursePlan) UPA.getPersistenceUnit()
+                .createQueryBuilder(AcademicCoursePlan.class)
+                .addAndField("id", id)
+                .setHint("navigationDepth", 5)
+                .getEntity();
     }
 
     protected VirtualFileSystem getFileSystem() {
@@ -1980,7 +1987,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             AcademicHistCoursePlan h = new AcademicHistCoursePlan();
 
             h.setAcademicYear(s);
-            h.setProgram(m.getProgram() == null ? null : academicHistCoursePrograms.get(m.getProgram().getId()));
+            h.setProgram(m.getCourseLevel().getAcademicClass().getProgram() == null ? null : academicHistCoursePrograms.get(m.getCourseLevel().getAcademicClass().getProgram().getId()));
             h.setCourseGroup(m.getCourseGroup() == null ? null : academicHistCourseGroups.get(m.getCourseGroup().getId()));
             h.setCourseLevel(m.getCourseLevel());
             h.setDiscipline(m.getDiscipline());
@@ -2008,8 +2015,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             h.setValuePM(m.getValuePM());
             h.setValueTPPM(m.getValueTPPM());
 
-            h.setStudentClass(m.getStudentClass());
-            h.setSemester(m.getSemester());
+            h.setStudentClass(m.getCourseLevel().getAcademicClass());
+            h.setSemester(m.getCourseLevel().getSemester());
             add(h);
         }
         return s;
@@ -2031,7 +2038,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         List<AcademicHistCourseAssignment> m = new ArrayList<>();
         for (AcademicHistCourseAssignment value : findHistCourseAssignments(yearId)) {
             if (teacher == null || (value.getTeacher() != null && value.getTeacher().getId() == (teacher))) {
-                if (semester == null || (value.getCoursePlan().getSemester() != null && value.getCoursePlan().getSemester().getName().equals(semester))) {
+                if (semester == null || (value.getCoursePlan().getCourseLevel().getSemester() != null && value.getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
                     m.add(value);
                 }
             }
@@ -2627,15 +2634,15 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         Map<Integer, AcademicClass> academicClasses = findAcademicClassesMap();
         
         //should remove me!
-        for (AcademicCoursePlan s : findCoursePlans()) {
-            if (s.getStudentClass() != null && s.getSemester() != null) {
-                AcademicCourseLevel lvl = findCourseLevels(s.getStudentClass().getId(), s.getSemester().getId());
-                if (lvl != null) {
-                    s.setCourseLevel(lvl);
-                    pu.merge(s);
-                }
-            }
-        }
+//        for (AcademicCoursePlan s : findCoursePlans()) {
+//            if (s.getCourseLevel().getAcademicClass() != null && s.getCourseLevel().getSemester() != null) {
+//                AcademicCourseLevel lvl = findCourseLevels(s.getStudentClass().getId(), s.getSemester().getId());
+//                if (lvl != null) {
+//                    s.setCourseLevel(lvl);
+//                    pu.merge(s);
+//                }
+//            }
+//        }
         
         for (AcademicStudent s : findStudents()) {
             AppUser u = s.getUser();
@@ -2782,9 +2789,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 List<AcademicClass> myClasses = new ArrayList<>();
                 Set<String> myPrograms = new HashSet<>();
                 for (AcademicCourseAssignment a : findCourseAssignments(s.getId(), null, false, statCache)) {
-                    myPrograms.add(a.getCoursePlan().getProgram().getName());
+                    myPrograms.add(a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getName());
                     myClasses.add(a.getSubClass());
-                    myClasses.add(a.getCoursePlan().getStudentClass());
+                    myClasses.add(a.getCoursePlan().getCourseLevel().getAcademicClass());
                 }
 
                 for (AcademicClass ac : findAcademicUpHierarchyList(myClasses.toArray(new AcademicClass[myClasses.size()]), academicClasses)) {

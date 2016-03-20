@@ -7,28 +7,20 @@ package net.vpc.app.vainruling.plugins.academic.service;
 
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.upa.callbacks.PersistenceUnitEvent;
-import net.vpc.upa.callbacks.PersistenceUnitListenerAdapter;
 import net.vpc.upa.config.Callback;
+import net.vpc.upa.config.OnPreUpdateFormula;
 
 /**
  *
  * @author vpc
  */
 @Callback
-public class AcademicPersistenceUnitCallback extends PersistenceUnitListenerAdapter
-//        implements PersistenceUnitListener 
-{
+public class AcademicPersistenceUnitCallback {
 
-    @Override
+    @OnPreUpdateFormula
     public void onPreUpdateFormulas(PersistenceUnitEvent event) {
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         p.validateAcademicData();
-    }
-
-    @Override
-    public void onUpdateFormulas(PersistenceUnitEvent event) {
-//        AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-//        p.validateAcademicData();
     }
 
 }

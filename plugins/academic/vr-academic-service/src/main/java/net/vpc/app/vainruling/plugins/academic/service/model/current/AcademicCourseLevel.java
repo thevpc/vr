@@ -33,13 +33,9 @@ public class AcademicCourseLevel {
     @Sequence
 
     private int id;
-    private String name;
     @Formula("concat(this.academicClass.name,'-',this.semester.code)")
     @Field(modifiers = {UserFieldModifier.MAIN})
-    private String fullName;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
-    @Deprecated
-    private AcademicProgram program;
+    private String name;
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     private AcademicClass academicClass;
     @Field(modifiers = {UserFieldModifier.SUMMARY})
@@ -58,16 +54,6 @@ public class AcademicCourseLevel {
     public AcademicCourseLevel(int id, String name) {
         this.id = id;
         this.name = name;
-    }
-
-    @Deprecated
-    public AcademicProgram getProgram() {
-        return program;
-    }
-
-    @Deprecated
-    public void setProgram(AcademicProgram program) {
-        this.program = program;
     }
 
     public int getId() {
@@ -121,14 +107,6 @@ public class AcademicCourseLevel {
 
     public void setSemester(AcademicSemester semester) {
         this.semester = semester;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 
 }

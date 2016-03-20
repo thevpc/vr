@@ -45,16 +45,19 @@ public class ObjManagerService {
     @Autowired
     TraceService trace;
 
-    public Object resolveId(Object t) {
+    public Object resolveId(String entityName, Object t) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(t.getClass());
+        Entity entity = pu.getEntity(entityName);
+        if (t instanceof Record) {
+            return entity.getBuilder().recordToId((Record) t);
+        }
         return entity.getBuilder().entityToId(t);
     }
 
-    public void save(Object t) {
+    public void save(String entityName, Object t) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(t.getClass());
-        Object id = entity.getBuilder().entityToId(t);
+        Entity entity = pu.getEntity(entityName);
+        Object id = resolveId(entityName, t);
         List<Field> pf = entity.getPrimaryFields();
         boolean persist = false;
         if (id == null) {
@@ -72,68 +75,67 @@ public class ObjManagerService {
             persist = entity.findById(id) == null;
         }
         if (persist) {
-            pu.persist(t);
+            pu.persist(entityName, t);
 //            trace.inserted(t, getClass(), Level.FINE);
         } else {
-            pu.merge(t);
+            pu.merge(entityName, t);
 //            trace.updated(t, old, getClass(), Level.FINE);
         }
     }
 
-    public void erase(String type, Object id) {
+    public void erase(String entityName, Object id) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(type);
+        Entity entity = pu.getEntity(entityName);
         if (trace.accept(entity)) {
-            trace.removed(pu.findById(type, id), entity.getParent().getPath(), Level.FINE);
+            trace.removed(pu.findById(entityName, id), entity.getParent().getPath(), Level.FINE);
         }
-        pu.remove(type, RemoveOptions.forId(id));
+        pu.remove(entityName, RemoveOptions.forId(id));
     }
 
-    public boolean isSoftRemovable(String type) {
+    public boolean isSoftRemovable(String entityName) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(type);
+        Entity entity = pu.getEntity(entityName);
         return entity.containsField("deleted");
     }
 
-    public void remove(String type, Object id) {
-        if (!isSoftRemovable(type)) {
-            erase(type, id);
+    public void remove(String entityName, Object id) {
+        if (!isSoftRemovable(entityName)) {
+            erase(entityName, id);
             return;
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(type);
-        Object t = (Object) pu.findById(type, id);
+        Entity entity = pu.getEntity(entityName);
+        Record t = pu.findRecordById(entityName, id);
         if (t != null) {
             //check if already soft deleted
-            Boolean b = (Boolean) entity.getBuilder().getProperty(t, "deleted");
+            Boolean b = (Boolean) entity.getField("deleted").getValue(t);
             if (b != null && b.booleanValue()) {
-                erase(type, id);
+                erase(entityName, id);
             } else {
                 UserSession session = VrApp.getContext().getBean(UserSession.class);
-                Record r = entity.getBuilder().entityToRecord(t, true);
                 if (entity.containsField("deleted")) {
-                    r.setBoolean("deleted", true);
+                    t.setBoolean("deleted", true);
                 }
                 if (entity.containsField("deletedBy")) {
-                    r.setString("deletedBy", session.getUser().getLogin());
+                    t.setString("deletedBy", session.getUser().getLogin());
                 }
                 if (entity.containsField("deletedOn")) {
-                    r.setDate("deletedOn", new Timestamp(System.currentTimeMillis()));
+                    t.setDate("deletedOn", new Timestamp(System.currentTimeMillis()));
                 }
                 pu.merge(t);
                 if (trace.accept(entity)) {
-                    trace.softremoved(pu.findById(type, id), entity.getParent().getPath(), Level.FINE);
+                    trace.softremoved(pu.findById(entityName, id), entity.getParent().getPath(), Level.FINE);
                 }
             }
         }
     }
 
-    public String getObjectName(Object obj) {
+    public String getObjectName(String entityName,Object obj) {
         if (obj == null) {
             return "NO_NAME";
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(obj.getClass());
+        Entity entity = pu.getEntity(entityName);
         Field mf = entity.getMainField();
         if (mf == null) {
             return obj.toString();
@@ -173,11 +175,11 @@ public class ObjManagerService {
 //
 //        return VrApp.getBean(PluginManagerService.class).invokeEntityAction(entity.getEntityType(), action, object, args);
 //    }
-    public void archive(String type, Object object) {
+    public void archive(String entityName, Object object) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(type);
-        Object id = resolveId(object);
-        Object t = pu.findById(type, id);
+        Entity entity = pu.getEntity(entityName);
+        Object id = resolveId(entityName, object);
+        Object t = pu.findById(entityName, id);
         if (t != null) {
             Record r = entity.getBuilder().entityToRecord(t, true);
             if (entity.containsField("archived")) {
@@ -186,7 +188,7 @@ public class ObjManagerService {
 //            Object old = pu.findById(type, id);
             pu.merge(t);
             if (trace.accept(entity)) {
-                trace.archived(pu.findById(type, id), entity.getParent().getPath(), Level.FINE);
+                trace.archived(pu.findById(entityName, id), entity.getParent().getPath(), Level.FINE);
             }
 //            trace.updated(t, old, getClass(), Level.FINE);
         }
@@ -199,21 +201,26 @@ public class ObjManagerService {
         return pu.findById(type, id);
     }
 
-    public Object find(String entity, Object id) {
+    public Object find(String entityName, Object id) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.findById(entity, id);
+        return pu.findById(entityName, id);
     }
 
-    public boolean isArchivable(String type) {
+    public Record findRecord(String entityName, Object id) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(type);
+        return pu.findRecordById(entityName, id);
+    }
+
+    public boolean isArchivable(String entityName) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity entity = pu.getEntity(entityName);
         return entity.containsField("archived");
     }
 
-    public List<Object> findAll(String type, Map<String, Object> criteria) {
+    public List<Object> findAll(String entityName, Map<String, Object> criteria) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(type);
-        QueryBuilder cc = pu.createQueryBuilder(type)
+        Entity entity = pu.getEntity(entityName);
+        QueryBuilder cc = pu.createQueryBuilder(entityName)
                 .setOrder(entity.getListOrder())
                 .setEntityAlias("o");
         if (criteria != null) {
@@ -227,7 +234,7 @@ public class ObjManagerService {
 
     public long findCountByFilter(String entityName, String criteria, ObjSearch objSearch) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        String qq = "Select count(1) from "+entityName+" o ";
+        String qq = "Select count(1) from " + entityName + " o ";
         Expression filterExpression = null;
         if (criteria != null) {
             filterExpression = new UserExpression(criteria);
@@ -243,9 +250,9 @@ public class ObjManagerService {
             }
         }
         if (filterExpression != null) {
-            qq+=" where "+filterExpression;
+            qq += " where " + filterExpression;
         }
-        Number nn=(Number)pu.createQuery(qq).getSingleValue();
+        Number nn = (Number) pu.createQuery(qq).getSingleValue();
         return nn.longValue();
     }
 
@@ -275,6 +282,38 @@ public class ObjManagerService {
 
         }
         List<Object> list = q.getEntityList();
+        if (objSearch != null) {
+            list = objSearch.filterList(list, entityName);
+        }
+        return list;
+    }
+
+    public List<Record> findRecordsByFilter(String entityName, String criteria, ObjSearch objSearch) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity entity = pu.getEntity(entityName);
+        QueryBuilder q = pu
+                .createQueryBuilder(entityName)
+                .setEntityAlias("o")
+                .setOrder(entity.getListOrder());
+        Expression filterExpression = null;
+        if (criteria != null) {
+            filterExpression = new UserExpression(criteria);
+        }
+        if (objSearch != null) {
+            String c = objSearch.createPreProcessingExpression(entityName);
+            if (c != null) {
+                if (filterExpression == null) {
+                    filterExpression = new UserExpression(c);
+                } else {
+                    filterExpression = new And(filterExpression, new UserExpression(c));
+                }
+            }
+        }
+        if (filterExpression != null) {
+            q.setExpression(filterExpression);
+
+        }
+        List<Record> list = q.getRecordList();
         if (objSearch != null) {
             list = objSearch.filterList(list, entityName);
         }

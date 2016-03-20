@@ -174,7 +174,7 @@ public class StatCache {
         List<AcademicCourseAssignment> m = new ArrayList<>();
         if (teacher == null) {
             for (AcademicCourseAssignment value : getAcademicCourseAssignmentList()) {
-                if (semester == null || (value.getCoursePlan().getSemester() != null && value.getCoursePlan().getSemester().getName().equals(semester))) {
+                if (semester == null || (value.getCoursePlan().getCourseLevel().getSemester() != null && value.getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
                     m.add(value);
                 }
             }
@@ -197,7 +197,7 @@ public class StatCache {
                     System.out.println("Found assignments for teacherId=" + teacher + " : " + tt+" but he/she seems to be not enabled!");
                 }
                 for (AcademicCourseAssignment value : list) {
-                    if (semester == null || (value.getCoursePlan().getSemester() != null && value.getCoursePlan().getSemester().getName().equals(semester))) {
+                    if (semester == null || (value.getCoursePlan().getCourseLevel().getSemester() != null && value.getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
                         m.add(value);
                     }
                 }
@@ -248,7 +248,7 @@ public class StatCache {
         List<AcademicCourseIntent> m = new ArrayList<>();
         if (teacher == null) {
             for (AcademicCourseIntent value : getAcademicCourseIntentList()) {
-                if (semester == null || (value.getAssignment().getCoursePlan().getSemester() != null && value.getAssignment().getCoursePlan().getSemester().getName().equals(semester))) {
+                if (semester == null || (value.getAssignment().getCoursePlan().getCourseLevel().getSemester() != null && value.getAssignment().getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
                     m.add(value);
                 }
             }
@@ -258,7 +258,7 @@ public class StatCache {
                 System.out.println("No intents for " + teacher + " : " + getAcademicTeacherMap().get(teacher));
             } else {
                 for (AcademicCourseIntent value : list) {
-                    if (semester == null || (value.getAssignment().getCoursePlan().getSemester() != null && value.getAssignment().getCoursePlan().getSemester().getName().equals(semester))) {
+                    if (semester == null || (value.getAssignment().getCoursePlan().getCourseLevel().getSemester() != null && value.getAssignment().getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
                         m.add(value);
                     }
                 }
@@ -271,7 +271,7 @@ public class StatCache {
         List<AcademicCourseIntent> m = new ArrayList<>();
         if (assignmentId == null) {
             for (AcademicCourseIntent value : getAcademicCourseIntentList()) {
-                if (semester == null || (value.getAssignment().getCoursePlan().getSemester() != null && value.getAssignment().getCoursePlan().getSemester().getName().equals(semester))) {
+                if (semester == null || (value.getAssignment().getCoursePlan().getCourseLevel().getSemester() != null && value.getAssignment().getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
                     m.add(value);
                 }
             }
@@ -281,7 +281,8 @@ public class StatCache {
 //                System.out.println("No intents for " + assignmentId + " : assignment=" + assignmentId);
             } else {
                 for (AcademicCourseIntent value : list) {
-                    if (semester == null || (value.getAssignment().getCoursePlan().getSemester() != null && value.getAssignment().getCoursePlan().getSemester().getName().equals(semester))) {
+                    if (semester == null || (value.getAssignment().getCoursePlan().getCourseLevel().getSemester() != null 
+                            && value.getAssignment().getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
                         m.add(value);
                     }
                 }

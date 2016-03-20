@@ -9,6 +9,7 @@ import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VFS;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -706,11 +707,14 @@ public class XlsxLoadImporter {
                     }
                     {
                         String stringVal = studentClass.getName() + "-" + semester.getName();
-                        courseLevel = service.findCourseLevel(program.getId(), stringVal);
+                        courseLevel = service.findCourseLevel(studentClass.getId(), semester.getId());
                         if (courseLevel == null) {
                             courseLevel = new AcademicCourseLevel();
                             courseLevel.setName(stringVal);
-                            courseLevel.setProgram(program);
+//                            courseLevel.setProgram(program);
+                            courseLevel.setCreationDate(new Timestamp(System.currentTimeMillis()));
+                            courseLevel.setSemester(semester);
+                            courseLevel.setAcademicClass(studentClass);
                             service.add(courseLevel);
                         }
                     }
@@ -800,9 +804,6 @@ public class XlsxLoadImporter {
                         if (coursePlan == null) {
                             coursePlan = new AcademicCoursePlan();
                             coursePlan.setName(coursePlanName);
-                            coursePlan.setProgram(program);
-                            coursePlan.setStudentClass(studentClass);
-                            coursePlan.setSemester(semester);
                             coursePlan.setCourseLevel(courseLevel);
                             coursePlan.setCourseGroup(courseGroup);
                             coursePlan.setDiscipline(discipline);

@@ -16,6 +16,7 @@ import net.vpc.upa.callbacks.EntityListener;
 import net.vpc.upa.callbacks.PersistEvent;
 import net.vpc.upa.callbacks.UpdateEvent;
 import net.vpc.upa.config.Callback;
+import net.vpc.upa.config.OnPersist;
 
 /**
  *
@@ -23,24 +24,14 @@ import net.vpc.upa.config.Callback;
  */
 @Callback
 public class AcademicTeacherCallback
-        extends EntityListenerAdapter
-        implements EntityListener {
+       {
 
     protected boolean accept(Entity entity) {
         return !entity.getModifiers().contains(EntityModifier.SYSTEM)
                 && entity.getName().equals("AcademicTeacher");
     }
 
-    @Override
-    public void onPrePersist(PersistEvent event) {
-//        PersistenceUnit pu = event.getPersistenceUnit();
-//        Entity entity = event.getEntity();
-//        if (!accept(entity)) {
-//            return;
-//        }
-    }
-
-    @Override
+    @OnPersist
     public void onPersist(PersistEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
@@ -57,24 +48,5 @@ public class AcademicTeacherCallback
         }
     }
 
-    @Override
-    public void onPreUpdate(UpdateEvent event) {
-//        PersistenceUnit pu = event.getPersistenceUnit();
-//        Entity entity = event.getEntity();
-//        if (!accept(entity)) {
-//            return;
-//        }
-    }
-
-    @Override
-    public void onUpdate(UpdateEvent event) {
-//        PersistenceUnit pu = event.getPersistenceUnit();
-//        Entity entity = event.getEntity();
-//        if (!accept(entity)) {
-//            return;
-//        }
-//        List<Record> old = event.getContext().getObject("updated_objects");
-//        VRApp.getBean(TraceService.class).updated(event.getUpdatesRecord(), old, entity.getParent().getPath(), Level.FINE);
-    }
-
+    
 }

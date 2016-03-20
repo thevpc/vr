@@ -158,12 +158,12 @@ public abstract class AbstractCourseLoadCtrl {
                     accepted = false;
                 }
                 if (accepted && semesterFilter.size() > 0) {
-                    if (!semesterFilter.contains(c.getAssignment().getCoursePlan().getSemester().getId())) {
+                    if (!semesterFilter.contains(c.getAssignment().getCoursePlan().getCourseLevel().getSemester().getId())) {
                         accepted = false;
                     }
                 }
                 if (accepted && classFilter.size() > 0) {
-                    if (!classFilter.contains(c.getAssignment().getCoursePlan().getStudentClass().getId())) {
+                    if (!classFilter.contains(c.getAssignment().getCoursePlan().getCourseLevel().getAcademicClass().getId())) {
                         accepted = false;
                     }
                 }
@@ -275,7 +275,9 @@ public abstract class AbstractCourseLoadCtrl {
                         }
                     }
                 }
-                d = (t.getCoursePlan() != null && t.getCoursePlan().getStudentClass() != null && t.getCoursePlan().getStudentClass().getProgram() != null) ? t.getCoursePlan().getStudentClass().getProgram().getDepartment() : null;
+                d = (t.getCoursePlan() != null && t.getCoursePlan().getCourseLevel().getAcademicClass() != null 
+                        && t.getCoursePlan().getCourseLevel().getAcademicClass().getProgram() != null) ? 
+                        t.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment() : null;
                 if (d != null) {
                     if (userSession.allowed("Custom.Education.CourseLoadUpdateIntents")) {
                         AppDepartment d2 = user.getDepartment();
@@ -315,7 +317,8 @@ public abstract class AbstractCourseLoadCtrl {
                         }
                     }
                 }
-                d = (t.getCoursePlan() != null && t.getCoursePlan().getStudentClass() != null && t.getCoursePlan().getStudentClass().getProgram() != null) ? t.getCoursePlan().getStudentClass().getProgram().getDepartment() : null;
+                d = (t.getCoursePlan() != null && t.getCoursePlan().getCourseLevel().getAcademicClass() != null && t.getCoursePlan().getCourseLevel().getAcademicClass().getProgram() != null) ? 
+                        t.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment() : null;
                 if (d != null) {
                     if (userSession.allowed("Custom.Education.CourseLoadUpdateAssignments")) {
                         AppDepartment d2 = userSession.getUser().getDepartment();

@@ -45,25 +45,28 @@ public class AcademicCoursePlan {
     private String name2;
 
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
-    @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
-    )
-    private AcademicProgram program;
+//    @Field(modifiers = {UserFieldModifier.SUMMARY})
+//    @Properties(
+//            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
+//    )
+//    private AcademicProgram program;
 
     private String discipline;
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
-    private AcademicClass studentClass;
-
-    @Field()
-    private AcademicCourseLevel courseLevel;
+//    @Field(modifiers = {UserFieldModifier.SUMMARY})
+//    private AcademicClass studentClass;
 
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
-    private AcademicSemester semester;
+    private AcademicCourseLevel courseLevel;
+
+//    @Field(modifiers = {UserFieldModifier.SUMMARY})
+//    @Properties(
+//            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
+//    )
+//    private AcademicSemester semester;
 
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     @Properties(
@@ -149,21 +152,21 @@ public class AcademicCoursePlan {
         this.name = name;
     }
 
-    public AcademicProgram getProgram() {
-        return program;
-    }
-
-    public void setProgram(AcademicProgram program) {
-        this.program = program;
-    }
-
-    public AcademicClass getStudentClass() {
-        return studentClass;
-    }
-
-    public void setStudentClass(AcademicClass studentClass) {
-        this.studentClass = studentClass;
-    }
+//    public AcademicProgram getProgram() {
+//        return program;
+//    }
+//
+//    public void setProgram(AcademicProgram program) {
+//        this.program = program;
+//    }
+//
+//    public AcademicClass getStudentClass() {
+//        return studentClass;
+//    }
+//
+//    public void setStudentClass(AcademicClass studentClass) {
+//        this.studentClass = studentClass;
+//    }
 
     public AcademicCourseLevel getCourseLevel() {
         return courseLevel;
@@ -173,13 +176,13 @@ public class AcademicCoursePlan {
         this.courseLevel = courseLevel;
     }
 
-    public AcademicSemester getSemester() {
-        return semester;
-    }
-
-    public void setSemester(AcademicSemester semester) {
-        this.semester = semester;
-    }
+//    public AcademicSemester getSemester() {
+//        return semester;
+//    }
+//
+//    public void setSemester(AcademicSemester semester) {
+//        this.semester = semester;
+//    }
 
     public double getValueC() {
         return valueC;
@@ -222,7 +225,12 @@ public class AcademicCoursePlan {
 
     @Override
     public String toString() {
-        return "CoursePlan{" + "name=" + name + ", department=" + program + ", studentClass=" + studentClass + ", moduleLevel=" + courseLevel + ", semester=" + semester + ", valueC=" + valueC + ", valueTD=" + valueTD + ", valueTP=" + valueTP + ", valuePM=" + valuePM + '}';
+        return "CoursePlan{" + "name=" + name 
+//                + ", department=" + program 
+//                + ", studentClass=" + studentClass 
+                + ", moduleLevel=" + courseLevel 
+//                + ", semester=" + semester 
+                + ", valueC=" + valueC + ", valueTD=" + valueTD + ", valueTP=" + valueTP + ", valuePM=" + valuePM + '}';
     }
 
     public int getPosition() {

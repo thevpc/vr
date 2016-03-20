@@ -46,7 +46,7 @@ and open the template in the editor.
                             <div class="table-responsive">
                                 <p:dataTable value="#{r.questions}" var="i">
                                     <p:column headerText="">
-                                        <p:outputLabel value="#{i.question.name}"/>
+                                        <p:outputLabel value="#{i.response.question.name}"/>
                                     </p:column>
                                     <p:column headerText="">
                                         <p:selectOneRadio id="customRadio" value="#{i.response.response}">
@@ -61,19 +61,20 @@ and open the template in the editor.
                             </div>
                         </div>
                     </ui:repeat>
-
-                    <div class="row">
-                        <p:outputLabel value="valider?"/>
-                        <p:selectBooleanButton id="value2" value="#{studentFeedbackCtrl.model.validate}" 
-                                               onLabel="Oui" 
-                                               offLabel="Non" 
-                                               onIcon="ui-icon-check" 
-                                               offIcon="ui-icon-close" style="width:60px">
-                        </p:selectBooleanButton>
-                    </div>
-                    <div class="row">
-                        <p:commandButton value="Enregistrer" action="#{studentFeedbackCtrl.onSave}" update="listForm"/>
-                    </div>
+                    <ui:fragment rendered="#{studentFeedbackCtrl.model.rows.size() gt 0}">
+                        <div class="row">
+                            <p:outputLabel value="valider?"/>
+                            <p:selectBooleanButton id="value2" value="#{studentFeedbackCtrl.model.validate}" 
+                                                   onLabel="Oui" 
+                                                   offLabel="Non" 
+                                                   onIcon="ui-icon-check" 
+                                                   offIcon="ui-icon-close" style="width:60px">
+                            </p:selectBooleanButton>
+                        </div>
+                        <div class="row">
+                            <p:commandButton value="Enregistrer" action="#{studentFeedbackCtrl.onSave}" update="listForm"/>
+                        </div>
+                    </ui:fragment>
                 </h:form>
             </ui:define>
 

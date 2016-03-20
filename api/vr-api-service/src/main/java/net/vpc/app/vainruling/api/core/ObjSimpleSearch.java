@@ -126,7 +126,7 @@ public class ObjSimpleSearch extends ObjSearch {
     private Map<String, String> toStringRecord(Object o, String entityName) {
         Map<String, String> words = new HashMap<>();
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        Record r = pu.getEntity(entityName).getBuilder().entityToRecord(o, true);
+        Record r = (o instanceof Record)?((Record)o):pu.getEntity(entityName).getBuilder().entityToRecord(o, true);
         if (r != null) {
             for (Map.Entry<String, Object> entry : r.toMap().entrySet()) {
                 String k = entry.getKey();

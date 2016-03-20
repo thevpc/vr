@@ -5,10 +5,12 @@
  */
 package net.vpc.app.vainruling.plugins.academic.perfeval.service.model;
 
+import net.vpc.upa.RelationshipType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
 import net.vpc.upa.config.Id;
+import net.vpc.upa.config.ManyToOne;
 import net.vpc.upa.config.Path;
 import net.vpc.upa.config.Sequence;
 
@@ -17,7 +19,7 @@ import net.vpc.upa.config.Sequence;
  * @author vpc
  */
 @Entity
-@Path("/Education/Eval")
+@Path("/Education/Evaluation")
 public class AcademicFeedbackQuestion {
 
     @Id
@@ -29,6 +31,7 @@ public class AcademicFeedbackQuestion {
     private int position;
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private boolean mandatory;
+    @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicFeedbackGroup parent;
 
     public int getId() {

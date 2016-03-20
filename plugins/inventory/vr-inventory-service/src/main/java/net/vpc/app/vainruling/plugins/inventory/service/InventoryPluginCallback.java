@@ -14,21 +14,18 @@ import net.vpc.app.vainruling.plugins.inventory.service.model.InventoryStatus;
 import net.vpc.app.vainruling.plugins.inventory.service.model.InventoryUser;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.callbacks.EntityListenerAdapter;
-import net.vpc.upa.callbacks.EntityListener;
 import net.vpc.upa.callbacks.PersistEvent;
 import net.vpc.upa.config.Callback;
+import net.vpc.upa.config.OnPersist;
 
 /**
  *
  * @author vpc
  */
 @Callback
-public class InventoryPluginCallback 
-    extends EntityListenerAdapter 
-    implements EntityListener {
+public class InventoryPluginCallback{
 
-    @Override
+    @OnPersist
     public void onPersist(PersistEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();

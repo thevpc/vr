@@ -12,26 +12,23 @@ import net.vpc.app.vainruling.api.model.AppUserType;
 import net.vpc.upa.Entity;
 import net.vpc.upa.EntityModifier;
 import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.callbacks.EntityListenerAdapter;
-import net.vpc.upa.callbacks.EntityListener;
 import net.vpc.upa.callbacks.PersistEvent;
 import net.vpc.upa.config.Callback;
+import net.vpc.upa.config.OnPersist;
 
 /**
  *
  * @author vpc
  */
 @Callback
-public class AppUserTeacherCallback
-        extends EntityListenerAdapter
-        implements EntityListener {
+public class AppUserTeacherCallback {
 
     protected boolean accept(Entity entity) {
         return !entity.getModifiers().contains(EntityModifier.SYSTEM)
                 && entity.getEntityType().equals(AppUser.class);
     }
 
-    @Override
+    @OnPersist
     public void onPersist(PersistEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();

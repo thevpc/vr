@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.i18n.I18n;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
 import net.vpc.common.gomail.GoMail;
 import net.vpc.common.gomail.GoMailBodyPosition;
 import net.vpc.upa.Action;
@@ -18,6 +19,7 @@ import net.vpc.upa.Action;
 import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
 import net.vpc.upa.FieldModifier;
+import net.vpc.upa.Record;
 import net.vpc.upa.Relationship;
 import net.vpc.upa.UPA;
 import net.vpc.upa.UPAObject;
@@ -31,14 +33,16 @@ public class I18nChecker {
     public static void main(String[] args) {
 
         VrAppTest.runStandalone();
-        int count = checkI18n();
-        System.out.println(count + " Missing resources!");
+//        int count = checkI18n();
+//        System.out.println(count + " Missing resources!");
         UPA.getContext().invokePrivileged(new Action<Object>() {
 
             @Override
             public Object run() {
                 AcademicFeedback f=new AcademicFeedback();
-                UPA.getPersistenceUnit().updateFormulas();
+//                UPA.getPersistenceUnit().updateFormulas();
+                Record rr = UPA.getPersistenceUnit().findRecordById(AcademicCoursePlan.class, 121);
+                System.out.println(rr.getObject("fullName"));
 //                UPA.getPersistenceUnit().persist(f);
 //                for (Object o : UPA.getPersistenceUnit().findAll(AcademicInternship.class)) {
 //                    System.out.println(o);

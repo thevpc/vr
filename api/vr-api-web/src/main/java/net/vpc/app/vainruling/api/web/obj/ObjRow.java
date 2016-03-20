@@ -5,6 +5,8 @@
  */
 package net.vpc.app.vainruling.api.web.obj;
 
+import net.vpc.upa.Record;
+
 /**
  *
  * @author vpc
@@ -15,10 +17,10 @@ public class ObjRow {
     private boolean write;
     private boolean selected;
     private boolean selectable = true;
-    private Object value;
+    private Record value;
     private int rowPos;
 
-    public ObjRow(Object value) {
+    public ObjRow(Record value) {
         this.value = value;
     }
 
@@ -46,11 +48,11 @@ public class ObjRow {
         this.selected = selected;
     }
 
-    public Object getValue() {
+    public Record getValue() {
         return value;
     }
 
-    public void setValue(Object value) {
+    public void setValue(Record value) {
         this.value = value;
     }
 

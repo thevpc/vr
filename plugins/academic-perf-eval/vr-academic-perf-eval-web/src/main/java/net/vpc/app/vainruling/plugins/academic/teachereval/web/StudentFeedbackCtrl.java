@@ -35,8 +35,8 @@ import org.springframework.beans.factory.annotation.Autowired;
             @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Mes Retours d'information",
-        menu = "/Education",
-        url = "/modules/academic/perfeval/studentfeedback"
+        menu = "/Education/Evaluation",
+        url = "modules/academic/perfeval/studentfeedback"
 )
 public class StudentFeedbackCtrl {
 

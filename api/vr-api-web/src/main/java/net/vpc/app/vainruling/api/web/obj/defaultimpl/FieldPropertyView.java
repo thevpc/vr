@@ -24,14 +24,14 @@ import net.vpc.upa.types.EntityType;
  */
 public class FieldPropertyView extends PropertyView {
 
-    public FieldPropertyView(String componentId, Field field, DataType dataType,String ctrlType, PropertyViewManager manager) {
-        super(componentId, 
-                field==null?VrApp.getBean(I18n.class).get(componentId):
-                VrApp.getBean(I18n.class).get(field), field, ctrlType, manager);
-        setHeader(field==null?VrApp.getBean(I18n.class).get(componentId):
-                VrApp.getBean(I18n.class).get(field));
-        setDataType(dataType!=null?dataType:field.getDataType());
-        setRequired(getDataType()==null?false:!getDataType().isNullable());
+    public FieldPropertyView(String componentId, Field field, DataType dataType, String ctrlType, PropertyViewManager manager) {
+        super(componentId,
+                field == null ? VrApp.getBean(I18n.class).get(componentId)
+                        : VrApp.getBean(I18n.class).get(field), field, ctrlType, manager);
+        setHeader(field == null ? VrApp.getBean(I18n.class).get(componentId)
+                : VrApp.getBean(I18n.class).get(field));
+        setDataType(dataType != null ? dataType : field.getDataType());
+        setRequired(getDataType() == null ? false : !getDataType().isNullable());
     }
 
     public Field getField() {
@@ -48,8 +48,10 @@ public class FieldPropertyView extends PropertyView {
         if (!getComponentId().contains(".")) {
             Field field = getField();
             final Object v2 = field.getDataType().convert(value);
-            if (o != null && field.getEntity().getEntityType().isAssignableFrom(o.getClass())) {
-                field.getEntity().getBuilder().entityToRecord(o).setObject(field.getName(), v2);
+            if (o != null
+                    && (o instanceof Record
+                    || field.getEntity().getEntityType().isAssignableFrom(o.getClass()))) {
+                field.getEntity().getBuilder().setProperty(o, field.getName(), v2);
             }
         }
     }
@@ -73,11 +75,11 @@ public class FieldPropertyView extends PropertyView {
         SelectValue sv = null;
         if (obj != null) {
             String[] exprArr = expr.split("\\.");
-            sv = new SelectValue(obj, obj, UPA.getPersistenceUnit().getEntity(obj.getClass()));
+            sv = new SelectValue(obj, obj, getField().getEntity());
             for (String n : exprArr) {
                 Field field = sv.entity.getField(n);
                 DataType dataType = field.getDataType();
-                Object oo = sv.value==null?null:field.getValue(sv.value);
+                Object oo = sv.value == null ? null : field.getValue(sv.value);
                 if (dataType instanceof EntityType) {
                     EntityType et = (EntityType) dataType;
                     Entity e2 = et.getRelationship().getTargetRole().getEntity();
