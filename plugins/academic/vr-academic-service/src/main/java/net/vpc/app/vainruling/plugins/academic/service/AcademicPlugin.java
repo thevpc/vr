@@ -75,6 +75,10 @@ import net.vpc.app.vainruling.api.util.ExcelTemplate;
 import net.vpc.app.vainruling.api.util.NamedDoubles;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicBac;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicPreClass;
+import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
+import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.GlobalAssignmentStat;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.GlobalStat;
 import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
@@ -167,7 +171,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (findTeacherSemestrialLoads == null) {
             findTeacherSemestrialLoads = cache.getAcademicTeacherSemestrialLoadByTeacherIdMap().get(teacherId);
             if (findTeacherSemestrialLoads == null) {
-                log.severe("reacherSemestrialLoads not found for teacherId=" + teacherId + " (" + teacher + ")");
+                log.severe("teacherSemestrialLoads not found for teacherId=" + teacherId + " (" + teacher + ")");
                 findTeacherSemestrialLoads = new ArrayList<>();
             }
         }
@@ -460,7 +464,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 .getEntityList();
         List<AcademicCourseIntent> m = new ArrayList<>();
         for (AcademicCourseIntent value : intents) {
-            if (semester == null || (value.getAssignment().getCoursePlan().getCourseLevel().getSemester() != null 
+            if (semester == null || (value.getAssignment().getCoursePlan().getCourseLevel().getSemester() != null
                     && value.getAssignment().getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
                 m.add(value);
             }
@@ -485,7 +489,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
         List<AcademicCourseIntent> m = new ArrayList<>();
         for (AcademicCourseIntent value : intents) {
-            if (semester == null || (value.getAssignment().getCoursePlan().getCourseLevel().getSemester() != null 
+            if (semester == null || (value.getAssignment().getCoursePlan().getCourseLevel().getSemester() != null
                     && value.getAssignment().getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
                 m.add(value);
             }
@@ -1444,6 +1448,16 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return p;
     }
 
+    public void importStudent(AcademicStudentImport s) throws IOException {
+        XlsxLoadImporter i = new XlsxLoadImporter();
+        i.importStudent(s, null);
+    }
+
+    public void importTeacher(AcademicTeacherImport t) throws IOException {
+        XlsxLoadImporter i = new XlsxLoadImporter();
+        i.importTeacher(t, null);
+    }
+
     public int importFile(VFile folder, ImportOptions importOptions) throws IOException {
         XlsxLoadImporter i = new XlsxLoadImporter();
         return i.importFile(folder, importOptions);
@@ -1461,10 +1475,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public void update(Object t) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         pu.merge(t);
-    }
-
-    public List<AppCivility> findCivilities() {
-        return UPA.getPersistenceUnit().findAll(AppCivility.class);
     }
 
     public List<AcademicTeacher> findTeachers() {
@@ -1567,9 +1577,33 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return UPA.getPersistenceUnit().findAll(AcademicTeacherSituation.class);
     }
 
+    public List<AcademicPreClass> findAcademicPreClasses() {
+        return UPA.getPersistenceUnit().findAll(AcademicPreClass.class);
+    }
+
+    public List<AcademicBac> findAcademicBacs() {
+        return UPA.getPersistenceUnit().findAll(AcademicBac.class);
+    }
+
     public Map<Integer, AcademicClass> findAcademicClassesMap() {
         HashMap<Integer, AcademicClass> _allClasses = new HashMap<>();
         for (AcademicClass a : findAcademicClasses()) {
+            _allClasses.put(a.getId(), a);
+        }
+        return _allClasses;
+    }
+
+    public Map<Integer, AcademicPreClass> findAcademicPreClassesMap() {
+        HashMap<Integer, AcademicPreClass> _allClasses = new HashMap<>();
+        for (AcademicPreClass a : findAcademicPreClasses()) {
+            _allClasses.put(a.getId(), a);
+        }
+        return _allClasses;
+    }
+
+    public Map<Integer, AcademicBac> findAcademicBacsMap() {
+        HashMap<Integer, AcademicBac> _allClasses = new HashMap<>();
+        for (AcademicBac a : findAcademicBacs()) {
             _allClasses.put(a.getId(), a);
         }
         return _allClasses;
@@ -1648,8 +1682,19 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 .getEntity();
     }
 
+    public AcademicTeacherDegree findTeacherDegree(int id) {
+        return UPA.getPersistenceUnit().
+                createQuery("Select a from AcademicTeacherDegree a where a.id=:t")
+                .setParameter("t", id)
+                .getEntity();
+    }
+
     public AcademicTeacherSituation findTeacherSituation(String t) {
         return (AcademicTeacherSituation) UPA.getPersistenceUnit().findByMainField(AcademicTeacherSituation.class, t);
+    }
+
+    public AcademicTeacherSituation findTeacherSituation(int id) {
+        return (AcademicTeacherSituation) UPA.getPersistenceUnit().findById(AcademicTeacherSituation.class, id);
     }
 
     public AcademicCourseLevel findCourseLevel(int programId, String name) {
@@ -1796,6 +1841,12 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public AcademicClass findAcademicClass(String t) {
         return UPA.getPersistenceUnit().createQuery("Select a from AcademicClass a where a.name=:t")
                 .setParameter("t", t)
+                .getEntity();
+    }
+
+    public AcademicClass findAcademicClass(int id) {
+        return UPA.getPersistenceUnit().createQuery("Select a from AcademicClass a where a.id=:t")
+                .setParameter("t", id)
                 .getEntity();
     }
 
@@ -2471,6 +2522,26 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 .findById(AppPeriod.class, id);
     }
 
+    public AcademicBac findAcademicBac(int id) {
+        return (AcademicBac) UPA.getPersistenceUnit()
+                .findById(AcademicBac.class, id);
+    }
+
+    public AcademicBac findAcademicBac(String name) {
+        return (AcademicBac) UPA.getPersistenceUnit()
+                .findByField(AcademicBac.class, "name", name);
+    }
+
+    public AcademicPreClass findAcademicPreClass(int id) {
+        return (AcademicPreClass) UPA.getPersistenceUnit()
+                .findById(AcademicPreClass.class, id);
+    }
+
+    public AcademicPreClass findAcademicPreClass(String name) {
+        return (AcademicPreClass) UPA.getPersistenceUnit()
+                .findByField(AcademicPreClass.class, "name", name);
+    }
+
     public AppPeriod findAcademicYearSnapshot(String t, String snapshotName) {
         return (AppPeriod) UPA.getPersistenceUnit()
                 .createQuery("Select a from AppPeriod a where a.name=:t and a.snapshotName=:s")
@@ -2629,10 +2700,68 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return result;
     }
 
+    public List<AcademicPreClass> findAcademicDownHierarchyList(AcademicPreClass[] classes, Map<Integer, AcademicPreClass> allClasses) {
+        HashSet<Integer> visited = new HashSet<>();
+        if (allClasses == null) {
+            allClasses = findAcademicPreClassesMap();
+        }
+        List<AcademicPreClass> result = new ArrayList<>();
+        Stack<Integer> stack = new Stack<>();
+        for (AcademicPreClass c : classes) {
+            if (c != null) {
+                stack.push(c.getId());
+            }
+        }
+        while (!stack.isEmpty()) {
+            int i = stack.pop();
+            if (!visited.contains(i)) {
+                AcademicPreClass c = allClasses.get(i);
+                if (c != null) {
+                    result.add(c);
+                    for (AcademicPreClass p : allClasses.values()) {
+                        if (p.getParent() != null && p.getParent().getId() == c.getId()) {
+                            stack.push(p.getId());
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public List<AcademicBac> findAcademicDownHierarchyList(AcademicBac[] classes, Map<Integer, AcademicBac> allClasses) {
+        HashSet<Integer> visited = new HashSet<>();
+        if (allClasses == null) {
+            allClasses = findAcademicBacsMap();
+        }
+        List<AcademicBac> result = new ArrayList<>();
+        Stack<Integer> stack = new Stack<>();
+        for (AcademicBac c : classes) {
+            if (c != null) {
+                stack.push(c.getId());
+            }
+        }
+        while (!stack.isEmpty()) {
+            int i = stack.pop();
+            if (!visited.contains(i)) {
+                AcademicBac c = allClasses.get(i);
+                if (c != null) {
+                    result.add(c);
+                    for (AcademicBac p : allClasses.values()) {
+                        if (p.getParent() != null && p.getParent().getId() == c.getId()) {
+                            stack.push(p.getId());
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     public void validateAcademicData() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Map<Integer, AcademicClass> academicClasses = findAcademicClassesMap();
-        
+
         //should remove me!
 //        for (AcademicCoursePlan s : findCoursePlans()) {
 //            if (s.getCourseLevel().getAcademicClass() != null && s.getCourseLevel().getSemester() != null) {
@@ -2643,7 +2772,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //                }
 //            }
 //        }
-        
         for (AcademicStudent s : findStudents()) {
             AppUser u = s.getUser();
             AppContact c = s.getContact();

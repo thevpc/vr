@@ -48,6 +48,10 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStud
 import net.vpc.app.vainruling.plugins.commonmodel.service.CommonModelPlugin;
 import net.vpc.app.vainruling.api.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicBac;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicPreClass;
+import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
+import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.utils.Chronometer;
 import net.vpc.common.utils.PlatformTypes;
@@ -272,16 +276,7 @@ public class XlsxLoadImporter {
         return count;
     }
 
-    public void importTeachers(VFile file) throws IOException {
-        final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
-        Chronometer ch = new Chronometer();
-        log.log(Level.INFO, "importTeachers from {0}", file);
-        File tmp = VFS.copyNativeTempFile(file);
-        SheetParser sp = pfm.createSheetParser(tmp);
-        sp.setContainsHeader(true);
-        sp.setSheetIndex(0);
-        sp.setSkipRows(0);
-        DataReader rows = sp.parse();
+    public AcademicTeacherImport parseAcademicTeacherImport(Object[] values) {
         final int COL_FIRST_NAME = 1;
         final int COL_LAST_NAME = 2;
         final int COL_DEGREE = 3;
@@ -296,146 +291,258 @@ public class XlsxLoadImporter {
         final int COL_FIRST_NAME2 = 12;
         final int COL_LAST_NAME2 = 13;
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-//        final AppUserType teacherType = VRApp.getBean(CorePlugin.class).findUserType("Teacher");
-        AppConfig appConfig = core.findAppConfig();
-        AppCompany mainCompany = appConfig==null?null:appConfig.getMainCompany();
-        long count = 0;
-        while (rows.hasNext()) {
-            DataRow row = rows.readRow();
-            Object[] values = row.getValues();
-//            if (!"x".equalsIgnoreCase(Convert.toString(values[8]))) {
-            AcademicTeacher academicTeacher = new AcademicTeacher();
-            String fs = core.validateName(Convert.toString(values[COL_FIRST_NAME]));
-            String ln = core.validateName(Convert.toString(values[COL_LAST_NAME]));
-            String nin = null;// national identification number aca CIN
-            if (!StringUtils.isEmpty(nin) || !StringUtils.isEmpty(fs) || !StringUtils.isEmpty(ln)) {
-                AppContact contact = new AppContact();
-                contact.setNin(nin);
-                contact.setFirstName(fs);
-                contact.setLastName(ln);
-                contact.setFullName(core.validateName(AppContact.getName(contact)));
-                contact = core.findOrCreateContact(contact);
-                contact.setCompany(mainCompany);
-                AcademicTeacher oldAcademicTeacher = service.findTeacherByContact(contact.getId());
-                if (oldAcademicTeacher != null) {
-                    academicTeacher = oldAcademicTeacher;
-                } else {
-                    academicTeacher.setContact(contact);
-                }
-                String fs2 = Convert.toString(values[COL_FIRST_NAME2]);
-                String ln2 = Convert.toString(values[COL_LAST_NAME2]);
-                contact.setFirstName2(fs2);
-                contact.setLastName2(ln2);
-                contact.setFullName2(AppContact.getName2(contact));
-
-                List<AcademicTeacherSemestrialLoad> semestrialLoads = new ArrayList<>();
-                String degreeString = Convert.toString(values[COL_DEGREE]);
-                if (degreeString == null) {
-                    throw new NoSuchElementException("Missing Degree for " + academicTeacher.getContact().getFullName());
-                }
-                AcademicTeacherDegree degree = service.findTeacherDegree(degreeString);
-                if (degree == null) {
-                    throw new NoSuchElementException("Degree Not Found " + degreeString);
-                }
-                academicTeacher.setDegree(degree);
-                {
-                    String stringVal = Convert.toString(values[COL_SITUATION]);
-                    AcademicTeacherSituation v = service.findTeacherSituation(stringVal);
-                    if (v == null) {
-                        v = new AcademicTeacherSituation();
-                        v.setName(stringVal);
-                        v.setName2(Convert.toString(values[COL_SITUATION2]));
-                        service.add(v);
-                    }
-                    academicTeacher.setSituation(v);
-                }
-                {
-                    AcademicTeacherSemestrialLoad sload = new AcademicTeacherSemestrialLoad();
-                    sload.setTeacher(academicTeacher);
-                    sload.setWeeksLoad(Convert.toInteger(values[COL_WEEK_LOAD_1], IntegerParserConfig.LENIENT));
-                    sload.setSemester(1);
-                    semestrialLoads.add(sload);
-
-                    sload = new AcademicTeacherSemestrialLoad();
-                    sload.setTeacher(academicTeacher);
-                    sload.setWeeksLoad(Convert.toInteger(values[COL_WEEK_LOAD_2], IntegerParserConfig.LENIENT));
-                    sload.setSemester(2);
-                    semestrialLoads.add(sload);
-                }
-                {
-                    String stringVal = Convert.toString(values[COL_GENDER]);
-                    AppGender v = service.findGender(stringVal);
-                    if (v == null) {
-                        v = new AppGender();
-                        v.setName(stringVal);
-                        service.add(v);
-                    }
-                    contact.setGender(v);
-                }
-                {
-                    String stringVal = Convert.toString(values[COL_CIVILITY]);
-                    AppCivility v = service.findCivility(stringVal);
-                    if (v == null) {
-                        v = new AppCivility();
-                        v.setName(stringVal);
-                        service.add(v);
-                    }
-                    contact.setCivility(v);
-                }
-
-                academicTeacher.getContact().setEmail(Convert.toString(values[COL_EMAIL]));
-                academicTeacher.setDiscipline(VrApp.getBean(AcademicPlugin.class).formatDisciplinesNames(Convert.toString(values[COL_DISCIPLINE]), true));
-                service.update(contact);
-                if (oldAcademicTeacher == null) {
-                    service.add(academicTeacher);
-                } else {
-                    service.update(academicTeacher);
-                }
-                count++;
-                final AcademicTeacher finalAcademicTeacher = academicTeacher;
-                UPA.getContext().invokePrivileged(new Action<Object>() {
-
-                    @Override
-                    public Object run() {
-                        service.addUserForTeacher(finalAcademicTeacher);
-                        return null;
-                    }
-
-                }, null);
-//                service.add(tal);
-                final List<AcademicTeacherSemestrialLoad> academicTeacherSemestrialLoads = service.findTeacherSemestrialLoads(academicTeacher.getId());
-                for (AcademicTeacherSemestrialLoad sload : semestrialLoads) {
-                    boolean found = false;
-                    for (AcademicTeacherSemestrialLoad a : academicTeacherSemestrialLoads) {
-                        if (a.getSemester() == sload.getSemester()) {
-                            a.setWeeksLoad(sload.getWeeksLoad());
-                            service.update(a);
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        service.add(sload);
-                    }
-                }
-            }
-//            }
+        AcademicTeacherImport academicTeacherImport = new AcademicTeacherImport();
+        academicTeacherImport.setFirstName(core.validateName(Convert.toString(values[COL_FIRST_NAME])));
+        academicTeacherImport.setLastName(core.validateName(Convert.toString(values[COL_LAST_NAME])));
+        if (!StringUtils.isEmpty(academicTeacherImport.getNin()) || !StringUtils.isEmpty(academicTeacherImport.getFirstName()) || !StringUtils.isEmpty(academicTeacherImport.getLastName())) {
+            academicTeacherImport.setFirstName2(Convert.toString(values[COL_FIRST_NAME2]));
+            academicTeacherImport.setLastName2(Convert.toString(values[COL_LAST_NAME2]));
+            academicTeacherImport.setDegreeName(Convert.toString(values[COL_DEGREE]));
+            academicTeacherImport.setSituationName(Convert.toString(values[COL_SITUATION]));
+            academicTeacherImport.setSituationName2(Convert.toString(values[COL_SITUATION2]));
+            academicTeacherImport.setGenderName(Convert.toString(values[COL_GENDER]));
+            academicTeacherImport.setCivilityName(Convert.toString(values[COL_CIVILITY]));
+            academicTeacherImport.setEmail(Convert.toString(values[COL_EMAIL]));
+            academicTeacherImport.setDiscipline(Convert.toString(values[COL_DISCIPLINE]));
+            academicTeacherImport.setWeekLoads(new int[]{
+                Convert.toInteger(values[COL_WEEK_LOAD_1], IntegerParserConfig.LENIENT),
+                Convert.toInteger(values[COL_WEEK_LOAD_2], IntegerParserConfig.LENIENT)
+            });
+            return academicTeacherImport;
         }
-        TraceService trace = VrApp.getBean(TraceService.class);
-        trace.trace("importTeachers", "importTeachers from " + file + " in " + ch.stop() + " (" + count + " rows)", null, getClass().getSimpleName(), Level.INFO);
-        log.log(Level.INFO, "importTeachers from {0} in {1} " + " (" + count + " rows)", new Object[]{file, ch.stop()});
+        return null;
     }
 
-    public int importStudents(VFile file) throws IOException {
+    public class ImportTeacherContext {
+
+        AppCompany mainCompany;
+        Map<String, AppGender> gendersByName;
+        Map<Integer, AppGender> gendersById;
+        Map<String, AppCivility> civilityByName;
+        Map<Integer, AppCivility> civilityById;
+    }
+
+    public void importTeacher(AcademicTeacherImport a, ImportTeacherContext ctx) throws IOException {
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
         final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
+        CommonModelPlugin common = VrApp.getBean(CommonModelPlugin.class);
+
+        if (ctx == null) {
+            ctx = new ImportTeacherContext();
+        }
+        if (ctx.mainCompany == null) {
+            AppConfig appConfig = core.findAppConfig();
+            ctx.mainCompany = appConfig == null ? null : appConfig.getMainCompany();
+        }
+        if (ctx.gendersById == null) {
+            ctx.gendersByName = new HashMap<>();
+            ctx.gendersById = new HashMap<>();
+            for (AppGender g : core.findGenders()) {
+                ctx.gendersByName.put(g.getName().toUpperCase(), g);
+                ctx.gendersById.put(g.getId(), g);
+            }
+
+        }
+
+        if (ctx.civilityById == null) {
+            ctx.civilityByName = new HashMap<>();
+            ctx.civilityById = new HashMap<>();
+            for (AppCivility g : core.findCivilities()) {
+                ctx.civilityByName.put(g.getName().toUpperCase(), g);
+                ctx.civilityById.put(g.getId(), g);
+            }
+        }
+
+        AcademicTeacher academicTeacher = new AcademicTeacher();
+        AppContact contact = new AppContact();
+        contact.setNin(a.getNin());
+        contact.setFirstName(a.getFirstName());
+        contact.setLastName(a.getLastName());
+        contact.setFullName(core.validateName(AppContact.getName(contact)));
+        contact.setPhone1(a.getPhone());
+
+        AppDepartment dept = null;
+        if (a.getDepartmentId() != null) {
+            dept = core.findDepartment(a.getDepartmentId());
+            if (dept == null) {
+                throw new NoSuchElementException("Department Not Found " + a.getDepartmentId());
+            }
+        } else {
+            dept = service.findDepartment(a.getDepartmentName());
+            if (dept == null) {
+                throw new NoSuchElementException("Department Not Found " + a.getDepartmentName());
+            }
+        }
+        AppPeriod period = null;
+        if (a.getStartPeriodId() != null) {
+            period = common.findPeriod(a.getStartPeriodId());
+            if (period == null) {
+                throw new NoSuchElementException("Period Not Found " + a.getStartPeriodId());
+            }
+        } else {
+            period = common.findPeriod(a.getStartPeriodName());
+            if (period == null) {
+                throw new NoSuchElementException("Period Not Found " + a.getStartPeriodName());
+            }
+        }
+
+        AcademicTeacherDegree degree = null;
+        if (a.getDegreeId() != null) {
+            degree = service.findTeacherDegree(a.getDegreeId());
+            if (degree == null) {
+                throw new NoSuchElementException("Degree Not Found " + a.getDegreeId());
+            }
+        } else {
+            degree = service.findTeacherDegree(a.getDegreeName());
+            if (degree == null) {
+                throw new NoSuchElementException("Degree Not Found " + a.getDegreeName());
+            }
+        }
+
+        AppGender gender = null;
+        if (a.getGenderId() != null) {
+            gender = ctx.gendersById.get(a.getGenderId());
+            if (gender == null) {
+                throw new NoSuchElementException("Gender Not Found " + a.getGenderId());
+            }
+        } else {
+            gender = ctx.gendersByName.get(a.getGenderName().toUpperCase());
+            if (gender == null) {
+                throw new NoSuchElementException("Gender Not Found " + a.getGenderName());
+            }
+        }
+
+        AppCivility civility = null;
+        if (a.getCivilityId() != null) {
+            civility = ctx.civilityById.get(a.getCivilityId());
+            if (civility == null) {
+                throw new NoSuchElementException("Civility Not Found " + a.getCivilityId());
+            }
+        } else {
+            civility = ctx.civilityByName.get(a.getCivilityName().toUpperCase());
+            if (civility == null) {
+                if (gender.getName().equals("F")) {
+                    civility = ctx.civilityByName.get("Mlle");
+                } else {
+                    civility = ctx.civilityByName.get("M.");
+                }
+                if (civility == null) {
+                    throw new NoSuchElementException("Civility Not Found " + a.getCivilityName());
+                }
+            }
+        }
+
+        AcademicTeacherSituation situation = null;
+        if (a.getSituationId() != null) {
+            situation = service.findTeacherSituation(a.getSituationId());
+            if (situation == null) {
+                throw new NoSuchElementException("Situation Not Found " + a.getCivilityId());
+            }
+        } else {
+            situation = service.findTeacherSituation(a.getSituationName());
+            if (situation == null) {
+                throw new NoSuchElementException("Situation Not Found " + a.getCivilityId());
+            }
+        }
+
+        contact = core.findOrCreateContact(contact);
+        contact.setCompany(ctx.mainCompany);
+        AcademicTeacher oldAcademicTeacher = service.findTeacherByContact(contact.getId());
+        if (oldAcademicTeacher != null) {
+            academicTeacher = oldAcademicTeacher;
+        } else {
+            academicTeacher.setContact(contact);
+        }
+        academicTeacher.setDepartment(dept);
+        contact.setFirstName2(a.getFirstName2());
+        contact.setLastName2(a.getLastName2());
+        contact.setFullName2(AppContact.getName2(contact));
+        contact.setEmail(a.getEmail());
+
+        List<AcademicTeacherSemestrialLoad> semestrialLoads = new ArrayList<>();
+        academicTeacher.setDegree(degree);
+        academicTeacher.setSituation(situation);
+        if (contact.getGender() == null) {
+            contact.setGender(gender);
+        }
+        if (contact.getCivility() == null) {
+            contact.setCivility(civility);
+        }
+        if (contact.getCivility() == null) {
+            contact.setCivility(civility);
+        }
+
+        academicTeacher.setDiscipline(VrApp.getBean(AcademicPlugin.class).formatDisciplinesNames(a.getDiscipline(), true));
+        service.update(contact);
+        if (oldAcademicTeacher == null) {
+            service.add(academicTeacher);
+        } else {
+            service.update(academicTeacher);
+        }
+        if (a.getWeekLoads() != null) {
+            for (int i = 0; i < a.getWeekLoads().length; i++) {
+                int weekLoad = a.getWeekLoads()[i];
+                AcademicTeacherSemestrialLoad sload = new AcademicTeacherSemestrialLoad();
+                sload.setTeacher(academicTeacher);
+                sload.setWeeksLoad(weekLoad);
+                sload.setSemester(i + 1);
+                semestrialLoads.add(sload);
+            }
+        }
+        final AcademicTeacher finalAcademicTeacher = academicTeacher;
+        UPA.getContext().invokePrivileged(new Action<Object>() {
+
+            @Override
+            public Object run() {
+                service.addUserForTeacher(finalAcademicTeacher);
+                return null;
+            }
+
+        }, null);
+//                service.add(tal);
+        final List<AcademicTeacherSemestrialLoad> academicTeacherSemestrialLoads = service.findTeacherSemestrialLoads(academicTeacher.getId());
+        for (AcademicTeacherSemestrialLoad sload : semestrialLoads) {
+            boolean found = false;
+            for (AcademicTeacherSemestrialLoad al : academicTeacherSemestrialLoads) {
+                if (al.getSemester() == sload.getSemester()) {
+                    al.setWeeksLoad(sload.getWeeksLoad());
+                    service.update(al);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                service.add(sload);
+            }
+        }
+    }
+
+    public void importTeachers(VFile file) throws IOException {
         Chronometer ch = new Chronometer();
-        log.log(Level.INFO, "importStudents from {0}", file);
+        log.log(Level.INFO, "importTeachers from {0}", file);
         File tmp = VFS.copyNativeTempFile(file);
         SheetParser sp = pfm.createSheetParser(tmp);
         sp.setContainsHeader(true);
         sp.setSheetIndex(0);
         sp.setSkipRows(0);
         DataReader rows = sp.parse();
+        long count = 0;
+        while (rows.hasNext()) {
+            DataRow row = rows.readRow();
+            Object[] values = row.getValues();
+            AcademicTeacherImport aa = parseAcademicTeacherImport(values);
+            ImportTeacherContext ctx = new ImportTeacherContext();
+            if (aa != null) {
+                importTeacher(aa, ctx);
+                count++;
+            }
+        }
+        TraceService trace = VrApp.getBean(TraceService.class);
+        trace.trace("importTeachers", "importTeachers from " + file + " in " + ch.stop() + " (" + count + " rows)", null, getClass().getSimpleName(), Level.INFO);
+        log.log(Level.INFO, "importTeachers from {0} in {1} " + " (" + count + " rows)", new Object[]{file, ch.stop()});
+    }
+
+    public AcademicStudentImport parseAcademicStudentImport(Object[] values) throws IOException {
         int col = -1;
         final int COL_DEPT = ++col;
         final int COL_NIN = ++col;
@@ -451,135 +558,275 @@ public class XlsxLoadImporter {
         final int COL_LAST_NAME2 = ++col;
         final int COL_FIRST_NAME2 = ++col;
         CorePlugin core = VrApp.getBean(CorePlugin.class);
+        String fn = core.validateName(Convert.toString(values[COL_FIRST_NAME]));
+        String ln = core.validateName(Convert.toString(values[COL_LAST_NAME]));
+        String nin = Convert.toString(values[COL_NIN]);
+        if (!StringUtils.isEmpty(nin) || !StringUtils.isEmpty(fn) || !StringUtils.isEmpty(ln)) {
+            AcademicStudentImport a = new AcademicStudentImport();
+            a.setFirstName(fn);
+            a.setLastName(ln);
+            a.setNin(nin);
+            a.setStartPeriodName(Convert.toString(values[COL_YEAR1]));
+            a.setClassName(Convert.toString(values[COL_CLASS]));
+            a.setFirstName2(Convert.toString(values[COL_FIRST_NAME2]));
+            a.setLastName2(Convert.toString(values[COL_LAST_NAME2]));
+            a.setDepartmentName(Convert.toString(values[COL_DEPT]));
+            a.setPhone(Convert.toString(values[COL_GSM]));
+            a.setGenderName(Convert.toString(values[COL_GENDER]));
+            a.setSubscriptionNumber(Convert.toString(values[COL_SUBSCRIPTION_NBR]));
+            a.setCivilityName(Convert.toString(values[COL_CIVILITY]));
+            a.setEmail(Convert.toString(values[COL_EMAIL]));
+            return a;
+        }
+        return null;
+    }
+
+    public static class ImportStudentContext {
+
+        Map<String, AppGender> gendersByName;
+        Map<Integer, AppGender> gendersById;
+        Map<String, AppCivility> civilityByName;
+        Map<Integer, AppCivility> civilityById;
+        Map<String, AppProfile> profiles;
+        AppCompany mainCompany;
+    }
+
+    public void importStudent(AcademicStudentImport a, ImportStudentContext ctx) throws IOException {
+        final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
         CommonModelPlugin common = VrApp.getBean(CommonModelPlugin.class);
-        Map<String, AppGender> genders = new HashMap<>();
-        Map<String, AppProfile> profiles = new HashMap<>();
-        AppConfig appConfig = core.findAppConfig();
-        AppCompany mainCompany = appConfig==null?null:appConfig.getMainCompany();
-        for (AcademicClass cls : service.findAcademicClasses()) {
-            AppProfile p = core.findOrCreateCustomProfile(cls.getName(), "AcademicClass");
-            profiles.put(p.getCode(), p);
-            profiles.put(cls.getName(), p);
+        if (ctx == null) {
+            ctx = new ImportStudentContext();
         }
-        for (AppGender g : core.findGenders()) {
-            genders.put(g.getName().toUpperCase(), g);
+        if (ctx.mainCompany == null) {
+            AppConfig appConfig = core.findAppConfig();
+            ctx.mainCompany = appConfig == null ? null : appConfig.getMainCompany();
         }
+        if (ctx.profiles == null) {
+            ctx.profiles = new HashMap<>();
+            for (AcademicClass cls : service.findAcademicClasses()) {
+                AppProfile p = core.findOrCreateCustomProfile(cls.getName(), "AcademicClass");
+                ctx.profiles.put(p.getCode(), p);
+                ctx.profiles.put(cls.getName(), p);
+            }
+
+        }
+        if (ctx.gendersById == null) {
+            ctx.gendersByName = new HashMap<>();
+            ctx.gendersById = new HashMap<>();
+            for (AppGender g : core.findGenders()) {
+                ctx.gendersByName.put(g.getName().toUpperCase(), g);
+                ctx.gendersById.put(g.getId(), g);
+            }
+
+        }
+
+        if (ctx.civilityById == null) {
+            ctx.civilityByName = new HashMap<>();
+            ctx.civilityById = new HashMap<>();
+            for (AppCivility g : core.findCivilities()) {
+                ctx.civilityByName.put(g.getName().toUpperCase(), g);
+                ctx.civilityById.put(g.getId(), g);
+            }
+        }
+
+        AppDepartment dept = null;
+        if (a.getDepartmentId() != null) {
+            dept = core.findDepartment(a.getDepartmentId());
+//            if (dept == null) {
+//                throw new NoSuchElementException("Department Not Found " + a.getDepartmentId());
+//            }
+        } else {
+            dept = service.findDepartment(a.getDepartmentName());
+//            if (dept == null) {
+//                throw new NoSuchElementException("Department Not Found " + a.getDepartmentName());
+//            }
+        }
+
+        AppPeriod period = null;
+        if (a.getStartPeriodId() != null) {
+            period = common.findPeriod(a.getStartPeriodId());
+            if (period == null) {
+                throw new NoSuchElementException("Period Not Found " + a.getStartPeriodId());
+            }
+        } else {
+            period = common.findPeriod(a.getStartPeriodName());
+            if (period == null) {
+                throw new NoSuchElementException("Period Not Found " + a.getStartPeriodName());
+            }
+        }
+
+        AppGender gender = null;
+        if (a.getGenderId() != null) {
+            gender = ctx.gendersById.get(a.getGenderId());
+            if (gender == null) {
+                throw new NoSuchElementException("Gender Not Found " + a.getGenderId());
+            }
+        } else {
+            gender = ctx.gendersByName.get(a.getGenderName().toUpperCase());
+            if (gender == null) {
+                throw new NoSuchElementException("Gender Not Found " + a.getGenderName());
+            }
+        }
+
+        AppCivility civility = null;
+        if (a.getCivilityId() != null) {
+            civility = ctx.civilityById.get(a.getCivilityId());
+            if (civility == null) {
+                throw new NoSuchElementException("Civility Not Found " + a.getCivilityId());
+            }
+        } else {
+            civility = ctx.civilityByName.get(a.getCivilityName().toUpperCase());
+            if (civility == null) {
+                if (gender.getName().equals("F")) {
+                    civility = ctx.civilityByName.get("MLLE");
+                } else {
+                    civility = ctx.civilityByName.get("M.");
+                }
+                if (civility == null) {
+                    throw new NoSuchElementException("Civility Not Found " + a.getCivilityName());
+                }
+            }
+        }
+
+        AcademicBac bac = null;
+        if (a.getPreClassBacId() != null) {
+            bac = service.findAcademicBac(a.getPreClassBacId());
+            if (bac == null) {
+                throw new NoSuchElementException("Bac Not Found " + a.getPreClassBacId());
+            }
+        } else if (!StringUtils.isEmpty(a.getPreClassBacName())) {
+            bac = service.findAcademicBac(a.getPreClassBacName());
+            if (bac == null) {
+                throw new NoSuchElementException("Bac Not Found " + a.getStartPeriodName());
+            }
+        }
+
+        AcademicPreClass prep = null;
+        if (a.getPreClassBacId() != null) {
+            prep = service.findAcademicPreClass(a.getPreClassPrepId());
+            if (prep == null) {
+                throw new NoSuchElementException("Prep Not Found " + a.getPreClassBacId());
+            }
+        } else if (!StringUtils.isEmpty(a.getPreClassBacName())) {
+            prep = service.findAcademicPreClass(a.getPreClassPrepName());
+            if (prep == null) {
+                throw new NoSuchElementException("Prep Not Found " + a.getStartPeriodName());
+            }
+        }
+
+        AcademicClass studentclass = null;
+        if (a.getClassId() != null) {
+            studentclass = service.findAcademicClass(a.getClassId());
+            if (studentclass == null) {
+                throw new NoSuchElementException("Class Not Found " + a.getPreClassBacId());
+            }
+        } else {
+            studentclass = service.findAcademicClass(a.getClassName());
+            if (studentclass == null) {
+                throw new NoSuchElementException("Class Not Found " + a.getStartPeriodName());
+            }
+        }
+        
+        AppContact contact = new AppContact();
+        contact.setNin(a.getNin());
+        contact.setFirstName(a.getFirstName());
+        contact.setLastName(a.getLastName());
+        contact.setFullName(core.validateName(AppContact.getName(contact)));
+        String fs2 = a.getFirstName2();
+        contact = core.findOrCreateContact(contact);
+        AcademicStudent academicStudent = null;
+        AcademicStudent oldAcademicStudent = service.findStudentByContact(contact.getId());
+        if (oldAcademicStudent != null) {
+            academicStudent = oldAcademicStudent;
+        } else {
+            academicStudent = new AcademicStudent();
+            academicStudent.setContact(contact);
+        }
+        if (academicStudent.getDepartment() == null) {
+            academicStudent.setDepartment(dept);
+        }
+        String ln2 = a.getLastName2();
+        contact.setFirstName2(fs2);
+        contact.setLastName2(ln2);
+        contact.setFullName2(AppContact.getName2(contact));
+        contact.setPhone1(a.getPhone());
+        academicStudent.setFirstSubscription(period);
+
+        academicStudent.setLastClass1(studentclass);
+        if (studentclass.getProgram() != null) {
+            academicStudent.setDepartment(studentclass.getProgram().getDepartment());
+        }
+        if (contact.getGender() == null) {
+            contact.setGender(gender);
+        }
+        if (contact.getCivility() == null) {
+            contact.setCivility(civility);
+        }
+        academicStudent.setSubscriptionNumber(a.getSubscriptionNumber());
+        if (academicStudent.getBaccalaureateClass() == null) {
+            academicStudent.setBaccalaureateClass(bac);
+        }
+        if (academicStudent.getPreClass() == null) {
+            academicStudent.setPreClass(prep);
+        }
+        if (academicStudent.getPreClassRank() <= 0) {
+            academicStudent.setPreClassRank(a.getPreClassPrepRank());
+        }
+        if (academicStudent.getPreClassRankMax() <= 0) {
+            academicStudent.setPreClassRankMax(a.getPreClassPrepRankMax());
+        }
+        if (academicStudent.getBaccalaureateScore() <= 0) {
+            academicStudent.setBaccalaureateScore(a.getPreClassBacScore());
+        }
+
+        contact.setEmail(a.getEmail());
+        contact.setPositionSuffix(studentclass.getName());
+        contact.setPositionTitle1("Student " + studentclass.getName());
+        contact.setEnabled(true);
+        contact.setCompany(ctx.mainCompany);
+
+        service.update(contact);
+        academicStudent.setStage(AcademicStudentStage.ATTENDING);
+        if (oldAcademicStudent == null) {
+            service.add(academicStudent);
+        } else {
+            service.update(academicStudent);
+        }
+        final AcademicStudent finalAcademicStudent = academicStudent;
+        UPA.getContext().invokePrivileged(new Action<Object>() {
+
+            @Override
+            public Object run() {
+                service.addUserForStudent(finalAcademicStudent);
+                return null;
+            }
+
+        }, null);
+    }
+
+    public int importStudents(VFile file) throws IOException {
+        final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
+        Chronometer ch = new Chronometer();
+        log.log(Level.INFO, "importStudents from {0}", file);
+        File tmp = VFS.copyNativeTempFile(file);
+        SheetParser sp = pfm.createSheetParser(tmp);
+        sp.setContainsHeader(true);
+        sp.setSheetIndex(0);
+        sp.setSkipRows(0);
+        DataReader rows = sp.parse();
+
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        ImportStudentContext importStudentContext = new ImportStudentContext();
         int count = 0;
         while (rows.hasNext()) {
             DataRow row = rows.readRow();
             Object[] values = row.getValues();
-//            if (!"x".equalsIgnoreCase(Convert.toString(values[8]))) {
-            String fs = core.validateName(Convert.toString(values[COL_FIRST_NAME]));
-            String ln = core.validateName(Convert.toString(values[COL_LAST_NAME]));
-            String nin = Convert.toString(values[COL_NIN]);
-            String dept = Convert.toString(values[COL_DEPT]);
-            if (!StringUtils.isEmpty(nin) || !StringUtils.isEmpty(fs) || !StringUtils.isEmpty(ln)) {
-
-                AppDepartment depInstance = service.findDepartment(dept);
-                if (depInstance == null) {
-                    throw new NoSuchElementException("Department Not Found " + dept);
-                }
-                String periodName = Convert.toString(values[COL_YEAR1]);
-
-                AppPeriod period = common.findPeriod(periodName);
-                if (period == null) {
-                    throw new NoSuchElementException("Period Not Found " + periodName);
-                }
-
-                AcademicClass level = service.findAcademicClass(Convert.toString(values[COL_CLASS]));
-                if (level == null) {
-                    throw new NoSuchElementException("CourseLevel Not Found " + Convert.toString(values[COL_CLASS]));
-                }
-
-                AppContact contact = new AppContact();
-                contact.setNin(nin);
-                contact.setFirstName(fs);
-                contact.setLastName(ln);
-                contact.setFullName(core.validateName(AppContact.getName(contact)));
-                String fs2 = Convert.toString(values[COL_FIRST_NAME2]);
-                contact = core.findOrCreateContact(contact);
-                AcademicStudent academicStudent = null;
-                AcademicStudent oldAcademicStudent = service.findStudentByContact(contact.getId());
-                if (oldAcademicStudent != null) {
-                    academicStudent = oldAcademicStudent;
-                } else {
-                    academicStudent = new AcademicStudent();
-                    academicStudent.setContact(contact);
-                }
-                academicStudent.setDepartment(depInstance);
-                String ln2 = Convert.toString(values[COL_LAST_NAME2]);
-                contact.setFirstName2(fs2);
-                contact.setLastName2(ln2);
-                contact.setFullName2(AppContact.getName2(contact));
-                contact.setPhone1(Convert.toString(values[COL_GSM]));
-                academicStudent.setFirstSubscription(period);
-
-                academicStudent.setLastClass1(level);
-                if (level.getProgram() != null) {
-                    academicStudent.setDepartment(level.getProgram().getDepartment());
-                }
-                {
-                    String stringVal = Convert.toString(values[COL_GENDER]);
-                    AppGender v = genders.get(stringVal.toUpperCase());
-                    if (v == null) {
-//                        v = new AppGender();
-//                        v.setName(stringVal);
-//                        service.add(v);
-//                        genders.put(stringVal.toUpperCase(), v);
-                    }
-                    if (contact.getGender() == null) {
-                        contact.setGender(v);
-                    }
-                }
-                academicStudent.setSubscriptionNumber(Convert.toString(values[COL_SUBSCRIPTION_NBR]));
-                {
-                    String stringVal = Convert.toString(values[COL_CIVILITY]);
-                    if (StringUtils.isEmpty(stringVal)) {
-                        AppGender g = contact.getGender();
-                        if (g != null && g.getName().equalsIgnoreCase("F")) {
-                            stringVal = "Mlle";
-                        } else {
-                            stringVal = "M.";
-                        }
-                    }
-                    AppCivility v = service.findCivility(stringVal);
-                    if (v == null) {
-//                        v = new AppCivility();
-//                        v.setName(stringVal);
-//                        service.add(v);
-                    }
-                    if (contact.getCivility()== null) {
-                        contact.setCivility(v);
-                    }
-                }
-
-                contact.setEmail(Convert.toString(values[COL_EMAIL]));
-                contact.setPositionSuffix(Convert.toString(values[COL_CLASS]));
-                contact.setPositionTitle1("Student " + Convert.toString(values[COL_CLASS]));
-                contact.setEnabled(true);
-                contact.setCompany(mainCompany);
-
-                service.update(contact);
-                academicStudent.setStage(AcademicStudentStage.ATTENDING);
-                if (oldAcademicStudent == null) {
-                    service.add(academicStudent);
-                } else {
-                    service.update(academicStudent);
-                }
+            AcademicStudentImport a = parseAcademicStudentImport(values);
+            if (a != null) {
+                importStudent(a, importStudentContext);
                 count++;
-                final AcademicStudent finalAcademicStudent = academicStudent;
-                UPA.getContext().invokePrivileged(new Action<Object>() {
-
-                    @Override
-                    public Object run() {
-                        service.addUserForStudent(finalAcademicStudent);
-                        return null;
-                    }
-
-                }, null);
-//                service.add(tal);
             }
-//            }
         }
         TraceService trace = VrApp.getBean(TraceService.class);
         trace.trace("importStudents", "importStudents from " + file + " in " + ch.stop() + " (" + count + " rows)", null, getClass().getSimpleName(), Level.INFO);

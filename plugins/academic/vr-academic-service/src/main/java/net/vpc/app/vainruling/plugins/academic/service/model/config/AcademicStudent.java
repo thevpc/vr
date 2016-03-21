@@ -12,7 +12,9 @@ import net.vpc.app.vainruling.api.model.AppContact;
 import net.vpc.app.vainruling.api.model.AppDepartment;
 import net.vpc.app.vainruling.api.model.AppUser;
 import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicBac;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicPreClass;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
@@ -55,6 +57,12 @@ public class AcademicStudent {
     @Field(max = "4000")
     @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
     private String privateObservations;
+
+    private AcademicPreClass preClass;
+    private int preClassRank;
+    private int preClassRankMax;
+    private AcademicBac baccalaureateClass;
+    private double baccalaureateScore;
 
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
@@ -284,6 +292,46 @@ public class AcademicStudent {
 
     public void setUpdateDate(Timestamp updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public AcademicPreClass getPreClass() {
+        return preClass;
+    }
+
+    public void setPreClass(AcademicPreClass preClass) {
+        this.preClass = preClass;
+    }
+
+    public int getPreClassRank() {
+        return preClassRank;
+    }
+
+    public void setPreClassRank(int preClassRank) {
+        this.preClassRank = preClassRank;
+    }
+
+    public AcademicBac getBaccalaureateClass() {
+        return baccalaureateClass;
+    }
+
+    public void setBaccalaureateClass(AcademicBac baccalaureateClass) {
+        this.baccalaureateClass = baccalaureateClass;
+    }
+
+    public double getBaccalaureateScore() {
+        return baccalaureateScore;
+    }
+
+    public void setBaccalaureateScore(double baccalaureateScore) {
+        this.baccalaureateScore = baccalaureateScore;
+    }
+
+    public int getPreClassRankMax() {
+        return preClassRankMax;
+    }
+
+    public void setPreClassRankMax(int preClassRankMax) {
+        this.preClassRankMax = preClassRankMax;
     }
 
 }

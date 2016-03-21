@@ -34,7 +34,7 @@ public class I18nChecker {
 
         VrAppTest.runStandalone();
         int count = checkI18n();
-//        System.out.println(count + " Missing resources!");
+        System.out.println(count + " Missing resources!");
         UPA.getContext().invokePrivileged(new Action<Object>() {
 
             @Override

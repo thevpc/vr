@@ -892,7 +892,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             if (getModel().getMode() == EditCtrlMode.UPDATE) {
                 boolean firstDetailRelation = true;
                 int counter = 0;
-                int maxPerLine = 3;
+                int maxPerLine = 2;
                 for (Relationship relation : ot.getRelationships()) {
                     if (relation.getTargetEntity().getName().equals(ot.getName())) {
                         if (relation.getRelationshipType() == RelationshipType.COMPOSITION) {

@@ -5,11 +5,17 @@
  */
 package net.vpc.app.vainruling.api.web.util;
 
+import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.api.i18n.I18n;
 import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.app.vainruling.api.web.obj.PropertyView;
 import net.vpc.common.utils.Convert;
 import net.vpc.common.utils.IntegerParserConfig;
+import net.vpc.upa.Entity;
+import net.vpc.upa.EntityPart;
+import net.vpc.upa.Field;
 import net.vpc.upa.Properties;
+import net.vpc.upa.Section;
 import net.vpc.upa.UPAObject;
 
 /**
@@ -19,7 +25,7 @@ import net.vpc.upa.UPAObject;
 public class UPAObjectHelper {
 
     public static Object findObjectProperty(UPAObject f, String property, String context, Object defaultValue) {
-        if(f==null){
+        if (f == null) {
             return defaultValue;
         }
         Properties p = f.getProperties();
@@ -77,5 +83,20 @@ public class UPAObjectHelper {
         pv.setPrependEmptyCells(findIntProperty(f, UIConstants.FIELD_FORM_EMPTY_PREFIX, null, pv.getPrependEmptyCells()));
         pv.setAppendEmptyCells(findIntProperty(f, UIConstants.FIELD_FORM_EMPTY_SUFFIX, null, pv.getAppendEmptyCells()));
         pv.setSeparatorText(findStringProperty(f, UIConstants.FIELD_FORM_SEPARATOR, null, pv.getSeparatorText()));
+        if (f instanceof Field) {
+            Field ff = (Field) f;
+            Entity ffe = ((Field) f).getEntity();
+            EntityPart p1 = ff.getParent();
+            if (p1 != null && p1 instanceof Section) {
+                int i = ffe.indexOfField(ff.getName());
+                if (i > 0) {
+                    Field ffp = ffe.getField(i - 1);
+                    EntityPart p0 = ffp.getParent();
+                    if (p0 != p1) {
+                        pv.setSeparatorText(VrApp.getBean(I18n.class).get(p1));
+                    }
+                }
+            }
+        }
     }
 }

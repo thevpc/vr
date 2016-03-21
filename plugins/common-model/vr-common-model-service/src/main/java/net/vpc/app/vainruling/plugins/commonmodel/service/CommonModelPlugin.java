@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.commonmodel.service;
 
+import java.util.List;
 import net.vpc.app.vainruling.api.AppPlugin;
 import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.Start;
@@ -25,6 +26,18 @@ public class CommonModelPlugin {
 
     @Start
     public void start() {
+    }
+
+    public AppPeriod findPeriod(int id) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return (AppPeriod) pu.createQuery("Select u from AppPeriod u where u.id=:id")
+                .setParameter("id", id).getEntity();
+    }
+    
+    public List<AppPeriod> findValidPeriods() {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select u from AppPeriod u where (u.snapshotName=null or u.snapshotName='') order by u.name")
+                .getEntityList();
     }
 
     public AppPeriod findPeriod(String name) {

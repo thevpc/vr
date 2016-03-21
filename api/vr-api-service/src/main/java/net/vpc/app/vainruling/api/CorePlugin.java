@@ -469,6 +469,10 @@ public class CorePlugin {
         return UPA.getPersistenceUnit().findById(AppDepartment.class, id);
     }
 
+    public List<AppDepartment> findDepartments() {
+        return UPA.getPersistenceUnit().findAll(AppDepartment.class);
+    }
+
     public AppDepartment findDepartment(String code) {
         return UPA.getPersistenceUnit().
                 createQuery("Select a from AppDepartment a where a.code=:code or a.name=:code or a.name2=:code")
@@ -478,6 +482,10 @@ public class CorePlugin {
 
     public AppCivility findCivility(String t) {
         return (AppCivility) UPA.getPersistenceUnit().findByMainField(AppCivility.class, t);
+    }
+
+    public List<AppCivility> findCivilities() {
+        return UPA.getPersistenceUnit().findAll(AppCivility.class);
     }
 
     public AppContact findContact(int id) {
