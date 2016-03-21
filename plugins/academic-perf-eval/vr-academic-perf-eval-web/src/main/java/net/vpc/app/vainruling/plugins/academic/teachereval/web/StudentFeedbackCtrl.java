@@ -6,8 +6,10 @@
 package net.vpc.app.vainruling.plugins.academic.teachereval.web;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
@@ -18,6 +20,7 @@ import net.vpc.app.vainruling.api.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackGroup;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackQuestion;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackResponse;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
@@ -36,7 +39,8 @@ import org.springframework.beans.factory.annotation.Autowired;
         css = "fa-table",
         title = "Mes Retours d'information",
         menu = "/Education/Evaluation",
-        url = "modules/academic/perfeval/studentfeedback"
+        url = "modules/academic/perfeval/studentfeedback",
+        securityKey = "Custom.Academic.StudentFeedback"
 )
 public class StudentFeedbackCtrl {
 
@@ -61,7 +65,7 @@ public class StudentFeedbackCtrl {
         if (s != null) {
             HashSet<String> ids = new HashSet<>();
             for (AcademicFeedback f : feedback.findStudentFeedbacks(s.getId(), false, false)) {
-                getModel().getFeedbacks().add(new SelectItem(String.valueOf(f.getId()), f.getCourse().getFullName()+" - "+f.getCourse().getTeacher().getContact().getFullName()));
+                getModel().getFeedbacks().add(new SelectItem(String.valueOf(f.getId()), f.getCourse().getFullName() + " - " + f.getCourse().getTeacher().getContact().getFullName()));
                 ids.add(String.valueOf(f.getId()));
             }
             if (!ids.contains(getModel().getSelectedFeedback())) {
@@ -81,18 +85,32 @@ public class StudentFeedbackCtrl {
         if (!StringUtils.isEmpty(getModel().getSelectedFeedback())) {
             getModel().setFeedback(feedback.findFeedback(Integer.parseInt(getModel().getSelectedFeedback())));
             List<AcademicFeedbackGroup> groups = feedback.findStudentFeedbackGroups(getModel().getFeedback().getModel().getId());
+            Map<Integer, Question> questionsMap = new HashMap<>();
+            Map<Integer, Row> groupsMap = new HashMap<>();
             for (AcademicFeedbackGroup group : groups) {
                 Row row = new Row();
                 row.setTitle(group.getName());
                 ArrayList<Question> questions = new ArrayList<Question>();
                 row.setQuestions(questions);
-                for (AcademicFeedbackResponse r : feedback.findStudentFeedbackResponses(Integer.parseInt(getModel().getSelectedFeedback()))) {
-                    Question q = new Question();
-                    q.setResponse(r);
-                    questions.add(q);
-                }
+                groupsMap.put(group.getId(), row);
                 rows.add(row);
             }
+
+            for (AcademicFeedbackQuestion r : feedback.findStudentFeedbackQuestionsByModel(getModel().getFeedback().getModel().getId())) {
+                Question q = new Question();
+                questionsMap.put(r.getId(), q);
+                Row gg = groupsMap.get(r.getParent().getId());
+                if (gg != null) {
+                    gg.getQuestions().add(q);
+                }
+            }
+            for (AcademicFeedbackResponse r : feedback.findStudentFeedbackResponses(Integer.parseInt(getModel().getSelectedFeedback()))) {
+                Question qq = questionsMap.get(r.getQuestion().getId());
+                if (qq != null) {
+                    qq.setResponse(r);
+                }
+            }
+
         }
         getModel().setRows(rows);
     }

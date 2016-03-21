@@ -7,6 +7,8 @@ package net.vpc.app.vainruling.plugins.academic.perfeval.service;
 
 import java.util.List;
 import net.vpc.app.vainruling.api.AppPlugin;
+import net.vpc.app.vainruling.api.CorePlugin;
+import net.vpc.app.vainruling.api.Start;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackGroup;
@@ -35,9 +37,40 @@ public class AcademicPerfEvalPlugin {
         pu.merge(r);
     }
 
+    @Start
+    public void onStart() {
+        VrApp.getBean(CorePlugin.class).createRight("Custom.Academic.StudentFeedback", "Custom.Academic.StudentFeedback");
+        VrApp.getBean(CorePlugin.class).createRight("Custom.Academic.StudentFeedback", "Custom.Academic.TeacherStatFeedback");
+    }
+
     public AcademicFeedback findFeedback(int feedbackId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.findById(AcademicFeedback.class, feedbackId);
+    }
+
+    public List<AcademicCourseAssignment> findAssignmentsWithFeedbacks(int teacherId, Boolean validated, Boolean archived) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        return pu.createQuery("Select u from AcademicCourseAssignment u where u.teacherId=:teacherId and exists(Select f from AcademicFeedback f where f.courseId= u.id) "
+        return pu.createQuery("Select u from AcademicCourseAssignment u where u.teacherId=:teacherId and u.id in (Select f.courseId from AcademicFeedback f where 1=1 "
+                + (validated != null ? (" and f.validated=" + validated) : "")
+                + (archived != null ? (" and f.archived=" + archived) : "")
+                + ")"
+        )
+                .setParameter("teacherId", teacherId)
+                .setHint("navigationDepth", 3)
+                .getEntityList();
+    }
+
+    public List<AcademicFeedback> findAssignmentFeedbacks(int academicCourseAssignmentId, Boolean validated, Boolean archived) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select f from AcademicFeedback f where f.courseId= :academicCourseAssignmentId "
+                + (validated != null ? (" and f.validated=" + validated) : "")
+                + (archived != null ? (" and f.archived=" + archived) : "")
+                + " order by f.name"
+        )
+                .setParameter("academicCourseAssignmentId", academicCourseAssignmentId)
+                .setHint("navigationDepth", 3)
+                .getEntityList();
     }
 
     public List<AcademicFeedback> findStudentFeedbacks(int studentId, Boolean validated, Boolean archived) {
@@ -59,6 +92,13 @@ public class AcademicPerfEvalPlugin {
                 .getEntityList();
     }
 
+    public List<AcademicFeedbackQuestion> findStudentFeedbackQuestionsByModel(int feedbackModelId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select f from AcademicFeedbackQuestion f where f.parent.modelId=:feedbackModelId order by f.parentId, f.position")
+                .setParameter("feedbackModelId", feedbackModelId)
+                .getEntityList();
+    }
+
     public List<AcademicFeedbackResponse> findStudentFeedbackResponsesByGroup(int feedbackId, int groupId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select f from AcademicFeedbackResponse f where f.feedbackId=:feedbackId  and f.parentId=:parentId")
@@ -70,6 +110,13 @@ public class AcademicPerfEvalPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select f from AcademicFeedbackGroup f where f.modelId=:modelId order by f.position")
                 .setParameter("modelId", feedbackModelId)
+                .getEntityList();
+    }
+
+    public List<AcademicFeedbackQuestion> findAcademicFeedbackQuestionByGroup(int groupId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select u from AcademicFeedbackQuestion u where u.parentId=:id order by u.position")
+                .setParameter("id", groupId)
                 .getEntityList();
     }
 

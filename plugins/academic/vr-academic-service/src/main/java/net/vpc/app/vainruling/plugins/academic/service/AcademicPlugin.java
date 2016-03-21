@@ -121,6 +121,35 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     private static DecimalFormat FF = new DecimalFormat("0.0#");
     int maxWeeks = 14;//should be in config
 
+    public void generateTeacherAssignementDocumentsFolder() {
+        generateTeacherAssignementDocumentsFolder("/Documents/Services/Support De Cours/Par Enseignant");
+    }
+
+    private String toValideFileName(String s) {
+        if (StringUtils.isEmpty(s)) {
+            s = "X";
+        }
+        char[] ca = s.toCharArray();
+        for (int i = 0; i < ca.length; i++) {
+            char c = ca[i];
+            if ("()[]*?/\\".indexOf(c) >= 0) {
+                ca[i] = '_';
+            }
+        }
+        return new String(ca);
+    }
+
+    public void generateTeacherAssignementDocumentsFolder(String path) {
+        for (AcademicCourseAssignment a : findAcademicCourseAssignments()) {
+            if (a.getTeacher() != null && a.getTeacher().getContact() != null) {
+                String n = toValideFileName(a.getTeacher().getContact().getFullName());
+                String c = toValideFileName(a.getCoursePlan().getFullName());
+                VFile r = fileSystemPlugin.getFileSystem().get(path + "/" + n + "/" + c);
+                r.mkdirs();
+            }
+        }
+    }
+
     public TeacherStat evalTeacherStat(int teacherId,
             boolean includeIntent,
             StatCache cache) {
@@ -451,6 +480,14 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         for (AcademicCourseIntent ii : intentList) {
             pu.remove(ii);
         }
+    }
+
+    public AcademicCourseAssignment findAcademicCourseAssignment(int assignmentId) {
+        return UPA.getPersistenceUnit().findById(AcademicCourseAssignment.class, assignmentId);
+    }
+
+    public List<AcademicCourseAssignment> findAcademicCourseAssignments() {
+        return UPA.getPersistenceUnit().findAll(AcademicCourseAssignment.class);
     }
 
     public List<AcademicCourseIntent> findCourseIntentsByAssignment(int assignment, String semester, StatCache cache) {
@@ -2760,6 +2797,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     public void validateAcademicData() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
+        generateTeacherAssignementDocumentsFolder();
         Map<Integer, AcademicClass> academicClasses = findAcademicClassesMap();
 
         //should remove me!

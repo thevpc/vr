@@ -149,12 +149,12 @@ public class FileSystemPlugin {
             final VirtualFileSystem me = fileSystem.subfs(home.getPath());
             MountableFS mfs = VFS.createMountableFS("user:" + login);
             try {
-                mfs.mount("/MyDocuments", me);
+                mfs.mount("/Mes Documents", me);
                 List<AppProfile> profiles = core.findProfilesByUser(u.getId());
                 for (AppProfile p : profiles) {
                     if (CorePlugin.PROFILE_ADMIN.equals(p.getName())) {
                         //this is admin
-                        mfs.mount("/All", fileSystem);
+                        mfs.mount("/Tous", fileSystem);
                     }
                 }
                 VrFSTable t = new VrFSTable();

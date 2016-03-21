@@ -87,20 +87,21 @@ public class AcademicAddressBookCtrl {
     }
 
     public void onSearch() {
-        String q = getModel().getQuery();
-        if (q == null) {
-            q = "";
+        String query = getModel().getQuery();
+        if (query == null) {
+            query = "";
         }
-        q = q.trim();
+        query = query.trim();
         String qt = getModel().getQueryType();
         List<Contact> cc = new ArrayList<>();
         if (!StringUtils.isEmpty(qt)) {
-            if (q.length() > 0) {
+            if (true) //q.length() > 0
+            {
                 if (qt.equals("teachers")) {
                     AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
                     AcademicAddressBookPlugin ad = VrApp.getBean(AcademicAddressBookPlugin.class);
                     for (AcademicTeacher t : ap.findEnabledTeachers()) {
-                        if (t.getContact().getFullName().toLowerCase().contains(q.toLowerCase())) {
+                        if (query.isEmpty() || t.getContact().getFullName().toLowerCase().contains(query.toLowerCase())) {
                             Contact ct = new Contact();
                             ct.setName(t.getContact().getFullName());
                             if (t.getDepartment() != null) {
@@ -127,7 +128,7 @@ public class AcademicAddressBookCtrl {
                     }
                 } else if (qt.endsWith("students")) {
                     for (AcademicStudent t : VrApp.getBean(AcademicPlugin.class).findStudents()) {
-                        if (t.getContact().getFullName().toLowerCase().contains(q.toLowerCase())) {
+                        if (query.isEmpty() || t.getContact().getFullName().toLowerCase().contains(query.toLowerCase())) {
                             Contact ct = new Contact();
                             ct.setName(t.getContact().getFullName());
                             if (t.getFirstSubscription() != null) {
@@ -151,7 +152,7 @@ public class AcademicAddressBookCtrl {
                     }
                 } else if (qt.endsWith("graduated")) {
                     for (AcademicFormerStudent t : VrApp.getBean(AcademicPlugin.class).findGraduatedStudents()) {
-                        if (t.getStudent().getContact().getFullName().toLowerCase().contains(q.toLowerCase())) {
+                        if (query.isEmpty() || t.getStudent().getContact().getFullName().toLowerCase().contains(query.toLowerCase())) {
                             Contact ct = new Contact();
                             ct.setName(t.getStudent().getContact().getFullName());
                             if (t.getStudent().getStage() == AcademicStudentStage.GRADUATED) {
