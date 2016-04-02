@@ -72,7 +72,7 @@ and open the template in the editor.
                         <ui:fragment  rendered="#{loginService.userSession.connected}">
                             <li>
                                 <p:outputPanel>
-                                    <h:commandLink value="Back-end" action="#{vrMenuManager.gotoPage('welcome', '')}"/>
+                                    <h:outputLink value="${jsfCtrl.context}/p/welcome">Back-end</h:outputLink>
                                 </p:outputPanel>
                             </li>
                             <li>
@@ -81,7 +81,7 @@ and open the template in the editor.
                                 </p:outputPanel>
                             </li>
                         </ui:fragment>
-                        <li><h:commandLink styleClass="#{vrMenuManager.isCurrentPageId('contacts')?'active':''}" action="#{vrMenuManager.gotoPage('publicContacts', '')}" value="contact"/></li>
+                        <li><h:outputLink styleClass="#{vrMenuManager.isCurrentPageId('contacts')?'active':''}" value="${jsfCtrl.context}/p/publicContacts">contact</h:outputLink></li>
                     </ul>
                 </nav>
                 <div class="pullcontainer">

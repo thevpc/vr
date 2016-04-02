@@ -45,7 +45,7 @@ public class FieldPropertyView extends PropertyView {
     }
 
     public void storeTo(Object o) {
-        if (!getComponentId().contains(".")) {
+        if (!isDisabled() && !getComponentId().contains(".")) {
             Field field = getField();
             final Object v2 = field.getDataType().convert(value);
             if (o != null

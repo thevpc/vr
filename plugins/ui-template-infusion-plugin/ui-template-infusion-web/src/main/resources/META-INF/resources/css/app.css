@@ -390,3 +390,8 @@ button.ui-button > span.ui-icon{
 
     .content .vr-logo{display:none;}
 }
+
+
+table.jqplot-table-legend.vr-no-legend{
+    display: none;
+}

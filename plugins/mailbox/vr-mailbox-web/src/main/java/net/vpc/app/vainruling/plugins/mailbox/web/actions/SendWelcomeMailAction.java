@@ -40,7 +40,7 @@ public class SendWelcomeMailAction implements ActionDialog {
     public void invoke(Class entityType, Object obj, Object[] args) {
         MailboxPlugin mailboxPlugin = VrApp.getBean(MailboxPlugin.class);
         ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
-        mailboxPlugin.sendWelcomeEmail(objCtrl.getModel().getSelectedObjects(),true);
+        mailboxPlugin.sendWelcomeEmail(objCtrl.getSelectedEntityObjects(),true);
     }
 
 }

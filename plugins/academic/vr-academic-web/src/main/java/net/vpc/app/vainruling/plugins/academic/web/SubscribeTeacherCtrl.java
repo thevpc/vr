@@ -179,7 +179,9 @@ public class SubscribeTeacherCtrl {
 
     public void onRefresh() {
         getModel().setTeacher(new AcademicTeacherImport());
-        getModel().getTeacher().setWeekLoads(new int[]{14,14});
+        AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
+        int semesterMaxWeeks = ap.getSemesterMaxWeeks();
+        getModel().getTeacher().setWeekLoads(new int[]{semesterMaxWeeks,semesterMaxWeeks});
         updateLists();
     }
 

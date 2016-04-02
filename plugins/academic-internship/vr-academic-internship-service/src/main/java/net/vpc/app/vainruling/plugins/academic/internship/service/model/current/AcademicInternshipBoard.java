@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.internship.service.model.current
 
 import net.vpc.app.vainruling.api.model.AppDepartment;
 import net.vpc.app.vainruling.api.model.AppPeriod;
+import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipType;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
@@ -15,6 +16,7 @@ import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
+import net.vpc.upa.config.Property;
 import net.vpc.upa.config.Sequence;
 
 /**
@@ -31,6 +33,7 @@ public class AcademicInternshipBoard {
     private int id;
     @Field(modifiers = UserFieldModifier.MAIN)
     private String name;
+    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
     private String observations;
     private boolean enabled;
     @Field(modifiers = UserFieldModifier.SUMMARY)

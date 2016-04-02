@@ -25,7 +25,7 @@ public class CreateIntershipsAction implements ActionDialog {
 
     @Override
     public void openDialog(String actionId, List<String> itemIds) {
-        Object co = VrApp.getBean(ObjCtrl.class).getModel().getCurrentObj();
+        Object co = VrApp.getBean(ObjCtrl.class).getCurrentEntityObject();
         if(co==null){
             return;
         }

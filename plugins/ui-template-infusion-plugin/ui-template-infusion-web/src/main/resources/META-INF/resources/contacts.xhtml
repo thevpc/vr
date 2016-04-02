@@ -8,6 +8,12 @@
       xmlns:f="http://java.sun.com/jsf/core"
       >
     <h:head>
+        <!--
+        .separator span {
+            styles
+        }
+        padding-top: 24px;
+        -->
     </h:head>
     <h:body>
         <ui:composition template="/templates/public-template.xhtml">
@@ -65,9 +71,9 @@
                                         <p:inputText styleClass="form-control" placeholder="Search..." value="#{academicAddressBookCtrl.model.query}"/>
                                         <!--<input id="search01" type="text" class="form-control" placeholder="Search..."/>-->
                                         <span class="input-group-btn">
-                                            <p:commandButton class="btn btn-default" icon="fa-search" value="..." style="padding-bottom: 2px;" actionListener="#{academicAddressBookCtrl.onSearch}" update=":contactForm:contactsTable">
-                                                <i class="fa fa-search"></i>
-                                            </p:commandButton>>
+                                            <p:commandLink class="btn btn-default" value="..." style="padding-bottom: 4px;font-size: initial;" actionListener="#{academicAddressBookCtrl.onSearch}" update=":contactForm:contactsTable">
+
+                                            </p:commandLink>
                                         </span>
                                     </div>
 
@@ -78,7 +84,7 @@
                                                              paginatorAlwaysVisible="false"
                                                              paginator="true"
                                                              paginatorPosition="bottom"
-                                                             emptyMessage="Aucun résultat"
+                                                             emptyMessage="No result"
                                                              rows="5"
                                                              paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                                              rowsPerPageTemplate="5,20,50"
@@ -87,9 +93,9 @@
                                                         <p:commandLink rendered="#{i.urlCommand ne null and i.urlCommand ne ''}" action="#{vrMenuManager.gotoPage(i.urlCommand, i.urlArgs)}">
                                                             <h:graphicImage value="#{i.photo}" style="width: 40px; margin-left: 0 !important; margin-left: 5px;margin-right: 5px;">
                                                             </h:graphicImage>
-                                                                <p:outputLabel class="fa"  value="#{i.name}" />
+                                                            <p:outputLabel class="fa"  value="#{i.name}" />
                                                         </p:commandLink>                                                    
-                                                            <p:outputLabel rendered="#{i.urlCommand eq null || i.urlCommand eq ''}" value="#{i.name}"/>
+                                                        <p:outputLabel rendered="#{i.urlCommand eq null || i.urlCommand eq ''}" value="#{i.name}"/>
                                                     </p:column>
                                                     <p:column headerText="Contact Information">
                                                         <div style="border: none">

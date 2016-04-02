@@ -57,6 +57,21 @@ public class VrHelper {
 
     private static final DecimalFormat FILE_SIZE_FORMAT = new DecimalFormat("0.0");
 
+    public static String toValideFileName(String s) {
+        if (StringUtils.isEmpty(s)) {
+            s = "EMPTY_NAME";
+        }
+        s = StringUtils.normalize(s);
+        char[] ca = s.toCharArray();
+        for (int i = 0; i < ca.length; i++) {
+            char c = ca[i];
+            if ("()[]*?/\\:<>&".indexOf(c) >= 0) {
+                ca[i] = '_';
+            }
+        }
+        return new String(ca);
+    }
+
     public static String formatFileSize(Number value) {
         final int KO = 1024;
         final int MO = KO * KO;
@@ -105,7 +120,7 @@ public class VrHelper {
                 e.attributes().remove("style");
             }
         }
-        StringBuilder sb=new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (Node cc : d.body().childNodes()) {
             sb.append(cc);
         }
@@ -262,4 +277,22 @@ public class VrHelper {
         return (T) arg;
     }
 
+    public static String getFirstNonNull(String... vals) {
+        for (String val : vals) {
+            if (!StringUtils.isEmpty(val)) {
+                return val;
+            }
+        }
+        return "";
+    }
+
+    public static String getValidString(String locale, String fr, String ar, String en) {
+        if (locale.equals("fr")) {
+            return getFirstNonNull(fr, en, ar);
+        } else if (locale.equals("ar")) {
+            return getFirstNonNull(ar, fr, en);
+        } else {
+            return getFirstNonNull(en, fr, ar);
+        }
+    }
 }

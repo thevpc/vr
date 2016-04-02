@@ -7,12 +7,14 @@ package net.vpc.app.vainruling.plugins.academic.perfeval.service.model;
 
 import java.sql.Timestamp;
 import net.vpc.app.vainruling.api.model.AppPeriod;
+import net.vpc.app.vainruling.api.ui.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
+import net.vpc.upa.config.Property;
 import net.vpc.upa.config.Sequence;
 
 /**
@@ -44,6 +46,7 @@ public class AcademicFeedbackHistory {
     private String question;
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private String student;
+    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
     private String observations;
     private int position;
     @Field(modifiers = UserFieldModifier.SUMMARY)

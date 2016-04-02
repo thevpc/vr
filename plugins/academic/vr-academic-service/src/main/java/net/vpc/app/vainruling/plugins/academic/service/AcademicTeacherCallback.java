@@ -23,8 +23,7 @@ import net.vpc.upa.config.OnPersist;
  * @author vpc
  */
 @Callback
-public class AcademicTeacherCallback
-       {
+public class AcademicTeacherCallback {
 
     protected boolean accept(Entity entity) {
         return !entity.getModifiers().contains(EntityModifier.SYSTEM)
@@ -38,15 +37,15 @@ public class AcademicTeacherCallback
         if (!accept(entity)) {
             return;
         }
-        int s = VrApp.getBean(AcademicPlugin.class).findSemesters().size();
+        AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
+        int s = ap.findSemesters().size();
         for (int i = 1; i < s + 1; i++) {
             AcademicTeacherSemestrialLoad load = new AcademicTeacherSemestrialLoad();
             load.setSemester(i);
-            load.setWeeksLoad(14);
+            load.setWeeksLoad(ap.getSemesterMaxWeeks());
             load.setTeacher((AcademicTeacher) event.getPersistedObject());
             pu.persist(load);
         }
     }
 
-    
 }

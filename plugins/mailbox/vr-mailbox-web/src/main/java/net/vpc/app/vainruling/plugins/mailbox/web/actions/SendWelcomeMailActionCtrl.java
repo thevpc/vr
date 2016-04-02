@@ -103,7 +103,7 @@ public class SendWelcomeMailActionCtrl {
 //            @Override
 //            public void run() {
         try {
-            List<AppUser> users = VrApp.getBean(ObjCtrl.class).getModel().getSelectedObjects();
+            List<AppUser> users = VrApp.getBean(ObjCtrl.class).getSelectedEntityObjects();
             if ("selected".equals(getModel().getTarget())) {
                 VrApp.getBean(MailboxPlugin.class).sendWelcomeEmail(users, true);
             } else if ("new".equals(getModel().getTarget())) {

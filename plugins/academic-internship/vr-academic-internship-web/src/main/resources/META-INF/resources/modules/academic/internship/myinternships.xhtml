@@ -35,7 +35,7 @@ and open the template in the editor.
                     <p:messages id="currentMessages"/>
                     <div class="row">
                         <p:selectOneMenu value="#{myInternshipsCtrl.model.internshipId}">
-                            <p:ajax listener="#{myInternshipsCtrl.onRefresh}" update="@all"/>
+                            <p:ajax listener="#{myInternshipsCtrl.onRefresh}" update=":listForm"/>
                             <f:selectItem itemLabel="Selectionner Stage..." itemValue="" />
                             <f:selectItems value="#{myInternshipsCtrl.model.internships}" />
                         </p:selectOneMenu>

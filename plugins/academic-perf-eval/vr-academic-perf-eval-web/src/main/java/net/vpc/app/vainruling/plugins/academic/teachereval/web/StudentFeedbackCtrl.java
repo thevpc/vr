@@ -64,7 +64,7 @@ public class StudentFeedbackCtrl {
         getModel().setFeedbacks(new ArrayList<SelectItem>());
         if (s != null) {
             HashSet<String> ids = new HashSet<>();
-            for (AcademicFeedback f : feedback.findStudentFeedbacks(s.getId(), false, false)) {
+            for (AcademicFeedback f : feedback.findStudentFeedbacks(s.getId(), false, false,true)) {
                 getModel().getFeedbacks().add(new SelectItem(String.valueOf(f.getId()), f.getCourse().getFullName() + " - " + f.getCourse().getTeacher().getContact().getFullName()));
                 ids.add(String.valueOf(f.getId()));
             }

@@ -7,16 +7,17 @@ package net.vpc.app.vainruling.plugins.academic.addressbook.web;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.model.AppContact;
 import net.vpc.app.vainruling.api.model.AppGender;
+import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.app.vainruling.api.web.UCtrl;
 import net.vpc.app.vainruling.api.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.addressbook.service.AcademicAddressBookPlugin;
 import net.vpc.app.vainruling.plugins.academic.addressbook.service.model.AcademicTeacherCV;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicDiscipline;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
@@ -86,6 +87,27 @@ public class AcademicAddressBookCtrl {
 
     }
 
+   
+    public String getValidString(String en, String fr, String ar) {
+        return VrHelper.getValidString(getValidLocaleCode(), en, fr, ar);
+    }
+
+     
+
+    public String getValidLocaleCode() {
+        String loc = getModel().getLocale();
+        if (loc == null) {
+            loc = "en";
+        }
+        if (loc.contains("ar")) {
+            return "ar";
+        }
+        if (loc.contains("fr")) {
+            return "fr";
+        }
+        return "en";
+    }
+
     public void onSearch() {
         String query = getModel().getQuery();
         if (query == null) {
@@ -105,17 +127,21 @@ public class AcademicAddressBookCtrl {
                             Contact ct = new Contact();
                             ct.setName(t.getContact().getFullName());
                             if (t.getDepartment() != null) {
-                                ct.getTitles().add("Dept. " + t.getDepartment().getName());
+                                ct.getTitles().add("Dept. " + getValidString(t.getDepartment().getName(),t.getDepartment().getName2(),t.getDepartment().getName3()));
                             }
-                            ct.getTitles().add((t.getDegree()==null?"?":t.getDegree().getName()) + ", " + (t.getSituation()==null?"?":t.getSituation().getName()));
-
-                            if (!StringUtils.isEmpty(t.getDiscipline())) {
-                                ct.getTitles().add(t.getDiscipline());
+                            ct.getTitles().add((t.getDegree() == null ? "?" : getValidString(t.getDegree().getName(), t.getDegree().getName2(), t.getDegree().getName3())) + ", " 
+                                    + (t.getSituation() == null ? "?" : getValidString(t.getSituation().getName(), t.getSituation().getName2(), t.getSituation().getName3())));
+                            
+                            String disc=ap.formatDisciplinesForLocale(t.getDiscipline(),getValidLocaleCode());
+                            
+                            if (!StringUtils.isEmpty(disc)) {
+                                ct.getTitles().add(disc);
                             }
 
                             AcademicTeacherCV cv = ad.findOrCreateAcademicTeacherCV(t.getId());
-                            if (!StringUtils.isEmpty(cv.getTitle1())) {
-                                ct.getTitles().add(cv.getTitle1());
+                            String t1 = getValidString(cv.getTitle1(), cv.getTitle2(), cv.getTitle3());
+                            if (!StringUtils.isEmpty(t1)) {
+                                ct.getTitles().add(t1);
                             }
                             if (!StringUtils.isEmpty(t.getContact().getEmail())) {
                                 ct.getTitles().add(t.getContact().getEmail());
@@ -132,16 +158,29 @@ public class AcademicAddressBookCtrl {
                             Contact ct = new Contact();
                             ct.setName(t.getContact().getFullName());
                             if (t.getFirstSubscription() != null) {
-                                ct.getTitles().add("sub. " + t.getFirstSubscription().getName());
+                                ct.getTitles().add(getValidString(
+                                        "sub. " + t.getFirstSubscription().getName(),
+                                        "inscr. " + t.getFirstSubscription().getName(),
+                                        null
+                                ));
                             }
                             if (t.getLastClass1() != null) {
-                                ct.getTitles().add(t.getLastClass1().getName());
+                                ct.getTitles().add(
+                                        getValidString(t.getLastClass1().getName(), t.getLastClass1().getName2(), null)
+                                );
                             }
                             if (t.getLastClass2() != null) {
-                                ct.getTitles().add(t.getLastClass2().getName());
+                                ct.getTitles().add(
+                                        getValidString(t.getLastClass2().getName(),
+                                                t.getLastClass2().getName2(),
+                                                null
+                                        ));
                             }
                             if (t.getLastClass3() != null) {
-                                ct.getTitles().add(t.getLastClass3().getName());
+                                ct.getTitles().add(
+                                        getValidString(
+                                                t.getLastClass3().getName(), t.getLastClass3().getName2(), null
+                                        ));
                             }
                             if (!StringUtils.isEmpty(t.getContact().getEmail())) {
                                 ct.getTitles().add(t.getContact().getEmail());
@@ -231,11 +270,12 @@ public class AcademicAddressBookCtrl {
 
     public class Model {
 
+        private String locale;
         private String lastQuery;
         private String lastQueryType;
         private String query;
         private String queryType = "teachers";
-        private List<Contact> list;
+        private List<Contact> list = new ArrayList<>();
 
         public String getLastQuery() {
             return lastQuery;
@@ -261,15 +301,23 @@ public class AcademicAddressBookCtrl {
             this.queryType = queryType;
         }
 
+        public String getLocale() {
+            return locale;
+        }
+
+        public void setLocale(String locale) {
+            this.locale = locale;
+        }
+
         public List<Contact> getList() {
-            synchronized (this) {
-                if (list == null || lastQuery == null || lastQueryType == null
-                        || !Objects.equals(lastQuery, query)
-                        || !Objects.equals(lastQueryType, queryType)) {
-                    onSearch();
-                    //rebuild
-                }
-            }
+//            synchronized (this) {
+//                if (list == null || lastQuery == null || lastQueryType == null
+//                        || !Objects.equals(lastQuery, query)
+//                        || !Objects.equals(lastQueryType, queryType)) {
+//                    onSearch();
+//                    //rebuild
+//                }
+//            }
             return list;
         }
 

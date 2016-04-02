@@ -36,7 +36,7 @@ and open the template in the editor.
                     <!-- /.row -->
                     <div class="row">
                         <p:selectOneMenu value="#{teacherCourseLoadCtrl.model.teacherId}">
-                            <p:ajax listener="#{teacherCourseLoadCtrl.onTeacherChanged}" update="@all"/>
+                            <p:ajax listener="#{teacherCourseLoadCtrl.onTeacherChanged}" update=":buttonsForm :listForm"/>
                             <f:selectItem itemLabel="Selectionner Enseignant..." itemValue="" />
                             <f:selectItems value="#{teacherCourseLoadCtrl.model.teachers}" />
                         </p:selectOneMenu>
@@ -143,10 +143,10 @@ and open the template in the editor.
                                     </p:menuButton>
                                 </p:column>
                                 <p:column headerText="" width="10%">
-                                    <h:outputText value="#{i.assignment.coursePlan.semester.name}" />
+                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.semester.name}" />
                                 </p:column>
                                 <p:column headerText="" width="10%">
-                                    <h:outputText value="#{i.assignment.coursePlan.program.name}-#{i.assignment.coursePlan.studentClass.name}" />
+                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.academicClass.program.name}-#{i.assignment.coursePlan.courseLevel.academicClass.name}" />
                                 </p:column>
                                 <p:column  headerText="Module">
                                     <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}" styleClass="#{i.assigned?'vr-assigned-course':''}" value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" />
@@ -206,7 +206,7 @@ and open the template in the editor.
 
                                 </p:column>
                                 <p:column  headerText="" width="10%">
-                                    <h:outputText value="#{i.assignment.coursePlan.program.name}-#{i.assignment.coursePlan.studentClass.name}" />
+                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.academicClass.program.name}-#{i.assignment.coursePlan.courseLevel.academicClass.name}" />
                                 </p:column>
                                 <p:column headerText="Module">
                                     <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}" value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" styleClass="#{i.assigned?'vr-assigned-course':''}"/>
@@ -244,7 +244,7 @@ and open the template in the editor.
                                                   layout="grid" columns="5"
                                                   style="font-size: x-small;margin-left: 20px;"
                                                   >
-                                <p:ajax listener="#{teacherCourseLoadCtrl.onOthersFiltersChanged}" update="@all"/>
+                                <!--<p:ajax listener="# {teacherCourseLoadCtrl.onOthersFiltersChanged}" update="@all"/>-->
                                 <f:selectItem  itemLabel="Modules Affectés" itemValue="assigned" />
                                 <f:selectItem itemLabel="Modules Non Affectés" itemValue="non-assigned" />
                                 <f:selectItem itemLabel="Modules Demandés" itemValue="intended" />
@@ -252,6 +252,9 @@ and open the template in the editor.
                                 <f:selectItem itemLabel="Modules En Conflits" itemValue="conflict" />
                                 <f:selectItems value="#{teacherCourseLoadCtrl.model.filterSelectItems}"/>
                             </p:selectManyCheckbox>
+                            
+                            <p:commandButton value="Filter" style="margin-top: 20px;margin-bottom: 20px;margin-left: 100px;" action="#{teacherCourseLoadCtrl.onOthersFiltersChanged}" update=":listForm"/>
+                            
                             <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.others}" class="table table-bordered table-hover"
                                          paginatorAlwaysVisible="false"
                                          paginator="true"
@@ -282,10 +285,10 @@ and open the template in the editor.
                                     </p:menuButton>
                                 </p:column>
                                 <p:column headerText="" width="10%">
-                                    <h:outputText value="#{i.assignment.coursePlan.semester.name}" />
+                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.semester.name}" />
                                 </p:column>
                                 <p:column headerText="" width="10%">
-                                    <h:outputText value="#{i.assignment.coursePlan.program.name}-#{i.assignment.coursePlan.studentClass.name}" />
+                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.academicClass.program.name}-#{i.assignment.coursePlan.courseLevel.academicClass.name}" />
                                 </p:column>
                                 <p:column headerText="Module" filterBy="#{i.assignment.coursePlan.name}">
                                     <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}" styleClass="#{i.assigned?'vr-assigned-course':''}" value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" />

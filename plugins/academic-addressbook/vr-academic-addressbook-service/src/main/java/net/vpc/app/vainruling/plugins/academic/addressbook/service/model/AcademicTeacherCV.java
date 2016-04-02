@@ -30,8 +30,13 @@ public class AcademicTeacherCV {
 
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private String title1;
+    private String subTitle1;
+
     private String title2;
+    private String subTitle2;
+
     private String title3;
+    private String subTitle3;
 
     @Field(max = "32000")
     @Properties(
@@ -73,10 +78,7 @@ public class AcademicTeacherCV {
     private String socialURL3;
     private String socialURL4;
     private String rssURL;
-    @Field(defaultValue = "0",modifiers = {UserFieldModifier.SUMMARY}
-            ,persistAccessLevel = AccessLevel.PROTECTED
-            ,updateAccessLevel = AccessLevel.PROTECTED
-            ,readAccessLevel = AccessLevel.PUBLIC
+    @Field(defaultValue = "0", modifiers = {UserFieldModifier.SUMMARY}, persistAccessLevel = AccessLevel.PROTECTED, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PUBLIC
     )
     private long viewsCounter;
 
@@ -230,6 +232,30 @@ public class AcademicTeacherCV {
 
     public void setViewsCounter(long viewsCounter) {
         this.viewsCounter = viewsCounter;
+    }
+
+    public String getSubTitle1() {
+        return subTitle1;
+    }
+
+    public void setSubTitle1(String subTitle1) {
+        this.subTitle1 = subTitle1;
+    }
+
+    public String getSubTitle2() {
+        return subTitle2;
+    }
+
+    public void setSubTitle2(String subTitle2) {
+        this.subTitle2 = subTitle2;
+    }
+
+    public String getSubTitle3() {
+        return subTitle3;
+    }
+
+    public void setSubTitle3(String subTitle3) {
+        this.subTitle3 = subTitle3;
     }
 
 }

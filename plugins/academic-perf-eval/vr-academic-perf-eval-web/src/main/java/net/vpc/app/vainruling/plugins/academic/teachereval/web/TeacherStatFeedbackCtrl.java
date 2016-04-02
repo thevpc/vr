@@ -32,6 +32,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCou
 import net.vpc.common.strings.StringUtils;
 import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.chart.ChartSeries;
+import org.primefaces.model.chart.LegendPlacement;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -70,7 +71,7 @@ public class TeacherStatFeedbackCtrl {
         getModel().setAcademicCourseAssignmentList(new ArrayList<SelectItem>());
         if (s != null) {
             HashSet<String> ids = new HashSet<>();
-            for (AcademicCourseAssignment f : feedback.findAssignmentsWithFeedbacks(s.getId(), false, false)) {
+            for (AcademicCourseAssignment f : feedback.findAssignmentsWithFeedbacks(s.getId(), false, false, true)) {
                 getModel().getAcademicCourseAssignmentList().add(new SelectItem(String.valueOf(f.getId()), f.getFullName()));
                 ids.add(String.valueOf(f.getId()));
             }
@@ -108,7 +109,6 @@ public class TeacherStatFeedbackCtrl {
                         q.getValues().touch("2");
                         q.getValues().touch("3");
                         q.getValues().touch("4");
-                        q.getValues().touch("5");
                         questions.add(q);
                         questionsMap.put(r.getId(), q);
                     }
@@ -127,18 +127,24 @@ public class TeacherStatFeedbackCtrl {
                     if (!value.getValues().isEmpty()) {
                         BarChartModel bmodel = new BarChartModel();
                         bmodel.setShadow(true);
-                        ChartSeries boys = new ChartSeries();
+                        bmodel.setLegendCols(1);
+                        bmodel.setLegendPlacement(LegendPlacement.OUTSIDE);
+                        bmodel.setLegendPosition("e");
+                        bmodel.setBarMargin(0);
+                        bmodel.setBarPadding(0);
 //                        boys.setLabel("Boys");
                         for (String val : new TreeSet<String>((Set) value.getValues().keySet())) {
+                            ChartSeries boys = new ChartSeries();
                             String vv = String.valueOf(val);
                             String vv0 = getModel().getValueTexts().get(vv);
                             if (vv0 != null) {
                                 vv = vv0;
                             }
-                            boys.set(vv, value.getValues().getCount(val));
+                            boys.set(" ", value.getValues().getCount(val));
+                            boys.setLabel(vv);
+                            bmodel.addSeries(boys);
                         }
 
-                        bmodel.addSeries(boys);
                         value.setChart(bmodel);
                     }
                 }

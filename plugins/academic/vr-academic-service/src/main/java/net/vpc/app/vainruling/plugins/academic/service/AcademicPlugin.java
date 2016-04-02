@@ -73,6 +73,7 @@ import net.vpc.app.vainruling.api.model.AppUserType;
 import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.api.util.ExcelTemplate;
 import net.vpc.app.vainruling.api.util.NamedDoubles;
+import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicBac;
@@ -116,34 +117,28 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     CorePlugin core;
     @Autowired
     FileSystemPlugin fileSystemPlugin;
+    public static final int DEFAULT_SEMESTER_MAX_WEEKS = 14;
 
     private static PropertyPlaceholderHelper h = new PropertyPlaceholderHelper("${", "}");
     private static DecimalFormat FF = new DecimalFormat("0.0#");
-    int maxWeeks = 14;//should be in config
 
-    public void generateTeacherAssignementDocumentsFolder() {
-        generateTeacherAssignementDocumentsFolder("/Documents/Services/Support De Cours/Par Enseignant");
+    public int getSemesterMaxWeeks() {
+        try {
+            return (Integer) core.getOrCreateAppPropertyValue("AcademicPlugin.SemesterMaxWeeks", null, DEFAULT_SEMESTER_MAX_WEEKS);
+        } catch (Exception e) {
+            return DEFAULT_SEMESTER_MAX_WEEKS;
+        }
     }
 
-    private String toValideFileName(String s) {
-        if (StringUtils.isEmpty(s)) {
-            s = "X";
-        }
-        char[] ca = s.toCharArray();
-        for (int i = 0; i < ca.length; i++) {
-            char c = ca[i];
-            if ("()[]*?/\\".indexOf(c) >= 0) {
-                ca[i] = '_';
-            }
-        }
-        return new String(ca);
+    public void generateTeacherAssignementDocumentsFolder() {
+        generateTeacherAssignementDocumentsFolder("/Documents/Services/Supports Pedagogiques/Par Enseignant");
     }
 
     public void generateTeacherAssignementDocumentsFolder(String path) {
         for (AcademicCourseAssignment a : findAcademicCourseAssignments()) {
             if (a.getTeacher() != null && a.getTeacher().getContact() != null) {
-                String n = toValideFileName(a.getTeacher().getContact().getFullName());
-                String c = toValideFileName(a.getCoursePlan().getFullName());
+                String n = VrHelper.toValideFileName(a.getTeacher().getContact().getFullName());
+                String c = VrHelper.toValideFileName(a.getFullName());
                 VFile r = fileSystemPlugin.getFileSystem().get(path + "/" + n + "/" + c);
                 r.mkdirs();
             }
@@ -213,6 +208,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         double sum_max_semester_weeks = 0;
         LoadValue teacher_extraWeek = teacher_stat.getExtraWeek();
         LoadValue teacher_extra = teacher_stat.getExtra();
+        int maxWeeks = getSemesterMaxWeeks();
         for (int i = 0; i < sems.length; i++) {
             AcademicSemester ss = semesters.get(i);
             TeacherSemesterStat sem = new TeacherSemesterStat();
@@ -949,7 +945,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         double contrEquivTot = s.getAssignment(null, Contractuel, null).getValue().getEquiv();
         double vacEquivTot = s.getAssignment(null, Vacataire, null).getValue().getEquiv();
         double missingAss = ta.getMissingAssignments().getEquiv();
-
+        int maxWeeks = getSemesterMaxWeeks();
         neededByDue.getValue().setEquiv(permEquivTot - permEquivDu + contrEquivTot + vacEquivTot + missingAss);
         neededByDue.getValueWeek().setEquiv(neededByDue.getValue().getEquiv() / maxWeeks / findSemesters().size());
         neededByDue.setTeachersCount(
@@ -1519,11 +1515,11 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public List<AcademicTeacher> findEnabledTeachers() {
-        return UPA.getPersistenceUnit().createQuery("Select u from AcademicTeacher u where u.deleted=false and u.enabled=true").getEntityList();
+        return UPA.getPersistenceUnit().createQuery("Select u from AcademicTeacher u where u.deleted=false and u.enabled=true order by u.contact.fullName").getEntityList();
     }
 
     public List<AcademicStudent> findStudents() {
-        return UPA.getPersistenceUnit().createQuery("Select u from AcademicStudent u where u.deleted=false").getEntityList();
+        return UPA.getPersistenceUnit().createQuery("Select u from AcademicStudent u where u.deleted=false order by u.contact.fullName").getEntityList();
     }
 
     public List<AcademicStudent> findStudents(String studentProfileFilter) {
@@ -2259,6 +2255,63 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
         return ok;
     }
+    
+    public String formatDisciplinesForLocale(String value,String locale) {
+        StringBuilder sb=new StringBuilder();
+        for (String s : parseDisciplinesForLocale(value, locale)) {
+            if(sb.length()>0){
+                sb.append(", ");
+            }
+            sb.append(s);
+        }
+        return sb.toString();
+    }
+    
+    public List<String> parseDisciplinesForLocale(String value,String locale) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        if (value == null) {
+            value = "";
+        }
+        List<String> ok = new ArrayList<>();
+        for (String n : value.split(",|;| ")) {
+            String[] cn = codeAndName(n);
+            String code = cn[0].toLowerCase();
+            AcademicDiscipline t = pu.findByMainField(AcademicDiscipline.class, code);
+            if (t == null) {
+                if (!StringUtils.isEmpty(code)) {
+                    ok.add(cn[1]);
+                }
+            }else{
+                ok.add(VrHelper.getValidString(locale, t.getName(), t.getName2(), t.getName3()));
+            }
+        }
+        return ok;
+    }
+    
+    public List<AcademicDiscipline> parseDisciplinesZombies(String value) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        if (value == null) {
+            value = "";
+        }
+        List<AcademicDiscipline> ok = new ArrayList<>();
+        for (String n : value.split(",|;| ")) {
+            String[] cn = codeAndName(n);
+            String code = cn[0].toLowerCase();
+            AcademicDiscipline t = pu.findByMainField(AcademicDiscipline.class, code);
+            if (t == null) {
+                if (!StringUtils.isEmpty(code)) {
+                    t = new AcademicDiscipline();
+                    t.setId(-1);
+                    t.setCode(code);
+                    t.setName(cn[1]);
+                }
+            }
+            if (t != null) {
+                ok.add(t);
+            }
+        }
+        return ok;
+    }
 
     public List<String> parseWords(String value) {
         if (value == null) {
@@ -2797,7 +2850,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     public void validateAcademicData() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        generateTeacherAssignementDocumentsFolder();
         Map<Integer, AcademicClass> academicClasses = findAcademicClassesMap();
 
         //should remove me!
@@ -3022,6 +3074,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 }
             }
         }
+        generateTeacherAssignementDocumentsFolder();
     }
 
     public List<AcademicClass> findStudentClasses(int studentId) {

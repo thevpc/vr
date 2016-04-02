@@ -115,7 +115,7 @@ public class SendExternalMailActionCtrl {
 //            @Override
 //            public void run() {
         try {
-            ArticlesItem obj = (ArticlesItem)VrApp.getBean(ObjCtrl.class).getModel().getCurrentObj();
+            ArticlesItem obj = (ArticlesItem)VrApp.getBean(ObjCtrl.class).getCurrentEntityObject();
             VrApp.getBean(ArticlesPlugin.class).sendExternalMail(obj, VrHelper.formatJSONObject(c));
         } catch (Exception e) {
             FacesUtils.addErrorMessage(e.getMessage());

@@ -727,7 +727,7 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Class Not Found " + a.getStartPeriodName());
             }
         }
-        
+
         AppContact contact = new AppContact();
         contact.setNin(a.getNin());
         contact.setFirstName(a.getFirstName());
@@ -994,7 +994,8 @@ public class XlsxLoadImporter {
                             if ("tp".equalsIgnoreCase(stringVal)) {
                                 courseType.setWeeks(10);
                             } else {
-                                courseType.setWeeks(14);
+                                AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
+                                courseType.setWeeks(ap.getSemesterMaxWeeks());
                             }
                             service.add(courseType);
                         }

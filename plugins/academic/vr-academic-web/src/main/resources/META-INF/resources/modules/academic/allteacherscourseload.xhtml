@@ -48,7 +48,7 @@ and open the template in the editor.
                     <div class="row">
                         <div class="table-responsive">
                             <p:selectManyCheckbox value="#{allTeachersCourseLoadCtrl.model.filters}" layout="grid" columns="5">
-                                <p:ajax listener="#{allTeachersCourseLoadCtrl.onFiltersChanged}" update="@all"/>
+                                <p:ajax listener="#{allTeachersCourseLoadCtrl.onFiltersChanged}" update=":listForm"/>
                                 <f:selectItem itemLabel="grade" itemValue="degree" />
                                 <f:selectItem itemLabel="situation" itemValue="situation" />
                                 <f:selectItem itemLabel="semaines" itemValue="weeks" />
@@ -66,7 +66,7 @@ and open the template in the editor.
                         </div>
                         <div class="table-responsive">
                             <p:selectManyCheckbox value="#{allTeachersCourseLoadCtrl.model.refreshFilter}" layout="grid" columns="5">
-                                <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update="@all"/>
+                                <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
                                 <f:selectItem itemLabel="Inclure les Voeux" itemValue="intents" />
                             </p:selectManyCheckbox>
                         </div>

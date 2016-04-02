@@ -238,7 +238,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                     ActionDialogAdapter e = actionDialogManager.findAction(buttonId);
                     if (e != null) {
-                        return e.isEnabled(getEntity().getEntityType(), getModel().getMode(), getModel().getCurrentObj());
+                        return e.isEnabled(getEntity().getEntityType(), getModel().getMode(), getModel().getCurrentRecord());
                     }
                     break;
                 }
@@ -262,7 +262,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                     ActionDialogAdapter e = actionDialogManager.findAction(buttonId);
                     if (e != null) {
-                        return e.isEnabled(getEntity().getEntityType(), getModel().getMode(), getModel().getCurrentObj());
+                        return e.isEnabled(getEntity().getEntityType(), getModel().getMode(), getModel().getCurrentRecord());
                     }
                     break;
                 }
@@ -274,6 +274,22 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
+    public Object getCurrentEntityObject() {
+        Object selectedObject=getModel().getCurrentRecord();
+        EntityBuilder b = getEntity().getBuilder();
+        return selectedObject==null?null:(selectedObject instanceof Record)?b.recordToEntity((Record)selectedObject):selectedObject;
+    }
+    
+    public List getSelectedEntityObjects() {
+        List list=new ArrayList();
+        EntityBuilder b = getEntity().getBuilder();
+        for (Object selectedObject : getModel().getSelectedObjects()) {
+            Object o=(selectedObject instanceof Record)?b.recordToEntity((Record)selectedObject):selectedObject;
+            list.add(o);
+        }
+        return list;
+    }
+    
     @Override
     public PModel getModel() {
         return (PModel) super.getModel();
@@ -324,14 +340,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             currentViewToModel();
             switch (getModel().getMode()) {
                 case NEW: {
-                    Object c = getModel().getCurrentObj();
+                    Object c = getModel().getCurrentRecord();
                     objService.save(getEntityName(), c);
                     updateMode(EditCtrlMode.UPDATE);
 //                    onCancelCurrent();
                     break;
                 }
                 case UPDATE: {
-                    Object c = getModel().getCurrentObj();
+                    Object c = getModel().getCurrentRecord();
                     objService.save(getEntityName(), c);
 //                    onCancelCurrent();
                     break;
@@ -350,13 +366,13 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             currentViewToModel();
             switch (getModel().getMode()) {
                 case NEW: {
-                    Object c = getModel().getCurrentObj();
+                    Object c = getModel().getCurrentRecord();
                     objService.save(getEntityName(), c);
                     onCancelCurrent();
                     break;
                 }
                 case UPDATE: {
-                    Object c = getModel().getCurrentObj();
+                    Object c = getModel().getCurrentRecord();
                     objService.save(getEntityName(), c);
                     onCancelCurrent();
                     break;
@@ -384,7 +400,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 reloadPage(true);
             } else {
                 currentViewToModel();
-                Object c = getModel().getCurrentObj();
+                Object c = getModel().getCurrentRecord();
                 objService.remove(getEntityName(), objService.resolveId(getEntityName(), c));
                 count++;
                 reloadPage(true);
@@ -415,7 +431,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 reloadPage(true);
             } else {
                 currentViewToModel();
-                Object c = getModel().getCurrentObj();
+                Object c = getModel().getCurrentRecord();
                 objService.archive(getEntityName(), objService.resolveId(getEntityName(), c));
                 getModel().setCurrent(delegated_newInstance());
                 updateMode(EditCtrlMode.LIST);
@@ -632,7 +648,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             switch (getMode()) {
                 case UPDATE:
                 case NEW: {
-                    return Arrays.asList(getCurrentObj());
+                    return Arrays.asList(getCurrentRecord());
                 }
                 case LIST: {
                     List all = new ArrayList();
@@ -647,7 +663,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             return Collections.emptyList();
         }
 
-        public Record getCurrentObj() {
+        public Record getCurrentRecord() {
             ObjRow c = getCurrent();
             if (c == null) {
                 return null;
@@ -725,7 +741,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     public void updateModelFromConfig() {
         enabledButtons.clear();
         Config cfg = VrHelper.parseJSONObject(getModel().getCmd(), Config.class);
-        Object o = getModel().getCurrentObj();
+        Object o = getModel().getCurrentRecord();
         Entity e = getEntity();
         EntityBuilder builder = e.getBuilder();
         if (cfg != null && cfg.values != null && !cfg.values.isEmpty() && o != null && e != null) {
@@ -787,7 +803,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 //        }
         getModel().setActions(act);
         try {
-            Object currentObj = getModel().getCurrentObj();
+            Object currentObj = getModel().getCurrentRecord();
             for (PropertyView property : properties) {
                 property.loadFrom(currentObj);
             }
@@ -813,7 +829,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     public void currentViewToModel() {
         try {
             for (PropertyView property : properties) {
-                property.storeTo(getModel().getCurrentObj());
+                property.storeTo(getModel().getCurrentRecord());
             }
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
@@ -1221,7 +1237,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         } else {
             try {
                 currentViewToModel();
-                Object c = getModel().getCurrentObj();
+                Object c = getModel().getCurrentRecord();
                 actionDialogManager.findAction(actionKey).invoke(getEntity().getEntityType(), c, args);
             } catch (RuntimeException ex) {
                 log.log(Level.SEVERE, "Error", ex);
@@ -1256,8 +1272,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                                 selected.add(String.valueOf(objService.resolveId(getEntityName(), r.getRecord())));
                             }
                         }
-                    } else if (getModel().getCurrentObj() != null) {
-                        selected.add(String.valueOf(objService.resolveId(getEntityName(), getModel().getCurrentObj())));
+                    } else if (getModel().getCurrentRecord() != null) {
+                        selected.add(String.valueOf(objService.resolveId(getEntityName(), getModel().getCurrentRecord())));
                     }
                     currentViewToModel();
                     ed.openDialog(actionId, selected);
@@ -1265,7 +1281,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 } else {
                     try {
                         currentViewToModel();
-                        Object c = getModel().getCurrentObj();
+                        Object c = getModel().getCurrentRecord();
                         ed.invoke(getEntity().getEntityType(), c, null);
                     } catch (RuntimeException ex) {
                         log.log(Level.SEVERE, "Error", ex);

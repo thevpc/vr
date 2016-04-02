@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.perfeval.service;
 
+import java.util.Collections;
 import java.util.List;
 import net.vpc.app.vainruling.api.AppPlugin;
 import net.vpc.app.vainruling.api.CorePlugin;
@@ -48,13 +49,20 @@ public class AcademicPerfEvalPlugin {
         return pu.findById(AcademicFeedback.class, feedbackId);
     }
 
-    public List<AcademicCourseAssignment> findAssignmentsWithFeedbacks(int teacherId, Boolean validated, Boolean archived) {
+    public List<AcademicCourseAssignment> findAssignmentsWithFeedbacks(int teacherId, Boolean validated, Boolean archived,Boolean enabled) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
+        if(enabled!=null && enabled){
+            Boolean ok=(Boolean)VrApp.getBean(CorePlugin.class).getOrCreateAppPropertyValue("AcademicPerfEvalPlugin.EnableTeacherFeedbacks", null, true);
+            if(ok!=null && !ok.booleanValue()){
+                return Collections.EMPTY_LIST;
+            }
+        }
 //        return pu.createQuery("Select u from AcademicCourseAssignment u where u.teacherId=:teacherId and exists(Select f from AcademicFeedback f where f.courseId= u.id) "
         return pu.createQuery("Select u from AcademicCourseAssignment u where u.teacherId=:teacherId and u.id in (Select f.courseId from AcademicFeedback f where 1=1 "
                 + (validated != null ? (" and f.validated=" + validated) : "")
                 + (archived != null ? (" and f.archived=" + archived) : "")
                 + ")"
+                + (enabled != null ? (" and u.enableCourseFeedback=" + enabled) : "")
         )
                 .setParameter("teacherId", teacherId)
                 .setHint("navigationDepth", 3)
@@ -73,11 +81,18 @@ public class AcademicPerfEvalPlugin {
                 .getEntityList();
     }
 
-    public List<AcademicFeedback> findStudentFeedbacks(int studentId, Boolean validated, Boolean archived) {
+    public List<AcademicFeedback> findStudentFeedbacks(int studentId, Boolean validated, Boolean archived,Boolean enabled) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
+        if(enabled!=null && enabled){
+            Boolean ok=(Boolean)VrApp.getBean(CorePlugin.class).getOrCreateAppPropertyValue("AcademicPerfEvalPlugin.EnableStudentFeedbacks", null, true);
+            if(ok!=null && !ok.booleanValue()){
+                return Collections.EMPTY_LIST;
+            }
+        }
         return pu.createQuery("Select f from AcademicFeedback f where f.studentId= :studentId "
                 + (validated != null ? (" and f.validated=" + validated) : "")
                 + (archived != null ? (" and f.archived=" + archived) : "")
+                + (enabled != null ? (" and f.course.enableCourseFeedback=" + enabled) : "")
                 + " order by f.name"
         )
                 .setParameter("studentId", studentId)
