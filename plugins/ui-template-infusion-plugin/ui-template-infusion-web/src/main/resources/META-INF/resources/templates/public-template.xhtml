@@ -122,23 +122,19 @@ and open the template in the editor.
                                                 </div>
                                             </ui:fragment>
                                             <ui:fragment 
-                                                rendered="#{!jsfCtrl.isEmpty(a.content.content)}"
+                                                rendered="#{!jsfCtrl.isEmpty(jsfCtrl.html2txt(a.content.content))}"
                                                 >
                                                 <p class="hero-content">
                                                     <h:outputLabel value="#{a.content.content}" escape="false"/>
                                                 </p>
                                             </ui:fragment>
-                                            <h:outputLink 
-                                                rendered="#{!jsfCtrl.isEmpty(a.content.linkURL)}"
-                                                value="#{jsfCtrl.url(a.content.linkURL)}"
-                                                styleClass="#{(a.content.linkClassStyle eq null or a.content.linkClassStyle eq '')?'hero-btn':a.content.linkClassStyle}"
-                                                ><h:outputText value="#{a.content.linkText}"/>
-                                            </h:outputLink>
                                             <p:outputPanel rendered="#{a.attachments.size() ne 0}">
                                                 <ui:repeat value="#{a.attachments}" var="att">
                                                     <h:outputLink 
                                                         value="#{jsfCtrl.url(att.path)}" 
-                                                        styleClass="#{(att.style eq null or att.style eq '')?'hero-btn':att.style}">
+                                                        styleClass="#{(att.style eq null or att.style eq '')?'hero-btn':att.style}"
+                                                        style="#{jsfCtrl.isEmpty(jsfCtrl.html2txt(a.content.content))?'margin-top:450px;':''}"
+                                                        >
                                                         <h:outputText value="#{att.name}" />
                                                     </h:outputLink>
                                                 </ui:repeat>

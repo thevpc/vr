@@ -47,6 +47,8 @@ public class AcademicCourseAssignment {
 
     private String name2;
 
+    private AcademicCoursePlan coursePlan;
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private AcademicClass subClass;
 
@@ -102,8 +104,6 @@ public class AcademicCourseAssignment {
      * number of teachers or Masters sharing the same Course load
      */
     private double shareCount = 1;
-
-    private AcademicCoursePlan coursePlan;
 
     @Field(modifiers = UserFieldModifier.SUMMARY)
     @Properties(

@@ -54,7 +54,7 @@ public class TraceService {
 
     public static boolean isSilenced() {
         Integer i = SILENCE.get();
-        return (i == null) || (i.intValue() > 0);
+        return (i != null && i.intValue() > 0);
     }
 
     public static Runnable makeSilenced(final Runnable r) {
@@ -123,33 +123,33 @@ public class TraceService {
     public void inserted(Object o, String module, Level level) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(o.getClass());
-        trace("added", e.getName() + " added", dump(o), module, e.getName(), e.getBuilder().entityToId(o), level);
+        trace("added", e.getName() + " added", dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
     }
 
     public void updated(Object o, Object old, String module, Level level) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(o.getClass());
-        trace("updated", e.getName() + " updated", dumpDiff(old, o, e, e.getFields()), module, e.getName(), e.getBuilder().entityToId(o), level);
+        trace("updated", e.getName() + " updated", dumpDiff(old, o, e, e.getFields()), module, e.getName(), e.getBuilder().objectToId(o), level);
     }
 
     public void removed(Object o, String module, Level level) {
         if (o != null) {
             PersistenceUnit pu = UPA.getPersistenceUnit();
             Entity e = pu.getEntity(o.getClass());
-            trace("removed", e.getName() + " removed", dump(o), module, e.getName(), e.getBuilder().entityToId(o), level);
+            trace("removed", e.getName() + " removed", dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
         }
     }
 
     public void softremoved(Object o, String module, Level level) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(o.getClass());
-        trace("soft-removed", e.getName(), dump(o), module, e.getName(), e.getBuilder().entityToId(o), level);
+        trace("soft-removed", e.getName(), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
     }
 
     public void archived(Object o, String module, Level level) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(o.getClass());
-        trace("archived", e.getName(), dump(o), module, e.getName(), e.getBuilder().entityToId(o), level);
+        trace("archived", e.getName(), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
     }
 
     public void trace(String action, String message, String data, String module, String objectName, Object objectId, Level level) {
@@ -218,7 +218,7 @@ public class TraceService {
 
     private String dump(Object o, Entity e, List<Field> fields) {
         StringBuilder b = new StringBuilder(e.getName()).append("{");
-        Record rec = e.getBuilder().entityToRecord(o, true);
+        Record rec = e.getBuilder().objectToRecord(o, true);
         boolean first = true;
         for (Field field : fields) {
             if (first) {
@@ -288,8 +288,8 @@ public class TraceService {
 
     private String dumpDiff(Object o1, Object o2, Entity e, List<Field> fields) {
         StringBuilder b = new StringBuilder(e.getName()).append("{");
-        Record rec1 = e.getBuilder().entityToRecord(o1, true);
-        Record rec2 = e.getBuilder().entityToRecord(o2, true);
+        Record rec1 = e.getBuilder().objectToRecord(o1, true);
+        Record rec2 = e.getBuilder().objectToRecord(o2, true);
         boolean first = true;
         for (Field field : fields) {
             Object val1 = rec1.getObject(field.getName());

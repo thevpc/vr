@@ -46,9 +46,9 @@ public class AppInfoCtrl extends BasePageCtrl {
 
     public static class Model {
 
-        private String appVersion = "1.0.37";
-        private String appDate = "2016-03-18";
-        private String appBuild = "41";
+        private String appVersion = "1.0.38";
+        private String appDate = "2016-04-08";
+        private String appBuild = "42";
         private String author = "Taha BEN SALAH (c)";
         private int pluginsCount = 0;
 

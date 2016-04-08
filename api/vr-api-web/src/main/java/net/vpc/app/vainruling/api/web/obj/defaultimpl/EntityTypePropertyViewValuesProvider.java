@@ -38,7 +38,7 @@ public class EntityTypePropertyViewValuesProvider implements PropertyViewValuesP
             if (v != null) {
                 EntityTypePropertyView etpv = (EntityTypePropertyView) dependentPropertyView;
                 Entity me = etpv.getMasterEntity();
-                Object mid = me.getBuilder().entityToId(v);
+                Object mid = me.getBuilder().objectToId(v);
                 String expr = etpv.getComponentId().substring(propertyView.getComponentId().length()+1);
                 constraints.put(expr + "." + me.getPrimaryFields().get(0).getName(), mid);
             }

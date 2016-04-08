@@ -184,10 +184,10 @@ public class MyPlanningListCtrl extends AbstractPlanningCtrl {
                         fusion.getDays().add(day0);
                     }
                     for (PlanningHour hour : day.getHours()) {
-                        String ha = "A:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonnull(hour.getActivity());
-                        String hr = "R:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonnull(hour.getRoom());
-                        String hs = "S:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonnull(hour.getStudents());
-                        String hj = "J:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonnull(hour.getSubject());
+                        String ha = "A:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getActivity());
+                        String hr = "R:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getRoom());
+                        String hs = "S:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getStudents());
+                        String hj = "J:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getSubject());
 
                         PlanningHour h0 = null;
                         for (PlanningHour dd : day0.getHours()) {

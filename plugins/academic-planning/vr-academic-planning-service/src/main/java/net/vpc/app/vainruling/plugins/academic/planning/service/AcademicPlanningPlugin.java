@@ -148,7 +148,7 @@ public class AcademicPlanningPlugin {
     private VFile getEmploiFolder() {
         final String academicPlanningPluginPlanningRoot = "AcademicPlanningPlugin.PlanningRoot";
         Object t = core.getAppPropertyValue(academicPlanningPluginPlanningRoot, null);
-        String ts = StringUtils.nonnull(t);
+        String ts = StringUtils.nonNull(t);
         if (ts.trim().length() > 0) {
             return fileSystemPlugin.getFileSystem().get(ts);
         } else {
@@ -160,7 +160,7 @@ public class AcademicPlanningPlugin {
                 }
                 
             });
-            return fileSystemPlugin.getFileSystem().get(StringUtils.nonnull(t));
+            return fileSystemPlugin.getFileSystem().get(StringUtils.nonNull(t));
         }
     }
 

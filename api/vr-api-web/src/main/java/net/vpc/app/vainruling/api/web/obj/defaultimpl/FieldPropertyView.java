@@ -83,7 +83,7 @@ public class FieldPropertyView extends PropertyView {
                 if (dataType instanceof EntityType) {
                     EntityType et = (EntityType) dataType;
                     Entity e2 = et.getRelationship().getTargetRole().getEntity();
-                    Object newSelectedItem = e2.getBuilder().entityToId(oo);
+                    Object newSelectedItem = e2.getBuilder().objectToId(oo);
                     sv = new SelectValue(oo, newSelectedItem, e2);
                 } else {
                     sv = new SelectValue(oo, oo, null);

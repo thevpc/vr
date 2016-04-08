@@ -66,7 +66,7 @@ public class AppGender {
 
     @Override
     public String toString() {
-        return StringUtils.nonnull(name);
+        return StringUtils.nonNull(name);
     }
 
     public String getCode() {

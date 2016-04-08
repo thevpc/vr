@@ -51,7 +51,7 @@ public class ObjManagerService {
         if (t instanceof Record) {
             return entity.getBuilder().recordToId((Record) t);
         }
-        return entity.getBuilder().entityToId(t);
+        return entity.getBuilder().objectToId(t);
     }
 
     public void save(String entityName, Object t) {
@@ -122,7 +122,7 @@ public class ObjManagerService {
                 if (entity.containsField("deletedOn")) {
                     t.setDate("deletedOn", new Timestamp(System.currentTimeMillis()));
                 }
-                pu.merge(t);
+                pu.merge(entityName,t);
                 if (trace.accept(entity)) {
                     trace.softremoved(pu.findById(entityName, id), entity.getParent().getPath(), Level.FINE);
                 }
@@ -140,7 +140,7 @@ public class ObjManagerService {
         if (mf == null) {
             return obj.toString();
         }
-        return String.valueOf(entity.getBuilder().entityToRecord(obj, true).getObject(mf.getName()));
+        return String.valueOf(entity.getBuilder().objectToRecord(obj, true).getObject(mf.getName()));
     }
 
 //    public boolean isEntityAction(String type, String action, Object object) {
@@ -181,12 +181,12 @@ public class ObjManagerService {
         Object id = resolveId(entityName, object);
         Object t = pu.findById(entityName, id);
         if (t != null) {
-            Record r = entity.getBuilder().entityToRecord(t, true);
+            Record r = entity.getBuilder().objectToRecord(t, true);
             if (entity.containsField("archived")) {
                 r.setBoolean("archived", true);
             }
 //            Object old = pu.findById(type, id);
-            pu.merge(t);
+            pu.merge(entityName,t);
             if (trace.accept(entity)) {
                 trace.archived(pu.findById(entityName, id), entity.getParent().getPath(), Level.FINE);
             }

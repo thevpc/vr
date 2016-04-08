@@ -805,16 +805,16 @@ public class MailboxPlugin {
 //                        .replace("{from_positionTitle3}", u.getPositionTitle3());
 //            }
         if (u != null) {
-            m.getProperties().setProperty("from_login", StringUtils.nonnull(u.getLogin()));
-            m.getProperties().setProperty("from_type", StringUtils.nonnull(u.getType().getName()));
-            m.getProperties().setProperty("from_fullName", StringUtils.nonnull(u.getContact().getFullName()));
-            m.getProperties().setProperty("from_firstName", StringUtils.nonnull(u.getContact().getFirstName()));
-            m.getProperties().setProperty("from_lastName", StringUtils.nonnull(u.getContact().getLastName()));
-            m.getProperties().setProperty("from_positionTitle1", StringUtils.nonnull(u.getContact().getPositionTitle1()));
-            m.getProperties().setProperty("from_positionTitle2", StringUtils.nonnull(u.getContact().getPositionTitle2()));
-            m.getProperties().setProperty("from_positionTitle3", StringUtils.nonnull(u.getContact().getPositionTitle3()));
-            m.getProperties().setProperty("from_gender", StringUtils.nonnull(u.getContact().getGender() == null ? null : u.getContact().getGender().getName()));
-            m.getProperties().setProperty("from_department", StringUtils.nonnull(u.getDepartment() == null ? null : u.getDepartment().getName()));
+            m.getProperties().setProperty("from_login", StringUtils.nonNull(u.getLogin()));
+            m.getProperties().setProperty("from_type", StringUtils.nonNull(u.getType().getName()));
+            m.getProperties().setProperty("from_fullName", StringUtils.nonNull(u.getContact().getFullName()));
+            m.getProperties().setProperty("from_firstName", StringUtils.nonNull(u.getContact().getFirstName()));
+            m.getProperties().setProperty("from_lastName", StringUtils.nonNull(u.getContact().getLastName()));
+            m.getProperties().setProperty("from_positionTitle1", StringUtils.nonNull(u.getContact().getPositionTitle1()));
+            m.getProperties().setProperty("from_positionTitle2", StringUtils.nonNull(u.getContact().getPositionTitle2()));
+            m.getProperties().setProperty("from_positionTitle3", StringUtils.nonNull(u.getContact().getPositionTitle3()));
+            m.getProperties().setProperty("from_gender", StringUtils.nonNull(u.getContact().getGender() == null ? null : u.getContact().getGender().getName()));
+            m.getProperties().setProperty("from_department", StringUtils.nonNull(u.getDepartment() == null ? null : u.getDepartment().getName()));
         }
         m.subject(emailSubject);
         m.body().add(emailContent, richText ? GoMail.HTML_CONTENT_TYPE : GoMail.TEXT_CONTENT_TYPE, true);

@@ -84,7 +84,7 @@ public class AppGovernorate {
 
     @Override
     public String toString() {
-        return StringUtils.nonnull(name);
+        return StringUtils.nonNull(name);
     }
 
     public String getName3() {

@@ -50,10 +50,12 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.common.utils.Convert;
 import net.vpc.common.utils.PlatformTypes;
 import net.vpc.upa.AccessLevel;
+import net.vpc.upa.CustomDefaultObject;
 import net.vpc.upa.Entity;
 import net.vpc.upa.EntityBuilder;
 import net.vpc.upa.Field;
 import net.vpc.upa.FieldModifier;
+import net.vpc.upa.Formula;
 import net.vpc.upa.Package;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.Record;
@@ -182,6 +184,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         return newTitleString;
     }
 
+    @Override
     public boolean isEnabledButton(String buttonId) {
         Boolean v = enabledButtons.get(buttonId);
         if (v == null) {
@@ -270,26 +273,27 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             return false;
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
-            throw ex;
+//            throw ex;
+            return false;
         }
     }
 
     public Object getCurrentEntityObject() {
-        Object selectedObject=getModel().getCurrentRecord();
+        Object selectedObject = getModel().getCurrentRecord();
         EntityBuilder b = getEntity().getBuilder();
-        return selectedObject==null?null:(selectedObject instanceof Record)?b.recordToEntity((Record)selectedObject):selectedObject;
+        return selectedObject == null ? null : (selectedObject instanceof Record) ? b.recordToObject((Record) selectedObject) : selectedObject;
     }
-    
+
     public List getSelectedEntityObjects() {
-        List list=new ArrayList();
+        List list = new ArrayList();
         EntityBuilder b = getEntity().getBuilder();
         for (Object selectedObject : getModel().getSelectedObjects()) {
-            Object o=(selectedObject instanceof Record)?b.recordToEntity((Record)selectedObject):selectedObject;
+            Object o = (selectedObject instanceof Record) ? b.recordToObject((Record) selectedObject) : selectedObject;
             list.add(o);
         }
         return list;
     }
-    
+
     @Override
     public PModel getModel() {
         return (PModel) super.getModel();
@@ -322,7 +326,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             currentModelToView();
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
-            throw ex;
+//            throw ex;
         }
     }
 
@@ -356,7 +360,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 //            reloadPage();
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
-            throw ex;
+            FacesUtils.addErrorMessage("Enregistrement Echoué : " + ex.getMessage());
+//            throw ex;
         }
     }
 
@@ -382,7 +387,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             updateMode(EditCtrlMode.LIST);
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
-            throw ex;
+            FacesUtils.addErrorMessage("Erreur : " + ex.getMessage());
+//            throw ex;
         }
     }
 
@@ -413,7 +419,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             }
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
-            FacesUtils.addErrorMessage(null, count + " Erreur : " + ex);
+            FacesUtils.addErrorMessage(count + " Erreur : " + ex);
         }
     }
 
@@ -492,22 +498,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     getModel().setSearch(new ObjSimpleSearch(cfg.searchExpr));
                 }
             }
-            List<Record> found = objService.findRecordsByFilter(getEntityName(), cfg.listFilter, getModel().getSearch());
-            List<ObjRow> filteredObjects = new ArrayList<>();
-            Entity entity = getEntity();
-            UPASecurityManager sm = entity.getPersistenceUnit().getSecurityManager();
-            EntityBuilder b = entity.getBuilder();
-            for (Record rec : found) {
-                Object id = b.recordToId(rec);
-                if (sm.isAllowedNavigate(entity, id, rec)) {
-                    ObjRow row = new ObjRow(rec, b.recordToEntity(rec));
-                    row.setRead(sm.isAllowedLoad(entity, id, rec));
-                    row.setWrite(sm.isAllowedUpdate(entity, id, rec));
-                    row.setRowPos(filteredObjects.size());
-                    filteredObjects.add(row);
-                }
-            }
-            getModel().setList(filteredObjects);
+            loadList();
             if (cfg.id == null || cfg.id.trim().length() == 0) {
                 updateMode(EditCtrlMode.LIST);
                 getModel().setCurrent(null);
@@ -516,14 +507,17 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 updateMode(EditCtrlMode.LIST);
                 getModel().setCurrent(null);
             } else {
+                Entity entity = getEntity();
+                UPASecurityManager sm = entity.getPersistenceUnit().getSecurityManager();
+                EntityBuilder b = entity.getBuilder();
                 Object eid = resolveEntityId(cfg.id);
                 Record curr = objService.findRecord(getEntityName(), eid);
-                ObjRow r = new ObjRow(curr,b.recordToEntity(curr));
+                ObjRow r = new ObjRow(curr, b.recordToObject(curr));
                 r.setRead(sm.isAllowedLoad(entity, eid, curr));
                 r.setWrite(sm.isAllowedUpdate(entity, eid, curr));
                 r.setRowPos(-1);
                 //now should try finding row pos
-                for (ObjRow filteredObject : filteredObjects) {
+                for (ObjRow filteredObject : getModel().getList()) {
                     Object id1 = getEntity().getBuilder().recordToId(filteredObject.getRecord());
                     if (id1.equals(eid)) {
                         r.setRowPos(filteredObject.getRowPos());
@@ -536,8 +530,28 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             }
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage("Erreur : " + ex.getMessage());
             throw ex;
         }
+    }
+
+    private void loadList() {
+        List<Record> found = objService.findRecordsByFilter(getEntityName(), getModel().getConfig().listFilter, getModel().getSearch());
+        List<ObjRow> filteredObjects = new ArrayList<>();
+        Entity entity = getEntity();
+        UPASecurityManager sm = entity.getPersistenceUnit().getSecurityManager();
+        EntityBuilder b = entity.getBuilder();
+        for (Record rec : found) {
+            Object id = b.recordToId(rec);
+            if (sm.isAllowedNavigate(entity, id, rec)) {
+                ObjRow row = new ObjRow(rec, b.recordToObject(rec));
+                row.setRead(sm.isAllowedLoad(entity, id, rec));
+                row.setWrite(sm.isAllowedUpdate(entity, id, rec));
+                row.setRowPos(filteredObjects.size());
+                filteredObjects.add(row);
+            }
+        }
+        getModel().setList(filteredObjects);
     }
 
     private Object resolveEntityId(String strId) {
@@ -702,13 +716,17 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     }
 
+    protected Record createInitializedRecord() {
+        return getEntity().getBuilder().createInitializedRecord();
+    }
+
     @Override
     protected ObjRow delegated_newInstance() {
         enabledButtons.clear();
         try {
             if (getModel().getEntityName() != null) {
-                Entity e = UPA.getPersistenceUnit().getEntity(getModel().getEntityName());
-                Record o = e.createRecord();
+                Entity e = getEntity();
+                Record o = createInitializedRecord();
                 for (Field field : e.getFields()) {
                     Object v = field.getDefaultValue();
                     if (v != null) {
@@ -717,7 +735,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                 }
                 EntityBuilder b = e.getBuilder();
-                ObjRow r = new ObjRow(o,b.recordToEntity(o));
+                ObjRow r = new ObjRow(o, b.recordToObject(o));
                 r.setRead(true);
                 r.setWrite(true);
                 r.setSelected(false);
@@ -725,7 +743,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
                 return r;
             }
-            ObjRow r = new ObjRow(getEntity().getBuilder().createRecord(),getEntity().getBuilder().createObject());
+            ObjRow r = new ObjRow(createInitializedRecord(), getEntity().getBuilder().createObject());
             r.setRowPos(-1);
             return r;
         } catch (RuntimeException ex) {
@@ -1105,7 +1123,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         if (getModel().getCurrent() != null) {
             Config cfg = new Config();
             cfg.entity = getEntityName();
-            Object curr = getModel().getCurrent() == null ? null : getEntity().getBuilder().entityToId(getModel().getCurrent().getRecord());
+            Object curr = getModel().getCurrent() == null ? null : getEntity().getBuilder().objectToId(getModel().getCurrent().getRecord());
             cfg.id = curr == null ? null : String.valueOf(curr);
             if (getModel().getFieldSelection() != null) {
                 ArrayList<String> all = new ArrayList<>();
@@ -1177,19 +1195,37 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         onRefresh();
     }
 
-    public void onCancelCurrent() {
+    public void onList() {
         enabledButtons.clear();
-        super.onCancelCurrent();
+        try {
+            getModel().setCurrent(delegated_newInstance());
+            updateMode(EditCtrlMode.LIST);
+        } catch (RuntimeException ex) {
+            log.log(Level.SEVERE, "Error", ex);
+            throw ex;
+        }
+        loadList();
+        pushHistory();
+    }
+
+    private void pushHistory() {
         VrMenuManager menu = VrApp.getBean(VrMenuManager.class);
         if (getModel().getCurrent() != null) {
             Config cfg = new Config();
             cfg.entity = getEntityName();
-            cfg.id = String.valueOf(getEntity().getBuilder().entityToId(getModel().getCurrent().getRecord()));
+            cfg.id = String.valueOf(getEntity().getBuilder().objectToId(getModel().getCurrent().getRecord()));
             cfg.values = getModel().getConfig().values;
             cfg.listFilter = getModel().getConfig().listFilter;
             cfg.disabledFields = getModel().getConfig().disabledFields;
             menu.pushHistory("obj", cfg);
         }
+    }
+
+    @Override
+    public void onCancelCurrent() {
+        enabledButtons.clear();
+        super.onCancelCurrent();
+        pushHistory();
     }
 
     public List<PropertyView> getProperties() {
@@ -1269,11 +1305,21 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     if (getModel().getMode() == EditCtrlMode.LIST) {
                         for (ObjRow r : getModel().getList()) {
                             if (r.isSelected()) {
-                                selected.add(String.valueOf(objService.resolveId(getEntityName(), r.getRecord())));
+                                String iid = StringUtils.nonEmpty(objService.resolveId(getEntityName(), r.getRecord()));
+                                if (iid != null) {
+                                    selected.add(iid);
+                                } else {
+                                    System.out.println("Why?");
+                                }
                             }
                         }
                     } else if (getModel().getCurrentRecord() != null) {
-                        selected.add(String.valueOf(objService.resolveId(getEntityName(), getModel().getCurrentRecord())));
+                        String iid = StringUtils.nonEmpty(objService.resolveId(getEntityName(), getModel().getCurrentRecord()));
+                        if (iid != null) {
+                            selected.add(iid);
+                        } else {
+                            System.out.println("Why?");
+                        }
                     }
                     currentViewToModel();
                     ed.openDialog(actionId, selected);

@@ -146,7 +146,7 @@ and open the template in the editor.
                                     <h:outputText value="#{i.assignment.coursePlan.courseLevel.semester.name}" />
                                 </p:column>
                                 <p:column headerText="" width="10%">
-                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.academicClass.program.name}-#{i.assignment.coursePlan.courseLevel.academicClass.name}" />
+                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.academicClass.name}" />
                                 </p:column>
                                 <p:column  headerText="Module">
                                     <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}" styleClass="#{i.assigned?'vr-assigned-course':''}" value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" />

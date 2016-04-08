@@ -58,7 +58,7 @@ public class AcademicCoursePlan {
 
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:120px")
     )
     private AcademicCourseLevel courseLevel;
 
@@ -100,9 +100,9 @@ public class AcademicCoursePlan {
     private int position;
     private int groupCountC = 1;
     private int groupCountTD = 1;
-    private int groupCountTP = 0;
-    private int groupCountPM = 0;
-    private int groupCountTPPM = 0;
+    private int groupCountTP = 2;
+    private int groupCountPM = 1;
+    private int groupCountTPPM = 1;
     private int weeksC = 0;
     private int weeksTD = 0;
     private int weeksTP = 0;

@@ -698,7 +698,7 @@ public class CorePlugin {
     public <T> T findOrCreate(T o, String field) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(o.getClass());
-        Object value = e.getBuilder().entityToRecord(o, true).getObject(field);
+        Object value = e.getBuilder().objectToRecord(o, true).getObject(field);
         T t = pu.createQueryBuilder(o.getClass()).setExpression(new Equals(new Var(field), new Literal(value, e.getField(field).getDataType())))
                 .getEntity();
         if (t == null) {

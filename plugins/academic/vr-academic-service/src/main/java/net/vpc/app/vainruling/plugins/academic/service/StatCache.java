@@ -49,7 +49,7 @@ public class StatCache {
             if (entity == null) {
                 entity = u.getEntity(e.getClass());
             }
-            K k = (K) entity.getBuilder().entityToId(e);
+            K k = (K) entity.getBuilder().objectToId(e);
             m.put(k, e);
         }
         return m;

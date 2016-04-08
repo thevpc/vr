@@ -222,7 +222,7 @@ public class PropertyView implements Serializable {
                     Entity masterEntity = et.getRelationship().getTargetRole().getEntity();
                     EntityBuilder mconverter = masterEntity.getBuilder();
                     for (Object v : values) {
-                        Object id = mconverter.entityToId(v);
+                        Object id = mconverter.objectToId(v);
                         if (Objects.equal(Convert.toString(selectedItem), Convert.toString(id))) {
                             someUpdates |= !Objects.equal(value, v);
                             value = v;
@@ -232,9 +232,9 @@ public class PropertyView implements Serializable {
                 }else if (dataType instanceof KeyType) {
                     KeyType et = (KeyType) dataType;
                     Entity masterEntity = et.getEntity();
-                    EntityBuilder mconverter = masterEntity.getBuilder();
+                    EntityBuilder mbuilder = masterEntity.getBuilder();
                     for (Object v : values) {
-                        Object id = mconverter.entityToId(v);
+                        Object id = mbuilder.objectToId(v);
                         if (Objects.equal(Convert.toString(selectedItem), Convert.toString(id))) {
                             someUpdates |= !Objects.equal(value, v);
                             value = v;

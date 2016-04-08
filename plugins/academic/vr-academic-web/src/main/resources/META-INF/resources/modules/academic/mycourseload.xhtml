@@ -105,7 +105,7 @@ and open the template in the editor.
                                                      actionListener="#{myCourseLoadCtrl.removeFromMine(i.assignment.id)}" update=":listForm" title="Clickez ici pour supprimer le voeux"/>
                                 </p:column>
                                 <p:column headerText="" width="10%">
-                                    <h:outputText value="#{i.assignment.coursePlan.program.name}-#{i.assignment.coursePlan.studentClass.name}" />
+                                    <h:outputText value="#{i.assignment.coursePlan.studentClass.name}" />
                                 </p:column>
                                 <p:column  headerText="Module">
                                     <h:outputText styleClass="#{i.assigned?'vr-assigned-course':''}"  value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" />
@@ -150,7 +150,7 @@ and open the template in the editor.
                                     <p:commandButton disabled="#{i.assigned}" value="-" actionListener="#{myCourseLoadCtrl.removeFromMine(i.assignment.id)}" update=":listForm"  title="Clickez ici pour supprimer le voeux"/>
                                 </p:column>
                                 <p:column  headerText="" width="10%">
-                                    <h:outputText value="#{i.assignment.coursePlan.program.name}-#{i.assignment.coursePlan.studentClass.name}" />
+                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.academicClass.program.name}-#{i.assignment.coursePlan.studentClass.name}" />
                                 </p:column>
                                 <p:column headerText="Module">
                                     <h:outputText styleClass="#{i.assigned?'vr-assigned-course':''}"  value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" />
@@ -206,7 +206,7 @@ and open the template in the editor.
                                     <h:outputText value="#{i.assignment.coursePlan.semester.name}" />
                                 </p:column>
                                 <p:column headerText="" width="10%">
-                                    <h:outputText value="#{i.assignment.coursePlan.program.name}-#{i.assignment.coursePlan.studentClass.name}" />
+                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.academicClass.program.name}-#{i.assignment.coursePlan.studentClass.name}" />
                                 </p:column>
                                 <p:column headerText="Module">
                                     <h:outputText styleClass="#{i.assigned?'vr-assigned-course':''}" value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" />

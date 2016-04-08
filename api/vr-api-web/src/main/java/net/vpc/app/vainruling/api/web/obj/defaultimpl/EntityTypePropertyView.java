@@ -103,8 +103,8 @@ public class EntityTypePropertyView extends FieldPropertyView {
             items.add(new SelectItem(null, "N/A"));
         }
         EntityBuilder mec = me.getBuilder();
-        for (Object value : this.getValues()) {
-            items.add(new SelectItem(mec.entityToId(value), String.valueOf(mec.getMainValue(value))));
+        for (Object val : this.getValues()) {
+            items.add(new SelectItem(mec.objectToId(val), String.valueOf(mec.getMainValue(val))));
         }
         this.setItems(items);
     }

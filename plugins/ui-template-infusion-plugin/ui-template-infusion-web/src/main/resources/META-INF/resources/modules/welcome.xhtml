@@ -56,8 +56,10 @@ and open the template in the editor.
                                     <p:outputPanel rendered="#{a.attachments.size() ne 0}">
                                         <ui:repeat value="#{a.attachments}" var="att">
                                             <h:outputLink 
-                                                value="#{att.path}" 
-                                                styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}">
+                                                value="#{jsfCtrl.url(att.path)}" 
+                                                styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
+                                                style="margin-left: 3px;margin-right: 3px;"
+                                                >
                                                 <h:outputText value="#{att.name}" />
                                             </h:outputLink>
                                         </ui:repeat>

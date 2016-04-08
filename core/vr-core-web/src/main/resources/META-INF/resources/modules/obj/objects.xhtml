@@ -84,7 +84,7 @@ and open the template in the editor.
                             <p:commandButton value="pdf" rendered="#{objCtrl.isEnabledButton('ExportPdf')}" icon="fa fa-file-pdf-o"  styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" update="buttons :listForm :itemForm :pageTitleForm"/>
                             <p:commandButton value="Auth." rendered="#{objCtrl.isEnabledButton('Authorization')}" icon="fa fa-user-secret" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" type="button"  update="buttons :listForm :itemForm :pageTitleForm"/>
                             <p:commandButton value="Trace" rendered="#{objCtrl.isEnabledButton('Log')}" icon="fa fa-backward" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" type="button" update="buttons :listForm :itemForm :itemForm :pageTitleForm"/>  
-                            <p:commandButton title="Liste" rendered="#{objCtrl.isEnabledButton('List')}" icon="fa fa-list-ol" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onCancelCurrent}" update="buttons :listForm :itemForm :pageTitleForm"/>
+                            <p:commandButton title="Liste" rendered="#{objCtrl.isEnabledButton('List')}" icon="fa fa-list-ol" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onList}" update="buttons :listForm :itemForm :pageTitleForm"/>
 
                             <p:commandButton title="Precédant" icon="fa fa-angle-left" 
                                              action="#{objCtrl.onSelectPrevious}" 
@@ -164,6 +164,7 @@ and open the template in the editor.
                     <div class="row">
                         <p:spacer width="10" height="10" />
                     </div>
+                    <p:growl id="growl" showDetail="true" sticky="true" /> 
                     <p:outputPanel id="editItemList" rendered="#{objCtrl.isListMode()}">
                         <div class="row">
                             <!--<div class="col-lg-6">-->

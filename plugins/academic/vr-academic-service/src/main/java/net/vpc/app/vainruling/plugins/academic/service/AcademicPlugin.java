@@ -603,8 +603,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 AcademicCourseAssignment a2 = o2.getAssignment();
 //                String s1 = a1.getCoursePlan().getName();
 //                String s2 = a2.getCoursePlan().getName();
-                String s1 = StringUtils.nonnull(a1.getFullName());
-                String s2 = StringUtils.nonnull(a2.getFullName());
+                String s1 = StringUtils.nonNull(a1.getFullName());
+                String s2 = StringUtils.nonNull(a2.getFullName());
                 return s1.compareTo(s2);
             }
         });
@@ -1250,7 +1250,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
         p.put(prefix + "name", c.getName());
         p.put(prefix + "name2", c.getName2());
-        p.put(prefix + "type", StringUtils.nonnull(c.getCourseType() == null ? null : c.getCourseType().getName()));
+        p.put(prefix + "type", StringUtils.nonNull(c.getCourseType() == null ? null : c.getCourseType().getName()));
         p.put(prefix + "discipline", c.getCoursePlan().getDiscipline());
         p.put(prefix + "roomConstraintsC", c.getCoursePlan().getRoomConstraintsC());
         p.put(prefix + "roomConstraintsTP", c.getCoursePlan().getRoomConstraintsTP());
@@ -1438,10 +1438,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     p.put(modulePrefix + ".sh", iformat(m.getShareCount()));
                     p.put(modulePrefix + ".grpsh", iformat(m.getGroupCount() * m.getShareCount()));
                     AcademicCoursePlan coursePlan = m.getCoursePlan();
-                    p.put(modulePrefix + ".class", StringUtils.nonnull(coursePlan.getCourseLevel().getAcademicClass()));
-                    p.put(modulePrefix + ".level", StringUtils.nonnull(coursePlan.getCourseLevel()));
-                    p.put(modulePrefix + ".type", StringUtils.nonnull(m.getCourseType()));
-                    p.put(modulePrefix + ".program", StringUtils.nonnull(coursePlan.getCourseLevel().getAcademicClass().getProgram()));
+                    p.put(modulePrefix + ".class", StringUtils.nonNull(coursePlan.getCourseLevel().getAcademicClass()));
+                    p.put(modulePrefix + ".level", StringUtils.nonNull(coursePlan.getCourseLevel()));
+                    p.put(modulePrefix + ".type", StringUtils.nonNull(m.getCourseType()));
+                    p.put(modulePrefix + ".program", StringUtils.nonNull(coursePlan.getCourseLevel().getAcademicClass().getProgram()));
                     moduleIndex++;
                 }
             }

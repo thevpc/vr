@@ -69,7 +69,7 @@ public class AcademicHistCourseGroup {
 
     @Override
     public String toString() {
-        return StringUtils.nonnull(name);
+        return StringUtils.nonNull(name);
     }
 
     public AppPeriod getAcademicYear() {
