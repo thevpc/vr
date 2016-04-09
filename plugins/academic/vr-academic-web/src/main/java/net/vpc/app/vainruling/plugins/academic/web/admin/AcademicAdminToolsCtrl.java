@@ -50,10 +50,10 @@ public class AcademicAdminToolsCtrl {
         return model;
     }
 
-    public void generateTeachingLoad() {
+    public void generateTeachingLoad(String version) {
         try {
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-            p.generateTeachingLoad();
+            p.generateTeachingLoad(version);
             FacesUtils.addInfoMessage("Successful Operation");
         } catch (Exception ex) {
             Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);

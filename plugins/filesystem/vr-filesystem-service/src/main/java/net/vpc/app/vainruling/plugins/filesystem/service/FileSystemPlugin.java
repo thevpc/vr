@@ -40,6 +40,8 @@ public class FileSystemPlugin {
     private VirtualFileSystem fileSystem;
     private String nativeFileSystemPath;
     public static final String RIGHT_FILESYSTEM_WRITE = "Custom.FileSystem.Write";
+    private static String MY_DOCYMENTS_NAME = "Mes Documents";
+    private static String ALL_NAME = "Tous";
 
     @Install
     public void installService() {
@@ -72,6 +74,10 @@ public class FileSystemPlugin {
 
     public VirtualFileSystem getFileSystem() {
         return fileSystem;
+    }
+
+    public VFile getUserDocumentsFolder(final String login) {
+        return getUserFileSystem(login).get("/" + MY_DOCYMENTS_NAME);
     }
 
     public VFile getUserFolder(final String login) {
@@ -149,12 +155,12 @@ public class FileSystemPlugin {
             final VirtualFileSystem me = fileSystem.subfs(home.getPath());
             MountableFS mfs = VFS.createMountableFS("user:" + login);
             try {
-                mfs.mount("/Mes Documents", me);
+                mfs.mount("/" + MY_DOCYMENTS_NAME, me);
                 List<AppProfile> profiles = core.findProfilesByUser(u.getId());
                 for (AppProfile p : profiles) {
                     if (CorePlugin.PROFILE_ADMIN.equals(p.getName())) {
                         //this is admin
-                        mfs.mount("/Tous", fileSystem);
+                        mfs.mount("/"+ALL_NAME, fileSystem);
                     }
                 }
                 VrFSTable t = new VrFSTable();

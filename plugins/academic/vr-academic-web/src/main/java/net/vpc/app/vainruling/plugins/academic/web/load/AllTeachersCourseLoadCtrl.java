@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
+import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherStat;
 import net.vpc.app.vainruling.api.VrApp;
@@ -21,6 +22,9 @@ import net.vpc.app.vainruling.plugins.academic.service.StatCache;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherSemesterStat;
 import net.vpc.app.vainruling.plugins.academic.web.admin.AcademicAdminToolsCtrl;
 import net.vpc.common.jsf.FacesUtils;
+import net.vpc.upa.Action;
+import net.vpc.upa.UPA;
+import net.vpc.upa.VoidAction;
 
 /**
  *
@@ -52,6 +56,14 @@ public class AllTeachersCourseLoadCtrl {
     }
 
     public void onRefresh() {
+        final CorePlugin cp = VrApp.getBean(CorePlugin.class);
+        String version = UPA.getContext().invokePrivileged(new Action<String>() {
+            @Override
+            public String run() {
+                return (String) cp.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01");
+            }
+        });
+        getModel().setVersion(version);
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         StatCache cache = new StatCache();
         boolean includeIntents = containsRefreshFilter("intents");
@@ -76,9 +88,26 @@ public class AllTeachersCourseLoadCtrl {
         String[] defaultFilters = {"situation", "degree", "valueWeek", "extraWeek", "c", "td", "tp", "pm"};
         String[] filters = defaultFilters;
         String[] refreshFilter = {};
+        String version;
 
         public String[] getFilters() {
             return filters;
+        }
+
+        public String[] getDefaultFilters() {
+            return defaultFilters;
+        }
+
+        public void setDefaultFilters(String[] defaultFilters) {
+            this.defaultFilters = defaultFilters;
+        }
+
+        public String getVersion() {
+            return version;
+        }
+
+        public void setVersion(String version) {
+            this.version = version;
         }
 
         public String[] getRefreshFilter() {
@@ -142,8 +171,15 @@ public class AllTeachersCourseLoadCtrl {
 
     public void generateTeachingLoad() {
         try {
+            final CorePlugin cp = VrApp.getBean(CorePlugin.class);
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-            p.generateTeachingLoad();
+            UPA.getContext().invokePrivileged(new VoidAction() {
+                @Override
+                public void run() {
+                    cp.setAppProperty("AcademicPlugin.import.version", null, getModel().getVersion());
+                }
+            });
+            p.generateTeachingLoad(getModel().getVersion());
             FacesUtils.addInfoMessage("Successful Operation");
         } catch (Exception ex) {
             Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);

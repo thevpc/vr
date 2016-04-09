@@ -39,8 +39,9 @@ and open the template in the editor.
                     <!-- /.row -->
                 </h:form>
                 <h:form id="genForm">
-                    <p:growl id="growl" showDetail="true" sticky="true" />  
-                    <p:commandButton value="Generate Teaching Load" actionListener="#{allTeachersCourseLoadCtrl.generateTeachingLoad}" update="growl"/>
+                    <p:growl id="growl" showDetail="true" sticky="true" />
+                    <p:outputLabel value="Version" style="margin-right: 7px;"/> <p:inputText value="#{allTeachersCourseLoadCtrl.model.version}" style="margin-right: 7px;"/>
+                    <p:commandButton value="Génerer" actionListener="#{allTeachersCourseLoadCtrl.generateTeachingLoad}" update="growl"/>
                     <p:separator/>
                 </h:form>
                 <h:form id="listForm">

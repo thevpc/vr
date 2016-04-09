@@ -636,10 +636,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             }
             AppUser u = st.getTeacher().getUser();
             if (u != null) {
-                VirtualFileSystem ufs = fileSystemPlugin.getUserFileSystem(u.getLogin());
-                ufs.get("/MyDocuments/Charges").mkdirs();
+                VFile mydocs = fileSystemPlugin.getUserDocumentsFolder(u.getLogin());
+                mydocs.get("Charges").mkdirs();
                 ExcelTemplate.generateExcel(template, f2, p);
-                f2.copyTo(ufs.get("/MyDocuments/Charges", f2.getName()));
+                f2.copyTo(mydocs.get("Charges").get(f2.getName()));
             }
         }
     }
@@ -1228,85 +1228,93 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (!prefix.endsWith(".")) {
             prefix = prefix + ".";
         }
-        double wc = c.getCoursePlan().getWeeksC();
-        if (wc == 0) {
-            wc = 1;
-        }
-        double wtd = c.getCoursePlan().getWeeksTD();
-        if (wtd == 0) {
-            wtd = 1;
-        }
-        double wtp = c.getCoursePlan().getWeeksTP();
-        if (wtp == 0) {
-            wtp = 1;
-        }
-        double wpm = c.getCoursePlan().getWeeksPM();
-        if (wpm == 0) {
-            wpm = 1;
-        }
-        double wtppm = c.getCoursePlan().getWeeksTPPM();
-        if (wtppm == 0) {
-            wtppm = 1;
+        AcademicCoursePlan coursePlan = c.getCoursePlan();
+        AcademicClass cls = c.getSubClass();
+        if (cls == null && coursePlan != null) {
+            cls = coursePlan.getCourseLevel().getAcademicClass();
         }
         p.put(prefix + "name", c.getName());
         p.put(prefix + "name2", c.getName2());
-        p.put(prefix + "type", StringUtils.nonNull(c.getCourseType() == null ? null : c.getCourseType().getName()));
-        p.put(prefix + "discipline", c.getCoursePlan().getDiscipline());
-        p.put(prefix + "roomConstraintsC", c.getCoursePlan().getRoomConstraintsC());
-        p.put(prefix + "roomConstraintsTP", c.getCoursePlan().getRoomConstraintsTP());
-        if (c.getValueC() != 0 && c.getValueTP() == 0) {
-            p.put(prefix + "roomConstraints", c.getCoursePlan().getRoomConstraintsC());
-        } else if (c.getValueC() == 0 && c.getValueTP() != 0) {
-            p.put(prefix + "roomConstraints", c.getCoursePlan().getRoomConstraintsTP());
-        } else {
-            StringBuilder s = new StringBuilder();
-            if (c.getValueC() != 0 && !StringUtils.isEmpty(c.getCoursePlan().getRoomConstraintsC())) {
-                s.append("C:").append(c.getCoursePlan().getRoomConstraintsC().trim());
-            }
-            if (c.getValueTP() != 0 && !StringUtils.isEmpty(c.getCoursePlan().getRoomConstraintsTP())) {
-                if (s.length() > 0) {
-                    s.append(", ");
-                }
-                s.append("TP:").append(c.getCoursePlan().getRoomConstraintsTP().trim());
-            }
-            p.put(prefix + "roomConstraints", s.toString());
-        }
-        p.put(prefix + "sem.code", c.getCoursePlan().getCourseLevel().getSemester().getCode());
-        p.put(prefix + "sem.name", c.getCoursePlan().getCourseLevel().getSemester().getName());
-        p.put(prefix + "sem.name2", c.getCoursePlan().getCourseLevel().getSemester().getName2());
-        p.put(prefix + "ue", c.getCoursePlan().getCourseGroup() == null ? "" : c.getCoursePlan().getCourseGroup().getName());
-        p.put(prefix + "lvl", c.getCoursePlan().getCourseLevel().getName());
-        p.put(prefix + "grp", c.getGroupCount());
-        p.put(prefix + "share", c.getShareCount());
-        p.put(prefix + "c.grp", c.getCoursePlan().getGroupCountC());
-        p.put(prefix + "td.grp", c.getCoursePlan().getGroupCountTD());
-        p.put(prefix + "tp.grp", c.getCoursePlan().getGroupCountTP());
-        p.put(prefix + "pm.grp", c.getCoursePlan().getGroupCountPM());
-        p.put(prefix + "tppm.grp", c.getCoursePlan().getGroupCountTPPM());
         p.put(prefix + "c", c.getValueC());
         p.put(prefix + "td", c.getValueTD());
         p.put(prefix + "tp", c.getValueTP());
         p.put(prefix + "pm", c.getValuePM());
+        if (coursePlan != null) {
+            double wc = coursePlan.getWeeksC();
+            if (wc == 0) {
+                wc = 1;
+            }
+            double wtd = coursePlan.getWeeksTD();
+            if (wtd == 0) {
+                wtd = 1;
+            }
+            double wtp = coursePlan.getWeeksTP();
+            if (wtp == 0) {
+                wtp = 1;
+            }
+            double wpm = coursePlan.getWeeksPM();
+            if (wpm == 0) {
+                wpm = 1;
+            }
+            double wtppm = coursePlan.getWeeksTPPM();
+            if (wtppm == 0) {
+                wtppm = 1;
+            }
+            p.put(prefix + "type", StringUtils.nonNull(c.getCourseType() == null ? null : c.getCourseType().getName()));
+            p.put(prefix + "discipline", coursePlan.getDiscipline());
+            p.put(prefix + "roomConstraintsC", coursePlan.getRoomConstraintsC());
+            p.put(prefix + "roomConstraintsTP", coursePlan.getRoomConstraintsTP());
+            if (c.getValueC() != 0 && c.getValueTP() == 0) {
+                p.put(prefix + "roomConstraints", coursePlan.getRoomConstraintsC());
+            } else if (c.getValueC() == 0 && c.getValueTP() != 0) {
+                p.put(prefix + "roomConstraints", coursePlan.getRoomConstraintsTP());
+            } else {
+                StringBuilder s = new StringBuilder();
+                if (c.getValueC() != 0 && !StringUtils.isEmpty(coursePlan.getRoomConstraintsC())) {
+                    s.append("C:").append(coursePlan.getRoomConstraintsC().trim());
+                }
+                if (c.getValueTP() != 0 && !StringUtils.isEmpty(coursePlan.getRoomConstraintsTP())) {
+                    if (s.length() > 0) {
+                        s.append(", ");
+                    }
+                    s.append("TP:").append(coursePlan.getRoomConstraintsTP().trim());
+                }
+                p.put(prefix + "roomConstraints", s.toString());
+            }
+            p.put(prefix + "sem.code", coursePlan.getCourseLevel().getSemester().getCode());
+            p.put(prefix + "sem.name", coursePlan.getCourseLevel().getSemester().getName());
+            p.put(prefix + "sem.name2", coursePlan.getCourseLevel().getSemester().getName2());
+            p.put(prefix + "ue", coursePlan.getCourseGroup() == null ? "" : coursePlan.getCourseGroup().getName());
+            p.put(prefix + "lvl", coursePlan.getCourseLevel().getName());
+            p.put(prefix + "grp", c.getGroupCount());
+            p.put(prefix + "share", c.getShareCount());
+            p.put(prefix + "c.grp", coursePlan.getGroupCountC());
+            p.put(prefix + "td.grp", coursePlan.getGroupCountTD());
+            p.put(prefix + "tp.grp", coursePlan.getGroupCountTP());
+            p.put(prefix + "pm.grp", coursePlan.getGroupCountPM());
+            p.put(prefix + "tppm.grp", coursePlan.getGroupCountTPPM());
 
-        p.put(prefix + "w.c", wc);
-        p.put(prefix + "w.td", wtd);
-        p.put(prefix + "w.tp", wtp);
-        p.put(prefix + "w.pm", wpm);
-        p.put(prefix + "w.tppm", wtppm);
+            p.put(prefix + "w.c", wc);
+            p.put(prefix + "w.td", wtd);
+            p.put(prefix + "w.tp", wtp);
+            p.put(prefix + "w.pm", wpm);
+            p.put(prefix + "w.tppm", wtppm);
 
-        p.put(prefix + "w1.c", c.getValueC() / wc);
-        p.put(prefix + "w1.td", c.getValueTD() / wtd);
-        p.put(prefix + "w1.tp", c.getValueTP() / wtp);
-        p.put(prefix + "w1.pm", c.getValuePM() / wpm);
-        p.put(prefix + "w1.tppm", c.getCoursePlan().getValueTPPM() / wtppm);
-
-        p.put(prefix + "class.name", c.getCoursePlan().getCourseLevel().getAcademicClass().getName());
-        p.put(prefix + "class.name2", c.getCoursePlan().getCourseLevel().getAcademicClass().getName2());
-        p.put(prefix + "program.name", c.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getName());
-        p.put(prefix + "program.name2", c.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getName2());
-        p.put(prefix + "department.code", c.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment().getCode());
-        p.put(prefix + "department.name", c.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment().getName());
-        p.put(prefix + "department.name2", c.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment().getName2());
+            p.put(prefix + "w1.c", c.getValueC() / wc);
+            p.put(prefix + "w1.td", c.getValueTD() / wtd);
+            p.put(prefix + "w1.tp", c.getValueTP() / wtp);
+            p.put(prefix + "w1.pm", c.getValuePM() / wpm);
+            p.put(prefix + "w1.tppm", coursePlan.getValueTPPM() / wtppm);
+            if (cls != null) {
+                p.put(prefix + "class.name", cls.getName());
+                p.put(prefix + "class.name2", cls.getName2());
+                p.put(prefix + "program.name", cls.getProgram().getName());
+                p.put(prefix + "program.name2", cls.getProgram().getName2());
+                p.put(prefix + "department.code", cls.getProgram().getDepartment().getCode());
+                p.put(prefix + "department.name", cls.getProgram().getDepartment().getName());
+                p.put(prefix + "department.name2", cls.getProgram().getDepartment().getName2());
+            }
+        }
         p.put(prefix + "teacher.name", c.getTeacher() == null ? null : getValidName(c.getTeacher()));
         p.put(prefix + "teacher.name2", (c.getTeacher() == null || c.getTeacher().getContact() == null) ? null : c.getTeacher().getContact().getFullName2());
         p.put(prefix + "teacher.discipline", c.getTeacher() == null ? null : c.getTeacher().getDiscipline());
@@ -2255,19 +2263,19 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
         return ok;
     }
-    
-    public String formatDisciplinesForLocale(String value,String locale) {
-        StringBuilder sb=new StringBuilder();
+
+    public String formatDisciplinesForLocale(String value, String locale) {
+        StringBuilder sb = new StringBuilder();
         for (String s : parseDisciplinesForLocale(value, locale)) {
-            if(sb.length()>0){
+            if (sb.length() > 0) {
                 sb.append(", ");
             }
             sb.append(s);
         }
         return sb.toString();
     }
-    
-    public List<String> parseDisciplinesForLocale(String value,String locale) {
+
+    public List<String> parseDisciplinesForLocale(String value, String locale) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (value == null) {
             value = "";
@@ -2281,13 +2289,13 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 if (!StringUtils.isEmpty(code)) {
                     ok.add(cn[1]);
                 }
-            }else{
+            } else {
                 ok.add(VrHelper.getValidString(locale, t.getName(), t.getName2(), t.getName3()));
             }
         }
         return ok;
     }
-    
+
     public List<AcademicDiscipline> parseDisciplinesZombies(String value) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (value == null) {
@@ -2494,34 +2502,34 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
     }
 
-    public void generateTeachingLoad() {
+    public void generateTeachingLoad(String version0) throws IOException {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        try {
-            String year = (String) core.findAppConfig().getMainPeriod().getName();
-            String version = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01");
-            String dir = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.configFolder", null, "/Config/Import/import/${year}");
-            String namePattern = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.namePattern", null, "*-eniso-ii-${year}-${version}");
-            Map<String, String> vars = new HashMap<>();
-            vars.put("home", System.getProperty("user.home"));
-            vars.put("year", year);
-            vars.put("version", version);
+//        try {
+        String year = (String) core.findAppConfig().getMainPeriod().getName();
+        String version = (!StringUtils.isEmpty(version0)) ? version0 : ((String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01"));
+        String dir = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.configFolder", null, "/Config/Import/import/${year}");
+        String namePattern = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.namePattern", null, "*-eniso-ii-${year}-${version}");
+        Map<String, String> vars = new HashMap<>();
+        vars.put("home", System.getProperty("user.home"));
+        vars.put("year", year);
+        vars.put("version", version);
 
-            dir = StringUtils.replaceDollarPlaceHolders(dir, new MapStringConverter(vars));
+        dir = StringUtils.replaceDollarPlaceHolders(dir, new MapStringConverter(vars));
+        ///Output/${year}/${version}
+        String outdir = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.outputFolder", null, "/Documents/ByProfile/DirectorOfStudies/Charges/${year}/${version}");
 
-            String outdir = (String) core.getOrCreateAppPropertyValue("academicPlugin.outputFolder", null, "/Output/${year}/${version}");
-
-            outdir = StringUtils.replaceDollarPlaceHolders(outdir, new MapStringConverter(vars));
+        outdir = StringUtils.replaceDollarPlaceHolders(outdir, new MapStringConverter(vars));
 
 //            String dataFolder = dir + "/data";
-            String templatesFolder = dir + "/templates";
+        String templatesFolder = dir + "/templates";
 
-            namePattern = StringUtils.replaceDollarPlaceHolders(namePattern, new MapStringConverter(vars));
+        namePattern = StringUtils.replaceDollarPlaceHolders(namePattern, new MapStringConverter(vars));
 
-            AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
+        AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
 
-            net.vpc.common.vfs.VirtualFileSystem fs = getFileSystem();
-            fs.get(outdir).mkdirs();
-            //TODO should export from DB all this information
+        net.vpc.common.vfs.VirtualFileSystem fs = getFileSystem();
+        fs.get(outdir).mkdirs();
+        //TODO should export from DB all this information
 //            VFS.copy(fs.get(dataFolder), fs.get(outdir), new VFileFilter() {
 //
 //                @Override
@@ -2531,23 +2539,23 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //                            || pathname.getName().toLowerCase().endsWith(".xlsx")));
 //                }
 //            });
-            s.generate(
-                    new TeacherGenerationOptions()
-                    //                    .setTeacherIds(new Integer[]{s.findTeacher(StringComparators.ilike("*zarrouk*")).getId()})
-                    //                    .setSemester(null)
-                    .setContents(
-                            //                            GeneratedContent.CourseListLoads,
-                            GeneratedContent.GroupedTeacherAssignments,
-                            GeneratedContent.TeacherAssignments,
-                            GeneratedContent.CourseListLoads,
-                            GeneratedContent.TeacherListAssignmentsSummary,
-                            GeneratedContent.Bundle
-                    )
-                    .setTemplateFolder(templatesFolder)
-                    .setOutputFolder(outdir)
-                    .setOutputNamePattern(namePattern)
-                    .setIncludeIntents(true)
-            );
+        s.generate(
+                new TeacherGenerationOptions()
+                //                    .setTeacherIds(new Integer[]{s.findTeacher(StringComparators.ilike("*zarrouk*")).getId()})
+                //                    .setSemester(null)
+                .setContents(
+                        //                            GeneratedContent.CourseListLoads,
+                        GeneratedContent.GroupedTeacherAssignments,
+                        GeneratedContent.TeacherAssignments,
+                        GeneratedContent.CourseListLoads,
+                        GeneratedContent.TeacherListAssignmentsSummary,
+                        GeneratedContent.Bundle
+                )
+                .setTemplateFolder(templatesFolder)
+                .setOutputFolder(outdir)
+                .setOutputNamePattern(namePattern)
+                .setIncludeIntents(true)
+        );
 //            XMailService mails = new XMailService();
 //            XMail m=mails.read(XMailFormat.TEXT, new File(dir+"/notification-charge.xmail"));
 //            m.setSimulate(true);
@@ -2555,9 +2563,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //            for () {
 //                break;
 //            }
-        } catch (Exception ex) {
-            Logger.getLogger(XlsxLoadImporter.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        } catch (Exception ex) {
+//            Logger.getLogger(XlsxLoadImporter.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     public void addUserForTeacher(AcademicTeacher academicTeacher) {

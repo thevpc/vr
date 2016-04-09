@@ -1330,6 +1330,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                         Object c = getModel().getCurrentRecord();
                         ed.invoke(getEntity().getEntityType(), c, null);
                     } catch (RuntimeException ex) {
+                        FacesUtils.addInfoMessage("Erruer : " + ex.getMessage());
                         log.log(Level.SEVERE, "Error", ex);
                         throw ex;
                     }

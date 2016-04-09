@@ -10,6 +10,7 @@ import net.vpc.app.vainruling.api.EntityAction;
 import net.vpc.app.vainruling.api.model.AppConfig;
 import net.vpc.app.vainruling.api.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.api.web.obj.ActionDialog;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.UPA;
 
 /**
@@ -20,14 +21,13 @@ import net.vpc.upa.UPA;
         actionLabel = "MAJ Formules", actionStyle = "fa-calculator",
         dialog = false
 )
-public class UpdateFormulasAction implements ActionDialog{
+public class UpdateFormulasAction implements ActionDialog {
 
     @Override
     public void openDialog(String actionId, List<String> itemIds) {
         throw new IllegalArgumentException("Unsupported");
     }
-    
-    
+
     @Override
     public boolean isEnabled(Class entityType, EditCtrlMode mode, Object value) {
         return true;//value != null;
@@ -36,5 +36,6 @@ public class UpdateFormulasAction implements ActionDialog{
     @Override
     public void invoke(Class entityType, Object obj, Object[] args) {
         UPA.getPersistenceUnit().updateFormulas();
+        FacesUtils.addInfoMessage("Mise à jour réussie");
     }
 }

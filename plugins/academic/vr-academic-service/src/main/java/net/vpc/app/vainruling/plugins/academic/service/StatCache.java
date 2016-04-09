@@ -255,7 +255,7 @@ public class StatCache {
         } else {
             List<AcademicCourseIntent> list = getAcademicCourseIntentByTeacherId().get(teacher);
             if (list == null) {
-                System.out.println("No intents for " + teacher + " : " + getAcademicTeacherMap().get(teacher));
+                //System.out.println("No intents for " + teacher + " : " + getAcademicTeacherMap().get(teacher));
             } else {
                 for (AcademicCourseIntent value : list) {
                     if (semester == null || (value.getAssignment().getCoursePlan().getCourseLevel().getSemester() != null && value.getAssignment().getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {

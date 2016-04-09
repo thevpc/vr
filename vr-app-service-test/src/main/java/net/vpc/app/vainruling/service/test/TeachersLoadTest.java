@@ -69,14 +69,18 @@ public class TeachersLoadTest {
 //        }
 //    }
     public void runGenerate() {
-        AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
-        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        try {
+            AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
+            CorePlugin core = VrApp.getBean(CorePlugin.class);
 //        core.setAppProperty("academicPlugin.year", null, "2014-2015");
-        core.setAppProperty("AcademicPlugin.import.version", null, "21bis");
+            core.setAppProperty("AcademicPlugin.import.version", null, "21bis");
 //        s.resetTeachers();
-        s.resetModuleTeaching();
-        s.importTeachingLoad();
-        s.generateTeachingLoad();
+            s.resetModuleTeaching();
+            s.importTeachingLoad();
+            s.generateTeachingLoad(null);
+        } catch (IOException ex) {
+            Logger.getLogger(TeachersLoadTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void runGenerate0() {
@@ -93,7 +97,7 @@ public class TeachersLoadTest {
             core.setAppProperty("AcademicPlugin.import.outputFolder", null, outputFolder);
 
             AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
-            s.generateTeachingLoad();
+            s.generateTeachingLoad(null);
 //            net.vpc.vfs.VirtualFileSystem fs = core.getFileSystem();
 //            fs = new NativeVFS();
 //            VFS.copy(fs.get(dataFolder), fs.get(outputFolder), new VFileFilter() {
@@ -134,8 +138,7 @@ public class TeachersLoadTest {
 //            for () {
 //                break;
 //            }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             Logger.getLogger(XlsxLoadImporter.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -147,12 +150,11 @@ public class TeachersLoadTest {
             MailboxPlugin mails = new MailboxPlugin();
             GoMail m = mails.read(GoMailFormat.TEXT, new File(dir + "/notification-charge-finale.xmail"));
             m.setSimulate(false);
-            mails.sendExternalMail(m,null,null);
+            mails.sendExternalMail(m, null, null);
 //            for () {
 //                break;
 //            }
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             Logger.getLogger(XlsxLoadImporter.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
