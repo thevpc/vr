@@ -207,6 +207,22 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         onRefresh();
     }
 
+    public StreamedContent downloadPath(String path) {
+        InputStream stream = null;
+        try {
+            FileSystemPlugin fsp = VrApp.getBean(FileSystemPlugin.class);
+            final VFile f = fsp.getFileSystem().get(path);
+            if (f.exists() && f.isFile()) {
+                fsp.markDownloaded(f);
+                stream = f.getInputStream();
+                return new DefaultStreamedContent(stream, f.probeContentType(), f.getName());
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
     public StreamedContent getContent(VFileInfo i) {
         InputStream stream = null;
         try {

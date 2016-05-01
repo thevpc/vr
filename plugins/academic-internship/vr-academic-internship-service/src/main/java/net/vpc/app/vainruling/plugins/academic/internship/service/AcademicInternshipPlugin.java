@@ -422,6 +422,67 @@ public class AcademicInternshipPlugin {
         }
     }
 
+    public List<AcademicInternship> findInternships(int teacherId, int boardId, int deptId, int internshipTypeId, boolean openOnly) {
+        AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
+        CorePlugin cp = VrApp.getBean(CorePlugin.class);
+        AcademicTeacher t = teacherId < 0 ? null : ap.findTeacher(teacherId);
+        AppDepartment d = deptId < 0 ? (t == null ? null : t.getDepartment()) : cp.findDepartment(deptId);
+        AcademicTeacher h = d == null ? null : ap.findHeadOfDepartment(d.getId());
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        if (h != null && d != null && h.getId() == teacherId) {
+            if (boardId <= 0) {
+                if (internshipTypeId < 0) {
+                    return  pu.createQuery("Select u from AcademicInternship u where (u.boardId==null or u.board.departmentId=:departmentId) " + (openOnly ? "and u.internshipStatus.closed=false" : ""))
+                            .setParameter("departmentId", d.getId())
+                            .setHint("navigationDepth", 2)
+                            .getEntityList();
+                } else {
+                    return pu.createQuery("Select u from AcademicInternship u where (u.boardId==null or (u.board.departmentId=:departmentId and u.board.internshipTypeId=:internshipTypeId)) " + (openOnly ? "and u.internshipStatus.closed=false" : ""))
+                            .setParameter("departmentId", d.getId())
+                            .setParameter("internshipTypeId", internshipTypeId)
+                            .setHint("navigationDepth", 2)
+                            .getEntityList();
+                }
+            } else {
+                return pu.createQuery("Select u from AcademicInternship u where u.boardId=:boardId " 
+                        + (openOnly ? " and u.internshipStatus.closed=false" : ""))
+                        .setParameter("boardId", boardId)
+                        .setHint("navigationDepth", 2)
+                        .getEntityList();
+            }
+        }
+
+        if (boardId <= 0) {
+            StringBuilder boardList = new StringBuilder();
+            List<AcademicInternshipBoard> goodBoards = pu.createQuery("Select u.board from AcademicInternshipBoardTeacher u where "
+                    + " 1=1"
+                    + ((openOnly) ? " and u.board.enabled=true" : "")
+                    + ((deptId > 0) ? (" and u.board.departmentId=" + deptId) : "")
+                    + ((teacherId > 0) ? (" and u.teacherId=" + teacherId) : "")
+                    + ((internshipTypeId > 0) ? (" and u.board.internshipTypeId=" + internshipTypeId) : "")
+            )
+                    .getEntityList();
+            for (AcademicInternshipBoard b : goodBoards) {
+                if (boardList.length() > 0) {
+                    boardList.append(",");
+                }
+                boardList.append(b.getId());
+            }
+            if (boardList.length() == 0) {
+                return new ArrayList<>();
+            }
+            return pu.createQuery("Select u from AcademicInternship u where u.boardId in (" + boardList + ") " + (openOnly ? "and u.internshipStatus.closed=false" : ""))
+                    .setHint("navigationDepth", 2)
+                    .getEntityList();
+
+        } else {
+            return pu.createQuery("Select u from AcademicInternship u where u.boardId=:boardId and u.internshipStatus.closed=false")
+                    .setParameter("boardId", boardId)
+                    .setHint("navigationDepth", 2)
+                    .getEntityList();
+        }
+    }
+
     @Install
     public void install() {
         VrApp.getBean(CorePlugin.class).createRight("Custom.Education.MyInternships", "Custom.Education.MyInternships");

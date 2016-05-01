@@ -5,13 +5,10 @@
  */
 package net.vpc.app.vainruling.core.service;
 
-import java.util.ArrayList;
 import net.vpc.app.vainruling.api.core.Plugin;
 import java.util.Arrays;
-import java.util.List;
 import net.vpc.app.vainruling.api.AppPlugin;
 import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.core.ActionInfo;
 import net.vpc.app.vainruling.api.core.PluginManagerService;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;

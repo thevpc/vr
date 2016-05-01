@@ -20,7 +20,7 @@ import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
  */
 @EntityAction(entityType = AppUser.class,
         actionName = "sendWelcomeMail",
-        actionLabel = "welcome email", actionStyle = "fa-envelope-o",
+        actionLabel = "w-mail", actionStyle = "fa-envelope-o",
         dialog = true
 )
 public class SendWelcomeMailAction implements ActionDialog {

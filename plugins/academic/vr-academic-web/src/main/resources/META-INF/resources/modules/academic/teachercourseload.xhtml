@@ -124,6 +124,7 @@ and open the template in the editor.
                                          rows="10"
                                          paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                          rowsPerPageTemplate="10,20,50"
+                                         emptyMessage="Aucune charge"
                                          >
                                 <p:column style="padding: 0;" styleClass="ui-widget-header"  headerText="" width="5%">
                                     <p:menuButton value="...">
@@ -186,6 +187,7 @@ and open the template in the editor.
                                          rows="10"
                                          paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                          rowsPerPageTemplate="10,20,50"
+                                         emptyMessage="Aucune charge"
                                          >
                                 <p:column  style="padding: 0;" styleClass="ui-widget-header"   headerText="" width="5%">
                                     <p:menuButton value="...">
@@ -252,9 +254,9 @@ and open the template in the editor.
                                 <f:selectItem itemLabel="Modules En Conflits" itemValue="conflict" />
                                 <f:selectItems value="#{teacherCourseLoadCtrl.model.filterSelectItems}"/>
                             </p:selectManyCheckbox>
-                            
+
                             <p:commandButton value="Filter" style="margin-top: 20px;margin-bottom: 20px;margin-left: 100px;" action="#{teacherCourseLoadCtrl.onOthersFiltersChanged}" update=":listForm"/>
-                            
+
                             <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.others}" class="table table-bordered table-hover"
                                          paginatorAlwaysVisible="false"
                                          paginator="true"
@@ -263,6 +265,7 @@ and open the template in the editor.
                                          paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                          rowsPerPageTemplate="20,50,100,200,1000"
                                          widgetVar="othersTable"
+                                         emptyMessage="Aucune charge"
                                          >
                                 <p:column   style="padding: 0;" styleClass="ui-widget-header"  headerText="" width="5%">
                                     <p:menuButton value="...">

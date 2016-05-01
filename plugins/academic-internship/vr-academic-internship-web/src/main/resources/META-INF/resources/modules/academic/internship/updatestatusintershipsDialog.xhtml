@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:head>
+        <title><h:outputText value="Channger Phases"/></title>
+        <style type="text/css">
+            /*
+            .ui-widget {    
+                font-size: 90%;
+            }
+
+            .ui-selectonemenu-list,
+            .ui-selectonemenu-panel,
+            .ui-widget-content 
+            {
+                height:50% !important
+            }
+
+
+            .ui-selectonemenu-items-wrapper
+            {
+                height:100% !important
+            }
+            .ui-dialog {
+                width: auto !important;
+                min-height: 370px !important;
+            }
+            */
+
+        </style>
+        <link href="${jsfCtrl.context}/css/app.css" rel="stylesheet" type="text/css"/>
+    </h:head>
+
+    <h:body>
+
+
+
+        <div class="row">
+            <h:form id="listForm" style="width: 98%;">
+                <p:panelGrid styleClass="noBorderGrid" style="border-style: none;border-width: 0px;width: 100%;">
+                    <p:row>
+                        <p:column colspan="2"><p:outputLabel value="#{updateStatusIntershipsActionCtrl.model.message}" /></p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column ><p:outputLabel value="Comité" /></p:column>
+                        <p:column >
+                            <p:selectOneMenu value="#{updateStatusIntershipsActionCtrl.model.selectedBoard}">
+                                <p:ajax listener="#{updateStatusIntershipsActionCtrl.onUpdateBoard}" update=":listForm"/>
+                                <f:selectItem itemLabel="Selectionner Comité..." itemValue="" />
+                                <f:selectItems value="#{updateStatusIntershipsActionCtrl.model.boards}" />
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column ><p:outputLabel value="Filtrer par Phase" /></p:column>
+                        <p:column >
+                            <p:selectOneMenu value="#{updateStatusIntershipsActionCtrl.model.selectedStatusFrom}">
+                                <f:selectItem itemLabel="Selectionner Phase..." itemValue="" />
+                                <f:selectItems value="#{updateStatusIntershipsActionCtrl.model.statuses}" />
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column ><p:outputLabel value="Changer en ..." /></p:column>
+                        <p:column >
+                            <p:selectOneMenu value="#{updateStatusIntershipsActionCtrl.model.selectedStatusTo}">
+                                <f:selectItem itemLabel="Selectionner Phase..." itemValue="" />
+                                <f:selectItems value="#{updateStatusIntershipsActionCtrl.model.statuses}" />
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>
+
+                <p:commandButton value="Appliquer changements" actionListener="#{updateStatusIntershipsActionCtrl.apply}" 
+                                 style="margin-left: 20px;margin-right: 20px;margin-top: 5px;" disabled="#{updateStatusIntershipsActionCtrl.model.disabled}"/>
+                <p:commandButton value="Fermer" actionListener="#{updateStatusIntershipsActionCtrl.fireEventExtraDialogClosed}" style="margin-left: 20px;margin-right: 20px;margin-top: 5px;" />
+            </h:form>
+        </div>
+    </h:body>
+
+</html>

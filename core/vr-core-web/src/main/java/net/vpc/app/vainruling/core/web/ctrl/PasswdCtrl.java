@@ -12,6 +12,8 @@ import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.VrApp;
 import net.vpc.app.vainruling.api.web.UCtrl;
 import net.vpc.common.jsf.FacesUtils;
+import net.vpc.upa.UPA;
+import net.vpc.upa.VoidAction;
 import org.springframework.context.annotation.Scope;
 
 /**
@@ -68,7 +70,7 @@ public class PasswdCtrl {
 
     public void changePassword() {
         try {
-            CorePlugin t = VrApp.getBean(CorePlugin.class);
+            final CorePlugin t = VrApp.getBean(CorePlugin.class);
             String s1 = getModel().getPassword1();
             String s2 = getModel().getPassword2();
             if (s1 == null) {
@@ -81,8 +83,19 @@ public class PasswdCtrl {
                 FacesUtils.addErrorMessage(null, "Les mots de passe ne coincident pas");
                 return;
             }
-            t.passwd(t.getActualLogin(), getModel().getOldPassword(), getModel().getPassword1());
-            FacesUtils.addInfoMessage(null, "Mot de passe modifié");
+            UPA.getContext().invokePrivileged(new VoidAction() {
+                @Override
+                public void run() {
+                    try {
+                        t.passwd(t.getActualLogin(), getModel().getOldPassword(), getModel().getPassword1());
+                        FacesUtils.addInfoMessage(null, "Mot de passe modifié");
+                    } catch (Exception ex) {
+                        log.log(Level.SEVERE, "Error", ex);
+                        FacesUtils.addErrorMessage(null, ex.getMessage());
+                    }
+                }
+            }
+            );
         } catch (Exception ex) {
             log.log(Level.SEVERE, "Error", ex);
             FacesUtils.addErrorMessage(null, ex.getMessage());

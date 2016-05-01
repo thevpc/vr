@@ -69,7 +69,7 @@ public class LoginCtrl {
     public String dologin() {
         VRWebHelper.prepareUserSession();
         if(VrApp.getBean(AppGlobalCtrl.class).isShutdown() && !"admin".equals(getModel().getLogin())){
-            FacesUtils.addErrorMessage("Impossible de logger. Serveur indisponible momentannément.");
+            FacesUtils.addErrorMessage("Impossible de logger. Serveur indisponible momentannément. Redémarrage en cours.");
             return null;
         }
         AppUser u = loginService.login(getModel().getLogin(), getModel().getPassword());

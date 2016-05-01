@@ -32,6 +32,7 @@ and open the template in the editor.
                 
                                 </h:form>-->
                 <h:form id="listForm">
+                <p:messages id="pageMessages"/>
 
                     <div class="row">
                         <p:selectOneMenu value="#{studentFeedbackCtrl.model.selectedFeedback}">
@@ -49,10 +50,10 @@ and open the template in the editor.
                                     </p:column>
                                     <p:column headerText="">
                                         <p:selectOneRadio id="customRadio" value="#{i.response.response}" style="font-size: xx-small">
-                                            <f:selectItem itemLabel="Tout a fait en désaccord" itemValue="1" />
+                                            <f:selectItem itemLabel="Tout à fait en désaccord" itemValue="1" />
                                             <f:selectItem itemLabel="Plutot en désaccord" itemValue="2" />
-                                            <f:selectItem itemLabel="Plutot daccord" itemValue="3" />
-                                            <f:selectItem itemLabel="Tout a fait en accord" itemValue="4" />
+                                            <f:selectItem itemLabel="Plutot d'accord" itemValue="3" />
+                                            <f:selectItem itemLabel="Tout à fait en accord" itemValue="4" />
                                         </p:selectOneRadio>
                                     </p:column>
                                 </p:dataTable>

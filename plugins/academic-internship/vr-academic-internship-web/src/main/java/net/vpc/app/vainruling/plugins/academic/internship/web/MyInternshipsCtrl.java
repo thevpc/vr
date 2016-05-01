@@ -18,7 +18,9 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.api.CorePlugin;
 import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.api.core.OpinionType;
 import net.vpc.app.vainruling.api.model.AppCompany;
+import net.vpc.app.vainruling.api.model.AppDepartment;
 import net.vpc.app.vainruling.api.security.UserSession;
 import net.vpc.app.vainruling.api.util.VrHelper;
 import net.vpc.app.vainruling.api.web.OnPageLoad;
@@ -71,6 +73,7 @@ public class MyInternshipsCtrl {
         private boolean uploading;
         private boolean student;
         private boolean teacher;
+        private boolean manager;
         private String internshipId;
         private String companyId;
         private String superviser1Id;
@@ -83,6 +86,10 @@ public class MyInternshipsCtrl {
         private List<SelectItem> companies = new ArrayList<SelectItem>();
         private List<SelectItem> typeVariants = new ArrayList<SelectItem>();
         private List<SelectItem> durations = new ArrayList<SelectItem>();
+
+        public OpinionType[] getOpinions() {
+            return OpinionType.values();
+        }
 
         public AcademicInternship getInternship() {
             return internship;
@@ -212,6 +219,14 @@ public class MyInternshipsCtrl {
             this.teacher = teacher;
         }
 
+        public boolean isManager() {
+            return manager;
+        }
+
+        public void setManager(boolean manager) {
+            this.manager = manager;
+        }
+
     }
 
     public Model getModel() {
@@ -236,6 +251,22 @@ public class MyInternshipsCtrl {
     public AcademicTeacher getCurrentTeacher() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         return a.getCurrentTeacher();
+    }
+
+    public AcademicTeacher getCurrentHeadOfDepartment() {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        CorePlugin c = VrApp.getBean(CorePlugin.class);
+        AcademicTeacher t = a.getCurrentTeacher();
+        if (t != null) {
+            AppDepartment d = t.getDepartment();
+            if (d != null) {
+                AcademicTeacher h = a.findHeadOfDepartment(d.getId());
+                if (h != null && h.getId() == t.getId()) {
+                    return t;
+                }
+            }
+        }
+        return null;
     }
 
     public AcademicInternship getSelectedInternship() {
@@ -420,8 +451,16 @@ public class MyInternshipsCtrl {
         }
     }
 
+      @OnPageLoad
+    public void onPageLoad() {
+         getModel().setInternshipId(null);
+         getModel().setInternship(null);
+         onRefresh();
+    }
+    
     @OnPageLoad
     public void onRefresh() {
+        getModel().setUploading(false);
         getModel().setInternship(getSelectedInternship());
 
         CorePlugin c = VrApp.getBean(CorePlugin.class);
@@ -435,6 +474,7 @@ public class MyInternshipsCtrl {
 
         AcademicStudent currentStudent = getCurrentStudent();
         AcademicTeacher currentTeacher = getCurrentTeacher();
+        AcademicTeacher headOfDepartment = getCurrentHeadOfDepartment();
         List<AcademicInternship> internships = new ArrayList<>();
         if (currentStudent != null) {
             getModel().setStudent(true);
@@ -445,6 +485,7 @@ public class MyInternshipsCtrl {
             getModel().setTeacher(true);
             internships = pi.findActualInternshipsBySupervisor(currentTeacher.getId());
         }
+        getModel().setManager(headOfDepartment!=null);
         for (AcademicInternship t : internships) {
             String n = null;
             if (currentStudent == null) {

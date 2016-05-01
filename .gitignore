@@ -89,3 +89,8 @@
 /plugins/academic-planning/vr-academic-perf-eval-web/target/
 /plugins/academic-planning/vr-academic-planning-web/target/
 /plugins/academic-planning/vr-academic-planning-service/target/
+/plugins/ui-template-infusion-plugin/ui-app-theme-infusion/target/
+/plugins/themes/ui-app-theme-infusion/target/
+/old/api/vr-api-service/target/
+/old/api/vr-api-web/target/
+/plugins/themes/ui-component-theme-infusion/target/

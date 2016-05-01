@@ -12,7 +12,7 @@ $(window).load(function() {
 
 $(function() {
   var pull = $('#pull');
-  var menu = $('nav ul');
+  var menu = $('nav.infusion ul');
         
           $(pull).on('click', function(e) {
               e.preventDefault();

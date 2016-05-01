@@ -46,14 +46,14 @@ and open the template in the editor.
                             <p:commandButton  title="Actualiser" rendered="#{objCtrl.isEnabledButton('Refresh')}" icon="fa fa-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onRefresh}"  update="buttons :listForm :itemForm :pageTitleForm" alt=""/>
                             <p:commandButton title="Nouveau" rendered="#{objCtrl.isEnabledButton('New')}" icon="fa fa-plus" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{objCtrl.onNew}"  update="buttons :listForm :itemForm :pageTitleForm"/>
 
-                            <p:splitButton title="Enregistrer" rendered="#{objCtrl.isEnabledButton('Save')}"  onclick="processOnSaveCurrent()"  update="buttons :listForm :itemForm :pageTitleForm" icon="fa fa-save" styleClass=" vr-toolbox-button">
+                            <p:splitButton title="Enregistrer" rendered="#{objCtrl.isEnabledButton('Save')}"  onclick="processOnSaveCurrent()"  update="buttons :listForm :itemForm :pageTitleForm" icon="fa fa-save" styleClass=" vr-toolbox-split-button">
                                 <p:menuitem value="Enregister et Fermer" onclick="processOnSaveCurrentAndClose()" ajax="true"  update="buttons :listForm :itemForm :pageTitleForm" icon="ui-icon-arrowrefresh-1-w" />
                                 <p:menuitem value="Enregistrer" onclick="processOnSaveCurrent()"  ajax="true" update="buttons :listForm :itemForm :pageTitleForm" icon="ui-icon-close" />
                             </p:splitButton>
 
                             <p:commandButton title="Supprimer" rendered="#{objCtrl.isEnabledButton('Remove')}" icon="fa fa-trash-o" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"   onclick="PF('confirmationDelete').show();" />
 
-                            <p:splitButton title="Chercher" rendered="#{objCtrl.isEnabledButton('Search')}"  icon="fa fa-search"  onclick="document.getElementById('listForm:processOnSimpleSearchLink').click();"  update="buttons :listForm :itemForm :pageTitleForm" styleClass=" vr-toolbox-button">
+                            <p:splitButton title="Chercher" rendered="#{objCtrl.isEnabledButton('Search')}"  icon="fa fa-search"  onclick="document.getElementById('listForm:processOnSimpleSearchLink').click();"  update="buttons :listForm :itemForm :pageTitleForm" styleClass=" vr-toolbox-split-button">
                                 <p:menuitem value="Recherche Simple" icon="" onclick="document.getElementById('listForm:processOnSimpleSearchLink').click();" ajax="true"  update="buttons :listForm :itemForm :pageTitleForm"/>
                                 <p:menuitem value="Annuler Recherche" icon="ui-icon-close" onclick="processOnClearSearch()" ajax="true"  update="buttons :listForm :itemForm :pageTitleForm" />
                                 <p:separator />
@@ -62,7 +62,7 @@ and open the template in the editor.
                             </p:splitButton>
 
 
-                            <p:splitButton rendered="#{objCtrl.isEnabledButton('Advanced')}" title="Avancé" icon="fa fa-compass" styleClass=" vr-toolbox-button">
+                            <p:splitButton rendered="#{objCtrl.isEnabledButton('Advanced')}" title="Avancé" icon="fa fa-compass" styleClass=" vr-toolbox-split-button">
                                 <p:menuitem rendered="#{objCtrl.isEnabledButton('Archive')}" value="Archiver" icon="fa fa-archive" onclick="PF('confirmationArchive').show();" ajax="true"/>
                                 <p:separator />
                             </p:splitButton>
@@ -100,7 +100,7 @@ and open the template in the editor.
                                              update="buttons :listForm :itemForm :pageTitleForm"
                                              />  
 
-                            <p:commandButton title="Retour" icon="fa fa-history" 
+                            <p:commandButton title="Retour" icon="fa fa-backward" 
                                              action="#{vrMenuManager.goBack}" 
                                              ajax="false" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"/>  
 

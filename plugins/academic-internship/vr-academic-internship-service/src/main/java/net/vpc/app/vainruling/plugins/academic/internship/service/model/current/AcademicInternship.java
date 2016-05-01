@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.plugins.academic.internship.service.model.current;
 
 import java.sql.Timestamp;
+import net.vpc.app.vainruling.api.core.OpinionType;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.api.model.AppCompany;
@@ -94,6 +95,30 @@ public class AcademicInternship {
     }
     )
     private String midTermReportFilePath;
+    private OpinionType midTermStudentIntMentoringOpinion;
+    private OpinionType midTermStudentExtMentoringOpinion;
+    private OpinionType midTermStudentMeetingOpinion;
+    private OpinionType midTermStudentExtMeetingOpinion;
+    private int midTermStudentPhysMeetingCount;
+    private int midTermStudentVoiceMeetingCount;
+    private int midTermStudentTextMeetingCount;
+    private int midTermStudentPhysMeetingExtCount;
+    private int midTermStudentVoiceMeetingExtCount;
+    private int midTermStudentTextMeetingExtCount;
+    private int midTermStudentProgress;
+    @Field(max = "400", modifiers = UserFieldModifier.SUMMARY)
+    private String midTermStudentObs;
+    
+    private OpinionType midTermTeacherExtMentoringOpinion;
+    private OpinionType midTermTeacherMeetingOpinion;
+    private OpinionType midTermTeacherTechWorkOpinion;
+    private OpinionType midTermTeacherSciWorkOpinion;
+    private OpinionType midTermTeacherCommWorkOpinion;
+    private OpinionType midTermTeacherAutonomyOpinion;
+    private int midTermTeacherProgress;
+    @Field(max = "400", modifiers = UserFieldModifier.SUMMARY)
+    private String midTermTeacherObs;
+
     @Properties({
         @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
         @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
@@ -416,4 +441,167 @@ public class AcademicInternship {
     public void setExamLocation(String examLocation) {
         this.examLocation = examLocation;
     }
+
+    public OpinionType getMidTermStudentIntMentoringOpinion() {
+        return midTermStudentIntMentoringOpinion;
+    }
+
+    public void setMidTermStudentIntMentoringOpinion(OpinionType midTermStudentIntMentoringOpinion) {
+        this.midTermStudentIntMentoringOpinion = midTermStudentIntMentoringOpinion;
+    }
+
+    public OpinionType getMidTermStudentExtMentoringOpinion() {
+        return midTermStudentExtMentoringOpinion;
+    }
+
+    public void setMidTermStudentExtMentoringOpinion(OpinionType midTermStudentExtMentoringOpinion) {
+        this.midTermStudentExtMentoringOpinion = midTermStudentExtMentoringOpinion;
+    }
+
+    public OpinionType getMidTermStudentMeetingOpinion() {
+        return midTermStudentMeetingOpinion;
+    }
+
+    public void setMidTermStudentMeetingOpinion(OpinionType midTermStudentMeetingOpinion) {
+        this.midTermStudentMeetingOpinion = midTermStudentMeetingOpinion;
+    }
+
+    public int getMidTermStudentPhysMeetingCount() {
+        return midTermStudentPhysMeetingCount;
+    }
+
+    public void setMidTermStudentPhysMeetingCount(int midTermStudentPhysMeetingCount) {
+        this.midTermStudentPhysMeetingCount = midTermStudentPhysMeetingCount;
+    }
+
+    public int getMidTermStudentVoiceMeetingCount() {
+        return midTermStudentVoiceMeetingCount;
+    }
+
+    public void setMidTermStudentVoiceMeetingCount(int midTermStudentVoiceMeetingCount) {
+        this.midTermStudentVoiceMeetingCount = midTermStudentVoiceMeetingCount;
+    }
+
+    public int getMidTermStudentTextMeetingCount() {
+        return midTermStudentTextMeetingCount;
+    }
+
+    public void setMidTermStudentTextMeetingCount(int midTermStudentTextMeetingCount) {
+        this.midTermStudentTextMeetingCount = midTermStudentTextMeetingCount;
+    }
+
+    public String getMidTermStudentObs() {
+        return midTermStudentObs;
+    }
+
+    public void setMidTermStudentObs(String midTermStudentObs) {
+        this.midTermStudentObs = midTermStudentObs;
+    }
+
+    public OpinionType getMidTermTeacherExtMentoringOpinion() {
+        return midTermTeacherExtMentoringOpinion;
+    }
+
+    public void setMidTermTeacherExtMentoringOpinion(OpinionType midTermTeacherExtMentoringOpinion) {
+        this.midTermTeacherExtMentoringOpinion = midTermTeacherExtMentoringOpinion;
+    }
+
+    public OpinionType getMidTermTeacherMeetingOpinion() {
+        return midTermTeacherMeetingOpinion;
+    }
+
+    public void setMidTermTeacherMeetingOpinion(OpinionType midTermTeacherMeetingOpinion) {
+        this.midTermTeacherMeetingOpinion = midTermTeacherMeetingOpinion;
+    }
+
+    public OpinionType getMidTermTeacherTechWorkOpinion() {
+        return midTermTeacherTechWorkOpinion;
+    }
+
+    public void setMidTermTeacherTechWorkOpinion(OpinionType midTermTeacherTechWorkOpinion) {
+        this.midTermTeacherTechWorkOpinion = midTermTeacherTechWorkOpinion;
+    }
+
+    public OpinionType getMidTermTeacherSciWorkOpinion() {
+        return midTermTeacherSciWorkOpinion;
+    }
+
+    public void setMidTermTeacherSciWorkOpinion(OpinionType midTermTeacherSciWorkOpinion) {
+        this.midTermTeacherSciWorkOpinion = midTermTeacherSciWorkOpinion;
+    }
+
+    public OpinionType getMidTermTeacherCommWorkOpinion() {
+        return midTermTeacherCommWorkOpinion;
+    }
+
+    public void setMidTermTeacherCommWorkOpinion(OpinionType midTermTeacherCommWorkOpinion) {
+        this.midTermTeacherCommWorkOpinion = midTermTeacherCommWorkOpinion;
+    }
+
+    public OpinionType getMidTermTeacherAutonomyOpinion() {
+        return midTermTeacherAutonomyOpinion;
+    }
+
+    public void setMidTermTeacherAutonomyOpinion(OpinionType midTermTeacherAutonomyOpinion) {
+        this.midTermTeacherAutonomyOpinion = midTermTeacherAutonomyOpinion;
+    }
+
+    public String getMidTermTeacherObs() {
+        return midTermTeacherObs;
+    }
+
+    public void setMidTermTeacherObs(String midTermTeacherObs) {
+        this.midTermTeacherObs = midTermTeacherObs;
+    }
+
+    public int getMidTermStudentProgress() {
+        return midTermStudentProgress;
+    }
+
+    public void setMidTermStudentProgress(int midTermStudentProgress) {
+        this.midTermStudentProgress = midTermStudentProgress;
+    }
+
+    public int getMidTermTeacherProgress() {
+        return midTermTeacherProgress;
+    }
+
+    public void setMidTermTeacherProgress(int midTermTeacherProgress) {
+        this.midTermTeacherProgress = midTermTeacherProgress;
+    }
+
+    public int getMidTermStudentPhysMeetingExtCount() {
+        return midTermStudentPhysMeetingExtCount;
+    }
+
+    public void setMidTermStudentPhysMeetingExtCount(int midTermStudentPhysMeetingExtCount) {
+        this.midTermStudentPhysMeetingExtCount = midTermStudentPhysMeetingExtCount;
+    }
+
+    public int getMidTermStudentVoiceMeetingExtCount() {
+        return midTermStudentVoiceMeetingExtCount;
+    }
+
+    public void setMidTermStudentVoiceMeetingExtCount(int midTermStudentVoiceMeetingExtCount) {
+        this.midTermStudentVoiceMeetingExtCount = midTermStudentVoiceMeetingExtCount;
+    }
+
+    public int getMidTermStudentTextMeetingExtCount() {
+        return midTermStudentTextMeetingExtCount;
+    }
+
+    public void setMidTermStudentTextMeetingExtCount(int midTermStudentTextMeetingExtCount) {
+        this.midTermStudentTextMeetingExtCount = midTermStudentTextMeetingExtCount;
+    }
+
+    public OpinionType getMidTermStudentExtMeetingOpinion() {
+        return midTermStudentExtMeetingOpinion;
+    }
+
+    public void setMidTermStudentExtMeetingOpinion(OpinionType midTermStudentExtMeetingOpinion) {
+        this.midTermStudentExtMeetingOpinion = midTermStudentExtMeetingOpinion;
+    }
+    
+    
+    
 }

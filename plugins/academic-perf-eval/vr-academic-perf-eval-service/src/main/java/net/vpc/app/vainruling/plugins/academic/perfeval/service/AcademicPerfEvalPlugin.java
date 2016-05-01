@@ -22,6 +22,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
+import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
@@ -84,7 +85,13 @@ public class AcademicPerfEvalPlugin {
     public List<AcademicFeedback> findStudentFeedbacks(int studentId, Boolean validated, Boolean archived,Boolean enabled) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if(enabled!=null && enabled){
-            Boolean ok=(Boolean)VrApp.getBean(CorePlugin.class).getOrCreateAppPropertyValue("AcademicPerfEvalPlugin.EnableStudentFeedbacks", null, true);
+            Boolean ok=(Boolean)UPA.getContext().invokePrivileged(new Action<Boolean>(){
+                @Override
+                public Boolean run() {
+                    return (Boolean)VrApp.getBean(CorePlugin.class).getOrCreateAppPropertyValue("AcademicPerfEvalPlugin.EnableStudentFeedbacks", null, true);
+                }
+                
+            });
             if(ok!=null && !ok.booleanValue()){
                 return Collections.EMPTY_LIST;
             }

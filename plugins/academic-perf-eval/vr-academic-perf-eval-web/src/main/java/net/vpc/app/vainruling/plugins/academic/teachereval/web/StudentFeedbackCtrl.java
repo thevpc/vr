@@ -24,6 +24,7 @@ import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFe
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackResponse;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
         breadcrumb = {
             @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
-        title = "Mes Retours d'information",
+        title = "Mes Retours des enseignements",
         menu = "/Education/Evaluation",
         url = "modules/academic/perfeval/studentfeedback",
         securityKey = "Custom.Academic.StudentFeedback"
@@ -64,7 +65,7 @@ public class StudentFeedbackCtrl {
         getModel().setFeedbacks(new ArrayList<SelectItem>());
         if (s != null) {
             HashSet<String> ids = new HashSet<>();
-            for (AcademicFeedback f : feedback.findStudentFeedbacks(s.getId(), false, false,true)) {
+            for (AcademicFeedback f : feedback.findStudentFeedbacks(s.getId(), false, false, true)) {
                 getModel().getFeedbacks().add(new SelectItem(String.valueOf(f.getId()), f.getCourse().getFullName() + " - " + f.getCourse().getTeacher().getContact().getFullName()));
                 ids.add(String.valueOf(f.getId()));
             }
@@ -120,15 +121,28 @@ public class StudentFeedbackCtrl {
     }
 
     public void onSave() {
+        boolean allvalid = true;
         for (Row row : getModel().getRows()) {
             for (Question question : row.getQuestions()) {
+                if (StringUtils.isEmpty(question.getResponse().getResponse())) {
+                    allvalid = false;
+                }
                 feedback.saveResponse(question.getResponse());
             }
         }
         if (getModel().isValidate()) {
-            getModel().getFeedback().setValidated(true);
-            UPA.getPersistenceUnit().merge(getModel().getFeedback());
-            onReloadFeedbacks();
+            if (allvalid) {
+                getModel().getFeedback().setValidated(true);
+                UPA.getPersistenceUnit().merge(getModel().getFeedback());
+                getModel().setSelectedFeedback(null);
+                getModel().setFeedback(null);
+                onReloadFeedbacks();
+                FacesUtils.addInfoMessage("Formulaire validé");
+            } else {
+                FacesUtils.addErrorMessage("Merci de repondre à toutes les questions");
+            }
+        }else{
+                FacesUtils.addInfoMessage("Formulaire enregistré");
         }
     }
 

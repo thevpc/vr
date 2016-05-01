@@ -16,7 +16,7 @@ figure,
 footer,
 header,
 hgroup,
-nav,
+nav.infusion,
 section,
 summary {
     display: block;
@@ -557,18 +557,18 @@ h2.logo-text {
     padding: 34px;
     width: 50%;
 }
-nav {
+nav.infusion {
     float: left;
     background-color: #fff;
 }
-nav ul {
+nav.infusion ul {
     margin: 0;
 }
-nav ul li {
+nav.infusion ul li {
     list-style: none;
     float: left;
 }
-nav ul li a {
+nav.infusion ul li a {
     display: block;
     padding: 25px 43px 23px 5px;
     text-transform: uppercase;
@@ -581,11 +581,11 @@ nav ul li a {
     -webkit-transition: 0.5s ease;
     -o-transition: 0.5s ease;
 }
-nav ul li a:hover {
+nav.infusion ul li a:hover {
     text-decoration: none;
     color: #63c6ae;
 }
-nav ul li a.active {
+nav.infusion ul li a.active {
     color: #63c6ae;
 }
 .hero {
@@ -638,7 +638,7 @@ nav ul li a.active {
     border: solid 1px rgba(255,255,255,0.6);
     background-color: rgba(0,0,0,0.4);
 }
-.arrow {
+.arrow-infusion {
     height: 37px;
     width: 100%;
     padding: 0px;

@@ -257,5 +257,5 @@ public class AcademicInternshipStatus {
     public void setSupervisorRequestable(boolean supervisorRequestable) {
         this.supervisorRequestable = supervisorRequestable;
     }
-    
+
 }

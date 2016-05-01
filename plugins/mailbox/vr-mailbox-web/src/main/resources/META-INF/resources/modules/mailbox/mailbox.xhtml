@@ -36,7 +36,7 @@ and open the template in the editor.
                     <!-- /.row -->
                     <div class="row">
                         <p:outputPanel id="buttons">
-                            <p:menuButton value="#{mailboxCtrl.preferredTitle}">
+                            <p:menuButton value="#{mailboxCtrl.preferredTitle}" styleClass="vr-leftmost-menubutton">
                                 <p:menuitem value="Boîte réception" actionListener="#{mailboxCtrl.onSelectInboxFolder}" update="buttons :listForm :itemForm :pageTitleForm :newItemForm" icon="ui-icon-shuffle"/>
                                 <p:menuitem value="Archive"  actionListener="#{mailboxCtrl.onSelectArchivedInboxFolder}" update="buttons :listForm :itemForm :pageTitleForm :newItemForm" icon="ui-icon-disk"/>
                                 <p:menuitem value="Corbeille"  actionListener="#{mailboxCtrl.onSelectDeletedInboxFolder}" update="buttons :listForm :itemForm :pageTitleForm :newItemForm"  icon="ui-icon-trash"/>
@@ -45,14 +45,14 @@ and open the template in the editor.
                                 <p:menuitem value="Archive Envoi" actionListener="#{mailboxCtrl.onSelectArchivedOutboxFolder}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"  icon="ui-icon-disk"/>
                                 <p:menuitem value="Corbeille Envoi" actionListener="#{mailboxCtrl.onSelectDeletedOutboxFolder}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"  icon="ui-icon-trash"/>
                             </p:menuButton>
-                            <p:commandButton title="Envyer" rendered="#{mailboxCtrl.isEnabledButton('Send')}" icon="fa fa-send-o" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" onclick="processOnSendCurrent()"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
-                            <p:commandButton title="Répondre" rendered="#{mailboxCtrl.isEnabledButton('Reply')}" icon="fa fa-mail-reply" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{mailboxCtrl.onReply}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
-                            <p:commandButton title="Rafraichir" rendered="#{mailboxCtrl.isEnabledButton('Refresh')}" icon="fa fa-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{mailboxCtrl.onRefresh}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
-                            <p:commandButton title="Nouveau" rendered="#{mailboxCtrl.isEnabledButton('New')}" icon="fa fa-plus" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{mailboxCtrl.onNew}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
-                            <p:commandButton title="Supprimer" rendered="#{mailboxCtrl.isEnabledButton('Remove')}" icon="fa fa-trash-o" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"   onclick="PF('confirmationDelete').show();"  />
-                            <p:commandButton title="Archiver" rendered="#{mailboxCtrl.isEnabledButton('Archive')}" icon="fa fa-archive" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"  onclick="PF('confirmationArchive').show();"/>
-                            <p:commandButton title="Avancé" rendered="#{mailboxCtrl.isEnabledButton('Advanced')}" icon="fa fa-flask" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"  actionListener="#{mailboxCtrl.onAdvancedSettings}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
-                            <p:commandButton title="Fermer" rendered="#{mailboxCtrl.isEnabledButton('Cancel')}" icon="fa fa-arrow-left" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="#{mailboxCtrl.onCancelCurrent}" update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                            <p:commandButton title="Envoyer" rendered="#{mailboxCtrl.isEnabledButton('Send')}" icon="fa fa-envelope" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" onclick="processOnSendCurrent()"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                            <p:commandButton title="Répondre" rendered="#{mailboxCtrl.isEnabledButton('Reply')}" icon="fa fa-mail-reply" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{mailboxCtrl.onReply}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                            <p:commandButton title="Rafraichir" rendered="#{mailboxCtrl.isEnabledButton('Refresh')}" icon="fa fa-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{mailboxCtrl.onRefresh}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                            <p:commandButton title="Nouveau" rendered="#{mailboxCtrl.isEnabledButton('New')}" icon="fa fa-plus" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{mailboxCtrl.onNew}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                            <p:commandButton title="Supprimer" rendered="#{mailboxCtrl.isEnabledButton('Remove')}" icon="fa fa-trash-o" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"   onclick="PF('confirmationDelete').show();"  />
+                            <p:commandButton title="Archiver" rendered="#{mailboxCtrl.isEnabledButton('Archive')}" icon="fa fa-archive" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"  onclick="PF('confirmationArchive').show();"/>
+                            <p:commandButton title="Avancé" rendered="#{mailboxCtrl.isEnabledButton('Advanced')}" icon="fa fa-flask" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"  actionListener="#{mailboxCtrl.onAdvancedSettings}"  update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                            <p:commandButton title="Fermer" rendered="#{mailboxCtrl.isEnabledButton('Cancel')}" icon="fa fa-arrow-left" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true" actionListener="#{mailboxCtrl.onCancelCurrent}" update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
                         </p:outputPanel>
                     </div>
 
@@ -270,10 +270,7 @@ and open the template in the editor.
                             <p:spacer width="5" height="10"/>
                             <p:outputLabel value="#{jsfCtrl.date(mailboxCtrl.model.current.sendTime, 'dd MMM yyyy à HH:mm')}"/>
                             <p:spacer width="5" height="20"/>
-                            <p:commandButton id="msgDetailsId" value="" style="    padding-top: 5px;
-                                             padding-bottom: 5px;
-                                             padding-left: 0;
-                                             padding-right: 0;" type="button" icon="fa fa-fw fa-edit"/>
+                            <p:commandButton id="msgDetailsId" value="" style="width: 30px;height: 30px;" type="button" icon="fa fa-fw fa-edit"/>
                             <p:separator style="margin-top: 0px"/>
                             <p:outputLabel value="#{mailboxCtrl.model.current.content}" escape="false"/>
                         </p:panel>
