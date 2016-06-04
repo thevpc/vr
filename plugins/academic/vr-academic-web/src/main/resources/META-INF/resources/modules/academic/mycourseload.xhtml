@@ -19,7 +19,7 @@ and open the template in the editor.
     <h:body>
 
 
-        <ui:composition template="/templates/template.xhtml">
+        <ui:composition template="/templates/private-template.xhtml">
             <ui:define name="content">
                 <h:form id="buttonsForm">
                     <p:confirmDialog message="Are you sure, you want to delete ?"  header="Initiating deleting process"  widgetVar="confirmationDelete">  
@@ -42,7 +42,7 @@ and open the template in the editor.
 
                     <div class="row">
                         <div class="table-responsive">
-                            <h1><p:outputLabel style="font-weight: bold" value="#{myCourseLoadCtrl.currentTeacher.contact.fullName} - #{myCourseLoadCtrl.model.stat.teacher.degree.name} - #{myCourseLoadCtrl.model.stat.teacher.situation.name}"/></h1>
+                            <h1><p:outputLabel style="font-weight: bold" value="#{myCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{myCourseLoadCtrl.model.stat.teacher.degree.name} - #{myCourseLoadCtrl.model.stat.teacher.situation.name}"/></h1>
                             <p:panelGrid>
                                 <p:row>
                                     <p:column styleClass="ui-widget-header"  ><p:outputLabel value=""/></p:column>

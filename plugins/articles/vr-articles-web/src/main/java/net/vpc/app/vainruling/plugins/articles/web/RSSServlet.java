@@ -12,9 +12,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
-import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
+import net.vpc.app.vainruling.core.service.fs.FileSystemService;
 import net.vpc.common.vfs.VirtualFileSystem;
 
 /**
@@ -26,7 +26,7 @@ public class RSSServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        FileSystemPlugin core = VrApp.getBean(FileSystemPlugin.class);
+        FileSystemService core = VrApp.getBean(FileSystemService.class);
         final VirtualFileSystem fs = core.getFileSystem();
         String filename = URLDecoder.decode(request.getPathInfo().substring(1), "UTF-8");
         VrApp.getBean(ArticlesPlugin.class).generateRSS(null, filename, response.getOutputStream());

@@ -11,11 +11,6 @@
             <artifactId>vr-core-service</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.common-model</groupId>
-            <artifactId>vr-common-model-service</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

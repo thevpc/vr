@@ -1,0 +1,52 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="upa-tutorial-webjsf:war exploded">
+    <output-path>$PROJECT_DIR$/../../upa/upa-tutorial/upa-tutorial-webjsf/target/upa-tutorial-webjsf-1.2.0</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="upa-tutorial-webjsf" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="archive" name="upa-api-1.2.0.22.jar">
+            <element id="module-output" name="upa-api" />
+          </element>
+          <element id="archive" name="upa-impl-1.2.0.22.0.jar">
+            <element id="module-output" name="upa-impl" />
+          </element>
+          <element id="library" level="project" name="Maven: cglib:cglib:3.2.2" />
+          <element id="library" level="project" name="Maven: org.ow2.asm:asm:5.0.4" />
+          <element id="library" level="project" name="Maven: org.apache.ant:ant:1.9.6" />
+          <element id="library" level="project" name="Maven: org.apache.ant:ant-launcher:1.9.6" />
+          <element id="library" level="project" name="Maven: org.apache.poi:poi:3.9" />
+          <element id="library" level="project" name="Maven: commons-codec:commons-codec:1.5" />
+          <element id="library" level="project" name="Maven: org.apache.poi:poi-ooxml:3.9" />
+          <element id="library" level="project" name="Maven: dom4j:dom4j:1.6.1" />
+          <element id="library" level="project" name="Maven: xml-apis:xml-apis:1.0.b2" />
+          <element id="library" level="project" name="Maven: org.apache.poi:poi-ooxml-schemas:3.9" />
+          <element id="library" level="project" name="Maven: org.apache.xmlbeans:xmlbeans:2.3.0" />
+          <element id="library" level="project" name="Maven: stax:stax-api:1.0.1" />
+          <element id="archive" name="upa-web-1.0.0.0.6.jar">
+            <element id="module-output" name="upa-web" />
+          </element>
+          <element id="archive" name="upa-tutorial-business-1.2.0.jar">
+            <element id="module-output" name="upa-tutorial-business" />
+          </element>
+          <element id="archive" name="upa-tutorial-dal-1.2.0.jar">
+            <element id="module-output" name="upa-tutorial-dal" />
+          </element>
+          <element id="library" level="project" name="Maven: org.apache.derby:derby:10.9.1.0" />
+          <element id="library" level="project" name="Maven: org.apache.derby:derbyclient:10.9.1.0" />
+          <element id="library" level="project" name="Maven: com.sun.faces:jsf-api:2.1.1-b04" />
+          <element id="library" level="project" name="Maven: com.sun.faces:jsf-impl:2.1.1-b04" />
+          <element id="library" level="project" name="Maven: javax.servlet:jstl:1.1.2" />
+          <element id="library" level="project" name="Maven: taglibs:standard:1.1.2" />
+          <element id="library" level="project" name="Maven: org.primefaces:primefaces:3.5" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/../../upa/upa-tutorial/upa-tutorial-webjsf/target/upa-tutorial-webjsf-1.2.0/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="javaee-facet-resources" facet="upa-tutorial-webjsf/web/Web" />
+    </root>
+  </artifact>
+</component>

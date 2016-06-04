@@ -6,16 +6,15 @@
 package net.vpc.app.vainruling.plugins.tasks.web;
 
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.web.OnPageLoad;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;
-import net.vpc.app.vainruling.api.web.UCtrl;
-import net.vpc.app.vainruling.api.web.UPathItem;
-import net.vpc.app.vainruling.api.web.ctrl.AbstractObjectCtrl;
-import net.vpc.app.vainruling.api.web.ctrl.EditCtrlMode;
+import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
+import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 

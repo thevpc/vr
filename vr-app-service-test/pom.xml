@@ -27,9 +27,14 @@
             <version>1.0</version>
         </dependency>-->
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>vr-app-service</artifactId>
-            <version>${project.version}</version>
+            <groupId>net.vpc.app.vain-ruling.apps.eniso-info</groupId>
+            <artifactId>eniso-info-service</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>1.4</version>
         </dependency>
     </dependencies>
     <build>

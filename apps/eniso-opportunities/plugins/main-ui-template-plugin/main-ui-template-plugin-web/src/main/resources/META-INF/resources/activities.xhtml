@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" 
+      xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+    <h:head>
+    </h:head>
+    <h:body>
+        <ui:composition template="/templates/public-template.xhtml">
+            <ui:define name="row1">
+
+            </ui:define>
+            <ui:define name="row2">
+
+            </ui:define>
+            <ui:define name="row3">
+                <h:form>
+                    <div class="text-inter">
+                        <div class="container">
+                            <div class="row">
+                                <h1>Activities</h1>
+                            </div>
+                            <ui:repeat value="#{articlesCtrl.activities}" var="i">
+                                <div class="row">
+                                    <div class="col-md-12" style="text-align: justify;text-justify: inter-word;">
+                                        <h3 style="padding-top: 0px !important;">#{i.content.subject}</h3>
+                                        <p:imageSwitch rendered="#{i.imageAttachments.size() gt 0}" effect="#{articlesCtrl.imageSwitchRandomEffect}" slideshowAuto="true" style="float: left; 
+                                                       margin-right: 10px; 
+                                                       margin-bottom: 10px;
+                                                       " 
+                                                       slideshowSpeed="6000"
+
+                                                       >
+                                            <ui:repeat value="#{i.imageAttachments}" var="im">
+                                                <p:graphicImage value="#{jsfCtrl.urlr(im.path)}" alt="#{im.name}" width="400"/>
+                                            </ui:repeat>
+                                        </p:imageSwitch>
+
+                                        <p style="margin-bottom: 30px;margin-bottom: 20px;">
+                                            <h:outputText escape="false" style="display: inline; margin-left: 10px; 
+                                                          margin-top: 10px;margin-bottom: 30px" value="#{jsfCtrl.pureHtml(i.content.content)}"/>
+                                        </p>
+                                        <h:panelGrid columns="3" style="border: none;margin-top: 30px;" columnClasses="ui-grid-col-10">
+                                            <ui:repeat value="#{i.attachments}" var="att">
+                                                <h:outputLink 
+                                                    value="#{jsfCtrl.url(att.path)}" 
+                                                    styleClass="#{(att.style eq null or att.style eq '')?'vr-att-button':att.style}"
+                                                    style="margin-right: 10px;line-height: 6;"
+                                                    >
+                                                    <h:outputText value="#{att.name}" />
+                                                </h:outputLink>
+                                            </ui:repeat>
+                                        </h:panelGrid>
+                                        <p:separator style="border-color: #63C6AE;"/>
+                                        <p style="margin-top: 0px;">
+                                            <h:outputText style="float: right; margin-right: 10px;" value="by #{i.content.sender.contact.fullName}, #{jsfCtrl.date(i.content.sendTime,jsfCtrl.getLocale('en'))}"/>
+                                        </p>
+                                        
+                                    </div>
+
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </h:form>
+                <div class="shadow"></div>
+            </ui:define>
+            <ui:define name="row4">
+
+            </ui:define>
+            <ui:define name="row5">
+
+            </ui:define>
+            <!--            <ui:define name="row6">
+            
+                        </ui:define>-->
+            <!--            <ui:define name="row7">
+            
+                        </ui:define>-->
+        </ui:composition>
+    </h:body>
+</html>

@@ -6,19 +6,17 @@
 package net.vpc.app.vainruling.plugins.academic.web.admin;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.security.UserSession;
-import net.vpc.app.vainruling.api.util.VrHelper;
-import net.vpc.app.vainruling.api.web.UCtrl;
-import net.vpc.app.vainruling.api.web.UPathItem;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
+import net.vpc.app.vainruling.core.service.fs.FileSystemService;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.vfs.VFS;
 import net.vpc.upa.UPA;
@@ -64,7 +62,7 @@ public class AcademicAdminToolsCtrl {
 
     public void handleTeachingLoadFileUpload(FileUploadEvent event) {
         try {
-            String p = VrApp.getBean(FileSystemPlugin.class).getNativeFileSystemPath()
+            String p = VrApp.getBean(FileSystemService.class).getNativeFileSystemPath()
                     + "/Temp/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
                     + "-" + VrApp.getBean(UserSession.class).getUser().getLogin();
             new File(p).mkdirs();

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="Derby - vain@localhost" uuid="684a982f-703d-4aae-a009-2305ba8506fc">
+      <secret-storage>master_key</secret-storage>
+      <user-name>vr</user-name>
+      <schema-pattern>*.APP *.VR</schema-pattern>
+      <default-schemas>*.APP *.VR</default-schemas>
+    </data-source>
+    <data-source name="MySQL - VR@localhost" uuid="cc710a86-ab24-4fbc-9d72-5e68fb64d44f">
+      <secret-storage>master_key</secret-storage>
+      <user-name>root</user-name>
+      <schema-pattern>VR.*</schema-pattern>
+      <default-schemas>VR.*</default-schemas>
+    </data-source>
+  </component>
+</project>

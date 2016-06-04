@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.plugins.inventory.service;
 
 import java.util.List;
-import net.vpc.app.vainruling.api.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.equipments.service.model.Equipment;
 import net.vpc.app.vainruling.plugins.inventory.service.model.Inventory;
 import net.vpc.app.vainruling.plugins.inventory.service.model.InventoryRow;

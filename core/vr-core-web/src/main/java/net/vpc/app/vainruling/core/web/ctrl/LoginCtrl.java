@@ -8,14 +8,13 @@ package net.vpc.app.vainruling.core.web.ctrl;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.model.AppUser;
-import net.vpc.app.vainruling.api.security.UserSession;
-import net.vpc.app.vainruling.api.web.UCtrl;
-import net.vpc.app.vainruling.api.web.VRWebHelper;
-import net.vpc.app.vainruling.api.web.VrMenuManager;
-import net.vpc.app.vainruling.api.LoginService;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.util.VRWebHelper;
+import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.common.jsf.FacesUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,9 +33,7 @@ public class LoginCtrl {
     private Model model = new Model();
 
     @Autowired
-    private CorePlugin coreService;
-    @Autowired
-    private LoginService loginService;
+    private CorePlugin core;
 
     @PostConstruct
     private void prepare() {
@@ -55,7 +52,7 @@ public class LoginCtrl {
     }
 
     public String doimpersonate() {
-        AppUser u = loginService.impersonate(getModel().getLogin(), getModel().getPassword());
+        AppUser u = core.impersonate(getModel().getLogin(), getModel().getPassword());
         if (u != null) {
             return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
 //            return VRApp.getBean(VrMenu.class).gotoPage("todo", "sys-labo-action");
@@ -72,7 +69,7 @@ public class LoginCtrl {
             FacesUtils.addErrorMessage("Impossible de logger. Serveur indisponible momentannément. Redémarrage en cours.");
             return null;
         }
-        AppUser u = loginService.login(getModel().getLogin(), getModel().getPassword());
+        AppUser u = core.login(getModel().getLogin(), getModel().getPassword());
         if (u != null) {
             VrApp.getBean(ActiveSessionsCtrl.class).onRefresh();
             return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
@@ -85,7 +82,7 @@ public class LoginCtrl {
 
     public String dologout() {
         boolean impersonating = getSession().isImpersonating();
-        loginService.logout();
+        core.logout();
         if (impersonating) {
             return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
         }

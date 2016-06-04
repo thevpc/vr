@@ -94,4 +94,9 @@ public class AcademicFeedback {
     public void setModel(AcademicFeedbackModel model) {
         this.model = model;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(name);
+    }
 }

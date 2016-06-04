@@ -12,11 +12,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.filesystem</groupId>
-            <artifactId>vr-filesystem-service</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.mailbox</groupId>
             <artifactId>vr-mailbox-service</artifactId>
             <version>${project.version}</version>

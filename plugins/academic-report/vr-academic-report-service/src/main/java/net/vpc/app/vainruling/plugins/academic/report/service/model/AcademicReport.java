@@ -6,8 +6,8 @@
 package net.vpc.app.vainruling.plugins.academic.report.service.model;
 
 import java.util.Date;
-import net.vpc.app.vainruling.api.model.AppUser;
-import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.upa.UserFieldModifier;

@@ -6,12 +6,12 @@
 package net.vpc.app.vainruling.plugins.academic.internship.service.model.current;
 
 import java.sql.Timestamp;
-import net.vpc.app.vainruling.api.core.OpinionType;
+import net.vpc.app.vainruling.core.service.model.OpinionType;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.api.model.AppCompany;
-import net.vpc.app.vainruling.api.model.AppContact;
-import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.app.vainruling.core.service.model.AppCompany;
+import net.vpc.app.vainruling.core.service.model.AppContact;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipDuration;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipStatus;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipVariant;

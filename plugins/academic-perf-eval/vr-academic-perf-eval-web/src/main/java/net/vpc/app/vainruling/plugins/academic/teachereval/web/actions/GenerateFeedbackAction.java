@@ -6,10 +6,10 @@
 package net.vpc.app.vainruling.plugins.academic.teachereval.web.actions;
 
 import java.util.List;
-import net.vpc.app.vainruling.api.EntityAction;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.web.ctrl.EditCtrlMode;
-import net.vpc.app.vainruling.api.web.obj.ActionDialog;
+import net.vpc.app.vainruling.core.service.obj.EntityAction;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
+import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackModel;
 
@@ -38,7 +38,7 @@ public class GenerateFeedbackAction implements ActionDialog {
 
     @Override
     public void invoke(Class entityType, Object obj, Object[] args) {
-        VrApp.getBean(AcademicPerfEvalPlugin.class).generatedStudentsFeedbackForm(((AcademicFeedbackModel) obj).getId(), 
+        VrApp.getBean(AcademicPerfEvalPlugin.class).generateStudentsFeedbackForm(((AcademicFeedbackModel) obj).getId(),
                 (String) args[0]);
     }
 

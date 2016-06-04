@@ -5,11 +5,14 @@
  */
 package net.vpc.app.vainruling.plugins.articles.web;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.model.AppUser;
-import net.vpc.app.vainruling.api.security.UserSession;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.UpaAware;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesFile;
 import net.vpc.app.vainruling.plugins.articles.service.model.FullArticle;
@@ -69,6 +72,7 @@ public class ArticlesCtrl {
     public static class Model {
 
         private FullArticle current;
+        private Map<String,List<FullArticle>> articles=new HashMap<>();
 
         public FullArticle getCurrent() {
             return current;
@@ -78,11 +82,23 @@ public class ArticlesCtrl {
             this.current = current;
         }
 
+        public Map<String, List<FullArticle>> getArticles() {
+            return articles;
+        }
+
+        public void setArticles(Map<String, List<FullArticle>> articles) {
+            this.articles = articles;
+        }
     }
 
-    public List<FullArticle> getWelcomeArticles() {
-        return findArticles("Welcome");
+    public void loadArticles(String name){
+        getModel().getArticles().put(name,findArticles(name));
     }
+
+//    public List<FullArticle> getWelcomeArticles() {
+//        getModel().getArticles().put("Welcome",findArticles("Welcome"))
+//        return findArticles("Welcome");
+//    }
 
     public List<FullArticle> getMainRow1Articles() {
         return findArticles("Main.Row1");
@@ -104,9 +120,6 @@ public class ArticlesCtrl {
         return imageSwitchEffects[(int) (Math.random() * imageSwitchEffects.length)];
     }
 
-    public List<FullArticle> getNews() {
-        return findArticles("News");
-    }
 
     public List<FullArticle> getMainRow4Articles() {
         return findArticles("Main.Row4");
@@ -124,6 +137,7 @@ public class ArticlesCtrl {
         return findArticles("Main.Row7");
     }
 
+    @UpaAware
     public List<FullArticle> findArticles(String disposition) {
         AppUser u = VrApp.getBean(UserSession.class).getUser();
         return articles.findFullArticlesByUserAndCategory(u == null ? null : u.getLogin(), disposition);

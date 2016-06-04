@@ -8,9 +8,10 @@ package net.vpc.app.vainruling.core.web.ctrl;
 import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.ActiveSessionsTracker;
-import net.vpc.app.vainruling.api.LoginService;
+
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.agent.ActiveSessionsTracker;
 
 /**
  *
@@ -33,7 +34,7 @@ public class AppSessionListener implements HttpSessionListener{
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
         try{
-            VrApp.getBean(LoginService.class).logout();
+            VrApp.getBean(CorePlugin.class).logout();
         }catch(Exception e){
             System.err.println(e);
         }

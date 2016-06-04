@@ -20,21 +20,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.model.AppCompany;
-import net.vpc.app.vainruling.api.model.AppConfig;
-import net.vpc.app.vainruling.api.model.AppCountry;
-import net.vpc.app.vainruling.api.model.AppCountryRegion;
-import net.vpc.app.vainruling.api.model.AppGovernorate;
-import net.vpc.app.vainruling.api.security.UserSession;
-import net.vpc.app.vainruling.api.util.VrHelper;
-import net.vpc.app.vainruling.api.web.OnPageLoad;
-import net.vpc.app.vainruling.api.web.UCtrl;
-import net.vpc.app.vainruling.api.web.UPathItem;
-import net.vpc.app.vainruling.api.web.ctrl.EditCtrlMode;
-import net.vpc.app.vainruling.api.web.obj.DialogResult;
-import net.vpc.app.vainruling.api.web.util.ChartUtils;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppCompany;
+import net.vpc.app.vainruling.core.service.model.AppConfig;
+import net.vpc.app.vainruling.core.service.model.AppCountry;
+import net.vpc.app.vainruling.core.service.model.AppCountryRegion;
+import net.vpc.app.vainruling.core.service.model.AppGovernorate;
+import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
+import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.web.util.ChartUtils;
 import net.vpc.app.vainruling.plugins.academic.internship.service.AcademicInternshipPlugin;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipBoardMessage;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternshipBoard;
@@ -51,8 +51,9 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.web.dialog.DisciplineDialogCtrl;
-import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
+import net.vpc.app.vainruling.core.service.fs.FileSystemService;
 import net.vpc.common.jsf.FacesUtils;
+import net.vpc.common.streams.PathInfo;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.Action;
@@ -1166,7 +1167,7 @@ public class MyInternshipBoardsCtrl {
     }
 
     public StreamedContent download(final String report) {
-        final FileSystemPlugin fs = VrApp.getBean(FileSystemPlugin.class);
+        final FileSystemService fs = VrApp.getBean(FileSystemService.class);
         return UPA.getContext().invokePrivileged(new Action<StreamedContent>() {
             @Override
             public StreamedContent run() {
@@ -1181,7 +1182,7 @@ public class MyInternshipBoardsCtrl {
                 if (f != null) {
                     InputStream stream = null;
                     try {
-                        FileSystemPlugin fsp = VrApp.getBean(FileSystemPlugin.class);
+                        FileSystemService fsp = VrApp.getBean(FileSystemService.class);
                         fsp.markDownloaded(f);
                         stream = f.getInputStream();
                         return new DefaultStreamedContent(stream, f.probeContentType(), f.getName());
@@ -1200,7 +1201,7 @@ public class MyInternshipBoardsCtrl {
             public void run() {
                 try {
                     String report = getModel().getRequestUploadType();
-                    FileSystemPlugin fs = VrApp.getBean(FileSystemPlugin.class);
+                    FileSystemService fs = VrApp.getBean(FileSystemService.class);
                     String login = VrApp.getBean(UserSession.class).getUser().getLogin();
                     String tempPath = "/Temp/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
                             + "-" + login;
@@ -1209,22 +1210,26 @@ public class MyInternshipBoardsCtrl {
                     File f = new File(p, event.getFile().getFileName());
                     event.getFile().write(f.getPath());
                     AcademicInternship internship = getModel().getInternship();
-
+                    PathInfo uu = PathInfo.create(f);
+                    String extensionPart = uu.getExtensionPart();
+                    if(extensionPart==null){
+                        extensionPart="pdf";
+                    }
                     VFile userHome = fs.getUserFolder(login).get("MesRapports");
                     userHome.mkdirs();
                     if ("report1".equals(report)) {
-                        String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-spec.pdf";
+                        String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-spec."+extensionPart;
                         VFile ff = userHome.get(validName);
                         fs.getFileSystem().get(tempPath + "/" + event.getFile().getFileName()).copyTo(ff);
                         internship.setSpecFilePath(ff.getBaseFile("vrfs").getPath());
                     } else if ("report2".equals(report)) {
-                        String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-mid.pdf";
+                        String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-mid."+extensionPart;
                         VFile ff = userHome.get(validName);
                         fs.getFileSystem().get(tempPath + "/" + event.getFile().getFileName()).copyTo(ff);
                         internship.setMidTermReportFilePath(ff.getBaseFile("vrfs").getPath());
 
                     } else if ("report3".equals(report)) {
-                        String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-final.pdf";
+                        String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-final."+extensionPart;
                         VFile ff = userHome.get(validName);
                         fs.getFileSystem().get(tempPath + "/" + event.getFile().getFileName()).copyTo(ff);
                         internship.setReportFilePath(ff.getBaseFile("vrfs").getPath());

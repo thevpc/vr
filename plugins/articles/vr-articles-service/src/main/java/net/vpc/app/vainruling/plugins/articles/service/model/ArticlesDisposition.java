@@ -52,4 +52,9 @@ public class ArticlesDisposition {
         this.description = description;
     }
 
+    @Override
+    public String toString() {
+        return String.valueOf(name);
+    }
+
 }

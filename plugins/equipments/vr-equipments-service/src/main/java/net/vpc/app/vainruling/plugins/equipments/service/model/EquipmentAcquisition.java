@@ -6,9 +6,9 @@
 package net.vpc.app.vainruling.plugins.equipments.service.model;
 
 import java.util.Date;
-import net.vpc.app.vainruling.api.model.AppCompany;
-import net.vpc.app.vainruling.api.model.AppUser;
-import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.app.vainruling.core.service.model.AppCompany;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
@@ -46,7 +46,6 @@ public class EquipmentAcquisition {
             @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA))
     @Field(max = "4000")
     private String admissionObs;
-
 
     public int getId() {
         return id;
@@ -118,6 +117,11 @@ public class EquipmentAcquisition {
 
     public void setAdmissionObs(String admissionObs) {
         this.admissionObs = admissionObs;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(name);
     }
 
 }

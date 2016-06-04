@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+
+
+        <ui:composition template="/templates/private-template.xhtml">
+            <ui:define name="content">
+                <h:form id="itemForm" enctype="multipart/form-data" >
+                    <div class="row">
+                        <p:outputPanel style="margin-bottom:20px;border-width: 2px;border-style: solid;border-color: #0f6b57;border-radius: 5px;padding: 5px">
+                            <p>Bonjour <strong>#{userSession.user==null?'anonymous' : userSession.user.contact.fullName}</strong></p>
+                            <p>Vous êtes connecté#{userSession.female?'e':''} en tant que <strong>#{userSession.user.login}</strong>
+                                <ui:fragment rendered="#{userSession.impersonating}">
+                                    , (en réalité vous ête <strong>#{userSession.rootUser.contact.fullName}</strong> aka <strong>#{userSession.rootUser.login}</strong>)
+                                </ui:fragment>
+                                <ui:fragment rendered="#{userSession.profiles.size() gt 0}">
+                                    , vous faites partie #{(userSession.profiles.size() gt 1)?'des groupes':'du groupe'} <strong>#{userSession.profilesString}</strong>
+                                </ui:fragment>
+                            </p>
+                        </p:outputPanel>
+                    </div>
+
+                    <div class="row">
+                        <!--                        <p:fieldset legend="2015-08-29 Planification PFE" style="font-size: smaller">
+                                                    <h:panelGrid columns="1" cellpadding="5">
+                        
+                                                        <h:outputText
+                                                            value="Cliquez ci-après pour télécharger la version 1.0 de la planification des PFE :   " />
+                                                        <h:outputLink value="http://www.tahabensalah.net/eniso/downloads/pfe-planning-v01.xlsx" title="planification-pfe">
+                                                            <h:outputText
+                                                                value="[[planification-pfe]]" />
+                                                        </h:outputLink>
+                                                    </h:panelGrid>
+                                                </p:fieldset>-->
+
+
+                        <ui:repeat value="#{articlesCtrl.welcomeArticles}" var="a">
+                            <p:panel header="#{a.content.subject}" footer="écrit par #{(a.content.sender eq null)?'//inconnu//':a.content.sender.contact.fullName} #{(a.content.sendTime eq null)?'' : (jsfCtrl.str(' - (le ',jsfCtrl.date(a.content.sendTime,'dd MMM yyyy à HH:mm') ,')'))}" style="margin-bottom:20px">
+                                <h:panelGrid columns="1" cellpadding="10">
+                                    <h:outputText value="#{a.content.content}" escape="false"/>
+                                    <h:outputLink rendered="#{a.content.linkText ne null and a.content.linkText ne ''}" 
+                                                  value="#{a.content.linkURL}" 
+                                                  styleClass="#{(a.content.linkClassStyle eq null or a.content.linkClassStyle eq '')?'btn  btn-default':a.content.linkClassStyle}">
+                                        <h:outputText value="#{a.content.linkText}" />
+                                    </h:outputLink>
+                                    <p:outputPanel rendered="#{a.attachments.size() ne 0}">
+                                        <ui:repeat value="#{a.attachments}" var="att">
+                                            <h:outputLink 
+                                                value="#{att.path}" 
+                                                styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}">
+                                                <h:outputText value="#{att.name}" />
+                                            </h:outputLink>
+                                        </ui:repeat>
+                                    </p:outputPanel>
+                                </h:panelGrid>
+                            </p:panel>
+                        </ui:repeat>
+                    </div>
+                </h:form>
+            </ui:define>
+
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

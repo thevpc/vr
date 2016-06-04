@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.articles.service;
 
-import net.vpc.app.vainruling.api.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
 import net.vpc.upa.Entity;
 import net.vpc.upa.Field;

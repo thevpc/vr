@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.equipments.service.model;
 
-import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
@@ -20,7 +20,7 @@ import net.vpc.upa.config.Sequence;
  */
 @Entity(listOrder = "name")
 @Path("Equipment/Config")
-@Property(name = UIConstants.ENTITY_ID_HIERARCHY,value = "brand")
+@Property(name = UIConstants.ENTITY_ID_HIERARCHY, value = "brand")
 public class EquipmentBrandLine {
 
     @Id
@@ -53,6 +53,11 @@ public class EquipmentBrandLine {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(name);
     }
 
 }

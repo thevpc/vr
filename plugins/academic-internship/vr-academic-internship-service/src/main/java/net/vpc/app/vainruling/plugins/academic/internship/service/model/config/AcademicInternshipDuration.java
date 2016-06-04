@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.internship.service.model.config;
 
-import net.vpc.app.vainruling.api.util.DurationType;
+import net.vpc.app.vainruling.core.service.util.DurationType;
 import net.vpc.upa.RelationshipType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;

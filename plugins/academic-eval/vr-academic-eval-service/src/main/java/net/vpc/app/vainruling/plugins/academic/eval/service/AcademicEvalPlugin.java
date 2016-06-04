@@ -5,13 +5,15 @@
  */
 package net.vpc.app.vainruling.plugins.academic.eval.service;
 
-import net.vpc.app.vainruling.api.AppPlugin;
+import net.vpc.app.vainruling.core.service.AppPlugin;
+import net.vpc.app.vainruling.core.service.UpaAware;
 
 /**
  *
  * @author vpc
  */
 @AppPlugin(dependsOn = "academicPlugin", version = "1.4")
+@UpaAware
 public class AcademicEvalPlugin {
 
 

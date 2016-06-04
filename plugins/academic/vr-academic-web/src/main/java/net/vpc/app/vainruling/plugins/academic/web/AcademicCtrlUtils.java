@@ -7,11 +7,11 @@ package net.vpc.app.vainruling.plugins.academic.web;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.web.util.JsfCtrl;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.web.util.JsfCtrl;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
+import net.vpc.app.vainruling.core.service.fs.FileSystemService;
 import net.vpc.common.vfs.VFile;
 
 /**
@@ -61,7 +61,7 @@ public class AcademicCtrlUtils {
     public static VFile[] getTeacherAbsoluteFiles(int id, String[] path) {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = ap.findTeacher(id);
-        FileSystemPlugin fs = VrApp.getBean(FileSystemPlugin.class);
+        FileSystemService fs = VrApp.getBean(FileSystemService.class);
         List<VFile> files = new ArrayList<VFile>();
         if (t != null && t.getUser() != null) {
             VFile userFolder = fs.getUserFolder(t.getUser().getLogin());
@@ -85,7 +85,7 @@ public class AcademicCtrlUtils {
     public static VFile getTeacherAbsoluteFile(int id, String path) {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = ap.findTeacher(id);
-        FileSystemPlugin fs = VrApp.getBean(FileSystemPlugin.class);
+        FileSystemService fs = VrApp.getBean(FileSystemService.class);
         if (t != null && t.getUser() != null) {
             VFile thisTeacherPhoto = fs.getUserFolder(t.getUser().getLogin()).get(path);
             if (thisTeacherPhoto.exists()) {

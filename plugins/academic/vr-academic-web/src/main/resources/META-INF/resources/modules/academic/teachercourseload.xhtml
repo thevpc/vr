@@ -19,7 +19,7 @@ and open the template in the editor.
     <h:body>
 
 
-        <ui:composition template="/templates/template.xhtml">
+        <ui:composition template="/templates/private-template.xhtml">
             <ui:define name="links">
                 <style type="text/css">
 
@@ -48,7 +48,7 @@ and open the template in the editor.
                 <h:form id="listForm">
                     <div class="row">
                         <div class="table-responsive">
-                            <h1><p:outputLabel style="font-weight: bold" value="#{teacherCourseLoadCtrl.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.teacher.situation.name}"/></h1>
+                            <h1><p:outputLabel style="font-weight: bold" value="#{teacherCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.teacher.situation.name}"/></h1>
                             <p:panelGrid>
                                 <p:row>
                                     <p:column styleClass="ui-widget-header"  ><p:outputLabel  value=""/></p:column>
@@ -269,15 +269,15 @@ and open the template in the editor.
                                          >
                                 <p:column   style="padding: 0;" styleClass="ui-widget-header"  headerText="" width="5%">
                                     <p:menuButton value="...">
-                                        <p:menuitem value="Aj. Voeux à #{teacherCourseLoadCtrl.currentTeacher.contact.firstName}" 
-                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id) or (teacherCourseLoadCtrl.currentTeacher eq null)}"
+                                        <p:menuitem value="Aj. Voeux à #{teacherCourseLoadCtrl.model.currentTeacher.contact.firstName}"
+                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id) or (teacherCourseLoadCtrl.model.currentTeacher eq null)}"
                                                     actionListener="#{teacherCourseLoadCtrl.addToMine(i.assignment.id)}" update=":listForm" icon="ui-icon-arrowrefresh-1-w" />
                                         <p:menuitem value="Supp. tous les Voeux" 
                                                     disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
                                                     actionListener="#{teacherCourseLoadCtrl.removeAllIntents(i.assignment.id)}" update=":listForm" icon="ui-icon-arrowrefresh-1-w" />
                                         <p:separator />
-                                        <p:menuitem value="Affecter à #{teacherCourseLoadCtrl.currentTeacher.contact.firstName}" 
-                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id) or (teacherCourseLoadCtrl.currentTeacher eq null)}"
+                                        <p:menuitem value="Affecter à #{teacherCourseLoadCtrl.model.currentTeacher.contact.firstName}"
+                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id) or (teacherCourseLoadCtrl.model.currentTeacher eq null)}"
                                                     actionListener="#{teacherCourseLoadCtrl.doAssign(i.assignment.id)}" update=":listForm" icon="ui-icon-arrowrefresh-1-w" />
                                         <p:menuitem value="Confirmer Aff." 
                                                     disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"

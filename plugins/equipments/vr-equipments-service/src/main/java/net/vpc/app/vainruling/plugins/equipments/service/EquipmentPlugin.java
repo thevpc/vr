@@ -10,17 +10,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import net.vpc.app.vainruling.api.AppPlugin;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.Install;
-import net.vpc.app.vainruling.api.InstallDemo;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.model.AppContact;
-import net.vpc.app.vainruling.plugins.commonmodel.service.model.AppArea;
-import net.vpc.app.vainruling.plugins.commonmodel.service.model.AppAreaType;
-import net.vpc.app.vainruling.api.model.AppProfile;
-import net.vpc.app.vainruling.api.model.AppUser;
-import net.vpc.app.vainruling.api.model.AppUserType;
+
+import net.vpc.app.vainruling.core.service.*;
+import net.vpc.app.vainruling.core.service.model.AppContact;
+import net.vpc.app.vainruling.core.service.model.AppArea;
+import net.vpc.app.vainruling.core.service.model.AppAreaType;
+import net.vpc.app.vainruling.core.service.model.AppProfile;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.AppUserType;
 import net.vpc.app.vainruling.plugins.equipments.service.model.Equipment;
 import net.vpc.app.vainruling.plugins.equipments.service.model.EquipmentBrand;
 import net.vpc.app.vainruling.plugins.equipments.service.model.EquipmentBrandLine;
@@ -28,7 +25,7 @@ import net.vpc.app.vainruling.plugins.equipments.service.model.EquipmentProperty
 import net.vpc.app.vainruling.plugins.equipments.service.model.EquipmentStatusType;
 import net.vpc.app.vainruling.plugins.equipments.service.model.EquipmentType;
 import net.vpc.app.vainruling.plugins.equipments.service.model.EquipmentTypeGroup;
-import net.vpc.common.utils.Utils;
+import net.vpc.common.util.Utils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author vpc
  */
 @AppPlugin(version = "1.2", dependsOn = "commonModel")
+@UpaAware
 public class EquipmentPlugin {
 
     @Autowired

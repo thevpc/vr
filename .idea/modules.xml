@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/apps/eniso-info/eniso-info.iml" filepath="$PROJECT_DIR$/apps/eniso-info/eniso-info.iml" group="eniso-info and modules" />
+      <module fileurl="file://$PROJECT_DIR$/apps/eniso-info/eniso-info-service/eniso-info-service.iml" filepath="$PROJECT_DIR$/apps/eniso-info/eniso-info-service/eniso-info-service.iml" group="eniso-info and modules" />
+      <module fileurl="file://$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/eniso-info-theme-infusion.iml" filepath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/eniso-info-theme-infusion.iml" group="eniso-info and modules" />
+      <module fileurl="file://$PROJECT_DIR$/apps/eniso-info/eniso-info-web/eniso-info-web.iml" filepath="$PROJECT_DIR$/apps/eniso-info/eniso-info-web/eniso-info-web.iml" group="eniso-info and modules" />
+      <module fileurl="file://$PROJECT_DIR$/../../common/gomail/gomail.iml" filepath="$PROJECT_DIR$/../../common/gomail/gomail.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../common/streams/streams.iml" filepath="$PROJECT_DIR$/../../common/streams/streams.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../common/strings/strings.iml" filepath="$PROJECT_DIR$/../../common/strings/strings.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../upa/upa.iml" filepath="$PROJECT_DIR$/../../upa/upa.iml" group="upa and modules" />
+      <module fileurl="file://$PROJECT_DIR$/../../upa/upa-api/upa-api.iml" filepath="$PROJECT_DIR$/../../upa/upa-api/upa-api.iml" group="upa and modules" />
+      <module fileurl="file://$PROJECT_DIR$/../../upa/upa-impl/upa-impl.iml" filepath="$PROJECT_DIR$/../../upa/upa-impl/upa-impl.iml" group="upa and modules" />
+      <module fileurl="file://$PROJECT_DIR$/../../upa/upa-portable/upa-portable.iml" filepath="$PROJECT_DIR$/../../upa/upa-portable/upa-portable.iml" group="upa and modules" />
+      <module fileurl="file://$PROJECT_DIR$/../../upa/upa-test/upa-test.iml" filepath="$PROJECT_DIR$/../../upa/upa-test/upa-test.iml" group="upa and modules" />
+      <module fileurl="file://$PROJECT_DIR$/../../upa/upa-tutorial/upa-tutorial.iml" filepath="$PROJECT_DIR$/../../upa/upa-tutorial/upa-tutorial.iml" group="upa and modules/upa-tutorial and modules" />
+      <module fileurl="file://$PROJECT_DIR$/../../upa/upa-tutorial/upa-tutorial-business/upa-tutorial-business.iml" filepath="$PROJECT_DIR$/../../upa/upa-tutorial/upa-tutorial-business/upa-tutorial-business.iml" group="upa and modules/upa-tutorial and modules" />
+      <module fileurl="file://$PROJECT_DIR$/../../upa/upa-tutorial/upa-tutorial-dal/upa-tutorial-dal.iml" filepath="$PROJECT_DIR$/../../upa/upa-tutorial/upa-tutorial-dal/upa-tutorial-dal.iml" group="upa and modules/upa-tutorial and modules" />
+      <module fileurl="file://$PROJECT_DIR$/../../upa/upa-tutorial/upa-tutorial-desktop/upa-tutorial-desktop.iml" filepath="$PROJECT_DIR$/../../upa/upa-tutorial/upa-tutorial-desktop/upa-tutorial-desktop.iml" group="upa and modules/upa-tutorial and modules" />
+      <module fileurl="file://$PROJECT_DIR$/../../upa/upa-tutorial/upa-tutorial-webjsf/upa-tutorial-webjsf.iml" filepath="$PROJECT_DIR$/../../upa/upa-tutorial/upa-tutorial-webjsf/upa-tutorial-webjsf.iml" group="upa and modules/upa-tutorial and modules" />
+      <module fileurl="file://$PROJECT_DIR$/../../upa/upa-vfs/upa-vfs.iml" filepath="$PROJECT_DIR$/../../upa/upa-vfs/upa-vfs.iml" group="upa and modules" />
+      <module fileurl="file://$PROJECT_DIR$/../../upa/upa-web/upa-web.iml" filepath="$PROJECT_DIR$/../../upa/upa-web/upa-web.iml" group="upa and modules" />
+      <module fileurl="file://$PROJECT_DIR$/../../common/utils/utils.iml" filepath="$PROJECT_DIR$/../../common/utils/utils.iml" />
+      <module fileurl="file://$PROJECT_DIR$/vain-ruling.iml" filepath="$PROJECT_DIR$/vain-ruling.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/vr-builder/vain-ruling-builder.iml" filepath="$PROJECT_DIR$/vr-builder/vain-ruling-builder.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/../../common/vfs/vfs.iml" filepath="$PROJECT_DIR$/../../common/vfs/vfs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../abyss/tool/vpc-devtools/vpc-devtools.iml" filepath="$PROJECT_DIR$/../../abyss/tool/vpc-devtools/vpc-devtools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/academic-addressbook/vr-academic-addressbook-service/vr-academic-addressbook-service.iml" filepath="$PROJECT_DIR$/plugins/academic-addressbook/vr-academic-addressbook-service/vr-academic-addressbook-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/academic-addressbook/vr-academic-addressbook-web/vr-academic-addressbook-web.iml" filepath="$PROJECT_DIR$/plugins/academic-addressbook/vr-academic-addressbook-web/vr-academic-addressbook-web.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/academic-eval/vr-academic-eval-service/vr-academic-eval-service.iml" filepath="$PROJECT_DIR$/plugins/academic-eval/vr-academic-eval-service/vr-academic-eval-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/academic-eval/vr-academic-eval-web/vr-academic-eval-web.iml" filepath="$PROJECT_DIR$/plugins/academic-eval/vr-academic-eval-web/vr-academic-eval-web.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-service/vr-academic-internship-service.iml" filepath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-service/vr-academic-internship-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-web/vr-academic-internship-web.iml" filepath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-web/vr-academic-internship-web.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/academic-perf-eval/vr-academic-perf-eval-service/vr-academic-perf-eval-service.iml" filepath="$PROJECT_DIR$/plugins/academic-perf-eval/vr-academic-perf-eval-service/vr-academic-perf-eval-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/academic-perf-eval/vr-academic-perf-eval-web/vr-academic-perf-eval-web.iml" filepath="$PROJECT_DIR$/plugins/academic-perf-eval/vr-academic-perf-eval-web/vr-academic-perf-eval-web.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-service/vr-academic-planning-service.iml" filepath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-service/vr-academic-planning-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/vr-academic-planning-web.iml" filepath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/vr-academic-planning-web.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/academic-report/vr-academic-report-service/vr-academic-report-service.iml" filepath="$PROJECT_DIR$/plugins/academic-report/vr-academic-report-service/vr-academic-report-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/academic-report/vr-academic-report-web/vr-academic-report-web.iml" filepath="$PROJECT_DIR$/plugins/academic-report/vr-academic-report-web/vr-academic-report-web.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/academic/vr-academic-service/vr-academic-service.iml" filepath="$PROJECT_DIR$/plugins/academic/vr-academic-service/vr-academic-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/academic/vr-academic-web/vr-academic-web.iml" filepath="$PROJECT_DIR$/plugins/academic/vr-academic-web/vr-academic-web.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/vr-app-service-test/vr-app-service-test.iml" filepath="$PROJECT_DIR$/vr-app-service-test/vr-app-service-test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/articles/vr-articles-service/vr-articles-service.iml" filepath="$PROJECT_DIR$/plugins/articles/vr-articles-service/vr-articles-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/articles/vr-articles-web/vr-articles-web.iml" filepath="$PROJECT_DIR$/plugins/articles/vr-articles-web/vr-articles-web.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/blog/vr-blog-service/vr-blog-service.iml" filepath="$PROJECT_DIR$/plugins/blog/vr-blog-service/vr-blog-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/core/vr-core-service/vr-core-service.iml" filepath="$PROJECT_DIR$/core/vr-core-service/vr-core-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/core/vr-core-web/vr-core-web.iml" filepath="$PROJECT_DIR$/core/vr-core-web/vr-core-web.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/dev-toolbox/vr-dev-toolbox-service/vr-dev-toolbox-service.iml" filepath="$PROJECT_DIR$/plugins/dev-toolbox/vr-dev-toolbox-service/vr-dev-toolbox-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/dev-toolbox/vr-dev-toolbox-web/vr-dev-toolbox-web.iml" filepath="$PROJECT_DIR$/plugins/dev-toolbox/vr-dev-toolbox-web/vr-dev-toolbox-web.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/equipments/vr-equipments-service/vr-equipments-service.iml" filepath="$PROJECT_DIR$/plugins/equipments/vr-equipments-service/vr-equipments-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/forum/vr-forum-service/vr-forum-service.iml" filepath="$PROJECT_DIR$/plugins/forum/vr-forum-service/vr-forum-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/inventory/vr-inventory-service/vr-inventory-service.iml" filepath="$PROJECT_DIR$/plugins/inventory/vr-inventory-service/vr-inventory-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/mailbox/vr-mailbox-service/vr-mailbox-service.iml" filepath="$PROJECT_DIR$/plugins/mailbox/vr-mailbox-service/vr-mailbox-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/mailbox/vr-mailbox-web/vr-mailbox-web.iml" filepath="$PROJECT_DIR$/plugins/mailbox/vr-mailbox-web/vr-mailbox-web.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/tasks/vr-tasks-service/vr-tasks-service.iml" filepath="$PROJECT_DIR$/plugins/tasks/vr-tasks-service/vr-tasks-service.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/tasks/vr-tasks-web/vr-tasks-web.iml" filepath="$PROJECT_DIR$/plugins/tasks/vr-tasks-web/vr-tasks-web.iml" group="vain-ruling-builder and modules" />
+      <module fileurl="file://$PROJECT_DIR$/../../common/web-jsf/web-jsf.iml" filepath="$PROJECT_DIR$/../../common/web-jsf/web-jsf.iml" />
+    </modules>
+  </component>
+</project>

@@ -17,12 +17,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.api.AppPlugin;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.Install;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.model.AppDepartment;
-import net.vpc.app.vainruling.api.model.AppUser;
+
+import net.vpc.app.vainruling.core.service.*;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.AppUserType;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipBoardMessage;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipBoardTeacher;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternshipBoard;
@@ -45,6 +44,7 @@ import net.vpc.upa.UPA;
  * @author vpc
  */
 @AppPlugin(dependsOn = "academicPlugin", version = "1.4")
+@UpaAware
 public class AcademicInternshipPlugin {
 
     public AcademicInternship findInternship(int id) {
@@ -508,7 +508,8 @@ public class AcademicInternshipPlugin {
             validCodes.add(vc.getCode());
         }
 
-        for (AppUser appUser : core.findUsersByProfileFilter(studentProfiles)) {
+        AppUserType studentType = core.findUserType("Student");
+        for (AppUser appUser : core.findUsersByProfileFilter(studentProfiles,studentType.getId())) {
             AcademicStudent student = acad.findStudentByUser(appUser.getId());
             if (student != null) {
                 AcademicInternship i = pu.createQuery("Select u from AcademicInternship u where "

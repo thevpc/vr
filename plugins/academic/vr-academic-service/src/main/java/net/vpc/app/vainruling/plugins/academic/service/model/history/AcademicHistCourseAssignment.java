@@ -5,8 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.history;
 
-import net.vpc.app.vainruling.api.model.AppDepartment;
-import net.vpc.app.vainruling.api.model.AppPeriod;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;

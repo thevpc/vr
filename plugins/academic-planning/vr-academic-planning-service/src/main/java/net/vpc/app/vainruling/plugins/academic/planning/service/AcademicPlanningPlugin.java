@@ -13,10 +13,12 @@ import java.util.Set;
 import java.util.TreeSet;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import net.vpc.app.vainruling.api.AppPlugin;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.model.AppUser;
+import net.vpc.app.vainruling.core.service.AppPlugin;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.UpaAware;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.fs.FileSystemService;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningData;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
@@ -24,7 +26,6 @@ import net.vpc.app.vainruling.plugins.academic.service.model.PlanningHour;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VFileFilter;
@@ -41,12 +42,13 @@ import org.w3c.dom.NodeList;
  * @author vpc
  */
 @AppPlugin(dependsOn = "academicPlugin", version = "1.4")
+@UpaAware
 public class AcademicPlanningPlugin {
 
     @Autowired
     CorePlugin core;
     @Autowired
-    FileSystemPlugin fileSystemPlugin;
+    FileSystemService fileSystemService;
     @Autowired
     AcademicPlugin academicPlugin;
 
@@ -57,7 +59,7 @@ public class AcademicPlanningPlugin {
             return list;
         }
 //        String teacherName = uuu == null ? "" : uuu.getContact().getFullName();
-        VFile p = fileSystemPlugin.getUserFolder(uuu.getLogin()).get("/myplanning.xml");
+        VFile p = fileSystemService.getUserFolder(uuu.getLogin()).get("/myplanning.xml");
         if (p != null && p.exists()) {
             try {
 
@@ -150,9 +152,9 @@ public class AcademicPlanningPlugin {
         Object t = core.getAppPropertyValue(academicPlanningPluginPlanningRoot, null);
         String ts = StringUtils.nonNull(t);
         if (ts.trim().length() > 0) {
-            return fileSystemPlugin.getFileSystem().get(ts);
+            return fileSystemService.getFileSystem().get(ts);
         } else {
-            final String defaultPath = fileSystemPlugin.getProfileFileSystem("DirectorOfStudies").get("/Emplois").getBaseFile("vrfs").getPath();
+            final String defaultPath = fileSystemService.getProfileFileSystem("DirectorOfStudies").get("/Emplois").getBaseFile("vrfs").getPath();
             t = UPA.getContext().invokePrivileged(new Action<Object>(){
                 @Override
                 public Object run() {
@@ -160,7 +162,7 @@ public class AcademicPlanningPlugin {
                 }
                 
             });
-            return fileSystemPlugin.getFileSystem().get(StringUtils.nonNull(t));
+            return fileSystemService.getFileSystem().get(StringUtils.nonNull(t));
         }
     }
 

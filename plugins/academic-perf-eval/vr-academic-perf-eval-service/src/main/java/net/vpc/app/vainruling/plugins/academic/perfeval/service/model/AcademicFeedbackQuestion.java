@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.perfeval.service.model;
 
-import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.RelationshipType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
@@ -84,5 +84,12 @@ public class AcademicFeedbackQuestion {
     public void setParent(AcademicFeedbackGroup parent) {
         this.parent = parent;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(name);
+    }
+    
+    
 
 }

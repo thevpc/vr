@@ -11,15 +11,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
-import net.vpc.app.vainruling.api.AppPlugin;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.Install;
-import net.vpc.app.vainruling.api.InstallDemo;
-import net.vpc.app.vainruling.api.TraceService;
-import net.vpc.app.vainruling.api.security.UserSession;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.model.AppUser;
-import net.vpc.app.vainruling.api.model.AppProfile;
+
+import net.vpc.app.vainruling.core.service.*;
+import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.plugins.tasks.service.model.Todo;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoCategory;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;
@@ -27,7 +23,7 @@ import net.vpc.app.vainruling.plugins.tasks.service.model.TodoPriority;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoProgress;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatus;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatusType;
-import net.vpc.common.utils.Utils;
+import net.vpc.common.util.Utils;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.RemoveOptions;
@@ -39,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author vpc
  */
 @AppPlugin(version = "1.0")
+@UpaAware
 public class TaskPlugin {
 
     @Autowired
@@ -210,7 +207,7 @@ public class TaskPlugin {
                 t.setDeletedBy(session.getUser().getLogin());
                 t.setDeletedOn(new Timestamp(System.currentTimeMillis()));
                 pu.merge(t);
-                trace.softremoved(pu.findById(Todo.class, todoId), e.getParent().getPath(), Level.FINE);
+                trace.softremoved(Todo.class.getSimpleName(),pu.findById(Todo.class, todoId), e.getParent().getPath(), Level.FINE);
             }
         }
     }
@@ -490,6 +487,13 @@ public class TaskPlugin {
 //        AppAreaType areaType_salle = new AppAreaType("salle");
 //        AppAreaType areaType_armoire = new AppAreaType("armoire");
 //        AppAreaType areaType_rangement = new AppAreaType("rangement");
+    }
+
+    @Start
+    public void startService() {
+        for (TodoList findTodoListsByResp : findTodoLists()) {
+            VrApp.getBean(CorePlugin.class).createRight("Custom.Todo." + findTodoListsByResp.getName(), "TODO " + findTodoListsByResp.getName());
+        }
     }
 
     @Install

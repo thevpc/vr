@@ -5,9 +5,9 @@
  */
 package net.vpc.app.vainruling.plugins.academic.internship.service.model.history;
 
-import net.vpc.app.vainruling.api.model.AppDepartment;
-import net.vpc.app.vainruling.api.model.AppPeriod;
-import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipStatus;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipType;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;

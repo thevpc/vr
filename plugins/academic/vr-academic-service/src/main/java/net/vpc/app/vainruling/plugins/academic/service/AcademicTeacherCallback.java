@@ -5,16 +5,13 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service;
 
-import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherSemestrialLoad;
 import net.vpc.upa.Entity;
 import net.vpc.upa.EntityModifier;
 import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.callbacks.EntityListenerAdapter;
-import net.vpc.upa.callbacks.EntityListener;
 import net.vpc.upa.callbacks.PersistEvent;
-import net.vpc.upa.callbacks.UpdateEvent;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.config.OnPersist;
 

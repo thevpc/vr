@@ -5,22 +5,15 @@
  */
 package net.vpc.app.vainruling.plugins.academic.teachereval.web;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.web.OnPageLoad;
-import net.vpc.app.vainruling.api.web.UCtrl;
-import net.vpc.app.vainruling.api.web.UPathItem;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.ValueCountSet;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackGroup;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackModel;
@@ -29,6 +22,8 @@ import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFe
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
 import net.vpc.common.strings.StringUtils;
 import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.chart.ChartSeries;
@@ -62,23 +57,59 @@ public class TeacherStatFeedbackCtrl {
 
     @OnPageLoad
     public void onLoad() {
+        getModel().setValidate(false);
+        getModel().setTeacherListEnabled(academic.isCurrentManager());
+        ArrayList<SelectItem> academicTeachers = new ArrayList<>();
+        for (AcademicTeacher f : academic.findTeachers()) {
+            academicTeachers.add(new SelectItem(String.valueOf(f.getId()), f.getContact().getFullTitle()));
+        }
+        getModel().setTeachersList(academicTeachers);
+
+        ArrayList<SelectItem> filterTypesList = new ArrayList<>();
+        filterTypesList.add(new SelectItem("assignment", "Enseignement"));
+        filterTypesList.add(new SelectItem("course", "Cours"));
+        getModel().setFilterTypesList(filterTypesList);
+        getModel().setFilterType("assignment");
         onReloadFeedbacks();
     }
 
     public void onReloadFeedbacks() {
-        getModel().setValidate(false);
-        AcademicTeacher s = academic.getCurrentTeacher();
-        getModel().setAcademicCourseAssignmentList(new ArrayList<SelectItem>());
+
+        ArrayList<SelectItem> theList = new ArrayList<>();
+        getModel().setFilterList(theList);
+        AcademicTeacher s = null;
+        if(getModel().isTeacherListEnabled()){
+            String selectedTeacherString = getModel().getSelectedTeacher();
+            if(!StringUtils.isEmpty(selectedTeacherString)){
+                s=academic.findTeacher(Integer.parseInt(selectedTeacherString));
+            }
+        }else{
+            s=academic.getCurrentTeacher();
+        }
         if (s != null) {
             HashSet<String> ids = new HashSet<>();
-            for (AcademicCourseAssignment f : feedback.findAssignmentsWithFeedbacks(s.getId(), false, false, true)) {
-                getModel().getAcademicCourseAssignmentList().add(new SelectItem(String.valueOf(f.getId()), f.getFullName()));
-                ids.add(String.valueOf(f.getId()));
+
+            String filterType = getModel().getSelectedFilterType();
+            if("assignment".equals(filterType)) {
+                for (AcademicCourseAssignment f : feedback.findAssignmentsWithFeedbacks(s.getId(), getModel().getValidatedFilter(), false, true)) {
+                    theList.add(new SelectItem(filterType+":"+String.valueOf(f.getId()), f.getFullName()));
+                    ids.add(filterType+":"+String.valueOf(f.getId()));
+                }
+            }else if("course".equals(filterType)){
+                for (AcademicCoursePlan f : feedback.findAcademicCoursePlansWithFeedbacks(s.getId(), getModel().getValidatedFilter(), false, true)) {
+                    theList.add(new SelectItem(filterType+":"+String.valueOf(f.getId()), f.getFullName()));
+                    ids.add(filterType+":"+String.valueOf(f.getId()));
+                }
+            }else if("courseType".equals(filterType)){
+                for (AcademicCourseType f : feedback.findAcademicCourseTypesWithFeedbacks(s.getId(), getModel().getValidatedFilter(), false, true)) {
+                    theList.add(new SelectItem(filterType+":"+String.valueOf(f.getId()), f.getName()));
+                    ids.add(filterType+":"+String.valueOf(f.getId()));
+                }
             }
-            if (!ids.contains(getModel().getSelectedAcademicCourseAssignment())) {
-                getModel().setSelectedAcademicCourseAssignment(null);
+            if (!ids.contains(getModel().getSelectedFilter())) {
+                getModel().setSelectedFilter(null);
                 for (String id : ids) {
-                    getModel().setSelectedAcademicCourseAssignment(id);
+                    getModel().setSelectedFilter(id);
                     break;
                 }
             }
@@ -88,136 +119,168 @@ public class TeacherStatFeedbackCtrl {
 
     public void onFilterChange() {
         getModel().setValidate(false);
+        getModel().setRows(evaluateGroupViews(findAcademicFeedbacks()));
+    }
+
+    public List<AcademicFeedback> findAcademicFeedbacksByAssignment(int id) {
+        AcademicCourseAssignment a = academic.findAcademicCourseAssignment(id);
+        if(a==null){
+            return Collections.emptyList();
+        }
+        return feedback.findAssignmentFeedbacks(a.getId(), getModel().getValidatedFilter(), false);
+    }
+
+    public List<AcademicFeedback> findAcademicFeedbacks() {
+        String selectedFilter = getModel().getSelectedFilter();
+        if(StringUtils.isEmpty(selectedFilter)){
+            return Collections.emptyList();
+        }
+        int pos = selectedFilter.indexOf(":");
+        String filterType = selectedFilter.substring(0, pos);
+        String idString=selectedFilter.substring(pos+1);
+        if("assignment".equals(filterType)) {
+            int id = Integer.parseInt(idString);
+            return feedback.findAssignmentFeedbacks(id, getModel().getValidatedFilter(), false);
+        }else if("course".equals(filterType)) {
+            int teacherId=-1;
+            if(getModel().isTeacherListEnabled()){
+                String selectedTeacher = getModel().getSelectedTeacher();
+                if(!StringUtils.isEmpty(selectedTeacher)){
+                    teacherId=Integer.parseInt(selectedTeacher);
+                }
+            }else{
+                teacherId=academic.getCurrentTeacher().getId();
+            }
+            int courseId = Integer.parseInt(idString);
+            return feedback.findFeedbacks(
+                    courseId,
+                    teacherId,
+                    null,
+                    null,
+                    getModel().getValidatedFilter(),
+                    false
+            );
+        }else if("courseType".equals(filterType)) {
+            int teacherId=-1;
+            if(getModel().isTeacherListEnabled()){
+                String selectedTeacher = getModel().getSelectedTeacher();
+                if(!StringUtils.isEmpty(selectedTeacher)){
+                    teacherId=Integer.parseInt(selectedTeacher);
+                }
+            }else{
+                teacherId=academic.getCurrentTeacher().getId();
+            }
+            int courseTypeId = Integer.parseInt(idString);
+            return feedback.findFeedbacks(
+                    null,
+                    teacherId,
+                    courseTypeId,
+                    null,
+                    getModel().getValidatedFilter(),
+                    false
+            );
+        }else{
+            return Collections.emptyList();
+        }
+    }
+
+    public List<GroupView> evaluateGroupViews(List<AcademicFeedback> feedbacks) {
+        int countFeedbacks=feedbacks.size();
+        int countQuestions=0;
+        int countValidResponses=0;
+        double countResponseCompletion=0;
         List<GroupView> rows = new ArrayList<>();
-        if (!StringUtils.isEmpty(getModel().getSelectedAcademicCourseAssignment())) {
-            getModel().setAcademicCourseAssignment(academic.findAcademicCourseAssignment(Integer.parseInt(getModel().getSelectedAcademicCourseAssignment())));
-            List<AcademicFeedback> feedbacks = feedback.findAssignmentFeedbacks(getModel().getAcademicCourseAssignment().getId(), false, false);
-            if (feedbacks.size() > 0) {
-                AcademicFeedbackModel fmodel = feedbacks.get(0).getModel();
-                List<AcademicFeedbackGroup> groups = feedback.findStudentFeedbackGroups(fmodel.getId());
-                Map<Integer, QuestionView> questionsMap = new HashMap<Integer, QuestionView>();
+        if (feedbacks.size() > 0) {
+            AcademicFeedbackModel fmodel = feedbacks.get(0).getModel();
+            List<AcademicFeedbackGroup> groups = feedback.findStudentFeedbackGroups(fmodel.getId());
+            Map<Integer, QuestionView> questionsMap = new HashMap<Integer, QuestionView>();
 
-                for (AcademicFeedbackGroup group : groups) {
-                    GroupView row = new GroupView();
-                    row.setTitle(group.getName());
-                    ArrayList<QuestionView> questions = new ArrayList<QuestionView>();
-                    row.setQuestions(questions);
-                    for (AcademicFeedbackQuestion r : feedback.findAcademicFeedbackQuestionByGroup(group.getId())) {
-                        QuestionView q = new QuestionView();
-                        q.setQuestion(r);
-                        q.getValues().touch("1");
-                        q.getValues().touch("2");
-                        q.getValues().touch("3");
-                        q.getValues().touch("4");
-                        questions.add(q);
-                        questionsMap.put(r.getId(), q);
-                    }
-                    rows.add(row);
+            for (AcademicFeedbackGroup group : groups) {
+                GroupView row = new GroupView();
+                row.setTitle(group.getName());
+                ArrayList<QuestionView> questions = new ArrayList<QuestionView>();
+                row.setQuestions(questions);
+                for (AcademicFeedbackQuestion r : feedback.findAcademicFeedbackQuestionByGroup(group.getId())) {
+                    QuestionView q = new QuestionView();
+                    q.setQuestion(r);
+                    q.getValues().touch("1");
+                    q.getValues().touch("2");
+                    q.getValues().touch("3");
+                    q.getValues().touch("4");
+                    questions.add(q);
+                    questionsMap.put(r.getId(), q);
                 }
-                for (AcademicFeedback fb : feedbacks) {
-                    //ValueCountSet
-                    for (AcademicFeedbackResponse r : feedback.findStudentFeedbackResponses(fb.getId())) {
-                        QuestionView qv = questionsMap.get(r.getQuestion().getId());
-                        if (qv != null && !StringUtils.isEmpty(r.getResponse())) {
-                            qv.getValues().inc(r.getResponse());
-                        }
-                    }
+                countQuestions+=questions.size();
+                rows.add(row);
+            }
+            int[] feedbacksIds=new int[feedbacks.size()];
+            for (int i = 0; i < feedbacks.size(); i++) {
+                feedbacksIds[i]=feedbacks.get(i).getId();
+            }
+            for (AcademicFeedbackResponse r : feedback.findStudentFeedbackResponses(feedbacksIds)) {
+                QuestionView qv = questionsMap.get(r.getQuestion().getId());
+                if (qv != null && !StringUtils.isEmpty(r.getResponse())) {
+                    qv.getValues().inc(r.getResponse());
+                    countValidResponses++;
                 }
-                for (QuestionView value : questionsMap.values()) {
-                    if (!value.getValues().isEmpty()) {
-                        BarChartModel bmodel = new BarChartModel();
-                        bmodel.setShadow(true);
-                        bmodel.setLegendCols(1);
-                        bmodel.setLegendPlacement(LegendPlacement.OUTSIDE);
-                        bmodel.setLegendPosition("e");
-                        bmodel.setBarMargin(0);
-                        bmodel.setBarPadding(0);
+            }
+            for (QuestionView value : questionsMap.values()) {
+                if (!value.getValues().isEmpty()) {
+                    BarChartModel bmodel = new BarChartModel();
+                    bmodel.setShadow(true);
+                    bmodel.setLegendCols(1);
+                    bmodel.setLegendPlacement(LegendPlacement.OUTSIDE);
+                    bmodel.setLegendPosition("e");
+                    bmodel.setBarMargin(0);
+                    bmodel.setBarPadding(0);
 //                        boys.setLabel("Boys");
-                        for (String val : new TreeSet<String>((Set) value.getValues().keySet())) {
-                            ChartSeries boys = new ChartSeries();
-                            String vv = String.valueOf(val);
-                            String vv0 = getModel().getValueTexts().get(vv);
-                            if (vv0 != null) {
-                                vv = vv0;
-                            }
-                            boys.set(" ", value.getValues().getCount(val));
-                            boys.setLabel(vv);
-                            bmodel.addSeries(boys);
+                    for (String val : new TreeSet<String>((Set) value.getValues().keySet())) {
+                        ChartSeries boys = new ChartSeries();
+                        String vv = String.valueOf(val);
+                        String vv0 = getModel().getValueTexts().get(vv);
+                        if (vv0 != null) {
+                            vv = vv0;
                         }
-
-                        value.setChart(bmodel);
+                        boys.set(" ", value.getValues().getCount(val));
+                        boys.setLabel(vv);
+                        bmodel.addSeries(boys);
                     }
+
+                    value.setChart(bmodel);
                 }
             }
         }
-        getModel().setRows(rows);
+        if(countQuestions!=0 && countFeedbacks!=0) {
+            countResponseCompletion = (countValidResponses*100) / (countQuestions*countFeedbacks);
+        }
+        getModel().setCountFeedbacks(countFeedbacks);
+        getModel().setCountQuestions(countQuestions);
+        getModel().setCountValidResponses(countValidResponses);
+        getModel().setCountResponseCompletion(countResponseCompletion);
+        return rows;
     }
 
     public void onValidate() {
 
     }
 
-    public static class QuestionView {
-
-        AcademicFeedbackQuestion question;
-        ValueCountSet values = new ValueCountSet();
-        BarChartModel chart;
-
-        public AcademicFeedbackQuestion getQuestion() {
-            return question;
-        }
-
-        public void setQuestion(AcademicFeedbackQuestion question) {
-            this.question = question;
-        }
-
-        public ValueCountSet getValues() {
-            return values;
-        }
-
-        public void setValues(ValueCountSet values) {
-            this.values = values;
-        }
-
-        public BarChartModel getChart() {
-            return chart;
-        }
-
-        public void setChart(BarChartModel chart) {
-            this.chart = chart;
-        }
-
-    }
-
-    public static class GroupView {
-
-        private String title;
-        private List<QuestionView> questions;
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public List<QuestionView> getQuestions() {
-            return questions;
-        }
-
-        public void setQuestions(List<QuestionView> questions) {
-            this.questions = questions;
-        }
-
-    }
-
     public static class Model {
 
         private String title;
-        private String selectedAcademicCourseAssignment;
-        private List<SelectItem> academicCourseAssignmentList = new ArrayList<SelectItem>();
-        private AcademicCourseAssignment academicCourseAssignment = null;
+        private boolean teacherListEnabled=false;
+        private String selectedTeacher;
+        private String selectedFilterType="assignement";
+        private List<SelectItem> teachersList = new ArrayList<SelectItem>();
+        private List<SelectItem> filterTypesList = new ArrayList<SelectItem>();
+
+        private int countFeedbacks;
+        private int countQuestions;
+        private int countValidResponses;
+        private double countResponseCompletion;
+        private Boolean validatedFilter;
+        private String filterType;
+        private String selectedFilter;
+        private List<SelectItem> filterList = new ArrayList<SelectItem>();
         private List<GroupView> rows = new ArrayList<>();
         private boolean validate = false;
         private Map<String, String> valueTexts = new HashMap<>();
@@ -238,20 +301,20 @@ public class TeacherStatFeedbackCtrl {
             this.title = title;
         }
 
-        public List<SelectItem> getAcademicCourseAssignmentList() {
-            return academicCourseAssignmentList;
+        public List<SelectItem> getFilterList() {
+            return filterList;
         }
 
-        public void setAcademicCourseAssignmentList(List<SelectItem> academicCourseAssignmentList) {
-            this.academicCourseAssignmentList = academicCourseAssignmentList;
+        public void setFilterList(List<SelectItem> filterList) {
+            this.filterList = filterList;
         }
 
-        public String getSelectedAcademicCourseAssignment() {
-            return selectedAcademicCourseAssignment;
+        public String getSelectedFilter() {
+            return selectedFilter;
         }
 
-        public void setSelectedAcademicCourseAssignment(String selectedAcademicCourseAssignment) {
-            this.selectedAcademicCourseAssignment = selectedAcademicCourseAssignment;
+        public void setSelectedFilter(String selectedFilter) {
+            this.selectedFilter = selectedFilter;
         }
 
         public List<GroupView> getRows() {
@@ -262,13 +325,6 @@ public class TeacherStatFeedbackCtrl {
             this.rows = rows;
         }
 
-        public AcademicCourseAssignment getAcademicCourseAssignment() {
-            return academicCourseAssignment;
-        }
-
-        public void setAcademicCourseAssignment(AcademicCourseAssignment academicCourseAssignment) {
-            this.academicCourseAssignment = academicCourseAssignment;
-        }
 
         public boolean isValidate() {
             return validate;
@@ -282,6 +338,104 @@ public class TeacherStatFeedbackCtrl {
             return valueTexts;
         }
 
+        public boolean isTeacherListEnabled() {
+            return teacherListEnabled;
+        }
+
+        public Model setTeacherListEnabled(boolean teacherListEnabled) {
+            this.teacherListEnabled = teacherListEnabled;
+            return this;
+        }
+
+        public String getSelectedTeacher() {
+            return selectedTeacher;
+        }
+
+        public void setSelectedTeacher(String selectedTeacher) {
+            this.selectedTeacher = selectedTeacher;
+        }
+
+        public List<SelectItem> getTeachersList() {
+            return teachersList;
+        }
+
+        public void setTeachersList(List<SelectItem> teachersList) {
+            this.teachersList = teachersList;
+        }
+
+        public String getFilterType() {
+            return filterType;
+        }
+
+        public Model setFilterType(String filterType) {
+            this.filterType = filterType;
+            return this;
+        }
+
+        public Boolean getValidatedFilter() {
+            return validatedFilter;
+        }
+
+        public Model setValidatedFilter(Boolean validatedFilter) {
+            this.validatedFilter = validatedFilter;
+            return this;
+        }
+
+        public String getSelectedFilterType() {
+            return selectedFilterType;
+        }
+
+        public void setSelectedFilterType(String selectedFilterType) {
+            this.selectedFilterType = selectedFilterType;
+        }
+
+        public List<SelectItem> getFilterTypesList() {
+            return filterTypesList;
+        }
+
+        public void setFilterTypesList(List<SelectItem> filterTypesList) {
+            this.filterTypesList = filterTypesList;
+        }
+
+        public void setValueTexts(Map<String, String> valueTexts) {
+            this.valueTexts = valueTexts;
+        }
+
+        public int getCountFeedbacks() {
+            return countFeedbacks;
+        }
+
+        public Model setCountFeedbacks(int countFeedbacks) {
+            this.countFeedbacks = countFeedbacks;
+            return this;
+        }
+
+        public int getCountQuestions() {
+            return countQuestions;
+        }
+
+        public Model setCountQuestions(int countQuestions) {
+            this.countQuestions = countQuestions;
+            return this;
+        }
+
+        public int getCountValidResponses() {
+            return countValidResponses;
+        }
+
+        public Model setCountValidResponses(int countValidResponses) {
+            this.countValidResponses = countValidResponses;
+            return this;
+        }
+
+        public double getCountResponseCompletion() {
+            return countResponseCompletion;
+        }
+
+        public Model setCountResponseCompletion(double countResponseCompletion) {
+            this.countResponseCompletion = countResponseCompletion;
+            return this;
+        }
     }
 
     public Model getModel() {

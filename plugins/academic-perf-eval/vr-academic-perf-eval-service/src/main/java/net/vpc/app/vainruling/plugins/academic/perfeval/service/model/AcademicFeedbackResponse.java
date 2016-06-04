@@ -88,4 +88,10 @@ public class AcademicFeedbackResponse {
         this.valid = valid;
     }
 
+    @Override
+    public String toString() {
+        return "AcademicFeedbackResponse{" + "feedback=" + feedback + ", question=" + question + ", response=" + response + '}';
+    }
+
+    
 }

@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.perfeval.service.model;
 
-import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;
@@ -53,6 +53,11 @@ public class AcademicFeedbackModel {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(name);
     }
 
 }

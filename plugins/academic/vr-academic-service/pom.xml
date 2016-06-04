@@ -17,16 +17,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.filesystem</groupId>
-            <artifactId>vr-filesystem-service</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.common-model</groupId>
-            <artifactId>vr-common-model-service</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>rome</groupId>
             <artifactId>rome</artifactId>
             <version>1.0</version>

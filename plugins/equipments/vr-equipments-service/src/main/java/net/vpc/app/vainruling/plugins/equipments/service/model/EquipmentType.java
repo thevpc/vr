@@ -52,4 +52,8 @@ public class EquipmentType {
         this.typeGroup = typeGroup;
     }
 
+    @Override
+    public String toString() {
+        return String.valueOf(name);
+    }
 }

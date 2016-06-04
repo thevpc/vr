@@ -9,8 +9,8 @@ import java.util.Calendar;
 import java.util.Date;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.api.web.ctrl.BasePageCtrl;
-import net.vpc.common.utils.Chronometer;
+
+import net.vpc.common.util.Chronometer;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 

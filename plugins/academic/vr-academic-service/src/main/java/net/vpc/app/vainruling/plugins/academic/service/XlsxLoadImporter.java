@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.api.CorePlugin;
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
@@ -29,32 +29,31 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSeme
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
-import net.vpc.common.utils.Convert;
-import net.vpc.common.utils.DoubleParserConfig;
-import net.vpc.common.utils.IntegerParserConfig;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.DoubleParserConfig;
+import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseGroup;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherSemestrialLoad;
-import net.vpc.app.vainruling.api.TraceService;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.model.AppCivility;
-import net.vpc.app.vainruling.api.model.AppCompany;
-import net.vpc.app.vainruling.api.model.AppConfig;
-import net.vpc.app.vainruling.api.model.AppContact;
-import net.vpc.app.vainruling.api.model.AppDepartment;
-import net.vpc.app.vainruling.api.model.AppGender;
-import net.vpc.app.vainruling.api.model.AppProfile;
+import net.vpc.app.vainruling.core.service.TraceService;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppCivility;
+import net.vpc.app.vainruling.core.service.model.AppCompany;
+import net.vpc.app.vainruling.core.service.model.AppConfig;
+import net.vpc.app.vainruling.core.service.model.AppContact;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppGender;
+import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.commonmodel.service.CommonModelPlugin;
-import net.vpc.app.vainruling.api.model.AppPeriod;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicBac;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicPreClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.utils.Chronometer;
-import net.vpc.common.utils.PlatformTypes;
+import net.vpc.common.util.Chronometer;
+import net.vpc.common.util.PlatformTypes;
 import net.vpc.upa.Action;
 
 import net.vpc.upa.bulk.DataReader;
@@ -325,7 +324,6 @@ public class XlsxLoadImporter {
     public void importTeacher(AcademicTeacherImport a, ImportTeacherContext ctx) throws IOException {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
-        CommonModelPlugin common = VrApp.getBean(CommonModelPlugin.class);
 
         if (ctx == null) {
             ctx = new ImportTeacherContext();
@@ -375,12 +373,12 @@ public class XlsxLoadImporter {
         }
         AppPeriod period = null;
         if (a.getStartPeriodId() != null) {
-            period = common.findPeriod(a.getStartPeriodId());
+            period = core.findPeriod(a.getStartPeriodId());
             if (period == null) {
                 throw new NoSuchElementException("Period Not Found " + a.getStartPeriodId());
             }
         } else {
-            period = common.findPeriod(a.getStartPeriodName());
+            period = core.findPeriod(a.getStartPeriodName());
             if (period == null) {
                 throw new NoSuchElementException("Period Not Found " + a.getStartPeriodName());
             }
@@ -594,7 +592,6 @@ public class XlsxLoadImporter {
     public void importStudent(AcademicStudentImport a, ImportStudentContext ctx) throws IOException {
         final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        CommonModelPlugin common = VrApp.getBean(CommonModelPlugin.class);
         if (ctx == null) {
             ctx = new ImportStudentContext();
         }
@@ -645,12 +642,12 @@ public class XlsxLoadImporter {
 
         AppPeriod period = null;
         if (a.getStartPeriodId() != null) {
-            period = common.findPeriod(a.getStartPeriodId());
+            period = core.findPeriod(a.getStartPeriodId());
             if (period == null) {
                 throw new NoSuchElementException("Period Not Found " + a.getStartPeriodId());
             }
         } else {
-            period = common.findPeriod(a.getStartPeriodName());
+            period = core.findPeriod(a.getStartPeriodName());
             if (period == null) {
                 throw new NoSuchElementException("Period Not Found " + a.getStartPeriodName());
             }

@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+        >
+<h:head>
+</h:head>
+<h:body>
+
+
+    <ui:composition template="/templates/login-template.xhtml">
+        <ui:define name="login-fieldset">
+
+
+            <p:growl id="growl" showDetail="true" sticky="false" />
+            <p:messages showDetail="true"/>
+            <h:messages layout="list"/>
+            <fieldset>
+                <div class="form-group">
+                    <p:inputText value="#{loginCtrl.model.login}" styleClass="form-control" placeholder="Login"/>
+                </div>
+                <div class="form-group">
+                    <p:password value="#{loginCtrl.model.password}" styleClass="form-control" placeholder="Password"/>
+                </div>
+                <!--                                    <div class="checkbox">
+                                                        <label>
+                                                            <input name="remember" type="checkbox" value="Remember Me"/>Remember Me
+                                                        </label>
+                                                    </div>-->
+                <!-- Change this to a button or input when using this as a form -->
+                <p:commandButton value="Login" action="#{loginCtrl.dologin}"
+                                 styleClass="btn btn-lg btn-success btn-block"
+                                 update="growl"
+                        />
+            </fieldset>
+
+
+        </ui:define>
+    </ui:composition>
+
+
+    </h:body>
+
+</html>
+

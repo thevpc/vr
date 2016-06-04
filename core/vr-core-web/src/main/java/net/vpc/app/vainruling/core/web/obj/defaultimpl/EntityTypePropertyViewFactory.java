@@ -1,0 +1,127 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package net.vpc.app.vainruling.core.web.obj.defaultimpl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.ValueChangeEvent;
+import javax.faces.event.ValueChangeListener;
+
+import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.app.vainruling.core.web.obj.*;
+import net.vpc.upa.Entity;
+import net.vpc.upa.Field;
+import net.vpc.upa.KeyType;
+import net.vpc.upa.types.DataType;
+import net.vpc.upa.types.EntityType;
+
+/**
+ *
+ * @author vpc
+ */
+public class EntityTypePropertyViewFactory implements PropertyViewFactory {
+
+    private static final Logger log = Logger.getLogger(EntityTypePropertyViewFactory.class.getName());
+
+    @Override
+    public PropertyView[] createPropertyView(String componentId, Field field, DataType datatype, Map<String, Object> configuration, PropertyViewManager manager, final ViewContext viewContext) {
+        FieldPropertyViewInfo nfo = FieldPropertyViewInfo.build(field, datatype, configuration);
+
+//        ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
+//        DataType dataType = field.getDataType();
+//        boolean main = field.getModifiers().contains(FieldModifier.MAIN);
+//        boolean id = field.getModifiers().contains(FieldModifier.ID);
+//        boolean insert = field.getModifiers().contains(FieldModifier.PERSIST_DEFAULT);
+//        boolean update = !id && field.getModifiers().contains(FieldModifier.UPDATE_DEFAULT);
+//        boolean nullable = dataType.isNullable();
+//        boolean listMode = objCtrl.getModel().getMode() == EditCtrlMode.LIST;
+//        boolean insertMode = objCtrl.getModel().getMode() == EditCtrlMode.NEW;
+//        boolean updateMode = objCtrl.getModel().getMode() == EditCtrlMode.UPDATE;
+//        boolean forceDisabled = configuration != null && configuration.get("disabled") != null && (Boolean.TRUE.equals(configuration.get("disabled")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("disabled"))));
+//        boolean forceInvisible = configuration != null && configuration.get("invisible") != null && (Boolean.TRUE.equals(configuration.get("invisible")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("invisible"))));
+//        boolean visible
+//                = insertMode
+//                        ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_CREATE, null, true)
+//                        : updateMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_UPDATE, null, true)
+//                                : true;
+        if (!nfo.visible) {
+            return null;
+        }
+        Entity me = null;
+        if (nfo.dataType instanceof EntityType) {
+            EntityType t = (EntityType) nfo.dataType;
+            me = t.getRelationship().getTargetRole().getEntity();
+        } else if (nfo.dataType instanceof KeyType) {
+            KeyType t = (KeyType) nfo.dataType;
+            me = t.getEntity();
+        }
+        String controlType = field == null ? UIConstants.ControlType.ENTITY : UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.ENTITY);
+        final EntityTypePropertyView propView = new EntityTypePropertyView(componentId, field, nfo.dataType, controlType, manager);
+        propView.update(viewContext);
+
+        propView.setDisabled(nfo.disabled);
+        UPAObjectHelper.applyLayout(field, propView);
+        List<PropertyView> all = new ArrayList<>();
+        String ih = UPAObjectHelper.findStringProperty(me, UIConstants.ENTITY_ID_HIERARCHY, null, null);
+        if (ih != null) {
+            PropertyView[] r = manager.createPropertyView(me.getField(ih).getName(), me.getField(ih), configuration, viewContext);
+            if (r != null) {
+                for (int i = 0; i < r.length; i++) {
+                    PropertyView r0 = r[i];
+                    if (r0 != null) {
+                        r0.setName(field.getName() + " / " + r0.getName());
+                        r0.setComponentId(propView.getComponentId() + "." + r0.getComponentId());
+                        Object rootReferrer=propView.getRootReferrer();
+                        if(rootReferrer==null && propView.getReferrer() instanceof Field){
+                            rootReferrer=((Field) propView.getReferrer()).getEntity();
+                        }
+                        r0.setRootReferrer(rootReferrer);
+                        if (nfo.disabled) {
+                            r0.setDisabled(true);
+                        }
+                        if (i == r.length - 1) {
+                            r0.getUpdatablePropertyViews().add(propView);
+                        }
+                        all.add(r0);
+                        if (i == (r.length - 1)) {
+                            if (r0.getCtrlType().equals(UIConstants.ControlType.ENTITY)) {
+                                r0.setCtrlType(UIConstants.ControlType.ENTITY + "_onchange");
+                            }
+                            r0.setSubmitOnChange(true);
+                            r0.setChangeListener(new ValueChangeListener() {
+
+                                @Override
+                                public void processValueChange(ValueChangeEvent event) throws AbortProcessingException {
+                                    propView.update(new ViewContext());
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        for (PropertyView a : all) {
+            propView.getDependentPropertyViews().add(a);
+        }
+        all.add(propView);
+        if (all.size() > 1) {
+            if (propView.isPrependNewLine()) {
+                propView.setPrependNewLine(false);
+                all.get(0).setPrependNewLine(true);
+            }
+            if (propView.getPrependEmptyCells() > 0) {
+                all.get(0).setPrependEmptyCells(propView.getPrependEmptyCells());
+                propView.setPrependEmptyCells(0);
+            }
+        }
+        return all.toArray(new PropertyView[all.size()]);
+
+    }
+
+}

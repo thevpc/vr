@@ -5,8 +5,9 @@
  */
 package net.vpc.app.vainruling.plugins.devtoolbox.service;
 
-import net.vpc.app.vainruling.api.AppPlugin;
-import net.vpc.app.vainruling.api.Install;
+import net.vpc.app.vainruling.core.service.AppPlugin;
+import net.vpc.app.vainruling.core.service.Install;
+import net.vpc.app.vainruling.core.service.UpaAware;
 
 
 /**
@@ -14,6 +15,7 @@ import net.vpc.app.vainruling.api.Install;
  * @author vpc
  */
 @AppPlugin(version = "1.0")
+@UpaAware
 public class DevToolboxPlugin {
 
     @Install

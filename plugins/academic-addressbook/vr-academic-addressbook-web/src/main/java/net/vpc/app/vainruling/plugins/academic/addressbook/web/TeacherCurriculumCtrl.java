@@ -6,12 +6,12 @@
 package net.vpc.app.vainruling.plugins.academic.addressbook.web;
 
 import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.util.VrHelper;
-import net.vpc.app.vainruling.api.web.OnPageLoad;
-import net.vpc.app.vainruling.api.web.UCtrl;
-import net.vpc.app.vainruling.api.web.UPathItem;
-import net.vpc.app.vainruling.api.web.util.JsfCtrl;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.web.util.JsfCtrl;
 import net.vpc.app.vainruling.plugins.academic.addressbook.service.AcademicAddressBookPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;

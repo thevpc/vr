@@ -18,8 +18,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.web.util.JsfCtrl;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.web.util.JsfCtrl;
 
 /**
  *

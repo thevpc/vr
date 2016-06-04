@@ -5,9 +5,9 @@
  */
 package net.vpc.app.vainruling.plugins.equipments.service.model;
 
-import net.vpc.app.vainruling.plugins.commonmodel.service.model.AppArea;
+import net.vpc.app.vainruling.core.service.model.AppArea;
 import java.sql.Timestamp;
-import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
@@ -224,4 +224,9 @@ public class Equipment {
 //    public void setBrand(EquipmentBrand brand) {
 //        this.brand = brand;
 //    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(name);
+    }
 }

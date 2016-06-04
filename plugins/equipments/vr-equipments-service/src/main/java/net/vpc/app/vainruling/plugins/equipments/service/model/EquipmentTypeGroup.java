@@ -40,4 +40,8 @@ public class EquipmentTypeGroup {
         this.name = name;
     }
     
+    @Override
+    public String toString() {
+        return String.valueOf(name);
+    }
 }

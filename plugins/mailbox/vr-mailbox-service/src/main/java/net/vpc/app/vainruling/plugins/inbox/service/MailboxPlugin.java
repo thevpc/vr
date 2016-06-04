@@ -5,6 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.inbox.service;
 
+import net.vpc.app.vainruling.core.service.*;
+import net.vpc.app.vainruling.core.service.fs.FileSystemService;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
 import java.io.File;
 import java.io.IOException;
@@ -20,20 +22,12 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.api.AppEntityExtendedPropertiesProvider;
-import net.vpc.app.vainruling.api.AppPlugin;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.Install;
-import net.vpc.app.vainruling.api.Start;
-import net.vpc.app.vainruling.api.TraceService;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.VrNotificationEvent;
-import net.vpc.app.vainruling.api.VrNotificationManager;
-import net.vpc.app.vainruling.api.VrNotificationSession;
-import net.vpc.app.vainruling.api.model.AppProfile;
-import net.vpc.app.vainruling.api.model.AppTrace;
-import net.vpc.app.vainruling.api.model.AppUser;
-import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
+import net.vpc.app.vainruling.core.service.obj.AppEntityExtendedPropertiesProvider;
+import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
+import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
+import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
+import net.vpc.app.vainruling.core.service.model.AppProfile;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.inbox.service.model.EmailType;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
@@ -62,7 +56,8 @@ import net.vpc.upa.VoidAction;
  *
  * @author vpc
  */
-@AppPlugin(version = "1.6", dependsOn = "fileSystemPlugin")
+@AppPlugin(version = "1.6")
+@UpaAware
 public class MailboxPlugin {
 
 //    public void
@@ -310,9 +305,9 @@ public class MailboxPlugin {
 
             @Override
             public Integer run() {
-                return UPA.getPersistenceUnit()
-                        .createQuery("Select u from MailboxReceived u where u.ownerId=:userId and u.read=false and u.deleted=false and u.archived=false")
-                        .setParameter("userId", userId).getEntityList().size();
+                return ((Number)UPA.getPersistenceUnit()
+                        .createQuery("Select Count(1) from MailboxReceived u where u.ownerId=:userId and u.read=false and u.deleted=false and u.archived=false")
+                        .setParameter("userId", userId).getSingleValue()).intValue();
             }
         }, null);
     }
@@ -639,7 +634,7 @@ public class MailboxPlugin {
     public Set<String> createUsersEmails(String recipientProfiles) {
         Set<String> rows = new HashSet<>();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles)) {
+        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles,null)) {
             String email = p.getContact() == null ? null : p.getContact().getEmail();
             if (!StringUtils.isEmpty(email)) {
                 rows.add(email);
@@ -651,7 +646,7 @@ public class MailboxPlugin {
     public Set<String> createUsersLogins(String recipientProfiles) {
         Set<String> rows = new HashSet<>();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles)) {
+        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles,null)) {
             String login = p.getLogin();
             if (!StringUtils.isEmpty(login)) {
                 rows.add(login);
@@ -676,7 +671,7 @@ public class MailboxPlugin {
         }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         List<String[]> rows = new ArrayList<>();
-        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles)) {
+        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles,null)) {
             String email = p.getContact().getEmail();
             if (!StringUtils.isEmpty(email)) {
                 Map<String, Object> allValues = new HashMap<>();
@@ -824,7 +819,7 @@ public class MailboxPlugin {
 
                 if (u != null) {
                     if (!StringUtils.isEmpty(footerEmbeddedImage)) {
-                        FileSystemPlugin fs = VrApp.getBean(FileSystemPlugin.class);
+                        FileSystemService fs = VrApp.getBean(FileSystemService.class);
                         VirtualFileSystem ufs = fs.getUserFileSystem(u.getLogin());
                         VirtualFileSystem allfs = fs.getFileSystem();
                         if (ufs.exists(footerEmbeddedImage)) {

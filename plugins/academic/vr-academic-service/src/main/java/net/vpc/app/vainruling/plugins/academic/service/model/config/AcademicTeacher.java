@@ -6,12 +6,12 @@
 package net.vpc.app.vainruling.plugins.academic.service.model.config;
 
 import java.sql.Timestamp;
-import net.vpc.app.vainruling.api.model.AppContact;
-import net.vpc.app.vainruling.api.model.AppDepartment;
-import net.vpc.app.vainruling.api.model.AppUser;
-import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.app.vainruling.core.service.model.AppContact;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
-import net.vpc.app.vainruling.api.model.AppPeriod;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
@@ -30,6 +30,9 @@ import net.vpc.upa.config.Sequence;
  */
 @Entity(listOrder = "contact.fullName")
 @Path("Contact")
+@Properties(
+        @Property(name="cache.navigationDepth",type="int",value="5")
+)
 public class AcademicTeacher {
 
     @Id
@@ -221,7 +224,7 @@ public class AcademicTeacher {
         if (contact != null) {
             return contact.toString();
         }
-        return "AcademicTeacher{" + "id=" + id + ", contact=" + contact.toString() + '}';
+        return "AcademicTeacher{" + "id=" + id + ", contact=" + contact + '}';
     }
 
     public String getOtherNames() {

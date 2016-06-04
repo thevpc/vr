@@ -5,11 +5,11 @@
  */
 package net.vpc.app.vainruling.plugins.academic.web.dialog;
 
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.ui.UIConstants;
-import net.vpc.app.vainruling.api.web.obj.PropertyView;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.app.vainruling.core.web.obj.PropertyView;
 import org.springframework.stereotype.Component;
-import net.vpc.app.vainruling.api.web.obj.PropertyViewDialog;
+import net.vpc.app.vainruling.core.web.obj.PropertyViewDialog;
 
 /**
  *

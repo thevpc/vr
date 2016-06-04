@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.api.web.UCtrl;
+import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.MultiRecord;
 import net.vpc.upa.Record;
@@ -125,12 +125,12 @@ public class DevToolsCtrl {
     public void exec() {
         String q = getModel().getQuery();
         if (q != null && q.trim().length() > 0) {
+            clear();
             if (getModel().isSql()) {
-                clear();
                 q = q.trim();
                 if (q.toLowerCase().startsWith("select")) {
                     try {
-                        QueryResult r = UPA.getPersistenceUnit().getPersistenceStore().getConnection().executeQuery(q, null, null, false);
+                        QueryResult r = UPA.getPersistenceUnit().getConnection().executeQuery(q, null, null, false);
                         final int fieldsCount = r.getFieldsCount();
                         for (int i = 0; i < fieldsCount; i++) {
                             getModel().getRowNames().add(new ColDef("C" + (i + 1), i));
@@ -151,7 +151,7 @@ public class DevToolsCtrl {
                     }
                 } else {
                     try {
-                        int r = UPA.getPersistenceUnit().getPersistenceStore().getConnection().executeNonQuery(q, new ArrayList<Parameter>(), new ArrayList<Parameter>());
+                        int r = UPA.getPersistenceUnit().getConnection().executeNonQuery(q, new ArrayList<Parameter>(), new ArrayList<Parameter>());
                         List<Object> row = Arrays.asList((Object) r);
                         getModel().getRows().add((List<Object>) row);
                         getModel().getRowNames().add(new ColDef("<Result>", 0));

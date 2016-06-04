@@ -6,10 +6,10 @@
 package net.vpc.app.vainruling.core.web.admin.actions;
 
 import java.util.List;
-import net.vpc.app.vainruling.api.EntityAction;
-import net.vpc.app.vainruling.api.model.AppConfig;
-import net.vpc.app.vainruling.api.web.ctrl.EditCtrlMode;
-import net.vpc.app.vainruling.api.web.obj.ActionDialog;
+import net.vpc.app.vainruling.core.service.obj.EntityAction;
+import net.vpc.app.vainruling.core.service.model.AppConfig;
+import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
+import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.UPA;
 

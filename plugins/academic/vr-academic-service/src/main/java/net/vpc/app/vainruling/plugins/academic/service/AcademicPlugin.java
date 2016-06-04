@@ -28,9 +28,11 @@ import jxl.read.biff.BiffException;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
-import net.vpc.app.vainruling.api.AppEntityExtendedPropertiesProvider;
-import net.vpc.app.vainruling.api.AppPlugin;
-import net.vpc.app.vainruling.api.model.AppPeriod;
+import net.vpc.app.vainruling.core.service.*;
+import net.vpc.app.vainruling.core.service.cache.CacheService;
+import net.vpc.app.vainruling.core.service.fs.FileSystemService;
+import net.vpc.app.vainruling.core.service.obj.AppEntityExtendedPropertiesProvider;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseGroup;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseLevel;
@@ -58,22 +60,17 @@ import net.vpc.app.vainruling.plugins.academic.service.model.stat.ModuleSemester
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.ModuleStat;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherSemesterStat;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherStat;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.Install;
-import net.vpc.app.vainruling.api.Start;
-import net.vpc.app.vainruling.api.TraceService;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.model.AppCivility;
-import net.vpc.app.vainruling.api.model.AppContact;
-import net.vpc.app.vainruling.api.model.AppDepartment;
-import net.vpc.app.vainruling.api.model.AppGender;
-import net.vpc.app.vainruling.api.model.AppProfile;
-import net.vpc.app.vainruling.api.model.AppUser;
-import net.vpc.app.vainruling.api.model.AppUserType;
-import net.vpc.app.vainruling.api.security.UserSession;
-import net.vpc.app.vainruling.api.util.ExcelTemplate;
-import net.vpc.app.vainruling.api.util.NamedDoubles;
-import net.vpc.app.vainruling.api.util.VrHelper;
+import net.vpc.app.vainruling.core.service.model.AppCivility;
+import net.vpc.app.vainruling.core.service.model.AppContact;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppGender;
+import net.vpc.app.vainruling.core.service.model.AppProfile;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.AppUserType;
+import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.util.ExcelTemplate;
+import net.vpc.app.vainruling.core.service.util.NamedDoubles;
+import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicBac;
@@ -82,16 +79,13 @@ import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudent
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.GlobalAssignmentStat;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.GlobalStat;
-import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
 import net.vpc.common.streams.PathInfo;
 import net.vpc.common.strings.MapStringConverter;
 import net.vpc.common.strings.StringComparator;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.utils.Chronometer;
+import net.vpc.common.util.Chronometer;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
-import net.vpc.upa.expressions.Order;
-import net.vpc.upa.expressions.Var;
 import net.vpc.upa.types.DateTime;
 import net.vpc.common.vfs.VFS;
 import net.vpc.common.vfs.VFile;
@@ -106,7 +100,8 @@ import org.springframework.util.PropertyPlaceholderHelper;
  *
  * @author vpc
  */
-@AppPlugin(version = "1.9", dependsOn = {"fileSystemPlugin", "commonModel"})
+@AppPlugin(version = "1.9")
+@UpaAware
 public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     private static final Logger log = Logger.getLogger(AcademicPlugin.class.getName());
@@ -116,7 +111,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     @Autowired
     CorePlugin core;
     @Autowired
-    FileSystemPlugin fileSystemPlugin;
+    FileSystemService fileSystemService;
+    @Autowired
+    CacheService cacheService;
+
     public static final int DEFAULT_SEMESTER_MAX_WEEKS = 14;
 
     private static PropertyPlaceholderHelper h = new PropertyPlaceholderHelper("${", "}");
@@ -139,7 +137,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             if (a.getTeacher() != null && a.getTeacher().getContact() != null) {
                 String n = VrHelper.toValideFileName(a.getTeacher().getContact().getFullName());
                 String c = VrHelper.toValideFileName(a.getFullName());
-                VFile r = fileSystemPlugin.getFileSystem().get(path + "/" + n + "/" + c);
+                VFile r = fileSystemService.getFileSystem().get(path + "/" + n + "/" + c);
                 r.mkdirs();
             }
         }
@@ -201,14 +199,14 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
 
         teacher_stat.setSemestrialLoad(findTeacherSemestrialLoads.toArray(new AcademicTeacherSemestrialLoad[findTeacherSemestrialLoads.size()]));
-        List<AcademicSemester> semesters = findSemesters();
+        List<AcademicSemester> semesters = cache.getAcademicSemesterList();
         TeacherSemesterStat[] sems = new TeacherSemesterStat[semesters.size()];
         teacher_stat.setSemesters(sems);
         double sum_semester_weeks = 0;
         double sum_max_semester_weeks = 0;
         LoadValue teacher_extraWeek = teacher_stat.getExtraWeek();
         LoadValue teacher_extra = teacher_stat.getExtra();
-        int maxWeeks = getSemesterMaxWeeks();
+        int maxWeeks = cache.getSemesterMaxWeeks();
         for (int i = 0; i < sems.length; i++) {
             AcademicSemester ss = semesters.get(i);
             TeacherSemesterStat sem = new TeacherSemesterStat();
@@ -628,7 +626,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
         for (TeacherStat st : stats) {
             String pp = soutput.replace("*", AppContact.getName(st.getTeacher().getContact()));
-            VFile f2 = fileSystemPlugin.getFileSystem().get(pp);
+            VFile f2 = fileSystemService.getFileSystem().get(pp);
             f2.getParentFile().mkdirs();
             Map<String, Object> p = preparePrintableTeacherLoadProperties(st, cache);
             if (writeVars) {
@@ -636,7 +634,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             }
             AppUser u = st.getTeacher().getUser();
             if (u != null) {
-                VFile mydocs = fileSystemPlugin.getUserDocumentsFolder(u.getLogin());
+                VFile mydocs = fileSystemService.getUserDocumentsFolder(u.getLogin());
                 mydocs.get("Charges").mkdirs();
                 ExcelTemplate.generateExcel(template, f2, p);
                 f2.copyTo(mydocs.get("Charges").get(f2.getName()));
@@ -945,9 +943,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         double contrEquivTot = s.getAssignment(null, Contractuel, null).getValue().getEquiv();
         double vacEquivTot = s.getAssignment(null, Vacataire, null).getValue().getEquiv();
         double missingAss = ta.getMissingAssignments().getEquiv();
-        int maxWeeks = getSemesterMaxWeeks();
+        int maxWeeks = cache.getSemesterMaxWeeks();
         neededByDue.getValue().setEquiv(permEquivTot - permEquivDu + contrEquivTot + vacEquivTot + missingAss);
-        neededByDue.getValueWeek().setEquiv(neededByDue.getValue().getEquiv() / maxWeeks / findSemesters().size());
+        List<AcademicSemester> semesters = cache.getAcademicSemesterList();
+        neededByDue.getValueWeek().setEquiv(neededByDue.getValue().getEquiv() / maxWeeks / semesters.size());
         neededByDue.setTeachersCount(
                 (int) Math.ceil(
                         neededByDue.getValueWeek().getEquiv() / assistant.getValueDU()
@@ -955,7 +954,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         );
 
         neededRelative.getValue().setEquiv(contrEquivTot + vacEquivTot + missingAss);
-        neededRelative.getValueWeek().setEquiv(neededRelative.getValue().getEquiv() / maxWeeks / findSemesters().size());
+        neededRelative.getValueWeek().setEquiv(neededRelative.getValue().getEquiv() / maxWeeks / semesters.size());
         neededRelative.setTeachersCount(
                 (int) Math.ceil(
                         neededRelative.getValueWeek().getEquiv() / assistant.getValueDU()
@@ -965,7 +964,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         double contratMiss = 6;
         GlobalAssignmentStat missingStat = s.getMissing();
         missingStat.getValue().set(ta.getMissingAssignments());
-        missingStat.getValueWeek().set(missingStat.getValue()).div(maxWeeks * findSemesters().size());
+        missingStat.getValueWeek().set(missingStat.getValue()).div(maxWeeks * semesters.size());
         missingStat.setTeachersCount(
                 (int) Math.ceil(
                         missingStat.getValueWeek().getEquiv() / contratMiss
@@ -1189,6 +1188,52 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         writeVars(p, output);
         ExcelTemplate.generateExcel(template, output, p);
         log.log(Level.FINE, "generateCourseListLoadsFile in {0}", new Object[]{ch.stop()});
+    }
+
+    public AcademicTeacher findCurrentHeadOfDepartment() {
+        UserSession sm = VrApp.getBean(UserSession.class);
+        AppUser user = (sm == null) ? null : sm.getUser();
+        if(user==null || user.getDepartment()==null){
+            return null;
+        }
+        return findHeadOfDepartment(user.getDepartment().getId());
+    }
+
+    public boolean isCurrentManager() {
+        UserSession sm = VrApp.getBean(UserSession.class);
+        AppUser user = (sm == null) ? null : sm.getUser();
+        if(user==null || user.getDepartment()==null){
+            return false;
+        }
+        for (AppProfile u : core.findProfilesByUser(user.getId())) {
+            String name = u.getName();
+            if("HeadOfDepartment".equals(name)){
+                //check if same department
+                return true;
+            }
+            if("DirectorOfStudies".equals(name)){
+                //check if same department
+                return true;
+            }
+            if("Director".equals(name)){
+                //check if same department
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isCurrentHeadOfDepartment() {
+        UserSession sm = VrApp.getBean(UserSession.class);
+        AppUser user = (sm == null) ? null : sm.getUser();
+        if(user==null || user.getDepartment()==null){
+            return false;
+        }
+        AcademicTeacher d = findHeadOfDepartment(user.getDepartment().getId());
+        if(d.getUser()!=null && d.getUser().getId()==user.getId()){
+            return true;
+        }
+        return false;
     }
 
     public AcademicTeacher findHeadOfDepartment(int depId) {
@@ -1519,7 +1564,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public List<AcademicTeacher> findTeachers() {
-        return UPA.getPersistenceUnit().findAll(AcademicTeacher.class);
+        return cacheService.getList(AcademicTeacher.class);
+
+        //return UPA.getPersistenceUnit().findAll(AcademicTeacher.class);
     }
 
     public List<AcademicTeacher> findEnabledTeachers() {
@@ -1530,12 +1577,26 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return UPA.getPersistenceUnit().createQuery("Select u from AcademicStudent u where u.deleted=false order by u.contact.fullName").getEntityList();
     }
 
-    public List<AcademicStudent> findStudents(String studentProfileFilter) {
-        List<AcademicStudent> base = findStudents();
+    /**
+     *
+     * @param studentFilter ql expression x based. example "x.fullName like '%R%'"
+     * @return
+     */
+    public List<AcademicStudent> findStudents(String studentFilter) {
+        return UPA.getPersistenceUnit().createQuery("Select x from AcademicStudent x " +
+                " where " +
+                " x.deleted=false " +
+                ((StringUtils.isEmpty(studentFilter)) ? "" : (" and " + studentFilter)) +
+                " order by x.contact.fullName").getEntityList();
+    }
+
+    public List<AcademicStudent> findStudents(String studentProfileFilter,String studentFilter) {
+        List<AcademicStudent> base = findStudents(studentFilter);
         if (!StringUtils.isEmpty(studentProfileFilter)) {
             List<AcademicStudent> goodStudents = new ArrayList<>();
             HashSet<Integer> goodUsers = new HashSet<Integer>();
-            List<AppUser> users = VrApp.getBean(CorePlugin.class).findUsersByProfileFilter(studentProfileFilter);
+            AppUserType studentType = core.findUserType("Student");
+            List<AppUser> users = VrApp.getBean(CorePlugin.class).findUsersByProfileFilter(studentProfileFilter,studentType.getId());
             for (AppUser user : users) {
                 goodUsers.add(user.getId());
             }
@@ -1556,7 +1617,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (!StringUtils.isEmpty(teacherProfileFilter)) {
             List<AcademicTeacher> goodTeachers = new ArrayList<>();
             HashSet<Integer> goodUsers = new HashSet<Integer>();
-            List<AppUser> users = VrApp.getBean(CorePlugin.class).findUsersByProfileFilter(teacherProfileFilter);
+            AppUserType teacherType = core.findUserType("Teacher");
+            List<AppUser> users = VrApp.getBean(CorePlugin.class).findUsersByProfileFilter(teacherProfileFilter,teacherType.getId());
             for (AppUser user : users) {
                 goodUsers.add(user.getId());
             }
@@ -1668,8 +1730,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public List<AcademicSemester> findSemesters() {
-        return UPA.getPersistenceUnit().createQueryBuilder(AcademicSemester.class).setOrder(new Order().addOrder(new Var("name"), true))
-                .getEntityList();
+        return cacheService.getList(AcademicSemester.class);
+//        return UPA.getPersistenceUnit().createQueryBuilder(AcademicSemester.class).setOrder(new Order().addOrder(new Var("name"), true))
+//                .getEntityList();
     }
 
     public AcademicProgram findProgram(int departmentId, String t) {
@@ -1797,7 +1860,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public void resetModuleTeaching() {
         resetCurrentYear();
         resetHistAcademicYears();
-        trace.trace("resetModuleTeaching", "reset Module Academic", null, getClass().getSimpleName(), Level.FINE);
+        trace.trace("resetModuleTeaching", "reset Module Academic", null, "academicPlugin", Level.FINE);
     }
 
     public void resetTeachers() {
@@ -1826,7 +1889,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //        UPA.getPersistenceUnit().createQuery("delete from AcademicSemester").executeNonQuery();
 //        UPA.getPersistenceUnit().createQuery("delete from AcademicTeacherSituation").executeNonQuery();
 //        UPA.getPersistenceUnit().createQuery("delete from AcademicTeacherDegree").executeNonQuery();
-        trace.trace("resetCurrentYear", "reset Module Academic", null, getClass().getSimpleName(), Level.FINE);
+        trace.trace("resetCurrentYear", "reset Module Academic", null, "academicPlugin", Level.FINE);
     }
 
     public AcademicCourseAssignment findCourseAssignment(int courseAssignmentId) {
@@ -1834,11 +1897,12 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public AcademicTeacher findTeacher(int t) {
-        return (AcademicTeacher) UPA.getPersistenceUnit()
-                .createQuery("Select u from AcademicTeacher u where u.id=:id")
-                .setParameter("id", t)
-                .setHint("navigationDepth", 5)
-                .getEntity();
+        return cacheService .getList(AcademicTeacher.class).getByKey(t);
+//        return (AcademicTeacher) UPA.getPersistenceUnit()
+//                .createQuery("Select u from AcademicTeacher u where u.id=:id")
+//                .setParameter("id", t)
+//                .setHint("navigationDepth", 5)
+//                .getEntity();
 //                .findById(AcademicTeacher.class, t);
     }
 
@@ -2008,7 +2072,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     protected VirtualFileSystem getFileSystem() {
-        return this.fileSystemPlugin.getFileSystem();
+        return this.fileSystemService.getFileSystem();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -2170,7 +2234,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistCoursePlan a where a.academiYear=:y").setParameter("y", year).executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistCourseGroup a where a.courseLevel.program.academiYear=:y").setParameter("y", year).executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistProgram a where a.academiYear=:y").setParameter("y", year).executeNonQuery();
-        trace.trace("resetAcademicYear", "reset Academic Year", String.valueOf(year), getClass().getSimpleName(), Level.FINE);
+        trace.trace("resetAcademicYear", "reset Academic Year", String.valueOf(year), "academicPlugin", Level.FINE);
     }
 
     public void resetHistAcademicYears() {
@@ -2181,7 +2245,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistCoursePlan").executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistCourseGroup").executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistProgram").executeNonQuery();
-        trace.trace("resetHistAcademicYears", "reset Academic Years", "", getClass().getSimpleName(), Level.FINE);
+        trace.trace("resetHistAcademicYears", "reset Academic Years", "", "academicPlugin", Level.FINE);
     }
 
     public List<AcademicHistTeacherAnnualLoad> findHistTeacherAnnualLoads(int year) {
@@ -2491,7 +2555,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
             AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
 
-            net.vpc.common.vfs.VirtualFileSystem fs = this.fileSystemPlugin.getFileSystem();
+            net.vpc.common.vfs.VirtualFileSystem fs = this.fileSystemService.getFileSystem();
             s.resetModuleTeaching();
             s.importFile(
                     fs.get(dataFolder),
@@ -3085,12 +3149,36 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         generateTeacherAssignementDocumentsFolder();
     }
 
-    public List<AcademicClass> findStudentClasses(int studentId) {
+    public List<AcademicClass> findStudentClasses(int studentId,boolean down,boolean up) {
         AcademicStudent student = findStudent(studentId);
         if (student == null) {
             return Collections.EMPTY_LIST;
         }
-        return findAcademicDownHierarchyList(new AcademicClass[]{student.getLastClass1(), student.getLastClass2(), student.getLastClass3()}, null);
+        AcademicClass[] refs=new AcademicClass[]{student.getLastClass1(), student.getLastClass2(), student.getLastClass3()};
+        List<AcademicClass> upList=null;
+        List<AcademicClass> downList=null;
+        Map<Integer, AcademicClass> mm = findAcademicClassesMap();
+        if(down){
+            upList=findAcademicDownHierarchyList(refs, mm);
+        }
+        if(up){
+            upList=findAcademicUpHierarchyList(refs, mm);
+        }
+        HashSet<Integer> visited=new HashSet<>();
+        List<AcademicClass> all=new ArrayList<>();
+        for (List<AcademicClass> cls : Arrays.asList(upList, Arrays.asList(refs),downList)) {
+            if(cls!=null){
+                for (AcademicClass a : cls) {
+                    if(a!=null){
+                        if(!visited.contains(a.getId())){
+                            visited.add(a.getId());
+                            all.add(a);
+                        }
+                    }
+                }
+            }
+        }
+        return all;
 
     }
 }

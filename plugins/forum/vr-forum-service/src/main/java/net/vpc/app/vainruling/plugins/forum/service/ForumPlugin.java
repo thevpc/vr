@@ -5,14 +5,16 @@
  */
 package net.vpc.app.vainruling.plugins.forum.service;
 
-import net.vpc.app.vainruling.api.AppPlugin;
-import net.vpc.app.vainruling.api.Install;
+import net.vpc.app.vainruling.core.service.AppPlugin;
+import net.vpc.app.vainruling.core.service.Install;
+import net.vpc.app.vainruling.core.service.UpaAware;
 
 /**
  *
  * @author vpc
  */
 @AppPlugin
+@UpaAware
 public class ForumPlugin {
 
     @Install

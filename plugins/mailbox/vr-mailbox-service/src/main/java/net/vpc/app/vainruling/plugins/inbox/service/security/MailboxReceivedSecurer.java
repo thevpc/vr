@@ -5,8 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.inbox.service.security;
 
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.upa.DefaultEntitySecurityManager;
 import net.vpc.upa.Entity;
 import net.vpc.upa.config.SecurityContext;

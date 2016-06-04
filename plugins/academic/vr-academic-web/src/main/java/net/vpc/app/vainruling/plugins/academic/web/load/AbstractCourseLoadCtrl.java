@@ -8,7 +8,6 @@ package net.vpc.app.vainruling.plugins.academic.web.load;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfo;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,14 +18,14 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherStat;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.model.AppDepartment;
-import net.vpc.app.vainruling.api.model.AppUser;
-import net.vpc.app.vainruling.api.security.UserSession;
-import net.vpc.app.vainruling.api.util.VrHelper;
-import net.vpc.app.vainruling.api.web.OnPageLoad;
-import net.vpc.app.vainruling.api.web.VrMenuManager;
-import net.vpc.app.vainruling.api.web.obj.ObjCtrl;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
+import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.plugins.academic.service.StatCache;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
@@ -101,6 +100,7 @@ public abstract class AbstractCourseLoadCtrl {
         getModel().setFilterSelectItems(allValidFilters.toArray(new SelectItem[allValidFilters.size()]));
 
         AcademicTeacher t = getCurrentTeacher();
+        getModel().setCurrentTeacher(t);
         boolean assigned = isFiltered("assigned");
         boolean nonassigned = isFiltered("non-assigned");
         boolean intended = isFiltered("intended");
@@ -195,7 +195,7 @@ public abstract class AbstractCourseLoadCtrl {
 
     public void addToMine(Integer assignementId) {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getCurrentTeacher();
+        AcademicTeacher t = getModel().getCurrentTeacher();
         if (t != null && assignementId != null) {
             a.addIntent(t.getId(), assignementId);
         }
@@ -204,7 +204,7 @@ public abstract class AbstractCourseLoadCtrl {
 
     public void removeFromMine(Integer assignementId) {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getCurrentTeacher();
+        AcademicTeacher t = getModel().getCurrentTeacher();
         if (t != null && assignementId != null) {
             a.removeIntent(t.getId(), assignementId);
         }
@@ -221,7 +221,7 @@ public abstract class AbstractCourseLoadCtrl {
 
     public void doUnAssign(Integer assignementId) {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getCurrentTeacher();
+        AcademicTeacher t = getModel().getCurrentTeacher();
         if (t != null && assignementId != null) {
             a.removeTeacherAcademicCourseAssignment(assignementId);
         }
@@ -230,7 +230,7 @@ public abstract class AbstractCourseLoadCtrl {
 
     public void doAssign(Integer assignementId) {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getCurrentTeacher();
+        AcademicTeacher t = getModel().getCurrentTeacher();
         if (t != null && assignementId != null) {
             a.addTeacherAcademicCourseAssignment(t.getId(), assignementId);
         }
@@ -376,6 +376,16 @@ public abstract class AbstractCourseLoadCtrl {
         String[] defaultFilters = {"situation", "degree", "valueWeek", "extraWeek", "c", "td", "tp", "pm"};
         String[] othersFilters = defaultFilters;
         SelectItem[] filterSelectItems = new SelectItem[0];
+
+        AcademicTeacher currentTeacher;
+
+        public AcademicTeacher getCurrentTeacher() {
+            return currentTeacher;
+        }
+
+        public void setCurrentTeacher(AcademicTeacher currentTeacher) {
+            this.currentTeacher = currentTeacher;
+        }
 
         public List<AcademicCourseAssignmentInfo> getMineS1() {
             return mineS1;

@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.tasks.service.model;
 
-import net.vpc.app.vainruling.api.model.AppProfile;
+import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;

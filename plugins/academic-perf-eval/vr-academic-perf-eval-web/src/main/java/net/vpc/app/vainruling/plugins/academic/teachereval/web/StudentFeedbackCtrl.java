@@ -13,10 +13,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.web.OnPageLoad;
-import net.vpc.app.vainruling.api.web.UCtrl;
-import net.vpc.app.vainruling.api.web.UPathItem;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackGroup;
@@ -139,7 +139,7 @@ public class StudentFeedbackCtrl {
                 onReloadFeedbacks();
                 FacesUtils.addInfoMessage("Formulaire validé");
             } else {
-                FacesUtils.addErrorMessage("Merci de repondre à toutes les questions");
+                FacesUtils.addErrorMessage("Merci de repondre à toutes les questions avant de valider");
             }
         }else{
                 FacesUtils.addInfoMessage("Formulaire enregistré");

@@ -6,8 +6,8 @@
 package net.vpc.app.vainruling.plugins.devtoolbox.web;
 
 import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.web.UCtrl;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.plugins.devtoolbox.service.DevSrv;
 import net.vpc.common.strings.StringUtils;
 import org.springframework.context.annotation.Scope;

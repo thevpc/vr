@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.inventory.service.model;
 
-import net.vpc.app.vainruling.api.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.upa.RelationshipType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;

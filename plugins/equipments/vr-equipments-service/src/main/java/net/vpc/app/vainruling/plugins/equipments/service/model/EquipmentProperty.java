@@ -25,15 +25,15 @@ public class EquipmentProperty {
     @Id
     @Sequence
     private int id;
-    
+
     @ManyToOne(type = RelationshipType.COMPOSITION)
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private Equipment equipment;
-    
+
     @Field(modifiers = UserFieldModifier.MAIN)
     private String name;
-    
-    @Field(max = "400",modifiers = UserFieldModifier.SUMMARY)
+
+    @Field(max = "400", modifiers = UserFieldModifier.SUMMARY)
     private String value;
 
     public int getId() {
@@ -66,6 +66,11 @@ public class EquipmentProperty {
 
     public void setEquipment(Equipment equipment) {
         this.equipment = equipment;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(name);
     }
 
 }

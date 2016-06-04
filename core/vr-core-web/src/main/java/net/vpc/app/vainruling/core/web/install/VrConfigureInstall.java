@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
-import net.vpc.app.vainruling.api.model.AppProperty;
+import net.vpc.app.vainruling.core.service.model.AppProperty;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.QueryBuilder;

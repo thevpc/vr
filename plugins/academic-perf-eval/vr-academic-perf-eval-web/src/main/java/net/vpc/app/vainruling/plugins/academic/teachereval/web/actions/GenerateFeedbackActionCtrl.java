@@ -9,9 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.util.VrHelper;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.common.strings.StringUtils;
 import org.primefaces.context.RequestContext;
@@ -98,7 +98,7 @@ public class GenerateFeedbackActionCtrl {
     }
 
     public void fireEventExtraDialogApply() {
-        VrApp.getBean(AcademicPerfEvalPlugin.class).generatedStudentsFeedbackForm(
+        VrApp.getBean(AcademicPerfEvalPlugin.class).generateStudentsFeedbackForm(
                 getModel().getModelId(),
                 getModel().getFilter()
         );

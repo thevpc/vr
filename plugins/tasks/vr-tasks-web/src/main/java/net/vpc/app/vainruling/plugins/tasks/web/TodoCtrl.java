@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.model.AppUser;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
 import net.vpc.app.vainruling.plugins.tasks.service.model.Todo;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoCategory;
@@ -19,16 +19,16 @@ import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoPriority;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatus;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatusType;
-import net.vpc.app.vainruling.api.web.BreadcrumbItem;
-import net.vpc.app.vainruling.api.web.OnPageLoad;
-import net.vpc.app.vainruling.api.web.UCtrl;
-import net.vpc.app.vainruling.api.web.UCtrlData;
-import net.vpc.app.vainruling.api.web.UCtrlProvider;
-import net.vpc.app.vainruling.api.web.UPathItem;
-import net.vpc.app.vainruling.api.web.VRMenuDef;
-import net.vpc.app.vainruling.api.web.VRMenuDefFactory;
-import net.vpc.app.vainruling.api.web.ctrl.AbstractObjectCtrl;
-import net.vpc.app.vainruling.api.web.ctrl.EditCtrlMode;
+import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
+import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.UCtrlData;
+import net.vpc.app.vainruling.core.web.UCtrlProvider;
+import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
+import net.vpc.app.vainruling.core.web.menu.VRMenuDefFactory;
+import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
+import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.common.strings.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -398,7 +398,6 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
     public List<VRMenuDef> createVRMenuDefList() {
         List<VRMenuDef> ok = new ArrayList<>();
         for (TodoList findTodoListsByResp : todoService.findTodoListsByResp(null)) {
-            VrApp.getBean(CorePlugin.class).createRight("Custom.Todo." + findTodoListsByResp.getName(), "TODO " + findTodoListsByResp.getName());
             final VRMenuDef vrMenuDef = new VRMenuDef(findTodoListsByResp.getName(), "/Todo", "todo", findTodoListsByResp.getName(),
                     "Custom.Todo." + findTodoListsByResp.getName(),""
             );
@@ -412,16 +411,12 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
     public UCtrlData getUCtrl(String cmd) {
         String listName = cmd;
         String title = "?";
-        TodoList list = todoService.findTodoList(listName);
-        if (list != null) {
-
-            if (TodoList.LABO_ACTION.equals(list.getName())) {
-                title = ("Mes Actions Labo");
-            } else if (TodoList.LABO_TICKET.equals(list.getName())) {
-                title = ("Mes Ticktes Labo");
-            } else {
-                title = (list.getName());
-            }
+        if (TodoList.LABO_ACTION.equals(listName)) {
+            title = ("Mes Actions Labo");
+        } else if (TodoList.LABO_TICKET.equals(listName)) {
+            title = ("Mes Ticktes Labo");
+        } else {
+            title = (listName);
         }
 
         UCtrlData d = new UCtrlData();

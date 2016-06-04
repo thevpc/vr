@@ -15,15 +15,15 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import net.vpc.app.vainruling.api.AppPlugin;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.core.Plugin;
-import net.vpc.app.vainruling.api.core.PluginManagerService;
-import net.vpc.app.vainruling.api.i18n.I18n;
-import net.vpc.app.vainruling.api.model.AppVersion;
+import javax.naming.InitialContext;
+
+import net.vpc.app.vainruling.core.service.util.I18n;
+import net.vpc.app.vainruling.core.service.model.AppVersion;
+import net.vpc.app.vainruling.core.service.util.Reflector;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
+import net.vpc.upa.VoidAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
  * @author vpc
  */
 @Service
-@DependsOn(value = {"i18n", "vrApp", "pluginManagerService"})
+@DependsOn(value = {"i18n", "vrApp"})
 public class BootstrapService {
 
     private static final Logger log = Logger.getLogger(BootstrapService.class.getName());
@@ -46,13 +46,18 @@ public class BootstrapService {
         i18n.register("i18n.dictionary");
         i18n.register("i18n.presentation");
         i18n.register("i18n.service");
-        UPA.getContext().invokePrivileged(new Action<Object>() {
+//        try {
+//            InitialContext c = new InitialContext();
+//            c.bind("java:comp/env/datasource", VrApp.getContext().getBean("datasource"));
+//        }catch(Exception ex){
+//            ex.printStackTrace();
+//        }
+        UPA.getContext().invokePrivileged(new VoidAction() {
             @Override
-            public Object run() {
+            public void run() {
                 tryInstall();
-                return null;
             }
-        }, null);
+        });
     }
 
     private List<String> getOrderedPlugins() {
@@ -60,7 +65,7 @@ public class BootstrapService {
         ArrayList<String> ordered = new ArrayList<>();
         for (String k : s.keySet()) {
             Object o1 = VrApp.getContext().getBean(k);
-            AppPlugin a1 = o1.getClass().getAnnotation(AppPlugin.class);
+            AppPlugin a1 = (AppPlugin) Reflector.getTargetClass(o1).getAnnotation(AppPlugin.class);
             for (String d : a1.dependsOn()) {
                 VrApp.getContext().getBean(d);
             }
@@ -71,9 +76,9 @@ public class BootstrapService {
             @Override
             public int compare(String s1, String s2) {
                 Object o1 = VrApp.getContext().getBean(s1);
-                AppPlugin a1 = o1.getClass().getAnnotation(AppPlugin.class);
+                AppPlugin a1 = (AppPlugin) Reflector.getTargetClass(o1).getAnnotation(AppPlugin.class);
                 Object o2 = VrApp.getContext().getBean(s1);
-                AppPlugin a2 = o2.getClass().getAnnotation(AppPlugin.class);
+                AppPlugin a2 = (AppPlugin) Reflector.getTargetClass(o2).getAnnotation(AppPlugin.class);
                 HashSet<String> hs1 = new HashSet<>(Arrays.asList(a1.dependsOn()));
                 HashSet<String> hs2 = new HashSet<>(Arrays.asList(a2.dependsOn()));
                 if (!s1.equals("coreService")) {
@@ -98,13 +103,13 @@ public class BootstrapService {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         ArrayList<Plugin> toInstall = new ArrayList<>();
         ArrayList<Plugin> toStart = new ArrayList<>();
-        for (Plugin pp : VrApp.getBean(PluginManagerService.class).getPlugins()) {
+        for (Plugin pp : VrApp.getBean(CorePlugin.class).getPlugins()) {
             String sver = pp.getVersion();
             AppVersion v = (AppVersion) pu.findById(AppVersion.class, pp.getBeanName());
             boolean ignore = false;
             if (v == null || !sver.equals(v.getServiceVersion()) || !v.isCoherent()) {
                 if (v != null && !v.isActive()) {
-                    log.log(Level.INFO, "Plugin {0} is diactivated (version {1})", new Object[]{pp.getBeanName(), pp.getVersion()});
+                    log.log(Level.INFO, "Plugin {0} is deactivated (version {1})", new Object[]{pp.getBeanName(), pp.getVersion()});
                     //ignore
                     ignore = true;
                 } else {

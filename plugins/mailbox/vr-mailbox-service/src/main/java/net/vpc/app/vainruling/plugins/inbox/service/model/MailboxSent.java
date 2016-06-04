@@ -6,8 +6,8 @@
 package net.vpc.app.vainruling.plugins.inbox.service.model;
 
 import java.sql.Timestamp;
-import net.vpc.app.vainruling.api.model.AppUser;
-import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;

@@ -5,10 +5,10 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service;
 
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.model.AppUser;
-import net.vpc.app.vainruling.api.model.AppUserType;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.AppUserType;
 import net.vpc.upa.Entity;
 import net.vpc.upa.EntityModifier;
 import net.vpc.upa.PersistenceUnit;

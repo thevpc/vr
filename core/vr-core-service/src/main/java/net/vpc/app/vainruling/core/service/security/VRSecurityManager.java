@@ -5,14 +5,13 @@
  */
 package net.vpc.app.vainruling.core.service.security;
 
-import net.vpc.app.vainruling.api.security.UserSession;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.TraceService;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.model.AppUser;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.TraceService;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.upa.DefaultUserPrincipal;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;

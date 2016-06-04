@@ -7,10 +7,10 @@ package net.vpc.app.vainruling.core.web.ctrl;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.web.OnPageLoad;
-import net.vpc.app.vainruling.api.web.UCtrl;
-import net.vpc.app.vainruling.api.web.VrMenuManager;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 
 /**
  *

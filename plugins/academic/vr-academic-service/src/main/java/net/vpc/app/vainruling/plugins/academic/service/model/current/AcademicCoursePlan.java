@@ -6,8 +6,7 @@
 package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
 import java.sql.Timestamp;
-import net.vpc.app.vainruling.api.ui.UIConstants;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;

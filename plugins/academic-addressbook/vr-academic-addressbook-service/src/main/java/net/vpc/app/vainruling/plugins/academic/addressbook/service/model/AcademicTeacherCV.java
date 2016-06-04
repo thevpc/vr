@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.addressbook.service.model;
 
-import net.vpc.app.vainruling.api.ui.UIConstants;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.UserFieldModifier;

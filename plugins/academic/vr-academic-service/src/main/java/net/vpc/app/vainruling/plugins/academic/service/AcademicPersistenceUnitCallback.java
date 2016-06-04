@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service;
 
-import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.upa.callbacks.PersistenceUnitEvent;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.config.OnPreUpdateFormula;

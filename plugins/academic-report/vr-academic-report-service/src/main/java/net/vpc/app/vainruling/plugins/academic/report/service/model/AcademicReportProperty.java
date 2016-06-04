@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.report.service.model;
 
-import net.vpc.app.vainruling.api.AppPropertyTypeKind;
+import net.vpc.app.vainruling.core.service.model.AppPropertyTypeKind;
 import net.vpc.upa.RelationshipType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;

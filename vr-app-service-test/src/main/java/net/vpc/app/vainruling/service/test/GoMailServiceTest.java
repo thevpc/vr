@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.common.gomail.GoMail;
 import net.vpc.common.gomail.GoMailDataSourceFactory;

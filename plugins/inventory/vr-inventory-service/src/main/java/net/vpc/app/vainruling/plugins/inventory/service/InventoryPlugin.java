@@ -5,10 +5,10 @@
  */
 package net.vpc.app.vainruling.plugins.inventory.service;
 
-import net.vpc.app.vainruling.api.AppPlugin;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.Install;
-import net.vpc.app.vainruling.plugins.inventory.service.model.Inventory;
+import net.vpc.app.vainruling.core.service.AppPlugin;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.Install;
+import net.vpc.app.vainruling.core.service.UpaAware;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @AppPlugin(
         version = "1.0", dependsOn = {"equipmentPlugin"}
 )
+@UpaAware
 public class InventoryPlugin {
 
     @Autowired

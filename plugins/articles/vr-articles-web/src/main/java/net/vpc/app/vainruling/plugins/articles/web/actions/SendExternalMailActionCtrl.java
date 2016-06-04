@@ -14,14 +14,15 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.VrNotificationEvent;
-import net.vpc.app.vainruling.api.VrNotificationSession;
-import net.vpc.app.vainruling.api.util.VrHelper;
-import net.vpc.app.vainruling.api.web.obj.ObjCtrl;
-import net.vpc.app.vainruling.api.web.obj.PropertyView;
-import net.vpc.app.vainruling.api.web.obj.PropertyViewManager;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
+import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
+import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
+import net.vpc.app.vainruling.core.web.obj.PropertyView;
+import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
+import net.vpc.app.vainruling.core.web.obj.ViewContext;
 import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
 import net.vpc.app.vainruling.plugins.inbox.service.model.EmailType;
@@ -82,11 +83,12 @@ public class SendExternalMailActionCtrl {
         if (config == null) {
             config = new Config();
         }
-        
-        PropertyView emailType = propertyViewManager.createPropertyView("emailType", EmailType.class, null)[0];
+
+        ViewContext viewContext = new ViewContext();
+        PropertyView emailType = propertyViewManager.createPropertyView("emailType", EmailType.class, null, viewContext)[0];
         getModel().setEmailType(emailType);
         //MailboxMessageFormat
-        getModel().setMailboxMessageFormat(propertyViewManager.createPropertyView("mailboxMessageFormat", MailboxMessageFormat.class, null)[0]);
+        getModel().setMailboxMessageFormat(propertyViewManager.createPropertyView("mailboxMessageFormat", MailboxMessageFormat.class, null, viewContext)[0]);
         String t = config.getTitle();
 
         getModel().setTitle(StringUtils.isEmpty(t) ? "Envoi de Mail" : t);

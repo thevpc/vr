@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.core.web.ctrl;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import net.vpc.app.vainruling.api.web.UCtrl;
+import net.vpc.app.vainruling.core.web.UCtrl;
 
 /**
  *

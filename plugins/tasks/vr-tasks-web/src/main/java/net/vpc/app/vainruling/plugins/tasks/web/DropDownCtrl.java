@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.plugins.tasks.web;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
-import net.vpc.app.vainruling.api.web.UCtrl;
+import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoPriority;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatusType;
 

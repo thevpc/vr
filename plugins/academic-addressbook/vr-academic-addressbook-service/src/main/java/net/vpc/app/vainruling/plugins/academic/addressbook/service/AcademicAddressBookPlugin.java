@@ -5,8 +5,9 @@
  */
 package net.vpc.app.vainruling.plugins.academic.addressbook.service;
 
-import net.vpc.app.vainruling.api.AppPlugin;
-import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.core.service.AppPlugin;
+import net.vpc.app.vainruling.core.service.UpaAware;
+import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.addressbook.service.model.AcademicTeacherCV;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
@@ -19,6 +20,7 @@ import net.vpc.upa.UPA;
  * @author vpc
  */
 @AppPlugin(dependsOn = "academicPlugin", version = "1.4")
+@UpaAware
 public class AcademicAddressBookPlugin {
 
     public void updateViewsCounterforTeacherCV(int t) {

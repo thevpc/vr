@@ -16,28 +16,25 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.api.AppPlugin;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.Install;
-import net.vpc.app.vainruling.api.ProfilePatternFilter;
-import net.vpc.app.vainruling.api.Start;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.VrNotificationEvent;
-import net.vpc.app.vainruling.api.VrNotificationManager;
-import net.vpc.app.vainruling.api.VrNotificationSession;
-import net.vpc.app.vainruling.api.model.AppProfile;
-import net.vpc.app.vainruling.api.util.VrHelper;
+
+import net.vpc.app.vainruling.core.service.*;
+import net.vpc.app.vainruling.core.service.fs.FileSystemService;
+import net.vpc.common.util.MultiMap;
+import net.vpc.app.vainruling.core.service.util.ProfilePatternFilter;
+import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
+import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
+import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
+import net.vpc.app.vainruling.core.service.model.AppProfile;
+import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesDisposition;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesFile;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
 import net.vpc.app.vainruling.plugins.inbox.service.model.EmailType;
 import net.vpc.app.vainruling.plugins.articles.service.model.FullArticle;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
-import net.vpc.app.vainruling.plugins.filesystem.service.FileSystemPlugin;
 import net.vpc.app.vainruling.plugins.inbox.service.MailData;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.common.strings.StringUtils;
@@ -52,13 +49,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author vpc
  */
-@AppPlugin(version = "1.8", dependsOn = {"mailboxPlugin", "fileSystemPlugin"})
+@AppPlugin(version = "1.8", dependsOn = {"mailboxPlugin"})
+@UpaAware
 public class ArticlesPlugin {
 
     @Autowired
     CorePlugin core;
     @Autowired
-    FileSystemPlugin fileSystemPlugin;
+    FileSystemService fileSystemService;
     public static final String SEND_EXTERNAL_MAIL_QUEUE = "sendExternalMailQueue";
 
     public List<ArticlesFile> findArticlesFiles(int articleId) {
@@ -71,26 +69,57 @@ public class ArticlesPlugin {
                 .getEntityList();
     }
 
+    public List<ArticlesFile> findArticlesFiles(int[] articleIds) {
+        if(articleIds.length==0){
+            return Collections.emptyList();
+        }
+        StringBuilder ids_string=new StringBuilder();
+        ids_string.append(articleIds[0]);
+        for (int i = 1; i < articleIds.length; i++) {
+            ids_string.append(",");
+            ids_string.append(articleIds[i]);
+        }
+        return UPA.getPersistenceUnit().createQuery("Select u from ArticlesFile u where "
+                        + " u.articleId in(" + ids_string + ")"
+                        + " order by "
+                        + "  u.position asc"
+        )
+                .getEntityList();
+    }
+
     public List<FullArticle> findFullArticlesByUserAndCategory(final String login, final String disposition) {
         return UPA.getContext().invokePrivileged(new Action<List<FullArticle>>() {
 
             @Override
             public List<FullArticle> run() {
                 List<FullArticle> all = new ArrayList<>();
-                for (ArticlesItem a : findArticlesByUserAndCategory(login, disposition)) {
+                List<ArticlesItem> articles = findArticlesByUserAndCategory(login, disposition);
+                int[] articleIds=new int[articles.size()];
+                for (int i = 0; i < articleIds.length; i++) {
+                    articleIds[i]=articles.get(i).getId();
+                }
+                MultiMap<Integer,ArticlesFile> articlesFilesMap=new MultiMap<Integer, ArticlesFile>();
+                for (ArticlesFile articlesFile : findArticlesFiles(articleIds)) {
+                    articlesFilesMap.put(articlesFile.getArticle().getId(),articlesFile);
+                }
+                for (ArticlesItem a : articles) {
                     String aname = a.getLinkText();
                     String aurl = a.getLinkURL();
                     String acss = a.getLinkClassStyle();
                     List<ArticlesFile> att = new ArrayList<>();
-                    if(!StringUtils.isEmpty(aname) || !StringUtils.isEmpty(aurl)){
-                        ArticlesFile baseArt=new ArticlesFile();
+                    if (!StringUtils.isEmpty(aname) || !StringUtils.isEmpty(aurl)) {
+                        ArticlesFile baseArt = new ArticlesFile();
                         baseArt.setId(-1);
-                        baseArt.setName(StringUtils.isEmpty(aname)?"NoName":aname);
+                        baseArt.setName(StringUtils.isEmpty(aname) ? "NoName" : aname);
                         baseArt.setPath(aurl);
                         baseArt.setStyle(acss);
                         att.add(baseArt);
                     }
-                    att.addAll(findArticlesFiles(a.getId()));
+
+                    List<ArticlesFile> c = articlesFilesMap.get(a.getId());
+                    if(c!=null) {
+                        att.addAll(c);
+                    }
                     FullArticle f = new FullArticle(a, att);
                     all.add(f);
                 }

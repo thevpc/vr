@@ -7,11 +7,11 @@ package net.vpc.app.vainruling.core.web.ctrl;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.core.PluginManagerService;
-import net.vpc.app.vainruling.api.web.OnPageLoad;
-import net.vpc.app.vainruling.api.web.UCtrl;
-import net.vpc.app.vainruling.api.web.ctrl.BasePageCtrl;
+
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.web.UCtrl;
 import org.springframework.context.annotation.Scope;
 
 /**
@@ -41,14 +41,14 @@ public class AppInfoCtrl extends BasePageCtrl {
 
     @OnPageLoad
     public void reloadPage(String cmd) {
-        getModel().setPluginsCount(VrApp.getBean(PluginManagerService.class).getPlugins().length);
+        getModel().setPluginsCount(VrApp.getBean(CorePlugin.class).getPlugins().length);
     }
 
     public static class Model {
 
-        private String appVersion = "1.0.44";
-        private String appDate = "2016-04-30";
-        private String appBuild = "42";
+        private String appVersion = "1.0.49";
+        private String appDate = "2016-06-03";
+        private String appBuild = "49";
         private String author = "Taha BEN SALAH (c)";
         private int pluginsCount = 0;
 

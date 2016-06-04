@@ -6,8 +6,8 @@
 package net.vpc.app.vainruling.plugins.inventory.service.model;
 
 import java.util.Date;
-import net.vpc.app.vainruling.plugins.commonmodel.service.model.AppArea;
-import net.vpc.app.vainruling.api.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.AppArea;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.equipments.service.model.Equipment;
 import net.vpc.upa.RelationshipType;
 import net.vpc.upa.UserFieldModifier;

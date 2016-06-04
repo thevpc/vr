@@ -1,0 +1,34 @@
+package net.vpc.app.vainruling.plugins.academic.internship.service.model.planning;
+
+import org.jgap.Configuration;
+import org.jgap.Gene;
+import org.jgap.IChromosome;
+import org.jgap.InvalidConfigurationException;
+import org.jgap.impl.IntegerGene;
+
+/**
+ * Created by vpc on 5/20/16.
+ */
+public abstract class BaseMarshaller implements ChromosomeMarshaller{
+    private int activity;
+    private int index;
+    private Configuration conf;
+
+    public BaseMarshaller(int activity, int index, Configuration conf) {
+        this.activity = activity;
+        this.index = index;
+        this.conf = conf;
+    }
+
+    public int getActivity() {
+        return activity;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public Configuration getConf() {
+        return conf;
+    }
+}

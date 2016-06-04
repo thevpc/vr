@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
@@ -40,6 +40,7 @@ public class StatCache {
     private Map<Integer, List<AcademicTeacherSemestrialLoad>> academicTeacherSemestrialLoadByTeacherIdMap;
     private Map<String, AcademicTeacherDegree> academicTeacherDegreesByCodeMap;
     private List<AcademicSemester> academicSemesterList;
+    private Integer semesterMaxWeeks;
 
     public static <K, V> Map<K, V> toMap(List<V> entityList) {
         Map<K, V> m = new HashMap<>();
@@ -53,6 +54,14 @@ public class StatCache {
             m.put(k, e);
         }
         return m;
+    }
+
+    public int getSemesterMaxWeeks() {
+        if(semesterMaxWeeks==null){
+            AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
+            semesterMaxWeeks=p.getSemesterMaxWeeks();
+        }
+        return semesterMaxWeeks;
     }
 
     public Map<Integer, AcademicCourseAssignment> getAcademicCourseAssignmentMap() {
@@ -107,9 +116,23 @@ public class StatCache {
 
     public List<AcademicCourseIntent> getAcademicCourseIntentList() {
         if (academicCourseIntentList == null) {
+//            academicCourseIntentList = UPA.getPersistenceUnit().createQuery("Select u from AcademicCourseIntent u")
+//                    .setHint("navigationDepth", 5)
+//                    .getEntityList();
             academicCourseIntentList = UPA.getPersistenceUnit().createQuery("Select u from AcademicCourseIntent u")
-                    .setHint("navigationDepth", 5)
+                    .setHint("navigationDepth", 1)
                     .getEntityList();
+
+            Map<Integer, AcademicTeacher> academicTeacherMap = getAcademicTeacherMap();
+            Map<Integer, AcademicCourseAssignment> assignmentsMap = getAcademicCourseAssignmentMap();
+            for (AcademicCourseIntent intent : academicCourseIntentList) {
+                if(intent.getTeacher()!=null) {
+                    intent.setTeacher(academicTeacherMap.get(intent.getTeacher().getId()));
+                }
+                if(intent.getAssignment()!=null) {
+                    intent.setAssignment(assignmentsMap.get(intent.getAssignment().getId()));
+                }
+            }
         }
         return academicCourseIntentList;
     }

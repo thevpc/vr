@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.service.model.config;
 
 import java.util.Date;
 import java.util.Objects;
-import net.vpc.app.vainruling.api.model.AppCompany;
+import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
 import net.vpc.upa.config.Field;

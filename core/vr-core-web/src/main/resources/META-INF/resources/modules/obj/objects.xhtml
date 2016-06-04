@@ -26,7 +26,7 @@ and open the template in the editor.
     <h:body>
 
 
-        <ui:composition template="/templates/template.xhtml">
+        <ui:composition template="/templates/private-template.xhtml">
             <ui:define name="content">
                 <h:form id="buttonsForm">
                     <p:confirmDialog message="Are you sure, you want to delete ?"  header="Initiating deleting process"  widgetVar="confirmationDelete">  
@@ -369,7 +369,7 @@ and open the template in the editor.
                                         </h:panelGrid>  
                                     </pe:dynaFormControl>
                                     <pe:dynaFormControl type="entityDetail">   
-                                        <p:commandButton ajax="false" value="#{data.evalCount()}" disabled="#{data.disabled}" action="#{vrMenuManager.gotoPage('obj', data.buildActionCommand())}"/>
+                                        <p:commandButton ajax="false" value="#{data.count}" disabled="#{data.disabled}" action="#{vrMenuManager.gotoPage('obj', data.buildActionCommand())}"/>
                                     </pe:dynaFormControl>
 
 

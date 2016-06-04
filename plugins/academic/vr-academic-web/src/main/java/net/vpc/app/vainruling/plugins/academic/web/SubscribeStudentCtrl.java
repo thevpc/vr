@@ -9,21 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.model.AppCivility;
-import net.vpc.app.vainruling.api.model.AppDepartment;
-import net.vpc.app.vainruling.api.model.AppGender;
-import net.vpc.app.vainruling.api.model.AppPeriod;
-import net.vpc.app.vainruling.api.web.OnPageLoad;
-import net.vpc.app.vainruling.api.web.UCtrl;
-import net.vpc.app.vainruling.api.web.UPathItem;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppCivility;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppGender;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
+import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicBac;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicPreClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
-import net.vpc.app.vainruling.plugins.commonmodel.service.CommonModelPlugin;
 import net.vpc.common.jsf.FacesUtils;
 
 /**
@@ -154,13 +153,12 @@ public class SubscribeStudentCtrl {
 
     public void updateLists() {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        CommonModelPlugin common = VrApp.getBean(CommonModelPlugin.class);
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
 
         List<SelectItem> list = null;
 
         list = new ArrayList<>();
-        for (AppPeriod x : common.findValidPeriods()) {
+        for (AppPeriod x : core.findValidPeriods()) {
             list.add(new SelectItem(x.getName(), x.getName()));
         }
         getModel().setPeriods(list);

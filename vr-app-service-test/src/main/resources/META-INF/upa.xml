@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <upa version="1.0">
     <scan types="net.vpc.app.**"/>
+    <persistenceUnit name="main">
+        <connection>
+            <connectionString>derby://localhost/vain;structure=create;userName=vr;password=vr</connectionString>
+        </connection>
+    </persistenceUnit>
+    <persistenceUnit name="mysql">
     <connection>
-        <connectionString>derby:default://localhost/vain;structure=create;userName=vr;password=vr</connectionString>
+    <connectionString>mysql://localhost/VR;structure=create;userName=root;password='';pool=true</connectionString>
     </connection>
-<!--    <connection>
-        <connectionString>mysql:default://localhost/vr;structure=create;structure=create;userName=root;password=password</connectionString>
-    </connection>-->
+    </persistenceUnit>
 </upa>

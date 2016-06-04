@@ -12,21 +12,22 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.api.VrApp;
-import net.vpc.app.vainruling.api.security.UserSession;
-import net.vpc.app.vainruling.api.util.VrHelper;
-import net.vpc.app.vainruling.api.web.BreadcrumbItem;
-import net.vpc.app.vainruling.api.web.OnPageLoad;
-import net.vpc.app.vainruling.api.web.UCtrl;
-import net.vpc.app.vainruling.api.web.UCtrlData;
-import net.vpc.app.vainruling.api.web.UCtrlProvider;
-import net.vpc.app.vainruling.api.web.VRMenuDef;
-import net.vpc.app.vainruling.api.web.VRMenuDefFactory;
-import net.vpc.app.vainruling.api.web.ctrl.EditCtrlMode;
-import net.vpc.app.vainruling.api.web.obj.DialogResult;
-import net.vpc.app.vainruling.api.web.obj.PropertyView;
-import net.vpc.app.vainruling.api.web.obj.PropertyViewManager;
-import net.vpc.app.vainruling.api.web.obj.dialog.ProfileExprDialogCtrl;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
+import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.UCtrlData;
+import net.vpc.app.vainruling.core.web.UCtrlProvider;
+import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
+import net.vpc.app.vainruling.core.web.menu.VRMenuDefFactory;
+import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
+import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.web.obj.PropertyView;
+import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
+import net.vpc.app.vainruling.core.web.obj.ViewContext;
+import net.vpc.app.vainruling.core.web.obj.dialog.ProfileExprDialogCtrl;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
@@ -139,7 +140,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         }
         getModel().setFolder(config.folder);
         getModel().setSent(config.sent);
-        getModel().setMailboxMessageFormat(propertyViewManager.createPropertyView("mailboxMessageFormat", MailboxMessageFormat.class, null)[0]);
+        getModel().setMailboxMessageFormat(propertyViewManager.createPropertyView("mailboxMessageFormat", MailboxMessageFormat.class, null, new ViewContext())[0]);
         onRefresh();
     }
 

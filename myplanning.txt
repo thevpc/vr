@@ -1,0 +1,58 @@
+chairs:
+Faten Ben Abdallah, 
+Nejmeddine Jouida, 
+Ali Douik, 
+Saoussen Ben Jebra, 
+Naoufel Khayati, 
+Badreddine Bouzouita, 
+Oussama Ben Khiroun, 
+Souheil Ben Ayed
+examiners:
+Faten Ben Abdallah, 
+Nejmeddine Jouida, 
+Ali Douik, 
+Saoussen Ben Jebra, 
+Naoufel Khayati, 
+Badreddine Bouzouita, 
+Oussama Ben Khiroun, 
+Souheil Ben Ayed
+rooms:
+{1:R1}, 
+{2:R2}, 
+{3:R3}, 
+{4:R4}, 
+{5:R5}, 
+{6:R6}, 
+{7:R7}, 
+{8:R8}
+times:
+2016-06-27 08:30, 
+2016-06-27 09:30, 
+2016-06-27 10:30, 
+2016-06-27 11:30, 
+2016-06-27 12:30, 
+2016-06-28 08:30, 
+2016-06-28 09:30, 
+2016-06-28 10:30, 
+2016-06-28 11:30, 
+2016-06-28 12:30, 
+2016-06-29 08:30, 
+2016-06-29 09:30, 
+2016-06-29 10:30, 
+2016-06-29 11:30, 
+2016-06-29 12:30, 
+2016-06-30 08:30, 
+2016-06-30 09:30, 
+2016-06-30 10:30, 
+2016-06-30 11:30, 
+2016-06-30 12:30
+null , null , null , [Oussama Ben Khiroun] , 001 - Application multiplateformes de gestion des demandes client en temps réel - Sabrine ABDELGHANI
+null , null , null , [Badreddine Bouzouita] , 002 - Quality assurance: test planning, test designing , test execution - Hend AJILI
+null , null , null , [Faten Ben Abdallah] , 003 - Conception et Réalisation d’une plateforme de monitoring et de reporting d’une solution VAS Cloud de Huawei - Sana ALI
+null , null , null , [Nejmeddine Jouida] , 004 - PFE -Serveur Web pour une maison intélligente - Imen AOUF
+null , null , null , [Saoussen Ben Jebra] , 005 - Conception et développement d’une place de marché pour les objets BIM - Dhouha BCHIR
+null , null , null , [Oussama Ben Khiroun] , 006 - Développement et conception d’un générateur du code HTML, CSS et JavaScript Collaboratif à base des composants prédéfinis. - Khaled BDERA
+null , null , null , [Nejmeddine Jouida] , 007 - Solution embarquée de reconnaissance faciale en temps réel - Wejden BELGHITH
+null , null , null , [Souheil Ben Ayed] , 008 - Development and deployment of e-learning platform - Daâd BELLAREJ
+null , null , null , [Naoufel Khayati] , 009 - Mise en place d’une application de gestion éléctronique des documents Avec SharePoint 2013 et Office 365 - Ahmed BEN ABDELJAOUED
+null , null , null , [Ali Douik] , 010 - Application de reconnaissance de manuscrits anciens - Nadia BEN ABDESSALEM

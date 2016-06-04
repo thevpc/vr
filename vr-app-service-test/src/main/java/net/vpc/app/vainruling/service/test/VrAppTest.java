@@ -5,8 +5,8 @@
  */
 package net.vpc.app.vainruling.service.test;
 
-import net.vpc.app.vainruling.api.CorePlugin;
-import net.vpc.app.vainruling.api.VrApp;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
 
 /**
  *
@@ -15,10 +15,13 @@ import net.vpc.app.vainruling.api.VrApp;
 public class VrAppTest {
 
     public static void runStandalone() {
-        VrApp.runStandalone(CorePlugin.USER_ADMIN, "admin", true, new String[0]);
+        VrApp.runStandalone(CorePlugin.USER_ADMIN, "admin", true);
+    }
+    public static void runStandaloneNoLog() {
+        VrApp.runStandalone(CorePlugin.USER_ADMIN, "admin", false);
     }
 
     public static void runStandalone(String login, String password) {
-        VrApp.runStandalone(login, password, true, new String[0]);
+        VrApp.runStandalone(login, password, true);
     }
 }

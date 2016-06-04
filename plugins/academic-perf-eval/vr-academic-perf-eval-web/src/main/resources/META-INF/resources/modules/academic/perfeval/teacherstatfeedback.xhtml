@@ -20,7 +20,7 @@ and open the template in the editor.
     <h:body>
 
 
-        <ui:composition template="/templates/template.xhtml">
+        <ui:composition template="/templates/private-template.xhtml">
             <ui:define name="content">
                 <!--                <h:form id="buttonsForm">
                 
@@ -33,23 +33,41 @@ and open the template in the editor.
                 
                                 </h:form>-->
                 <h:form id="listForm">
+                        <div class="row">
+                            <p:selectOneMenu rendered="#{teacherStatFeedbackCtrl.model.teacherListEnabled}" value="#{teacherStatFeedbackCtrl.model.selectedTeacher}">
+                                <p:ajax listener="#{teacherStatFeedbackCtrl.onReloadFeedbacks}" update=":listForm"/>
+                                <f:selectItem itemLabel="Selectionner Enseignant..." itemValue="" />
+                                <f:selectItems value="#{teacherStatFeedbackCtrl.model.teachersList}" />
+                            </p:selectOneMenu>
 
+                            <p:outputLabel value="Grouper par " style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"/>
+                            <p:selectOneMenu value="#{teacherStatFeedbackCtrl.model.selectedFilterType}">
+                                <p:ajax listener="#{teacherStatFeedbackCtrl.onReloadFeedbacks}" update=":listForm"/>
+                                <f:selectItem itemLabel="selectionner..." itemValue="" />
+                                <f:selectItems value="#{teacherStatFeedbackCtrl.model.filterTypesList}" />
+                            </p:selectOneMenu>
+                        </div>
                     <div class="row">
-                        <p:selectOneMenu value="#{teacherStatFeedbackCtrl.model.selectedAcademicCourseAssignment}">
+                        <p:outputLabel value="Filtrer par " style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"/>
+                        <p:selectOneMenu value="#{teacherStatFeedbackCtrl.model.selectedFilter}">
                             <p:ajax listener="#{teacherStatFeedbackCtrl.onFilterChange}" update=":listForm"/>
-                            <f:selectItem itemLabel="Selectionner..." itemValue="" />
-                            <f:selectItems value="#{teacherStatFeedbackCtrl.model.academicCourseAssignmentList}" />
+                            <f:selectItem itemLabel="Selectionner ..." itemValue="" />
+                            <f:selectItems value="#{teacherStatFeedbackCtrl.model.filterList}" />
                         </p:selectOneMenu>
+                    </div>
+                    <div class="row">
+                        <p:outputLabel rendered="#{teacherStatFeedbackCtrl.model.rows.size() gt 0}"
+                                       value="#{teacherStatFeedbackCtrl.model.countFeedbacks}  Formulaires    ;    Complétude : #{teacherStatFeedbackCtrl.model.countResponseCompletion}%"/>
                     </div>
                     <ui:repeat var="r" value="#{teacherStatFeedbackCtrl.model.rows}">
                         <div class="row">
                             <div class="table-responsive">
                                 <p:dataTable value="#{r.questions}" var="i" style="margin-top: 20px;">
-                                    <p:column headerText="#{r.title}">
+                                    <p:column headerText="#{r.title}" width="30%">
                                         <p:outputLabel value="#{i.question.name}"/>
                                     </p:column>
                                     <p:column headerText="">
-                                        <p:chart class="vr-no-legend" type="bar" rendered="#{i.chart ne null}" model="#{i.chart}" style="height:60px;width: 400px"/>
+                                        <p:chart class="vr-no-legend" type="bar" rendered="#{i.chart ne null}" model="#{i.chart}" style="height:100px;width: 400px"/>
                                         <p:outputLabel rendered="#{i.chart eq null}" value="Aucune donnée"/>
                                     </p:column>
                                 </p:dataTable>
