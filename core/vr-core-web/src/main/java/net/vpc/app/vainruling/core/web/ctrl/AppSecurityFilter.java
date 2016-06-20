@@ -1,28 +1,23 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.ctrl;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @WebFilter(filterName = "AppSecurityFilter",
@@ -84,10 +79,10 @@ public class AppSecurityFilter implements Filter {
 //            }
         }
         if (acceptRequest) {
-            try{
+            try {
                 chain.doFilter(request, response);
-            }catch(Exception e){
-                log.log(Level.SEVERE,"Unhandled Error",e);
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Unhandled Error", e);
 //                HttpServletResponse res = (HttpServletResponse) response;
 //                res.sendError(500);
             }

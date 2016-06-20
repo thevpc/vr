@@ -1,23 +1,14 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.planning.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import net.vpc.app.vainruling.core.service.AppPlugin;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.UpaAware;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.fs.FileSystemService;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningData;
@@ -37,8 +28,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.util.*;
+
 /**
- *
  * @author vpc
  */
 @AppPlugin(dependsOn = "academicPlugin", version = "1.4")
@@ -47,8 +41,6 @@ public class AcademicPlanningPlugin {
 
     @Autowired
     CorePlugin core;
-    @Autowired
-    FileSystemService fileSystemService;
     @Autowired
     AcademicPlugin academicPlugin;
 
@@ -59,7 +51,7 @@ public class AcademicPlanningPlugin {
             return list;
         }
 //        String teacherName = uuu == null ? "" : uuu.getContact().getFullName();
-        VFile p = fileSystemService.getUserFolder(uuu.getLogin()).get("/myplanning.xml");
+        VFile p = core.getUserFolder(uuu.getLogin()).get("/myplanning.xml");
         if (p != null && p.exists()) {
             try {
 
@@ -152,17 +144,17 @@ public class AcademicPlanningPlugin {
         Object t = core.getAppPropertyValue(academicPlanningPluginPlanningRoot, null);
         String ts = StringUtils.nonNull(t);
         if (ts.trim().length() > 0) {
-            return fileSystemService.getFileSystem().get(ts);
+            return core.getFileSystem().get(ts);
         } else {
-            final String defaultPath = fileSystemService.getProfileFileSystem("DirectorOfStudies").get("/Emplois").getBaseFile("vrfs").getPath();
-            t = UPA.getContext().invokePrivileged(new Action<Object>(){
+            final String defaultPath = core.getProfileFileSystem("DirectorOfStudies").get("/Emplois").getBaseFile("vrfs").getPath();
+            t = UPA.getContext().invokePrivileged(new Action<Object>() {
                 @Override
                 public Object run() {
                     return core.getOrCreateAppPropertyValue(academicPlanningPluginPlanningRoot, null, defaultPath);
                 }
-                
+
             });
-            return fileSystemService.getFileSystem().get(StringUtils.nonNull(t));
+            return core.getFileSystem().get(StringUtils.nonNull(t));
         }
     }
 

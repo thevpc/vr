@@ -1,48 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
+
 and open the template in the editor.
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"   
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://java.sun.com/jsf/core"
-      >
+        >
 
-    <h:head>
-    </h:head>
+<h:head>
+</h:head>
 
-    <h:body>
-
-
-        <ui:composition template="/templates/private-template.xhtml">
-            <ui:define name="content">
-                <h:form id="listForm" enctype="multipart/form-data" >
-                    <p:messages id="messages" showDetail="true" autoUpdate="true" />
-                    <div class="row">
-                        <h:outputText value="Vous êtes #{userSession.user.contact eq null ? '':userSession.user.contact.fullName} (#{userSession.user.login})" />
-                    </div>
-                    <div class="row">
-                        <p:panelGrid columns="2" styleClass="noBorderGrid" >
-                            <h:outputText value="Ancien Mot de passe: " />
-                            <p:password value="#{passwdCtrl.model.oldPassword}"/>                       
-                            <h:outputText value="Mot de passe: " />
-                            <p:password id="pwd1" value="#{passwdCtrl.model.password1}" feedback="true" />                       
-                            <h:outputText value="Répéter Mot de passe: " />
-                            <p:password id="pwd2" value="#{passwdCtrl.model.password2}" feedback="true" />                       
-                        </p:panelGrid>
-                        <p:commandButton value="valider" action="#{passwdCtrl.changePassword}" update="messages"/>
-                    </div>
-                </h:form>
-            </ui:define>
+<h:body>
 
 
-        </ui:composition>
+    <ui:composition template="/templates/private-template.xhtml">
+        <ui:define name="content">
+            <h:form id="listForm" enctype="multipart/form-data">
+                <p:messages id="messages" showDetail="true" autoUpdate="true"/>
+
+                <div class="row">
+                    <h:outputText
+                            value="Vous êtes #{userSession.user.contact eq null ? '':userSession.user.contact.fullName} (#{userSession.user.login})"/>
+                </div>
+                <div class="row">
+                    <p:panelGrid columns="2" styleClass="noBorderGrid">
+                        <h:outputText value="Ancien Mot de passe: "/>
+                        <p:password value="#{passwdCtrl.model.oldPassword}"/>
+                        <h:outputText value="Mot de passe: "/>
+                        <p:password id="pwd1" value="#{passwdCtrl.model.password1}" feedback="true"/>
+                        <h:outputText value="Répéter Mot de passe: "/>
+                        <p:password id="pwd2" value="#{passwdCtrl.model.password2}" feedback="true"/>
+                    </p:panelGrid>
+                    <p:commandButton value="valider" action="#{passwdCtrl.changePassword}" update="messages"/>
+                </div>
+            </h:form>
+        </ui:define>
 
 
-    </h:body>
+    </ui:composition>
+
+
+</h:body>
 
 </html>

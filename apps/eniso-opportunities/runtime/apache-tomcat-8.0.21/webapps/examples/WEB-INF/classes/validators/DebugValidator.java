@@ -19,12 +19,11 @@
 package validators;
 
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import javax.servlet.jsp.tagext.PageData;
 import javax.servlet.jsp.tagext.TagLibraryValidator;
 import javax.servlet.jsp.tagext.ValidationMessage;
+import java.io.IOException;
+import java.io.InputStream;
 
 
 /**
@@ -53,15 +52,15 @@ public class DebugValidator extends TagLibraryValidator {
      * also interpreted as no errors.
      *
      * @param prefix The value of the prefix argument in this directive
-     * @param uri The value of the URI argument in this directive
-     * @param page The page data for this page
+     * @param uri    The value of the URI argument in this directive
+     * @param page   The page data for this page
      */
     @Override
     public ValidationMessage[] validate(String prefix, String uri,
                                         PageData page) {
 
         System.out.println("---------- Prefix=" + prefix + " URI=" + uri +
-                           "----------");
+                "----------");
 
         InputStream is = page.getInputStream();
         while (true) {

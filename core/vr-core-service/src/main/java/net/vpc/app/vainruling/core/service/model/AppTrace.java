@@ -1,23 +1,17 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.model;
 
-import java.sql.Timestamp;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Properties;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
+
+import java.sql.Timestamp;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "time desc")
@@ -27,63 +21,63 @@ public class AppTrace {
     @Id
     @Sequence
     private int id;
-    
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE,value = "width:10%")
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
     )
     private Timestamp time;
-    
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE,value = "width:8%")
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:8%")
     )
     private String action;
-    
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE,value = "width:9%")
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:9%")
     )
     private String module;
 
     private String objectName;
-    
+
     private String objectId;
-    
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE,value = "width:9%")
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:9%")
     )
     private String user;
-    
+
     private int userId;
-    
+
     private int levelId;
-    
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE,value = "width:7%")
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:7%")
     )
     private String level;
 
-    @Field(max = "1024",modifiers = UserFieldModifier.SUMMARY)
+    @Field(max = "1024", modifiers = UserFieldModifier.SUMMARY)
     @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE,value = "width:30%")
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:30%")
     )
     private String message;
-    
-    @Field(max = "4096",modifiers = UserFieldModifier.SUMMARY)
+
+    @Field(max = "4096", modifiers = UserFieldModifier.SUMMARY)
     @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE,value = "width:40%")
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40%")
     )
     private String data;
 
     private String ip;
-    
+
     public AppTrace() {
     }
 
-    public AppTrace(String message, String data, String module, Timestamp time, String user, int userId, int levelId, String level, String action, String objectName, String objectId,String ip) {
+    public AppTrace(String message, String data, String module, Timestamp time, String user, int userId, int levelId, String level, String action, String objectName, String objectId, String ip) {
         this.message = message;
         this.data = data;
         this.module = module;
@@ -201,7 +195,7 @@ public class AppTrace {
     public void setIp(String ip) {
         this.ip = ip;
     }
-    
+
     @Override
     public String toString() {
         return String.valueOf(message);

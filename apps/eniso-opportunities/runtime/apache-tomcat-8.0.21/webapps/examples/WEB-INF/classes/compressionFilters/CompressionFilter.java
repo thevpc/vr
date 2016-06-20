@@ -16,21 +16,11 @@
 */
 package compressionFilters;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Implementation of <code>javax.servlet.Filter</code> used to compress
@@ -42,36 +32,30 @@ import javax.servlet.http.HttpServletResponse;
 public class CompressionFilter implements Filter {
 
     /**
-     * The filter configuration object we are associated with.  If this value
-     * is null, this filter instance is not currently configured.
-     */
-    private FilterConfig config = null;
-
-    /**
      * Minimal reasonable threshold.
      */
     private final int minThreshold = 128;
-
-    /**
-     * The threshold number to compress.
-     */
-    protected int compressionThreshold = 0;
-
     /**
      * Minimal reasonable buffer.
      */
     private final int minBuffer = 8192;  // 8KB is what tomcat would use by default anyway
-
+    /**
+     * The threshold number to compress.
+     */
+    protected int compressionThreshold = 0;
     /**
      * The compression buffer size to avoid chunking.
      */
     protected int compressionBuffer = 0;
-
     /**
      * The mime types to compress.
      */
     protected String[] compressionMimeTypes = {"text/html", "text/xml", "text/plain"};
-
+    /**
+     * The filter configuration object we are associated with.  If this value
+     * is null, this filter instance is not currently configured.
+     */
+    private FilterConfig config = null;
     /**
      * Debug level for this filter.
      */
@@ -88,12 +72,12 @@ public class CompressionFilter implements Filter {
         config = filterConfig;
         if (filterConfig != null) {
             String value = filterConfig.getInitParameter("debug");
-            if (value!=null) {
+            if (value != null) {
                 debug = Integer.parseInt(value);
             }
 
             String str = filterConfig.getInitParameter("compressionThreshold");
-            if (str!=null) {
+            if (str != null) {
                 compressionThreshold = Integer.parseInt(str);
                 if (compressionThreshold != 0 && compressionThreshold < minThreshold) {
                     if (debug > 0) {
@@ -105,7 +89,7 @@ public class CompressionFilter implements Filter {
             }
 
             str = filterConfig.getInitParameter("compressionBuffer");
-            if (str!=null) {
+            if (str != null) {
                 compressionBuffer = Integer.parseInt(str);
                 if (compressionBuffer < minBuffer) {
                     if (debug > 0) {
@@ -117,7 +101,7 @@ public class CompressionFilter implements Filter {
             }
 
             str = filterConfig.getInitParameter("compressionMimeTypes");
-            if (str!=null) {
+            if (str != null) {
                 List<String> values = new ArrayList<>();
                 StringTokenizer st = new StringTokenizer(str, ",");
 
@@ -145,8 +129,8 @@ public class CompressionFilter implements Filter {
     }
 
     /**
-    * Take this filter out of service.
-    */
+     * Take this filter out of service.
+     */
     @Override
     public void destroy() {
 
@@ -171,8 +155,8 @@ public class CompressionFilter implements Filter {
      * (<code>chain.doFilter()</code>), <br>
      **/
     @Override
-    public void doFilter ( ServletRequest request, ServletResponse response,
-                        FilterChain chain ) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response,
+                         FilterChain chain) throws IOException, ServletException {
 
         if (debug > 0) {
             System.out.println("@doFilter");
@@ -189,11 +173,11 @@ public class CompressionFilter implements Filter {
         boolean supportCompression = false;
         if (request instanceof HttpServletRequest) {
             if (debug > 1) {
-                System.out.println("requestURI = " + ((HttpServletRequest)request).getRequestURI());
+                System.out.println("requestURI = " + ((HttpServletRequest) request).getRequestURI());
             }
 
             // Are we allowed to compress ?
-            String s = ((HttpServletRequest)request).getParameter("gzip");
+            String s = ((HttpServletRequest) request).getParameter("gzip");
             if ("false".equals(s)) {
                 if (debug > 0) {
                     System.out.println("got parameter gzip=false --> don't compress, just chain filter");
@@ -203,7 +187,7 @@ public class CompressionFilter implements Filter {
             }
 
             Enumeration<String> e =
-                ((HttpServletRequest)request).getHeaders("Accept-Encoding");
+                    ((HttpServletRequest) request).getHeaders("Accept-Encoding");
             while (e.hasMoreElements()) {
                 String name = e.nextElement();
                 if (name.indexOf("gzip") != -1) {
@@ -222,7 +206,7 @@ public class CompressionFilter implements Filter {
         if (supportCompression) {
             if (response instanceof HttpServletResponse) {
                 CompressionServletResponseWrapper wrappedResponse =
-                    new CompressionServletResponseWrapper((HttpServletResponse)response);
+                        new CompressionServletResponseWrapper((HttpServletResponse) response);
                 wrappedResponse.setDebugLevel(debug);
                 wrappedResponse.setCompressionThreshold(compressionThreshold);
                 wrappedResponse.setCompressionBuffer(compressionBuffer);
@@ -247,6 +231,15 @@ public class CompressionFilter implements Filter {
     }
 
     /**
+     * Required by Weblogic 6.1
+     *
+     * @return the FilterConfig that was used to initialise this filter.
+     */
+    public FilterConfig getFilterConfig() {
+        return config;
+    }
+
+    /**
      * Set filter config
      * This function is equivalent to init. Required by Weblogic 6.1
      *
@@ -254,15 +247,6 @@ public class CompressionFilter implements Filter {
      */
     public void setFilterConfig(FilterConfig filterConfig) {
         init(filterConfig);
-    }
-
-    /**
-     * Required by Weblogic 6.1
-     *
-     * @return the FilterConfig that was used to initialise this filter.
-     */
-    public FilterConfig getFilterConfig() {
-        return config;
     }
 }
 

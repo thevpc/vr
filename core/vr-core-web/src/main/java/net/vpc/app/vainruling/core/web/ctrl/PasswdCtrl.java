@@ -1,13 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.ctrl;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.UCtrl;
@@ -16,8 +13,11 @@ import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 import org.springframework.context.annotation.Scope;
 
+import javax.faces.bean.ManagedBean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @UCtrl(
@@ -34,6 +34,40 @@ public class PasswdCtrl {
 
     public Model getModel() {
         return model;
+    }
+
+    public void changePassword() {
+        try {
+            final CorePlugin t = VrApp.getBean(CorePlugin.class);
+            String s1 = getModel().getPassword1();
+            String s2 = getModel().getPassword2();
+            if (s1 == null) {
+                s1 = "";
+            }
+            if (s2 == null) {
+                s2 = "";
+            }
+            if (!s1.equals(s2)) {
+                FacesUtils.addErrorMessage(null, "Les mots de passe ne coincident pas");
+                return;
+            }
+            UPA.getContext().invokePrivileged(new VoidAction() {
+                                                  @Override
+                                                  public void run() {
+                                                      try {
+                                                          t.passwd(t.getActualLogin(), getModel().getOldPassword(), getModel().getPassword1());
+                                                          FacesUtils.addInfoMessage(null, "Mot de passe modifié");
+                                                      } catch (Exception ex) {
+                                                          log.log(Level.SEVERE, "Error", ex);
+                                                          FacesUtils.addErrorMessage(null, ex.getMessage());
+                                                      }
+                                                  }
+                                              }
+            );
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(null, ex.getMessage());
+        }
     }
 
     public static class Model {
@@ -66,39 +100,5 @@ public class PasswdCtrl {
             this.oldPassword = oldPassword;
         }
 
-    }
-
-    public void changePassword() {
-        try {
-            final CorePlugin t = VrApp.getBean(CorePlugin.class);
-            String s1 = getModel().getPassword1();
-            String s2 = getModel().getPassword2();
-            if (s1 == null) {
-                s1 = "";
-            }
-            if (s2 == null) {
-                s2 = "";
-            }
-            if (!s1.equals(s2)) {
-                FacesUtils.addErrorMessage(null, "Les mots de passe ne coincident pas");
-                return;
-            }
-            UPA.getContext().invokePrivileged(new VoidAction() {
-                @Override
-                public void run() {
-                    try {
-                        t.passwd(t.getActualLogin(), getModel().getOldPassword(), getModel().getPassword1());
-                        FacesUtils.addInfoMessage(null, "Mot de passe modifié");
-                    } catch (Exception ex) {
-                        log.log(Level.SEVERE, "Error", ex);
-                        FacesUtils.addErrorMessage(null, ex.getMessage());
-                    }
-                }
-            }
-            );
-        } catch (Exception ex) {
-            log.log(Level.SEVERE, "Error", ex);
-            FacesUtils.addErrorMessage(null, ex.getMessage());
-        }
     }
 }

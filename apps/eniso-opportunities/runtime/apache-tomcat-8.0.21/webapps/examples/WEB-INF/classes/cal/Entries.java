@@ -16,16 +16,15 @@
  */
 package cal;
 
-import java.util.Hashtable;
-
 import javax.servlet.http.HttpServletRequest;
+import java.util.Hashtable;
 
 public class Entries {
 
-    private final Hashtable<String, Entry> entries;
-    private static final String[] time = { "8am", "9am", "10am", "11am",
-            "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm" };
     public static final int rows = 12;
+    private static final String[] time = {"8am", "9am", "10am", "11am",
+            "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm"};
+    private final Hashtable<String, Entry> entries;
 
     public Entries() {
         entries = new Hashtable<>(rows);

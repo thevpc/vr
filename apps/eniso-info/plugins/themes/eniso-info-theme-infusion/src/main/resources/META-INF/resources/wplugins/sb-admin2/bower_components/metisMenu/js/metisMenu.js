@@ -6,7 +6,8 @@
  * Made by Osman Nuri Okumus
  * Under MIT License
  */
-;(function($, window, document, undefined) {
+;
+(function ($, window, document, undefined) {
 
     var pluginName = "metisMenu",
         defaults = {
@@ -23,7 +24,7 @@
     }
 
     Plugin.prototype = {
-        init: function() {
+        init: function () {
 
             var $this = this.element,
                 $toggle = this.settings.toggle,
@@ -42,7 +43,7 @@
                 $this.find("li.active").has("ul").children("a").addClass("doubleTapToGo");
             }
 
-            $this.find("li").has("ul").children("a").on("click" + "." + pluginName, function(e) {
+            $this.find("li").has("ul").children("a").on("click" + "." + pluginName, function (e) {
                 e.preventDefault();
 
                 //Do we need to enable the double tap
@@ -65,7 +66,7 @@
             });
         },
 
-        isIE: function() { //https://gist.github.com/padolsey/527683
+        isIE: function () { //https://gist.github.com/padolsey/527683
             var undef,
                 v = 3,
                 div = document.createElement("div"),
@@ -73,14 +74,14 @@
 
             while (
                 div.innerHTML = "<!--[if gt IE " + (++v) + "]><i></i><![endif]-->",
-                all[0]
-            ) {
+                    all[0]
+                ) {
                 return v > 4 ? v : undef;
             }
         },
 
         //Enable the link on the second click.
-        doubleTapToGo: function(elem) {
+        doubleTapToGo: function (elem) {
             var $this = this.element;
 
             //if the class "doubleTapToGo" exists, remove it and return
@@ -91,7 +92,7 @@
 
             //does not exists, add a new class and return false
             if (elem.parent().children("ul").length) {
-                 //first remove all other class
+                //first remove all other class
                 $this.find(".doubleTapToGo").removeClass("doubleTapToGo");
                 //add the class on the current element
                 elem.addClass("doubleTapToGo");
@@ -99,14 +100,14 @@
             }
         },
 
-        remove: function() {
+        remove: function () {
             this.element.off("." + pluginName);
             this.element.removeData(pluginName);
         }
 
     };
 
-    $.fn[pluginName] = function(options) {
+    $.fn[pluginName] = function (options) {
         this.each(function () {
             var el = $(this);
             if (el.data(pluginName)) {

@@ -2,12 +2,15 @@ package net.vpc.app.vainruling.plugins.academic.internship.service.model.plannin
 
 import net.vpc.common.strings.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.TreeSet;
 
 /**
  * Created by vpc on 5/19/16.
  */
-public class PlanningActivity implements Comparable<PlanningActivity>,Cloneable{
+public class PlanningActivity implements Comparable<PlanningActivity>, Cloneable {
     private PlanningInternship internship;
     private PlanningSpaceTime spaceTime;
     private String examiner;
@@ -25,7 +28,7 @@ public class PlanningActivity implements Comparable<PlanningActivity>,Cloneable{
     public PlanningActivity() {
     }
 
-    public PlanningActivity copy(){
+    public PlanningActivity copy() {
         try {
             return (PlanningActivity) clone();
         } catch (CloneNotSupportedException e) {
@@ -46,27 +49,31 @@ public class PlanningActivity implements Comparable<PlanningActivity>,Cloneable{
         return spaceTime;
     }
 
+    public PlanningActivity setSpaceTime(PlanningSpaceTime spaceTime) {
+        this.spaceTime = spaceTime;
+        return this;
+    }
+
     public PlanningRoom getRoom() {
         return getSpaceTime().getRoom();
     }
 
-
     public PlanningTime getTime() {
         PlanningSpaceTime t = getSpaceTime();
-        return t==null?null:t.getTime();
-    }
-
-    public PlanningActivity setSpaceTime(PlanningSpaceTime spaceTime) {
-        this.spaceTime = spaceTime;
-        return this;
+        return t == null ? null : t.getTime();
     }
 
     public String getExaminer() {
         return examiner;
     }
 
+    public PlanningActivity setExaminer(String examiner) {
+        this.examiner = examiner;
+        return this;
+    }
+
     public boolean isExaminer(String examiner) {
-        return (Objects.equals(getExaminer(),examiner));
+        return (Objects.equals(getExaminer(), examiner));
     }
 
     public boolean isChair(String chair) {
@@ -74,19 +81,14 @@ public class PlanningActivity implements Comparable<PlanningActivity>,Cloneable{
     }
 
     public boolean isSupervisor(String supervisor) {
-        if(getInternship().getSupervisors()!=null){
+        if (getInternship().getSupervisors() != null) {
             for (String s : getInternship().getSupervisors()) {
-                if((Objects.equals(s, supervisor))){
+                if ((Objects.equals(s, supervisor))) {
                     return true;
                 }
             }
         }
         return false;
-    }
-
-    public PlanningActivity setExaminer(String examiner) {
-        this.examiner = examiner;
-        return this;
     }
 
     public String getChair() {
@@ -99,13 +101,13 @@ public class PlanningActivity implements Comparable<PlanningActivity>,Cloneable{
     }
 
     private int compare(PlanningSpaceTime o1, PlanningSpaceTime o2) {
-        if(o1==null && o2==null){
+        if (o1 == null && o2 == null) {
             return 0;
         }
-        if(o1==null){
+        if (o1 == null) {
             return -1;
         }
-        if(o2==null){
+        if (o2 == null) {
             return 1;
         }
         return o1.compareTo(o2);
@@ -176,7 +178,7 @@ public class PlanningActivity implements Comparable<PlanningActivity>,Cloneable{
         return result;
     }
 
-    public List<String> getAllTeachers(){
+    public List<String> getAllTeachers() {
         TreeSet<String> persons = new TreeSet<>();
         if (!StringUtils.isEmpty(getChair())) {
             persons.add(getChair());

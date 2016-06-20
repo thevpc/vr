@@ -1,28 +1,23 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.install;
 
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.web.util.JsfCtrl;
+
+import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.util.JsfCtrl;
 
 /**
- *
  * @author vpc
  */
 @WebFilter(filterName = "VrConfigureInstallFilter", urlPatterns = {"/", "/index.xhtml"})
@@ -38,6 +33,20 @@ public class VrConfigureInstallFilter implements Filter {
     public VrConfigureInstallFilter() {
     }
 
+    public static String getStackTrace(Throwable t) {
+        String stackTrace = null;
+        try {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            t.printStackTrace(pw);
+            pw.close();
+            sw.close();
+            stackTrace = sw.getBuffer().toString();
+        } catch (Exception ex) {
+        }
+        return stackTrace;
+    }
+
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
@@ -49,7 +58,7 @@ public class VrConfigureInstallFilter implements Filter {
         // For example, a logging filter might log items on the request object,
         // such as the parameters.
         /*
-	for (Enumeration en = request.getParameterNames(); en.hasMoreElements(); ) {
+    for (Enumeration en = request.getParameterNames(); en.hasMoreElements(); ) {
 	    String name = (String)en.nextElement();
 	    String values[] = request.getParameterValues(name);
 	    int n = values.length;
@@ -75,7 +84,7 @@ public class VrConfigureInstallFilter implements Filter {
         // Write code here to process the request and/or response after
         // the rest of the filter chain is invoked.
         // For example, a logging filter might log the attributes on the
-        // request object after the request has been processed. 
+        // request object after the request has been processed.
         /*
 	for (Enumeration en = request.getAttributeNames(); en.hasMoreElements(); ) {
 	    String name = (String)en.nextElement();
@@ -92,16 +101,14 @@ public class VrConfigureInstallFilter implements Filter {
     }
 
     /**
-     *
-     * @param request The servlet request we are processing
+     * @param request  The servlet request we are processing
      * @param response The servlet response we are creating
-     * @param chain The filter chain we are processing
-     *
-     * @exception IOException if an input/output error occurs
-     * @exception ServletException if a servlet error occurs
+     * @param chain    The filter chain we are processing
+     * @throws IOException      if an input/output error occurs
+     * @throws ServletException if a servlet error occurs
      */
     public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain)
+                         FilterChain chain)
             throws IOException, ServletException {
 
         if (debug) {
@@ -132,12 +139,12 @@ public class VrConfigureInstallFilter implements Filter {
             if (v.isMandatoryConfig(httpRequest.getServletContext())) {
                 HttpServletResponse httpResponse = (HttpServletResponse) response;
                 String r = "r";
-                try{
-                    r=VrApp.getBean(JsfCtrl.class).getFacesContextPrefix();
-                }catch(Exception e){
+                try {
+                    r = VrApp.getBean(JsfCtrl.class).getFacesContextPrefix();
+                } catch (Exception e) {
                     //ignore
                 }
-                httpResponse.sendRedirect(httpRequest.getContextPath() + "/"+r+"/private/install.xhtml");
+                httpResponse.sendRedirect(httpRequest.getContextPath() + "/" + r + "/private/install.xhtml");
                 return;
             }
         }
@@ -243,20 +250,6 @@ public class VrConfigureInstallFilter implements Filter {
             } catch (Exception ex) {
             }
         }
-    }
-
-    public static String getStackTrace(Throwable t) {
-        String stackTrace = null;
-        try {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            t.printStackTrace(pw);
-            pw.close();
-            sw.close();
-            stackTrace = sw.getBuffer().toString();
-        } catch (Exception ex) {
-        }
-        return stackTrace;
     }
 
     public void log(String msg) {

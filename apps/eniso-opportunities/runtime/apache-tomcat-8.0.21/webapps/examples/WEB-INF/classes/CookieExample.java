@@ -15,19 +15,14 @@
 * limitations under the License.
 */
 
+import util.CookieFilter;
+import util.HTMLFilter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ResourceBundle;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import util.CookieFilter;
-import util.HTMLFilter;
 
 /**
  * Example servlet showing request headers
@@ -44,8 +39,7 @@ public class CookieExample extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
-        throws IOException, ServletException
-    {
+            throws IOException, ServletException {
 
         String cookieName = request.getParameter("cookiename");
         String cookieValue = request.getParameter("cookievalue");
@@ -77,10 +71,10 @@ public class CookieExample extends HttpServlet {
 
         out.println("<a href=\"../cookies.html\">");
         out.println("<img src=\"../images/code.gif\" height=24 " +
-                    "width=24 align=right border=0 alt=\"view code\"></a>");
+                "width=24 align=right border=0 alt=\"view code\"></a>");
         out.println("<a href=\"../index.html\">");
         out.println("<img src=\"../images/return.gif\" height=24 " +
-                    "width=24 align=right border=0 alt=\"return\"></a>");
+                "width=24 align=right border=0 alt=\"return\"></a>");
 
         out.println("<h3>" + title + "</h3>");
 
@@ -98,8 +92,8 @@ public class CookieExample extends HttpServlet {
                 String cValue = cookie.getValue();
                 out.print("Cookie Name: " + HTMLFilter.filter(cName) + "<br>");
                 out.println("  Cookie Value: "
-                            + HTMLFilter.filter(CookieFilter.filter(cName, cValue, sessionId))
-                            + "<br><br>");
+                        + HTMLFilter.filter(CookieFilter.filter(cName, cValue, sessionId))
+                        + "<br><br>");
             }
         } else {
             out.println(RB.getString("cookies.no-cookies"));
@@ -109,9 +103,9 @@ public class CookieExample extends HttpServlet {
             out.println("<P>");
             out.println(RB.getString("cookies.set") + "<br>");
             out.print(RB.getString("cookies.name") + "  "
-                      + HTMLFilter.filter(cookieName) + "<br>");
+                    + HTMLFilter.filter(cookieName) + "<br>");
             out.print(RB.getString("cookies.value") + "  "
-                      + HTMLFilter.filter(cookieValue));
+                    + HTMLFilter.filter(cookieValue));
         }
 
         out.println("<P>");
@@ -131,9 +125,8 @@ public class CookieExample extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request,
-                      HttpServletResponse response)
-        throws IOException, ServletException
-    {
+                       HttpServletResponse response)
+            throws IOException, ServletException {
         doGet(request, response);
     }
 

@@ -9,7 +9,7 @@ import org.jgap.impl.IntegerGene;
 /**
  * Created by vpc on 5/20/16.
  */
-public class SpaceTimeMarshaller extends BaseMarshaller{
+public class SpaceTimeMarshaller extends BaseMarshaller {
 
     public SpaceTimeMarshaller(int activity, int index, Configuration conf) {
         super(activity, index, conf);
@@ -26,12 +26,12 @@ public class SpaceTimeMarshaller extends BaseMarshaller{
         PlanningSpaceTime value = activityTable.getSpaceTimes().get(selected);
 
         PlanningActivity activity = activityTable.getTable().getActivities().get(getActivity());
-        if(!activity.isFixedSpace() && !activity.isFixedTime()){
+        if (!activity.isFixedSpace() && !activity.isFixedTime()) {
             activity.setSpaceTime(value);
-        }else if(activity.isFixedSpace()){
-            activity.setSpaceTime(new PlanningSpaceTime(activity.getSpaceTime().getRoom(),value.getTime()));
-        }else if(activity.isFixedTime()){
-            activity.setSpaceTime(new PlanningSpaceTime(activity.getSpaceTime().getRoom(),activity.getSpaceTime().getTime()));
+        } else if (activity.isFixedSpace()) {
+            activity.setSpaceTime(new PlanningSpaceTime(activity.getSpaceTime().getRoom(), value.getTime()));
+        } else if (activity.isFixedTime()) {
+            activity.setSpaceTime(new PlanningSpaceTime(activity.getSpaceTime().getRoom(), activity.getSpaceTime().getTime()));
         }
     }
 }

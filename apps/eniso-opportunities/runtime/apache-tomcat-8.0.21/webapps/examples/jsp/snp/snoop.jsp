@@ -18,39 +18,39 @@
 <body bgcolor="white">
 <h1> Request Information </h1>
 <font size="4">
-JSP Request Method: <%= util.HTMLFilter.filter(request.getMethod()) %>
-<br>
-Request URI: <%= util.HTMLFilter.filter(request.getRequestURI()) %>
-<br>
-Request Protocol: <%= util.HTMLFilter.filter(request.getProtocol()) %>
-<br>
-Servlet path: <%= util.HTMLFilter.filter(request.getServletPath()) %>
-<br>
-Path info: <%= util.HTMLFilter.filter(request.getPathInfo()) %>
-<br>
-Query string: <%= util.HTMLFilter.filter(request.getQueryString()) %>
-<br>
-Content length: <%= request.getContentLength() %>
-<br>
-Content type: <%= util.HTMLFilter.filter(request.getContentType()) %>
-<br>
-Server name: <%= util.HTMLFilter.filter(request.getServerName()) %>
-<br>
-Server port: <%= request.getServerPort() %>
-<br>
-Remote user: <%= util.HTMLFilter.filter(request.getRemoteUser()) %>
-<br>
-Remote address: <%= util.HTMLFilter.filter(request.getRemoteAddr()) %>
-<br>
-Remote host: <%= util.HTMLFilter.filter(request.getRemoteHost()) %>
-<br>
-Authorization scheme: <%= util.HTMLFilter.filter(request.getAuthType()) %>
-<br>
-Locale: <%= request.getLocale() %>
-<hr>
-The browser you are using is
-<%= util.HTMLFilter.filter(request.getHeader("User-Agent")) %>
-<hr>
+    JSP Request Method: <%= util.HTMLFilter.filter(request.getMethod()) %>
+    <br>
+    Request URI: <%= util.HTMLFilter.filter(request.getRequestURI()) %>
+    <br>
+    Request Protocol: <%= util.HTMLFilter.filter(request.getProtocol()) %>
+    <br>
+    Servlet path: <%= util.HTMLFilter.filter(request.getServletPath()) %>
+    <br>
+    Path info: <%= util.HTMLFilter.filter(request.getPathInfo()) %>
+    <br>
+    Query string: <%= util.HTMLFilter.filter(request.getQueryString()) %>
+    <br>
+    Content length: <%= request.getContentLength() %>
+    <br>
+    Content type: <%= util.HTMLFilter.filter(request.getContentType()) %>
+    <br>
+    Server name: <%= util.HTMLFilter.filter(request.getServerName()) %>
+    <br>
+    Server port: <%= request.getServerPort() %>
+    <br>
+    Remote user: <%= util.HTMLFilter.filter(request.getRemoteUser()) %>
+    <br>
+    Remote address: <%= util.HTMLFilter.filter(request.getRemoteAddr()) %>
+    <br>
+    Remote host: <%= util.HTMLFilter.filter(request.getRemoteHost()) %>
+    <br>
+    Authorization scheme: <%= util.HTMLFilter.filter(request.getAuthType()) %>
+    <br>
+    Locale: <%= request.getLocale() %>
+    <hr>
+    The browser you are using is
+    <%= util.HTMLFilter.filter(request.getHeader("User-Agent")) %>
+    <hr>
 </font>
 </body>
 </html>

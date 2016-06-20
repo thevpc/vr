@@ -15,16 +15,15 @@
 * limitations under the License.
 */
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ResourceBundle;
+import util.HTMLFilter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import util.HTMLFilter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ResourceBundle;
 
 /**
  * Example servlet showing request information.
@@ -41,8 +40,7 @@ public class RequestInfoExample extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
-        throws IOException, ServletException
-    {
+            throws IOException, ServletException {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
 
@@ -65,10 +63,10 @@ public class RequestInfoExample extends HttpServlet {
 
         out.println("<a href=\"../reqinfo.html\">");
         out.println("<img src=\"../images/code.gif\" height=24 " +
-                    "width=24 align=right border=0 alt=\"view code\"></a>");
+                "width=24 align=right border=0 alt=\"view code\"></a>");
         out.println("<a href=\"../index.html\">");
         out.println("<img src=\"../images/return.gif\" height=24 " +
-                    "width=24 align=right border=0 alt=\"return\"></a>");
+                "width=24 align=right border=0 alt=\"return\"></a>");
 
         out.println("<h3>" + title + "</h3>");
         out.println("<table border=0><tr><td>");
@@ -93,9 +91,9 @@ public class RequestInfoExample extends HttpServlet {
         out.println(HTMLFilter.filter(request.getRemoteAddr()));
         out.println("</td></tr>");
 
-        String cipherSuite=
-                (String)request.getAttribute("javax.servlet.request.cipher_suite");
-        if(cipherSuite!=null){
+        String cipherSuite =
+                (String) request.getAttribute("javax.servlet.request.cipher_suite");
+        if (cipherSuite != null) {
             out.println("<tr><td>");
             out.println("SSLCipherSuite:");
             out.println("</td><td>");
@@ -108,9 +106,8 @@ public class RequestInfoExample extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request,
-                      HttpServletResponse response)
-        throws IOException, ServletException
-    {
+                       HttpServletResponse response)
+            throws IOException, ServletException {
         doGet(request, response);
     }
 

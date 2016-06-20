@@ -1,23 +1,17 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.notification;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.*;
+
 /**
- *
  * @author vpc
  */
 @Component
@@ -25,17 +19,6 @@ import org.springframework.stereotype.Component;
 public class VrNotificationSession {
 
     private final static Map<String, VrNotificationSessionItem> map = new HashMap<>();
-
-    private static class VrNotificationSessionItem {
-
-        private Queue<VrNotificationEvent> queue = new LinkedList<>();
-        private VrNotificationQueue def;
-
-        public VrNotificationSessionItem(VrNotificationQueue def) {
-            this.def = def;
-        }
-
-    }
 
     private VrNotificationSessionItem get(String s) {
         VrNotificationSessionItem item = null;
@@ -76,7 +59,7 @@ public class VrNotificationSession {
         Queue<VrNotificationEvent> q = i.queue;
         q.clear();
     }
-    
+
     public VrNotificationEvent consume(String queueId) {
         VrNotificationSessionItem i = get(queueId);
         Queue<VrNotificationEvent> q = i.queue;
@@ -87,5 +70,16 @@ public class VrNotificationSession {
         VrNotificationSessionItem i = get(e.getQueueId());
         Queue<VrNotificationEvent> q = i.queue;
         q.remove(e);
+    }
+
+    private static class VrNotificationSessionItem {
+
+        private Queue<VrNotificationEvent> queue = new LinkedList<>();
+        private VrNotificationQueue def;
+
+        public VrNotificationSessionItem(VrNotificationQueue def) {
+            this.def = def;
+        }
+
     }
 }

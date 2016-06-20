@@ -1,15 +1,15 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.inbox.service;
 
+import net.vpc.app.vainruling.plugins.inbox.service.model.EmailDestinationType;
+
 import java.util.Properties;
-import net.vpc.app.vainruling.plugins.inbox.service.model.EmailType;
 
 /**
- *
  * @author vpc
  */
 public class MailData {
@@ -20,10 +20,19 @@ public class MailData {
     private String to;
     private String toFilter;
     private String category;
-    private EmailType emailType;
+    private EmailDestinationType emailType;
     private Integer templateId;
     private boolean external;
+    private boolean richText;
     private Properties properties = new Properties();
+
+    public boolean isRichText() {
+        return richText;
+    }
+
+    public void setRichText(boolean richText) {
+        this.richText = richText;
+    }
 
     public String getSubject() {
         return subject;
@@ -65,11 +74,11 @@ public class MailData {
         this.templateId = templateId;
     }
 
-    public EmailType getEmailType() {
+    public EmailDestinationType getEmailType() {
         return emailType;
     }
 
-    public void setEmailType(EmailType emailType) {
+    public void setEmailType(EmailDestinationType emailType) {
         this.emailType = emailType;
     }
 

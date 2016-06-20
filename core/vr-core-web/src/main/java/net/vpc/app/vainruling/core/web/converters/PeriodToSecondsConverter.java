@@ -1,18 +1,18 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.converters;
+
+import net.vpc.common.util.Chronometer;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import net.vpc.common.util.Chronometer;
 
 /**
- *
  * @author vpc
  */
 @FacesConverter("periodToSecondsConverter")
@@ -20,13 +20,13 @@ public class PeriodToSecondsConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component,
-            String value) {
+                              String value) {
         return value;
     }
 
     @Override
     public String getAsString(FacesContext context, UIComponent component,
-            Object value) {
+                              Object value) {
         if (value == null) {
             return "";
         }

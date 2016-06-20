@@ -1,19 +1,18 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service;
+
+import net.vpc.app.vainruling.core.service.util.PlatformReflector;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.vpc.app.vainruling.core.service.util.Reflector;
-
 /**
- *
  * @author vpc
  */
 public class Plugin implements Comparable<Plugin> {
@@ -28,41 +27,11 @@ public class Plugin implements Comparable<Plugin> {
         this.beanInstance = beanInstance;
     }
 
-    public String getBeanName() {
-        return beanName;
-    }
-
-    public <T> T getBeanInstance() {
-        return (T) beanInstance;
-    }
-
-    public String getVersion() {
-        AppPlugin p = (AppPlugin) Reflector.getTargetClass(beanInstance).getAnnotation(AppPlugin.class);
-        return p.version();
-    }
-
-    public Reflector.InstanceInvoker[] findMethodsByAnnotation(Class anno) {
-        return Reflector.findInstanceByAnnotation(beanInstance, anno);
-    }
-
-    public Reflector.InstanceInvoker[] findMethodsByAnnotation(Class anno, Class[] args) {
-        return Reflector.findInstanceByAnnotation(beanInstance, anno, args);
-    }
-
-    public Reflector.InstanceInvoker[] findMethodsByName(String name, Class[] args) {
-        return Reflector.findInstanceByName(beanInstance, name, args);
-    }
-
-    @Override
-    public int compareTo(Plugin o) {
-        return compare(this, o);
-    }
-
     public static int compare(Plugin s1, Plugin s2) {
         Object o1 = s1.getBeanInstance();
-        AppPlugin a1 = (AppPlugin) Reflector.getTargetClass(o1).getAnnotation(AppPlugin.class);
+        AppPlugin a1 = (AppPlugin) PlatformReflector.getTargetClass(o1).getAnnotation(AppPlugin.class);
         Object o2 = s2.getBeanInstance();
-        AppPlugin a2 = (AppPlugin) Reflector.getTargetClass(o2).getAnnotation(AppPlugin.class);
+        AppPlugin a2 = (AppPlugin) PlatformReflector.getTargetClass(o2).getAnnotation(AppPlugin.class);
         HashSet<String> hs1 = new HashSet<>(Arrays.asList(a1.dependsOn()));
         HashSet<String> hs2 = new HashSet<>(Arrays.asList(a2.dependsOn()));
         final String corePlugin = "corePlugin";
@@ -92,9 +61,39 @@ public class Plugin implements Comparable<Plugin> {
         return r;
     }
 
+    public String getBeanName() {
+        return beanName;
+    }
+
+    public <T> T getBeanInstance() {
+        return (T) beanInstance;
+    }
+
+    public String getVersion() {
+        AppPlugin p = (AppPlugin) PlatformReflector.getTargetClass(beanInstance).getAnnotation(AppPlugin.class);
+        return p.version();
+    }
+
+    public PlatformReflector.InstanceInvoker[] findMethodsByAnnotation(Class anno) {
+        return PlatformReflector.findInstanceByAnnotation(beanInstance, anno);
+    }
+
+    public PlatformReflector.InstanceInvoker[] findMethodsByAnnotation(Class anno, Class[] args) {
+        return PlatformReflector.findInstanceByAnnotation(beanInstance, anno, args);
+    }
+
+    public PlatformReflector.InstanceInvoker[] findMethodsByName(String name, Class[] args) {
+        return PlatformReflector.findInstanceByName(beanInstance, name, args);
+    }
+
+    @Override
+    public int compareTo(Plugin o) {
+        return compare(this, o);
+    }
+
     public void start() {
         log.log(Level.INFO, "Start Plugin {0}", beanName);
-        for (Reflector.InstanceInvoker p : findMethodsByAnnotation(Start.class)) {
+        for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(Start.class)) {
             p.invoke();
             return;
         }
@@ -102,7 +101,7 @@ public class Plugin implements Comparable<Plugin> {
 
     public void install() {
         log.log(Level.INFO, "Install Plugin {0}", beanName);
-        for (Reflector.InstanceInvoker p : findMethodsByAnnotation(Install.class)) {
+        for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(Install.class)) {
             p.invoke();
             return;
         }
@@ -110,16 +109,16 @@ public class Plugin implements Comparable<Plugin> {
 
     public void installDemo() {
         log.log(Level.INFO, "Install Plugin Demo {0}", beanName);
-        for (Reflector.InstanceInvoker p : findMethodsByAnnotation(InstallDemo.class)) {
+        for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(InstallDemo.class)) {
             p.invoke();
             return;
         }
     }
 
-    
+
 //    public boolean isEnabledEntityAction(Class entityType, String actionName, Object obj) {
 //        Entity entity = UPA.getPersistenceUnit().getEntity(entityType);
-//        for (Reflector.InstanceInvoker p : findMethodsByAnnotation(EntityActionFilter.class)) {
+//        for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(EntityActionFilter.class)) {
 //            EntityActionFilter r = p.getAnnotation();
 //            Class[] argTypes = p.getParameterTypes();
 //            Class rt = p.getReturnType();
@@ -172,7 +171,7 @@ public class Plugin implements Comparable<Plugin> {
 //    public ActionInfo[] getEntityActionList(Class entityType, Object obj) {
 //        ArrayList<ActionInfo> actions = new ArrayList<>();
 //        Entity entity = UPA.getPersistenceUnit().getEntity(entityType);
-//        for (Reflector.InstanceInvoker p : findMethodsByAnnotation(EntityActionList.class)) {
+//        for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(EntityActionList.class)) {
 //            EntityActionList r = p.getAnnotation();
 //            Class[] argTypes = p.getParameterTypes();
 //            Class rt = p.getReturnType();
@@ -219,7 +218,7 @@ public class Plugin implements Comparable<Plugin> {
 //            }
 //
 //        }
-//        for (Reflector.InstanceInvoker p : findMethodsByAnnotation(EntityAction.class)) {
+//        for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(EntityAction.class)) {
 //            EntityAction r = p.getAnnotation();
 //            String actionId = r.actionName();
 //            String actionLabel = r.actionLabel();

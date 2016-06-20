@@ -1,26 +1,26 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.internship.service.model.ext;
 
-import java.util.ArrayList;
-import java.util.List;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipBoardMessage;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternship;
-import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternshipSuperviserIntent;
+import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternshipSupervisorIntent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- *
  * @author vpc
  */
 public class AcademicInternshipExtList {
 
-    private List<AcademicInternshipExt> internshipExts=new ArrayList<>();
-    private List<AcademicInternship> internships=new ArrayList<>();
-    private List<AcademicInternshipBoardMessage> messages=new ArrayList<>();
-    private List<AcademicInternshipSuperviserIntent> superviserIntents=new ArrayList<>();
+    private List<AcademicInternshipExt> internshipExts = new ArrayList<>();
+    private List<AcademicInternship> internships = new ArrayList<>();
+    private List<AcademicInternshipBoardMessage> messages = new ArrayList<>();
+    private List<AcademicInternshipSupervisorIntent> supervisorIntents = new ArrayList<>();
 
     public List<AcademicInternshipExt> getInternshipExts() {
         return internshipExts;
@@ -46,12 +46,12 @@ public class AcademicInternshipExtList {
         this.messages = messages;
     }
 
-    public List<AcademicInternshipSuperviserIntent> getSuperviserIntents() {
-        return superviserIntents;
+    public List<AcademicInternshipSupervisorIntent> getSupervisorIntents() {
+        return supervisorIntents;
     }
 
-    public void setSuperviserIntents(List<AcademicInternshipSuperviserIntent> superviserIntents) {
-        this.superviserIntents = superviserIntents;
+    public void setSupervisorIntents(List<AcademicInternshipSupervisorIntent> supervisorIntents) {
+        this.supervisorIntents = supervisorIntents;
     }
-    
+
 }

@@ -1,122 +1,124 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
+
 and open the template in the editor.
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"   
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 
-      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+        >
 
-    <h:head>
-    </h:head>
+<h:head>
+</h:head>
 
-    <h:body>
+<h:body>
 
 
-        <ui:composition template="/templates/private-template.xhtml">
-            <ui:define name="content">
-                <h:form id="listForm">
-                    <p:messages id="messages"/>
-                    <div class="row">
-                        <div class="table-responsive">
-                            <p:panelGrid columns="2" styleClass="noBorderGrid" style="margin-top: 20px">
+    <ui:composition template="/templates/private-template.xhtml">
+        <ui:define name="content">
+            <h:form id="listForm">
+                <p:messages id="messages"/>
 
-                                <p:outputLabel value="CIN"/>
-                                <p:inputText value="#{subscribeTeacherCtrl.model.teacher.nin}"/>
+                <div class="row">
+                    <div class="table-responsive">
+                        <p:panelGrid columns="2" styleClass="noBorderGrid" style="margin-top: 20px">
 
-                                <p:outputLabel value="Prénom"/>
-                                <p:inputText value="#{subscribeTeacherCtrl.model.teacher.firstName}"/>
+                            <p:outputLabel value="CIN"/>
+                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.nin}"/>
 
-                                <p:outputLabel value="Nom"/>
-                                <p:inputText value="#{subscribeTeacherCtrl.model.teacher.lastName}"/>
+                            <p:outputLabel value="Prénom"/>
+                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.firstName}"/>
 
-                                <p:outputLabel value="Nom (ar)"/>
-                                <p:inputText value="#{subscribeTeacherCtrl.model.teacher.lastName2}"/>
+                            <p:outputLabel value="Nom"/>
+                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.lastName}"/>
 
-                                <p:outputLabel value="Prénom (ar)"/>
-                                <p:inputText value="#{subscribeTeacherCtrl.model.teacher.firstName2}"/>
+                            <p:outputLabel value="Nom (ar)"/>
+                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.lastName2}"/>
 
-                                <p:outputLabel value="Civlité"/>
-                                <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.civilityName}">
-                                    <f:selectItem itemLabel="Selectionner ..." itemValue="" />
-                                    <f:selectItems value="#{subscribeTeacherCtrl.model.civilities}" />
-                                </p:selectOneMenu>                                
+                            <p:outputLabel value="Prénom (ar)"/>
+                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.firstName2}"/>
 
-                                <p:outputLabel value="Genre"/>
-                                <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.genderName}">
-                                    <f:selectItem itemLabel="Selectionner ..." itemValue="" />
-                                    <f:selectItems value="#{subscribeTeacherCtrl.model.genders}" />
-                                </p:selectOneMenu>                                
+                            <p:outputLabel value="Civlité"/>
+                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.civilityName}">
+                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                <f:selectItems value="#{subscribeTeacherCtrl.model.civilities}"/>
+                            </p:selectOneMenu>
 
-                                <p:outputLabel value="GSM (98 222 333)"/>
-                                <p:inputText value="#{subscribeTeacherCtrl.model.teacher.phone}"/>
+                            <p:outputLabel value="Genre"/>
+                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.genderName}">
+                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                <f:selectItems value="#{subscribeTeacherCtrl.model.genders}"/>
+                            </p:selectOneMenu>
 
-                                
-                                <p:outputLabel value="Email"/>
-                                <p:inputText value="#{subscribeTeacherCtrl.model.teacher.email}"/>
+                            <p:outputLabel value="GSM (98 222 333)"/>
+                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.phone}"/>
 
-                                <p:outputLabel value="Discipline (info,meca,electronique,fpga)"/>
-                                <p:inputText value="#{subscribeTeacherCtrl.model.teacher.discipline}"/>
 
-                                <p:outputLabel value="Grade"/>
-                                <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.degreeName}">
-                                    <f:selectItem itemLabel="Selectionner ..." itemValue="" />
-                                    <f:selectItems value="#{subscribeTeacherCtrl.model.degrees}" />
-                                </p:selectOneMenu>                                
+                            <p:outputLabel value="Email"/>
+                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.email}"/>
 
-                                <p:outputLabel value="Situation"/>
-                                <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.situationName}">
-                                    <f:selectItem itemLabel="Selectionner ..." itemValue="" />
-                                    <f:selectItems value="#{subscribeTeacherCtrl.model.situations}" />
-                                </p:selectOneMenu>                                
+                            <p:outputLabel value="Discipline (info,meca,electronique,fpga)"/>
+                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.discipline}"/>
 
-                                <p:outputLabel value="Charge S1 / S2"/>
-                                <ui:fragment>
-                                    <p:inputText value="#{subscribeTeacherCtrl.model.teacher.weekLoads[0]}"/>
-                                    <p:inputText value="#{subscribeTeacherCtrl.model.teacher.weekLoads[1]}"/>
-                                </ui:fragment>
-                                
+                            <p:outputLabel value="Grade"/>
+                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.degreeName}">
+                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                <f:selectItems value="#{subscribeTeacherCtrl.model.degrees}"/>
+                            </p:selectOneMenu>
 
-                                <p:outputLabel value="1er contrat"/>
-                                <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.startPeriodName}">
-                                    <f:selectItem itemLabel="Selectionner ..." itemValue="" />
-                                    <f:selectItems value="#{subscribeTeacherCtrl.model.periods}" />
-                                </p:selectOneMenu>                                
+                            <p:outputLabel value="Situation"/>
+                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.situationName}">
+                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                <f:selectItems value="#{subscribeTeacherCtrl.model.situations}"/>
+                            </p:selectOneMenu>
 
-                                <p:outputLabel value="Département"/>
-                                <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.departmentName}">
-                                    <f:selectItem itemLabel="Selectionner ..." itemValue="" />
-                                    <f:selectItems value="#{subscribeTeacherCtrl.model.departments}" />
-                                </p:selectOneMenu>                                
+                            <p:outputLabel value="Charge S1 / S2"/>
+                            <ui:fragment>
+                                <p:inputText value="#{subscribeTeacherCtrl.model.teacher.weekLoads[0]}"/>
+                                <p:inputText value="#{subscribeTeacherCtrl.model.teacher.weekLoads[1]}"/>
+                            </ui:fragment>
 
-                            </p:panelGrid>
-                        </div>
+
+                            <p:outputLabel value="1er contrat"/>
+                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.startPeriodName}">
+                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                <f:selectItems value="#{subscribeTeacherCtrl.model.periods}"/>
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Département"/>
+                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.departmentName}">
+                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                <f:selectItems value="#{subscribeTeacherCtrl.model.departments}"/>
+                            </p:selectOneMenu>
+
+                        </p:panelGrid>
                     </div>
+                </div>
 
 
-                    <p:separator />
-                    <div class="row">
-                        <div class="table-responsive">
-                            <p:commandButton action="#{subscribeTeacherCtrl.onImport}" value="Enregistrer" update=":listForm" style="margin-left: 100px;"/>
-                        </div>
+                <p:separator/>
+
+                <div class="row">
+                    <div class="table-responsive">
+                        <p:commandButton action="#{subscribeTeacherCtrl.onImport}" value="Enregistrer"
+                                         update=":listForm" style="margin-left: 100px;"/>
                     </div>
+                </div>
 
-                </h:form>
-
-
-
-            </ui:define>
+            </h:form>
 
 
-        </ui:composition>
+        </ui:define>
 
 
-    </h:body>
+    </ui:composition>
+
+
+</h:body>
 
 </html>

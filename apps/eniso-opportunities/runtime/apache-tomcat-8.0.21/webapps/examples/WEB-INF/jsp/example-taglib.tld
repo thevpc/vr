@@ -21,98 +21,98 @@
 
 <taglib>
 
-  <tlib-version>1.0</tlib-version>
-  <jsp-version>1.2</jsp-version>
-  <short-name>simple</short-name>
-  <uri>http://tomcat.apache.org/example-taglib</uri>
-  <description>
-    A simple tab library for the examples
-  </description>
-
-  <tag>
-    <name>ShowSource</name>
-    <tag-class>examples.ShowSource</tag-class>
-    <description> Display JSP sources </description>
-    <attribute>
-       <name>jspFile</name>
-       <required>true</required>
-       <rtexprvalue>true</rtexprvalue>
-    </attribute>
-  </tag>
-
-  <!-- A simple Tag -->
-  <!-- foo tag -->
-  <tag>
-    <name>foo</name>
-    <tag-class>examples.FooTag</tag-class>
-    <tei-class>examples.FooTagExtraInfo</tei-class>
-    <body-content>JSP</body-content>
+    <tlib-version>1.0</tlib-version>
+    <jsp-version>1.2</jsp-version>
+    <short-name>simple</short-name>
+    <uri>http://tomcat.apache.org/example-taglib</uri>
     <description>
-      Perform a server side action; uses 3 mandatory attributes
+        A simple tab library for the examples
     </description>
 
-    <attribute>
-      <name>att1</name>
-      <required>true</required>
-    </attribute>
-    <attribute>
-      <name>att2</name>
-      <required>true</required>
-    </attribute>
-    <attribute>
-      <name>att3</name>
-      <required>true</required>
-    </attribute>
-  </tag>
+    <tag>
+        <name>ShowSource</name>
+        <tag-class>examples.ShowSource</tag-class>
+        <description>Display JSP sources</description>
+        <attribute>
+            <name>jspFile</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
 
-  <!-- Another simple tag -->
-  <!-- log tag -->
-  <tag>
-    <name>log</name>
-    <tag-class>examples.LogTag</tag-class>
-    <body-content>TAGDEPENDENT</body-content>
-    <description>
-      Perform a server side action; Log the message.
-    </description>
-    <attribute>
-      <name>toBrowser</name>
-      <required>false</required>
-    </attribute>
-  </tag>
+    <!-- A simple Tag -->
+    <!-- foo tag -->
+    <tag>
+        <name>foo</name>
+        <tag-class>examples.FooTag</tag-class>
+        <tei-class>examples.FooTagExtraInfo</tei-class>
+        <body-content>JSP</body-content>
+        <description>
+            Perform a server side action; uses 3 mandatory attributes
+        </description>
 
-  <!-- Another simple Tag -->
-  <!-- values tag -->
-  <tag>
-    <name>values</name>
-    <tag-class>examples.ValuesTag</tag-class>
-    <body-content>empty</body-content>
-    <description>
-        Accept and return values of different types. This tag is used
-        to illustrate type coercions.
-    </description>
-    <attribute>
-      <name>object</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.Object</type>
-    </attribute>
-    <attribute>
-      <name>string</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>long</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>long</type>
-    </attribute>
-    <attribute>
-      <name>double</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>double</type>
-    </attribute>
-  </tag>
+        <attribute>
+            <name>att1</name>
+            <required>true</required>
+        </attribute>
+        <attribute>
+            <name>att2</name>
+            <required>true</required>
+        </attribute>
+        <attribute>
+            <name>att3</name>
+            <required>true</required>
+        </attribute>
+    </tag>
+
+    <!-- Another simple tag -->
+    <!-- log tag -->
+    <tag>
+        <name>log</name>
+        <tag-class>examples.LogTag</tag-class>
+        <body-content>TAGDEPENDENT</body-content>
+        <description>
+            Perform a server side action; Log the message.
+        </description>
+        <attribute>
+            <name>toBrowser</name>
+            <required>false</required>
+        </attribute>
+    </tag>
+
+    <!-- Another simple Tag -->
+    <!-- values tag -->
+    <tag>
+        <name>values</name>
+        <tag-class>examples.ValuesTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            Accept and return values of different types. This tag is used
+            to illustrate type coercions.
+        </description>
+        <attribute>
+            <name>object</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Object</type>
+        </attribute>
+        <attribute>
+            <name>string</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>long</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>long</type>
+        </attribute>
+        <attribute>
+            <name>double</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>double</type>
+        </attribute>
+    </tag>
 </taglib>

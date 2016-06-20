@@ -1,17 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.install;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletContext;
 import net.vpc.app.vainruling.core.service.model.AppProperty;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.PersistenceUnit;
@@ -20,8 +13,15 @@ import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 import org.springframework.stereotype.Controller;
 
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @Controller
@@ -55,8 +55,8 @@ public class VrConfigureInstall {
     public AppProperty findSystemProperty(String name) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         QueryBuilder q = pu.createQueryBuilder(AppProperty.class);
-        q.addAndField("propertyName", name);
-        q.addAndExpression("(userId = null)");
+        q.byField("propertyName", name);
+        q.byExpression("(userId = null)");
         List<AppProperty> props = q.getEntityList();
         if (props.isEmpty()) {
             return null;

@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling</groupId>
@@ -13,8 +13,6 @@
         <module>../plugins/academic/vr-academic-web</module>
         <module>../plugins/academic-internship/vr-academic-internship-service</module>
         <module>../plugins/academic-internship/vr-academic-internship-web</module>
-        <module>../plugins/academic-addressbook/vr-academic-addressbook-service</module>
-        <module>../plugins/academic-addressbook/vr-academic-addressbook-web</module>
         <module>../plugins/academic-report/vr-academic-report-service</module>
         <module>../plugins/academic-report/vr-academic-report-web</module>
         <module>../plugins/academic-planning/vr-academic-planning-service</module>

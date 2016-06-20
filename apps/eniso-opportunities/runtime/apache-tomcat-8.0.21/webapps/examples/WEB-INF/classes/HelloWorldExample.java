@@ -14,14 +14,14 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ResourceBundle;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ResourceBundle;
 
 /**
  * The simplest possible servlet.
@@ -36,10 +36,9 @@ public class HelloWorldExample extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
-        throws IOException, ServletException
-    {
+            throws IOException, ServletException {
         ResourceBundle rb =
-            ResourceBundle.getBundle("LocalStrings",request.getLocale());
+                ResourceBundle.getBundle("LocalStrings", request.getLocale());
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
@@ -65,10 +64,10 @@ public class HelloWorldExample extends HttpServlet {
 
         out.println("<a href=\"../helloworld.html\">");
         out.println("<img src=\"../images/code.gif\" height=24 " +
-                    "width=24 align=right border=0 alt=\"view code\"></a>");
+                "width=24 align=right border=0 alt=\"view code\"></a>");
         out.println("<a href=\"../index.html\">");
         out.println("<img src=\"../images/return.gif\" height=24 " +
-                    "width=24 align=right border=0 alt=\"return\"></a>");
+                "width=24 align=right border=0 alt=\"return\"></a>");
         out.println("<h1>" + title + "</h1>");
         out.println("</body>");
         out.println("</html>");

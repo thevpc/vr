@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.history;
@@ -10,11 +10,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSeme
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseLevel;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
 
 /**
  * cours (dans un plan d'études)
@@ -54,7 +50,7 @@ public class AcademicHistCoursePlan {
     private double valuePM;
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     private double valueTPPM;
-//    private double valueDU;
+    //    private double valueDU;
     //Unite enseignement/UE
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     private AcademicHistCourseGroup courseGroup;
@@ -158,7 +154,7 @@ public class AcademicHistCoursePlan {
         this.valueTP = valueTP;
     }
 
-//    public double getValueDU() {
+    //    public double getValueDU() {
 //        return valueDU;
 //    }
 //

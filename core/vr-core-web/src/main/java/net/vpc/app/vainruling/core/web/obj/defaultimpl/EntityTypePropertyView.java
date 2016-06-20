@@ -1,28 +1,23 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.obj.NamedId;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
 import net.vpc.app.vainruling.core.web.obj.ViewContext;
-import net.vpc.upa.Entity;
-import net.vpc.upa.Field;
-import net.vpc.upa.KeyType;
-import net.vpc.upa.Relationship;
-import net.vpc.upa.UPA;
+import net.vpc.upa.*;
 import net.vpc.upa.types.DataType;
-import net.vpc.upa.types.EntityType;
+import net.vpc.upa.types.ManyToOneType;
+
+import javax.faces.model.SelectItem;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- *
  * @author vpc
  */
 public class EntityTypePropertyView extends FieldPropertyView {
@@ -36,17 +31,18 @@ public class EntityTypePropertyView extends FieldPropertyView {
         if (dt == null) {
             dt = field.getDataType();
         }
-        if (dt instanceof EntityType) {
-            EntityType entityType = (EntityType) dt;
-            Relationship relation = entityType.getRelationship();
+        if (dt instanceof ManyToOneType) {
+            ManyToOneType manyToOneType = (ManyToOneType) dt;
+            Relationship relation = manyToOneType.getRelationship();
             entity = relation.getTargetEntity();
         } else if (dt instanceof KeyType) {
             entity = ((KeyType) dt).getEntity();
         }
         setActionCommand("{entity:\"" + entity.getName() + "\",id:\"${ID}\"}");
     }
-    public Object getObjectValue(){
-        if(value instanceof NamedId){
+
+    public Object getObjectValue() {
+        if (value instanceof NamedId) {
             Object id = ((NamedId) value).getId();
             return entity.getBuilder().idToObject(id);
         }
@@ -77,9 +73,9 @@ public class EntityTypePropertyView extends FieldPropertyView {
         if (dt == null) {
             dt = getField().getDataType();
         }
-        if (dt instanceof EntityType) {
-            EntityType entityType = (EntityType) dt;
-            Relationship relation = entityType.getRelationship();
+        if (dt instanceof ManyToOneType) {
+            ManyToOneType manyToOneType = (ManyToOneType) dt;
+            Relationship relation = manyToOneType.getRelationship();
             e = relation.getTargetEntity();
         } else if (dt instanceof KeyType) {
             e = ((KeyType) dt).getEntity();
@@ -89,10 +85,10 @@ public class EntityTypePropertyView extends FieldPropertyView {
 //        return getEntityType().getRelationship().getTargetRole().getEntity();
     }
 
-    public EntityType getEntityType() {
+    public ManyToOneType getEntityType() {
         Field field = this.getField();
         DataType dt = field.getDataType();
-        return (EntityType) dt;
+        return (ManyToOneType) dt;
     }
 
     public void update(ViewContext viewContext) {
@@ -116,7 +112,7 @@ public class EntityTypePropertyView extends FieldPropertyView {
         this.setItems(items);
     }
 
-    public Entity getEntity(){
+    public Entity getEntity() {
         return entity;
     }
 }

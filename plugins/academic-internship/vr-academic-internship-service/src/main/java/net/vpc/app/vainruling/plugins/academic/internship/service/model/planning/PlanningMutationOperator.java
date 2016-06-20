@@ -11,9 +11,12 @@ import java.util.Map;
  * Created by vpc on 5/27/16.
  */
 public class PlanningMutationOperator extends BaseGeneticOperator implements Configurable {
-    /** String containing the CVS revision. Read out via reflection!*/
+    /**
+     * String containing the CVS revision. Read out via reflection!
+     */
     private final static String CVS_REVISION = "$Revision: 1.45 $";
-
+    PlanningActivityTableExt table;
+    PlanningFitnessFunction fitness;
     /**
      * Calculator for dynamically determining the mutation rate. If set to
      * null the value of m_mutationRate will be used. Replaces the previously used
@@ -23,8 +26,6 @@ public class PlanningMutationOperator extends BaseGeneticOperator implements Con
 
     private PlanningMutationOperatorConfigurable m_config = new
             PlanningMutationOperatorConfigurable();
-    PlanningActivityTableExt table;
-    PlanningFitnessFunction fitness;
 //    /**
 //     * Constructs a new instance of this MutationOperator without a specified
 //     * mutation rate, which results in dynamic mutation being turned on. This
@@ -83,13 +84,12 @@ public class PlanningMutationOperator extends BaseGeneticOperator implements Con
      * Constructs a new instance of this MutationOperator with the given
      * mutation rate.
      *
-     * @param a_config the configuration to use
+     * @param a_config              the configuration to use
      * @param a_desiredMutationRate desired rate of mutation, expressed as
-     * the denominator of the 1 / X fraction. For example, 1000 would result
-     * in 1/1000 genes being mutated on average. A mutation rate of zero disables
-     * mutation entirely
+     *                              the denominator of the 1 / X fraction. For example, 1000 would result
+     *                              in 1/1000 genes being mutated on average. A mutation rate of zero disables
+     *                              mutation entirely
      * @throws InvalidConfigurationException
-     *
      * @author Neil Rotstan
      * @since 1.1
      */
@@ -97,20 +97,19 @@ public class PlanningMutationOperator extends BaseGeneticOperator implements Con
                                     final int a_desiredMutationRate, PlanningActivityTableExt table)
             throws InvalidConfigurationException {
         super(a_config);
-        this.table=table;
-        this.fitness=new PlanningFitnessFunction(table);
+        this.table = table;
+        this.fitness = new PlanningFitnessFunction(table);
         m_config.m_mutationRate = a_desiredMutationRate;
     }
 
     /**
-     * @param a_population the population of chromosomes from the current
-     * evolution prior to exposure to any genetic operators. Chromosomes in this
-     * array should not be modified. Please notice, that the call in
-     * Genotype.evolve() to the implementations of GeneticOperator overgoes this
-     * due to performance issues
+     * @param a_population           the population of chromosomes from the current
+     *                               evolution prior to exposure to any genetic operators. Chromosomes in this
+     *                               array should not be modified. Please notice, that the call in
+     *                               Genotype.evolve() to the implementations of GeneticOperator overgoes this
+     *                               due to performance issues
      * @param a_candidateChromosomes the pool of chromosomes that have been
-     * mutated
-     *
+     *                               mutated
      * @author Neil Rotstan
      * @author Klaus Meffert
      * @since 1.0
@@ -141,16 +140,16 @@ public class PlanningMutationOperator extends BaseGeneticOperator implements Con
             IChromosome chrom = a_population.getChromosome(i);
 
             mutate = (generator.nextInt(m_config.m_mutationRate) == 0);
-            if(mutate){
+            if (mutate) {
                 table.unmarshall(chrom);
                 IChromosome copyOfChromosome = null;
                 try {
                     mutateTable();
-                    copyOfChromosome=table.marshall(getConfiguration());
+                    copyOfChromosome = table.marshall(getConfiguration());
                 } catch (InvalidConfigurationException e) {
                     e.printStackTrace();
                 }
-                if(copyOfChromosome!=null){
+                if (copyOfChromosome != null) {
                     a_candidateChromosomes.add(copyOfChromosome);
                 }
             }
@@ -158,49 +157,49 @@ public class PlanningMutationOperator extends BaseGeneticOperator implements Con
     }
 
     private void mutateTable() throws InvalidConfigurationException {
-        Map<String, PlanningTeacherStats> t = fitness.evalTeacherStats(table.getTable());
-        HashSet<String> missingExaminer=new HashSet<>();
-        HashSet<String> surplusExaminer=new HashSet<>();
-        HashSet<String> missingChair=new HashSet<>();
-        HashSet<String> surplusChair=new HashSet<>();
+        Map<String, PlanningTeacherStats> t = fitness.evalTeacherStats(table.getTable(), false);
+        HashSet<String> missingExaminer = new HashSet<>();
+        HashSet<String> surplusExaminer = new HashSet<>();
+        HashSet<String> missingChair = new HashSet<>();
+        HashSet<String> surplusChair = new HashSet<>();
         for (Map.Entry<String, PlanningTeacherStats> e : t.entrySet()) {
             PlanningTeacherStats s = e.getValue();
-            if(s.chairBalance<0){
+            if (s.chairBalance < 0) {
                 missingChair.add(s.teacherName);
-            }else if(s.chairBalance>0){
+            } else if (s.chairBalance > 0) {
                 surplusChair.add(s.teacherName);
             }
-            if(s.examinerBalance<0){
+            if (s.examinerBalance < 0) {
                 missingExaminer.add(s.teacherName);
-            }else if(s.examinerBalance>0){
+            } else if (s.examinerBalance > 0) {
                 surplusExaminer.add(s.teacherName);
             }
         }
         RandomGenerator generator = getConfiguration().getRandomGenerator();
-        boolean switchExaminer=missingExaminer.size()>0 && surplusExaminer.size()>0;
-        boolean switchChair=missingChair.size()>0 && surplusChair.size()>0;
-        if(switchExaminer && switchChair){
-            if(generator.nextBoolean()){
-                switchExaminer=false;
-            }else{
-                switchChair=false;
+        boolean switchExaminer = missingExaminer.size() > 0 && surplusExaminer.size() > 0;
+        boolean switchChair = missingChair.size() > 0 && surplusChair.size() > 0;
+        if (switchExaminer && switchChair) {
+            if (generator.nextBoolean()) {
+                switchExaminer = false;
+            } else {
+                switchChair = false;
             }
         }
-        if(switchExaminer){
-            String[] missingExaminerArr=missingExaminer.toArray(new String[missingExaminer.size()]);
-            String[] surplusExaminerArr=surplusExaminer.toArray(new String[surplusExaminer.size()]);
-            String a=missingExaminerArr[generator.nextInt(missingExaminer.size())];
-            String b=surplusExaminerArr[generator.nextInt(surplusExaminer.size())];
+        if (switchExaminer) {
+            String[] missingExaminerArr = missingExaminer.toArray(new String[missingExaminer.size()]);
+            String[] surplusExaminerArr = surplusExaminer.toArray(new String[surplusExaminer.size()]);
+            String a = missingExaminerArr[generator.nextInt(missingExaminer.size())];
+            String b = surplusExaminerArr[generator.nextInt(surplusExaminer.size())];
             //switch these examiners!
             List<PlanningActivity> surplusExaminersActivities = table.getExaminerActivities(b);
             PlanningActivity bc = surplusExaminersActivities.get(generator.nextInt(surplusExaminersActivities.size()));
             bc.setExaminer(a);
         }
-        if(switchChair){
-            String[] missingChairArr=missingChair.toArray(new String[missingChair.size()]);
-            String[] surplusChairArr=surplusChair.toArray(new String[surplusChair.size()]);
-            String a=missingChairArr[generator.nextInt(missingChair.size())];
-            String b=surplusChairArr[generator.nextInt(surplusChair.size())];
+        if (switchChair) {
+            String[] missingChairArr = missingChair.toArray(new String[missingChair.size()]);
+            String[] surplusChairArr = surplusChair.toArray(new String[surplusChair.size()]);
+            String a = missingChairArr[generator.nextInt(missingChair.size())];
+            String b = surplusChairArr[generator.nextInt(surplusChair.size())];
             //switch these Chairs!
             List<PlanningActivity> surplusChairsActivities = table.getChairActivities(b);
             PlanningActivity bc = surplusChairsActivities.get(generator.nextInt(surplusChairsActivities.size()));
@@ -212,9 +211,8 @@ public class PlanningMutationOperator extends BaseGeneticOperator implements Con
     /**
      * Helper: mutate all atomic elements of a gene.
      *
-     * @param a_gene the gene to be mutated
+     * @param a_gene      the gene to be mutated
      * @param a_generator the generator delivering amount of mutation
-     *
      * @author Klaus Meffert
      * @since 1.1
      */
@@ -231,21 +229,6 @@ public class PlanningMutationOperator extends BaseGeneticOperator implements Con
         }
     }
 
-
-    /**
-     *
-     * @param a_mutationRate new rate of mutation, expressed as
-     * the denominator of the 1 / X fraction. For example, 1000 would result
-     * in 1/1000 genes being mutated on average. A mutation rate of zero disables
-     * mutation entirely
-     *
-     * @author Klaus Meffert
-     * @since 3.2.2
-     */
-    public void setMutationRate(int a_mutationRate) {
-        m_config.m_mutationRate = a_mutationRate;
-    }
-
     /**
      * Compares this GeneticOperator against the specified object. The result is
      * true if and the argument is an instance of this class and is equal wrt the
@@ -253,7 +236,6 @@ public class PlanningMutationOperator extends BaseGeneticOperator implements Con
      *
      * @param a_other the object to compare against
      * @return true: if the objects are the same, false otherwise
-     *
      * @author Klaus Meffert
      * @since 2.6
      */
@@ -272,7 +254,6 @@ public class PlanningMutationOperator extends BaseGeneticOperator implements Con
      * @return a negative number if this instance is "less than" the given
      * instance, zero if they are equal to each other, and a positive number if
      * this is "greater than" the given instance
-     *
      * @author Klaus Meffert
      * @since 2.6
      */
@@ -284,8 +265,7 @@ public class PlanningMutationOperator extends BaseGeneticOperator implements Con
         if (m_config.m_mutationRate != op.m_config.m_mutationRate) {
             if (m_config.m_mutationRate > op.m_config.m_mutationRate) {
                 return 1;
-            }
-            else {
+            } else {
                 return -1;
             }
         }
@@ -296,6 +276,18 @@ public class PlanningMutationOperator extends BaseGeneticOperator implements Con
 
     public int getMutationRate() {
         return m_config.m_mutationRate;
+    }
+
+    /**
+     * @param a_mutationRate new rate of mutation, expressed as
+     *                       the denominator of the 1 / X fraction. For example, 1000 would result
+     *                       in 1/1000 genes being mutated on average. A mutation rate of zero disables
+     *                       mutation entirely
+     * @author Klaus Meffert
+     * @since 3.2.2
+     */
+    public void setMutationRate(int a_mutationRate) {
+        m_config.m_mutationRate = a_mutationRate;
     }
 
     class PlanningMutationOperatorConfigurable

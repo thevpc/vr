@@ -3,7 +3,7 @@ package net.vpc.app.vainruling.plugins.academic.internship.service.model.plannin
 /**
  * Created by vpc on 5/19/16.
  */
-public class PlanningRoom implements Comparable<PlanningRoom>{
+public class PlanningRoom implements Comparable<PlanningRoom> {
     private String name;
     private int index;
 
@@ -21,7 +21,7 @@ public class PlanningRoom implements Comparable<PlanningRoom>{
     }
 
     public double distance(PlanningRoom other) {
-        return Math.abs(this.getIndex()-other.getIndex());
+        return Math.abs(this.getIndex() - other.getIndex());
     }
 
     @Override
@@ -51,7 +51,7 @@ public class PlanningRoom implements Comparable<PlanningRoom>{
     @Override
     public int compareTo(PlanningRoom o) {
         int compare = Integer.compare(getIndex(), o.getIndex());
-        if(compare==0){
+        if (compare == 0) {
             compare = getName().compareTo(o.getName());
         }
         return compare;

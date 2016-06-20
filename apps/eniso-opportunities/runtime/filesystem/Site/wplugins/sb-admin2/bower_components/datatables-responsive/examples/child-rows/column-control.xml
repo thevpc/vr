@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <dt-example table-type="html-details" table-class="display nowrap" order="2">
 
-<css lib="datatables responsive" />
-<js lib="jquery datatables responsive">
-<![CDATA[
+    <css lib="datatables responsive"/>
+    <js lib="jquery datatables responsive">
+        <![CDATA[
 
 $(document).ready(function() {
 	$('#example').DataTable( {
@@ -22,11 +22,11 @@ $(document).ready(function() {
 } );
 
 ]]>
-</js>
+    </js>
 
-<title lib="Responsive">Column controlled child rows</title>
+    <title lib="Responsive">Column controlled child rows</title>
 
-<info><![CDATA[
+    <info><![CDATA[
 
 Responsive has two built in methods for displaying the controlling element of the child rows; `inline` which is the default option and shows the control in the first column, and `column` which set a _control column_ as the control. The control column is shown only when there is some other column hidden, and is dedicated only to the show / hide control for the rows.
 

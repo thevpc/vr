@@ -33,14 +33,14 @@
  *    table.columns( [ 'sign_up_date:name', 'user_name:name' ] ).order( 'desc' ).draw();
  */
 
-$.fn.dataTable.Api.register( 'columns().order()', function ( dir ) {
-  return this.iterator( 'columns', function ( settings, columns ) {
-    var a = [];
-    
-    for ( var i=0, ien=columns.length ; i<ien ; i++ ) {
-      a.push( [ columns[i], $.isArray(dir) ? dir[i] : dir ] );
-    }
-    
-    new $.fn.dataTable.Api( settings ).order( a );
-  } );
-} );
+$.fn.dataTable.Api.register('columns().order()', function (dir) {
+    return this.iterator('columns', function (settings, columns) {
+        var a = [];
+
+        for (var i = 0, ien = columns.length; i < ien; i++) {
+            a.push([columns[i], $.isArray(dir) ? dir[i] : dir]);
+        }
+
+        new $.fn.dataTable.Api(settings).order(a);
+    });
+});

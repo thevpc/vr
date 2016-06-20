@@ -2,7 +2,7 @@
  * This plug-in will provide numeric sorting for numeric columns which have
  * extra formatting, such as thousands separators, currency symbols or any other
  * non-numeric data.
- * 
+ *
  * By default when a cell is found to have no numeric data its value is sorted
  * numerically as if its value were 0. This could also be altered to be Inifnity
  * or -Infinity as required.
@@ -24,17 +24,17 @@
  *    } );
  */
 
-jQuery.extend( jQuery.fn.dataTableExt.oSort, {
-	"formatted-num-pre": function ( a ) {
-		a = (a === "-" || a === "") ? 0 : a.replace( /[^\d\-\.]/g, "" );
-		return parseFloat( a );
-	},
+jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+    "formatted-num-pre": function (a) {
+        a = (a === "-" || a === "") ? 0 : a.replace(/[^\d\-\.]/g, "");
+        return parseFloat(a);
+    },
 
-	"formatted-num-asc": function ( a, b ) {
-		return a - b;
-	},
+    "formatted-num-asc": function (a, b) {
+        return a - b;
+    },
 
-	"formatted-num-desc": function ( a, b ) {
-		return b - a;
-	}
-} );
+    "formatted-num-desc": function (a, b) {
+        return b - a;
+    }
+});

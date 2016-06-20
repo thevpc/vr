@@ -16,11 +16,8 @@
  */
 package async;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
+import async.Stockticker.Stock;
+import async.Stockticker.TickListener;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
@@ -29,11 +26,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import async.Stockticker.Stock;
-import async.Stockticker.TickListener;
-
-public class AsyncStockServlet extends HttpServlet implements TickListener, AsyncListener{
+public class AsyncStockServlet extends HttpServlet implements TickListener, AsyncListener {
 
     private static final long serialVersionUID = 1L;
 
@@ -57,12 +56,12 @@ public class AsyncStockServlet extends HttpServlet implements TickListener, Asyn
             actx.addListener(this);
             resp.setContentType("text/plain");
             clients.add(actx);
-            if (clientcount.incrementAndGet()==1) {
+            if (clientcount.incrementAndGet() == 1) {
                 ticker.addTickListener(this);
             }
         } else {
             new Exception("Async Not Supported").printStackTrace();
-            resp.sendError(400,"Async is not supported.");
+            resp.sendError(400, "Async is not supported.");
         }
     }
 
@@ -81,7 +80,7 @@ public class AsyncStockServlet extends HttpServlet implements TickListener, Asyn
     }
 
     public void writeStock(AsyncContext actx, Stock stock) {
-        HttpServletResponse response = (HttpServletResponse)actx.getResponse();
+        HttpServletResponse response = (HttpServletResponse) actx.getResponse();
         try {
             PrintWriter writer = response.getWriter();
             writer.write("STOCK#");//make client parsing easier
@@ -95,14 +94,16 @@ public class AsyncStockServlet extends HttpServlet implements TickListener, Asyn
             writer.write("\n");
             writer.flush();
             response.flushBuffer();
-        }catch (IOException x) {
-            try {actx.complete();}catch (Exception ignore){/* Ignore */}
+        } catch (IOException x) {
+            try {
+                actx.complete();
+            } catch (Exception ignore) {/* Ignore */}
         }
     }
 
     @Override
     public void onComplete(AsyncEvent event) throws IOException {
-        if (clients.remove(event.getAsyncContext()) && clientcount.decrementAndGet()==0) {
+        if (clients.remove(event.getAsyncContext()) && clientcount.decrementAndGet() == 0) {
             ticker.removeTickListener(this);
         }
     }

@@ -34,7 +34,7 @@ public class AcademicPerfEvalFeature {
                 tracking.addField("allowCourseFeedback", null, null, BooleanType.BOOLEAN)
                         .setDefaultObject(!entityName.equals(AcademicTeacher.class.getSimpleName()));
             }
-        }else if(entityName.equals(AcademicCourseAssignment.class.getSimpleName())){
+        } else if (entityName.equals(AcademicCourseAssignment.class.getSimpleName())) {
             if (entity.findField("enableCourseFeedback") == null) {
                 Section tracking = entity.getSection("Eval", MissingStrategy.CREATE);
                 tracking.addField("enableCourseFeedback", null, null, BooleanType.BOOLEAN)

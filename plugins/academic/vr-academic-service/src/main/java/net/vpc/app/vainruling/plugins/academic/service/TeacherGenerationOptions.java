@@ -1,12 +1,13 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.service;
 
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
+
 /**
- *
  * @author vpc
  */
 public class TeacherGenerationOptions {
@@ -18,6 +19,7 @@ public class TeacherGenerationOptions {
     private String outputFolder;
     private String outputNamePattern;
     private boolean includeIntents;
+    private AppPeriod period;
 
     public Integer[] getTeacherIds() {
         return teacherIds;
@@ -73,13 +75,21 @@ public class TeacherGenerationOptions {
         return this;
     }
 
+    public boolean isIncludeIntents() {
+        return includeIntents;
+    }
+
     public TeacherGenerationOptions setIncludeIntents(boolean inclueIntents) {
         this.includeIntents = inclueIntents;
         return this;
     }
 
-    public boolean isIncludeIntents() {
-        return includeIntents;
+    public AppPeriod getPeriod() {
+        return period;
     }
 
+    public TeacherGenerationOptions setPeriod(AppPeriod period) {
+        this.period = period;
+        return this;
+    }
 }

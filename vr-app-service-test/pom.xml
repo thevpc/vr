@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling</groupId>
     <artifactId>vr-app-service-test</artifactId>
@@ -21,11 +22,11 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.35</version>
         </dependency>
-<!--        <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins</groupId>
-            <artifactId>vr-ezp-service</artifactId>
-            <version>1.0</version>
-        </dependency>-->
+        <!--        <dependency>
+                    <groupId>net.vpc.app.vain-ruling.plugins</groupId>
+                    <artifactId>vr-ezp-service</artifactId>
+                    <version>1.0</version>
+                </dependency>-->
         <dependency>
             <groupId>net.vpc.app.vain-ruling.apps.eniso-info</groupId>
             <artifactId>eniso-info-service</artifactId>
@@ -86,7 +87,7 @@
             </plugin>
         </plugins>
     </build>
-        <repositories>
+    <repositories>
         <repository>
             <id>vpc-public-maven</id>
             <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>
@@ -95,34 +96,34 @@
                 <updatePolicy>always</updatePolicy>
             </snapshots>
         </repository>
-    </repositories>    
+    </repositories>
 
-<!--    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.15</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>checkstyle</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.4</version>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.1</version>
-            </plugin>
-        </plugins>
-        
-    </reporting>-->
+    <!--    <reporting>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>2.15</version>
+                    <reportSets>
+                        <reportSet>
+                            <reports>
+                                <report>checkstyle</report>
+                            </reports>
+                        </reportSet>
+                    </reportSets>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>3.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>findbugs-maven-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+            </plugins>
+
+        </reporting>-->
     <name>vr-app-service-test</name>
 </project>

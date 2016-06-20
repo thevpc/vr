@@ -1,79 +1,74 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.articles.service;
 
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndContentImpl;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.SyndFeedImpl;
+import com.sun.syndication.feed.synd.*;
 import com.sun.syndication.io.SyndFeedOutput;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import net.vpc.app.vainruling.core.service.*;
-import net.vpc.app.vainruling.core.service.fs.FileSystemService;
-import net.vpc.common.util.MultiMap;
-import net.vpc.app.vainruling.core.service.util.ProfilePatternFilter;
+import net.vpc.app.vainruling.core.service.model.AppProfile;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
-import net.vpc.app.vainruling.core.service.model.AppProfile;
+import net.vpc.app.vainruling.core.service.util.ProfilePatternFilter;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesDisposition;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesFile;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
-import net.vpc.app.vainruling.plugins.inbox.service.model.EmailType;
 import net.vpc.app.vainruling.plugins.articles.service.model.FullArticle;
-import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
 import net.vpc.app.vainruling.plugins.inbox.service.MailData;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
-import net.vpc.common.strings.StringUtils;
+
+import net.vpc.app.vainruling.plugins.inbox.service.model.EmailDestinationType;
+import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
 import net.vpc.common.gomail.GoMail;
 import net.vpc.common.gomail.GoMailListener;
+import net.vpc.common.strings.StringUtils;
+import net.vpc.common.util.MultiMap;
 import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @AppPlugin(version = "1.8", dependsOn = {"mailboxPlugin"})
 @UpaAware
 public class ArticlesPlugin {
 
+    public static final String SEND_EXTERNAL_MAIL_QUEUE = "sendExternalMailQueue";
     @Autowired
     CorePlugin core;
-    @Autowired
-    FileSystemService fileSystemService;
-    public static final String SEND_EXTERNAL_MAIL_QUEUE = "sendExternalMailQueue";
 
     public List<ArticlesFile> findArticlesFiles(int articleId) {
         return UPA.getPersistenceUnit().createQuery("Select u from ArticlesFile u where "
-                + " u.articleId=:articleId"
-                + " order by "
-                + "  u.position asc"
+                        + " u.articleId=:articleId"
+                        + " order by "
+                        + "  u.position asc"
         )
                 .setParameter("articleId", articleId)
                 .getEntityList();
     }
 
     public List<ArticlesFile> findArticlesFiles(int[] articleIds) {
-        if(articleIds.length==0){
+        if (articleIds.length == 0) {
             return Collections.emptyList();
         }
-        StringBuilder ids_string=new StringBuilder();
+        StringBuilder ids_string = new StringBuilder();
         ids_string.append(articleIds[0]);
         for (int i = 1; i < articleIds.length; i++) {
             ids_string.append(",");
@@ -94,13 +89,13 @@ public class ArticlesPlugin {
             public List<FullArticle> run() {
                 List<FullArticle> all = new ArrayList<>();
                 List<ArticlesItem> articles = findArticlesByUserAndCategory(login, disposition);
-                int[] articleIds=new int[articles.size()];
+                int[] articleIds = new int[articles.size()];
                 for (int i = 0; i < articleIds.length; i++) {
-                    articleIds[i]=articles.get(i).getId();
+                    articleIds[i] = articles.get(i).getId();
                 }
-                MultiMap<Integer,ArticlesFile> articlesFilesMap=new MultiMap<Integer, ArticlesFile>();
+                MultiMap<Integer, ArticlesFile> articlesFilesMap = new MultiMap<Integer, ArticlesFile>();
                 for (ArticlesFile articlesFile : findArticlesFiles(articleIds)) {
-                    articlesFilesMap.put(articlesFile.getArticle().getId(),articlesFile);
+                    articlesFilesMap.put(articlesFile.getArticle().getId(), articlesFile);
                 }
                 for (ArticlesItem a : articles) {
                     String aname = a.getLinkText();
@@ -117,7 +112,7 @@ public class ArticlesPlugin {
                     }
 
                     List<ArticlesFile> c = articlesFilesMap.get(a.getId());
-                    if(c!=null) {
+                    if (c != null) {
                         att.addAll(c);
                     }
                     FullArticle f = new FullArticle(a, att);
@@ -132,13 +127,13 @@ public class ArticlesPlugin {
     public List<ArticlesItem> findArticlesByUserAndCategory(String login, String disposition) {
         List<ArticlesItem> all = UPA.getPersistenceUnit().createQuery(
                 "Select u from ArticlesItem u where "
-                + " u.disposition.name=:disposition"
-                + " and u.deleted=false"
-                + " and u.archived=false"
-                + " order by "
-                + "  u.position desc"
-                + ", u.important desc"
-                + ", u.sendTime desc"
+                        + " u.disposition.name=:disposition"
+                        + " and u.deleted=false"
+                        + " and u.archived=false"
+                        + " order by "
+                        + "  u.position desc"
+                        + ", u.important desc"
+                        + ", u.sendTime desc"
         )
                 .setParameter("disposition", disposition)
                 .getEntityList();
@@ -146,7 +141,16 @@ public class ArticlesPlugin {
         return core.filterByProfilePattern(all, null, login, new ProfilePatternFilter<ArticlesItem>() {
             @Override
             public String getProfilePattern(ArticlesItem t) {
-                return t.getRecipientProfiles();
+                AppUser s = t.getSender();
+                String author = s.getLogin();
+                String p = t.getRecipientProfiles();
+                if (StringUtils.isEmpty(p)) {
+                    return p;
+                }
+                if (StringUtils.isEmpty(author)) {
+                    return p;
+                }
+                return "( "+p+" ) , "+author;
             }
         });
     }
@@ -190,22 +194,22 @@ public class ArticlesPlugin {
             m.setPreferFormattedText(true);
             m.setSubject("[ENISo][II] ${mail_subject}");
             m.setFormattedBody("<p>${if gender='F' then 'Chère' else 'Cher' end} ${civility} ${firstName},</p>"
-                    + "\n ${mail_body}"
-                    + "\n <p>Cordialement,</p>"
-                    + "\n <p>${from_fullName}</p>"
-                    + "\n <p>${from_positionTitle1}</p>"
-                    + "\n <p>${from_positionTitle2}</p>"
-                    + "\n <p>${from_positionTitle3}</p>"
-                    + "\n <p>" + "Restez connectés sur http://www.eniso.info </p>"
+                            + "\n ${mail_body}"
+                            + "\n <p>Cordialement,</p>"
+                            + "\n <p>${from_fullName}</p>"
+                            + "\n <p>${from_positionTitle1}</p>"
+                            + "\n <p>${from_positionTitle2}</p>"
+                            + "\n <p>${from_positionTitle3}</p>"
+                            + "\n <p>" + "Restez connectés sur http://www.eniso.info </p>"
             );
             m.setPlainBody("${if gender='F' then 'Chère' else 'Cher' end} ${civility} ${firstName},"
-                    + "\n ${mail_body}"
-                    + "\n Cordialement,"
-                    + "\n ${from_fullName}"
-                    + "\n ${from_positionTitle1}"
-                    + "\n ${from_positionTitle2}"
-                    + "\n ${from_positionTitle3}"
-                    + "\n Restez connectés sur http://www.eniso.info"
+                            + "\n ${mail_body}"
+                            + "\n Cordialement,"
+                            + "\n ${from_fullName}"
+                            + "\n ${from_positionTitle1}"
+                            + "\n ${from_positionTitle2}"
+                            + "\n ${from_positionTitle3}"
+                            + "\n Restez connectés sur http://www.eniso.info"
             );
             m.setFooterEmbeddedImage("/Config/VisualIdentity/Institution.jpg");
             core.findOrCreate(m);
@@ -224,12 +228,12 @@ public class ArticlesPlugin {
                     + "\n <p>${from_positionTitle3}</p>"
                     + "\n <p>" + "Restez connectés sur http://www.eniso.info </p>");
             m.setPlainBody("${if gender='F' then 'Chère' else 'Cher' end} ${civility} ${firstName},"
-                    + "\n ${mail_body}"
-                    + "\n Cordialement"
-                    + "\n ${from_fullName}"
-                    + "\n ${from_positionTitle1}"
-                    + "\n ${from_positionTitle2}"
-                    + "\n ${from_positionTitle3}"
+                            + "\n ${mail_body}"
+                            + "\n Cordialement"
+                            + "\n ${from_fullName}"
+                            + "\n ${from_positionTitle1}"
+                            + "\n ${from_positionTitle2}"
+                            + "\n ${from_positionTitle3}"
             );
             m.setFooterEmbeddedImage(null);
             m.setFooterEmbeddedImage("/Config/VisualIdentity/Institution.jpg");
@@ -263,35 +267,7 @@ public class ArticlesPlugin {
         return UPA.getPersistenceUnit().findByMainField(MailboxMessageFormat.class, "DefaultLocalMail");
     }
 
-    public static class SendExternalMailConfig {
-
-        private EmailType emailType;
-        private Integer templateId;
-
-        public EmailType getEmailType() {
-            return emailType;
-        }
-
-        public void setEmailType(EmailType emailType) {
-            this.emailType = emailType;
-        }
-
-        public Integer getTemplateId() {
-            return templateId;
-        }
-
-        public void setTemplateId(Integer templateId) {
-            this.templateId = templateId;
-        }
-
-    }
-
-//    @EntityActionList(entityType = ArticlesItem.class)
-//    public String[] findArticleActions(){
-//        return new String[]{"SendEmail"};
-//    }
-    
-    public void sendExternalMail(ArticlesItem obj,String config) {
+    public void sendExternalMail(ArticlesItem obj, String config) {
         if (obj == null) {
             return;
         }
@@ -303,9 +279,9 @@ public class ArticlesPlugin {
             c = new SendExternalMailConfig();
         }
         ArticlesItem a = (ArticlesItem) obj;
-        EmailType etype = c.getEmailType();
+        EmailDestinationType etype = c.getEmailType();
         if (etype == null) {
-            etype = EmailType.TOEACH;
+            etype = EmailDestinationType.TOEACH;
         }
         if (!StringUtils.isEmpty(a.getRecipientProfiles())) {
             MailData mailData = new MailData();
@@ -360,8 +336,13 @@ public class ArticlesPlugin {
         }
     }
 
-    public void sendLocalMail(ArticlesItem obj,String config) {
-        if (obj == null ) {
+//    @EntityActionList(entityType = ArticlesItem.class)
+//    public String[] findArticleActions(){
+//        return new String[]{"SendEmail"};
+//    }
+
+    public void sendLocalMail(ArticlesItem obj, String config) {
+        if (obj == null) {
             return;
         }
         if (!UPA.getPersistenceGroup().getSecurityManager().isAllowedKey("Custom.Article.SendInternalEmail")) {
@@ -372,9 +353,9 @@ public class ArticlesPlugin {
         if (c == null) {
             c = new SendExternalMailConfig();
         }
-        EmailType etype = c.getEmailType();
-        if (etype == null) {
-            etype = EmailType.TOEACH;
+        EmailDestinationType type = c.getEmailType();
+        if (type == null) {
+            type = EmailDestinationType.TO;
         }
         if (!StringUtils.isEmpty(a.getRecipientProfiles())) {
             MailData mailData = new MailData();
@@ -385,7 +366,7 @@ public class ArticlesPlugin {
             mailData.setTo(a.getRecipientProfiles());
             mailData.setToFilter(a.getFilterExpression());
             mailData.setCategory("Article");
-            mailData.setEmailType(etype);
+            mailData.setEmailType(type);
             MailboxPlugin mailboxPlugin = VrApp.getBean(MailboxPlugin.class);
             try {
                 GoMail m = mailboxPlugin.createGoMail(mailData);
@@ -439,5 +420,28 @@ public class ArticlesPlugin {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public static class SendExternalMailConfig {
+
+        private  EmailDestinationType emailType;
+        private Integer templateId;
+
+        public  EmailDestinationType getEmailType() {
+            return emailType;
+        }
+
+        public void setEmailType(EmailDestinationType mailType) {
+            this.emailType = emailType;
+        }
+
+        public Integer getTemplateId() {
+            return templateId;
+        }
+
+        public void setTemplateId(Integer templateId) {
+            this.templateId = templateId;
+        }
+
     }
 }

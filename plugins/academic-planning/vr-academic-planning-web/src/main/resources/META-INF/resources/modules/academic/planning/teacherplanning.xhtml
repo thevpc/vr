@@ -1,50 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
+
 and open the template in the editor.
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"   
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 
-      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+        >
 
-    <h:head>
-    </h:head>
+<h:head>
+</h:head>
 
-    <h:body>
+<h:body>
 
 
-        <ui:composition template="/templates/private-template.xhtml">
-            <ui:define name="content">
-                <!--                <h:form id="buttonsForm">
-                
-                                     /.row 
-                                    <div class="row">
-                                        <p:outputLabel id="buttons">
-                                            <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
-                                        </p:outputLabel>
-                                    </div>
-                
-                                </h:form>-->
-                <h:form id="listForm">
-                    
-                    <div class="row">
-                        <p:selectOneMenu value="#{teacherPlanningCtrl.model.teacherId}">
-                            <p:ajax listener="#{teacherPlanningCtrl.onTeacherChanged}" update=":listForm"/>
-                            <f:selectItem itemLabel="Selectionner Enseignant..." itemValue="" />
-                            <f:selectItems value="#{teacherPlanningCtrl.model.teachers}" />
-                        </p:selectOneMenu>
-                        <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
-                    </div>
-                    
-                    <div class="row">
-                        <div class="table-responsive">
-                            <p:outputLabel value="Aucun Emploi du temps n'a pu etre resolu" rendered="#{
+    <ui:composition template="/templates/private-template.xhtml">
+        <ui:define name="content">
+            <!--                <h:form id="buttonsForm">
+
+                                 /.row
+                                <div class="row">
+                                    <p:outputLabel id="buttons">
+                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                    </p:outputLabel>
+                                </div>
+
+                            </h:form>-->
+            <h:form id="listForm">
+
+                <div class="row">
+                    <p:selectOneMenu value="#{teacherPlanningCtrl.model.teacherId}">
+                        <p:ajax listener="#{teacherPlanningCtrl.onTeacherChanged}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner Enseignant..." itemValue=""/>
+                        <f:selectItems value="#{teacherPlanningCtrl.model.teachers}"/>
+                    </p:selectOneMenu>
+                    <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
+                </div>
+
+                <div class="row">
+                    <div class="table-responsive">
+                        <p:outputLabel value="Aucun Emploi du temps n'a pu etre resolu" rendered="#{
                                     teacherPlanningCtrl.model.teacherId ne null 
                                     and 
                                     teacherPlanningCtrl.model.teacherId.length() gt 0
@@ -53,51 +53,54 @@ and open the template in the editor.
                                     or (teacherPlanningCtrl.model.planning.size()) eq 0
                                     )
                             }"/>
-                            <p:panelGrid rendered="#{teacherPlanningCtrl.model.planning ne null and (teacherPlanningCtrl.model.planning.size()) gt 0}">
+                        <p:panelGrid
+                                rendered="#{teacherPlanningCtrl.model.planning ne null and (teacherPlanningCtrl.model.planning.size()) gt 0}">
+                            <p:row>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="#{teacherPlanningCtrl.model.planning[0].dayName}"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Mardi"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Mercredi"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Jeudi"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Vendredi"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Samedi"/></p:column>
+                            </p:row>
+                            <ui:repeat var="h" value="#{teacherPlanningCtrl.model.planning[0].hours}" varStatus="hs">
                                 <p:row>
-                                    <p:column styleClass="ui-widget-header" ><p:outputLabel  value=""/></p:column>
-                                    <p:column styleClass="ui-widget-header" ><p:outputLabel  value="#{teacherPlanningCtrl.model.planning[0].dayName}"/></p:column>
-                                    <p:column styleClass="ui-widget-header" ><p:outputLabel  value="Mardi"/></p:column>
-                                    <p:column styleClass="ui-widget-header" ><p:outputLabel  value="Mercredi"/></p:column>
-                                    <p:column styleClass="ui-widget-header" ><p:outputLabel  value="Jeudi"/></p:column>
-                                    <p:column styleClass="ui-widget-header" ><p:outputLabel  value="Vendredi"/></p:column>
-                                    <p:column styleClass="ui-widget-header" ><p:outputLabel  value="Samedi"/></p:column>
-                                </p:row>
-                                <ui:repeat var="h" value="#{teacherPlanningCtrl.model.planning[0].hours}" varStatus="hs">
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header" >
-                                            <p:outputLabel  value="#{teacherPlanningCtrl.model.planning[hs.index].hours[hs.index].hour}"/>
+                                    <p:column styleClass="ui-widget-header">
+                                        <p:outputLabel
+                                                value="#{teacherPlanningCtrl.model.planning[hs.index].hours[hs.index].hour}"/>
+                                    </p:column>
+                                    <ui:repeat var="r" value="#{teacherPlanningCtrl.model.planning}">
+                                        <p:column
+                                                style="width:15.5%;#{teacherPlanningCtrl.resolveCssStyleForCourse(r.hours[hs.index].subject)}"
+                                                >
+                                            <h:panelGrid columns="1">
+                                                <p:outputLabel value="#{r.hours[hs.index].subject}"
+                                                               style="font-weight: bold"/>
+                                                <p:outputLabel value="#{r.hours[hs.index].actor}"
+                                                               style="#{teacherPlanningCtrl.resolveCssStyleForClass(r.hours[hs.index].students)}"
+                                                        />
+                                                <p:outputLabel value="#{r.hours[hs.index].activity}"/>
+                                                <p:outputLabel value="#{r.hours[hs.index].room}"/>
+                                            </h:panelGrid>
                                         </p:column>
-                                        <ui:repeat var="r" value="#{teacherPlanningCtrl.model.planning}">
-                                            <p:column 
-                                                      style="width:15.5%;#{teacherPlanningCtrl.resolveCssStyleForCourse(r.hours[hs.index].subject)}"
-                                                      >
-                                                <h:panelGrid columns="1">
-                                                    <p:outputLabel value="#{r.hours[hs.index].subject}" style="font-weight: bold"/>
-                                                    <p:outputLabel value="#{r.hours[hs.index].actor}"
-                                                                   style="#{teacherPlanningCtrl.resolveCssStyleForClass(r.hours[hs.index].students)}"
-                                                                   />
-                                                    <p:outputLabel value="#{r.hours[hs.index].activity}"/>
-                                                    <p:outputLabel value="#{r.hours[hs.index].room}"/>
-                                                </h:panelGrid>
-                                            </p:column>
-                                        </ui:repeat>
-                                    </p:row>                                    
-                                </ui:repeat>
-                            </p:panelGrid>
-                        </div>
+                                    </ui:repeat>
+                                </p:row>
+                            </ui:repeat>
+                        </p:panelGrid>
                     </div>
+                </div>
 
-                </h:form>
-
-
-
-            </ui:define>
+            </h:form>
 
 
-        </ui:composition>
+        </ui:define>
 
 
-    </h:body>
+    </ui:composition>
+
+
+</h:body>
 
 </html>

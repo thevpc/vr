@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.obj;
@@ -10,15 +10,9 @@ import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
-import net.vpc.upa.Entity;
-import net.vpc.upa.EntityPart;
-import net.vpc.upa.Field;
-import net.vpc.upa.Properties;
-import net.vpc.upa.Section;
-import net.vpc.upa.UPAObject;
+import net.vpc.upa.*;
 
 /**
- *
  * @author vpc
  */
 public class UPAObjectHelper {

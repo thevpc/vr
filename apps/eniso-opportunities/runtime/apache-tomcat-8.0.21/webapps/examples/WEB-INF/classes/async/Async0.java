@@ -16,16 +16,15 @@
 */
 package async;
 
-import java.io.IOException;
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.juli.logging.Log;
-import org.apache.juli.logging.LogFactory;
+import java.io.IOException;
 
 public class Async0 extends HttpServlet {
 
@@ -37,8 +36,8 @@ public class Async0 extends HttpServlet {
     protected void service(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         if (Boolean.TRUE == req.getAttribute("dispatch")) {
             log.info("Received dispatch, completing on the worker thread.");
-            log.info("After complete called started:"+req.isAsyncStarted());
-            resp.getWriter().write("Async dispatch worked:+"+System.currentTimeMillis()+"\n");
+            log.info("After complete called started:" + req.isAsyncStarted());
+            resp.getWriter().write("Async dispatch worked:+" + System.currentTimeMillis() + "\n");
         } else {
             resp.setContentType("text/plain");
             final AsyncContext actx = req.startAsync();
@@ -50,13 +49,13 @@ public class Async0 extends HttpServlet {
                         req.setAttribute("dispatch", Boolean.TRUE);
                         Thread.currentThread().setName("Async0-Thread");
                         log.info("Putting AsyncThread to sleep");
-                        Thread.sleep(2*1000);
+                        Thread.sleep(2 * 1000);
                         log.info("Dispatching");
                         actx.dispatch();
-                    }catch (InterruptedException x) {
-                        log.error("Async1",x);
-                    }catch (IllegalStateException x) {
-                        log.error("Async1",x);
+                    } catch (InterruptedException x) {
+                        log.error("Async1", x);
+                    } catch (IllegalStateException x) {
+                        log.error("Async1", x);
                     }
                 }
             };

@@ -1,48 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
+
 and open the template in the editor.
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"   
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
 
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+        >
 
-    <h:head>
-        <title><h:outputText value="Recherche Simple"/></title>
-        <style type="text/css">
-            .ui-widget {    
-                font-size: 90%;
-            }
+<h:head>
+    <title><h:outputText value="Recherche Simple"/></title>
+    <style type="text/css">
+        .ui-widget {
+            font-size: 90%;
+        }
 
-            .ui-selectonemenu-list,
-            .ui-selectonemenu-panel,
-            .ui-widget-content 
-            {
-                height:50% !important
-            }
+        .ui-selectonemenu-list,
+        .ui-selectonemenu-panel,
+        .ui-widget-content {
+            height: 50% !important
+        }
 
+        .ui-selectonemenu-items-wrapper {
+            height: 100% !important
+        }
 
-            .ui-selectonemenu-items-wrapper
-            {
-                height:100% !important
-            }
+    </style>
+</h:head>
 
-        </style>
-    </h:head>
-
-    <h:body>
-        <h:form id="myform">
-            <p:inputText value="#{objCtrl.model.search.expression}" style="width: 90%"/>
-            <p:separator/>
-            <p:commandButton icon="ui-icon-search" actionListener="#{objCtrl.fireEventSearchClosed}" value="Chercher" style="position: absolute;right: 10px; margin-top: 10px;"/>
-        </h:form>
+<h:body>
+    <h:form id="myform">
+        <p:inputText value="#{objCtrl.model.search.expression}" style="width: 90%"/>
+        <p:separator/>
+        <p:commandButton icon="ui-icon-search" actionListener="#{objCtrl.fireEventSearchClosed}" value="Chercher"
+                         style="position: absolute;right: 10px; margin-top: 10px;"/>
+    </h:form>
 
 
-
-    </h:body>
+</h:body>
 
 </html>

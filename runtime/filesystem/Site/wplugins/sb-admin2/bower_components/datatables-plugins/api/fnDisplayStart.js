@@ -15,18 +15,17 @@
  *    table.fnDisplayStart( 21 );
  */
 
-jQuery.fn.dataTableExt.oApi.fnDisplayStart = function ( oSettings, iStart, bRedraw )
-{
-    if ( typeof bRedraw == 'undefined' ) {
+jQuery.fn.dataTableExt.oApi.fnDisplayStart = function (oSettings, iStart, bRedraw) {
+    if (typeof bRedraw == 'undefined') {
         bRedraw = true;
     }
 
     oSettings._iDisplayStart = iStart;
-    if ( oSettings.oApi._fnCalculateEnd ) {
-        oSettings.oApi._fnCalculateEnd( oSettings );
+    if (oSettings.oApi._fnCalculateEnd) {
+        oSettings.oApi._fnCalculateEnd(oSettings);
     }
 
-    if ( bRedraw ) {
-        oSettings.oApi._fnDraw( oSettings );
+    if (bRedraw) {
+        oSettings.oApi._fnDraw(oSettings);
     }
 };

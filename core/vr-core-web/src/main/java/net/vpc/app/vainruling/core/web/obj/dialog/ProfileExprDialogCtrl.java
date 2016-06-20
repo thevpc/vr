@@ -1,17 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.obj.dialog;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.faces.bean.ManagedBean;
-import javax.faces.model.SelectItem;
-import javax.faces.model.SelectItemGroup;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
@@ -23,8 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.model.SelectItem;
+import javax.faces.model.SelectItemGroup;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author vpc
  */
 @Component
@@ -123,7 +123,7 @@ public class ProfileExprDialogCtrl {
 
     public void revalidateUsersList() {
         String e = getModel().getExpression();
-        getModel().setUsers(core.findUsersByProfileFilter(e,null));
+        getModel().setUsers(core.findUsersByProfileFilter(e, null));
     }
 
     public Model getModel() {
@@ -132,7 +132,7 @@ public class ProfileExprDialogCtrl {
 
     public void fireEventExtraDialogClosed() {
         //Object obj
-        RequestContext.getCurrentInstance().closeDialog(new DialogResult(getModel().getExpression(),getModel().getConfig().getUserInfo()));
+        RequestContext.getCurrentInstance().closeDialog(new DialogResult(getModel().getExpression(), getModel().getConfig().getUserInfo()));
     }
 
     public static class ProfileExprItem {

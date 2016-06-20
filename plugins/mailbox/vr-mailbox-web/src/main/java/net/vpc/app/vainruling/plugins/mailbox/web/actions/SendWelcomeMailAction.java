@@ -1,21 +1,21 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.mailbox.web.actions;
 
-import java.util.List;
-import net.vpc.app.vainruling.core.service.obj.EntityAction;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.obj.EntityAction;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 
+import java.util.List;
+
 /**
- *
  * @author vpc
  */
 @EntityAction(entityType = AppUser.class,
@@ -40,7 +40,7 @@ public class SendWelcomeMailAction implements ActionDialog {
     public void invoke(Class entityType, Object obj, Object[] args) {
         MailboxPlugin mailboxPlugin = VrApp.getBean(MailboxPlugin.class);
         ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
-        mailboxPlugin.sendWelcomeEmail(objCtrl.getSelectedEntityObjects(),true);
+        mailboxPlugin.sendWelcomeEmail(objCtrl.getSelectedEntityObjects(), true);
     }
 
 }

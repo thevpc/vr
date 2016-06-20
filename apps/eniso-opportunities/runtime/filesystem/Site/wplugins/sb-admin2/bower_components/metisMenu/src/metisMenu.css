@@ -11,12 +11,10 @@
     content: "\e114";
 }
 
-
 /*
  * Require Font-Awesome
  * http://fortawesome.github.io/Font-Awesome/
 */
-
 
 .fa.arrow:before {
     content: "\f104";

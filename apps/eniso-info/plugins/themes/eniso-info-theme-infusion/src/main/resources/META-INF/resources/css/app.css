@@ -1,6 +1,6 @@
 @font-face {
     font-family: dsdigi;
-    src: url('/vr/fonts/DSDIGI.woff');
+    src: url('../fonts/DSDIGI.woff');
     font-weight: normal;
 }
 
@@ -49,6 +49,7 @@
 .ui-icon.ui-ribbonicon-csv {
     background-image: url("../images/icons/csv.png");
 }
+
 .ui-icon.ui-ribbonicon-xls {
     background-image: url("../images/icons/sheet16.png");
 }
@@ -60,6 +61,7 @@
 .ui-icon.ui-ribbonicon-paste {
     background-image: url("../images/icons/paste16.png");
 }
+
 .ui-icon.ui-ribbonicon-copy {
     background-image: url("../images/icons/copy16.png");
 }
@@ -79,29 +81,36 @@
 .ui-icon.ui-ribbonicon-zoomout {
     background-image: url("../images/icons/zoomout.png");
 }
+
 .ui-icon.ui-ribbonicon-acl {
     background-image: url("../images/icons/acl.png");
 }
+
 .ui-icon.ui-ribbonicon-log {
     background-image: url("../images/icons/log.png");
 }
+
 .ui-icon.ui-ribbonicon-import {
     background-image: url("../images/icons/import.png");
 }
+
 .ui-icon.ui-ribbonicon-email {
     background-image: url("../images/icons/email16.png");
 }
+
 .ui-icon.ui-ribbonicon-xemail {
     background-image: url("../images/icons/xemail16.png");
 }
+
 .ui-widget, .ui-widget .ui-widget {
     font-size: 90%;
 }
+
 .legend {
     font-size: 100%;
 }
 
-.vr-clock{
+.vr-clock {
     /*    background: none;
         border-color: #1a6b57;
         border-style: none;
@@ -112,6 +121,7 @@
         font-weight: normal;*/
     padding: 21px 3px 0px 3px;
 }
+
 .ui-clock {
     padding: 4px 10px;
     background: none;
@@ -119,16 +129,18 @@
     border-width: 0px;
     border-color: #0f6b57;
     font-family: dsdigi;
-    /*font-size: x-small !important;*/ 
+    /*font-size: x-small !important;*/
     font-size: medium;
     color: #0f6b57;
     font-weight: bold;
     text-shadow: none;
 }
-.vr-cnx-nbr{
+
+.vr-cnx-nbr {
     background-color: #468A79;
 }
-.vr-cnx-label{
+
+.vr-cnx-label {
     font-size: x-small;
     color: #468A79;
 }
@@ -137,15 +149,14 @@ table.NoPaddingTableClass td {
     padding: 0
 }
 
-.ui-selectmanycheckbox td{
+.ui-selectmanycheckbox td {
     margin-left: 10px;
 }
 
-.vr-assigned-course{
+.vr-assigned-course {
     color: #1a6b57;
     font-weight: bold;
 }
-
 
 .vr-icon-prefix-folder {
     background-image: url('../images/icons/folder16.png');
@@ -157,6 +168,28 @@ table.NoPaddingTableClass td {
     padding-left: 22px;
     background-repeat: no-repeat;
 }
+
+.vr-icon-prefix-home {
+    background-image: url('../images/icons/home16.png');
+    position: relative;
+    float: left;
+    width: 0;
+    background-position: left;
+    padding-left: 16px;
+    padding-left: 22px;
+    background-repeat: no-repeat;
+}
+.vr-icon-prefix-parent {
+    background-image: url('../images/icons/parent16.png');
+    position: relative;
+    float: left;
+    width: 0;
+    background-position: left;
+    padding-left: 16px;
+    padding-left: 22px;
+    background-repeat: no-repeat;
+}
+
 .vr-icon-prefix-file {
     background-image: url('../images/icons/file16.png');
     position: relative;
@@ -166,6 +199,7 @@ table.NoPaddingTableClass td {
     padding-left: 22px;
     background-repeat: no-repeat;
 }
+
 .vr-icon-prefix-file-csv {
     background-image: url('../images/icons/file-csv16.png');
     position: relative;
@@ -175,6 +209,7 @@ table.NoPaddingTableClass td {
     padding-left: 22px;
     background-repeat: no-repeat;
 }
+
 .vr-icon-prefix-file-xls {
     background-image: url('../images/icons/file-xls16.png');
     position: relative;
@@ -184,6 +219,7 @@ table.NoPaddingTableClass td {
     padding-left: 22px;
     background-repeat: no-repeat;
 }
+
 .vr-icon-prefix-file-doc {
     background-image: url('../images/icons/file-doc16.png');
     position: relative;
@@ -193,6 +229,7 @@ table.NoPaddingTableClass td {
     padding-left: 22px;
     background-repeat: no-repeat;
 }
+
 .vr-icon-prefix-file-zip {
     background-image: url('../images/icons/file-zip16.png');
     position: relative;
@@ -202,6 +239,7 @@ table.NoPaddingTableClass td {
     padding-left: 22px;
     background-repeat: no-repeat;
 }
+
 .vr-icon-prefix-file-pdf {
     background-image: url('../images/icons/file-pdf16.png');
     position: relative;
@@ -211,6 +249,7 @@ table.NoPaddingTableClass td {
     padding-left: 22px;
     background-repeat: no-repeat;
 }
+
 .vr-icon-prefix-file-log {
     background-image: url('../images/icons/file-log16.png');
     position: relative;
@@ -220,6 +259,7 @@ table.NoPaddingTableClass td {
     padding-left: 22px;
     background-repeat: no-repeat;
 }
+
 .vr-icon-prefix-file-txt {
     background-image: url('../images/icons/file-txt16.png');
     position: relative;
@@ -229,6 +269,7 @@ table.NoPaddingTableClass td {
     padding-left: 22px;
     background-repeat: no-repeat;
 }
+
 .vr-icon-prefix-file-csv {
     background-image: url('../images/icons/file-csv16.png');
     position: relative;
@@ -238,6 +279,7 @@ table.NoPaddingTableClass td {
     padding-left: 22px;
     background-repeat: no-repeat;
 }
+
 .vr-icon-prefix-file-xml {
     background-image: url('../images/icons/file-xml16.png');
     position: relative;
@@ -247,6 +289,7 @@ table.NoPaddingTableClass td {
     padding-left: 22px;
     background-repeat: no-repeat;
 }
+
 .vr-icon-prefix-file-html {
     background-image: url('../images/icons/file-html16.png');
     position: relative;
@@ -256,6 +299,7 @@ table.NoPaddingTableClass td {
     padding-left: 22px;
     background-repeat: no-repeat;
 }
+
 .vr-icon-prefix-file-img {
     background-image: url('../images/icons/file-img16.png');
     position: relative;
@@ -289,14 +333,13 @@ table.NoPaddingTableClass td {
     margin: 10px 0 10px;
 }
 
-button.ui-button > span.ui-icon{
+button.ui-button > span.ui-icon {
     text-indent: 0px !important;
     background-image: none;
     color: #468A79;
 }
 
-
-.vr-leftmost-menubutton>.ui-button{
+.vr-leftmost-menubutton > .ui-button {
     height: 40px;
     height: 40px;
     margin: 0px 15px 0px 0px;
@@ -308,36 +351,34 @@ button.ui-button > span.ui-icon{
     height: 10px;
 }*/
 
-.vr-navbar{
-    background: url("/vr/fs/Site/images/patterns/wov.png");
-    background-color: #63C6AE; 
+.vr-navbar {
+    background: url("../images/patterns/wov.png");
+    background-color: #63C6AE;
     /*background-size: 100px 100px;*/
 }
-.vr-navbar2{
-    background:
-        radial-gradient(hsl(0, 100%, 27%) 4%, hsl(0, 100%, 18%) 9%, hsla(0, 100%, 20%, 0) 9%) 0 0,
-        radial-gradient(hsl(0, 100%, 27%) 4%, hsl(0, 100%, 18%) 8%, hsla(0, 100%, 20%, 0) 10%) 50px 50px,
-        radial-gradient(hsla(0, 100%, 30%, 0.8) 20%, hsla(0, 100%, 20%, 0)) 50px 0,
-        radial-gradient(hsla(0, 100%, 30%, 0.8) 20%, hsla(0, 100%, 20%, 0)) 0 50px,
-        radial-gradient(hsla(0, 100%, 20%, 1) 35%, hsla(0, 100%, 20%, 0) 60%) 50px 0,
-        radial-gradient(hsla(0, 100%, 20%, 1) 35%, hsla(0, 100%, 20%, 0) 60%) 100px 50px,
-        radial-gradient(hsla(0, 100%, 15%, 0.7), hsla(0, 100%, 20%, 0)) 0 0,
-        radial-gradient(hsla(0, 100%, 15%, 0.7), hsla(0, 100%, 20%, 0)) 50px 50px,
-        linear-gradient(45deg, hsla(0, 100%, 20%, 0) 49%, hsla(0, 100%, 0%, 1) 50%, hsla(0, 100%, 20%, 0) 70%) 0 0,
-        linear-gradient(-45deg, hsla(0, 100%, 20%, 0) 49%, hsla(0, 100%, 0%, 1) 50%, hsla(0, 100%, 20%, 0) 70%) 0 0;
-    background-color: #63C6AE; 
+
+.vr-navbar2 {
+    background: radial-gradient(hsl(0, 100%, 27%) 4%, hsl(0, 100%, 18%) 9%, hsla(0, 100%, 20%, 0) 9%) 0 0,
+    radial-gradient(hsl(0, 100%, 27%) 4%, hsl(0, 100%, 18%) 8%, hsla(0, 100%, 20%, 0) 10%) 50px 50px,
+    radial-gradient(hsla(0, 100%, 30%, 0.8) 20%, hsla(0, 100%, 20%, 0)) 50px 0,
+    radial-gradient(hsla(0, 100%, 30%, 0.8) 20%, hsla(0, 100%, 20%, 0)) 0 50px,
+    radial-gradient(hsla(0, 100%, 20%, 1) 35%, hsla(0, 100%, 20%, 0) 60%) 50px 0,
+    radial-gradient(hsla(0, 100%, 20%, 1) 35%, hsla(0, 100%, 20%, 0) 60%) 100px 50px,
+    radial-gradient(hsla(0, 100%, 15%, 0.7), hsla(0, 100%, 20%, 0)) 0 0,
+    radial-gradient(hsla(0, 100%, 15%, 0.7), hsla(0, 100%, 20%, 0)) 50px 50px,
+    linear-gradient(45deg, hsla(0, 100%, 20%, 0) 49%, hsla(0, 100%, 0%, 1) 50%, hsla(0, 100%, 20%, 0) 70%) 0 0,
+    linear-gradient(-45deg, hsla(0, 100%, 20%, 0) 49%, hsla(0, 100%, 0%, 1) 50%, hsla(0, 100%, 20%, 0) 70%) 0 0;
+    background-color: #63C6AE;
     background-size: 100px 100px;
 }
 
-.vr-att-button{
+.vr-att-button {
 
 }
 
-
-
 .vr-att-button {
-    border: solid 1px rgba(255,255,255,0.3);
-    background-color: rgba(0,0,0,0.2);
+    border: solid 1px rgba(255, 255, 255, 0.3);
+    background-color: rgba(0, 0, 0, 0.2);
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     border-radius: 5px; /* future proofing */
@@ -348,50 +389,52 @@ button.ui-button > span.ui-icon{
     font-size: 11px;
     font-weight: 600;
 }
+
 .vr-att-button:hover {
     color: #63c6ae;
     text-decoration: none;
-    border: solid 1px rgba(255,255,255,0.6);
-    background-color: rgba(0,0,0,0.4);
+    border: solid 1px rgba(255, 255, 255, 0.6);
+    background-color: rgba(0, 0, 0, 0.4);
 }
-.vr-toolbox-button{
+
+.vr-toolbox-button {
     font-weight: normal;
     margin-right: 5px;
     width: 40px;
     height: 40px;
 }
-.vr-toolbox-split-button{
+
+.vr-toolbox-split-button {
     font-weight: normal;
     margin-right: 5px;
     width: 80px;
     height: 40px;
 }
 
-button.vr-toolbox-button>span.ui-button-text{
+button.vr-toolbox-button > span.ui-button-text {
     font-weight: normal;
     padding: 0 0 0 0;
 }
 
-.ui-splitbutton>button.ui-splitbutton-menubutton{
+.ui-splitbutton > button.ui-splitbutton-menubutton {
     width: 40px;
     height: 40px;
 }
 
-.ui-splitbutton>button.ui-button{
+.ui-splitbutton > button.ui-button {
     width: 40px;
     height: 40px;
 }
 
-.vr-toolbox-button:hover{
+.vr-toolbox-button:hover {
     font-weight: normal;
     margin-right: 5px;
 }
 
-
-.noBorderGrid.ui-panelgrid>*>tr,
+.noBorderGrid.ui-panelgrid > * > tr,
 .noBorderGrid.ui-panelgrid .ui-panelgrid-cell {
     border: none;
-    border-width:0px;
+    border-width: 0px;
     border-style: none;
 }
 
@@ -410,6 +453,7 @@ button.vr-toolbox-button>span.ui-button-text{
     position: absolute;
     color: #fff;
 }
+
 /*.logo-bg {
     background-color: #63c6ae;
     position: absolute;
@@ -421,18 +465,23 @@ button.vr-toolbox-button>span.ui-button-text{
 
 @media all and (max-width: 500px) {
 
-    .content .vr-logo{display:none;}
+    .content .vr-logo {
+        display: none;
+    }
 }
 
 @media all and (max-width: 500px) {
 
-    .nophone{display:none;}
+    .nophone {
+        display: none;
+    }
 }
 
-table.jqplot-table-legend.vr-no-legend{
+table.jqplot-table-legend.vr-no-legend {
     display: none;
 }
-.navbar-brand-eniso{
+
+.navbar-brand-eniso {
     margin-top: 0px;
     margin-left: -15px;
     float: left;
@@ -440,56 +489,80 @@ table.jqplot-table-legend.vr-no-legend{
     display: inline;
     position: absolute;
 }
-.header-eniso{
+
+.header-eniso {
     height: 60px;
 }
-.logo-text-eniso{
+
+.logo-text-eniso {
 
 }
-.logo-text-eniso1{
-    font-family: 'Audiowide', serif;font-weight:normal;
-}
-.logo-text-eniso2{
-    font-family: 'Stalemate', serif;font-weight:800;font-size: 32px;
+
+.logo-text-eniso1 {
+    font-family: 'Audiowide', serif;
+    font-weight: normal;
 }
 
-.dropdown-menu>li>a{
-    padding: 3px 20px!important;
+.logo-text-eniso2 {
+    font-family: 'Stalemate', serif;
+    font-weight: 800;
+    font-size: 32px;
+}
+
+.dropdown-menu > li > a {
+    padding: 3px 20px !important;
     min-height: 0 !important;
     min-width: 200px !important;
-    margin : 1px 1px 1px 1px !important;
+    margin: 1px 1px 1px 1px !important;
     font-size: 10px !important;
     display: block;
     clear: both;
 }
-.dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover {
+
+.dropdown-menu > li > a:focus, .dropdown-menu > li > a:hover {
     color: #262626 !important;
     text-decoration: none !important;
     background-color: #f5f5f5 !important;
 }
 
-.ui-datagrid-content.ui-widget-content.noBorderGrid{
-    border: none;
-    border-width: 0px;
-    border-style: none;
-}
-.ui-panel.ui-widget.ui-widget-content.noBorderGrid{
+.ui-datagrid-content.ui-widget-content.noBorderGrid {
     border: none;
     border-width: 0px;
     border-style: none;
 }
 
-div.ui-datagrid.ui-widget.noBorderGrid>div{
+.ui-panel.ui-widget.ui-widget-content.noBorderGrid {
     border: none;
     border-width: 0px;
     border-style: none;
 }
 
-div.ui-panel.noBorderGrid>div.ui-panel-footer.ui-widget-content{
+div.ui-datagrid.ui-widget.noBorderGrid > div {
+    border: none;
+    border-width: 0px;
+    border-style: none;
+}
+
+div.ui-panel.noBorderGrid > div.ui-panel-footer.ui-widget-content {
     text-align: right;
     color: lightslategray;
     padding-top: 0;
 }
-.vr-menu-link{
+
+.vr-menu-link {
     font-family: verdana;
+}
+
+.vr-tiny-button {
+    width: 14px;
+    padding: 0px 0px 0px 0px;
+}
+
+button.vr-tiny-button > span {
+    padding: 2px 2px 2px 2px;
+!important
+}
+
+button.vr-tiny-button.ui-button-text-only .ui-button-text {
+    padding: 0px 0px 0px 0px;
 }

@@ -1,14 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.web;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.faces.bean.ManagedBean;
-import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCivility;
@@ -25,13 +21,17 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicPre
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
 import net.vpc.common.jsf.FacesUtils;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.model.SelectItem;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author vpc
  */
 @UCtrl(
         breadcrumb = {
-            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Inscription Etudiant",
         url = "modules/academic/subscribestudent",
@@ -42,83 +42,6 @@ import net.vpc.common.jsf.FacesUtils;
 public class SubscribeStudentCtrl {
 
     private Model model = new Model();
-
-    public class Model {
-
-        AcademicStudentImport student = new AcademicStudentImport();
-        List<SelectItem> genders = new ArrayList<>();
-        List<SelectItem> civilities = new ArrayList<>();
-        List<SelectItem> periods = new ArrayList<>();
-        List<SelectItem> departments = new ArrayList<>();
-        List<SelectItem> bacs = new ArrayList<>();
-        List<SelectItem> preps = new ArrayList<>();
-        List<SelectItem> classes = new ArrayList<>();
-
-        public AcademicStudentImport getStudent() {
-            return student;
-        }
-
-        public void setStudent(AcademicStudentImport student) {
-            this.student = student;
-        }
-
-        public List<SelectItem> getGenders() {
-            return genders;
-        }
-
-        public void setGenders(List<SelectItem> genders) {
-            this.genders = genders;
-        }
-
-        public List<SelectItem> getCivilities() {
-            return civilities;
-        }
-
-        public void setCivilities(List<SelectItem> civilities) {
-            this.civilities = civilities;
-        }
-
-        public List<SelectItem> getPeriods() {
-            return periods;
-        }
-
-        public void setPeriods(List<SelectItem> periods) {
-            this.periods = periods;
-        }
-
-        public List<SelectItem> getDepartments() {
-            return departments;
-        }
-
-        public void setDepartments(List<SelectItem> departments) {
-            this.departments = departments;
-        }
-
-        public List<SelectItem> getBacs() {
-            return bacs;
-        }
-
-        public void setBacs(List<SelectItem> bacs) {
-            this.bacs = bacs;
-        }
-
-        public List<SelectItem> getPreps() {
-            return preps;
-        }
-
-        public void setPreps(List<SelectItem> preps) {
-            this.preps = preps;
-        }
-
-        public List<SelectItem> getClasses() {
-            return classes;
-        }
-
-        public void setClasses(List<SelectItem> classes) {
-            this.classes = classes;
-        }
-
-    }
 
     public Model getModel() {
         return model;
@@ -198,6 +121,83 @@ public class SubscribeStudentCtrl {
             list.add(new SelectItem(x.getName(), x.getName()));
         }
         getModel().setClasses(list);
+
+    }
+
+    public class Model {
+
+        AcademicStudentImport student = new AcademicStudentImport();
+        List<SelectItem> genders = new ArrayList<>();
+        List<SelectItem> civilities = new ArrayList<>();
+        List<SelectItem> periods = new ArrayList<>();
+        List<SelectItem> departments = new ArrayList<>();
+        List<SelectItem> bacs = new ArrayList<>();
+        List<SelectItem> preps = new ArrayList<>();
+        List<SelectItem> classes = new ArrayList<>();
+
+        public AcademicStudentImport getStudent() {
+            return student;
+        }
+
+        public void setStudent(AcademicStudentImport student) {
+            this.student = student;
+        }
+
+        public List<SelectItem> getGenders() {
+            return genders;
+        }
+
+        public void setGenders(List<SelectItem> genders) {
+            this.genders = genders;
+        }
+
+        public List<SelectItem> getCivilities() {
+            return civilities;
+        }
+
+        public void setCivilities(List<SelectItem> civilities) {
+            this.civilities = civilities;
+        }
+
+        public List<SelectItem> getPeriods() {
+            return periods;
+        }
+
+        public void setPeriods(List<SelectItem> periods) {
+            this.periods = periods;
+        }
+
+        public List<SelectItem> getDepartments() {
+            return departments;
+        }
+
+        public void setDepartments(List<SelectItem> departments) {
+            this.departments = departments;
+        }
+
+        public List<SelectItem> getBacs() {
+            return bacs;
+        }
+
+        public void setBacs(List<SelectItem> bacs) {
+            this.bacs = bacs;
+        }
+
+        public List<SelectItem> getPreps() {
+            return preps;
+        }
+
+        public void setPreps(List<SelectItem> preps) {
+            this.preps = preps;
+        }
+
+        public List<SelectItem> getClasses() {
+            return classes;
+        }
+
+        public void setClasses(List<SelectItem> classes) {
+            this.classes = classes;
+        }
 
     }
 }

@@ -3,7 +3,7 @@ package net.vpc.app.vainruling.plugins.academic.internship.service.model.plannin
 /**
  * Created by vpc on 5/19/16.
  */
-public class PlanningSpaceTime implements Comparable<PlanningSpaceTime>{
+public class PlanningSpaceTime implements Comparable<PlanningSpaceTime> {
     private PlanningRoom room;
     private PlanningTime time;
 
@@ -21,10 +21,9 @@ public class PlanningSpaceTime implements Comparable<PlanningSpaceTime>{
     }
 
 
-
     @Override
     public String toString() {
-        return time+"-"+room;
+        return time + "-" + room;
     }
 
     @Override
@@ -49,7 +48,7 @@ public class PlanningSpaceTime implements Comparable<PlanningSpaceTime>{
     @Override
     public int compareTo(PlanningSpaceTime o) {
         int compare = getTime().compareTo(o.getTime());
-        if(compare==0){
+        if (compare == 0) {
             compare = getRoom().compareTo(o.getRoom());
         }
         return compare;

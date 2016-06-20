@@ -24,7 +24,7 @@ public class ColorGameBean {
     private String color2 = background;
     private String hint = "no";
     private int attempts = 0;
-        private int intval = 0;
+    private int intval = 0;
     private boolean tookHints = false;
 
     public void processRequest() {
@@ -32,29 +32,21 @@ public class ColorGameBean {
         // background = "yellow";
         // foreground = "red";
 
-        if (! color1.equals(foreground)) {
+        if (!color1.equals(foreground)) {
             if (color1.equalsIgnoreCase("black") ||
-                        color1.equalsIgnoreCase("cyan")) {
-                        background = color1;
-                }
+                    color1.equalsIgnoreCase("cyan")) {
+                background = color1;
+            }
         }
 
-        if (! color2.equals(background)) {
+        if (!color2.equals(background)) {
             if (color2.equalsIgnoreCase("black") ||
-                        color2.equalsIgnoreCase("cyan")) {
-                        foreground = color2;
+                    color2.equalsIgnoreCase("cyan")) {
+                foreground = color2;
             }
         }
 
         attempts++;
-    }
-
-    public void setColor2(String x) {
-        color2 = x;
-    }
-
-    public void setColor1(String x) {
-        color1 = x;
     }
 
     public void setAction(String x) {
@@ -64,11 +56,19 @@ public class ColorGameBean {
     }
 
     public String getColor2() {
-         return background;
+        return background;
+    }
+
+    public void setColor2(String x) {
+        color2 = x;
     }
 
     public String getColor1() {
-         return foreground;
+        return foreground;
+    }
+
+    public void setColor1(String x) {
+        color1 = x;
     }
 
     public int getAttempts() {
@@ -81,10 +81,10 @@ public class ColorGameBean {
 
     public boolean getSuccess() {
         if (background.equalsIgnoreCase("black") ||
-            background.equalsIgnoreCase("cyan")) {
+                background.equalsIgnoreCase("cyan")) {
 
             if (foreground.equalsIgnoreCase("black") ||
-                foreground.equalsIgnoreCase("cyan")) {
+                    foreground.equalsIgnoreCase("cyan")) {
                 return true;
             }
             return false;
@@ -102,12 +102,12 @@ public class ColorGameBean {
         background = "yellow";
     }
 
-    public void setIntval(int value) {
-        intval = value;
-        }
-
     public int getIntval() {
         return intval;
-        }
+    }
+
+    public void setIntval(int value) {
+        intval = value;
+    }
 }
 

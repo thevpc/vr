@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.obj;
@@ -9,29 +9,21 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.common.util.Chronometer;
+import net.vpc.upa.*;
+import net.vpc.upa.expressions.*;
+import net.vpc.upa.types.DataType;
+import net.vpc.upa.types.ManyToOneType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
 
-import net.vpc.common.util.Chronometer;
-import net.vpc.upa.Entity;
-import net.vpc.upa.Field;
-import net.vpc.upa.FieldModifier;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.QueryBuilder;
-import net.vpc.upa.Record;
-import net.vpc.upa.RemoveOptions;
-import net.vpc.upa.UPA;
-import net.vpc.upa.expressions.*;
-import net.vpc.upa.types.DataType;
-import net.vpc.upa.types.EntityType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 /**
- *
  * @author vpc
  */
 @Service
@@ -61,7 +53,7 @@ public class ObjManagerService {
             persist = true;
         } else if (pf.size() <= 1) {
             DataType dt = pf.get(0).getDataType();
-            if (dt instanceof EntityType) {
+            if (dt instanceof ManyToOneType) {
                 persist = entity.findById(id) == null;
             } else if (pf.size() == 1 && pf.get(0).getModifiers().contains(FieldModifier.PERSIST_SEQUENCE)) {
                 persist = Objects.equals(dt.getDefaultUnspecifiedValue(), id);
@@ -119,15 +111,15 @@ public class ObjManagerService {
                 if (entity.containsField("deletedOn")) {
                     t.setDate("deletedOn", new Timestamp(System.currentTimeMillis()));
                 }
-                pu.merge(entityName,t);
+                pu.merge(entityName, t);
                 if (trace.accept(entity)) {
-                    trace.softremoved(entityName,pu.findById(entityName, id), entity.getParent().getPath(), Level.FINE);
+                    trace.softremoved(entityName, pu.findById(entityName, id), entity.getParent().getPath(), Level.FINE);
                 }
             }
         }
     }
 
-    public String getObjectName(String entityName,Object obj) {
+    public String getObjectName(String entityName, Object obj) {
         if (obj == null) {
             return "NO_NAME";
         }
@@ -140,7 +132,7 @@ public class ObjManagerService {
         return String.valueOf(entity.getBuilder().objectToRecord(obj, true).getObject(mf.getName()));
     }
 
-//    public boolean isEntityAction(String type, String action, Object object) {
+    //    public boolean isEntityAction(String type, String action, Object object) {
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        Entity entity = pu.getEntity(type);
 //        return VrApp.getBean(PluginManagerService.class).isEnabledEntityAction(entity.getEntityType(), action, object);
@@ -183,9 +175,9 @@ public class ObjManagerService {
                 r.setBoolean("archived", true);
             }
 //            Object old = pu.findById(type, id);
-            pu.merge(entityName,t);
+            pu.merge(entityName, t);
             if (trace.accept(entity)) {
-                trace.archived(entityName,pu.findById(entityName, id), entity.getParent().getPath(), Level.FINE);
+                trace.archived(entityName, pu.findById(entityName, id), entity.getParent().getPath(), Level.FINE);
             }
 //            trace.updated(t, old, getClass(), Level.FINE);
         }
@@ -218,14 +210,14 @@ public class ObjManagerService {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         QueryBuilder cc = pu.createQueryBuilder(entityName)
-                .setOrder(entity.getListOrder())
+                .orderBy(entity.getListOrder())
                 .setEntityAlias("o");
         if (criteria != null) {
             for (Map.Entry<String, Object> entrySet : criteria.entrySet()) {
-                cc.addAndExpression(new Equals(new UserExpression("o." + entrySet.getKey()), new Literal(entrySet.getValue(), null)));
+                cc.byExpression(new Equals(new UserExpression("o." + entrySet.getKey()), new Literal(entrySet.getValue(), null)));
             }
         }
-        Chronometer c=new Chronometer();
+        Chronometer c = new Chronometer();
         List<Object> entityList = cc
                 .getEntityList();
         entityList.size();
@@ -236,26 +228,33 @@ public class ObjManagerService {
     public List<NamedId> findAllNamedIds(String entityName, Map<String, Object> criteria) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
-        Select q=new Select();
+        Select q = new Select();
 
         Field primaryField = entity.getPrimaryFields().get(0);
         q.field(" o." + primaryField.getName(), "id");
         Field mainField = entity.getMainField();
-        if(mainField==null){
-            mainField=primaryField;
+        if (mainField == null) {
+            mainField = primaryField;
         }
-        q.field("o." + mainField.getName(), "name");
+        StringBuilder sb = new StringBuilder();
+        sb.append("o." + mainField.getName());
+        while (mainField.getDataType() instanceof ManyToOneType) {
+            Entity t = ((ManyToOneType) mainField.getDataType()).getRelationship().getTargetEntity();
+            mainField = t.getMainField();
+            sb.append("." + mainField.getName());
+        }
+        q.field(sb.toString(), "name");
 
-        q.from(entityName,"o");
+        q.from(entityName, "o");
         q.orderBy(entity.getListOrder());
-        Expression where=null;
+        Expression where = null;
         if (criteria != null) {
             for (Map.Entry<String, Object> entrySet : criteria.entrySet()) {
-                where=And.create(where, new Equals(new UserExpression("o." + entrySet.getKey()), new Literal(entrySet.getValue(), null)));
+                where = And.create(where, new Equals(new UserExpression("o." + entrySet.getKey()), new Literal(entrySet.getValue(), null)));
             }
         }
         q.setWhere(where);
-        Chronometer c=new Chronometer();
+        Chronometer c = new Chronometer();
         List<NamedId> entityList = pu.createQuery(q)
                 .getTypeList(NamedId.class);
         entityList.size();
@@ -293,7 +292,7 @@ public class ObjManagerService {
         QueryBuilder q = pu
                 .createQueryBuilder(entityName)
                 .setEntityAlias("o")
-                .setOrder(entity.getListOrder());
+                .orderBy(entity.getListOrder());
         Expression filterExpression = null;
         if (criteria != null) {
             filterExpression = new UserExpression(criteria);
@@ -309,7 +308,7 @@ public class ObjManagerService {
             }
         }
         if (filterExpression != null) {
-            q.setExpression(filterExpression);
+            q.byExpression(filterExpression);
 
         }
         List<Object> list = q.getEntityList();
@@ -325,7 +324,7 @@ public class ObjManagerService {
         QueryBuilder q = pu
                 .createQueryBuilder(entityName)
                 .setEntityAlias("o")
-                .setOrder(entity.getListOrder());
+                .orderBy(entity.getListOrder());
         Expression filterExpression = null;
         if (criteria != null) {
             filterExpression = new UserExpression(criteria);
@@ -341,7 +340,7 @@ public class ObjManagerService {
             }
         }
         if (filterExpression != null) {
-            q.setExpression(filterExpression);
+            q.byExpression(filterExpression);
 
         }
         List<Record> list = q.getRecordList();
@@ -355,7 +354,7 @@ public class ObjManagerService {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(type);
         return pu.createQueryBuilder(type)
-                .setOrder(entity.getListOrder())
+                .orderBy(entity.getListOrder())
                 .getEntityList();
     }
 
@@ -364,8 +363,8 @@ public class ObjManagerService {
         Entity entity = pu.getEntity(type);
         DataType dt = entity.getField(field).getDataType();
         return pu.createQueryBuilder(type)
-                .setExpression(new And(new Var(field), new Literal(value, dt)))
-                .setOrder(entity.getListOrder())
+                .byExpression(new And(new Var(field), new Literal(value, dt)))
+                .orderBy(entity.getListOrder())
                 .getEntityList();
     }
 

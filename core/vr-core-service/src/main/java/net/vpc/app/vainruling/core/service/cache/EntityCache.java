@@ -4,6 +4,7 @@ import net.vpc.app.vainruling.core.service.util.EntityMapList;
 import net.vpc.common.util.MapList;
 import net.vpc.upa.Action;
 import net.vpc.upa.Entity;
+import net.vpc.upa.QueryHints;
 import net.vpc.upa.UPA;
 
 import java.lang.ref.SoftReference;
@@ -16,18 +17,18 @@ import java.util.Map;
 public class EntityCache {
     private Entity entity;
     private SoftReference<MapList> list;
-    private int navigationDepth=3;
-    private Map<String,Object> properties=new HashMap<>();
+    private int navigationDepth = 3;
+    private Map<String, Object> properties = new HashMap<>();
 
     public EntityCache(Entity entity) {
         this.entity = entity;
-        this.navigationDepth = entity.getProperties().getInt("cache.navigationDepth",3);
+        this.navigationDepth = entity.getProperties().getInt("cache.navigationDepth", 3);
     }
 
-    public <T> T getProperty(String value,Action<T> evalAction) {
-        if(properties.containsKey(value)){
-            return (T)properties.get(value);
-        }else{
+    public <T> T getProperty(String value, Action<T> evalAction) {
+        if (properties.containsKey(value)) {
+            return (T) properties.get(value);
+        } else {
             T val = evalAction.run();
             properties.put(value, val);
             return val;
@@ -38,28 +39,28 @@ public class EntityCache {
         return properties;
     }
 
-    public <K,V> MapList<K,V> getValues(){
-        MapList ret=null;
-        if(list==null || list.get()==null){
+    public <K, V> MapList<K, V> getValues() {
+        MapList ret = null;
+        if (list == null || list.get() == null) {
             ret = new EntityMapList(
                     UPA.getPersistenceUnit()
                             .createQueryBuilder(entity.getName())
-                            .setOrder(entity.getListOrder())
-                            .setHint("navigationDepth", this.navigationDepth)
+                            .orderBy(entity.getListOrder())
+                            .setHint(QueryHints.NAVIGATION_DEPTH, this.navigationDepth)
                             .getEntityList(),
                     entity
             );
-            list=new SoftReference<MapList>(
+            list = new SoftReference<MapList>(
                     ret
             );
-        }else{
-            ret= list.get();
+        } else {
+            ret = list.get();
         }
         return ret;
     }
 
-    public void invalidate(){
-        list=null;
+    public void invalidate() {
+        list = null;
         properties.clear();
     }
 }

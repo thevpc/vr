@@ -1,12 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.config;
 
-import java.util.Date;
-import java.util.Objects;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.Entity;
@@ -14,8 +12,10 @@ import net.vpc.upa.config.Field;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
 
+import java.util.Date;
+import java.util.Objects;
+
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "student.contact.fullName")
@@ -29,7 +29,7 @@ public class AcademicFormerStudent {
     private String eliminationReason;
     private String graduationProjectTitle;
     private String graduationProjectSummary;
-    private String graduationProjectSuperviser;
+    private String graduationProjectSupervisor;
     private String graduationProjectJury;
     private String graduationScoreLetter;
     private double graduationScoreValue;
@@ -115,12 +115,12 @@ public class AcademicFormerStudent {
         this.graduationProjectSummary = graduationProjectSummary;
     }
 
-    public String getGraduationProjectSuperviser() {
-        return graduationProjectSuperviser;
+    public String getGraduationProjectSupervisor() {
+        return graduationProjectSupervisor;
     }
 
-    public void setGraduationProjectSuperviser(String graduationProjectSuperviser) {
-        this.graduationProjectSuperviser = graduationProjectSuperviser;
+    public void setGraduationProjectSupervisor(String graduationProjectSupervisor) {
+        this.graduationProjectSupervisor = graduationProjectSupervisor;
     }
 
     public String getGraduationScoreLetter() {
@@ -171,7 +171,7 @@ public class AcademicFormerStudent {
         hash = 23 * hash + Objects.hashCode(this.eliminationReason);
         hash = 23 * hash + Objects.hashCode(this.graduationProjectTitle);
         hash = 23 * hash + Objects.hashCode(this.graduationProjectSummary);
-        hash = 23 * hash + Objects.hashCode(this.graduationProjectSuperviser);
+        hash = 23 * hash + Objects.hashCode(this.graduationProjectSupervisor);
         hash = 23 * hash + Objects.hashCode(this.graduationProjectJury);
         hash = 23 * hash + Objects.hashCode(this.graduationScoreLetter);
         hash = 23 * hash + (int) (Double.doubleToLongBits(this.graduationScoreValue) ^ (Double.doubleToLongBits(this.graduationScoreValue) >>> 32));
@@ -209,7 +209,7 @@ public class AcademicFormerStudent {
         if (!Objects.equals(this.graduationProjectSummary, other.graduationProjectSummary)) {
             return false;
         }
-        if (!Objects.equals(this.graduationProjectSuperviser, other.graduationProjectSuperviser)) {
+        if (!Objects.equals(this.graduationProjectSupervisor, other.graduationProjectSupervisor)) {
             return false;
         }
         if (!Objects.equals(this.graduationProjectJury, other.graduationProjectJury)) {
@@ -244,7 +244,7 @@ public class AcademicFormerStudent {
 
     @Override
     public String toString() {
-        return "AcademicFormerStudent{" + ", student=" + student + ", graduationDate=" + graduationDate + ", eliminationReason=" + eliminationReason + ", graduationProjectTitle=" + graduationProjectTitle + ", graduationProjectSummary=" + graduationProjectSummary + ", graduationProjectSuperviser=" + graduationProjectSuperviser + ", graduationProjectJury=" + graduationProjectJury + ", graduationScoreLetter=" + graduationScoreLetter + ", graduationScoreValue=" + graduationScoreValue + ", graduationScoreRank=" + graduationScoreRank + ", firstJobDate=" + firstJobDate + ", firstSalary=" + firstSalary + ", lastSalary=" + lastSalary + ", lastJobPosition=" + lastJobPosition + ", lastJobCompany=" + lastJobCompany + '}';
+        return "AcademicFormerStudent{" + ", student=" + student + ", graduationDate=" + graduationDate + ", eliminationReason=" + eliminationReason + ", graduationProjectTitle=" + graduationProjectTitle + ", graduationProjectSummary=" + graduationProjectSummary + ", graduationProjectSupervisor=" + graduationProjectSupervisor + ", graduationProjectJury=" + graduationProjectJury + ", graduationScoreLetter=" + graduationScoreLetter + ", graduationScoreValue=" + graduationScoreValue + ", graduationScoreRank=" + graduationScoreRank + ", firstJobDate=" + firstJobDate + ", firstSalary=" + firstSalary + ", lastSalary=" + lastSalary + ", lastJobPosition=" + lastJobPosition + ", lastJobCompany=" + lastJobCompany + '}';
     }
 
 }

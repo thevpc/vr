@@ -1,32 +1,28 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.inventory.service.model;
 
-import java.util.Date;
 import net.vpc.app.vainruling.core.service.model.AppArea;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.equipments.service.model.Equipment;
 import net.vpc.upa.RelationshipType;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.ManyToOne;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
+
+import java.util.Date;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "date desc")
 @Path("Equipment/Inventory")
 public class InventoryRow {
 
-    @Id @Sequence
+    @Id
+    @Sequence
     private int id;
     @ManyToOne(type = RelationshipType.COMPOSITION)
     @Field(modifiers = UserFieldModifier.SUMMARY)
@@ -127,6 +123,6 @@ public class InventoryRow {
     public void setExpectedQuantity(double expectedQuantity) {
         this.expectedQuantity = expectedQuantity;
     }
-    
+
 
 }

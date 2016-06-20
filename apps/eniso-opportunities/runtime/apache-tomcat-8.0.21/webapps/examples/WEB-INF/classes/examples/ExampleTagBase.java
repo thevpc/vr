@@ -24,11 +24,8 @@ import javax.servlet.jsp.tagext.Tag;
 public abstract class ExampleTagBase extends BodyTagSupport {
 
     private static final long serialVersionUID = 1L;
-
-    @Override
-    public void setParent(Tag parent) {
-        this.parent = parent;
-    }
+    protected BodyContent bodyOut;
+    protected Tag parent;
 
     @Override
     public void setBodyContent(BodyContent bodyOut) {
@@ -41,6 +38,11 @@ public abstract class ExampleTagBase extends BodyTagSupport {
     }
 
     @Override
+    public void setParent(Tag parent) {
+        this.parent = parent;
+    }
+
+    @Override
     public int doStartTag() throws JspException {
         return SKIP_BODY;
     }
@@ -49,7 +51,6 @@ public abstract class ExampleTagBase extends BodyTagSupport {
     public int doEndTag() throws JspException {
         return EVAL_PAGE;
     }
-
 
     @Override
     public void doInitBody() throws JspException {
@@ -68,7 +69,4 @@ public abstract class ExampleTagBase extends BodyTagSupport {
         pageContext = null;
         parent = null;
     }
-
-    protected BodyContent bodyOut;
-    protected Tag parent;
 }

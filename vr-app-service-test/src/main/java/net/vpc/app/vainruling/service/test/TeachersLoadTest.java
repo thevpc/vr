@@ -1,18 +1,14 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.service.test;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.plugins.academic.service.XlsxLoadImporter;
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.XlsxLoadImporter;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.common.gomail.GoMail;
 import net.vpc.common.gomail.GoMailFormat;
@@ -20,8 +16,12 @@ import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @Service
@@ -45,7 +45,7 @@ public class TeachersLoadTest {
 //        runSendMail();
     }
 
-//    public void runTest() {
+    //    public void runTest() {
 //        try {
 //            String version = "v14-temp";
 //            String year = "2015-2016";

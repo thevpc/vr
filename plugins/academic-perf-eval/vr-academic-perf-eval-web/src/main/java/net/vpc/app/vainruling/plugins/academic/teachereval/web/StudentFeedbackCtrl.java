@@ -1,18 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.teachereval.web;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
-import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
@@ -29,14 +21,18 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.model.SelectItem;
+import java.util.*;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @ManagedBean
 @UCtrl(
         breadcrumb = {
-            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Mes Retours des enseignements",
         menu = "/Education/Evaluation",
@@ -141,9 +137,13 @@ public class StudentFeedbackCtrl {
             } else {
                 FacesUtils.addErrorMessage("Merci de repondre à toutes les questions avant de valider");
             }
-        }else{
-                FacesUtils.addInfoMessage("Formulaire enregistré");
+        } else {
+            FacesUtils.addInfoMessage("Formulaire enregistré");
         }
+    }
+
+    public Model getModel() {
+        return model;
     }
 
     public static class Question {
@@ -240,10 +240,6 @@ public class StudentFeedbackCtrl {
             this.validate = validate;
         }
 
-    }
-
-    public Model getModel() {
-        return model;
     }
 
 }

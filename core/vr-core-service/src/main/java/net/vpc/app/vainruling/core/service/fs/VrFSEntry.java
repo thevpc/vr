@@ -1,12 +1,11 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.fs;
 
 /**
- *
  * @author vpc
  */
 public class VrFSEntry {
@@ -49,5 +48,5 @@ public class VrFSEntry {
     public void setLinkPath(String linkPath) {
         this.linkPath = linkPath;
     }
-    
+
 }

@@ -1,32 +1,26 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.internship.service.model.current;
 
-import java.sql.Timestamp;
-import net.vpc.app.vainruling.core.service.model.OpinionType;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppContact;
+import net.vpc.app.vainruling.core.service.model.OpinionType;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipDuration;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipStatus;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipVariant;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Properties;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
+
+import java.sql.Timestamp;
 //import net.vpc.upa.types.DateTime;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "name")
@@ -37,6 +31,9 @@ public class AcademicInternship {
     @Sequence
 
     private int id;
+
+    @Field(modifiers = UserFieldModifier.SUMMARY)
+    private AcademicInternshipGroup mainGroup;
 
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private AcademicInternshipBoard board;
@@ -63,7 +60,7 @@ public class AcademicInternship {
     private AcademicInternshipVariant internshipVariant;
 
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Details"),}
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Details"),}
     )
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
     private AcademicStudent student;
@@ -83,15 +80,15 @@ public class AcademicInternship {
     private java.util.Date startDate;
     private java.util.Date endDate;
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Evaluation"),
-        @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
-        @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Evaluation"),
+            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
+            @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
     }
     )
     private String specFilePath;
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
-        @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
+            @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
     }
     )
     private String midTermReportFilePath;
@@ -108,7 +105,7 @@ public class AcademicInternship {
     private int midTermStudentProgress;
     @Field(max = "400", modifiers = UserFieldModifier.SUMMARY)
     private String midTermStudentObs;
-    
+
     private OpinionType midTermTeacherExtMentoringOpinion;
     private OpinionType midTermTeacherMeetingOpinion;
     private OpinionType midTermTeacherTechWorkOpinion;
@@ -120,8 +117,8 @@ public class AcademicInternship {
     private String midTermTeacherObs;
 
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
-        @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
+            @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
     }
     )
     private String reportFilePath;
@@ -132,9 +129,10 @@ public class AcademicInternship {
     private AcademicTeacher chairExaminer;
     private Timestamp examDate;
     private String examLocation;
+    private AcademicInternshipSessionType sessionType;
 
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace")}
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace")}
     )
     private Timestamp lastStudentUpdateTime;
     private Timestamp lastTeacherUpdateTime;
@@ -142,7 +140,7 @@ public class AcademicInternship {
     private Timestamp lastUpdateTime;
 
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Observations")}
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Observations")}
     )
     @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
     @Field(max = "512")
@@ -601,7 +599,12 @@ public class AcademicInternship {
     public void setMidTermStudentExtMeetingOpinion(OpinionType midTermStudentExtMeetingOpinion) {
         this.midTermStudentExtMeetingOpinion = midTermStudentExtMeetingOpinion;
     }
-    
-    
-    
+
+    public AcademicInternshipSessionType getSessionType() {
+        return sessionType;
+    }
+
+    public void setSessionType(AcademicInternshipSessionType sessionType) {
+        this.sessionType = sessionType;
+    }
 }

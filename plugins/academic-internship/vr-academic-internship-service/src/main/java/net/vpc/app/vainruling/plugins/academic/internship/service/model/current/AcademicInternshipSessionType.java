@@ -1,0 +1,52 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ *
+ * and open the template in the editor.
+ */
+package net.vpc.app.vainruling.plugins.academic.internship.service.model.current;
+
+import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.upa.UserFieldModifier;
+import net.vpc.upa.config.*;
+
+/**
+ * @author vpc
+ */
+@Entity
+@Path("Education/Internship")
+public class AcademicInternshipSessionType {
+
+    @Id
+    @Sequence
+
+    private int id;
+    @Field(modifiers = UserFieldModifier.MAIN)
+    private String name;
+    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Field(max = "4000")
+    private String observations;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getObservations() {
+        return observations;
+    }
+
+    public void setObservations(String observations) {
+        this.observations = observations;
+    }
+}

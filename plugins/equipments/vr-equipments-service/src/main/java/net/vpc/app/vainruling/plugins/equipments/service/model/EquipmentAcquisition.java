@@ -1,25 +1,19 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.equipments.service.model;
 
-import java.util.Date;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Properties;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
+
+import java.util.Date;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "date desc")

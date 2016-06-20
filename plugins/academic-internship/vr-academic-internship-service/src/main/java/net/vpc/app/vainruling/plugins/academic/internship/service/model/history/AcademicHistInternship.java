@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.internship.service.model.history;
@@ -12,17 +12,11 @@ import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.A
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipType;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
 import net.vpc.upa.types.Date;
 import net.vpc.upa.types.DateTime;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "name")
@@ -39,15 +33,15 @@ public class AcademicHistInternship {
     @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
     private String description;
     private String technologies;
-    @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
+    @Field(max = "max")
     private String mainDiscipline;
-    @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
+    @Field(max = "max")
     private String student;
     private String secondStudent;
-    @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
+    @Field(max = "max")
     private String supervisorName;
     private String secondSupervisorName;
-    @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
+    @Field(max = "max")
     private String companyName;
     private String companyMentorName;
     private String companyMentorEmail;

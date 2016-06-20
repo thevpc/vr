@@ -20,104 +20,115 @@
     
 */
 
-
-
 /*  Fonts  */
 @font-face {
     font-family: 'raleway-regular';
     src: url('../fonts/raleway-regular.eot');
     src: url('../fonts/raleway-regular.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/raleway-regular.woff') format('woff'),
-         url('../fonts/raleway-regular.ttf') format('truetype'),
-         url('../fonts/raleway-regular.svg#ralewayregular') format('svg');
+    url('../fonts/raleway-regular.woff') format('woff'),
+    url('../fonts/raleway-regular.ttf') format('truetype'),
+    url('../fonts/raleway-regular.svg#ralewayregular') format('svg');
     font-weight: normal;
     font-style: normal;
 
 }
-
 
 @font-face {
     font-family: 'raleway-bold';
     src: url('../fonts/raleway-bold.eot');
     src: url('../fonts/raleway-bold.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/raleway-bold.woff') format('woff'),
-         url('../fonts/raleway-bold.ttf') format('truetype'),
-         url('../fonts/raleway-bold.svg#ralewaybold') format('svg');
+    url('../fonts/raleway-bold.woff') format('woff'),
+    url('../fonts/raleway-bold.ttf') format('truetype'),
+    url('../fonts/raleway-bold.svg#ralewaybold') format('svg');
     font-weight: normal;
     font-style: normal;
 
 }
-
 
 @font-face {
     font-family: 'raleway-semibold';
     src: url('../fonts/raleway-semibold.eot');
     src: url('../fonts/raleway-semibold.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/raleway-semibold.woff') format('woff'),
-         url('../fonts/raleway-semibold.ttf') format('truetype'),
-         url('../fonts/raleway-semibold.svg#ralewaysemibold') format('svg');
+    url('../fonts/raleway-semibold.woff') format('woff'),
+    url('../fonts/raleway-semibold.ttf') format('truetype'),
+    url('../fonts/raleway-semibold.svg#ralewaysemibold') format('svg');
     font-weight: normal;
     font-style: normal;
 
 }
 
-
-
 /*  General CSS*/
-body{
+body {
     background: #fff;
 }
 
-.wrapper{
+.wrapper {
     width: 92.72727272727273%;
     margin: 0 auto;
 }
 
 header ul.social li a,
 .main .work a .caption,
-header nav ul li a{
-    transition:all .1s linear;
-    -webkit-transition:all .1s linear;
-    -moz-transition:all .1s linear;
-    -o-transition:all .1s linear;
+header nav ul li a {
+    transition: all .1s linear;
+    -webkit-transition: all .1s linear;
+    -moz-transition: all .1s linear;
+    -o-transition: all .1s linear;
 }
 
-h1, h2, h3, h4, h5 ,h6{
+h1, h2, h3, h4, h5, h6 {
     color: #4b4848;
     font-family: "raleway-regular", arial;
     letter-spacing: 1px;
 }
 
-h1              { font-size: 2em; margin: .67em 0 }
-h2              { font-size: 1.5em; margin: .75em 0 }
-h3              { font-size: 1.17em; margin: .83em 0 }
-h5              { font-size: .83em; margin: 1.5em 0 }
-h6              { font-size: .75em; margin: 1.67em 0 }
-h1, h2, h3, h4,
-h5, h6          { font-weight: bolder }
-
-.clearfix:before,  
-.clearfix:after {  
-    content: " ";  
-    display: table;  
-}  
-.clearfix:after {  
-    clear: both;  
-}  
- 
-.clearfix {  
-    *zoom: 1;  
+h1 {
+    font-size: 2em;
+    margin: .67em 0
 }
 
+h2 {
+    font-size: 1.5em;
+    margin: .75em 0
+}
 
+h3 {
+    font-size: 1.17em;
+    margin: .83em 0
+}
 
+h5 {
+    font-size: .83em;
+    margin: 1.5em 0
+}
 
+h6 {
+    font-size: .75em;
+    margin: 1.67em 0
+}
 
+h1, h2, h3, h4,
+h5, h6 {
+    font-weight: bolder
+}
 
+.clearfix:before,
+.clearfix:after {
+    content: " ";
+    display: table;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+.clearfix {
+    *zoom: 1;
+}
 
 /*  Header  */
-@media (min-width:1099px){
-    header{
+@media (min-width: 1099px) {
+    header {
         display: block;
         position: fixed;
         top: 0;
@@ -125,19 +136,21 @@ h5, h6          { font-weight: bolder }
         width: 250px;
         min-height: 100%;
         padding: 0 0 0 50px;
-        background: #ffffff; 
+        background: #ffffff;
         float: left;
         overflow: hidden;
         z-index: 9999;
     }
-    .vr-top{
+
+    .vr-top {
         height: 50px;
         background-color: #73C8A9;
-        margin-left: -50px!important;
+        margin-left: -50px !important;
         padding-left: 50px;
         position: relative;
     }
-    .vr-contact{
+
+    .vr-contact {
         font-family: sans-serif;
         font-size: x-large;
         font-style: italic;
@@ -145,23 +158,24 @@ h5, h6          { font-weight: bolder }
         font-family: 'Anivers', serif;
         text-decoration: none;
     }
-    header .logo{
+
+    header .logo {
         margin-top: 50px;
     }
 
-    header nav ul{
+    header nav ul {
         display: block;
         overflow: hidden;
         margin-top: 100px;
         list-style: none;
     }
 
-    header nav ul li{
+    header nav ul li {
         display: block;
         margin-bottom: 30px;
     }
 
-    header nav ul li a{
+    header nav ul li a {
         color: #454545;
         font-family: "raleway-regular", arial;
         font-size: 14px;
@@ -170,29 +184,28 @@ h5, h6          { font-weight: bolder }
     }
 
     header nav ul li a:hover,
-    header nav ul li a.selected{
+    header nav ul li a.selected {
         color: #969595;
     }
 
-    header .footer{
+    header .footer {
         position: absolute;
         bottom: 50px;
     }
 
-    header ul.social{
+    header ul.social {
         list-style: none;
         margin-bottom: 5px;
     }
 
-    header ul.social li{
+    header ul.social li {
         display: block;
         float: left;
         position: relative;
         margin: 0 15px 15px 0;
     }
 
-
-    header ul.social li a{
+    header ul.social li a {
         display: block;
         width: 30px;
         height: 30px;
@@ -200,45 +213,41 @@ h5, h6          { font-weight: bolder }
         background-position: 0 0;
     }
 
-
-    header ul.social li a:hover{
+    header ul.social li a:hover {
         background: url('../img/sm_hover.png') no-repeat;
     }
 
-
-
     header ul.social li a.fb,
-    header ul.social li a.fb:hover{
+    header ul.social li a.fb:hover {
         background-position: 0 0;
     }
 
-
     header ul.social li a.google,
-    header ul.social li a.google:hover{
+    header ul.social li a.google:hover {
         background-position: -31px 0;
     }
 
     header ul.social li a.linkedin,
-    header ul.social li a.linkedin:hover{
+    header ul.social li a.linkedin:hover {
         background-position: -62px 0;
     }
 
     header ul.social li a.twitter,
-    header ul.social li a.twitter:hover{
+    header ul.social li a.twitter:hover {
         background-position: -93px 0;
     }
 
     header ul.social li a.dribble,
-    header ul.social li a.dribble:hover{
+    header ul.social li a.dribble:hover {
         background-position: -124px 0;
     }
 
     header ul.social li a.rss,
-    header ul.social li a.rss:hover{
+    header ul.social li a.rss:hover {
         background-position: -155px 0;
     }
 
-    header .rights p{
+    header .rights p {
         color: #454545;
         font-family: "raleway-regular", arial;
         font-size: 11px;
@@ -246,20 +255,21 @@ h5, h6          { font-weight: bolder }
         line-height: 18px;
     }
 
-    header .rights a{
+    header .rights a {
         font-family: "raleway-bold", arial;
         font-weight: bold;
         text-decoration: none;
     }
+
     #menu_icon,
-    .close_menu{
+    .close_menu {
         display: none;
     }
 
 }
 
 #menu_icon,
-.close_menu{
+.close_menu {
     float: right;
     margin-right: 40px;
     width: 40px;
@@ -268,20 +278,16 @@ h5, h6          { font-weight: bolder }
     background: url('../img/men_icons.png') no-repeat;
 }
 
-#menu_icon{    
+#menu_icon {
     background-position: 0 0;
 }
-.close_menu{
-    background-position: -41px 0!important;
+
+.close_menu {
+    background-position: -41px 0 !important;
 }
 
-
-
-
-
-
 /*  Main  */
-.main{
+.main {
     width: 100%;
     height: 100%;
     padding-left: 300px;
@@ -294,14 +300,8 @@ h5, h6          { font-weight: bolder }
     clear: both;
 }
 
-
-
-
-
-
-
 /*  Home/portfolio  */
-.main .work{
+.main .work {
     display: block;
     width: 33.33333333333333%;
     height: auto;
@@ -310,29 +310,27 @@ h5, h6          { font-weight: bolder }
     overflow: hidden;
 }
 
-.main .work .media{
+.main .work .media {
     width: 100%;
     vertical-align: middle;
 }
 
-.main .work .caption{
+.main .work .caption {
     position: absolute;
     display: block;
     width: 100%;
     height: 100%;
-    top: 0; 
+    top: 0;
     left: 0;
     background: #ffffff;
     opacity: 0;
 }
 
-
-.main .work a:hover .caption{
+.main .work a:hover .caption {
     opacity: 1;
 }
 
-
-.work .caption .work_title{
+.work .caption .work_title {
     display: block;
     width: 100%;
     position: absolute;
@@ -341,7 +339,7 @@ h5, h6          { font-weight: bolder }
     margin-top: -40px;
 }
 
-.main .work .caption h1{
+.main .work .caption h1 {
     position: relative;
     display: inline-block;
     max-width: 90%;
@@ -355,14 +353,8 @@ h5, h6          { font-weight: bolder }
     border-top: 1px solid #bfbbbb;
 }
 
-
-
-
-
-
-
 /*  Inner Page  */
-.top{
+.top {
     width: 100%;
     height: 250px;
     overflow: hidden;
@@ -375,38 +367,36 @@ h5, h6          { font-weight: bolder }
     -moz-background-size: cover;
     -o-background-size: cover;
     background-position: 50% 50%;
-    
-    
-    
-/* background: -webkit-linear-gradient(90deg, #73C8A9 10%, #373B44 90%);  Chrome 10+, Saf5.1+ 
-  background:    -moz-linear-gradient(90deg, #73C8A9 10%, #373B44 90%);  FF3.6+ 
-  background:     -ms-linear-gradient(90deg, #73C8A9 10%, #373B44 90%);  IE10 
-  background:      -o-linear-gradient(90deg, #73C8A9 10%, #373B44 90%);  Opera 11.10+ 
-  background:         linear-gradient(90deg, #73C8A9 10%, #373B44 90%);  W3C */
-                
+
+    /* background: -webkit-linear-gradient(90deg, #73C8A9 10%, #373B44 90%);  Chrome 10+, Saf5.1+
+      background:    -moz-linear-gradient(90deg, #73C8A9 10%, #373B44 90%);  FF3.6+
+      background:     -ms-linear-gradient(90deg, #73C8A9 10%, #373B44 90%);  IE10
+      background:      -o-linear-gradient(90deg, #73C8A9 10%, #373B44 90%);  Opera 11.10+
+      background:         linear-gradient(90deg, #73C8A9 10%, #373B44 90%);  W3C */
+
 }
 
-.work_nav{
+.work_nav {
     display: block;
     width: 100%;
 }
 
-.work_nav .btn{
+.work_nav .btn {
     float: right;
 }
 
-.work_nav ul{
+.work_nav ul {
     list-style: none;
 }
 
-.work_nav ul li{
+.work_nav ul li {
     display: block;
     float: left;
     margin: 0 0 1px 1px;
     position: relative;
 }
 
-.work_nav a{
+.work_nav a {
     display: block;
     width: 40px;
     height: 40px;
@@ -414,21 +404,22 @@ h5, h6          { font-weight: bolder }
     background-position: 0 0;
 }
 
-.work_nav a.previous{
+.work_nav a.previous {
     background-position: 0 0;
 }
 
-.work_nav a.grid{
+.work_nav a.grid {
     background-position: -41px 0;
 }
 
-.work_nav a.next{
+.work_nav a.next {
     background-position: -82px 0;
 }
 
-.top .title{
+.top .title {
     display: block;
-    width: 100%;color: #4b4848;
+    width: 100%;
+    color: #4b4848;
     font-family: "raleway-bold", arial;
     font-size: 26px;
     font-weight: bold;
@@ -436,7 +427,7 @@ h5, h6          { font-weight: bolder }
     padding: 20px;
     text-transform: uppercase;
     line-height: 30px;
-    margin: 0!important;
+    margin: 0 !important;
     overflow: hidden;
 
     -webkit-box-sizing: border-box;
@@ -446,7 +437,7 @@ h5, h6          { font-weight: bolder }
 
 }
 
-.content_header{
+.content_header {
     position: absolute;
     bottom: 0;
     margin: 0 auto;
@@ -454,7 +445,7 @@ h5, h6          { font-weight: bolder }
     margin-left: -46.36363636363637%;
 }
 
-.content{
+.content {
     color: #4b4848;
     font-family: "raleway-regular", arial;
     font-size: 15px;
@@ -468,7 +459,7 @@ h5, h6          { font-weight: bolder }
     box-sizing: border-box;
 }
 
-.content p{
+.content p {
     color: #4b4848;
     font-family: "raleway-regular", arial;
     font-size: 15px;
@@ -481,7 +472,7 @@ h5, h6          { font-weight: bolder }
 .content h3,
 .content h4,
 .content h5,
-.content h6{
+.content h6 {
     color: #4b4848;
     font-family: "raleway-semibold", arial;
     font-weight: bold;
@@ -490,14 +481,8 @@ h5, h6          { font-weight: bolder }
 
 }
 
-
-
-
-
-
-
 /*  Contact page map  */
-#map .map_adresse{
+#map .map_adresse {
     font-family: 'raleway-regular', arial;
     font-size: 14px;
     line-height: 22px;
@@ -505,28 +490,22 @@ h5, h6          { font-weight: bolder }
 }
 
 #map .map_address,
-#map .map_tel{
+#map .map_tel {
     padding: 5px;
 }
 
 #map .map_address .address,
-#map .map_tel .tel{
+#map .map_tel .tel {
     font-family: 'raleway-bold', arial;
     font-weight: bolder;
 }
 
-#map img{
+#map img {
     max-width: none;
 }
 
-
-
-
-
-
-
 /*  Tooltip  */
-.tooltip{
+.tooltip {
     display: block;
     padding: 7px 10px;
     background: #454545;
@@ -542,7 +521,7 @@ h5, h6          { font-weight: bolder }
 
 }
 
-.tooltip:after{
+.tooltip:after {
     content: '';
     width: 0px;
     height: 0px;
@@ -557,36 +536,33 @@ h5, h6          { font-weight: bolder }
     margin-left: -3px;
 }
 
-
-
-
-
-
-
 /*  Responsive code  */
-@media (max-width:1099px){
+@media (max-width: 1099px) {
 
-    header{
+    header {
         display: block;
         width: 100%;
         min-height: 100px;
         padding: 0;
         position: relative;
     }
-    header .logo{
+
+    header .logo {
         margin: 40px 0 0 30px;
         float: left;
     }
-    header .footer{
+
+    header .footer {
         display: none;
     }
+
     header #menu_icon,
-    header .close_menu{
+    header .close_menu {
         float: right;
         margin: 30px 30px 0 0;
     }
-    
-    header nav{
+
+    header nav {
         width: 100%;
         position: absolute;
         top: 100px;
@@ -594,12 +570,13 @@ h5, h6          { font-weight: bolder }
         z-index: 9999;
     }
 
-    header nav ul{
+    header nav ul {
         list-style: none;
         display: none;
         position: relative;
     }
-    header nav ul li a{
+
+    header nav ul li a {
         display: block;
         width: 100%;
         padding: 30px 0;
@@ -611,33 +588,38 @@ h5, h6          { font-weight: bolder }
         border-top: 1px solid #f7f5f5;
         background: #fff;
     }
-    header nav ul li a:active{
+
+    header nav ul li a:active {
         background: #f7f5f5;
     }
+
     #menu_icon,
     .close_menu,
-    .show_menu{
-        display: block;
-    }
-    .show_menu{
+    .show_menu {
         display: block;
     }
 
-    .main .work{
+    .show_menu {
+        display: block;
+    }
+
+    .main .work {
         width: 50%;
     }
-    .main{
+
+    .main {
         width: 100%;
         position: relative;
         padding-left: 0;
     }
-    #map{
-        margin: 0!important;
+
+    #map {
+        margin: 0 !important;
     }
 }
 
-@media (max-width:550px){
-     .main .work{
+@media (max-width: 550px) {
+    .main .work {
         width: 100%;
     }
 }

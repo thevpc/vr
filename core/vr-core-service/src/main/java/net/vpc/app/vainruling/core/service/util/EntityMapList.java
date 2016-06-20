@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by vpc on 6/1/16.
  */
-public class EntityMapList<K,V> extends MapList<K,V> {
+public class EntityMapList<K, V> extends MapList<K, V> {
     private Entity entity;
 
     public EntityMapList(Entity e) {
@@ -30,7 +30,7 @@ public class EntityMapList<K,V> extends MapList<K,V> {
 
         @Override
         public K resolveKey(V value) {
-            return (K)entity.getBuilder().objectToId(value);
+            return (K) entity.getBuilder().objectToId(value);
         }
     }
 }

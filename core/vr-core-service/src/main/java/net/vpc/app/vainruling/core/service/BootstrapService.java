@@ -1,35 +1,26 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
-import javax.naming.InitialContext;
-
-import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.model.AppVersion;
-import net.vpc.app.vainruling.core.service.util.Reflector;
+import net.vpc.app.vainruling.core.service.util.I18n;
+import net.vpc.app.vainruling.core.service.util.PlatformReflector;
 import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @Service
@@ -65,7 +56,7 @@ public class BootstrapService {
         ArrayList<String> ordered = new ArrayList<>();
         for (String k : s.keySet()) {
             Object o1 = VrApp.getContext().getBean(k);
-            AppPlugin a1 = (AppPlugin) Reflector.getTargetClass(o1).getAnnotation(AppPlugin.class);
+            AppPlugin a1 = (AppPlugin) PlatformReflector.getTargetClass(o1).getAnnotation(AppPlugin.class);
             for (String d : a1.dependsOn()) {
                 VrApp.getContext().getBean(d);
             }
@@ -76,9 +67,9 @@ public class BootstrapService {
             @Override
             public int compare(String s1, String s2) {
                 Object o1 = VrApp.getContext().getBean(s1);
-                AppPlugin a1 = (AppPlugin) Reflector.getTargetClass(o1).getAnnotation(AppPlugin.class);
+                AppPlugin a1 = (AppPlugin) PlatformReflector.getTargetClass(o1).getAnnotation(AppPlugin.class);
                 Object o2 = VrApp.getContext().getBean(s1);
-                AppPlugin a2 = (AppPlugin) Reflector.getTargetClass(o2).getAnnotation(AppPlugin.class);
+                AppPlugin a2 = (AppPlugin) PlatformReflector.getTargetClass(o2).getAnnotation(AppPlugin.class);
                 HashSet<String> hs1 = new HashSet<>(Arrays.asList(a1.dependsOn()));
                 HashSet<String> hs2 = new HashSet<>(Arrays.asList(a2.dependsOn()));
                 if (!s1.equals("coreService")) {

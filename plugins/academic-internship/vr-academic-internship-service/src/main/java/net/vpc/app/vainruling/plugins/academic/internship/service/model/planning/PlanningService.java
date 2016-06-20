@@ -5,7 +5,9 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
 import net.vpc.upa.UPA;
 import net.vpc.upa.bulk.*;
-import org.jgap.*;
+import org.jgap.Configuration;
+import org.jgap.Genotype;
+import org.jgap.IChromosome;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.MutationOperator;
 import org.springframework.stereotype.Service;
@@ -34,16 +36,16 @@ public class PlanningService {
     public static final int MAX_ALLOWED_EVOLUTIONS = 500;
 
     public void display(PlanningActivityTable t) {
-        display(t,System.out);
+        display(t, System.out);
     }
 
-    public void display(PlanningActivityTable t,File file) throws IOException {
+    public void display(PlanningActivityTable t, File file) throws IOException {
         PrintStream out = null;
         try {
-            out=new PrintStream(file);
-            display(t,out);
-        } finally{
-            if(out!=null){
+            out = new PrintStream(file);
+            display(t, out);
+        } finally {
+            if (out != null) {
                 out.close();
             }
         }
@@ -59,86 +61,86 @@ public class PlanningService {
         DataReader parse = sheetParser.parse();
 //        while(parse.)
 
-        BufferedReader r=new BufferedReader(new FileReader(file));
-        List<PlanningSpaceTime> spaceTimes=null;
-        final int START=0;
-        final int ACTIVITIES=1;
-        int status=0;
-        PlanningActivityTable t=new PlanningActivityTable();
-        Map<String,PlanningSpaceTime> spaceTimesMap=new HashMap<>();
-        while(parse.hasNext()){
+        BufferedReader r = new BufferedReader(new FileReader(file));
+        List<PlanningSpaceTime> spaceTimes = null;
+        final int START = 0;
+        final int ACTIVITIES = 1;
+        int status = 0;
+        PlanningActivityTable t = new PlanningActivityTable();
+        Map<String, PlanningSpaceTime> spaceTimesMap = new HashMap<>();
+        while (parse.hasNext()) {
             Object[] line = parse.readRow().getValues();
-                switch (status) {
-                    case START: {
-                        if (line[0].equals("chairs:")) {
-                            parse.hasNext();
-                            for (Object s : parse.readRow().getValues()) {
-                                t.getChairs().add(s.toString().trim());
-                            }
-                        }else if (line[0].equals("examiners:")){
-                            parse.hasNext();
-                            for (Object s : parse.readRow().getValues()) {
-                                t.getExaminers().add(s.toString().trim());
-                            }
-                        }else if (line[0].equals("rooms:")){
-                            parse.hasNext();
-                            for (Object s : parse.readRow().getValues()) {
-                                t.getRooms().add(new PlanningRoom(s.toString().trim(),t.getRooms().size()+1));
-                            }
-                        }else if (line[0].equals("times:")){
-                            parse.hasNext();
-                            for (Object s : parse.readRow().getValues()) {
-                                t.getTimes().add(new PlanningTime(s.toString().trim()));
-                            }
-                        }else if (line[0].equals("activities:")){
-                            spaceTimes = t.getSpaceTimes();
-                            for (PlanningSpaceTime spaceTime : spaceTimes) {
-                                spaceTimesMap.put(spaceTime.toString(),spaceTime);
-                            }
-                            status=ACTIVITIES;
-                        }else{
-                            throw new IllegalArgumentException("Parse exception at "+line);
+            switch (status) {
+                case START: {
+                    if (line[0].equals("chairs:")) {
+                        parse.hasNext();
+                        for (Object s : parse.readRow().getValues()) {
+                            t.getChairs().add(s.toString().trim());
                         }
-                        break;
+                    } else if (line[0].equals("examiners:")) {
+                        parse.hasNext();
+                        for (Object s : parse.readRow().getValues()) {
+                            t.getExaminers().add(s.toString().trim());
+                        }
+                    } else if (line[0].equals("rooms:")) {
+                        parse.hasNext();
+                        for (Object s : parse.readRow().getValues()) {
+                            t.getRooms().add(new PlanningRoom(s.toString().trim(), t.getRooms().size() + 1));
+                        }
+                    } else if (line[0].equals("times:")) {
+                        parse.hasNext();
+                        for (Object s : parse.readRow().getValues()) {
+                            t.getTimes().add(new PlanningTime(s.toString().trim()));
+                        }
+                    } else if (line[0].equals("activities:")) {
+                        spaceTimes = t.getSpaceTimes();
+                        for (PlanningSpaceTime spaceTime : spaceTimes) {
+                            spaceTimesMap.put(spaceTime.toString(), spaceTime);
+                        }
+                        status = ACTIVITIES;
+                    } else {
+                        throw new IllegalArgumentException("Parse exception at " + line);
                     }
-                    case ACTIVITIES:{
-                        String[] cols = new String[line.length];
-                        for (int i = 0; i < cols.length; i++) {
-                            cols[i]=line[i].toString().trim();
-                        }
-                        PlanningActivity a=new PlanningActivity();
-                        a.setInternship(new PlanningInternship());
-                        if(!cols[0].equals("?")){
-                            a.setSpaceTime(spaceTimesMap.get(cols[0]));
-                        }
-                        if(!cols[1].equals("?")){
-                            a.setChair(cols[1]);
-                        }
-                        if(!cols[2].equals("?")){
-                            a.setExaminer(cols[1]);
-                        }
-                        if(!cols[3].equals("?")){
-                            List<String> sups=new ArrayList<>();
-                            for (String s : cols[3].split("\\+")) {
-                                sups.add(s.trim());
-                            }
-                            a.getInternship().setSupervisors(sups);
-                        }
-                        a.getInternship().setCode(cols[4]);
-                        a.getInternship().setName(cols[5]);
-                        a.getInternship().setStudent(cols[6]);
-                        a.getInternship().setId((int)Double.parseDouble(cols[7]));
-                        a.getInternship().setDisciplines(cols[8]);
-                        t.getActivities().add(a);
-                        break;
+                    break;
+                }
+                case ACTIVITIES: {
+                    String[] cols = new String[line.length];
+                    for (int i = 0; i < cols.length; i++) {
+                        cols[i] = line[i].toString().trim();
                     }
+                    PlanningActivity a = new PlanningActivity();
+                    a.setInternship(new PlanningInternship());
+                    if (!cols[0].equals("?")) {
+                        a.setSpaceTime(spaceTimesMap.get(cols[0]));
+                    }
+                    if (!cols[1].equals("?")) {
+                        a.setChair(cols[1]);
+                    }
+                    if (!cols[2].equals("?")) {
+                        a.setExaminer(cols[1]);
+                    }
+                    if (!cols[3].equals("?")) {
+                        List<String> sups = new ArrayList<>();
+                        for (String s : cols[3].split("\\+")) {
+                            sups.add(s.trim());
+                        }
+                        a.getInternship().setSupervisors(sups);
+                    }
+                    a.getInternship().setCode(cols[4]);
+                    a.getInternship().setName(cols[5]);
+                    a.getInternship().setStudent(cols[6]);
+                    a.getInternship().setId((int) Double.parseDouble(cols[7]));
+                    a.getInternship().setDisciplines(cols[8]);
+                    t.getActivities().add(a);
+                    break;
                 }
             }
+        }
         r.close();
         return t;
     }
 
-    public void store(PlanningActivityTable t,File file) throws IOException {
+    public void store(PlanningActivityTable t, File file) throws IOException {
         if (t == null) {
             throw new IllegalArgumentException("Null Activity Table");
         } else {
@@ -147,26 +149,26 @@ public class PlanningService {
             sheetFormatter.setWriteHeader(false);
             DataWriter writer = sheetFormatter.createWriter();
 //            PrintStream out=new PrintStream(file);
-            if(t.getChairs()!=null){
+            if (t.getChairs() != null) {
                 writer.writeRow(new Object[]{"chairs:"});
                 writer.writeRow(t.getChairs().toArray());
             }
-            if(t.getExaminers()!=null){
+            if (t.getExaminers() != null) {
                 writer.writeRow(new Object[]{"examiners:"});
                 writer.writeRow(t.getExaminers().toArray());
             }
-            if(t.getRooms()!=null){
+            if (t.getRooms() != null) {
                 writer.writeRow(new Object[]{"rooms:"});
-                List<String> roomNames=new ArrayList<>();
+                List<String> roomNames = new ArrayList<>();
                 for (int i = 0; i < t.getRooms().size(); i++) {
                     PlanningRoom r = t.getRooms().get(i);
                     roomNames.add(r.getName());
                 }
                 writer.writeRow(roomNames.toArray());
             }
-            if(t.getTimes()!=null){
+            if (t.getTimes() != null) {
                 writer.writeRow(new Object[]{"times:"});
-                List<String> timeNames=new ArrayList<>();
+                List<String> timeNames = new ArrayList<>();
                 for (int i = 0; i < t.getTimes().size(); i++) {
                     PlanningTime r = t.getTimes().get(i);
                     timeNames.add(PlanningTime.DEFAULT_FORMAT.format(r.getTime()));
@@ -177,12 +179,12 @@ public class PlanningService {
             List<PlanningActivity> activities = t.getActivities();
             for (PlanningActivity a : activities) {
                 //evalTableFitness()
-                StringBuilder sup= new StringBuilder();
-                if(a.getInternship().getSupervisors()==null){
+                StringBuilder sup = new StringBuilder();
+                if (a.getInternship().getSupervisors() == null) {
                     sup.append("?");
-                }else{
+                } else {
                     for (String s : a.getInternship().getSupervisors()) {
-                        if(sup.length()>0){
+                        if (sup.length() > 0) {
                             sup.append(" + ");
                         }
                         sup.append(s);
@@ -205,17 +207,18 @@ public class PlanningService {
         }
     }
 
-    public Map<String,PlanningTeacherStats> evalTeacherStats(PlanningActivityTable t){
-        PlanningActivityTableExt t2=new PlanningActivityTableExt(t);
+    public Map<String, PlanningTeacherStats> evalTeacherStats(PlanningActivityTable t, boolean fixedOnly) {
+        PlanningActivityTableExt t2 = new PlanningActivityTableExt(t);
         PlanningFitnessFunction fitness = new PlanningFitnessFunction(t2);
-        return fitness.evalTeacherStats(t);
+        return fitness.evalTeacherStats(t, fixedOnly);
     }
-    public void display(PlanningActivityTable t,PrintStream out) {
+
+    public void display(PlanningActivityTable t, PrintStream out) {
         if (t == null) {
             System.out.println("NULL TABLE");
         } else {
-            boolean time = t.getActivities().get(0).getTime()!=null;
-            PlanningActivityTableExt t2=new PlanningActivityTableExt(t,true,time,null);
+            boolean time = t.getActivities().get(0).getTime() != null;
+            PlanningActivityTableExt t2 = new PlanningActivityTableExt(t, true, time, null);
 
 
             PlanningFitnessFunction fitness = new PlanningFitnessFunction(t2);
@@ -223,14 +226,14 @@ public class PlanningService {
             out.println("------ " + (fitnessValue.valid ? "  VALID" : "INVALID") + " " + fitnessValue);
             out.println("\t times(#" + t.getTimes().size() + "):" + new TreeSet(t.getTimes()));
             out.println("\t rooms(#" + t.getRooms().size() + "):" + new TreeSet(t.getRooms()));
-            for (Map.Entry<String, PlanningTeacherStats> e : fitness.evalTeacherStats(t).entrySet()) {
+            for (Map.Entry<String, PlanningTeacherStats> e : fitness.evalTeacherStats(t, false).entrySet()) {
                 out.println("\t teacher " + e.getKey() + ":");
-                out.println("\t\t activities:"+ e.getValue().activities);
-                out.println("\t\t balance   :"+ e.getValue().chairBalance+"/"+e.getValue().examinerBalance);
-                out.println("\t\t supervisor:"+ e.getValue().supervisor);
-                out.println("\t\t chair     :"+ e.getValue().chair);
-                out.println("\t\t examiner  :"+ e.getValue().examiner);
-                out.println("\t\t days      :"+ e.getValue().days);
+                out.println("\t\t activities:" + e.getValue().activities);
+                out.println("\t\t balance   :" + e.getValue().chairBalance + "/" + e.getValue().examinerBalance);
+                out.println("\t\t supervisor:" + e.getValue().supervisor);
+                out.println("\t\t chair     :" + e.getValue().chair);
+                out.println("\t\t examiner  :" + e.getValue().examiner);
+                out.println("\t\t days      :" + e.getValue().days);
 
             }
             List<PlanningActivity> activities = t.getActivities();
@@ -238,7 +241,7 @@ public class PlanningService {
             out.println("\t activities(#" + activities.size() + "):");
             for (PlanningActivity a : activities) {
                 //evalTableFitness()
-                out.println(a.getSpaceTime() + " : " + a.getChair() + " ; " + a.getExaminer() + " ; " + a.getInternship().getSupervisors() + " ; " + a.getInternship().getCode()+ " ; " + a.getInternship().getName());
+                out.println(a.getSpaceTime() + " : " + a.getChair() + " ; " + a.getExaminer() + " ; " + a.getInternship().getSupervisors() + " ; " + a.getInternship().getCode() + " ; " + a.getInternship().getName());
             }
         }
     }
@@ -290,90 +293,155 @@ public class PlanningService {
 //        return new PlanningResult(t.getTable(),myFunc.evalTableFitness(new PlanningActivityTableExt(t.getTable(),true,true,null)));
 //    }
 
-    public PlanningResult generateActivitiesSpaceTime(PlanningActivityTable table,int maxSeconds) {
+    public PlanningResult generateActivitiesSpaceTime(PlanningActivityTable table, int maxSeconds) {
         return matchActivitiesGeneticAlgo(table, maxSeconds, false, true);
     }
 
     public PlanningResult generateActivitiesJury(PlanningActivityTable table) {
-        PlanningActivityTableExt tableExt = new PlanningActivityTableExt(table,true,false,null);
+        PlanningActivityTableExt tableExt = new PlanningActivityTableExt(table, true, false, null);
         PlanningFitnessFunction myFunc = new PlanningFitnessFunction(tableExt);
-        List<String> conf=new ArrayList<>();
-        for (Map.Entry<String, PlanningTeacherStats> e : myFunc.evalTeacherStats(tableExt.getTable()).entrySet()) {
+        List<String> conf_examiners = new ArrayList<>();
+        List<String> conf_chairs = new ArrayList<>();
+        for (Map.Entry<String, PlanningTeacherStats> e : myFunc.evalTeacherStats(tableExt.getTable(), true).entrySet()) {
             PlanningTeacherStats s = e.getValue();
-            for (int i = 0; i < Math.ceil(s.supervisor); i++) {
-                conf.add(s.teacherName);
+            double max = Math.ceil(s.supervisor) - s.chair;
+            for (int i = 0; i < max; i++) {
+                conf_chairs.add(s.teacherName);
+            }
+            max = Math.ceil(s.supervisor) - s.examiner;
+            for (int i = 0; i < max; i++) {
+                conf_examiners.add(s.teacherName);
             }
         }
-        int activitiesCount = tableExt.getTable().getActivities().size();
-        if(conf.size()!=activitiesCount){
-            throw new IllegalArgumentException("Why");
+        int setChairs = 0;
+        int setExaminers = 0;
+
+        List<Integer> unsetExaminersIndexes = new ArrayList<>();
+        List<Integer> unsetChairsIndexes = new ArrayList<>();
+
+        List<PlanningActivity> activities = tableExt.getTable().getActivities();
+        for (int i = 0; i < activities.size(); i++) {
+            PlanningActivity activity = activities.get(i);
+            if (!StringUtils.isEmpty(activity.getChair()) && activity.isFixedChair()) {
+                setChairs++;
+            } else {
+                unsetChairsIndexes.add(i);
+            }
+            if (!StringUtils.isEmpty(activity.getExaminer()) && activity.isFixedExaminer()) {
+                setExaminers++;
+            } else {
+                unsetExaminersIndexes.add(i);
+            }
+        }
+        Random r = new Random();
+
+        if (unsetExaminersIndexes.size() > 0) {
+            int maxLoops = 100;
+            while (unsetExaminersIndexes.size() > 0 && conf_examiners.size() > 0 && maxLoops > 0) {
+                int a = r.nextInt(unsetExaminersIndexes.size());
+                int b = r.nextInt(conf_examiners.size());
+                PlanningActivity activity = tableExt.getTable().getActivities().get(a);
+                String value = conf_examiners.get(b);
+                if (!activity.isSupervisor(value) && !(activity.isFixedChair() && activity.isChair(value))) {
+                    activity.setExaminer(value);
+                    unsetExaminersIndexes.remove(a);
+                    conf_examiners.remove(b);
+                    maxLoops = 100;
+                } else {
+                    maxLoops--;
+                }
+            }
         }
 
-        List<String> chairs=new ArrayList<>(conf);
-        Collections.shuffle(chairs);
-        Random r=new Random();
-        for (int i = 0; i < activitiesCount; i++) {
-            boolean valueSet=false;
-            PlanningActivity activity = tableExt.getTable().getActivities().get(i);
-            if(!activity.isFixedChair() || StringUtils.isEmpty(activity.getChair())) {
-                int maxLoops=2*conf.size();
-                while (maxLoops>0 && !valueSet) {
+        if (unsetChairsIndexes.size() > 0) {
+            int maxLoops = 100;
+            while (unsetChairsIndexes.size() > 0 && conf_chairs.size() > 0 && maxLoops > 0) {
+                int a = r.nextInt(unsetChairsIndexes.size());
+                int b = r.nextInt(conf_chairs.size());
+                PlanningActivity activity = tableExt.getTable().getActivities().get(a);
+                String value = conf_chairs.get(b);
+                if (!activity.isSupervisor(value) && !(activity.isExaminer(value))) {
+                    activity.setChair(value);
+                    unsetChairsIndexes.remove(a);
+                    conf_chairs.remove(b);
+                    maxLoops = 100;
+                } else {
                     maxLoops--;
-                    int c = r.nextInt(chairs.size());
-                    String value = chairs.get(c);
-                    if (!activity.isSupervisor(value)) {
-                        if(activity.isFixedExaminer() && !StringUtils.isEmpty(activity.getExaminer()) && activity.isExaminer(value)){
-                            //could not force this!
-                        }else {
-                            activity.setChair(value);
-                            chairs.remove(c);
-                            valueSet = true;
-                        }
-                    }
                 }
-            }else{
-                chairs.remove(activity.getChair());
             }
         }
 
-        List<String> examiners=new ArrayList<>(conf);
-        Collections.shuffle(examiners);
-        for (int i = 0; i < activitiesCount; i++) {
-            PlanningActivity activity = tableExt.getTable().getActivities().get(i);
-            if(!activity.isFixedExaminer() || StringUtils.isEmpty(activity.getExaminer())) {
-                boolean valueSet = false;
-                int maxLoops = 2 * conf.size();
-                while (maxLoops > 0 && !valueSet) {
-                    maxLoops--;
-                    int c = r.nextInt(examiners.size());
-                    String value = examiners.get(c);
-                    if (!activity.isChair(value) && !activity.isSupervisor(value)) {
-                        activity.setExaminer(value);
-                        examiners.remove(c);
-                        valueSet = true;
-                    }
-                }
-            }else{
-                examiners.remove(activity.getExaminer());
-            }
-        }
-        return new PlanningResult(tableExt.getTable(),myFunc.evalTableFitness(tableExt));
+//        int activitiesCount = tableExt.getTable().getActivities().size();
+////        if(conf.size()!=activitiesCount){
+////            throw new IllegalArgumentException("Why");
+////        }
+//
+//        List<String> chairs=new ArrayList<>(conf_chairs);
+//        Collections.shuffle(chairs);
+//        for (int i = 0; i < activitiesCount && !chairs.isEmpty(); i++) {
+//            boolean valueSet=false;
+//            PlanningActivity activity = tableExt.getTable().getActivities().get(i);
+//            if(!activity.isFixedChair() || StringUtils.isEmpty(activity.getChair())) {
+//                int maxLoops=2*conf_chairs.size();
+//                while (maxLoops>0 && !valueSet) {
+//                    maxLoops--;
+//                    int c = r.nextInt(chairs.size());
+//                    String value = chairs.get(c);
+//                    if (!activity.isSupervisor(value)) {
+//                        if(activity.isFixedExaminer()
+//                                && !StringUtils.isEmpty(activity.getExaminer())
+//                                && activity.isExaminer(value)){
+//                            //could not force this!
+//                        }else {
+//                            activity.setChair(value);
+//                            chairs.remove(c);
+//                            valueSet = true;
+//                        }
+//                    }
+//                }
+//            }else{
+//                chairs.remove(activity.getChair());
+//            }
+//        }
+//
+//        List<String> examiners=new ArrayList<>(conf_examiners);
+//        Collections.shuffle(examiners);
+//        for (int i = 0; i < activitiesCount && !examiners.isEmpty(); i++) {
+//            PlanningActivity activity = tableExt.getTable().getActivities().get(i);
+//            if(!activity.isFixedExaminer() || StringUtils.isEmpty(activity.getExaminer())) {
+//                boolean valueSet = false;
+//                int maxLoops = 2 * conf_examiners.size();
+//                while (maxLoops > 0 && !valueSet) {
+//                    maxLoops--;
+//                    int c = r.nextInt(examiners.size());
+//                    String value = examiners.get(c);
+//                    if (!activity.isChair(value) && !activity.isSupervisor(value)) {
+//                        activity.setExaminer(value);
+//                        examiners.remove(c);
+//                        valueSet = true;
+//                    }
+//                }
+//            }else{
+//                examiners.remove(activity.getExaminer());
+//            }
+//        }
+        return new PlanningResult(tableExt.getTable(), myFunc.evalTableFitness(tableExt));
     }
 
     public PlanningResult matchActivitiesGeneticAlgo(PlanningActivityTable activityTable, int maxSeconds, boolean teachers, boolean spaceTime) {
-        PlanningActivityTableExt activityTable2=null;
-        PlanningActivityTable bestActivityTable=null;
-        FitnessValue bestFitnessValue=FitnessValue.invalid("invalid",0);
-        Chronometer chronometer=new Chronometer();
+        PlanningActivityTableExt activityTable2 = null;
+        PlanningActivityTable bestActivityTable = null;
+        FitnessValue bestFitnessValue = FitnessValue.invalid("invalid", 0);
+        Chronometer chronometer = new Chronometer();
         try {
             Configuration.reset();
             Configuration conf = new DefaultConfiguration();
-            activityTable2=new PlanningActivityTableExt(activityTable,teachers,spaceTime,conf);
+            activityTable2 = new PlanningActivityTableExt(activityTable, teachers, spaceTime, conf);
 //            conf.addNaturalSelector(new BestChromosomesSelector(conf, 0.3), true);
             conf.setPreservFittestIndividual(true);
 //            conf.setSelectFromPrevGen(0.5);
 
-            if(teachers) {
+            if (teachers) {
                 conf.getGeneticOperators().clear();
 //            conf.addGeneticOperator(new CrossoverOperator(conf, 0.5d));
                 conf.addGeneticOperator(new MutationOperator(conf));
@@ -384,18 +452,18 @@ public class PlanningService {
             IChromosome sampleChromosome = null;
             try {
                 sampleChromosome = activityTable2.marshall(conf);
-            }catch(IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 //nothing to plan
-                return new PlanningResult(activityTable2.getTable(),myFunc.evalTableFitness(activityTable2));
+                return new PlanningResult(activityTable2.getTable(), myFunc.evalTableFitness(activityTable2));
             }
             conf.setSampleChromosome(sampleChromosome);
 
             int activitiesSize = activityTable.getActivities().size();
             int spaceTimeSize = activityTable2.getSpaceTimes().size();
-            if(spaceTimeSize<activitiesSize){
-                throw new RuntimeException("Too few space time possibilities "+spaceTimeSize+"<"+activitiesSize);
+            if (spaceTimeSize < activitiesSize) {
+                throw new RuntimeException("Too few space time possibilities " + spaceTimeSize + "<" + activitiesSize);
             }
-            if(spaceTime) {
+            if (spaceTime) {
                 System.out.println("spaceTime ratio : " + ((double) spaceTimeSize) / activitiesSize);
             }
             conf.setPopulationSize(EVOLUTION_SIZE);
@@ -404,10 +472,10 @@ public class PlanningService {
             boolean ok = false;
             int iterations = 0;
             double fitnessValue = Double.POSITIVE_INFINITY;
-            int good=0;
-            Double goodVal=Double.NaN;
-            Double error=Double.NaN;
-            int steadyness=0;
+            int good = 0;
+            Double goodVal = Double.NaN;
+            Double error = Double.NaN;
+            int steadyness = 0;
 
             for (int i = 0; i < MAX_ALLOWED_EVOLUTIONS; i++) {
                 iterations = i + 1;
@@ -418,13 +486,13 @@ public class PlanningService {
                 fitnessValue = myFunc.getFitnessValue(bestSolutionSoFar);
                 System.out.println("iteration " + iterations + " : " + fitnessValue + " ; " + (fv.valid ? "VALID" : fv.toString()));
                 display(activityTable2.getTable(), new File(System.getProperty("user.home") + "/planning.txt"));
-                bestFitnessValue=fv;
-                bestActivityTable=activityTable2.getTable().copy();
+                bestFitnessValue = fv;
+                bestActivityTable = activityTable2.getTable().copy();
                 if (fv.valid) {
-                    if(Double.isNaN(goodVal)){
-                        goodVal=fv.value;
-                    }else{
-                        error=(fv.value-goodVal)/goodVal;
+                    if (Double.isNaN(goodVal)) {
+                        goodVal = fv.value;
+                    } else {
+                        error = (fv.value - goodVal) / goodVal;
                     }
                     good++;
                     ok = true;
@@ -433,38 +501,39 @@ public class PlanningService {
 //                        break;
 //                    }
                     //break;
-                }else{
-                    good=0;
+                } else {
+                    good = 0;
                 }
                 long elapsed = chronometer.getTime() / 1000;
-                if(elapsed >maxSeconds){
-                    System.out.println(chronometer.toString()+" elapsed > "+maxSeconds+"s. returning "+(ok?"valid":"invalid")+" result");
+                if (elapsed > maxSeconds) {
+                    System.out.println(chronometer.toString() + " elapsed > " + maxSeconds + "s. returning " + (ok ? "valid" : "invalid") + " result");
                     break;
                 }
             }
             if (!ok) {
-                return new PlanningResult(bestActivityTable,bestFitnessValue);
+                return new PlanningResult(bestActivityTable, bestFitnessValue);
             }
             System.out.println("found solution " + fitnessValue + " in " + iterations + " iterations");
         } catch (Exception e) {
             e.printStackTrace();
         }
         Collections.sort(bestActivityTable.getActivities());
-        return new PlanningResult(bestActivityTable,bestFitnessValue);
+        return new PlanningResult(bestActivityTable, bestFitnessValue);
     }
 
 
     public void storeFetXml(PlanningActivityTable activityTable, File file) throws ParserConfigurationException, TransformerException, IOException {
-        OutputStream out=null;
-        try{
-            out= new FileOutputStream(file);
+        OutputStream out = null;
+        try {
+            out = new FileOutputStream(file);
             storeFetXml(activityTable, out);
-        }finally{
-            if(out!=null){
+        } finally {
+            if (out != null) {
                 out.close();
             }
         }
     }
+
     public void storeFetXml(PlanningActivityTable activityTable, OutputStream out) throws ParserConfigurationException, TransformerException {
         TreeSet<String> hours = new TreeSet<>();
         TreeSet<String> dtes = new TreeSet<>();
@@ -476,7 +545,7 @@ public class PlanningService {
         for (String t : activityTable.getTeachers()) {
             teachers.add(t);
         }
-        Map<String, PlanningTeacherStats> t = evalTeacherStats(activityTable);
+        Map<String, PlanningTeacherStats> t = evalTeacherStats(activityTable, false);
 
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -573,7 +642,8 @@ public class PlanningService {
 
             Element Name = doc.createElement("Name");
             Subject.appendChild(Name);
-            Name.setTextContent(activity.getInternship().getCode()+"-"+activity.getInternship().getName());
+            String activityLabel = activity.getInternship().getCode() + "-" + activity.getInternship().getName() + "-" + activity.getInternship().getStudent();
+            Name.setTextContent(activityLabel);
         }
 
 
@@ -595,7 +665,8 @@ public class PlanningService {
             }
             Element Subject = doc.createElement("Subject");
             Activity.appendChild(Subject);
-            Subject.setTextContent(activity.getInternship().getCode() + "-" + activity.getInternship().getName());
+            String activityLabel = activity.getInternship().getCode() + "-" + activity.getInternship().getName() + "-" + activity.getInternship().getStudent();
+            Subject.setTextContent(activityLabel);
             //<Duration>1</Duration>
             Element Duration = doc.createElement("Duration");
             Activity.appendChild(Duration);
@@ -656,13 +727,13 @@ public class PlanningService {
 //            </ConstraintTeacherMinDaysPerWeek>
 
             for (PlanningTeacherStats stats : t.values()) {
-                if(stats.activities>0){
-                    int maxDays=(int)Math.ceil(1.0*stats.activities/hours.size());
-                    if(maxDays>=3){
+                if (stats.activities > 0) {
+                    int maxDays = (int) Math.ceil(1.0 * stats.activities / hours.size());
+                    if (maxDays >= 3) {
                         maxDays++;
                     }
-                    if(maxDays>dtes.size()){
-                        maxDays=dtes.size();
+                    if (maxDays > dtes.size()) {
+                        maxDays = dtes.size();
                     }
                     Element ConstraintTeacherMaxDaysPerWeek = doc.createElement("ConstraintTeacherMaxDaysPerWeek");
                     Time_Constraints_List.appendChild(ConstraintTeacherMaxDaysPerWeek);
@@ -710,17 +781,12 @@ public class PlanningService {
     }
 
 
-
-
-
-
 //    public static double nonzero(double x) {
 //        if (x == 0) {
 //            return 1;
 //        }
 //        return x;
 //    }
-
 
 
 }

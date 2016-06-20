@@ -1,19 +1,19 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.util;
+
+import org.springframework.util.PropertyPlaceholderHelper;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import org.springframework.util.PropertyPlaceholderHelper;
 
 /**
- *
  * @author dev01
  */
 public class ResourceBundleSuite {

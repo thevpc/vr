@@ -1,11 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service;
 
-import java.util.logging.Level;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.PersistenceUnit;
@@ -19,20 +18,16 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.stereotype.Component;
 
+import java.util.logging.Level;
+
 /**
- *
  * @author vpc
  */
 @Component
 public class VrApp implements ApplicationContextAware {
 
     private static ApplicationContext context;
-    private static boolean running=false;
-
-    @Override
-    public void setApplicationContext(ApplicationContext ac) throws BeansException {
-        VrApp.context = ac;
-    }
+    private static boolean running = false;
 
     public static <T extends Object> T getBean(Class<T> type) throws BeansException {
         return getContext().getBean(type);
@@ -43,12 +38,12 @@ public class VrApp implements ApplicationContextAware {
     }
 
     public static void runStandalone(String login, String password, boolean activateLog) {
-        running=true;
+        running = true;
         if (activateLog) {
             net.vpc.common.util.LogUtils.configure(Level.FINE, "net.vpc");
         }
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext
-        ("META-INF/stanalone-applicationContext.xml") {
+                ("META-INF/stanalone-applicationContext.xml") {
             protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
                 getBeanFactory().registerScope("session", new SimpleThreadScope());
             }
@@ -64,10 +59,15 @@ public class VrApp implements ApplicationContextAware {
     }
 
     public static void stopStandalone() {
-        if(running){
-            running=false;
+        if (running) {
+            running = false;
             PersistenceUnit persistenceUnit = UPA.getPersistenceUnit();
             persistenceUnit.commitTransaction();
         }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext ac) throws BeansException {
+        VrApp.context = ac;
     }
 }

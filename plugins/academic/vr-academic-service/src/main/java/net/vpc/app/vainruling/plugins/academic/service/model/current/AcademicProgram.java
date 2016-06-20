@@ -1,24 +1,18 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
-import java.sql.Timestamp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Formula;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Properties;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
+
+import java.sql.Timestamp;
 
 /**
  * filiere
@@ -43,9 +37,9 @@ public class AcademicProgram {
 
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
-    @Formula(value = "CurrentTimestamp()",type = FormulaType.PERSIST)
+    @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
-    @Formula(value = "CurrentTimestamp()",type = {FormulaType.PERSIST,FormulaType.UPDATE})
+    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
 
     public AcademicProgram() {
@@ -109,5 +103,5 @@ public class AcademicProgram {
         this.updateDate = updateDate;
     }
 
-    
+
 }

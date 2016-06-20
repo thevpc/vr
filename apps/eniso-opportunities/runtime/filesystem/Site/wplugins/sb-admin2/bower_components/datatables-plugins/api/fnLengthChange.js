@@ -1,5 +1,5 @@
 /**
- * Change the number of records that can be viewed on a single page in 
+ * Change the number of records that can be viewed on a single page in
  * DataTables.
  *
  * DataTables 1.10 provides the `dt-api page.len()` method to get and set the
@@ -19,30 +19,25 @@
  *    } );
  */
 
-jQuery.fn.dataTableExt.oApi.fnLengthChange = function ( oSettings, iDisplay )
-{
+jQuery.fn.dataTableExt.oApi.fnLengthChange = function (oSettings, iDisplay) {
     oSettings._iDisplayLength = iDisplay;
-    oSettings.oApi._fnCalculateEnd( oSettings );
+    oSettings.oApi._fnCalculateEnd(oSettings);
 
     /* If we have space to show extra rows (backing up from the end point - then do so */
-    if ( oSettings._iDisplayEnd == oSettings.aiDisplay.length )
-    {
+    if (oSettings._iDisplayEnd == oSettings.aiDisplay.length) {
         oSettings._iDisplayStart = oSettings._iDisplayEnd - oSettings._iDisplayLength;
-        if ( oSettings._iDisplayStart < 0 )
-        {
+        if (oSettings._iDisplayStart < 0) {
             oSettings._iDisplayStart = 0;
         }
     }
 
-    if ( oSettings._iDisplayLength == -1 )
-    {
+    if (oSettings._iDisplayLength == -1) {
         oSettings._iDisplayStart = 0;
     }
 
-    oSettings.oApi._fnDraw( oSettings );
+    oSettings.oApi._fnDraw(oSettings);
 
-    if ( oSettings.aanFeatures.l )
-    {
-        $('select', oSettings.aanFeatures.l).val( iDisplay );
+    if (oSettings.aanFeatures.l) {
+        $('select', oSettings.aanFeatures.l).val(iDisplay);
     }
 };

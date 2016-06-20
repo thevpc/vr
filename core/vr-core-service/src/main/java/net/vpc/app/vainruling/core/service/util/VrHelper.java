@@ -1,17 +1,11 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.util;
 
 import com.google.gson.Gson;
-import java.text.DecimalFormat;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.common.strings.StringUtils;
@@ -23,8 +17,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 
+import java.text.DecimalFormat;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 /**
- *
  * @author vpc
  */
 public class VrHelper {
@@ -50,12 +50,11 @@ public class VrHelper {
             return new net.vpc.upa.types.Date();
         }
     };
+    private static final DecimalFormat FILE_SIZE_FORMAT = new DecimalFormat("0.0");
 
     public static String extratTextFormHTML(String html) {
         return Jsoup.parse(html == null ? "" : html).text();
     }
-
-    private static final DecimalFormat FILE_SIZE_FORMAT = new DecimalFormat("0.0");
 
     public static String toValideFileName(String s) {
         if (StringUtils.isEmpty(s)) {

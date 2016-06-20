@@ -1,16 +1,12 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.ObjManagerService;
-import net.vpc.app.vainruling.core.service.obj.NamedId;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewValuesProvider;
@@ -18,10 +14,14 @@ import net.vpc.app.vainruling.core.web.obj.ViewContext;
 import net.vpc.upa.Action;
 import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
+import net.vpc.upa.NamedId;
 import net.vpc.upa.types.DataType;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author vpc
  */
 public class EntityTypePropertyViewValuesProvider implements PropertyViewValuesProvider {
@@ -41,8 +41,8 @@ public class EntityTypePropertyViewValuesProvider implements PropertyViewValuesP
             if (v != null) {
                 EntityTypePropertyView etpv = (EntityTypePropertyView) dependentPropertyView;
                 Entity me = etpv.getMasterEntity();
-                Object mid = me.getBuilder().objectToId(v);
-                String expr = etpv.getComponentId().substring(propertyView.getComponentId().length()+1);
+                Object mid = (v instanceof NamedId) ? ((NamedId) v).getId() : me.getBuilder().objectToId(v);
+                String expr = etpv.getComponentId().substring(propertyView.getComponentId().length() + 1);
                 constraints.put(expr + "." + me.getPrimaryFields().get(0).getName(), mid);
             }
         }

@@ -1,25 +1,28 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.ctrl;
 
-import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.agent.ActiveSessionsTracker;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.UCtrl;
-import net.vpc.app.vainruling.core.web.util.VRWebHelper;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
+import net.vpc.app.vainruling.core.web.util.VRWebHelper;
 import net.vpc.common.jsf.FacesUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+
 /**
- *
  * @author vpc
  */
 @UCtrl(
@@ -62,15 +65,18 @@ public class LoginCtrl {
         return null;
     }
 
-  
+
     public String dologin() {
         VRWebHelper.prepareUserSession();
-        if(VrApp.getBean(AppGlobalCtrl.class).isShutdown() && !"admin".equals(getModel().getLogin())){
+        if (VrApp.getBean(AppGlobalCtrl.class).isShutdown() && !"admin".equals(getModel().getLogin())) {
             FacesUtils.addErrorMessage("Impossible de logger. Serveur indisponible momentannément. Redémarrage en cours.");
             return null;
         }
         AppUser u = core.login(getModel().getLogin(), getModel().getPassword());
         if (u != null) {
+            ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+            getSession().setPlatformSession(externalContext.getSession(false));
+            getSession().setPlatformSessionMap(externalContext.getSessionMap());
             VrApp.getBean(ActiveSessionsCtrl.class).onRefresh();
             return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
 //            return VRApp.getBean(VrMenu.class).gotoPage("todo", "sys-labo-action");

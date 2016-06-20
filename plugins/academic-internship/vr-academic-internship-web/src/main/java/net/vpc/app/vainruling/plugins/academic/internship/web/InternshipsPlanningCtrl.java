@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.internship.web;
@@ -11,16 +11,22 @@ import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.internship.service.AcademicInternshipPlugin;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternship;
+import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternshipGroup;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.planning.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.util.Chronometer;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.upa.UPA;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.faces.bean.ManagedBean;
+import javax.faces.model.SelectItem;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -35,32 +41,65 @@ import java.util.logging.Level;
  */
 @UCtrl(
         breadcrumb = {
-            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Planification",
         menu = "/Education/Internship",
-        securityKey = "Custom.Education.AllInternships",
+        securityKey = "Custom.Education.InternshipsPlanning",
         url = "modules/academic/internship/internships-planning"
 )
 @ManagedBean
 public class InternshipsPlanningCtrl {
+    private static final String CHAIR_LETTER = "P";
+    private static final String EXAMINER_LETTER = "R";
+    private static final String SUPERVISOR_LETTER = "E";
+
     private Model model = new Model();
+    @Autowired
+    private AcademicPlugin academicPlugin;
+    @Autowired
+    private AcademicInternshipPlugin academicInternshipPlugin;
+
+    private static String formatDouble(double d) {
+        if (d == (int) d) {
+            return String.valueOf((int) d);
+        }
+        return String.valueOf(d);
+    }
 
     @OnPageLoad
     public void onPageLoad() {
-        getModel().setGenerationDays(5);
+        getModel().setManager(academicPlugin.isCurrentHeadOfDepartment());
+        getModel().setGenerationDays(6);
         getModel().setGenerationMinutesPerSession(60);
-        getModel().setGenerationSessionsPerDay(5);
+        getModel().setGenerationSessionsPerDay(6);
         getModel().setGenerationStartDate("2016-06-27");
         getModel().setGenerationStartTime("08:30");
         getModel().setGenerationRoomPerDay(8);
+        getModel().setSelectedGroup(null);
+        reloadInternshipGroups();
         reloadActivityTable();
     }
 
-    public StreamedContent downloadFetXml(){
+    public void onGroupChanged() {
+        reloadActivityTable();
+    }
+
+    public StreamedContent downloadFetXml() {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
-            VrApp.getBean(PlanningService.class).storeFetXml(getModel().getTable(), byteArrayOutputStream);
+            PlanningActivityTable table = getModel().getTable();
+            PlanningActivityTable table2 = table.copy();
+            ArrayList<PlanningActivity> activities = new ArrayList<>();
+            List<Row> rows = getModel().getRows();
+            for (int i = 0; i < rows.size(); i++) {
+                Row row = rows.get(i);
+                if (row.isVisible()) {
+                    activities.add(table.getActivities().get(i).copy());
+                }
+            }
+            table2.setActivities(activities);
+            VrApp.getBean(PlanningService.class).storeFetXml(table2, byteArrayOutputStream);
             InputStream stream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
             return new DefaultStreamedContent(stream, "text/xml", "planning.fet");
         } catch (Exception e) {
@@ -69,7 +108,7 @@ public class InternshipsPlanningCtrl {
         return null;
     }
 
-    private void resetErrors(){
+    private void resetErrors() {
         for (Column column : getModel().getColumns()) {
             column.resetError();
         }
@@ -83,242 +122,383 @@ public class InternshipsPlanningCtrl {
         }
     }
 
-    public void updateTable(){
+    public void updateTable() {
         List<Column> columns = getModel().getColumns();
-        Map<String, PlanningTeacherStats> stringPlanningTeacherStatsMap = VrApp.getBean(PlanningService.class).evalTeacherStats(getModel().getTable());
+        Map<String, PlanningTeacherStats> stringPlanningTeacherStatsMap = VrApp.getBean(PlanningService.class).evalTeacherStats(getModel().getTable(), false);
         resetErrors();
-        int tableWidth=0;
+        int tableWidth = 0;
         for (Column column : columns) {
-            if(column.isVisible()) {
+            if (column.isVisible() || !getModel().isShowVisibleColumnsOnly()) {
                 tableWidth += column.getWidth();
             }
         }
-        getModel().setBestWidth(tableWidth+10);
-
+        if (tableWidth <= 800) {
+            tableWidth = 800;
+        }
+        getModel().setBestWidth(tableWidth + 10);
+        boolean manager = getModel().isManager();
+        for (Row row : getModel().getRows()) {
+            row.enableChairFixing = manager && !StringUtils.isEmpty(row.activity.getChair());
+            row.enableExaminerFixing = manager && !StringUtils.isEmpty(row.activity.getExaminer());
+        }
         for (int i = getModel().getFirstJuryColumn(); i < columns.size(); i++) {
             Column column = columns.get(i);
-            column.stats= stringPlanningTeacherStatsMap.get(column.name);
+            column.stats = stringPlanningTeacherStatsMap.get(column.name);
         }
         for (int i = getModel().getFirstJuryColumn(); i < columns.size(); i++) {
             for (Row row : getModel().getRows()) {
-                StringBuilder sb=new StringBuilder();
+                StringBuilder sb = new StringBuilder();
                 Cell cell = row.cells.get(i);
-                PlanningActivity a=row.activity;
-                if(Objects.equals(a.getChair(),cell.column.name)){
-                    sb.append("P");
+                PlanningActivity a = row.activity;
+                if (Objects.equals(a.getChair(), cell.column.name)) {
+                    sb.append(CHAIR_LETTER);
                 }
-                if(Objects.equals(a.getExaminer(), cell.column.name)){
-                    sb.append("R");
+                if (Objects.equals(a.getExaminer(), cell.column.name)) {
+                    sb.append(EXAMINER_LETTER);
                 }
                 for (String supervisor : a.getInternship().getSupervisors()) {
-                    if(Objects.equals(supervisor, cell.column.name)){
-                        sb.append("E");
+                    if (Objects.equals(supervisor, cell.column.name)) {
+                        sb.append(SUPERVISOR_LETTER);
                     }
                 }
-                if(sb.length()>1){
+                cell.setChair(sb.indexOf(CHAIR_LETTER) >= 0);
+                cell.setExaminer(sb.indexOf(EXAMINER_LETTER) >= 0);
+                cell.setSupervisor(sb.indexOf(SUPERVISOR_LETTER) >= 0);
+                cell.setValue(sb.toString());
+                if (sb.length() > 1) {
                     cell.setError("Plusieurs Roles pour le meme enseignant");
                     cell.setStyle("background-color:red;");
-                }else if(sb.toString().equals("P")){
+                } else if (sb.toString().equals(CHAIR_LETTER)) {
                     cell.setStyle("background-color:lightsalmon;");
-                }else if(sb.toString().equals("R")){
+                } else if (sb.toString().equals(EXAMINER_LETTER)) {
                     cell.setStyle("background-color:lightgreen;");
-                }else if(sb.toString().equals("E")) {
+                } else if (sb.toString().equals(SUPERVISOR_LETTER)) {
                     cell.setStyle("background-color:lightblue;");
-                }else{
-                    cell.setStyle("");
+                } else {
+                    if (cell.column.highlighted || cell.row.highlighted) {
+                        cell.setStyle("background-color:gold;");
+                    } else if (!cell.column.isVisible() || !cell.row.isVisible()) {
+                        cell.setStyle("background-color:lightgray;");
+                    } else {
+                        cell.setStyle("");
+                    }
                 }
-                cell.setValue(sb.toString());
-                row.setCompleted(a.getAllTeachers().size()==(2+a.getInternship().getSupervisors().size()));
+                cell.setEnabledChairOrExaminerSwitcher(!cell.supervisor);
             }
             Column column = columns.get(i);
-            column.stats= stringPlanningTeacherStatsMap.get(column.name);
+            column.stats = stringPlanningTeacherStatsMap.get(column.name);
             column.setCompleted(Math.abs(column.stats.chairBalance) < 1 && Math.abs(column.stats.examinerBalance) < 1);
-            column.setTitleSuffix(formatDouble(column.stats.supervisor) + "," + formatDouble(column.stats.chair) + "," + formatDouble(column.stats.supervisor));
+            column.setTitleSuffix(formatDouble(column.stats.supervisor) + "," + formatDouble(column.stats.chair) + "," + formatDouble(column.stats.examiner));
             column.setTitleTooltip(
                     "encadrant=" + formatDouble(column.stats.supervisor)
                             + "," + "president=" + formatDouble(column.stats.chair)
-                            + "," + "rapporteur=" + formatDouble(column.stats.supervisor)
+                            + "," + "rapporteur=" + formatDouble(column.stats.examiner)
                             + "," + "activites=" + formatDouble(column.stats.activities)
                             + "," + "jours=" + formatDouble(column.stats.days)
             );
         }
+
+        for (int i = 0; i < getModel().getFirstJuryColumn(); i++) {
+            for (Row row : getModel().getRows()) {
+                Cell cell = row.cells.get(i);
+                if (cell.row.highlighted) {
+                    cell.setStyle("background-color:gold;");
+                } else {
+                    cell.setStyle("");
+                }
+            }
+        }
+
         for (Row row : getModel().getRows()) {
-            row.getCells().get(0).setStyle(row.isCompleted() ? "background-color:lightgreen;":"");
+            row.getCells().get(0).setStyle(row.isCompleted() ? "background-color:lightgreen;" : "");
             row.getCells().get(4).setValue(row.getActivity().getChair());
             row.getCells().get(5).setValue(row.getActivity().getExaminer());
         }
-    }
-    private static String formatDouble(double d){
-        if(d==(int)d){
-            return String.valueOf((int)d);
+
+        List<Row> visibleRows = new ArrayList<>();
+        if (!getModel().isShowVisibleRowsOnly()) {
+            for (Row row : getModel().getRows()) {
+                if (row.isVisible() || !getModel().isShowVisibleRowsOnly()) {
+                    visibleRows.add(row);
+                }
+            }
+        } else {
+            for (Row row : getModel().getRows()) {
+                if (row.isVisible()) {
+                    visibleRows.add(row);
+                }
+            }
         }
-        return String.valueOf(d);
+        getModel().setVisibleRows(visibleRows);
+
+        List<Column> visibleColumns = new ArrayList<>();
+        if (!getModel().isShowVisibleColumnsOnly()) {
+            for (Column column : columns) {
+                if (column.isVisible() || !getModel().isShowVisibleColumnsOnly()) {
+                    visibleColumns.add(column);
+                }
+            }
+        } else {
+            for (Column column : columns) {
+                if (column.isVisible()) {
+                    visibleColumns.add(column);
+                }
+            }
+        }
+        getModel().setVisibleColumns(visibleColumns);
     }
 
-    public void onGenerateJury(){
+    public void onGenerateJury() {
         try {
-        PlanningResult r = VrApp.getBean(PlanningService.class).generateActivitiesJury(getModel().getTable());
-        loadActivityTable(r.getResut());
+            PlanningResult r = VrApp.getBean(PlanningService.class).generateActivitiesJury(getModel().getTable());
+            loadActivityTable(r.getResut());
             FacesUtils.addInfoMessage("Generation reussie");
-        }catch(Exception ex){
-            java.util.logging.Logger.getLogger(InternshipsPlanningCtrl.class.getName()).log(Level.SEVERE, "Error saving Jury",ex);
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(InternshipsPlanningCtrl.class.getName()).log(Level.SEVERE, "Error saving Jury", ex);
             FacesUtils.addErrorMessage("Impossibe de generer le jury");
         }
     }
 
-    public void onSaveJury(){
+    public void onSaveJury() {
         try {
             AcademicPlugin academic = VrApp.getBean(AcademicPlugin.class);
             AcademicInternshipPlugin internships = VrApp.getBean(AcademicInternshipPlugin.class);
             List<AcademicTeacher> teachers = academic.findTeachers();
-            Map<String,AcademicTeacher> teachersByName=new HashMap<>();
+            Map<String, AcademicTeacher> teachersByName = new HashMap<>();
             for (AcademicTeacher teacher : teachers) {
-                teachersByName.put(teacher.getContact().getFullName(),teacher);
+                teachersByName.put(teacher.getContact().getFullName(), teacher);
             }
             for (PlanningActivity activity : getModel().getTable().getActivities()) {
                 int id = activity.getInternship().getId();
                 AcademicInternship internship = getModel().getInternshipsListMap().get(id);
-                if (!StringUtils.isEmpty(activity.getChair())) {
+                if (!StringUtils.isEmpty(activity.getChair()) && activity.isFixedChair()) {
                     internship.setChairExaminer(teachersByName.get(activity.getChair()));
                 } else {
                     internship.setChairExaminer(null);
                 }
-                if (!StringUtils.isEmpty(activity.getExaminer())) {
+                if (!StringUtils.isEmpty(activity.getExaminer()) && activity.isFixedExaminer()) {
                     internship.setFirstExaminer(teachersByName.get(activity.getExaminer()));
                 } else {
                     internship.setFirstExaminer(null);
                 }
-                UPA.getPersistenceUnit().updatePartial(internship, "firstExaminer","chairExaminer");
+                UPA.getPersistenceUnit()
+                        .createUpdateQuery(internship)
+                        .setIgnoreUnspecified(false)
+                        .update("firstExaminer", "chairExaminer").execute();
             }
             FacesUtils.addInfoMessage("Enregistrement reussi");
-        }catch(Exception ex){
-            java.util.logging.Logger.getLogger(InternshipsPlanningCtrl.class.getName()).log(Level.SEVERE, "Error saving Jury",ex);
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(InternshipsPlanningCtrl.class.getName()).log(Level.SEVERE, "Error saving Jury", ex);
             FacesUtils.addErrorMessage("Impossibe d'enregistrer le jury");
         }
     }
 
-    public void onResetJury(){
+    public void onResetJury() {
         try {
             for (PlanningActivity activity : getModel().getTable().getActivities()) {
                 int id = activity.getInternship().getId();
-                if(!activity.isFixedChair()) {
+                if (!activity.isFixedChair()) {
                     activity.setChair(null);
                 }
-                if(!activity.isFixedExaminer()) {
+                if (!activity.isFixedExaminer()) {
                     activity.setExaminer(null);
                 }
             }
             loadActivityTable(getModel().getTable());
             FacesUtils.addInfoMessage("Rechargement reussi");
-        }catch(Exception ex){
-            java.util.logging.Logger.getLogger(InternshipsPlanningCtrl.class.getName()).log(Level.SEVERE, "Error resetting Jury",ex);
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(InternshipsPlanningCtrl.class.getName()).log(Level.SEVERE, "Error resetting Jury", ex);
             FacesUtils.addErrorMessage("Impossibe de recharger le jury");
         }
     }
 
-    public void onSetAllFixedChair(){
+    public void onSetAllFixedChair() {
         for (PlanningActivity activity : getModel().getTable().getActivities()) {
             activity.setFixedChair(true);
         }
     }
 
-    public void onSetAllNonFixedChair(){
+    public void onSetAllNonFixedChair() {
         for (PlanningActivity activity : getModel().getTable().getActivities()) {
             activity.setFixedChair(false);
         }
     }
-    public void onSetAllFixedExaminer(){
+
+    public void onSetAllFixedExaminer() {
         for (PlanningActivity activity : getModel().getTable().getActivities()) {
             activity.setFixedExaminer(true);
         }
     }
 
-    public void onSetAllNonFixedExaminer(){
+    public void onSetAllNonFixedExaminer() {
         for (PlanningActivity activity : getModel().getTable().getActivities()) {
             activity.setFixedExaminer(false);
         }
     }
 
-    public void onReloadJury(){
+    public void onReloadJury() {
         reloadActivityTable();
     }
 
-    public void onChangeCellJury(Cell cell){
+    public void onChangeCellJury(Cell cell) {
         PlanningActivity activity = cell.row.activity;
-        if(Objects.equals(activity.getChair(),cell.column.name)){
+        if (Objects.equals(activity.getChair(), cell.column.name)) {
             //was chair ==> examiner
             activity.setChair(null);
             activity.setExaminer(cell.column.name);
-        }else if(Objects.equals(activity.getExaminer(),cell.column.name)){
+        } else if (Objects.equals(activity.getExaminer(), cell.column.name)) {
             activity.setExaminer(null);
-        }else {
+        } else {
             activity.setChair(cell.column.name);
         }
         updateTable();
     }
 
-    public void reloadActivityTable(){
-        List<AcademicInternship> internshipsList = VrApp.getBean(AcademicInternshipPlugin.class).findInternships(-1, -1, -1, -1, true);
-        setInternshipsList(internshipsList);
-       reinitializeActivityTableFromModel();
+    public void onChangeCellChair(Cell cell) {
+        Chronometer c = new Chronometer("onChangeCellChair");
+        PlanningActivity activity = cell.row.activity;
+        if (Objects.equals(activity.getChair(), cell.column.name)) {
+            //was chair ==> examiner
+            activity.setChair(null);
+        } else {
+            activity.setChair(cell.column.name);
+            if (activity.getExaminer() != null && activity.getExaminer().equals(activity.getChair())) {
+                activity.setExaminer(null);
+            }
+        }
+        updateTable();
+        System.out.println(c.stop());
     }
 
-    public void setInternshipsList(List<AcademicInternship> internshipsList){
+    public void onChangeCellExaminer(Cell cell) {
+        Chronometer c = new Chronometer("onChangeCellExaminer");
+        PlanningActivity activity = cell.row.activity;
+        if (Objects.equals(activity.getExaminer(), cell.column.name)) {
+            //was chair ==> examiner
+            activity.setExaminer(null);
+        } else {
+            activity.setExaminer(cell.column.name);
+            if (activity.getChair() != null && activity.getChair().equals(activity.getExaminer())) {
+                activity.setChair(null);
+            }
+        }
+        updateTable();
+        System.out.println(c.stop());
+    }
+
+    public void onChangeColumnVisibility(Column column) {
+        column.setVisible(!column.isVisible());
+        updateTable();
+    }
+
+    public void onChangeRowVisibility(Row row) {
+        row.setVisible(!row.isVisible());
+        updateTable();
+    }
+
+    public void onChangeColumnHighlight(Column column) {
+        column.setHighlighted(!column.isHighlighted());
+        updateTable();
+    }
+
+    public void onChangeRowHighlight(Row row) {
+        row.setHighlighted(!row.isHighlighted());
+        updateTable();
+    }
+
+    public void onSwitchColumnsVisibility() {
+        getModel().setShowVisibleColumnsOnly(!getModel().isShowVisibleColumnsOnly());
+        updateTable();
+    }
+
+    public void onSwitchRowsVisibility() {
+        getModel().setShowVisibleRowsOnly(!getModel().isShowVisibleRowsOnly());
+        updateTable();
+    }
+
+
+    public void reloadActivityTable() {
+        List<AcademicInternship> internshipsList = new ArrayList<>();
+        int groupId = Convert.toInteger(getModel().getSelectedGroup(), IntegerParserConfig.LENIENT_F);
+        if (groupId > 0) {
+            internshipsList = VrApp.getBean(AcademicInternshipPlugin.class).findInternships(-1, groupId, -1, -1, -1, true);
+        }
+        setInternshipsList(internshipsList);
+        reinitializeActivityTableFromModel();
+    }
+
+    public void setInternshipsList(List<AcademicInternship> internshipsList) {
         getModel().setInternshipsList(internshipsList);
-        Map<Integer,AcademicInternship> map=new HashMap<>();
+        Map<Integer, AcademicInternship> map = new HashMap<>();
         for (AcademicInternship a : internshipsList) {
-            map.put(a.getId(),a);
+            map.put(a.getId(), a);
         }
         getModel().setInternshipsListMap(map);
 
     }
-    public void reinitializeActivityTableFromModel(){
+
+    public void reinitializeActivityTableFromModel() {
         //initialize table
-        PlanningActivityTable t=new PlanningActivityTable();
+        PlanningActivityTable t = new PlanningActivityTable();
         t.addGeneratedRooms("R", getModel().getGenerationRoomPerDay());
         try {
-            t.addGeneratedTimes(getModel().getGenerationStartDate().trim()+" "+getModel().getGenerationStartTime().trim(), getModel().getGenerationDays(), getModel().getGenerationMinutesPerSession(), getModel().getGenerationSessionsPerDay());
+            t.addGeneratedTimes(getModel().getGenerationStartDate().trim() + " " + getModel().getGenerationStartTime().trim(), getModel().getGenerationDays(), getModel().getGenerationMinutesPerSession(), getModel().getGenerationSessionsPerDay());
         } catch (ParseException e) {
             e.printStackTrace();
         }
         for (AcademicInternship academicInternship : getModel().getInternshipsList()) {
-            if(academicInternship.getSupervisor()==null){
+            if (academicInternship.getSupervisor() == null) {
                 String internshipName = academicInternship.getCode() + " - " + academicInternship.getName() + " - " + academicInternship.getStudent().getContact().getFullName();
-                System.err.println(internshipName+" ignored, no supervisor found");
-            }else {
+                System.err.println(internshipName + " ignored, no supervisor found");
+            } else {
                 t.addActivity(academicInternship);
             }
         }
-        t.setDefaultChairsAndExaminers();
+
+        HashSet<String> all = new HashSet<>();
+        for (PlanningActivity a : t.getActivities()) {
+            all.addAll(a.getInternship().getSupervisors());
+        }
+        String extraTeachers = getModel().getExtraTeachers();
+        if (!StringUtils.isEmpty(extraTeachers)) {
+            for (String tn : extraTeachers.trim().split(" +")) {
+                if (!StringUtils.isEmpty(tn)) {
+                    all.add(tn);
+                }
+            }
+        }
+        t.setChairs(new ArrayList<String>(all));
+        t.setExaminers(new ArrayList<String>(all));
+
 
         loadActivityTable(t);
     }
 
-    public void loadActivityTable(PlanningActivityTable t){
+    public void loadActivityTable(PlanningActivityTable t) {
         getModel().setTable(t);
-        List<Row> cells= getModel().getRows();
+        List<Row> cells = getModel().getRows();
         List<Column> columns = getModel().getColumns();
         columns.clear();
         cells.clear();
 
         getModel().setTeachers(getModel().getTable().getTeachers());
-        columns.add(new Column(columns.size(),ColumnType.STATIC, "code",30));
-        columns.add(new Column(columns.size(),ColumnType.STATIC, "name",200));
-        columns.add(new Column(columns.size(),ColumnType.STATIC, "etudiant",100));
-        columns.add(new Column(columns.size(),ColumnType.STATIC, "encadrant",100));
-        columns.add(new Column(columns.size(),ColumnType.STATIC, "président",100));
-        columns.add(new Column(columns.size(),ColumnType.STATIC, "rapporteur",100));
+        columns.add(new Column(columns.size(), ColumnType.STATIC, "code", 30));
+        columns.add(new Column(columns.size(), ColumnType.STATIC, "intitulé", 200));
+        columns.add(new Column(columns.size(), ColumnType.STATIC, "étudiant", 100));
+        columns.add(new Column(columns.size(), ColumnType.STATIC, "encadrant", 100));
+        columns.add(new Column(columns.size(), ColumnType.STATIC, "président", 100));
+        columns.add(new Column(columns.size(), ColumnType.STATIC, "rapporteur", 100));
         getModel().setFirstJuryColumn(columns.size());
         for (String teacher : getModel().getTeachers()) {
-            columns.add(new Column(columns.size(),ColumnType.TEACHER, teacher,50));
+            columns.add(new Column(columns.size(), ColumnType.TEACHER, teacher, 50));
         }
 //        int row=0;
         List<PlanningActivity> activities = getModel().getTable().getActivities();
         for (int i = 0; i < activities.size(); i++) {
             PlanningActivity activity = activities.get(i);
             Row currRow = new Row();
-            currRow.index=i;
-            currRow.activity=activity;
+            currRow.index = i;
+            currRow.activity = activity;
             int col = 0;
             currRow.cells.add(new Cell(columns.get(col++), currRow, activity.getInternship().getCode()));
             currRow.cells.add(new Cell(columns.get(col++), currRow, activity.getInternship().getName()));
@@ -327,9 +507,73 @@ public class InternshipsPlanningCtrl {
             currRow.cells.add(new Cell(columns.get(col++), currRow, activity.getChair()));
             currRow.cells.add(new Cell(columns.get(col++), currRow, activity.getExaminer()));
             for (String teacher : getModel().getTeachers()) {
-                currRow.cells.add(new Cell(columns.get(col++),currRow, ""));
+                currRow.cells.add(new Cell(columns.get(col++), currRow, ""));
             }
             cells.add(currRow);
+        }
+        updateTable();
+    }
+
+    public void onSetAllColumnsVisible() {
+        List<Column> columns = getModel().getColumns();
+        for (int i = getModel().getFirstJuryColumn(); i < columns.size(); i++) {
+            Column column = columns.get(i);
+            column.setVisible(true);
+        }
+        updateTable();
+    }
+
+    public void onSetAllColumnsNonVisible() {
+        List<Column> columns = getModel().getColumns();
+        for (int i = getModel().getFirstJuryColumn(); i < columns.size(); i++) {
+            Column column = columns.get(i);
+            column.setVisible(false);
+        }
+        updateTable();
+    }
+
+    public void onSetAllColumnsHighlighted() {
+        List<Column> columns = getModel().getColumns();
+        for (int i = getModel().getFirstJuryColumn(); i < columns.size(); i++) {
+            Column column = columns.get(i);
+            column.setHighlighted(true);
+        }
+        updateTable();
+    }
+
+    public void onSetAllColumnsNonHighlighted() {
+        List<Column> columns = getModel().getColumns();
+        for (int i = getModel().getFirstJuryColumn(); i < columns.size(); i++) {
+            Column column = columns.get(i);
+            column.setHighlighted(true);
+        }
+        updateTable();
+    }
+
+    public void onSetAllRowsVisible() {
+        for (Row row : getModel().getRows()) {
+            row.setVisible(true);
+        }
+        updateTable();
+    }
+
+    public void onSetAllRowsNonVisible() {
+        for (Row row : getModel().getRows()) {
+            row.setVisible(false);
+        }
+        updateTable();
+    }
+
+    public void onSetAllRowsHighlighted() {
+        for (Row row : getModel().getRows()) {
+            row.setHighlighted(true);
+        }
+        updateTable();
+    }
+
+    public void onSetAllRowsNonHighlighted() {
+        for (Row row : getModel().getRows()) {
+            row.setHighlighted(true);
         }
         updateTable();
     }
@@ -339,34 +583,103 @@ public class InternshipsPlanningCtrl {
     }
 
 
-    public void onSaveOptions(){
+    public void onSaveOptions() {
         try {
-
+            reloadActivityTable();
             FacesUtils.addInfoMessage("Rien à enregister");
-        }catch(Exception ex){
-            java.util.logging.Logger.getLogger(InternshipsPlanningCtrl.class.getName()).log(Level.SEVERE, "Error saving options",ex);
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(InternshipsPlanningCtrl.class.getName()).log(Level.SEVERE, "Error saving options", ex);
             FacesUtils.addErrorMessage("Impossibe d'enregistrer les options");
         }
+    }
+
+    public void reloadInternshipGroups() {
+        List<SelectItem> internshipGroupsItems = new ArrayList<>();
+        AcademicTeacher tt = academicPlugin.getCurrentTeacher();
+        List<AcademicInternshipGroup> internshipGroups = academicInternshipPlugin.findEnabledInternshipGroupsByDepartment(tt.getDepartment().getId());
+        for (AcademicInternshipGroup t : internshipGroups) {
+            String n = t.getName();
+            internshipGroupsItems.add(new SelectItem(String.valueOf(t.getId()), n));
+        }
+        getModel().setGroups(internshipGroupsItems);
+    }
+
+
+    public enum ColumnType {
+        STATIC,
+        TEACHER
     }
 
     public static class Model {
         private PlanningActivityTable table;
         private List<String> teachers;
+        private List<SelectItem> groups = new ArrayList<SelectItem>();
+        private String selectedGroup;
         private List<AcademicInternship> internshipsList;
-        private Map<Integer,AcademicInternship> internshipsListMap;
-        private List<Column> columns=new ArrayList<>();
-        private List<Row> rows=new ArrayList<>();
+        private Map<Integer, AcademicInternship> internshipsListMap;
+        private List<Column> columns = new ArrayList<>();
+        private List<Row> rows = new ArrayList<>();
+        private List<Row> visibleRows = new ArrayList<>();
+        private List<Column> visibleColumns = new ArrayList<>();
         private int firstJuryColumn;
         private int bestWidth;
         private String generationStartDate;
         private String generationStartTime;
         private int generationDays;
+        private boolean manager;
         private int generationSessionsPerDay;
         private int generationMinutesPerSession;
         private int generationRoomPerDay;
+        private String extraTeachers;
+        private boolean showVisibleColumnsOnly = true;
+        private boolean showVisibleRowsOnly = true;
+
+        public List<SelectItem> getGroups() {
+            return groups;
+        }
+
+        public void setGroups(List<SelectItem> groups) {
+            this.groups = groups;
+        }
+
+        public boolean isManager() {
+            return manager;
+        }
+
+        public void setManager(boolean manager) {
+            this.manager = manager;
+        }
+
+        public String getExtraTeachers() {
+            return extraTeachers;
+        }
+
+        public void setExtraTeachers(String extraTeachers) {
+            this.extraTeachers = extraTeachers;
+        }
+
+        public List<Row> getVisibleRows() {
+            return visibleRows;
+        }
+
+        public void setVisibleRows(List<Row> visibleRows) {
+            this.visibleRows = visibleRows;
+        }
+
+        public List<Column> getVisibleColumns() {
+            return visibleColumns;
+        }
+
+        public void setVisibleColumns(List<Column> visibleColumns) {
+            this.visibleColumns = visibleColumns;
+        }
 
         public String getGenerationStartDate() {
             return generationStartDate;
+        }
+
+        public void setGenerationStartDate(String generationStartDate) {
+            this.generationStartDate = generationStartDate;
         }
 
         public int getGenerationRoomPerDay() {
@@ -375,10 +688,6 @@ public class InternshipsPlanningCtrl {
 
         public void setGenerationRoomPerDay(int generationRoomPerDay) {
             this.generationRoomPerDay = generationRoomPerDay;
-        }
-
-        public void setGenerationStartDate(String generationStartDate) {
-            this.generationStartDate = generationStartDate;
         }
 
         public String getGenerationStartTime() {
@@ -413,10 +722,6 @@ public class InternshipsPlanningCtrl {
             this.generationMinutesPerSession = generationMinutesPerSession;
         }
 
-        public void setFirstJuryColumn(int firstJuryColumn) {
-            this.firstJuryColumn = firstJuryColumn;
-        }
-
         public List<String> getTeachers() {
             return teachers;
         }
@@ -444,22 +749,17 @@ public class InternshipsPlanningCtrl {
         public List<Column> getColumns() {
             return columns;
         }
-        public List<Column> getVisibleColumns() {
-            List<Column> allVisible=new ArrayList<>();
-            for (Column column : columns) {
-                if(column.isVisible()){
-                    allVisible.add(column);
-                }
-            }
-            return allVisible;
+
+        public void setColumns(List<Column> columns) {
+            this.columns = columns;
         }
 
         public int getFirstJuryColumn() {
             return firstJuryColumn;
         }
 
-        public void setColumns(List<Column> columns) {
-            this.columns = columns;
+        public void setFirstJuryColumn(int firstJuryColumn) {
+            this.firstJuryColumn = firstJuryColumn;
         }
 
         public int getBestWidth() {
@@ -485,6 +785,30 @@ public class InternshipsPlanningCtrl {
         public void setInternshipsListMap(Map<Integer, AcademicInternship> internshipsListMap) {
             this.internshipsListMap = internshipsListMap;
         }
+
+        public boolean isShowVisibleColumnsOnly() {
+            return showVisibleColumnsOnly;
+        }
+
+        public void setShowVisibleColumnsOnly(boolean showVisibleColumnsOnly) {
+            this.showVisibleColumnsOnly = showVisibleColumnsOnly;
+        }
+
+        public boolean isShowVisibleRowsOnly() {
+            return showVisibleRowsOnly;
+        }
+
+        public void setShowVisibleRowsOnly(boolean showVisibleRowsOnly) {
+            this.showVisibleRowsOnly = showVisibleRowsOnly;
+        }
+
+        public String getSelectedGroup() {
+            return selectedGroup;
+        }
+
+        public void setSelectedGroup(String selectedGroup) {
+            this.selectedGroup = selectedGroup;
+        }
     }
 
     public static class Cell {
@@ -492,13 +816,26 @@ public class InternshipsPlanningCtrl {
         Row row;
         Object value;
         boolean error;
+        boolean chair;
+        boolean supervisor;
+        boolean examiner;
+        boolean enabledChairOrExaminerSwitcher;
         String errorMessage;
         String style;
 
-        public Cell(Column column, Row row,Object value) {
+        public Cell(Column column, Row row, Object value) {
             this.column = column;
             this.row = row;
-            this.value=value;
+            this.value = value;
+        }
+
+
+        public boolean isEnabledChairOrExaminerSwitcher() {
+            return enabledChairOrExaminerSwitcher;
+        }
+
+        public void setEnabledChairOrExaminerSwitcher(boolean enabledChairOrExaminerSwitcher) {
+            this.enabledChairOrExaminerSwitcher = enabledChairOrExaminerSwitcher;
         }
 
         public String getStyle() {
@@ -516,47 +853,64 @@ public class InternshipsPlanningCtrl {
         public void setValue(Object value) {
             this.value = value;
         }
-        public void resetError(){
-            error=false;
-            errorMessage=null;
+
+        public void resetError() {
+            error = false;
+            errorMessage = null;
         }
 
-        public void setError(String message){
-            error=true;
-            if(errorMessage!=null){
-                errorMessage+="\n"+message;
-            }else{
-                errorMessage=message;
+        public void setError(String message) {
+            error = true;
+            if (errorMessage != null) {
+                errorMessage += "\n" + message;
+            } else {
+                errorMessage = message;
             }
 //            column.setError(message);
 //            row.setError(message);
         }
 
-    }
+        public boolean isChair() {
+            return chair;
+        }
 
-    public enum ColumnType {
-        STATIC,
-        TEACHER
+        public void setChair(boolean chair) {
+            this.chair = chair;
+        }
+
+        public boolean isSupervisor() {
+            return supervisor;
+        }
+
+        public void setSupervisor(boolean supervisor) {
+            this.supervisor = supervisor;
+        }
+
+        public boolean isExaminer() {
+            return examiner;
+        }
+
+        public void setExaminer(boolean examiner) {
+            this.examiner = examiner;
+        }
+
     }
 
     public static class Row {
         int index;
+        boolean visible = true;
         boolean completed;
+        boolean highlighted;
         PlanningActivity activity;
         boolean error;
         String errorMessage;
-        List<Cell> cells=new ArrayList<>();
-        public void resetError(){
-            error=false;
-            errorMessage=null;
-        }
-        public void setError(String message){
-            error=true;
-            if(errorMessage!=null){
-                errorMessage+="\n"+message;
-            }else{
-                errorMessage=message;
-            }
+        List<Cell> cells = new ArrayList<>();
+        boolean enableChairFixing;
+        boolean enableExaminerFixing;
+
+        public void resetError() {
+            error = false;
+            errorMessage = null;
         }
 
         public int getIndex() {
@@ -569,6 +923,15 @@ public class InternshipsPlanningCtrl {
 
         public boolean isError() {
             return error;
+        }
+
+        public void setError(String message) {
+            error = true;
+            if (errorMessage != null) {
+                errorMessage += "\n" + message;
+            } else {
+                errorMessage = message;
+            }
         }
 
         public String getErrorMessage() {
@@ -586,13 +949,46 @@ public class InternshipsPlanningCtrl {
         public void setCompleted(boolean completed) {
             this.completed = completed;
         }
+
+        public boolean isEnableChairFixing() {
+            return enableChairFixing;
+        }
+
+        public void setEnableChairFixing(boolean enableChairFixing) {
+            this.enableChairFixing = enableChairFixing;
+        }
+
+        public boolean isEnableExaminerFixing() {
+            return enableExaminerFixing;
+        }
+
+        public void setEnableExaminerFixing(boolean enableExaminerFixing) {
+            this.enableExaminerFixing = enableExaminerFixing;
+        }
+
+        public boolean isHighlighted() {
+            return highlighted;
+        }
+
+        public void setHighlighted(boolean highlighted) {
+            this.highlighted = highlighted;
+        }
+
+        public boolean isVisible() {
+            return visible;
+        }
+
+        public void setVisible(boolean visible) {
+            this.visible = visible;
+        }
     }
 
     public static class Column {
         boolean completed;
         int index;
         int width;
-        boolean visible=true;
+        boolean visible = true;
+        boolean highlighted = false;
         ColumnType type;
         String name;
         PlanningTeacherStats stats;
@@ -601,25 +997,24 @@ public class InternshipsPlanningCtrl {
         String titleSuffix;
         String titleTooltip;
 
-        public Column(int index,ColumnType type,String name,int width) {
+        public Column(int index, ColumnType type, String name, int width) {
             this.index = index;
             this.type = type;
             this.name = name;
             this.width = width;
         }
 
-        public void setError(String message){
-            error=true;
-            if(errorMessage!=null){
-                errorMessage+="\n"+message;
-            }else{
-                errorMessage=message;
-            }
+        public void resetError() {
+            error = false;
+            errorMessage = null;
         }
 
-        public void resetError(){
-            error=false;
-            errorMessage=null;
+        public boolean isHighlighted() {
+            return highlighted;
+        }
+
+        public void setHighlighted(boolean highlighted) {
+            this.highlighted = highlighted;
         }
 
         public int getIndex() {
@@ -640,6 +1035,15 @@ public class InternshipsPlanningCtrl {
 
         public boolean isError() {
             return error;
+        }
+
+        public void setError(String message) {
+            error = true;
+            if (errorMessage != null) {
+                errorMessage += "\n" + message;
+            } else {
+                errorMessage = message;
+            }
         }
 
         public String getErrorMessage() {

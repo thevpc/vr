@@ -1,19 +1,14 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.equipments.service.model;
 
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "name")
@@ -24,7 +19,7 @@ public class EquipmentTypeProperty {
     @Sequence
     private int id;
     private String name;
-    @Field(max = "400",modifiers = UserFieldModifier.MAIN)
+    @Field(max = "400", modifiers = UserFieldModifier.MAIN)
     private String value;
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private EquipmentType equipmentType;

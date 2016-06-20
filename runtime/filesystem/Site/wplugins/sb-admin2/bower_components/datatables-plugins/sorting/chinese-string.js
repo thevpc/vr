@@ -6,7 +6,7 @@
  *
  * Please note that `localeCompare` is not implemented in the same way in all
  * browsers, potentially leading to different results (particularly in IE).
- * 
+ *
  *  @name Chinese (string)
  *  @summary Sort Chinese characters
  *  @author [Patrik Lindström](http://www.lcube.se/sorting-chinese-characters-in-javascript/)
@@ -19,12 +19,12 @@
  *    } );
  */
 
-jQuery.extend( jQuery.fn.dataTableExt.oSort, {
-	"chinese-string-asc" : function (s1, s2) {
-		return s1.localeCompare(s2);
-	},
+jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+    "chinese-string-asc": function (s1, s2) {
+        return s1.localeCompare(s2);
+    },
 
-	"chinese-string-desc" : function (s1, s2) {
-		return s2.localeCompare(s1);
-	}
-} );
+    "chinese-string-desc": function (s1, s2) {
+        return s2.localeCompare(s1);
+    }
+});

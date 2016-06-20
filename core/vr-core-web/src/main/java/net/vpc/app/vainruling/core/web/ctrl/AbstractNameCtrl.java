@@ -1,18 +1,18 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.ctrl;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.PostConstruct;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author vpc
  */
 public abstract class AbstractNameCtrl<T> extends BasePageCtrl {
@@ -109,6 +109,11 @@ public abstract class AbstractNameCtrl<T> extends BasePageCtrl {
 
     protected abstract List<T> delegated_findAll();
 
+    public static interface SelectionListener<T> {
+
+        void onSelect(T c);
+    }
+
     public static class Model<T> {
 
         private EditCtrlMode mode = EditCtrlMode.LIST;
@@ -128,16 +133,16 @@ public abstract class AbstractNameCtrl<T> extends BasePageCtrl {
             return current;
         }
 
+        public void setCurrent(T current) {
+            this.current = current;
+        }
+
         public EditCtrlMode getMode() {
             return mode;
         }
 
         public void setMode(EditCtrlMode mode) {
             this.mode = mode;
-        }
-
-        public void setCurrent(T current) {
-            this.current = current;
         }
 
         public List<T> getList() {
@@ -148,10 +153,5 @@ public abstract class AbstractNameCtrl<T> extends BasePageCtrl {
             this.list = list;
         }
 
-    }
-
-    public static interface SelectionListener<T> {
-
-        void onSelect(T c);
     }
 }

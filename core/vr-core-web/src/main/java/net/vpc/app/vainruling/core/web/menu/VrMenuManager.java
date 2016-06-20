@@ -1,33 +1,17 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.menu;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.UpaAware;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.util.Reflector;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.util.JsfCtrl;
-import net.vpc.app.vainruling.core.service.util.TreeDefinition;
-//import net.vpc.app.vainruling.tasks.TaskPlugin;
-//import net.vpc.app.vainruling.tasks.model.TodoList;
-import net.vpc.app.vainruling.core.service.util.TreeTraversal;
-import net.vpc.app.vainruling.core.service.util.TreeVisitor;
 import net.vpc.app.vainruling.core.web.util.VRWebHelper;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.*;
@@ -38,8 +22,14 @@ import net.vpc.upa.filters.EntityFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
+import javax.annotation.PostConstruct;
+import javax.faces.bean.ManagedBean;
+import java.util.*;
+
+//import net.vpc.app.vainruling.tasks.TaskPlugin;
+//import net.vpc.app.vainruling.tasks.model.TodoList;
+
 /**
- *
  * @author vpc
  */
 @UCtrl
@@ -49,7 +39,7 @@ public class VrMenuManager {
 
     private Model model = new Model();
     private Object pageCtrl;
-//    @Autowired
+    //    @Autowired
 //    private TaskPlugin todoService;
     @Autowired
     private I18n i18n;
@@ -171,12 +161,13 @@ public class VrMenuManager {
             UCtrlProvider up = (UCtrlProvider) ccc;
             return up.getUCtrl(cmd);
         }
-        UCtrl c2Ann = (UCtrl) Reflector.getTargetClass(ccc).getAnnotation(UCtrl.class);
+        UCtrl c2Ann = (UCtrl) PlatformReflector.getTargetClass(ccc).getAnnotation(UCtrl.class);
         if (c2Ann != null) {
             UCtrlData d = new UCtrlData();
             d.setCss(c2Ann.css());
             d.setTitle(c2Ann.title());
             d.setUrl(c2Ann.url());
+            d.setSecurityKey(c2Ann.securityKey());
             List<BreadcrumbItem> aa = new ArrayList<>();
             for (UPathItem breadcrumb : c2Ann.breadcrumb()) {
                 String title = breadcrumb.title();
@@ -203,12 +194,12 @@ public class VrMenuManager {
     }
 
     private String resolveGoodBeanName(Object o) {
-        StringBuilder ctrl0 = new StringBuilder(Reflector.getTargetClass(o).getSimpleName());
+        StringBuilder ctrl0 = new StringBuilder(PlatformReflector.getTargetClass(o).getSimpleName());
         ctrl0.setCharAt(0, Character.toLowerCase(ctrl0.charAt(0)));
         return ctrl0.toString();
     }
 
-//    public String gotoPage(Class type, String cmd) {
+    //    public String gotoPage(Class type, String cmd) {
 //        Object o = VrApp.getBean(type);
 //        return gotoPageByBean(o, cmd);
 //    }
@@ -238,10 +229,15 @@ public class VrMenuManager {
         if (d != null) {
             bc.addAll(Arrays.asList(d.getBreadcrumb()));
             url = d.getUrl();
+            if (!StringUtils.isEmpty(d.getSecurityKey())) {
+                if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey(d.getSecurityKey())) {
+                    throw new SecurityException("Page is Inaccessible");
+                }
+            }
         }
         setPageCtrl(o);
-        Reflector.InstanceInvoker[] mm = Reflector.findInstanceByAnnotation(o, OnPageLoad.class);
-        for (Reflector.InstanceInvoker m : mm) {
+        PlatformReflector.InstanceInvoker[] mm = PlatformReflector.findInstanceByAnnotation(o, OnPageLoad.class);
+        for (PlatformReflector.InstanceInvoker m : mm) {
             if (m.getParameterTypes().length == 0) {
                 m.invoke();
             } else if (m.getParameterTypes().length == 1) {
@@ -292,7 +288,7 @@ public class VrMenuManager {
         }
     }
 
-//    public String invoke(String name) {
+    //    public String invoke(String name) {
 //        try {
 //            return (String) getClass().getMethod(name).invoke(this);
 //        } catch (Exception ex) {
@@ -329,70 +325,16 @@ public class VrMenuManager {
         return model;
     }
 
-    public static class Model {
-
-        private List<BreadcrumbItem> breadcrumb = new ArrayList<BreadcrumbItem>();
-        private BreadcrumbItem titleCrumb = new BreadcrumbItem("", "", "", "");
-        private List<VRMenuDef> menuCtrl = null;
-        private String currentPageId;
-        private VRMenuDef root;
-
-        public VRMenuDef getRoot() {
-            return root;
-        }
-
-        public Model setRoot(VRMenuDef root) {
-            this.root = root;
-            return this;
-        }
-
-        public List<BreadcrumbItem> getBreadcrumb() {
-            return breadcrumb;
-        }
-
-        public String getCurrentPageId() {
-            return currentPageId;
-        }
-
-        public void setCurrentPageId(String currentPageId) {
-            this.currentPageId = currentPageId;
-        }
-
-        public void setBreadcrumb(List<BreadcrumbItem> breadcrumb) {
-            this.breadcrumb = breadcrumb;
-            for (int i = 0; i < breadcrumb.size(); i++) {
-                breadcrumb.get(i).setActive(i == breadcrumb.size() - 1);
-            }
-            if (this.breadcrumb.isEmpty()) {
-                titleCrumb = new BreadcrumbItem("", "", "", "");
-                titleCrumb.setActive(false);
-            } else {
-                titleCrumb = breadcrumb.get(breadcrumb.size() - 1);
-            }
-        }
-
-        public void setBreadcrumb(BreadcrumbItem... breadcrumb) {
-            setBreadcrumb(Arrays.asList(breadcrumb));
-        }
-
-        public BreadcrumbItem getTitleCrumb() {
-            return titleCrumb;
-        }
-
-        public List<VRMenuDef> getMenuCtrl() {
-            return menuCtrl;
-        }
-    }
-
-    @PostConstruct @UpaAware
+    @PostConstruct
+    @UpaAware
     public void initCustomMenus() {
         for (String beanName : VrApp.getContext().getBeanNamesForAnnotation(UCtrl.class)) {
-            if("vrMenuManager".equals(beanName)){
+            if ("vrMenuManager".equals(beanName)) {
                 continue; //unless we have unresolvable circular reference
             }
             Object b = VrApp.getContext().getBean(beanName);
-            UCtrl c = (UCtrl) Reflector.getTargetClass(b).getAnnotation(UCtrl.class);
-            if(c != null) {
+            UCtrl c = (UCtrl) PlatformReflector.getTargetClass(b).getAnnotation(UCtrl.class);
+            if (c != null) {
                 final String securityKey = c.securityKey();
                 if (!StringUtils.isEmpty(securityKey)) {
                     UPA.getContext().invokePrivileged(new VoidAction() {
@@ -407,7 +349,7 @@ public class VrMenuManager {
             if (b instanceof VRMenuDefFactory) {
                 for (VRMenuDef md : ((VRMenuDefFactory) b).createVRMenuDefList()) {
 
-                    if(md != null) {
+                    if (md != null) {
                         String securityKey = md.getSecurityKey();
                         if (!StringUtils.isEmpty(securityKey)) {
                             VrApp.getBean(CorePlugin.class).createRight(securityKey, securityKey);
@@ -422,7 +364,7 @@ public class VrMenuManager {
         List<VRMenuDef> menuCtrl = new ArrayList<>();
         for (String beanName : VrApp.getContext().getBeanNamesForAnnotation(UCtrl.class)) {
             Object b = VrApp.getContext().getBean(beanName);
-            UCtrl c = (UCtrl) Reflector.getTargetClass(b).getAnnotation(UCtrl.class);
+            UCtrl c = (UCtrl) PlatformReflector.getTargetClass(b).getAnnotation(UCtrl.class);
             if (c != null && c.menu().length() > 0) {
                 String menu = c.menu();
                 if (!menu.startsWith("/")) {
@@ -456,7 +398,62 @@ public class VrMenuManager {
         return menuCtrl;
     }
 
-//    public List<VRMenuDef> getAutowiredCustomMenusByCtrl() {
+    public static class Model {
+
+        private List<BreadcrumbItem> breadcrumb = new ArrayList<BreadcrumbItem>();
+        private BreadcrumbItem titleCrumb = new BreadcrumbItem("", "", "", "");
+        private List<VRMenuDef> menuCtrl = null;
+        private String currentPageId;
+        private VRMenuDef root;
+
+        public VRMenuDef getRoot() {
+            return root;
+        }
+
+        public Model setRoot(VRMenuDef root) {
+            this.root = root;
+            return this;
+        }
+
+        public List<BreadcrumbItem> getBreadcrumb() {
+            return breadcrumb;
+        }
+
+        public void setBreadcrumb(BreadcrumbItem... breadcrumb) {
+            setBreadcrumb(Arrays.asList(breadcrumb));
+        }
+
+        public String getCurrentPageId() {
+            return currentPageId;
+        }
+
+        public void setCurrentPageId(String currentPageId) {
+            this.currentPageId = currentPageId;
+        }
+
+        public void setBreadcrumb(List<BreadcrumbItem> breadcrumb) {
+            this.breadcrumb = breadcrumb;
+            for (int i = 0; i < breadcrumb.size(); i++) {
+                breadcrumb.get(i).setActive(i == breadcrumb.size() - 1);
+            }
+            if (this.breadcrumb.isEmpty()) {
+                titleCrumb = new BreadcrumbItem("", "", "", "");
+                titleCrumb.setActive(false);
+            } else {
+                titleCrumb = breadcrumb.get(breadcrumb.size() - 1);
+            }
+        }
+
+        public BreadcrumbItem getTitleCrumb() {
+            return titleCrumb;
+        }
+
+        public List<VRMenuDef> getMenuCtrl() {
+            return menuCtrl;
+        }
+    }
+
+    //    public List<VRMenuDef> getAutowiredCustomMenusByCtrl() {
 //        if (getModel().getMenuCtrl() == null) {
 //            getModel().menuCtrl = resolveAutowiredCustomMenusByCtrl();
 //        }

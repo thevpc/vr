@@ -15,19 +15,18 @@
 * limitations under the License.
 */
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.ResourceBundle;
+import util.HTMLFilter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import util.HTMLFilter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.ResourceBundle;
 
 /**
  * Example servlet showing request headers
@@ -44,8 +43,7 @@ public class SessionExample extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
-        throws IOException, ServletException
-    {
+            throws IOException, ServletException {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
 
@@ -69,10 +67,10 @@ public class SessionExample extends HttpServlet {
 
         out.println("<a href=\"../sessions.html\">");
         out.println("<img src=\"../images/code.gif\" height=24 " +
-                    "width=24 align=right border=0 alt=\"view code\"></a>");
+                "width=24 align=right border=0 alt=\"view code\"></a>");
         out.println("<a href=\"../index.html\">");
         out.println("<img src=\"../images/return.gif\" height=24 " +
-                    "width=24 align=right border=0 alt=\"return\"></a>");
+                "width=24 align=right border=0 alt=\"return\"></a>");
 
         out.println("<h3>" + title + "</h3>");
 
@@ -97,7 +95,7 @@ public class SessionExample extends HttpServlet {
             String name = names.nextElement();
             String value = session.getAttribute(name).toString();
             out.println(HTMLFilter.filter(name) + " = "
-                        + HTMLFilter.filter(value) + "<br>");
+                    + HTMLFilter.filter(value) + "<br>");
         }
 
         out.println("<P>");
@@ -138,9 +136,8 @@ public class SessionExample extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request,
-                      HttpServletResponse response)
-        throws IOException, ServletException
-    {
+                       HttpServletResponse response)
+            throws IOException, ServletException {
         doGet(request, response);
     }
 

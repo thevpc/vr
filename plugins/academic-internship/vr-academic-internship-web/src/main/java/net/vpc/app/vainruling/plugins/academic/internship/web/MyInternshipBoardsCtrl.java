@@ -1,32 +1,13 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.internship.web;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
-import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppCompany;
-import net.vpc.app.vainruling.core.service.model.AppConfig;
-import net.vpc.app.vainruling.core.service.model.AppCountry;
-import net.vpc.app.vainruling.core.service.model.AppCountryRegion;
-import net.vpc.app.vainruling.core.service.model.AppGovernorate;
+import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
@@ -36,22 +17,16 @@ import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.core.web.util.ChartUtils;
 import net.vpc.app.vainruling.plugins.academic.internship.service.AcademicInternshipPlugin;
-import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipBoardMessage;
-import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternshipBoard;
-import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipBoardTeacher;
-import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipDuration;
-import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipStatus;
-import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipType;
-import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipVariant;
+import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.*;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternship;
-import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternshipSuperviserIntent;
+import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternshipBoard;
+import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternshipSupervisorIntent;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.ext.AcademicInternshipExt;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.ext.AcademicInternshipExtList;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.web.dialog.DisciplineDialogCtrl;
-import net.vpc.app.vainruling.core.service.fs.FileSystemService;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.streams.PathInfo;
 import net.vpc.common.strings.StringUtils;
@@ -68,6 +43,17 @@ import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.chart.ChartSeries;
 import org.primefaces.model.chart.DonutChartModel;
 import org.primefaces.model.chart.PieChartModel;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.faces.bean.ManagedBean;
+import javax.faces.model.SelectItem;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * internships for teachers
@@ -76,7 +62,7 @@ import org.primefaces.model.chart.PieChartModel;
  */
 @UCtrl(
         breadcrumb = {
-            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Mes Comités de Stage",
         menu = "/Education/Internship",
@@ -86,394 +72,10 @@ import org.primefaces.model.chart.PieChartModel;
 @ManagedBean
 public class MyInternshipBoardsCtrl {
 
+
     private Model model = new Model();
-
-    public class Model {
-
-        private EditCtrlMode mode = EditCtrlMode.LIST;
-        private String requestUploadType;
-        private boolean uploading;
-        private boolean boardManager;
-        private String internshipId;
-        private String boardId;
-        private String companyId;
-        private String internshipStatusId;
-        private String chairExaminerId;
-        private String firstExaminerId;
-        private String secondExaminerId;
-        private String superviser1Id;
-        private String superviser2Id;
-        private String filterInternshipTypeId;
-        private String typeVariantId;
-        private String durationId;
-        private String newMessage;
-        private AcademicInternship internship;
-        private AcademicInternshipBoard internshipBoard;
-        private List<AcademicInternshipCount> academicInternshipCounts = new ArrayList<AcademicInternshipCount>();
-        private List<SelectItem> boards = new ArrayList<SelectItem>();
-        private List<SelectItem> internshipItems = new ArrayList<SelectItem>();
-        private List<SelectItem> internshipTypes = new ArrayList<SelectItem>();
-        private List<AcademicInternship> internships = new ArrayList<AcademicInternship>();
-        private AcademicInternshipExtList internshipExtList = new AcademicInternshipExtList();
-        private List<AcademicInternshipInfo> internshipInfos = new ArrayList<AcademicInternshipInfo>();
-        private List<SelectItem> teachers = new ArrayList<SelectItem>();
-        private List<SelectItem> companies = new ArrayList<SelectItem>();
-        private List<SelectItem> typeVariants = new ArrayList<SelectItem>();
-        private List<SelectItem> durations = new ArrayList<SelectItem>();
-        private List<SelectItem> internshipStatuses = new ArrayList<SelectItem>();
-        private List<AcademicInternshipBoardTeacher> boardTeachers = new ArrayList<AcademicInternshipBoardTeacher>();
-        private List<AcademicInternshipBoardMessage> boardMessages = new ArrayList<AcademicInternshipBoardMessage>();
-        private DonutChartModel donut1;
-        private DonutChartModel donut2;
-        private DonutChartModel donut3;
-        private DonutChartModel donut4;
-        private DonutChartModel donut5;
-        private BarChartModel bar1;
-        private PieChartModel pie1;
-        private PieChartModel pie2;
-        private boolean filterInternshipTypeVisible = true;
-
-        public DonutChartModel getDonut1() {
-            return donut1;
-        }
-
-        public void setDonut1(DonutChartModel donut1) {
-            this.donut1 = donut1;
-        }
-
-        public DonutChartModel getDonut2() {
-            return donut2;
-        }
-
-        public void setDonut2(DonutChartModel donut2) {
-            this.donut2 = donut2;
-        }
-
-        public boolean isBoardManager() {
-            return boardManager;
-        }
-
-        public void setBoardManager(boolean boardManager) {
-            this.boardManager = boardManager;
-        }
-
-        public List<AcademicInternshipBoardTeacher> getBoardTeachers() {
-            return boardTeachers;
-        }
-
-        public void setBoardTeachers(List<AcademicInternshipBoardTeacher> boardTeachers) {
-            this.boardTeachers = boardTeachers;
-        }
-
-        public AcademicInternship getInternship() {
-            return internship;
-        }
-
-        public void setInternship(AcademicInternship internship) {
-            this.internship = internship;
-        }
-
-        public String getInternshipId() {
-            return internshipId;
-        }
-
-        public void setInternshipId(String internshipId) {
-            this.internshipId = internshipId;
-        }
-
-        public List<SelectItem> getInternshipItems() {
-            return internshipItems;
-        }
-
-        public void setInternshipItems(List<SelectItem> internships) {
-            this.internshipItems = internships;
-        }
-
-        public List<SelectItem> getInternshipTypes() {
-            return internshipTypes;
-        }
-
-        public void setInternshipTypes(List<SelectItem> internshipTypes) {
-            this.internshipTypes = internshipTypes;
-        }
-
-        public String getFilterInternshipTypeId() {
-            return filterInternshipTypeId;
-        }
-
-        public void setFilterInternshipTypeId(String filterInternshipTypeId) {
-            this.filterInternshipTypeId = filterInternshipTypeId;
-        }
-
-        public List<AcademicInternship> getInternships() {
-            return internships;
-        }
-
-        public void setInternships(List<AcademicInternship> internships) {
-            this.internships = internships;
-        }
-
-        public String getSuperviser1Id() {
-            return superviser1Id;
-        }
-
-        public void setSuperviser1Id(String superviser1Id) {
-            this.superviser1Id = superviser1Id;
-        }
-
-        public String getSuperviser2Id() {
-            return superviser2Id;
-        }
-
-        public void setSuperviser2Id(String superviser2Id) {
-            this.superviser2Id = superviser2Id;
-        }
-
-        public List<SelectItem> getTeachers() {
-            return teachers;
-        }
-
-        public void setTeachers(List<SelectItem> teachers) {
-            this.teachers = teachers;
-        }
-
-        public String getTypeVariantId() {
-            return typeVariantId;
-        }
-
-        public void setTypeVariantId(String typeVariantId) {
-            this.typeVariantId = typeVariantId;
-        }
-
-        public List<SelectItem> getTypeVariants() {
-            return typeVariants;
-        }
-
-        public void setTypeVariants(List<SelectItem> typeVariants) {
-            this.typeVariants = typeVariants;
-        }
-
-        public String getCompanyId() {
-            return companyId;
-        }
-
-        public void setCompanyId(String companyId) {
-            this.companyId = companyId;
-        }
-
-        public List<SelectItem> getCompanies() {
-            return companies;
-        }
-
-        public void setCompanies(List<SelectItem> companies) {
-            this.companies = companies;
-        }
-
-        public String getRequestUploadType() {
-            return requestUploadType;
-        }
-
-        public void setRequestUploadType(String requestUploadType) {
-            this.requestUploadType = requestUploadType;
-        }
-
-        public boolean isUploading() {
-            return uploading;
-        }
-
-        public void setUploading(boolean uploading) {
-            this.uploading = uploading;
-        }
-
-        public String getBoardId() {
-            return boardId;
-        }
-
-        public void setBoardId(String boardId) {
-            this.boardId = boardId;
-        }
-
-        public List<SelectItem> getBoards() {
-            return boards;
-        }
-
-        public void setBoards(List<SelectItem> boards) {
-            this.boards = boards;
-        }
-
-        public AcademicInternshipBoard getInternshipBoard() {
-            return internshipBoard;
-        }
-
-        public void setInternshipBoard(AcademicInternshipBoard internshipBoard) {
-            this.internshipBoard = internshipBoard;
-        }
-
-        public String getDurationId() {
-            return durationId;
-        }
-
-        public void setDurationId(String durationId) {
-            this.durationId = durationId;
-        }
-
-        public List<SelectItem> getDurations() {
-            return durations;
-        }
-
-        public void setDurations(List<SelectItem> durations) {
-            this.durations = durations;
-        }
-
-        public String getInternshipStatusId() {
-            return internshipStatusId;
-        }
-
-        public void setInternshipStatusId(String internshipStatusId) {
-            this.internshipStatusId = internshipStatusId;
-        }
-
-        public String getChairExaminerId() {
-            return chairExaminerId;
-        }
-
-        public void setChairExaminerId(String chairExaminerId) {
-            this.chairExaminerId = chairExaminerId;
-        }
-
-        public String getFirstExaminerId() {
-            return firstExaminerId;
-        }
-
-        public void setFirstExaminerId(String firstExaminerId) {
-            this.firstExaminerId = firstExaminerId;
-        }
-
-        public String getSecondExaminerId() {
-            return secondExaminerId;
-        }
-
-        public void setSecondExaminerId(String secondExaminerId) {
-            this.secondExaminerId = secondExaminerId;
-        }
-
-        public List<SelectItem> getInternshipStatuses() {
-            return internshipStatuses;
-        }
-
-        public void setInternshipStatuses(List<SelectItem> internshipStatuses) {
-            this.internshipStatuses = internshipStatuses;
-        }
-
-        public List<AcademicInternshipBoardMessage> getBoardMessages() {
-            return boardMessages;
-        }
-
-        public void setBoardMessages(List<AcademicInternshipBoardMessage> boardMessages) {
-            this.boardMessages = boardMessages;
-        }
-
-        public String getNewMessage() {
-            return newMessage;
-        }
-
-        public void setNewMessage(String newMessage) {
-            this.newMessage = newMessage;
-        }
-
-        public List<AcademicInternshipInfo> getInternshipInfos() {
-            return internshipInfos;
-        }
-
-        public void setInternshipInfos(List<AcademicInternshipInfo> internshipInfos) {
-            this.internshipInfos = internshipInfos;
-        }
-
-        public EditCtrlMode getMode() {
-            return mode;
-        }
-
-        public void setMode(EditCtrlMode mode) {
-            this.mode = mode;
-        }
-
-        public boolean isList() {
-            return getMode() == EditCtrlMode.LIST;
-        }
-
-        public DonutChartModel getDonut3() {
-            return donut3;
-        }
-
-        public void setDonut3(DonutChartModel donut3) {
-            this.donut3 = donut3;
-        }
-
-        public DonutChartModel getDonut4() {
-            return donut4;
-        }
-
-        public void setDonut4(DonutChartModel donut4) {
-            this.donut4 = donut4;
-        }
-
-        public DonutChartModel getDonut5() {
-            return donut5;
-        }
-
-        public void setDonut5(DonutChartModel donut5) {
-            this.donut5 = donut5;
-        }
-
-        public PieChartModel getPie1() {
-            return pie1;
-        }
-
-        public void setPie1(PieChartModel pie1) {
-            this.pie1 = pie1;
-        }
-
-        public PieChartModel getPie2() {
-            return pie2;
-        }
-
-        public void setPie2(PieChartModel pie2) {
-            this.pie2 = pie2;
-        }
-
-        public BarChartModel getBar1() {
-            return bar1;
-        }
-
-        public void setBar1(BarChartModel bar1) {
-            this.bar1 = bar1;
-        }
-
-        public List<AcademicInternshipCount> getAcademicInternshipCounts() {
-            return academicInternshipCounts;
-        }
-
-        public void setAcademicInternshipCounts(List<AcademicInternshipCount> academicInternshipCounts) {
-            this.academicInternshipCounts = academicInternshipCounts;
-        }
-
-        public AcademicInternshipExtList getInternshipExtList() {
-            return internshipExtList;
-        }
-
-        public void setInternshipExtList(AcademicInternshipExtList internshipExtList) {
-            this.internshipExtList = internshipExtList;
-        }
-
-        public boolean isFilterInternshipTypeVisible() {
-            return filterInternshipTypeVisible;
-        }
-
-        public void setFilterInternshipTypeVisible(boolean filterInternshipTypeVisible) {
-            this.filterInternshipTypeVisible = filterInternshipTypeVisible;
-        }
-
-    }
+    @Autowired
+    private CorePlugin core;
 
     public Model getModel() {
         return model;
@@ -645,9 +247,9 @@ public class MyInternshipBoardsCtrl {
     public void onUpdateSupervisor() {
         if (getModel().getInternship() != null) {
             if (getModel().getInternship().getInternshipStatus().isBoardUpdatesSupervisors()) {
-                AcademicTeacher s1 = getSelectedTeacher(getModel().getSuperviser1Id());
+                AcademicTeacher s1 = getSelectedTeacher(getModel().getSupervisor1Id());
                 getModel().getInternship().setSupervisor(s1);
-                AcademicTeacher s2 = getSelectedTeacher(getModel().getSuperviser2Id());
+                AcademicTeacher s2 = getSelectedTeacher(getModel().getSupervisor2Id());
                 getModel().getInternship().setSecondSupervisor(s2);
             }
         }
@@ -984,15 +586,15 @@ public class MyInternshipBoardsCtrl {
         }
 
         if (getModel().getInternship() != null && getModel().getInternship().getSupervisor() != null) {
-            getModel().setSuperviser1Id(String.valueOf(getModel().getInternship().getSupervisor().getId()));
+            getModel().setSupervisor1Id(String.valueOf(getModel().getInternship().getSupervisor().getId()));
         } else {
-            getModel().setSuperviser1Id(null);
+            getModel().setSupervisor1Id(null);
         }
 
         if (getModel().getInternship() != null && getModel().getInternship().getSecondSupervisor() != null) {
-            getModel().setSuperviser2Id(String.valueOf(getModel().getInternship().getSecondSupervisor().getId()));
+            getModel().setSupervisor2Id(String.valueOf(getModel().getInternship().getSecondSupervisor().getId()));
         } else {
-            getModel().setSuperviser2Id(null);
+            getModel().setSupervisor2Id(null);
         }
 
         if (getModel().getInternship() != null && getModel().getInternship().getInternshipVariant() != null) {
@@ -1020,8 +622,8 @@ public class MyInternshipBoardsCtrl {
             getModel().setBoardTeachers(pi.findInternshipTeachersByBoard(getModel().getInternship().getBoard().getId()));
             getModel().setBoardMessages(pi.findInternshipMessagesByInternship(getModel().getInternship().getId()));
         }
-//        getModel().setSuperviser1Id((getModel().getInternship() == null || getModel().getInternship().getSupervisor() == null) ? null : String.valueOf(getModel().getInternship().getSupervisor().getId()));
-//        getModel().setSuperviser2Id((getModel().getInternship() == null || getModel().getInternship().getSecondSupervisor() == null) ? null : String.valueOf(getModel().getInternship().getSecondSupervisor().getId()));
+//        getModel().setSupervisor1Id((getModel().getInternship() == null || getModel().getInternship().getSupervisor() == null) ? null : String.valueOf(getModel().getInternship().getSupervisor().getId()));
+//        getModel().setSupervisor2Id((getModel().getInternship() == null || getModel().getInternship().getSecondSupervisor() == null) ? null : String.valueOf(getModel().getInternship().getSecondSupervisor().getId()));
 //        getModel().setTypeVariantId((getModel().getInternship() == null || getModel().getInternship().getInternshipVariant() == null) ? null : String.valueOf(getModel().getInternship().getInternshipVariant().getId()));
         getModel().setDurationId((getModel().getInternship() == null || getModel().getInternship().getDuration() == null) ? null : String.valueOf(getModel().getInternship().getDuration().getId()));
         getModel().setChairExaminerId((getModel().getInternship() == null || getModel().getInternship().getChairExaminer() == null) ? null : String.valueOf(getModel().getInternship().getChairExaminer().getId()));
@@ -1038,18 +640,6 @@ public class MyInternshipBoardsCtrl {
             onRefreshUpdateMode();
         }
 
-    }
-
-    public static class LocationInfo {
-
-        AppCompany company;
-        AppGovernorate governorate;
-        AppCountryRegion region;
-        AppCountry country;
-        String companyName;
-        String governorateName;
-        String regionName;
-        String countryName;
     }
 
     LocationInfo resolveLocation(AppCompany c) {
@@ -1104,10 +694,10 @@ public class MyInternshipBoardsCtrl {
                 supervisorInfo.add(i.internship.getSupervisor().getContact().getFullName() + "*");
             }
         }
-        List<AcademicInternshipSuperviserIntent> allIntents = i.internshipExt.getSuperviserIntents();
+        List<AcademicInternshipSupervisorIntent> allIntents = i.internshipExt.getSupervisorIntents();
         if (allIntents.size() > 0) {
             i.demanded = true;
-            for (AcademicInternshipSuperviserIntent aa : allIntents) {
+            for (AcademicInternshipSupervisorIntent aa : allIntents) {
                 AcademicTeacher a = aa.getTeacher();
                 if (tt != null && a.getId() == tt.getId()) {
                     i.demandedByMe = true;
@@ -1167,23 +757,21 @@ public class MyInternshipBoardsCtrl {
     }
 
     public StreamedContent download(final String report) {
-        final FileSystemService fs = VrApp.getBean(FileSystemService.class);
         return UPA.getContext().invokePrivileged(new Action<StreamedContent>() {
             @Override
             public StreamedContent run() {
                 VFile f = null;
                 if ("report1".equals(report)) {
-                    f = fs.getFileSystem().get(getModel().getInternship().getSpecFilePath());
+                    f = core.getFileSystem().get(getModel().getInternship().getSpecFilePath());
                 } else if ("report2".equals(report)) {
-                    f = fs.getFileSystem().get(getModel().getInternship().getMidTermReportFilePath());
+                    f = core.getFileSystem().get(getModel().getInternship().getMidTermReportFilePath());
                 } else if ("report3".equals(report)) {
-                    f = fs.getFileSystem().get(getModel().getInternship().getReportFilePath());
+                    f = core.getFileSystem().get(getModel().getInternship().getReportFilePath());
                 }
                 if (f != null) {
                     InputStream stream = null;
                     try {
-                        FileSystemService fsp = VrApp.getBean(FileSystemService.class);
-                        fsp.markDownloaded(f);
+                        core.markDownloaded(f);
                         stream = f.getInputStream();
                         return new DefaultStreamedContent(stream, f.probeContentType(), f.getName());
                     } catch (IOException ex) {
@@ -1201,37 +789,36 @@ public class MyInternshipBoardsCtrl {
             public void run() {
                 try {
                     String report = getModel().getRequestUploadType();
-                    FileSystemService fs = VrApp.getBean(FileSystemService.class);
                     String login = VrApp.getBean(UserSession.class).getUser().getLogin();
-                    String tempPath = "/Temp/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+                    String tempPath = CorePlugin.PATH_TEMP+"/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
                             + "-" + login;
-                    String p = fs.getNativeFileSystemPath() + tempPath;
+                    String p = core.getNativeFileSystemPath() + tempPath;
                     new File(p).mkdirs();
                     File f = new File(p, event.getFile().getFileName());
                     event.getFile().write(f.getPath());
                     AcademicInternship internship = getModel().getInternship();
                     PathInfo uu = PathInfo.create(f);
                     String extensionPart = uu.getExtensionPart();
-                    if(extensionPart==null){
-                        extensionPart="pdf";
+                    if (extensionPart == null) {
+                        extensionPart = "pdf";
                     }
-                    VFile userHome = fs.getUserFolder(login).get("MesRapports");
+                    VFile userHome = core.getUserFolder(login).get("MesRapports");
                     userHome.mkdirs();
                     if ("report1".equals(report)) {
-                        String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-spec."+extensionPart;
+                        String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-spec." + extensionPart;
                         VFile ff = userHome.get(validName);
-                        fs.getFileSystem().get(tempPath + "/" + event.getFile().getFileName()).copyTo(ff);
+                        core.getFileSystem().get(tempPath + "/" + event.getFile().getFileName()).copyTo(ff);
                         internship.setSpecFilePath(ff.getBaseFile("vrfs").getPath());
                     } else if ("report2".equals(report)) {
-                        String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-mid."+extensionPart;
+                        String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-mid." + extensionPart;
                         VFile ff = userHome.get(validName);
-                        fs.getFileSystem().get(tempPath + "/" + event.getFile().getFileName()).copyTo(ff);
+                        core.getFileSystem().get(tempPath + "/" + event.getFile().getFileName()).copyTo(ff);
                         internship.setMidTermReportFilePath(ff.getBaseFile("vrfs").getPath());
 
                     } else if ("report3".equals(report)) {
-                        String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-final."+extensionPart;
+                        String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-final." + extensionPart;
                         VFile ff = userHome.get(validName);
-                        fs.getFileSystem().get(tempPath + "/" + event.getFile().getFileName()).copyTo(ff);
+                        core.getFileSystem().get(tempPath + "/" + event.getFile().getFileName()).copyTo(ff);
                         internship.setReportFilePath(ff.getBaseFile("vrfs").getPath());
                     } else {
                         return;
@@ -1266,6 +853,18 @@ public class MyInternshipBoardsCtrl {
         AcademicInternshipPlugin p = VrApp.getBean(AcademicInternshipPlugin.class);
         p.removeBoardMessage(messageId);
         getModel().setBoardMessages(p.findInternshipMessagesByInternship(getModel().getInternship().getId()));
+    }
+
+    public static class LocationInfo {
+
+        AppCompany company;
+        AppGovernorate governorate;
+        AppCountryRegion region;
+        AppCountry country;
+        String companyName;
+        String governorateName;
+        String regionName;
+        String countryName;
     }
 
     public static class AcademicInternshipCount {
@@ -1391,6 +990,393 @@ public class MyInternshipBoardsCtrl {
 
         public void setInternshipExt(AcademicInternshipExt internshipExt) {
             this.internshipExt = internshipExt;
+        }
+
+    }
+
+    public class Model {
+
+        private EditCtrlMode mode = EditCtrlMode.LIST;
+        private String requestUploadType;
+        private boolean uploading;
+        private boolean boardManager;
+        private String internshipId;
+        private String boardId;
+        private String companyId;
+        private String internshipStatusId;
+        private String chairExaminerId;
+        private String firstExaminerId;
+        private String secondExaminerId;
+        private String supervisor1Id;
+        private String supervisor2Id;
+        private String filterInternshipTypeId;
+        private String typeVariantId;
+        private String durationId;
+        private String newMessage;
+        private AcademicInternship internship;
+        private AcademicInternshipBoard internshipBoard;
+        private List<AcademicInternshipCount> academicInternshipCounts = new ArrayList<AcademicInternshipCount>();
+        private List<SelectItem> boards = new ArrayList<SelectItem>();
+        private List<SelectItem> internshipItems = new ArrayList<SelectItem>();
+        private List<SelectItem> internshipTypes = new ArrayList<SelectItem>();
+        private List<AcademicInternship> internships = new ArrayList<AcademicInternship>();
+        private AcademicInternshipExtList internshipExtList = new AcademicInternshipExtList();
+        private List<AcademicInternshipInfo> internshipInfos = new ArrayList<AcademicInternshipInfo>();
+        private List<SelectItem> teachers = new ArrayList<SelectItem>();
+        private List<SelectItem> companies = new ArrayList<SelectItem>();
+        private List<SelectItem> typeVariants = new ArrayList<SelectItem>();
+        private List<SelectItem> durations = new ArrayList<SelectItem>();
+        private List<SelectItem> internshipStatuses = new ArrayList<SelectItem>();
+        private List<AcademicInternshipBoardTeacher> boardTeachers = new ArrayList<AcademicInternshipBoardTeacher>();
+        private List<AcademicInternshipBoardMessage> boardMessages = new ArrayList<AcademicInternshipBoardMessage>();
+        private DonutChartModel donut1;
+        private DonutChartModel donut2;
+        private DonutChartModel donut3;
+        private DonutChartModel donut4;
+        private DonutChartModel donut5;
+        private BarChartModel bar1;
+        private PieChartModel pie1;
+        private PieChartModel pie2;
+        private boolean filterInternshipTypeVisible = true;
+
+        public DonutChartModel getDonut1() {
+            return donut1;
+        }
+
+        public void setDonut1(DonutChartModel donut1) {
+            this.donut1 = donut1;
+        }
+
+        public DonutChartModel getDonut2() {
+            return donut2;
+        }
+
+        public void setDonut2(DonutChartModel donut2) {
+            this.donut2 = donut2;
+        }
+
+        public boolean isBoardManager() {
+            return boardManager;
+        }
+
+        public void setBoardManager(boolean boardManager) {
+            this.boardManager = boardManager;
+        }
+
+        public List<AcademicInternshipBoardTeacher> getBoardTeachers() {
+            return boardTeachers;
+        }
+
+        public void setBoardTeachers(List<AcademicInternshipBoardTeacher> boardTeachers) {
+            this.boardTeachers = boardTeachers;
+        }
+
+        public AcademicInternship getInternship() {
+            return internship;
+        }
+
+        public void setInternship(AcademicInternship internship) {
+            this.internship = internship;
+        }
+
+        public String getInternshipId() {
+            return internshipId;
+        }
+
+        public void setInternshipId(String internshipId) {
+            this.internshipId = internshipId;
+        }
+
+        public List<SelectItem> getInternshipItems() {
+            return internshipItems;
+        }
+
+        public void setInternshipItems(List<SelectItem> internships) {
+            this.internshipItems = internships;
+        }
+
+        public List<SelectItem> getInternshipTypes() {
+            return internshipTypes;
+        }
+
+        public void setInternshipTypes(List<SelectItem> internshipTypes) {
+            this.internshipTypes = internshipTypes;
+        }
+
+        public String getFilterInternshipTypeId() {
+            return filterInternshipTypeId;
+        }
+
+        public void setFilterInternshipTypeId(String filterInternshipTypeId) {
+            this.filterInternshipTypeId = filterInternshipTypeId;
+        }
+
+        public List<AcademicInternship> getInternships() {
+            return internships;
+        }
+
+        public void setInternships(List<AcademicInternship> internships) {
+            this.internships = internships;
+        }
+
+        public String getSupervisor1Id() {
+            return supervisor1Id;
+        }
+
+        public void setSupervisor1Id(String supervisor1Id) {
+            this.supervisor1Id = supervisor1Id;
+        }
+
+        public String getSupervisor2Id() {
+            return supervisor2Id;
+        }
+
+        public void setSupervisor2Id(String supervisor2Id) {
+            this.supervisor2Id = supervisor2Id;
+        }
+
+        public List<SelectItem> getTeachers() {
+            return teachers;
+        }
+
+        public void setTeachers(List<SelectItem> teachers) {
+            this.teachers = teachers;
+        }
+
+        public String getTypeVariantId() {
+            return typeVariantId;
+        }
+
+        public void setTypeVariantId(String typeVariantId) {
+            this.typeVariantId = typeVariantId;
+        }
+
+        public List<SelectItem> getTypeVariants() {
+            return typeVariants;
+        }
+
+        public void setTypeVariants(List<SelectItem> typeVariants) {
+            this.typeVariants = typeVariants;
+        }
+
+        public String getCompanyId() {
+            return companyId;
+        }
+
+        public void setCompanyId(String companyId) {
+            this.companyId = companyId;
+        }
+
+        public List<SelectItem> getCompanies() {
+            return companies;
+        }
+
+        public void setCompanies(List<SelectItem> companies) {
+            this.companies = companies;
+        }
+
+        public String getRequestUploadType() {
+            return requestUploadType;
+        }
+
+        public void setRequestUploadType(String requestUploadType) {
+            this.requestUploadType = requestUploadType;
+        }
+
+        public boolean isUploading() {
+            return uploading;
+        }
+
+        public void setUploading(boolean uploading) {
+            this.uploading = uploading;
+        }
+
+        public String getBoardId() {
+            return boardId;
+        }
+
+        public void setBoardId(String boardId) {
+            this.boardId = boardId;
+        }
+
+        public List<SelectItem> getBoards() {
+            return boards;
+        }
+
+        public void setBoards(List<SelectItem> boards) {
+            this.boards = boards;
+        }
+
+        public AcademicInternshipBoard getInternshipBoard() {
+            return internshipBoard;
+        }
+
+        public void setInternshipBoard(AcademicInternshipBoard internshipBoard) {
+            this.internshipBoard = internshipBoard;
+        }
+
+        public String getDurationId() {
+            return durationId;
+        }
+
+        public void setDurationId(String durationId) {
+            this.durationId = durationId;
+        }
+
+        public List<SelectItem> getDurations() {
+            return durations;
+        }
+
+        public void setDurations(List<SelectItem> durations) {
+            this.durations = durations;
+        }
+
+        public String getInternshipStatusId() {
+            return internshipStatusId;
+        }
+
+        public void setInternshipStatusId(String internshipStatusId) {
+            this.internshipStatusId = internshipStatusId;
+        }
+
+        public String getChairExaminerId() {
+            return chairExaminerId;
+        }
+
+        public void setChairExaminerId(String chairExaminerId) {
+            this.chairExaminerId = chairExaminerId;
+        }
+
+        public String getFirstExaminerId() {
+            return firstExaminerId;
+        }
+
+        public void setFirstExaminerId(String firstExaminerId) {
+            this.firstExaminerId = firstExaminerId;
+        }
+
+        public String getSecondExaminerId() {
+            return secondExaminerId;
+        }
+
+        public void setSecondExaminerId(String secondExaminerId) {
+            this.secondExaminerId = secondExaminerId;
+        }
+
+        public List<SelectItem> getInternshipStatuses() {
+            return internshipStatuses;
+        }
+
+        public void setInternshipStatuses(List<SelectItem> internshipStatuses) {
+            this.internshipStatuses = internshipStatuses;
+        }
+
+        public List<AcademicInternshipBoardMessage> getBoardMessages() {
+            return boardMessages;
+        }
+
+        public void setBoardMessages(List<AcademicInternshipBoardMessage> boardMessages) {
+            this.boardMessages = boardMessages;
+        }
+
+        public String getNewMessage() {
+            return newMessage;
+        }
+
+        public void setNewMessage(String newMessage) {
+            this.newMessage = newMessage;
+        }
+
+        public List<AcademicInternshipInfo> getInternshipInfos() {
+            return internshipInfos;
+        }
+
+        public void setInternshipInfos(List<AcademicInternshipInfo> internshipInfos) {
+            this.internshipInfos = internshipInfos;
+        }
+
+        public EditCtrlMode getMode() {
+            return mode;
+        }
+
+        public void setMode(EditCtrlMode mode) {
+            this.mode = mode;
+        }
+
+        public boolean isList() {
+            return getMode() == EditCtrlMode.LIST;
+        }
+
+        public DonutChartModel getDonut3() {
+            return donut3;
+        }
+
+        public void setDonut3(DonutChartModel donut3) {
+            this.donut3 = donut3;
+        }
+
+        public DonutChartModel getDonut4() {
+            return donut4;
+        }
+
+        public void setDonut4(DonutChartModel donut4) {
+            this.donut4 = donut4;
+        }
+
+        public DonutChartModel getDonut5() {
+            return donut5;
+        }
+
+        public void setDonut5(DonutChartModel donut5) {
+            this.donut5 = donut5;
+        }
+
+        public PieChartModel getPie1() {
+            return pie1;
+        }
+
+        public void setPie1(PieChartModel pie1) {
+            this.pie1 = pie1;
+        }
+
+        public PieChartModel getPie2() {
+            return pie2;
+        }
+
+        public void setPie2(PieChartModel pie2) {
+            this.pie2 = pie2;
+        }
+
+        public BarChartModel getBar1() {
+            return bar1;
+        }
+
+        public void setBar1(BarChartModel bar1) {
+            this.bar1 = bar1;
+        }
+
+        public List<AcademicInternshipCount> getAcademicInternshipCounts() {
+            return academicInternshipCounts;
+        }
+
+        public void setAcademicInternshipCounts(List<AcademicInternshipCount> academicInternshipCounts) {
+            this.academicInternshipCounts = academicInternshipCounts;
+        }
+
+        public AcademicInternshipExtList getInternshipExtList() {
+            return internshipExtList;
+        }
+
+        public void setInternshipExtList(AcademicInternshipExtList internshipExtList) {
+            this.internshipExtList = internshipExtList;
+        }
+
+        public boolean isFilterInternshipTypeVisible() {
+            return filterInternshipTypeVisible;
+        }
+
+        public void setFilterInternshipTypeVisible(boolean filterInternshipTypeVisible) {
+            this.filterInternshipTypeVisible = filterInternshipTypeVisible;
         }
 
     }

@@ -1,21 +1,20 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.ctrl;
-
-import java.util.Calendar;
-import java.util.Date;
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ManagedBean;
 
 import net.vpc.common.util.Chronometer;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import javax.faces.bean.ApplicationScoped;
+import javax.faces.bean.ManagedBean;
+import java.util.Calendar;
+import java.util.Date;
+
 /**
- *
  * @author vpc
  */
 @ManagedBean
@@ -53,7 +52,7 @@ public class AppGlobalCtrl extends BasePageCtrl {
 
     public String getHeadMessageText() {
         if (isShutdown()) {
-            long p = getModel().getShutdownTime().getTime()-System.currentTimeMillis();
+            long p = getModel().getShutdownTime().getTime() - System.currentTimeMillis();
             if (p <= 60000) {
                 return "Arrêt imminent...";
             }

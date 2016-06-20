@@ -9,7 +9,7 @@ import org.jgap.impl.IntegerGene;
 /**
  * Created by vpc on 5/20/16.
  */
-public class ExaminerMarshaller extends BaseMarshaller{
+public class ExaminerMarshaller extends BaseMarshaller {
 
     public ExaminerMarshaller(int activity, int index, Configuration conf) {
         super(activity, index, conf);
@@ -23,7 +23,7 @@ public class ExaminerMarshaller extends BaseMarshaller{
     @Override
     public void unmarshall(IChromosome iChromosome, PlanningActivityTableExt activityTable) {
         Object allele = (iChromosome.getGene(getIndex())).getAllele();
-        String examiner = allele==null?null:activityTable.getTable().getExaminers().get((int) allele);
+        String examiner = allele == null ? null : activityTable.getTable().getExaminers().get((int) allele);
         activityTable.getTable().getActivities().get(getActivity()).setExaminer(examiner);
     }
 }

@@ -15,7 +15,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<tomcat-users xmlns="http://tomcat.apache.org/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd">
+<tomcat-users xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://tomcat.apache.org/xml" version="1.0"
+              xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd">
     <!--
   NOTE:  By default, no user is included in the "manager-gui" role required
   to operate the "/manager/html" web application.  If you wish to use this app,

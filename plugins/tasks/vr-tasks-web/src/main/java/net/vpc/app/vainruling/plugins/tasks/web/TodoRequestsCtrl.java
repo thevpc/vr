@@ -1,38 +1,33 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.tasks.web;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.faces.bean.ManagedBean;
-import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
-import net.vpc.app.vainruling.plugins.tasks.service.model.Todo;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoCategory;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoPriority;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatus;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatusType;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
+import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
+import net.vpc.app.vainruling.plugins.tasks.service.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.model.SelectItem;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author vpc
  */
 @UCtrl(
         breadcrumb = {
-            @UPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = ""),}, css = "fa-table", title = "Listes", url = "modules/todo/todorequests"
+                @UPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = ""),}, css = "fa-table", title = "Listes", url = "modules/todo/todorequests"
 )
 @ManagedBean
 @Scope(value = "session")
@@ -218,22 +213,22 @@ public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {
         getModel().setCategoryItems(st);
     }
 
-    public void currentTodoListChanged(){
+    public void currentTodoListChanged() {
         for (TodoList todoList : getModel().getTodoLists()) {
-            if(todoList.getId()==getModel().getCurrentTodoListId()){
+            if (todoList.getId() == getModel().getCurrentTodoListId()) {
                 getModel().setTodoList(todoList);
                 todoListChanged();
                 break;
             }
         }
     }
-    
+
     public static class PModel extends Model<Todo> {
 
         private TodoList todoList;
         private String title = "Titre";
         private List<Todo> allTodos = new ArrayList<>();
-//        private List<Stat> statuses = new ArrayList<>();
+        //        private List<Stat> statuses = new ArrayList<>();
         private List<TodoStatus> statuses = new ArrayList<>();
         private List<TodoList> todoLists = new ArrayList<>();
         private List<TodoCategory> categories = new ArrayList<>();
@@ -255,11 +250,11 @@ public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {
         public void setCurrentTodoListId(Integer currentTodoListId) {
             this.currentTodoListId = currentTodoListId;
             if (currentTodoListId == null) {
-               this.todoList=null;
+                this.todoList = null;
             } else {
                 for (TodoList li : getTodoLists()) {
                     if (li.getId() == currentTodoListId) {
-                        todoList=li;
+                        todoList = li;
                         break;
                     }
                 }
@@ -371,17 +366,17 @@ public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {
         }
 
         @Override
+        public Todo getCurrent() {
+            return super.getCurrent();
+        }
+
+        @Override
         public void setCurrent(Todo current) {
             super.setCurrent(current);
             TodoCategory c = current.getCategory();
             this.currentCategoryId = c == null ? null : c.getId();
             TodoStatus s = current.getStatus();
             this.currentStatusId = s == null ? null : s.getId();
-        }
-
-        @Override
-        public Todo getCurrent() {
-            return super.getCurrent();
         }
 
         public List<Todo> getAllTodos() {

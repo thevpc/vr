@@ -1,86 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
+
 and open the template in the editor.
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"   
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 
-      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+        >
 
-    <h:head>
-        
-    </h:head>
+<h:head>
 
-    <h:body>
+</h:head>
+
+<h:body>
 
 
-        <ui:composition template="/templates/private-template.xhtml">
-            <ui:define name="content">
-                <!--                <h:form id="buttonsForm">
-                
-                                     /.row 
-                                    <div class="row">
-                                        <p:outputLabel id="buttons">
-                                            <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
-                                        </p:outputLabel>
-                                    </div>
-                
-                                </h:form>-->
-                <h:form id="listForm">
-                        <div class="row">
-                            <p:selectOneMenu rendered="#{teacherStatFeedbackCtrl.model.teacherListEnabled}" value="#{teacherStatFeedbackCtrl.model.selectedTeacher}">
-                                <p:ajax listener="#{teacherStatFeedbackCtrl.onReloadFeedbacks}" update=":listForm"/>
-                                <f:selectItem itemLabel="Selectionner Enseignant..." itemValue="" />
-                                <f:selectItems value="#{teacherStatFeedbackCtrl.model.teachersList}" />
-                            </p:selectOneMenu>
+    <ui:composition template="/templates/private-template.xhtml">
+        <ui:define name="content">
+            <!--                <h:form id="buttonsForm">
 
-                            <p:outputLabel value="Grouper par " style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"/>
-                            <p:selectOneMenu value="#{teacherStatFeedbackCtrl.model.selectedFilterType}">
-                                <p:ajax listener="#{teacherStatFeedbackCtrl.onReloadFeedbacks}" update=":listForm"/>
-                                <f:selectItem itemLabel="selectionner..." itemValue="" />
-                                <f:selectItems value="#{teacherStatFeedbackCtrl.model.filterTypesList}" />
-                            </p:selectOneMenu>
-                        </div>
+                                 /.row
+                                <div class="row">
+                                    <p:outputLabel id="buttons">
+                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                    </p:outputLabel>
+                                </div>
+
+                            </h:form>-->
+            <h:form id="listForm">
+                <div class="row">
+                    <p:selectOneMenu rendered="#{teacherStatFeedbackCtrl.model.teacherListEnabled}"
+                                     value="#{teacherStatFeedbackCtrl.model.selectedTeacher}">
+                        <p:ajax listener="#{teacherStatFeedbackCtrl.onReloadFeedbacks}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner Enseignant..." itemValue=""/>
+                        <f:selectItems value="#{teacherStatFeedbackCtrl.model.teachersList}"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel value="Grouper par "
+                                   style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"/>
+                    <p:selectOneMenu value="#{teacherStatFeedbackCtrl.model.selectedFilterType}">
+                        <p:ajax listener="#{teacherStatFeedbackCtrl.onReloadFeedbacks}" update=":listForm"/>
+                        <f:selectItem itemLabel="selectionner..." itemValue=""/>
+                        <f:selectItems value="#{teacherStatFeedbackCtrl.model.filterTypesList}"/>
+                    </p:selectOneMenu>
+                </div>
+                <div class="row">
+                    <p:outputLabel value="Filtrer par "
+                                   style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"/>
+                    <p:selectOneMenu value="#{teacherStatFeedbackCtrl.model.selectedFilter}">
+                        <p:ajax listener="#{teacherStatFeedbackCtrl.onFilterChange}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                        <f:selectItems value="#{teacherStatFeedbackCtrl.model.filterList}"/>
+                    </p:selectOneMenu>
+                </div>
+                <div class="row">
+                    <p:outputLabel rendered="#{teacherStatFeedbackCtrl.model.rows.size() gt 0}"
+                                   value="#{teacherStatFeedbackCtrl.model.countFeedbacks}  Formulaires    ;    Complétude : #{teacherStatFeedbackCtrl.model.countResponseCompletion}%"/>
+                </div>
+                <ui:repeat var="r" value="#{teacherStatFeedbackCtrl.model.rows}">
                     <div class="row">
-                        <p:outputLabel value="Filtrer par " style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"/>
-                        <p:selectOneMenu value="#{teacherStatFeedbackCtrl.model.selectedFilter}">
-                            <p:ajax listener="#{teacherStatFeedbackCtrl.onFilterChange}" update=":listForm"/>
-                            <f:selectItem itemLabel="Selectionner ..." itemValue="" />
-                            <f:selectItems value="#{teacherStatFeedbackCtrl.model.filterList}" />
-                        </p:selectOneMenu>
-                    </div>
-                    <div class="row">
-                        <p:outputLabel rendered="#{teacherStatFeedbackCtrl.model.rows.size() gt 0}"
-                                       value="#{teacherStatFeedbackCtrl.model.countFeedbacks}  Formulaires    ;    Complétude : #{teacherStatFeedbackCtrl.model.countResponseCompletion}%"/>
-                    </div>
-                    <ui:repeat var="r" value="#{teacherStatFeedbackCtrl.model.rows}">
-                        <div class="row">
-                            <div class="table-responsive">
-                                <p:dataTable value="#{r.questions}" var="i" style="margin-top: 20px;">
-                                    <p:column headerText="#{r.title}" width="30%">
-                                        <p:outputLabel value="#{i.question.name}"/>
-                                    </p:column>
-                                    <p:column headerText="">
-                                        <p:chart class="vr-no-legend" type="bar" rendered="#{i.chart ne null}" model="#{i.chart}" style="height:100px;width: 400px"/>
-                                        <p:outputLabel rendered="#{i.chart eq null}" value="Aucune donnée"/>
-                                    </p:column>
-                                </p:dataTable>
-                            </div>
+                        <div class="table-responsive">
+                            <p:dataTable value="#{r.questions}" var="i" style="margin-top: 20px;">
+                                <p:column headerText="#{r.title}" width="30%">
+                                    <p:outputLabel value="#{i.question.name}"/>
+                                </p:column>
+                                <p:column headerText="">
+                                    <p:chart class="vr-no-legend" type="bar" rendered="#{i.chart ne null}"
+                                             model="#{i.chart}" style="height:100px;width: 400px"/>
+                                    <p:outputLabel rendered="#{i.chart eq null}" value="Aucune donnée"/>
+                                </p:column>
+                            </p:dataTable>
                         </div>
-                    </ui:repeat>
-                </h:form>
-            </ui:define>
+                    </div>
+                </ui:repeat>
+            </h:form>
+        </ui:define>
 
 
-        </ui:composition>
+    </ui:composition>
 
 
-    </h:body>
+</h:body>
 
 </html>

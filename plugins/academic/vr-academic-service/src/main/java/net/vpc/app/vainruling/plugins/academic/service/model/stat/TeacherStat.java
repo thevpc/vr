@@ -1,20 +1,21 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.stat;
 
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherSemestrialLoad;
 
 /**
- *
  * @author vpc
  */
 public class TeacherStat {
 
     private AcademicTeacher teacher;
+    private AcademicTeacherPeriod teacherPeriod;
     private AcademicTeacherSemestrialLoad[] semestrialLoad;
     private LoadValue value = new LoadValue();
     private LoadValue extra = new LoadValue();
@@ -22,7 +23,7 @@ public class TeacherStat {
     private LoadValue valueWeek = new LoadValue();
     private LoadValue extraWeek = new LoadValue();
     private LoadValue dueWeek = new LoadValue();
-//    private double valueWeekEquiv;
+    //    private double valueWeekEquiv;
     private double weeks;
     private double maxWeeks;
     private boolean includeIntents;
@@ -44,7 +45,7 @@ public class TeacherStat {
         this.due = due;
     }
 
-//    public double getValueWeekEquiv() {
+    //    public double getValueWeekEquiv() {
 //        return valueWeekEquiv;
 //    }
 //
@@ -127,4 +128,11 @@ public class TeacherStat {
         this.includeIntents = includeIntents;
     }
 
+    public AcademicTeacherPeriod getTeacherPeriod() {
+        return teacherPeriod;
+    }
+
+    public void setTeacherPeriod(AcademicTeacherPeriod teacherPeriod) {
+        this.teacherPeriod = teacherPeriod;
+    }
 }

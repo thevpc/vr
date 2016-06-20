@@ -16,13 +16,12 @@
 */
 package compressionFilters;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.zip.GZIPOutputStream;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
 
 /**
  * Implementation of <b>ServletOutputStream</b> that works with
@@ -36,46 +35,29 @@ public class CompressionResponseStream extends ServletOutputStream {
     // ----------------------------------------------------------- Constructors
 
     /**
-     * Construct a servlet output stream associated with the specified Response.
-     *
-     * @param responseWrapper The associated response wrapper
-     * @param originalOutput the output stream
+     * The response with which this servlet output stream is associated.
      */
-    public CompressionResponseStream(
-            CompressionServletResponseWrapper responseWrapper,
-            ServletOutputStream originalOutput) {
-
-        super();
-        closed = false;
-        this.response = responseWrapper;
-        this.output = originalOutput;
-    }
+    protected final CompressionServletResponseWrapper response;
 
 
     // ----------------------------------------------------- Instance Variables
-
-
+    /**
+     * The underlying servlet output stream to which we should write data.
+     */
+    protected final ServletOutputStream output;
     /**
      * The threshold number which decides to compress or not.
      * Users can configure in web.xml to set it to fit their needs.
      */
     protected int compressionThreshold = 0;
-
     /**
      * The compression buffer size to avoid chunking
      */
     protected int compressionBuffer = 0;
-
     /**
      * The mime types to compress
      */
     protected String[] compressionMimeTypes = {"text/html", "text/xml", "text/plain"};
-
-    /**
-     * Debug level
-     */
-    private int debug = 0;
-
     /**
      * The buffer through which all of our output bytes are passed.
      */
@@ -95,16 +77,26 @@ public class CompressionResponseStream extends ServletOutputStream {
      * Has this stream been closed?
      */
     protected boolean closed = false;
+    /**
+     * Debug level
+     */
+    private int debug = 0;
 
     /**
-     * The response with which this servlet output stream is associated.
+     * Construct a servlet output stream associated with the specified Response.
+     *
+     * @param responseWrapper The associated response wrapper
+     * @param originalOutput  the output stream
      */
-    protected final CompressionServletResponseWrapper response;
+    public CompressionResponseStream(
+            CompressionServletResponseWrapper responseWrapper,
+            ServletOutputStream originalOutput) {
 
-    /**
-     * The underlying servlet output stream to which we should write data.
-     */
-    protected final ServletOutputStream output;
+        super();
+        closed = false;
+        this.response = responseWrapper;
+        this.output = originalOutput;
+    }
 
 
     // --------------------------------------------------------- Public Methods
@@ -124,7 +116,7 @@ public class CompressionResponseStream extends ServletOutputStream {
         this.compressionThreshold = compressionThreshold;
         buffer = new byte[this.compressionThreshold];
         if (debug > 1) {
-            System.out.println("compressionThreshold is set to "+ this.compressionThreshold);
+            System.out.println("compressionThreshold is set to " + this.compressionThreshold);
         }
     }
 
@@ -134,7 +126,7 @@ public class CompressionResponseStream extends ServletOutputStream {
     protected void setCompressionBuffer(int compressionBuffer) {
         this.compressionBuffer = compressionBuffer;
         if (debug > 1) {
-            System.out.println("compressionBuffer is set to "+ this.compressionBuffer);
+            System.out.println("compressionBuffer is set to " + this.compressionBuffer);
         }
     }
 
@@ -223,14 +215,13 @@ public class CompressionResponseStream extends ServletOutputStream {
      * Write the specified byte to our output stream.
      *
      * @param b The byte to be written
-     *
-     * @exception IOException if an input/output error occurs
+     * @throws IOException if an input/output error occurs
      */
     @Override
     public void write(int b) throws IOException {
 
         if (debug > 1) {
-            System.out.println("write "+b+" in CompressionResponseStream ");
+            System.out.println("write " + b + " in CompressionResponseStream ");
         }
         if (closed)
             throw new IOException("Cannot write to a closed output stream");
@@ -249,8 +240,7 @@ public class CompressionResponseStream extends ServletOutputStream {
      * to our output stream.
      *
      * @param b The byte array to be written
-     *
-     * @exception IOException if an input/output error occurs
+     * @throws IOException if an input/output error occurs
      */
     @Override
     public void write(byte b[]) throws IOException {
@@ -258,7 +248,6 @@ public class CompressionResponseStream extends ServletOutputStream {
         write(b, 0, b.length);
 
     }
-
 
 
     /**
@@ -285,11 +274,10 @@ public class CompressionResponseStream extends ServletOutputStream {
      * Write <code>len</code> bytes from the specified byte array, starting
      * at the specified offset, to our output stream.
      *
-     * @param b The byte array containing the bytes to be written
+     * @param b   The byte array containing the bytes to be written
      * @param off Zero-relative starting offset of the bytes to be written
      * @param len The number of bytes to be written
-     *
-     * @exception IOException if an input/output error occurs
+     * @throws IOException if an input/output error occurs
      */
     @Override
     public void write(byte b[], int off, int len) throws IOException {
@@ -415,11 +403,11 @@ public class CompressionResponseStream extends ServletOutputStream {
      * Checks if any entry in the string array starts with the specified value
      *
      * @param sArray the StringArray
-     * @param value string
+     * @param value  string
      */
     private boolean startsWithStringArray(String sArray[], String value) {
         if (value == null)
-           return false;
+            return false;
         for (int i = 0; i < sArray.length; i++) {
             if (value.startsWith(sArray[i])) {
                 return true;

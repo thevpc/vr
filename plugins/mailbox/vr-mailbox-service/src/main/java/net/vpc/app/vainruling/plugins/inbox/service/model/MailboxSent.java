@@ -1,25 +1,19 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.inbox.service.model;
 
-import java.sql.Timestamp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Sequence;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Properties;
-import net.vpc.upa.config.Property;
+import net.vpc.upa.config.*;
 import net.vpc.upa.types.DateTime;
 
+import java.sql.Timestamp;
+
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "sendTime")
@@ -35,7 +29,7 @@ public class MailboxSent {
 
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA))
-    @Field(max = "30000")
+    @Field(max = "max")
     private String content;
 
     @Field(modifiers = UserFieldModifier.SUMMARY)
@@ -56,7 +50,7 @@ public class MailboxSent {
     @Field(defaultValue = "false", modifiers = UserFieldModifier.SUMMARY)
     private boolean templateMessage;
 
-    @Field(defaultValue = "false",modifiers = UserFieldModifier.SUMMARY)
+    @Field(defaultValue = "false", modifiers = UserFieldModifier.SUMMARY)
     private boolean externalMessage;
 
     @Field(modifiers = UserFieldModifier.SUMMARY)
@@ -80,6 +74,7 @@ public class MailboxSent {
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
     private boolean archived;
+    private boolean richText;
     private boolean deleted;
     private String deletedBy;
     private Timestamp deletedOn;
@@ -236,4 +231,11 @@ public class MailboxSent {
         this.externalMessage = externalMessage;
     }
 
+    public boolean isRichText() {
+        return richText;
+    }
+
+    public void setRichText(boolean richText) {
+        this.richText = richText;
+    }
 }

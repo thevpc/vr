@@ -1,23 +1,11 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.web.load;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfo;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.faces.model.SelectItem;
-import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherStat;
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
@@ -26,13 +14,20 @@ import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.StatCache;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfo;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
+import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherStat;
+
+import javax.faces.model.SelectItem;
+import java.util.*;
 
 /**
- *
  * @author vpc
  */
 public abstract class AbstractCourseLoadCtrl {
@@ -86,6 +81,8 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public void onRefresh() {
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        int periodId = core.findAppConfig().getMainPeriod().getId();
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         List<SelectItem> allValidFilters = new ArrayList<>();
         for (AcademicSemester s : a.findSemesters()) {
@@ -106,7 +103,7 @@ public abstract class AbstractCourseLoadCtrl {
         boolean intended = isFiltered("intended");
         boolean nonintended = isFiltered("non-intended");
         boolean conflict = isFiltered("conflict");
-        
+
         if (!assigned && !nonassigned) {
             assigned = true;
             nonassigned = true;
@@ -124,14 +121,14 @@ public abstract class AbstractCourseLoadCtrl {
         reset();
 
         Map<Integer, AcademicCourseAssignmentInfo> all = new HashMap<>();
-        for (AcademicCourseAssignmentInfo b : a.findCourseAssignmentsAndIntents(null, null, cache)) {
+        for (AcademicCourseAssignmentInfo b : a.findCourseAssignmentsAndIntents(periodId, null, null, cache)) {
             all.put(b.getAssignment().getId(), b);
         }
         getModel().setAll(all);
         HashSet<Integer> visited = new HashSet<Integer>();
         if (t != null) {
-            getModel().setMineS1(a.findCourseAssignmentsAndIntents(t.getId(), "S1", cache));
-            getModel().setMineS2(a.findCourseAssignmentsAndIntents(t.getId(), "S2", cache));
+            getModel().setMineS1(a.findCourseAssignmentsAndIntents(periodId, t.getId(), "S1", cache));
+            getModel().setMineS2(a.findCourseAssignmentsAndIntents(periodId, t.getId(), "S2", cache));
             List<AcademicCourseAssignment> mine = new ArrayList<>();
             for (AcademicCourseAssignmentInfo m : getModel().getMineS1()) {
                 mine.add(m.getAssignment());
@@ -141,11 +138,11 @@ public abstract class AbstractCourseLoadCtrl {
                 mine.add(m.getAssignment());
                 visited.add(m.getAssignment().getId());
             }
-            getModel().setStat(a.evalTeacherStat(t.getId(), null, null, mine, false, cache));
+            getModel().setStat(a.evalTeacherStat(periodId, t.getId(), null, null, mine, false, cache));
         }
 
         List<AcademicCourseAssignmentInfo> others = new ArrayList<>();
-        for (AcademicCourseAssignmentInfo c : a.findCourseAssignmentsAndIntents(null, null, cache)) {
+        for (AcademicCourseAssignmentInfo c : a.findCourseAssignmentsAndIntents(periodId, null, null, cache)) {
             if (!visited.contains(c.getAssignment().getId())) {
                 boolean _assigned = c.isAssigned();
                 HashSet<String> s = new HashSet<>(c.getIntentsSet());
@@ -275,8 +272,8 @@ public abstract class AbstractCourseLoadCtrl {
                         }
                     }
                 }
-                d = (t.getCoursePlan() != null && t.getCoursePlan().getCourseLevel().getAcademicClass() != null 
-                        && t.getCoursePlan().getCourseLevel().getAcademicClass().getProgram() != null) ? 
+                d = (t.getCoursePlan() != null && t.getCoursePlan().getCourseLevel().getAcademicClass() != null
+                        && t.getCoursePlan().getCourseLevel().getAcademicClass().getProgram() != null) ?
                         t.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment() : null;
                 if (d != null) {
                     if (userSession.allowed("Custom.Education.CourseLoadUpdateIntents")) {
@@ -317,7 +314,7 @@ public abstract class AbstractCourseLoadCtrl {
                         }
                     }
                 }
-                d = (t.getCoursePlan() != null && t.getCoursePlan().getCourseLevel().getAcademicClass() != null && t.getCoursePlan().getCourseLevel().getAcademicClass().getProgram() != null) ? 
+                d = (t.getCoursePlan() != null && t.getCoursePlan().getCourseLevel().getAcademicClass() != null && t.getCoursePlan().getCourseLevel().getAcademicClass().getProgram() != null) ?
                         t.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment() : null;
                 if (d != null) {
                     if (userSession.allowed("Custom.Education.CourseLoadUpdateAssignments")) {

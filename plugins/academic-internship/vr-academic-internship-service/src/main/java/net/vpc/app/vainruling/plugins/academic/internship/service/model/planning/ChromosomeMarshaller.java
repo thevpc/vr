@@ -9,5 +9,6 @@ import org.jgap.InvalidConfigurationException;
  */
 public interface ChromosomeMarshaller {
     public Gene marshall(PlanningActivityTableExt activityTable) throws InvalidConfigurationException;
-    public void unmarshall(IChromosome iChromosome,PlanningActivityTableExt activityTable);
+
+    public void unmarshall(IChromosome iChromosome, PlanningActivityTableExt activityTable);
 }

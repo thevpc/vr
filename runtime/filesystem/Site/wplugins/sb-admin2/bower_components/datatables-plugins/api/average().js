@@ -21,12 +21,12 @@
  *    table.cells( 0, [3,4] ).data().average();
  */
 
-jQuery.fn.dataTable.Api.register( 'average()', function () {
+jQuery.fn.dataTable.Api.register('average()', function () {
     var data = this.flatten();
-    var sum = data.reduce( function ( a, b ) {
-        return (a*1) + (b*1); // cast values in-case they are strings
-    } );
- 
+    var sum = data.reduce(function (a, b) {
+        return (a * 1) + (b * 1); // cast values in-case they are strings
+    });
+
     return sum / data.length;
-} );
+});
 

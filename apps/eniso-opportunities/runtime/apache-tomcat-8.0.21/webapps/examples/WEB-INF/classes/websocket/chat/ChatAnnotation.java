@@ -16,22 +16,16 @@
  */
 package websocket.chat;
 
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
+import util.HTMLFilter;
+
+import javax.websocket.*;
+import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
-
-import org.apache.juli.logging.Log;
-import org.apache.juli.logging.LogFactory;
-
-import util.HTMLFilter;
 
 @ServerEndpoint(value = "/websocket/chat")
 public class ChatAnnotation {
@@ -49,42 +43,6 @@ public class ChatAnnotation {
     public ChatAnnotation() {
         nickname = GUEST_PREFIX + connectionIds.getAndIncrement();
     }
-
-
-    @OnOpen
-    public void start(Session session) {
-        this.session = session;
-        connections.add(this);
-        String message = String.format("* %s %s", nickname, "has joined.");
-        broadcast(message);
-    }
-
-
-    @OnClose
-    public void end() {
-        connections.remove(this);
-        String message = String.format("* %s %s",
-                nickname, "has disconnected.");
-        broadcast(message);
-    }
-
-
-    @OnMessage
-    public void incoming(String message) {
-        // Never trust the client
-        String filteredMessage = String.format("%s: %s",
-                nickname, HTMLFilter.filter(message.toString()));
-        broadcast(filteredMessage);
-    }
-
-
-
-
-    @OnError
-    public void onError(Throwable t) throws Throwable {
-        log.error("Chat Error: " + t.toString(), t);
-    }
-
 
     private static void broadcast(String msg) {
         for (ChatAnnotation client : connections) {
@@ -105,5 +63,34 @@ public class ChatAnnotation {
                 broadcast(message);
             }
         }
+    }
+
+    @OnOpen
+    public void start(Session session) {
+        this.session = session;
+        connections.add(this);
+        String message = String.format("* %s %s", nickname, "has joined.");
+        broadcast(message);
+    }
+
+    @OnClose
+    public void end() {
+        connections.remove(this);
+        String message = String.format("* %s %s",
+                nickname, "has disconnected.");
+        broadcast(message);
+    }
+
+    @OnMessage
+    public void incoming(String message) {
+        // Never trust the client
+        String filteredMessage = String.format("%s: %s",
+                nickname, HTMLFilter.filter(message.toString()));
+        broadcast(filteredMessage);
+    }
+
+    @OnError
+    public void onError(Throwable t) throws Throwable {
+        log.error("Chat Error: " + t.toString(), t);
     }
 }

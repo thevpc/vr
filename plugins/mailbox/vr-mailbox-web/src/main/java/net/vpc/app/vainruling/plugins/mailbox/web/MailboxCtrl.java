@@ -1,35 +1,28 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.mailbox.web;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
-import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UCtrlData;
 import net.vpc.app.vainruling.core.web.UCtrlProvider;
+import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
+import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDefFactory;
-import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
 import net.vpc.app.vainruling.core.web.obj.ViewContext;
 import net.vpc.app.vainruling.core.web.obj.dialog.ProfileExprDialogCtrl;
-import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
+import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxSent;
@@ -39,8 +32,15 @@ import net.vpc.upa.UPA;
 import org.primefaces.event.SelectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.faces.bean.ManagedBean;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @UCtrl
@@ -54,7 +54,10 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     private PropertyViewManager propertyViewManager;
 
     public void onNew() {
-        getModel().setNewItem(new MailboxSent());
+
+        MailboxSent item = new MailboxSent();
+        item.setRichText(true);
+        getModel().setNewItem(item);
         getModel().setMode(EditCtrlMode.NEW);
         getModel().setCurrent(null);
     }
@@ -70,17 +73,17 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         }
         switch (config.folder) {
             case CURRENT: {
-                return new UCtrlData(getPreferredTitle(config.folder, config.sent), "modules/mailbox/mailbox", "fa-table",
+                return new UCtrlData(getPreferredTitle(config.folder, config.sent), "modules/mailbox/mailbox", "fa-table", "Custom.Site.Mailbox",
                         new BreadcrumbItem("Social", "fa-dashboard", "", "")
                 );
             }
             case DELETED: {
-                return new UCtrlData(getPreferredTitle(config.folder, config.sent), "modules/mailbox/mailbox", "fa-table",
+                return new UCtrlData(getPreferredTitle(config.folder, config.sent), "modules/mailbox/mailbox", "fa-table", "Custom.Site.Mailbox",
                         new BreadcrumbItem("Social", "fa-dashboard", "", "")
                 );
             }
             case ARCHIVED: {
-                return new UCtrlData(getPreferredTitle(config.folder, config.sent), "modules/mailbox/mailbox", "fa-table",
+                return new UCtrlData(getPreferredTitle(config.folder, config.sent), "modules/mailbox/mailbox", "fa-table", "Custom.Site.Mailbox",
                         new BreadcrumbItem("Social", "fa-dashboard", "", "")
                 );
             }
@@ -125,8 +128,8 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     public List<VRMenuDef> createVRMenuDefList() {
         return Arrays.asList(
                 new VRMenuDef("Mes Messages", "/Social", "mailbox", "{folder:'CURRENT',sent:false}", "Custom.Site.Mailbox", "")//, 
-        //                new VRMenuDef("Messages Envoyés", "/Social", "mailbox", "{folder:'CURRENT',sent:true}", "Custom.Site.Outbox","")
-        //                , new VRMenuDef("Mes Messages Archivés", "/Social", "mailbox", "{folder:'ARCHIVED'}", "Custom.Site.Mailbox.Archived")
+                //                new VRMenuDef("Messages Envoyés", "/Social", "mailbox", "{folder:'CURRENT',sent:true}", "Custom.Site.Outbox","")
+                //                , new VRMenuDef("Mes Messages Archivés", "/Social", "mailbox", "{folder:'ARCHIVED'}", "Custom.Site.Mailbox.Archived")
         );
     }
 
@@ -225,7 +228,9 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     public void onCancelCurrent() {
         FacesUtils.clearMessages();
-        getModel().setNewItem(new MailboxSent());
+        MailboxSent item = new MailboxSent();
+        item.setRichText(true);
+        getModel().setNewItem(item);
         getModel().setMode(EditCtrlMode.LIST);
     }
 
@@ -277,20 +282,23 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         } catch (Exception e) {
             FacesUtils.addErrorMessage("Envoi impossible : " + e.getMessage());
         }
-        getModel().setNewItem(new MailboxSent());
+        MailboxSent item = new MailboxSent();
+        item.setRichText(true);
+        getModel().setNewItem(item);
         getModel().setMode(EditCtrlMode.LIST);
         onRefresh();
     }
-    
-    public String evalProfileMinusLogin(String profile,String login){
-        if(StringUtils.isEmpty(login) || StringUtils.isEmpty(login)){
+
+    public String evalProfileMinusLogin(String profile, String login) {
+        if (StringUtils.isEmpty(login) || StringUtils.isEmpty(login)) {
             return "";
         }
-        if(profile.trim().equals(login)){
+        if (profile.trim().equals(login)) {
             return "";
         }
-        return "("+profile+")-"+login;
+        return "(" + profile + ")-" + login;
     }
+
     public void onReply() {
         FacesUtils.clearMessages();
         MailboxSent s = new MailboxSent();
@@ -298,9 +306,10 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         if (current != null && current.recieved) {
             MailboxReceived r = (MailboxReceived) current.msg;
             String ee = evalProfileMinusLogin(r.getToProfiles(), r.getOwner().getLogin());
-            s.setToProfiles("" + r.getSender().getLogin() + (StringUtils.isEmpty(ee)?"":",("+ee+")"));
+            s.setToProfiles("" + r.getSender().getLogin() + (StringUtils.isEmpty(ee) ? "" : ",(" + ee + ")"));
             s.setCcProfiles(r.getCcProfiles());
             s.setSubject("RE:" + r.getSubject());
+            s.setRichText(true);
             getModel().setNewItem(s);
             getModel().setMode(EditCtrlMode.NEW);
             getModel().setCurrent(null);
@@ -367,37 +376,6 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         return false;
     }
 
-    public static class Row {
-
-        Message value;
-        boolean selected;
-        boolean hasAttachment;
-
-        public Message getValue() {
-            return value;
-        }
-
-        public void setValue(Message value) {
-            this.value = value;
-        }
-
-        public boolean isSelected() {
-            return selected;
-        }
-
-        public void setSelected(boolean selected) {
-            this.selected = selected;
-        }
-
-        public boolean isHasAttachment() {
-            return hasAttachment;
-        }
-
-        public void setHasAttachment(boolean hasAttachment) {
-            this.hasAttachment = hasAttachment;
-        }
-    }
-
     public boolean isListMode() {
         try {
 
@@ -454,6 +432,37 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             } else if ("bcc".equals(d)) {
                 getModel().getNewItem().setBccProfiles((String) o.getValue());
             }
+        }
+    }
+
+    public static class Row {
+
+        Message value;
+        boolean selected;
+        boolean hasAttachment;
+
+        public Message getValue() {
+            return value;
+        }
+
+        public void setValue(Message value) {
+            this.value = value;
+        }
+
+        public boolean isSelected() {
+            return selected;
+        }
+
+        public void setSelected(boolean selected) {
+            this.selected = selected;
+        }
+
+        public boolean isHasAttachment() {
+            return hasAttachment;
+        }
+
+        public void setHasAttachment(boolean hasAttachment) {
+            this.hasAttachment = hasAttachment;
         }
     }
 
@@ -545,19 +554,19 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             return ((MailboxSent) msg).getContent();
         }
 
-        public Date getSendTime() {
-            if (recieved) {
-                return ((MailboxReceived) msg).getSendTime();
-            }
-            return ((MailboxSent) msg).getSendTime();
-        }
-
         public void setContent(String value) {
             if (recieved) {
                 ((MailboxReceived) msg).setContent(value);
             } else {
                 ((MailboxSent) msg).setContent(value);
             }
+        }
+
+        public Date getSendTime() {
+            if (recieved) {
+                return ((MailboxReceived) msg).getSendTime();
+            }
+            return ((MailboxSent) msg).getSendTime();
         }
 
         public boolean isRead() {

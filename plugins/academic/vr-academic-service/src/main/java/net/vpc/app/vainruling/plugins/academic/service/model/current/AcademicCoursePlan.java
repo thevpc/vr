@@ -1,22 +1,17 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
-import java.sql.Timestamp;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Formula;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Properties;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
+
+import java.sql.Timestamp;
 
 /**
  * cours (dans un plan d'études) Module
@@ -31,6 +26,13 @@ public class AcademicCoursePlan {
     @Sequence
 
     private int id;
+
+    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Properties(
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:120px")
+    )
+    private AppPeriod period;
+
     @Field(defaultValue = "?")
     private String code;
     private String name;
@@ -92,7 +94,7 @@ public class AcademicCoursePlan {
     private double credits;
     @Field(defaultValue = "0")
     private double ects;
-//    private double valueDU;
+    //    private double valueDU;
     //Unite enseignement/UE
 //    @Field(modifiers = {UserFieldModifier.SUMMARY})
     private AcademicCourseGroup courseGroup;
@@ -114,9 +116,9 @@ public class AcademicCoursePlan {
 
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
-    @Formula(value = "CurrentTimestamp()",type = FormulaType.PERSIST)
+    @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
-    @Formula(value = "CurrentTimestamp()",type = {FormulaType.PERSIST,FormulaType.UPDATE})
+    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
 
     public int getId() {
@@ -207,7 +209,7 @@ public class AcademicCoursePlan {
         this.valueTP = valueTP;
     }
 
-//    public double getValueDU() {
+    //    public double getValueDU() {
 //        return valueDU;
 //    }
 //
@@ -224,10 +226,10 @@ public class AcademicCoursePlan {
 
     @Override
     public String toString() {
-        return "CoursePlan{" + "name=" + name 
+        return "CoursePlan{" + "name=" + name
 //                + ", department=" + program 
 //                + ", studentClass=" + studentClass 
-                + ", moduleLevel=" + courseLevel 
+                + ", moduleLevel=" + courseLevel
 //                + ", semester=" + semester 
                 + ", valueC=" + valueC + ", valueTD=" + valueTD + ", valueTP=" + valueTP + ", valuePM=" + valuePM + '}';
     }
@@ -399,7 +401,12 @@ public class AcademicCoursePlan {
     public void setUpdateDate(Timestamp updateDate) {
         this.updateDate = updateDate;
     }
-    
 
-    
+    public AppPeriod getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(AppPeriod period) {
+        this.period = period;
+    }
 }

@@ -1,18 +1,18 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.stat;
 
-import java.util.HashMap;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 
+import java.util.HashMap;
+
 /**
- *
  * @author vpc
  */
 public class GlobalAssignmentStat {
@@ -159,7 +159,7 @@ public class GlobalAssignmentStat {
     public LoadValue getAvgExtraWeek() {
         return avgExtraWeek;
     }
-    
+
 //    public void setAvgExtraWeek(LoadValue avgExtraWeek) {
 //        this.avgExtraWeek = avgExtraWeek;
 //    }

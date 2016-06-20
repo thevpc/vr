@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.util;
@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
  * @author vpc
  */
 public class NamedDoubles {
@@ -19,7 +18,7 @@ public class NamedDoubles {
     public boolean containsKey(String name) {
         return vals.containsKey(name);
     }
-    
+
     public double get(String name) {
         return get(name, 0);
     }
@@ -40,7 +39,7 @@ public class NamedDoubles {
     public double inc(String name) {
         return add(name, 1);
     }
-    
+
     public double add(String name, double x) {
         double v = get(name) + x;
         set(name, v);

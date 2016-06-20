@@ -1,11 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 
-import java.util.Map;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
@@ -17,8 +16,9 @@ import net.vpc.upa.Field;
 import net.vpc.upa.FieldModifier;
 import net.vpc.upa.types.DataType;
 
+import java.util.Map;
+
 /**
- *
  * @author vpc
  */
 public class FieldPropertyViewInfo {
@@ -36,10 +36,6 @@ public class FieldPropertyViewInfo {
     public boolean disabled;
     public DataType dataType;
 
-    public static FieldPropertyViewInfo build(Field field, DataType dataType, Map<String, Object> configuration) {
-        return new FieldPropertyViewInfo(field, dataType, configuration);
-    }
-
     private FieldPropertyViewInfo(Field field, DataType dataType, Map<String, Object> configuration) {
         this.dataType = dataType != null ? dataType : field.getDataType();
         if (field != null) {
@@ -49,8 +45,8 @@ public class FieldPropertyViewInfo {
             insert_seq = field.getModifiers().contains(FieldModifier.PERSIST_SEQUENCE);
             update = !id && field.getModifiers().contains(FieldModifier.UPDATE_DEFAULT);
         } else {
-            insert=true;
-            update=true;
+            insert = true;
+            update = true;
             //
         }
         nullable = dataType == null ? true : dataType.isNullable();
@@ -61,8 +57,8 @@ public class FieldPropertyViewInfo {
         if (field != null) {
             visible
                     = insertMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_CREATE, null, !insert_seq)
-                            : updateMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_UPDATE, null, !insert_seq)
-                                    : true;
+                    : updateMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_UPDATE, null, !insert_seq)
+                    : true;
         } else {
             visible = true;
         }
@@ -106,8 +102,8 @@ public class FieldPropertyViewInfo {
                     update = admin;
                 }
             }
-            if(!update){
-                disabled=true;
+            if (!update) {
+                disabled = true;
             }
         }
 
@@ -120,9 +116,13 @@ public class FieldPropertyViewInfo {
                     insert = admin;
                 }
             }
-            if(!insert){
-                disabled=true;
+            if (!insert) {
+                disabled = true;
             }
         }
+    }
+
+    public static FieldPropertyViewInfo build(Field field, DataType dataType, Map<String, Object> configuration) {
+        return new FieldPropertyViewInfo(field, dataType, configuration);
     }
 }

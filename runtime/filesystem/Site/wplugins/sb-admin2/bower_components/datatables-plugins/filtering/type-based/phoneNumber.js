@@ -7,7 +7,7 @@
  *
  * This filtering plug-in will allow both forms to be matched be providing both
  * the formatted and de-formatted data to the table's search.
- * 
+ *
  *  @summary Make phone numbers searchable formatted or unformatted
  *  @name Phone number
  *  @author Allan Jardine
@@ -22,10 +22,10 @@
  *    } );
  */
 
-jQuery.fn.DataTable.ext.type.search.phoneNumber = function ( data ) {
-    return ! data ?
+jQuery.fn.DataTable.ext.type.search.phoneNumber = function (data) {
+    return !data ?
         '' :
         typeof data === 'string' ?
-            data + data.replace(/[ \-]/g, '') :
+        data + data.replace(/[ \-]/g, '') :
             data;
 };

@@ -1,26 +1,20 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.articles.service.model;
 
-import java.sql.Timestamp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Properties;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
 import net.vpc.upa.types.DateTime;
 
+import java.sql.Timestamp;
+
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "deleted, archived, position desc, sendTime desc")
@@ -41,6 +35,8 @@ public class ArticlesItem {
             @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.PROFILE_EXPRESSION))
     private String recipientProfiles;
 
+    private boolean includeSender;
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private ArticlesDisposition disposition;
 
@@ -49,13 +45,13 @@ public class ArticlesItem {
 
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.RICHTEXTAREA))
-    @Field(max = "32000")
+    @Field(max = "max")
     private String content;
 
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Attatchment"),
-        @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
-        @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Attatchment"),
+            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
+            @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
     }
     )
     @Field(max = "1024")
@@ -66,8 +62,8 @@ public class ArticlesItem {
     private String linkClassStyle;
 
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
-        @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
+            @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
     }
     )
     private String imageURL;
@@ -248,5 +244,13 @@ public class ArticlesItem {
 
     public void setFilterExpression(String filterExpression) {
         this.filterExpression = filterExpression;
+    }
+
+    public boolean isIncludeSender() {
+        return includeSender;
+    }
+
+    public void setIncludeSender(boolean includeSender) {
+        this.includeSender = includeSender;
     }
 }

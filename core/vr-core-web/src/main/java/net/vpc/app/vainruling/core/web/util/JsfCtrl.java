@@ -1,27 +1,27 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.util;
 
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.common.strings.StringUtils;
+import org.springframework.stereotype.Controller;
+
+import javax.faces.bean.ManagedBean;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import javax.faces.bean.ManagedBean;
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
-import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.common.strings.StringUtils;
-import org.springframework.stereotype.Controller;
 
 /**
- *
  * @author vpc
  */
 @ManagedBean
@@ -50,7 +50,7 @@ public class JsfCtrl {
     }
 
     public boolean isFSPath(String path) {
-         if (path == null) {
+        if (path == null) {
             path = "";
         }
         if (StringUtils.isEmpty(path)) {
@@ -61,6 +61,7 @@ public class JsfCtrl {
         }
         return true;
     }
+
     public String url(String path) {
         if (path == null) {
             path = "";
@@ -262,10 +263,11 @@ public class JsfCtrl {
     public String getFacesContextPrefix() {
         return "r";
     }
-    
+
     public String getFacesContext() {
-        return getContext()+"/"+getFacesContextPrefix();
+        return getContext() + "/" + getFacesContextPrefix();
     }
+
     public String getContext() {
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         return req.getContextPath();
@@ -289,5 +291,5 @@ public class JsfCtrl {
         }
         return loc;
     }
-    
+
 }

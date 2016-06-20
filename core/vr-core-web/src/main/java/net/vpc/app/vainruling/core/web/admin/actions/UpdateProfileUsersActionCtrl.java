@@ -1,18 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.admin.actions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
@@ -23,8 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.faces.bean.ManagedBean;
+import java.util.*;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @Component
@@ -36,20 +31,6 @@ public class UpdateProfileUsersActionCtrl {
     @Autowired
     private CorePlugin core;
     private Model model = new Model();
-
-    public static class Config {
-
-        private String profile;
-
-        public String getProfile() {
-            return profile;
-        }
-
-        public void setProfile(String profile) {
-            this.profile = profile;
-        }
-
-    }
 
     public void openDialog(String config) {
         openDialog(VrHelper.parseJSONObject(config, Config.class));
@@ -69,13 +50,13 @@ public class UpdateProfileUsersActionCtrl {
                 }
             };
             Collections.sort(list[0], comp);
-            Collections.sort(list[1],comp);
+            Collections.sort(list[1], comp);
             DualListModel<AppUser> v = new DualListModel<AppUser>();
             v.setSource(list[1]);
             v.setTarget(list[0]);
             getModel().setValues(v);
             getModel().setProfileId(profileId);
-        }else{
+        } else {
             DualListModel<AppUser> v = new DualListModel<AppUser>();
             getModel().setValues(v);
             getModel().setProfileId(-1);
@@ -88,17 +69,15 @@ public class UpdateProfileUsersActionCtrl {
 
     }
 
-  
-
     public void save() {
         List t = getModel().getValues().getTarget();
-        List<String> users=new ArrayList<>();
+        List<String> users = new ArrayList<>();
         for (Object tt : t) {
-             String name=null;
-            if(tt instanceof AppUser){
-                name=((AppUser)tt).getLogin();
-            }else{
-                name=((String)tt);
+            String name = null;
+            if (tt instanceof AppUser) {
+                name = ((AppUser) tt).getLogin();
+            } else {
+                name = ((String) tt);
             }
             users.add(name);
         }
@@ -112,6 +91,24 @@ public class UpdateProfileUsersActionCtrl {
 
     public void fireEventExtraDialogClosed() {
         RequestContext.getCurrentInstance().closeDialog(null);
+    }
+
+    public Model getModel() {
+        return model;
+    }
+
+    public static class Config {
+
+        private String profile;
+
+        public String getProfile() {
+            return profile;
+        }
+
+        public void setProfile(String profile) {
+            this.profile = profile;
+        }
+
     }
 
     public static class Model {
@@ -134,12 +131,8 @@ public class UpdateProfileUsersActionCtrl {
         public void setProfileId(int profileId) {
             this.profileId = profileId;
         }
-        
 
-    }
 
-    public Model getModel() {
-        return model;
     }
 
 }

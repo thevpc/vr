@@ -1,14 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.internship.web.actions;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.internship.service.AcademicInternshipPlugin;
@@ -18,8 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.faces.bean.ManagedBean;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @Component
@@ -38,11 +38,11 @@ public class CreateIntershipsActionCtrl {
         getModel().setProfile("");
         getModel().setInternship(internship);
 
-        if (internship.getBoard()== null) {
+        if (internship.getBoard() == null) {
             getModel().setMessage("Merci de preciser le Comité");
         } else if (internship.getInternshipStatus() == null) {
             getModel().setMessage("Merci de preciser l'étape");
-        }else{
+        } else {
             getModel().setDisabled(false);
         }
 
@@ -55,7 +55,7 @@ public class CreateIntershipsActionCtrl {
     }
 
     public void save() {
-        VrApp.getBean(AcademicInternshipPlugin.class).generateInternships(getModel().getInternship(), getModel().getProfile());
+        VrApp.getBean(AcademicInternshipPlugin.class).generateInternships(getModel().getInternship().getId(), getModel().getProfile());
     }
 
     public void onChange() {
@@ -64,6 +64,10 @@ public class CreateIntershipsActionCtrl {
 
     public void fireEventExtraDialogClosed() {
         RequestContext.getCurrentInstance().closeDialog(null);
+    }
+
+    public Model getModel() {
+        return model;
     }
 
     public static class Model {
@@ -105,10 +109,6 @@ public class CreateIntershipsActionCtrl {
             this.message = message;
         }
 
-    }
-
-    public Model getModel() {
-        return model;
     }
 
 }

@@ -1,0 +1,101 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ *
+ * and open the template in the editor.
+ */
+package net.vpc.app.vainruling.plugins.academic.service.model.config;
+
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
+import net.vpc.upa.RelationshipType;
+import net.vpc.upa.UserFieldModifier;
+import net.vpc.upa.config.*;
+
+/**
+ * @author vpc
+ */
+@Entity(listOrder = "contact.fullName")
+@Path("Contact")
+@Properties(
+        @Property(name = "cache.navigationDepth", type = "int", value = "1")
+)
+public class AcademicTeacherPeriod {
+
+    @Id
+    @Sequence
+
+    private int id;
+    @Field(modifiers = UserFieldModifier.MAIN)
+    private AppPeriod period;
+    @ManyToOne(type = RelationshipType.COMPOSITION)
+    private AcademicTeacher teacher;
+
+    @Field(modifiers = UserFieldModifier.SUMMARY)
+    private AcademicTeacherDegree degree;
+
+    @Field(modifiers = UserFieldModifier.SUMMARY)
+    private AcademicTeacherSituation situation;
+    @Field(modifiers = UserFieldModifier.SUMMARY)
+    private AppDepartment department;
+    @Field(defaultValue = "true", modifiers = {UserFieldModifier.SUMMARY})
+    @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
+    private boolean enabled = true;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public AppPeriod getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(AppPeriod period) {
+        this.period = period;
+    }
+
+    public AcademicTeacher getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(AcademicTeacher teacher) {
+        this.teacher = teacher;
+    }
+
+    public AcademicTeacherDegree getDegree() {
+        return degree;
+    }
+
+    public void setDegree(AcademicTeacherDegree degree) {
+        this.degree = degree;
+    }
+
+    public AcademicTeacherSituation getSituation() {
+        return situation;
+    }
+
+    public void setSituation(AcademicTeacherSituation situation) {
+        this.situation = situation;
+    }
+
+    public AppDepartment getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(AppDepartment department) {
+        this.department = department;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+}

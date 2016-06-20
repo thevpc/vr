@@ -21,7 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class JspCalendar {
-    final Calendar  calendar;
+    final Calendar calendar;
 
     public JspCalendar() {
         calendar = Calendar.getInstance();
@@ -36,10 +36,10 @@ public class JspCalendar {
 
     public String getMonth() {
         int m = getMonthInt();
-        String[] months = new String [] { "January", "February", "March",
-                                        "April", "May", "June",
-                                        "July", "August", "September",
-                                        "October", "November", "December" };
+        String[] months = new String[]{"January", "February", "March",
+                "April", "May", "June",
+                "July", "August", "September",
+                "October", "November", "December"};
         if (m > 12)
             return "Unknown to Man";
 
@@ -49,8 +49,8 @@ public class JspCalendar {
 
     public String getDay() {
         int x = getDayOfWeek();
-        String[] days = new String[] {"Sunday", "Monday", "Tuesday", "Wednesday",
-                                      "Thursday", "Friday", "Saturday"};
+        String[] days = new String[]{"Sunday", "Monday", "Tuesday", "Wednesday",
+                "Thursday", "Friday", "Saturday"};
 
         if (x > 7)
             return "Unknown to Man";
@@ -64,24 +64,24 @@ public class JspCalendar {
     }
 
     public String getDate() {
-        return getMonthInt() + "/" + getDayOfMonth() + "/" +  getYear();
+        return getMonthInt() + "/" + getDayOfMonth() + "/" + getYear();
     }
 
     public String getCurrentDate() {
-        Date dt = new Date ();
-        calendar.setTime (dt);
-        return getMonthInt() + "/" + getDayOfMonth() + "/" +  getYear();
+        Date dt = new Date();
+        calendar.setTime(dt);
+        return getMonthInt() + "/" + getDayOfMonth() + "/" + getYear();
 
     }
 
     public String getNextDate() {
-        calendar.set (Calendar.DAY_OF_MONTH, getDayOfMonth() + 1);
-        return getDate ();
+        calendar.set(Calendar.DAY_OF_MONTH, getDayOfMonth() + 1);
+        return getDate();
     }
 
     public String getPrevDate() {
-        calendar.set (Calendar.DAY_OF_MONTH, getDayOfMonth() - 1);
-        return getDate ();
+        calendar.set(Calendar.DAY_OF_MONTH, getDayOfMonth() - 1);
+        return getDate();
     }
 
     public String getTime() {
@@ -127,19 +127,19 @@ public class JspCalendar {
     }
 
     public String getUSTimeZone() {
-        String[] zones = new String[] {"Hawaii", "Alaskan", "Pacific",
-                                       "Mountain", "Central", "Eastern"};
+        String[] zones = new String[]{"Hawaii", "Alaskan", "Pacific",
+                "Mountain", "Central", "Eastern"};
 
         return zones[10 + getZoneOffset()];
     }
 
     public int getZoneOffset() {
-        return calendar.get(Calendar.ZONE_OFFSET)/(60*60*1000);
+        return calendar.get(Calendar.ZONE_OFFSET) / (60 * 60 * 1000);
     }
 
 
     public int getDSTOffset() {
-        return calendar.get(Calendar.DST_OFFSET)/(60*60*1000);
+        return calendar.get(Calendar.DST_OFFSET) / (60 * 60 * 1000);
     }
 
 

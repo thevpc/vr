@@ -1,33 +1,28 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.report.service.model;
 
-import java.util.Date;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Properties;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
+
+import java.util.Date;
 
 /**
- *
  * @author vpc
  */
 @Entity
 @Path("Education/Evaluation")
 public class AcademicReport {
 
-    @Id @Sequence
+    @Id
+    @Sequence
     private int id;
     @Field(modifiers = UserFieldModifier.MAIN)
     private String subject;
@@ -39,10 +34,10 @@ public class AcademicReport {
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private AcademicClass academicClass;
     private String owner;
-    
+
     @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
     private String ownerDetails;
-    
+
     private String observationPrivateShort;
     @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
     private String observationPrivateLong;
@@ -51,8 +46,8 @@ public class AcademicReport {
     @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
     private String observationPublicLong;
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
-        @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
+            @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
     }
     )
     private String mainAttachment;
@@ -144,7 +139,6 @@ public class AcademicReport {
         this.ownerDetails = ownerDetails;
     }
 
-  
 
     public String getObservationPrivateShort() {
         return observationPrivateShort;
@@ -289,5 +283,5 @@ public class AcademicReport {
     public void setEvaluationPublicNumber(double evaluationPublicNumber) {
         this.evaluationPublicNumber = evaluationPublicNumber;
     }
-    
+
 }

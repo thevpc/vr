@@ -32,7 +32,7 @@ jQuery.extend(jQuery.fn.dataTableExt.oSort, {
 
         var month = 0;
         for (var i = 0; i < months.length; i++) {
-            if (months[i].toLowerCase() == dateComponents[0].toLowerCase().substring(0,3)) {
+            if (months[i].toLowerCase() == dateComponents[0].toLowerCase().substring(0, 3)) {
                 month = i;
                 break;
             }

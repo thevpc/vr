@@ -1,45 +1,35 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.tasks.web;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.faces.bean.ManagedBean;
-import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
-import net.vpc.app.vainruling.plugins.tasks.service.model.Todo;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoCategory;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoPriority;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatus;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatusType;
-import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
-import net.vpc.app.vainruling.core.web.UCtrlData;
-import net.vpc.app.vainruling.core.web.UCtrlProvider;
-import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
-import net.vpc.app.vainruling.core.web.menu.VRMenuDefFactory;
+import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
+import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
+import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
+import net.vpc.app.vainruling.core.web.menu.VRMenuDefFactory;
+import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
+import net.vpc.app.vainruling.plugins.tasks.service.model.*;
 import net.vpc.common.strings.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.model.SelectItem;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author vpc
  */
 @UCtrl(
         breadcrumb = {
-            @UPathItem(title = "Todo", css = "fa-dashboard", ctrl = "")
+                @UPathItem(title = "Todo", css = "fa-dashboard", ctrl = "")
         }, css = "fa-table", title = "Listes", url = "modules/todo/todos"
 )
 @ManagedBean
@@ -238,6 +228,42 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
         getModel().setCategoryItems(st);
     }
 
+    @Override
+    public List<VRMenuDef> createVRMenuDefList() {
+        List<VRMenuDef> ok = new ArrayList<>();
+        for (TodoList findTodoListsByResp : todoService.findTodoListsByResp(null)) {
+            final VRMenuDef vrMenuDef = new VRMenuDef(findTodoListsByResp.getName(), "/Todo", "todo", findTodoListsByResp.getName(),
+                    "Custom.Todo." + findTodoListsByResp.getName(), ""
+            );
+//            vrMenuDef.
+            ok.add(vrMenuDef);
+        }
+        return ok;
+    }
+
+    @Override
+    public UCtrlData getUCtrl(String cmd) {
+        String listName = cmd;
+        String title = "?";
+        if (TodoList.LABO_ACTION.equals(listName)) {
+            title = ("Mes Actions Labo");
+        } else if (TodoList.LABO_TICKET.equals(listName)) {
+            title = ("Mes Ticktes Labo");
+        } else {
+            title = (listName);
+        }
+
+        UCtrlData d = new UCtrlData();
+        d.setUrl("modules/todo/todos");
+        d.setCss("fa-table");
+        d.setTitle(title);
+        d.setSecurityKey("Custom.Todo." + listName);
+        List<BreadcrumbItem> items = new ArrayList<>();
+        items.add(new BreadcrumbItem("Todo", "fa-dashboard", "", ""));
+        d.setBreadcrumb(items.toArray(new BreadcrumbItem[items.size()]));
+        return d;
+    }
+
     public static class PModel extends Model<Todo> {
 
         private String listName = TodoList.LABO_ACTION;
@@ -246,7 +272,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
         private List<Todo> inProgress = new ArrayList<>();
         private List<Todo> toVerify = new ArrayList<>();
         private List<Todo> done = new ArrayList<>();
-//        private List<Stat> statuses = new ArrayList<>();
+        //        private List<Stat> statuses = new ArrayList<>();
         private List<TodoStatus> statuses = new ArrayList<>();
         private List<TodoCategory> categories = new ArrayList<>();
         private List<SelectItem> statusItems = new ArrayList<>();
@@ -347,17 +373,17 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
         }
 
         @Override
+        public Todo getCurrent() {
+            return super.getCurrent();
+        }
+
+        @Override
         public void setCurrent(Todo current) {
             super.setCurrent(current);
             TodoCategory c = current.getCategory();
             this.currentCategoryId = c == null ? null : c.getId();
             TodoStatus s = current.getStatus();
             this.currentStatusId = s == null ? null : s.getId();
-        }
-
-        @Override
-        public Todo getCurrent() {
-            return super.getCurrent();
         }
 
         public List<Todo> getTodo() {
@@ -392,41 +418,6 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
             this.done = done;
         }
 
-    }
-
-    @Override
-    public List<VRMenuDef> createVRMenuDefList() {
-        List<VRMenuDef> ok = new ArrayList<>();
-        for (TodoList findTodoListsByResp : todoService.findTodoListsByResp(null)) {
-            final VRMenuDef vrMenuDef = new VRMenuDef(findTodoListsByResp.getName(), "/Todo", "todo", findTodoListsByResp.getName(),
-                    "Custom.Todo." + findTodoListsByResp.getName(),""
-            );
-//            vrMenuDef.
-            ok.add(vrMenuDef);
-        }
-        return ok;
-    }
-
-    @Override
-    public UCtrlData getUCtrl(String cmd) {
-        String listName = cmd;
-        String title = "?";
-        if (TodoList.LABO_ACTION.equals(listName)) {
-            title = ("Mes Actions Labo");
-        } else if (TodoList.LABO_TICKET.equals(listName)) {
-            title = ("Mes Ticktes Labo");
-        } else {
-            title = (listName);
-        }
-
-        UCtrlData d = new UCtrlData();
-        d.setUrl("modules/todo/todos");
-        d.setCss("fa-table");
-        d.setTitle(title);
-        List<BreadcrumbItem> items = new ArrayList<>();
-        items.add(new BreadcrumbItem("Todo", "fa-dashboard", "", ""));
-        d.setBreadcrumb(items.toArray(new BreadcrumbItem[items.size()]));
-        return d;
     }
 
 }

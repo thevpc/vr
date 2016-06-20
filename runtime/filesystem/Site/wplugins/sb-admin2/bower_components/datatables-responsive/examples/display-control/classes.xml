@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <dt-example table-class="display responsive nowrap" order="2">
 
-<css lib="datatables responsive">
-</css>
-<js lib="jquery datatables responsive">
-<![CDATA[
+    <css lib="datatables responsive">
+    </css>
+    <js lib="jquery datatables responsive">
+        <![CDATA[
 
 $(document).ready(function() {
 	$('#example').DataTable( {
@@ -22,11 +22,11 @@ $(document).ready(function() {
 } );
 
 ]]>
-</js>
+    </js>
 
-<title lib="Responsive">Class control</title>
+    <title lib="Responsive">Class control</title>
 
-<info><![CDATA[
+    <info><![CDATA[
 
 You can tell Responsive what columns to want to be visible on different devices through the use of class names on the columns. The breakpoints are horizontal screen resolutions and the defaults are set for common devices:
 
@@ -53,34 +53,34 @@ This can be useful if you wish to change the format of the data shown on differe
 
 ]]></info>
 
-<custom-table>
-	<div id="breakpoint"> </div>
-	<table id="example" class="display responsive" width="100%">
-		<thead>
-			<tr>
-				<th class="all">Name</th>
-				<th class="min-phone-l">Position</th>
-				<th class="min-tablet">Office</th>
-				<th class="min-tablet">Age</th>
-				<th class="never">Start date</th>
-				<th class="desktop">Salary</th>
-				<th class="none">Extn.</th>
-			</tr>
-		</thead>
+    <custom-table>
+        <div id="breakpoint"></div>
+        <table id="example" class="display responsive" width="100%">
+            <thead>
+                <tr>
+                    <th class="all">Name</th>
+                    <th class="min-phone-l">Position</th>
+                    <th class="min-tablet">Office</th>
+                    <th class="min-tablet">Age</th>
+                    <th class="never">Start date</th>
+                    <th class="desktop">Salary</th>
+                    <th class="none">Extn.</th>
+                </tr>
+            </thead>
 
-		<tfoot>
-			<tr>
-				<th>Name</th>
-				<th>Position</th>
-				<th>Office</th>
-				<th>Age</th>
-				<th>Start date</th>
-				<th>Salary</th>
-				<th>Extn.</th>
-			</tr>
-		</tfoot>
-	</table>
-</custom-table>
+            <tfoot>
+                <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Office</th>
+                    <th>Age</th>
+                    <th>Start date</th>
+                    <th>Salary</th>
+                    <th>Extn.</th>
+                </tr>
+            </tfoot>
+        </table>
+    </custom-table>
 
 </dt-example>
 

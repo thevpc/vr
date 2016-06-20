@@ -1,19 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.articles.web.actions;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
@@ -25,17 +16,23 @@ import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
 import net.vpc.app.vainruling.core.web.obj.ViewContext;
 import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
-import net.vpc.app.vainruling.plugins.inbox.service.model.EmailType;
+import net.vpc.app.vainruling.plugins.inbox.service.model.EmailDestinationType;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.upa.NamedId;
+import net.vpc.upa.UPA;
 import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.faces.bean.ManagedBean;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @Component
@@ -50,31 +47,6 @@ public class SendExternalMailActionCtrl {
     @Autowired
     private PropertyViewManager propertyViewManager;
 
-    public static class Config {
-
-        private String type;
-        private String title;
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-      
-
-    }
-
     public void openDialog(String config) {
         openDialog(VrHelper.parseJSONObject(config, Config.class));
     }
@@ -85,7 +57,7 @@ public class SendExternalMailActionCtrl {
         }
 
         ViewContext viewContext = new ViewContext();
-        PropertyView emailType = propertyViewManager.createPropertyView("emailType", EmailType.class, null, viewContext)[0];
+        PropertyView emailType = propertyViewManager.createPropertyView("emailType", EmailDestinationType.class, null, viewContext)[0];
         getModel().setEmailType(emailType);
         //MailboxMessageFormat
         getModel().setMailboxMessageFormat(propertyViewManager.createPropertyView("mailboxMessageFormat", MailboxMessageFormat.class, null, viewContext)[0]);
@@ -108,16 +80,20 @@ public class SendExternalMailActionCtrl {
 
     public void startExec() {
         VrApp.getBean(VrNotificationSession.class).clear(ArticlesPlugin.SEND_EXTERNAL_MAIL_QUEUE);
-        ArticlesPlugin.SendExternalMailConfig c=new ArticlesPlugin.SendExternalMailConfig();
-        c.setEmailType((EmailType)getModel().getEmailType().getValue());
-        MailboxMessageFormat mailboxMessageFormat = (MailboxMessageFormat)getModel().getMailboxMessageFormat().getValue();
-        c.setTemplateId(mailboxMessageFormat==null?null:mailboxMessageFormat.getId());
-        
+        ArticlesPlugin.SendExternalMailConfig c = new ArticlesPlugin.SendExternalMailConfig();
+        c.setEmailType((EmailDestinationType) getModel().getEmailType().getValue());
+        Object value = getModel().getMailboxMessageFormat().getValue();
+        if (value instanceof NamedId) {
+            value = UPA.getPersistenceUnit().findById(MailboxMessageFormat.class, ((NamedId) value).getId());
+        }
+        MailboxMessageFormat mailboxMessageFormat = (MailboxMessageFormat) value;
+        c.setTemplateId(mailboxMessageFormat == null ? null : mailboxMessageFormat.getId());
+
 //        core.runThread(new Runnable() {
 //            @Override
 //            public void run() {
         try {
-            ArticlesItem obj = (ArticlesItem)VrApp.getBean(ObjCtrl.class).getCurrentEntityObject();
+            ArticlesItem obj = (ArticlesItem) VrApp.getBean(ObjCtrl.class).getCurrentEntityObject();
             VrApp.getBean(ArticlesPlugin.class).sendExternalMail(obj, VrHelper.formatJSONObject(c));
         } catch (Exception e) {
             FacesUtils.addErrorMessage(e.getMessage());
@@ -128,12 +104,40 @@ public class SendExternalMailActionCtrl {
     }
 
     public void onChange() {
-        
+
     }
-    
+
     public void fireEventExtraDialogClosed() {
         VrApp.getBean(VrNotificationSession.class).clear(ArticlesPlugin.SEND_EXTERNAL_MAIL_QUEUE);
         RequestContext.getCurrentInstance().closeDialog(null);
+    }
+
+    public Model getModel() {
+        return model;
+    }
+
+    public static class Config {
+
+        private String type;
+        private String title;
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+
     }
 
     public static class Model {
@@ -145,10 +149,10 @@ public class SendExternalMailActionCtrl {
 
         public List<VrNotificationEvent> getEvents() {
             List<VrNotificationEvent> evts = VrApp.getBean(VrNotificationSession.class).findAll(ArticlesPlugin.SEND_EXTERNAL_MAIL_QUEUE);
-            if(errorsOnly){
-                for(Iterator<VrNotificationEvent> i=evts.iterator();i.hasNext();){
+            if (errorsOnly) {
+                for (Iterator<VrNotificationEvent> i = evts.iterator(); i.hasNext(); ) {
                     VrNotificationEvent v = i.next();
-                    if(v.getLevel().intValue()<Level.WARNING.intValue()){
+                    if (v.getLevel().intValue() < Level.WARNING.intValue()) {
                         i.remove();
                     }
                 }
@@ -194,12 +198,8 @@ public class SendExternalMailActionCtrl {
         public void setMailboxMessageFormat(PropertyView mailboxMessageFormat) {
             this.mailboxMessageFormat = mailboxMessageFormat;
         }
-        
-        
-    }
 
-    public Model getModel() {
-        return model;
+
     }
 
 }

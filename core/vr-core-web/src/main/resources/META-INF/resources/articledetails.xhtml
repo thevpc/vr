@@ -1,59 +1,60 @@
 <!DOCTYPE html>
-<html lang="en" 
-      xmlns="http://www.w3.org/1999/xhtml"   
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:pe="http://primefaces.org/ui/extensions"
-      xmlns:f="http://java.sun.com/jsf/core"
-      >
-    <h:head>
-    </h:head>
-    <h:body>
-        <ui:composition template="/templates/public-template.xhtml">
-            <ui:define name="row1">
+        >
+<h:head>
+</h:head>
+<h:body>
+    <ui:composition template="/templates/public-template.xhtml">
+        <ui:define name="row1">
 
-            </ui:define>
-            <ui:define name="row2">
+        </ui:define>
+        <ui:define name="row2">
 
-            </ui:define>
-            <ui:define name="row3">
-                <div class="text-inter">
-                    <div class="container">
-                        <div class="row">
-                            <ui:fragment #{articlesCtrl.model.current ne null}>
-                                <h3>#{articlesCtrl.model.current.content.subject}</h3>
-                                <p>
-                                    <p:outputLabel escape="false" value="#{articlesCtrl.model.current.content.content}"/>
-                                </p>
-                                <a href="#" class="button solid-color">see profile</a>
+        </ui:define>
+        <ui:define name="row3">
+            <div class="text-inter">
+                <div class="container">
+                    <div class="row">
+                        <ui:fragment #{articlesCtrl.model.current ne null}>
+                        <h3>#{articlesCtrl.model.current.content.subject}</h3>
 
-                                <a href="#" class="button extra-color">back</a>
+                        <p>
+                            <p:outputLabel escape="false" value="#{articlesCtrl.model.current.content.content}"/>
+                        </p>
+                        <a href="#" class="button solid-color">see profile</a>
 
-                            </ui:fragment>
-                            <ui:fragment #{articlesCtrl.model.current eq null}>
-                                <h3>Article Introuvable</h3>
-                                <p>L'article que vous cherchez semble ne plus etre disponible. Merci de contacter votre administrateur pour regler ce problème</p>
-                            </ui:fragment>
-                            <div class="col-md-12">
-                            </div>
-                        </div>
-                    </div>
+                        <a href="#" class="button extra-color">back</a>
+
+                    </ui:fragment>
+                    <ui:fragment #{articlesCtrl.model.current eq null}>
+                    <h3>Article Introuvable</h3>
+
+                    <p>L'article que vous cherchez semble ne plus etre disponible. Merci de contacter votre administrateur pour regler ce problème</p>
+                </ui:fragment>
+                <div class="col-md-12">
                 </div>
-                <div class="shadow"></div>
-            </ui:define>
-            <ui:define name="row4">
+            </div>
+        </div>
+    </div>
 
-            </ui:define>
-            <ui:define name="row5">
+    <div class="shadow"></div>
+</ui:define>
+<ui:define name="row4">
 
-            </ui:define>
-            <!--            <ui:define name="row6">
-            
-                        </ui:define>-->
-            <!--            <ui:define name="row7">
-            
-                        </ui:define>-->
-        </ui:composition>
-    </h:body>
-</html>
+</ui:define>
+<ui:define name="row5">
+
+</ui:define>
+<!--            <ui:define name="row6">
+
+            </ui:define>-->
+<!--            <ui:define name="row7">
+
+            </ui:define>-->
+</ui:composition>
+        </h:body>
+        </html>

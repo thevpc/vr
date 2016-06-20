@@ -28,16 +28,37 @@ public class JspCalendar {
         calendar.setTime(trialTime);
     }
 
+    public static void main(String args[]) {
+        JspCalendar db = new JspCalendar();
+        p("date: " + db.getDayOfMonth());
+        p("year: " + db.getYear());
+        p("month: " + db.getMonth());
+        p("time: " + db.getTime());
+        p("date: " + db.getDate());
+        p("Day: " + db.getDay());
+        p("DayOfYear: " + db.getDayOfYear());
+        p("WeekOfYear: " + db.getWeekOfYear());
+        p("era: " + db.getEra());
+        p("ampm: " + db.getAMPM());
+        p("DST: " + db.getDSTOffset());
+        p("ZONE Offset: " + db.getZoneOffset());
+        p("TIMEZONE: " + db.getUSTimeZone());
+    }
+
+    private static void p(String x) {
+        System.out.println(x);
+    }
+
     public int getYear() {
         return calendar.get(Calendar.YEAR);
     }
 
     public String getMonth() {
         int m = getMonthInt();
-        String[] months = new String [] { "January", "February", "March",
-                                        "April", "May", "June",
-                                        "July", "August", "September",
-                                        "October", "November", "December" };
+        String[] months = new String[]{"January", "February", "March",
+                "April", "May", "June",
+                "July", "August", "September",
+                "October", "November", "December"};
         if (m > 12)
             return "Unknown to Man";
 
@@ -47,8 +68,8 @@ public class JspCalendar {
 
     public String getDay() {
         int x = getDayOfWeek();
-        String[] days = new String[] {"Sunday", "Monday", "Tuesday", "Wednesday",
-                                      "Thursday", "Friday", "Saturday"};
+        String[] days = new String[]{"Sunday", "Monday", "Tuesday", "Wednesday",
+                "Thursday", "Friday", "Saturday"};
 
         if (x > 7)
             return "Unknown to Man";
@@ -62,7 +83,7 @@ public class JspCalendar {
     }
 
     public String getDate() {
-        return getMonthInt() + "/" + getDayOfMonth() + "/" +  getYear();
+        return getMonthInt() + "/" + getDayOfMonth() + "/" + getYear();
 
     }
 
@@ -98,51 +119,28 @@ public class JspCalendar {
         return calendar.get(Calendar.MINUTE);
     }
 
-
     public int getSecond() {
         return calendar.get(Calendar.SECOND);
     }
-
-    public static void main(String args[]) {
-        JspCalendar db = new JspCalendar();
-        p("date: " + db.getDayOfMonth());
-        p("year: " + db.getYear());
-        p("month: " + db.getMonth());
-        p("time: " + db.getTime());
-        p("date: " + db.getDate());
-        p("Day: " + db.getDay());
-        p("DayOfYear: " + db.getDayOfYear());
-        p("WeekOfYear: " + db.getWeekOfYear());
-        p("era: " + db.getEra());
-        p("ampm: " + db.getAMPM());
-        p("DST: " + db.getDSTOffset());
-        p("ZONE Offset: " + db.getZoneOffset());
-        p("TIMEZONE: " + db.getUSTimeZone());
-    }
-
-    private static void p(String x) {
-        System.out.println(x);
-    }
-
 
     public int getEra() {
         return calendar.get(Calendar.ERA);
     }
 
     public String getUSTimeZone() {
-        String[] zones = new String[] {"Hawaii", "Alaskan", "Pacific",
-                                       "Mountain", "Central", "Eastern"};
+        String[] zones = new String[]{"Hawaii", "Alaskan", "Pacific",
+                "Mountain", "Central", "Eastern"};
 
         return zones[10 + getZoneOffset()];
     }
 
     public int getZoneOffset() {
-        return calendar.get(Calendar.ZONE_OFFSET)/(60*60*1000);
+        return calendar.get(Calendar.ZONE_OFFSET) / (60 * 60 * 1000);
     }
 
 
     public int getDSTOffset() {
-        return calendar.get(Calendar.DST_OFFSET)/(60*60*1000);
+        return calendar.get(Calendar.DST_OFFSET) / (60 * 60 * 1000);
     }
 
 

@@ -1,31 +1,20 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.service.tools;
 
+import net.vpc.upa.UPA;
+import net.vpc.upa.bulk.*;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.upa.UPA;
-import net.vpc.upa.bulk.DataReader;
-import net.vpc.upa.bulk.DataRow;
-import net.vpc.upa.bulk.DataWriter;
-import net.vpc.upa.bulk.ParseFormatManager;
-import net.vpc.upa.bulk.SheetColumn;
-import net.vpc.upa.bulk.SheetContentType;
-import net.vpc.upa.bulk.SheetFormatter;
-import net.vpc.upa.bulk.SheetParser;
 
 /**
- *
  * @author vpc
  */
 public class CourseOptionsRanking {
@@ -46,45 +35,6 @@ public class CourseOptionsRanking {
     public static void main(String[] args) {
 //        generateOptionsFile();
         evaluateAssignements();
-    }
-
-    private static class ChoiceInfo {
-
-        int number;
-        int count;
-        int available;
-        int[] demands;
-
-        @Override
-        public String toString() {
-            return "ChoiceInfo{" + "number=" + number + ", count=" + count + ", available=" + available + ", demands=" + (demands == null ? "" : Arrays.toString(demands)) + '}';
-        }
-
-    }
-
-    private static class StudentInfo {
-
-        String num;
-        String id;
-        String nom;
-        String prenom;
-        double moyg;
-        String result;
-        int rank;
-        boolean rattr;
-        int master;
-        int[] choice;
-        int assignement;
-        boolean ignored;
-
-        @Override
-        public String toString() {
-            return "StudentInfo{" + "num=" + num + ", id=" + id + ", nom=" + nom + ", prenom=" + prenom
-                    + ", moyg=" + moyg + ", result=" + result + ", rank=" + rank + "/" + getEffectiveRank(this)
-                    + ", assignment=" + assignement
-                    + '}';
-        }
-
     }
 
     public static List<StudentInfo> listPrincipal() {
@@ -202,18 +152,18 @@ public class CourseOptionsRanking {
             DataWriter w = frm.createWriter();
             for (StudentInfo a : all) {
                 w.writeRow(new Object[]{
-                    a.num,
-                    a.id,
-                    a.nom,
-                    a.prenom,
-                    a.moyg,
-                    a.rank,
-                    a.rattr ? "R" : "P",
-                    "",
-                    "",
-                    "",
-                    "",
-                    ""
+                        a.num,
+                        a.id,
+                        a.nom,
+                        a.prenom,
+                        a.moyg,
+                        a.rank,
+                        a.rattr ? "R" : "P",
+                        "",
+                        "",
+                        "",
+                        "",
+                        ""
                 });
             }
             w.close();
@@ -345,7 +295,7 @@ public class CourseOptionsRanking {
                 for (int i = 0; i < nbOptions; i++) {
                     if (s.choice[i] > 0) {
                         ChoiceInfo cc = findChoiceInfo(optionsInfos, s.choice[i]);
-                        if (cc.available>0) {
+                        if (cc.available > 0) {
                             s.assignement = s.choice[i];
                             cc.available--;
 //                            int c = cc.available + getAssignements(liste, cc.number);
@@ -388,20 +338,20 @@ public class CourseOptionsRanking {
                 System.out.println(">> " + optionsInfo + " == > " + getAssignements(liste, optionsInfo.number));
             }
 
-            Collections.sort(liste,new Comparator<StudentInfo>() {
+            Collections.sort(liste, new Comparator<StudentInfo>() {
 
                 @Override
                 public int compare(StudentInfo o1, StudentInfo o2) {
-                    int x=o1.assignement-o2.assignement;
-                    if(x!=0){
+                    int x = o1.assignement - o2.assignement;
+                    if (x != 0) {
                         return x;
                     }
-                    x=o1.nom.compareTo(o2.nom);
-                    if(x!=0){
+                    x = o1.nom.compareTo(o2.nom);
+                    if (x != 0) {
                         return x;
                     }
-                    x=o1.prenom.compareTo(o2.prenom);
-                    if(x!=0){
+                    x = o1.prenom.compareTo(o2.prenom);
+                    if (x != 0) {
                         return x;
                     }
                     return 0;
@@ -418,18 +368,18 @@ public class CourseOptionsRanking {
             DataWriter w = frm.createWriter();
             for (StudentInfo a : liste) {
                 w.writeRow(new Object[]{
-                    a.num,
-                    a.id,
-                    a.nom,
-                    a.prenom,
-                    a.moyg,
-                    a.rank,
-                    a.rattr ? "R" : "P",
-                    a.master,
-                    a.choice[0],
-                    a.choice[1],
-                    a.choice[2],
-                    a.assignement
+                        a.num,
+                        a.id,
+                        a.nom,
+                        a.prenom,
+                        a.moyg,
+                        a.rank,
+                        a.rattr ? "R" : "P",
+                        a.master,
+                        a.choice[0],
+                        a.choice[1],
+                        a.choice[2],
+                        a.assignement
                 });
             }
             w.close();
@@ -500,5 +450,44 @@ public class CourseOptionsRanking {
             }
         }
         throw new IllegalArgumentException("Never");
+    }
+
+    private static class ChoiceInfo {
+
+        int number;
+        int count;
+        int available;
+        int[] demands;
+
+        @Override
+        public String toString() {
+            return "ChoiceInfo{" + "number=" + number + ", count=" + count + ", available=" + available + ", demands=" + (demands == null ? "" : Arrays.toString(demands)) + '}';
+        }
+
+    }
+
+    private static class StudentInfo {
+
+        String num;
+        String id;
+        String nom;
+        String prenom;
+        double moyg;
+        String result;
+        int rank;
+        boolean rattr;
+        int master;
+        int[] choice;
+        int assignement;
+        boolean ignored;
+
+        @Override
+        public String toString() {
+            return "StudentInfo{" + "num=" + num + ", id=" + id + ", nom=" + nom + ", prenom=" + prenom
+                    + ", moyg=" + moyg + ", result=" + result + ", rank=" + rank + "/" + getEffectiveRank(this)
+                    + ", assignment=" + assignement
+                    + '}';
+        }
+
     }
 }

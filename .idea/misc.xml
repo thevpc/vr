@@ -2,16 +2,19 @@
 <project version="4">
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
-    <list size="4">
-      <item index="0" class="java.lang.String" itemvalue="net.vpc.upa.config.Callback" />
-      <item index="1" class="java.lang.String" itemvalue="net.vpc.upa.config.OnPersist" />
-      <item index="2" class="java.lang.String" itemvalue="net.vpc.upa.config.OnRemove" />
-      <item index="3" class="java.lang.String" itemvalue="net.vpc.upa.config.OnUpdate" />
+    <list size="6">
+      <item index="0" class="java.lang.String" itemvalue="net.vpc.app.vainruling.core.service.Install" />
+      <item index="1" class="java.lang.String" itemvalue="net.vpc.upa.config.Callback" />
+      <item index="2" class="java.lang.String" itemvalue="net.vpc.upa.config.OnPersist" />
+      <item index="3" class="java.lang.String" itemvalue="net.vpc.upa.config.OnPreUpdateFormula" />
+      <item index="4" class="java.lang.String" itemvalue="net.vpc.upa.config.OnRemove" />
+      <item index="5" class="java.lang.String" itemvalue="net.vpc.upa.config.OnUpdate" />
     </list>
   </component>
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$/../vain-ruling-apps/eniso-info/eniso-info-web" />
     <file type="web" url="file://$PROJECT_DIR$/apps/eniso-info/eniso-info-web" />
+    <file type="web" url="file://$PROJECT_DIR$/apps/wpm/wpm-web" />
     <file type="web" url="file://$PROJECT_DIR$/vr-app-web" />
     <file type="web" url="file://$PROJECT_DIR$/../../upa/upa-tutorial/upa-tutorial-webjsf" />
   </component>
@@ -32,6 +35,9 @@
         <option value="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/pom.xml" />
         <option value="$PROJECT_DIR$/apps/eniso-info/pom.xml" />
         <option value="$PROJECT_DIR$/../../abyss/tool/vpc-devtools/pom.xml" />
+        <option value="$PROJECT_DIR$/apps/wpm/plugins/wpm-payroll/wpm-payroll-web/pom.xml" />
+        <option value="$PROJECT_DIR$/apps/wpm/plugins/wpm-payroll/wpm-payroll-service/pom.xml" />
+        <option value="$PROJECT_DIR$/apps/wpm/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
@@ -39,6 +45,8 @@
         <option value="$PROJECT_DIR$/../vain-ruling-apps/eniso-info/eniso-info-service/pom.xml" />
         <option value="$PROJECT_DIR$/../vain-ruling-apps/eniso-info/eniso-info-web/pom.xml" />
         <option value="$PROJECT_DIR$/../vain-ruling-apps/eniso-info/pom.xml" />
+        <option value="$PROJECT_DIR$/plugins/academic-addressbook/vr-academic-addressbook-service/pom.xml" />
+        <option value="$PROJECT_DIR$/plugins/academic-addressbook/vr-academic-addressbook-web/pom.xml" />
         <option value="$PROJECT_DIR$/plugins/common-model/vr-common-model-service/pom.xml" />
         <option value="$PROJECT_DIR$/plugins/common-model/vr-common-model-web/pom.xml" />
         <option value="$PROJECT_DIR$/plugins/filesystem/vr-filesystem-service/pom.xml" />

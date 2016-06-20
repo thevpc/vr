@@ -16,6 +16,16 @@ public class FitnessValue {
     double value;
     List<FitnessValue> children;
 
+    public FitnessValue(String name, boolean valid, double value, List<FitnessValue> children) {
+        this.name = name;
+        this.valid = valid;
+        this.value = value;
+        this.children = children != null ? children : Collections.EMPTY_LIST;
+        if (value < 0 || Double.isNaN(value)) {
+            throw new IllegalArgumentException();
+        }
+    }
+
     public static FitnessValue create(String name, List<FitnessValue> others) {
         return create(name, others.toArray(new FitnessValue[others.size()]));
     }
@@ -27,6 +37,7 @@ public class FitnessValue {
     public static FitnessValue invalid(String name, double value) {
         return new FitnessValue(name, false, value, null);
     }
+
     public static FitnessValue create(String name, boolean valid, double value) {
         return new FitnessValue(name, valid, value, null);
     }
@@ -48,19 +59,8 @@ public class FitnessValue {
         return new FitnessValue(name, allValid, sum, Arrays.asList(others));
     }
 
-    public FitnessValue(String name, boolean valid, double value, List<FitnessValue> children) {
-        this.name = name;
-        this.valid = valid;
-        this.value = value;
-        this.children = children != null ? children : Collections.EMPTY_LIST;
-        if (value < 0 || Double.isNaN(value)) {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    public FitnessValue setName(String name) {
-        this.name = name;
-        return this;
+    public FitnessValue mul(double coeff) {
+        return new FitnessValue(name, valid, value * coeff, new ArrayList<>(children));
     }
 
 //        public FitnessValue add(FitnessValue o){
@@ -71,10 +71,6 @@ public class FitnessValue {
 //                return new FitnessValue("", allValid, (value + o.value)/1000, Arrays.asList(this, o));
 //            }
 //        }
-
-    public FitnessValue mul(double coeff) {
-        return new FitnessValue(name, valid, value * coeff, new ArrayList<>(children));
-    }
 
     @Override
     public String toString() {
@@ -92,13 +88,18 @@ public class FitnessValue {
         }
         sb.append(")");
         if (!valid) {
-            sb.insert(0,"invalid-");
+            sb.insert(0, "invalid-");
         }
         return sb.toString();
     }
 
     public String getName() {
         return name;
+    }
+
+    public FitnessValue setName(String name) {
+        this.name = name;
+        return this;
     }
 
     public boolean isValid() {

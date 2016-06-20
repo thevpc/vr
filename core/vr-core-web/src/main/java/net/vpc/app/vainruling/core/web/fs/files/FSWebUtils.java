@@ -1,26 +1,25 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.fs.files;
 
-import java.io.File;
-import java.util.Date;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.core.web.util.JsfCtrl;
-import net.vpc.app.vainruling.core.service.fs.FileSystemService;
 import net.vpc.common.vfs.VFS;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VirtualFileSystem;
 import org.primefaces.event.FileUploadEvent;
 
+import java.io.File;
+import java.util.Date;
+
 /**
- *
  * @author vpc
  */
 public class FSWebUtils {
@@ -58,7 +57,7 @@ public class FSWebUtils {
     public static VFile getUserAbsoluteFile(int userId, String path) {
         CorePlugin ap = VrApp.getBean(CorePlugin.class);
         AppUser t = ap.findUser(userId);
-        FileSystemService fs = VrApp.getBean(FileSystemService.class);
+        CorePlugin fs = VrApp.getBean(CorePlugin.class);
         if (t != null) {
             VFile thisTeacherPhoto = fs.getUserFolder(t.getLogin()).get(path);
             if (thisTeacherPhoto.exists()) {
@@ -76,9 +75,9 @@ public class FSWebUtils {
     }
 
     public VFile handleFileUploadEvent(FileUploadEvent event) throws Exception {
-        String tempPath = "/Temp/Files/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+        String tempPath = CorePlugin.PATH_TEMP+"/Files/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
                 + "-" + VrApp.getBean(UserSession.class).getUser().getLogin();
-        FileSystemService fsp = VrApp.getBean(FileSystemService.class);
+        CorePlugin fsp = VrApp.getBean(CorePlugin.class);
         String p = fsp.getNativeFileSystemPath() + tempPath;
         new File(p).mkdirs();
         File f = new File(p, event.getFile().getFileName());

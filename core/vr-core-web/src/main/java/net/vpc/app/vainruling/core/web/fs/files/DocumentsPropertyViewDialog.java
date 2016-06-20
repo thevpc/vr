@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.fs.files;
@@ -8,11 +8,10 @@ package net.vpc.app.vainruling.core.web.fs.files;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
-import org.springframework.stereotype.Component;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewDialog;
+import org.springframework.stereotype.Component;
 
 /**
- *
  * @author vpc
  */
 @Component

@@ -1,36 +1,30 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.ctrl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.web.UCtrl;
-import net.vpc.app.vainruling.core.service.agent.ActiveSessionsTracker;
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.notification.PollAware;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.agent.ActiveSessionsTracker;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.AppUserType;
+import net.vpc.app.vainruling.core.service.notification.PollAware;
+import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.util.ChartUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
 import org.primefaces.model.chart.DonutChartModel;
 
+import javax.faces.bean.ApplicationScoped;
+import javax.faces.bean.ManagedBean;
+import java.util.*;
+
 /**
- *
  * @author vpc
  */
 @UCtrl(
@@ -131,7 +125,7 @@ public class ActiveSessionsCtrl implements PollAware {
                         }
                     }
                     ChartUtils.reverseSortCount(circle1);
-                    ChartUtils.reverseSortCount(circle2,12,null);
+                    ChartUtils.reverseSortCount(circle2, 12, null);
                     ChartUtils.mergeMapKeys(circle1, circle2);
                     d.addCircle(circle1);
                     d.addCircle(circle2);
@@ -145,6 +139,22 @@ public class ActiveSessionsCtrl implements PollAware {
 
     public Model getModel() {
         return model;
+    }
+
+    public void onPoll() {
+        onUpdate();
+    }
+
+    public void onUpdate() {
+        onRefresh();
+    }
+
+    public String connectionPeriod(UserSession s) {
+        if (s == null) {
+            return "";
+        }
+        final Date t = s.getConnexionTime();
+        return Chronometer.formatPeriod(System.currentTimeMillis() - t.getTime(), Chronometer.DatePart.s);
     }
 
     public static class TypeStat implements Comparable<TypeStat> {
@@ -243,21 +253,5 @@ public class ActiveSessionsCtrl implements PollAware {
             this.donut2 = donut2;
         }
 
-    }
-
-    public void onPoll() {
-        onUpdate();
-    }
-
-    public void onUpdate() {
-        onRefresh();
-    }
-
-    public String connectionPeriod(UserSession s) {
-        if (s == null) {
-            return "";
-        }
-        final Date t = s.getConnexionTime();
-        return Chronometer.formatPeriod(System.currentTimeMillis() - t.getTime(), Chronometer.DatePart.s);
     }
 }

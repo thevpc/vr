@@ -15,38 +15,38 @@ import java.util.WeakHashMap;
  */
 @Service
 public class CacheService {
-    private WeakHashMap<String,EntityCache> entityCache =new WeakHashMap<>();
-    private Map<String, Object> properties=new HashMap<>();
+    private WeakHashMap<String, EntityCache> entityCache = new WeakHashMap<>();
+    private Map<String, Object> properties = new HashMap<>();
 
-    public void invalidate(Entity entity,Object value){
+    public void invalidate(Entity entity, Object value) {
         properties.clear();
         EntityCache c = entityCache.get(entity.getName());
-        if(c!=null){
+        if (c != null) {
             c.invalidate();
         }
     }
 
-    public <K,V> MapList<K,V> getList(Class<V> entity){
+    public <K, V> MapList<K, V> getList(Class<V> entity) {
         return get(entity).getValues();
     }
 
-    public EntityCache get(Class entity){
+    public EntityCache get(Class entity) {
         return get(UPA.getPersistenceUnit().getEntity(entity));
     }
 
-    public EntityCache get(Entity entity){
+    public EntityCache get(Entity entity) {
         EntityCache c = entityCache.get(entity.getName());
-        if(c==null){
-            c=new EntityCache(entity);
+        if (c == null) {
+            c = new EntityCache(entity);
             entityCache.put(entity.getName(), c);
         }
         return c;
     }
 
-    public <T> T getProperty(String value,Action<T> evalAction) {
-        if(properties.containsKey(value)){
-            return (T)properties.get(value);
-        }else{
+    public <T> T getProperty(String value, Action<T> evalAction) {
+        if (properties.containsKey(value)) {
+            return (T) properties.get(value);
+        } else {
             T val = evalAction.run();
             properties.put(value, val);
             return val;

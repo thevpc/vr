@@ -1,0 +1,65 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ *
+ * and open the template in the editor.
+ */
+package net.vpc.app.vainruling.core.service.model;
+
+import net.vpc.upa.FormulaType;
+import net.vpc.upa.UserFieldModifier;
+import net.vpc.upa.config.*;
+
+import java.sql.Timestamp;
+
+/**
+ * @author vpc
+ */
+@Entity(listOrder = "propertyName")
+@Path("Admin")
+public class AppDataStore {
+
+    @Id
+    @Field(modifiers = {UserFieldModifier.MAIN}, max = "255")
+    private String idName;
+    @Field(max = "maximum")
+    private String propertyValue;
+    private Timestamp creationDate;
+    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    private Timestamp updateDate;
+
+    public AppDataStore() {
+    }
+
+    public String getIdName() {
+        return idName;
+    }
+
+    public void setIdName(String idName) {
+        this.idName = idName;
+    }
+
+    public String getPropertyValue() {
+        return propertyValue;
+    }
+
+    public void setPropertyValue(String propertyValue) {
+        this.propertyValue = propertyValue;
+    }
+
+    public Timestamp getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Timestamp creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Timestamp getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Timestamp updateDate) {
+        this.updateDate = updateDate;
+    }
+
+}

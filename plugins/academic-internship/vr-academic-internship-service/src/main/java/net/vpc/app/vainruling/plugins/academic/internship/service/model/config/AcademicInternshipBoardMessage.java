@@ -1,24 +1,18 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.internship.service.model.config;
 
-import java.util.Date;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternship;
 import net.vpc.upa.RelationshipType;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.ManyToOne;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
+
+import java.util.Date;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "name")

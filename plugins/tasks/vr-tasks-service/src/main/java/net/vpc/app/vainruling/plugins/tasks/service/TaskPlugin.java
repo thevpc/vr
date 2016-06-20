@@ -1,9 +1,21 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.tasks.service;
+
+import net.vpc.app.vainruling.core.service.*;
+import net.vpc.app.vainruling.core.service.model.AppProfile;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.plugins.tasks.service.model.*;
+import net.vpc.common.util.Utils;
+import net.vpc.upa.Entity;
+import net.vpc.upa.PersistenceUnit;
+import net.vpc.upa.RemoveOptions;
+import net.vpc.upa.UPA;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -12,26 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.vpc.app.vainruling.core.service.*;
-import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.model.AppProfile;
-import net.vpc.app.vainruling.plugins.tasks.service.model.Todo;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoCategory;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoPriority;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoProgress;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatus;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatusType;
-import net.vpc.common.util.Utils;
-import net.vpc.upa.Entity;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.RemoveOptions;
-import net.vpc.upa.UPA;
-import org.springframework.beans.factory.annotation.Autowired;
-
 /**
- *
  * @author vpc
  */
 @AppPlugin(version = "1.0")
@@ -61,7 +54,7 @@ public class TaskPlugin {
         List<AppProfile> up = null;
         if (!session.allowed("TASK_VIEW_ALL")) {
             if (user == null) {
-                user = session.getUser()==null? null: session.getUser().getId();
+                user = session.getUser() == null ? null : session.getUser().getId();
             } else {
                 //error
                 //user = session.getUser().getId();
@@ -207,7 +200,7 @@ public class TaskPlugin {
                 t.setDeletedBy(session.getUser().getLogin());
                 t.setDeletedOn(new Timestamp(System.currentTimeMillis()));
                 pu.merge(t);
-                trace.softremoved(Todo.class.getSimpleName(),pu.findById(Todo.class, todoId), e.getParent().getPath(), Level.FINE);
+                trace.softremoved(Todo.class.getSimpleName(), pu.findById(Todo.class, todoId), e.getParent().getPath(), Level.FINE);
             }
         }
     }
@@ -309,7 +302,7 @@ public class TaskPlugin {
         }
     }
 
-//    public void saveProgress(TodoProgress todo) {
+    //    public void saveProgress(TodoProgress todo) {
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        UserSession session = VRSpring.getContext().getBean(UserSession.class);
 //        pu.persist(todo);
@@ -462,33 +455,6 @@ public class TaskPlugin {
         return false;
     }
 
-    private static class InitData {
-
-        TodoList laboActions;
-        TodoList laboTickets;
-//        List<TodoCategory> laboActionsCategories;
-//        List<TodoStatus> laboActionsStatuses;
-//        List<TodoCategory> laboTicketsCategories;
-//        List<TodoStatus> laboTicketsStatuses;
-//        long now;
-//        AppUserProfile adminProfile;
-//        AppUserProfile techProfile;
-//        AppUserProfile inventoryProfile;
-//        AppUserProfile teacherProfile;
-//        AppUserProfile studentProfile;
-//        AppUser admin;
-//        AppUser tech1;
-//        AppUser tech2;
-//        List<AppCivility> civilities;
-//        List<AppGender> genders;
-//        List<AppDepartment> departments;
-//        AppAreaType areaType_etablissement = new AppAreaType("etablissement");
-//        AppAreaType areaType_bloc = new AppAreaType("bloc");
-//        AppAreaType areaType_salle = new AppAreaType("salle");
-//        AppAreaType areaType_armoire = new AppAreaType("armoire");
-//        AppAreaType areaType_rangement = new AppAreaType("rangement");
-    }
-
     @Start
     public void startService() {
         for (TodoList findTodoListsByResp : findTodoLists()) {
@@ -511,8 +477,8 @@ public class TaskPlugin {
             s.setShortName("DIV");
             s.setList(d.laboActions);
             if (pu.createQueryBuilder(TodoCategory.class)
-                    .addAndField("name", s.getName())
-                    .addAndField("list", s.getList())
+                    .byField("name", s.getName())
+                    .byField("list", s.getList())
                     .getEntity() == null) {
                 pu.persist(s);
             }
@@ -523,8 +489,8 @@ public class TaskPlugin {
             s.setName(value.name());
             s.setType(value);
             if (pu.createQueryBuilder(TodoStatus.class)
-                    .addAndField("name", s.getName())
-                    .addAndField("list", s.getList())
+                    .byField("name", s.getName())
+                    .byField("list", s.getList())
                     .getEntity() == null) {
                 pu.persist(s);
             }
@@ -540,8 +506,8 @@ public class TaskPlugin {
             s.setName("Divers");
             s.setList(d.laboTickets);
             if (pu.createQueryBuilder(TodoCategory.class)
-                    .addAndField("name", s.getName())
-                    .addAndField("list", s.getList())
+                    .byField("name", s.getName())
+                    .byField("list", s.getList())
                     .getEntity() == null) {
                 pu.persist(s);
             }
@@ -552,8 +518,8 @@ public class TaskPlugin {
             s.setName(value.name());
             s.setType(value);
             if (pu.createQueryBuilder(TodoStatus.class)
-                    .addAndField("name", s.getName())
-                    .addAndField("list", s.getList())
+                    .byField("name", s.getName())
+                    .byField("list", s.getList())
                     .getEntity() == null) {
                 pu.persist(s);
             }
@@ -567,10 +533,10 @@ public class TaskPlugin {
         TodoList laboActionsList = (TodoList) pu.findByMainField(TodoList.class, TodoList.LABO_ACTION);
         TodoList laboTicketsList = (TodoList) pu.findByMainField(TodoList.class, TodoList.LABO_TICKET);
 
-        List<TodoCategory> laboActionsCategories = pu.createQueryBuilder(TodoCategory.class).addAndField("list", laboActionsList).getEntityList();
-        List<TodoStatus> laboActionsStatuses = pu.createQueryBuilder(TodoStatus.class).addAndField("list", laboActionsList).getEntityList();
-        List<TodoCategory> laboTicketsCategories = pu.createQueryBuilder(TodoCategory.class).addAndField("list", laboTicketsList).getEntityList();
-        List<TodoStatus> laboTicketsStatuses = pu.createQueryBuilder(TodoStatus.class).addAndField("list", laboTicketsList).getEntityList();
+        List<TodoCategory> laboActionsCategories = pu.createQueryBuilder(TodoCategory.class).byField("list", laboActionsList).getEntityList();
+        List<TodoStatus> laboActionsStatuses = pu.createQueryBuilder(TodoStatus.class).byField("list", laboActionsList).getEntityList();
+        List<TodoCategory> laboTicketsCategories = pu.createQueryBuilder(TodoCategory.class).byField("list", laboTicketsList).getEntityList();
+        List<TodoStatus> laboTicketsStatuses = pu.createQueryBuilder(TodoStatus.class).byField("list", laboTicketsList).getEntityList();
         final Timestamp now = new Timestamp(System.currentTimeMillis());
         for (int i = 0; i < 20; i++) {
             Todo d = new Todo();
@@ -605,8 +571,8 @@ public class TaskPlugin {
             d.setCreationTime(now);
             d.setInitiator(admin);
             if (pu.createQueryBuilder(Todo.class)
-                    .addAndField("name", d.getName())
-                    .addAndField("list", d.getList())
+                    .byField("name", d.getName())
+                    .byField("list", d.getList())
                     .getEntity() == null) {
                 pu.persist(d);
             }
@@ -642,11 +608,38 @@ public class TaskPlugin {
             }
             d.setResponsible(admin);
             if (pu.createQueryBuilder(Todo.class)
-                    .addAndField("name", d.getName())
-                    .addAndField("list", d.getList())
+                    .byField("name", d.getName())
+                    .byField("list", d.getList())
                     .getEntity() == null) {
                 pu.persist(d);
             }
         }
+    }
+
+    private static class InitData {
+
+        TodoList laboActions;
+        TodoList laboTickets;
+//        List<TodoCategory> laboActionsCategories;
+//        List<TodoStatus> laboActionsStatuses;
+//        List<TodoCategory> laboTicketsCategories;
+//        List<TodoStatus> laboTicketsStatuses;
+//        long now;
+//        AppUserProfile adminProfile;
+//        AppUserProfile techProfile;
+//        AppUserProfile inventoryProfile;
+//        AppUserProfile teacherProfile;
+//        AppUserProfile studentProfile;
+//        AppUser admin;
+//        AppUser tech1;
+//        AppUser tech2;
+//        List<AppCivility> civilities;
+//        List<AppGender> genders;
+//        List<AppDepartment> departments;
+//        AppAreaType areaType_etablissement = new AppAreaType("etablissement");
+//        AppAreaType areaType_bloc = new AppAreaType("bloc");
+//        AppAreaType areaType_salle = new AppAreaType("salle");
+//        AppAreaType areaType_armoire = new AppAreaType("armoire");
+//        AppAreaType areaType_rangement = new AppAreaType("rangement");
     }
 }

@@ -1,24 +1,16 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.teachereval.web;
 
-import java.util.*;
-import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
-import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackGroup;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackModel;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackQuestion;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackResponse;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
@@ -30,14 +22,18 @@ import org.primefaces.model.chart.ChartSeries;
 import org.primefaces.model.chart.LegendPlacement;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.model.SelectItem;
+import java.util.*;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @ManagedBean
 @UCtrl(
         breadcrumb = {
-            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Eval. Mes Enseignements",
         menu = "/Education/Evaluation",
@@ -78,32 +74,32 @@ public class TeacherStatFeedbackCtrl {
         ArrayList<SelectItem> theList = new ArrayList<>();
         getModel().setFilterList(theList);
         AcademicTeacher s = null;
-        if(getModel().isTeacherListEnabled()){
+        if (getModel().isTeacherListEnabled()) {
             String selectedTeacherString = getModel().getSelectedTeacher();
-            if(!StringUtils.isEmpty(selectedTeacherString)){
-                s=academic.findTeacher(Integer.parseInt(selectedTeacherString));
+            if (!StringUtils.isEmpty(selectedTeacherString)) {
+                s = academic.findTeacher(Integer.parseInt(selectedTeacherString));
             }
-        }else{
-            s=academic.getCurrentTeacher();
+        } else {
+            s = academic.getCurrentTeacher();
         }
         if (s != null) {
             HashSet<String> ids = new HashSet<>();
 
             String filterType = getModel().getSelectedFilterType();
-            if("assignment".equals(filterType)) {
+            if ("assignment".equals(filterType)) {
                 for (AcademicCourseAssignment f : feedback.findAssignmentsWithFeedbacks(s.getId(), getModel().getValidatedFilter(), false, true)) {
-                    theList.add(new SelectItem(filterType+":"+String.valueOf(f.getId()), f.getFullName()));
-                    ids.add(filterType+":"+String.valueOf(f.getId()));
+                    theList.add(new SelectItem(filterType + ":" + String.valueOf(f.getId()), f.getFullName()));
+                    ids.add(filterType + ":" + String.valueOf(f.getId()));
                 }
-            }else if("course".equals(filterType)){
+            } else if ("course".equals(filterType)) {
                 for (AcademicCoursePlan f : feedback.findAcademicCoursePlansWithFeedbacks(s.getId(), getModel().getValidatedFilter(), false, true)) {
-                    theList.add(new SelectItem(filterType+":"+String.valueOf(f.getId()), f.getFullName()));
-                    ids.add(filterType+":"+String.valueOf(f.getId()));
+                    theList.add(new SelectItem(filterType + ":" + String.valueOf(f.getId()), f.getFullName()));
+                    ids.add(filterType + ":" + String.valueOf(f.getId()));
                 }
-            }else if("courseType".equals(filterType)){
+            } else if ("courseType".equals(filterType)) {
                 for (AcademicCourseType f : feedback.findAcademicCourseTypesWithFeedbacks(s.getId(), getModel().getValidatedFilter(), false, true)) {
-                    theList.add(new SelectItem(filterType+":"+String.valueOf(f.getId()), f.getName()));
-                    ids.add(filterType+":"+String.valueOf(f.getId()));
+                    theList.add(new SelectItem(filterType + ":" + String.valueOf(f.getId()), f.getName()));
+                    ids.add(filterType + ":" + String.valueOf(f.getId()));
                 }
             }
             if (!ids.contains(getModel().getSelectedFilter())) {
@@ -124,7 +120,7 @@ public class TeacherStatFeedbackCtrl {
 
     public List<AcademicFeedback> findAcademicFeedbacksByAssignment(int id) {
         AcademicCourseAssignment a = academic.findAcademicCourseAssignment(id);
-        if(a==null){
+        if (a == null) {
             return Collections.emptyList();
         }
         return feedback.findAssignmentFeedbacks(a.getId(), getModel().getValidatedFilter(), false);
@@ -132,24 +128,24 @@ public class TeacherStatFeedbackCtrl {
 
     public List<AcademicFeedback> findAcademicFeedbacks() {
         String selectedFilter = getModel().getSelectedFilter();
-        if(StringUtils.isEmpty(selectedFilter)){
+        if (StringUtils.isEmpty(selectedFilter)) {
             return Collections.emptyList();
         }
         int pos = selectedFilter.indexOf(":");
         String filterType = selectedFilter.substring(0, pos);
-        String idString=selectedFilter.substring(pos+1);
-        if("assignment".equals(filterType)) {
+        String idString = selectedFilter.substring(pos + 1);
+        if ("assignment".equals(filterType)) {
             int id = Integer.parseInt(idString);
             return feedback.findAssignmentFeedbacks(id, getModel().getValidatedFilter(), false);
-        }else if("course".equals(filterType)) {
-            int teacherId=-1;
-            if(getModel().isTeacherListEnabled()){
+        } else if ("course".equals(filterType)) {
+            int teacherId = -1;
+            if (getModel().isTeacherListEnabled()) {
                 String selectedTeacher = getModel().getSelectedTeacher();
-                if(!StringUtils.isEmpty(selectedTeacher)){
-                    teacherId=Integer.parseInt(selectedTeacher);
+                if (!StringUtils.isEmpty(selectedTeacher)) {
+                    teacherId = Integer.parseInt(selectedTeacher);
                 }
-            }else{
-                teacherId=academic.getCurrentTeacher().getId();
+            } else {
+                teacherId = academic.getCurrentTeacher().getId();
             }
             int courseId = Integer.parseInt(idString);
             return feedback.findFeedbacks(
@@ -160,15 +156,15 @@ public class TeacherStatFeedbackCtrl {
                     getModel().getValidatedFilter(),
                     false
             );
-        }else if("courseType".equals(filterType)) {
-            int teacherId=-1;
-            if(getModel().isTeacherListEnabled()){
+        } else if ("courseType".equals(filterType)) {
+            int teacherId = -1;
+            if (getModel().isTeacherListEnabled()) {
                 String selectedTeacher = getModel().getSelectedTeacher();
-                if(!StringUtils.isEmpty(selectedTeacher)){
-                    teacherId=Integer.parseInt(selectedTeacher);
+                if (!StringUtils.isEmpty(selectedTeacher)) {
+                    teacherId = Integer.parseInt(selectedTeacher);
                 }
-            }else{
-                teacherId=academic.getCurrentTeacher().getId();
+            } else {
+                teacherId = academic.getCurrentTeacher().getId();
             }
             int courseTypeId = Integer.parseInt(idString);
             return feedback.findFeedbacks(
@@ -179,16 +175,16 @@ public class TeacherStatFeedbackCtrl {
                     getModel().getValidatedFilter(),
                     false
             );
-        }else{
+        } else {
             return Collections.emptyList();
         }
     }
 
     public List<GroupView> evaluateGroupViews(List<AcademicFeedback> feedbacks) {
-        int countFeedbacks=feedbacks.size();
-        int countQuestions=0;
-        int countValidResponses=0;
-        double countResponseCompletion=0;
+        int countFeedbacks = feedbacks.size();
+        int countQuestions = 0;
+        int countValidResponses = 0;
+        double countResponseCompletion = 0;
         List<GroupView> rows = new ArrayList<>();
         if (feedbacks.size() > 0) {
             AcademicFeedbackModel fmodel = feedbacks.get(0).getModel();
@@ -210,12 +206,12 @@ public class TeacherStatFeedbackCtrl {
                     questions.add(q);
                     questionsMap.put(r.getId(), q);
                 }
-                countQuestions+=questions.size();
+                countQuestions += questions.size();
                 rows.add(row);
             }
-            int[] feedbacksIds=new int[feedbacks.size()];
+            int[] feedbacksIds = new int[feedbacks.size()];
             for (int i = 0; i < feedbacks.size(); i++) {
-                feedbacksIds[i]=feedbacks.get(i).getId();
+                feedbacksIds[i] = feedbacks.get(i).getId();
             }
             for (AcademicFeedbackResponse r : feedback.findStudentFeedbackResponses(feedbacksIds)) {
                 QuestionView qv = questionsMap.get(r.getQuestion().getId());
@@ -250,8 +246,8 @@ public class TeacherStatFeedbackCtrl {
                 }
             }
         }
-        if(countQuestions!=0 && countFeedbacks!=0) {
-            countResponseCompletion = (countValidResponses*100) / (countQuestions*countFeedbacks);
+        if (countQuestions != 0 && countFeedbacks != 0) {
+            countResponseCompletion = (countValidResponses * 100) / (countQuestions * countFeedbacks);
         }
         getModel().setCountFeedbacks(countFeedbacks);
         getModel().setCountQuestions(countQuestions);
@@ -264,12 +260,16 @@ public class TeacherStatFeedbackCtrl {
 
     }
 
+    public Model getModel() {
+        return model;
+    }
+
     public static class Model {
 
         private String title;
-        private boolean teacherListEnabled=false;
+        private boolean teacherListEnabled = false;
         private String selectedTeacher;
-        private String selectedFilterType="assignement";
+        private String selectedFilterType = "assignement";
         private List<SelectItem> teachersList = new ArrayList<SelectItem>();
         private List<SelectItem> filterTypesList = new ArrayList<SelectItem>();
 
@@ -338,6 +338,10 @@ public class TeacherStatFeedbackCtrl {
             return valueTexts;
         }
 
+        public void setValueTexts(Map<String, String> valueTexts) {
+            this.valueTexts = valueTexts;
+        }
+
         public boolean isTeacherListEnabled() {
             return teacherListEnabled;
         }
@@ -397,10 +401,6 @@ public class TeacherStatFeedbackCtrl {
             this.filterTypesList = filterTypesList;
         }
 
-        public void setValueTexts(Map<String, String> valueTexts) {
-            this.valueTexts = valueTexts;
-        }
-
         public int getCountFeedbacks() {
             return countFeedbacks;
         }
@@ -436,10 +436,6 @@ public class TeacherStatFeedbackCtrl {
             this.countResponseCompletion = countResponseCompletion;
             return this;
         }
-    }
-
-    public Model getModel() {
-        return model;
     }
 
 }

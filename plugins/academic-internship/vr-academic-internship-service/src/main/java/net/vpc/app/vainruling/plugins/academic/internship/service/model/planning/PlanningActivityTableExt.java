@@ -9,14 +9,14 @@ import java.util.*;
  * Created by vpc on 5/20/16.
  */
 public class PlanningActivityTableExt {
+    boolean findTeachers;
+    boolean findSpaceTime;
     private PlanningActivityTable table;
     private List<PlanningSpaceTime> spaceTimes = new ArrayList<>();
     private List<ChromosomeMarshaller> marshallers = new ArrayList<>();
     private Set<String> teachers = new HashSet<>();
-    private Map<PlanningTime,Integer> timeIndexes = new HashMap<>();
-    private Map<String,TeacherIndex> teacherIndexes = new HashMap<>();
-    boolean findTeachers;
-    boolean findSpaceTime;
+    private Map<PlanningTime, Integer> timeIndexes = new HashMap<>();
+    private Map<String, TeacherIndex> teacherIndexes = new HashMap<>();
     private PlanningTime startTime;
     private PlanningTime endTime;
     private Configuration conf;
@@ -25,7 +25,7 @@ public class PlanningActivityTableExt {
         this(table, true, true, null);
     }
 
-    public PlanningActivityTableExt(PlanningActivityTable table, boolean findTeachers, boolean findSpaceTime,Configuration conf) {
+    public PlanningActivityTableExt(PlanningActivityTable table, boolean findTeachers, boolean findSpaceTime, Configuration conf) {
         this.table = table.copy();
         this.conf = conf;
         this.findTeachers = findTeachers;
@@ -33,8 +33,8 @@ public class PlanningActivityTableExt {
         refresh();
     }
 
-    public void refresh(){
-        startTime=null;
+    public void refresh() {
+        startTime = null;
         TreeSet<PlanningTime> sortedTimes = new TreeSet<PlanningTime>(table.getTimes());
         TreeSet<PlanningRoom> sortedRooms = new TreeSet<PlanningRoom>(table.getRooms());
         int index = 1;
@@ -69,42 +69,42 @@ public class PlanningActivityTableExt {
             }
         }
         marshallers.clear();
-        if(conf!=null) {
+        if (conf != null) {
             for (int i = 0; i < getTable().getActivities().size(); i++) {
                 PlanningActivity activity = getTable().getActivities().get(i);
                 if (isFindTeachers()) {
-                    if(StringUtils.isEmpty(activity.getChair()) || !activity.isFixedChair()) {
+                    if (StringUtils.isEmpty(activity.getChair()) || !activity.isFixedChair()) {
                         marshallers.add(new ChairMarshaller(i, marshallers.size(), conf));
                     }
-                    if(StringUtils.isEmpty(activity.getExaminer())|| !activity.isFixedExaminer()) {
+                    if (StringUtils.isEmpty(activity.getExaminer()) || !activity.isFixedExaminer()) {
                         marshallers.add(new ExaminerMarshaller(i, marshallers.size(), conf));
                     }
                 }
                 if (isFindSpaceTime()) {
-                    if(activity.getSpaceTime()==null|| !activity.isFixedSpace()|| !activity.isFixedTime()) {
+                    if (activity.getSpaceTime() == null || !activity.isFixedSpace() || !activity.isFixedTime()) {
                         marshallers.add(new SpaceTimeMarshaller(i, marshallers.size(), conf));
                     }
                 }
             }
         }
         for (String s : teachers) {
-            teacherIndexes.put(s,new TeacherIndex());
+            teacherIndexes.put(s, new TeacherIndex());
         }
         for (int i = 0; i < table.getChairs().size(); i++) {
-            String s=table.getChairs().get(i);
+            String s = table.getChairs().get(i);
             teacherIndexes.get(s).setChair(i);
         }
         for (int i = 0; i < table.getExaminers().size(); i++) {
-            String s=table.getExaminers().get(i);
+            String s = table.getExaminers().get(i);
             teacherIndexes.get(s).setExaminer(i);
         }
     }
 
-    public int getChairIndex(String teacher){
+    public int getChairIndex(String teacher) {
         return teacherIndexes.get(teacher).chair;
     }
 
-    public int getExaminerIndex(String teacher){
+    public int getExaminerIndex(String teacher) {
         return teacherIndexes.get(teacher).examiner;
     }
 
@@ -142,23 +142,10 @@ public class PlanningActivityTableExt {
         }
     }
 
-    public static class TeacherStatsMap{
-        Map<String,PlanningTeacherStats> m=new HashMap<>();
-        public PlanningTeacherStats get(String t){
-            PlanningTeacherStats st = m.get(t);
-            if(st==null){
-                st=new PlanningTeacherStats();
-                st.teacherName=t;
-                m.put(t,st);
-            }
-            return st;
-        }
-    }
-
     public List<PlanningActivity> getExaminerActivities(String teacher) {
-        List<PlanningActivity> list=new ArrayList<>();
+        List<PlanningActivity> list = new ArrayList<>();
         for (PlanningActivity activity : getActivities()) {
-            if(Objects.equals(activity.getExaminer(),teacher)){
+            if (Objects.equals(activity.getExaminer(), teacher)) {
                 list.add(activity);
             }
         }
@@ -166,9 +153,9 @@ public class PlanningActivityTableExt {
     }
 
     public List<PlanningActivity> getChairActivities(String teacher) {
-        List<PlanningActivity> list=new ArrayList<>();
+        List<PlanningActivity> list = new ArrayList<>();
         for (PlanningActivity activity : getActivities()) {
-            if(Objects.equals(activity.getChair(),teacher)){
+            if (Objects.equals(activity.getChair(), teacher)) {
                 list.add(activity);
             }
         }
@@ -176,10 +163,10 @@ public class PlanningActivityTableExt {
     }
 
     public List<PlanningActivity> getSupervisorActivities(String teacher) {
-        List<PlanningActivity> list=new ArrayList<>();
+        List<PlanningActivity> list = new ArrayList<>();
         for (PlanningActivity activity : getActivities()) {
             for (String s : activity.getInternship().getSupervisors()) {
-                if(Objects.equals(s,teacher)){
+                if (Objects.equals(s, teacher)) {
                     list.add(activity);
                 }
             }
@@ -191,50 +178,64 @@ public class PlanningActivityTableExt {
         return teachers;
     }
 
-    private void updateTimeCache(){
-        if(startTime==null){
-            TreeSet<PlanningTime> x=new TreeSet<>(table.getTimes());
+    private void updateTimeCache() {
+        if (startTime == null) {
+            TreeSet<PlanningTime> x = new TreeSet<>(table.getTimes());
             startTime = x.first();
             endTime = x.last();
-            int index=0;
+            int index = 0;
             for (PlanningTime planningTime : x) {
-                timeIndexes.put(planningTime,index);
+                timeIndexes.put(planningTime, index);
                 index++;
             }
         }
     }
 
-    public int getRoomIndex(PlanningRoom time){
+    public int getRoomIndex(PlanningRoom time) {
         return time.getIndex();
     }
 
-    public int getTimeIndex(PlanningTime time){
+    public int getTimeIndex(PlanningTime time) {
         updateTimeCache();
         return timeIndexes.get(time);
     }
 
-    public PlanningTime getStartTime(){
+    public PlanningTime getStartTime() {
         updateTimeCache();
         return startTime;
     }
 
-
-    public List<PlanningActivity> getActivities(){
+    public List<PlanningActivity> getActivities() {
         return getTable().getActivities();
     }
 
-    public PlanningTime getEndTime(){
+    public PlanningTime getEndTime() {
         updateTimeCache();
         return endTime;
     }
 
-   public int getTimePeriodInDays(){
+    public int getTimePeriodInDays() {
         updateTimeCache();
         return startTime.dayDistance(endTime);
-   }
-    public static class TeacherIndex{
-        int chair=-1;
-        int examiner=-1;
+    }
+
+    public static class TeacherStatsMap {
+        Map<String, PlanningTeacherStats> m = new HashMap<>();
+
+        public PlanningTeacherStats get(String t) {
+            PlanningTeacherStats st = m.get(t);
+            if (st == null) {
+                st = new PlanningTeacherStats();
+                st.teacherName = t;
+                m.put(t, st);
+            }
+            return st;
+        }
+    }
+
+    public static class TeacherIndex {
+        int chair = -1;
+        int examiner = -1;
 
         public TeacherIndex() {
         }

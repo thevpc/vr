@@ -16,15 +16,14 @@
 */
 package examples;
 
-import java.io.IOException;
-
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import java.io.IOException;
 
 /**
  * Example1: the simplest tag
  * Collect attributes and call into some actions
- *
+ * <p>
  * <foo att1="..." att2="...." att3="...." />
  */
 

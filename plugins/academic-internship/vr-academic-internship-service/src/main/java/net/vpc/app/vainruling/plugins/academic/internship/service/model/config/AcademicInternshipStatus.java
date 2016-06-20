@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.internship.service.model.config;
@@ -8,17 +8,9 @@ package net.vpc.app.vainruling.plugins.academic.internship.service.model.config;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.RelationshipType;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.ManyToOne;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Properties;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "name")
@@ -38,13 +30,13 @@ public class AcademicInternshipStatus {
     private String description;
 
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "General")}
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "General")}
     )
     @Field(defaultValue = "false")
     private boolean studentUpdatesDescr;
 
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Encadrants")}
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Encadrants")}
     )
 
     @Field(defaultValue = "false")
@@ -54,9 +46,9 @@ public class AcademicInternshipStatus {
     private boolean studentUpdatesSupervisors;
 
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Rapports")}
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Rapports")}
     )
-    
+
     @Field(defaultValue = "false")
     private boolean enabledReport1;
 
@@ -65,7 +57,7 @@ public class AcademicInternshipStatus {
 
     @Field(defaultValue = "false")
     private boolean enabledReport2;
-    
+
     @Field(defaultValue = "false")
     private boolean studentUpdatesReport2;
 
@@ -76,20 +68,20 @@ public class AcademicInternshipStatus {
     private boolean studentUpdatesReport3;
 
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Evaluation")}
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Evaluation")}
     )
 
     @Field(defaultValue = "false")
     private boolean studentSeesEvaluators;
 
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Enseignants")}
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Enseignants")}
     )
     @Field(defaultValue = "false")
     private boolean supervisorRequestable;
-    
+
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Comité")}
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Comité")}
     )
     @Field(defaultValue = "false")
     private boolean boardUpdatesDescr;
@@ -101,7 +93,7 @@ public class AcademicInternshipStatus {
     private boolean boardUpdatesEvaluators;
 
     @Properties({
-        @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Cloture")}
+            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Cloture")}
     )
     @Field(defaultValue = "false")
     private boolean closed;

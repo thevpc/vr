@@ -1,26 +1,19 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.model;
 
-import java.sql.Timestamp;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Formula;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Properties;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
+
+import java.sql.Timestamp;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "fullName")
@@ -76,17 +69,59 @@ public class AppContact {
 
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
-    @Formula(value = "CurrentTimestamp()",type = FormulaType.PERSIST)
+    @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
-    @Formula(value = "CurrentTimestamp()",type = {FormulaType.PERSIST,FormulaType.UPDATE})
+    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
-    
+
     @Field(defaultValue = "true", modifiers = {UserFieldModifier.SUMMARY})
     private boolean enabled;
     @Field(defaultValue = "false", modifiers = {UserFieldModifier.SUMMARY})
     private boolean deleted;
     private String deletedBy;
     private Timestamp deletedOn;
+
+    public static String getName(AppContact t) {
+        String n = t.getFullName();
+        if (n != null && n.trim().length() > 0) {
+            return n.trim();
+        }
+        StringBuilder s = new StringBuilder();
+        if (t.getFirstName() != null && t.getFirstName().trim().length() > 0) {
+            s.append(t.getFirstName().trim());
+        }
+        if (t.getLastName() != null && t.getLastName().trim().length() > 0) {
+            if (s.length() > 0) {
+                s.append(" ");
+            }
+            s.append(t.getLastName().trim());
+        }
+        if (s.length() == 0) {
+            s.append("San Nom");
+        }
+        return s.toString();
+    }
+
+    public static String getName2(AppContact t) {
+        String n = t.getFullName2();
+        if (n != null && n.trim().length() > 0) {
+            return n.trim();
+        }
+        StringBuilder s = new StringBuilder();
+        if (t.getFirstName2() != null && t.getFirstName2().trim().length() > 0) {
+            s.append(t.getFirstName2().trim());
+        }
+        if (t.getLastName2() != null && t.getLastName2().trim().length() > 0) {
+            if (s.length() > 0) {
+                s.append(" ");
+            }
+            s.append(t.getLastName2().trim());
+        }
+        if (s.length() == 0) {
+            s.append(getName(t));
+        }
+        return s.toString();
+    }
 
     public int getId() {
         return id;
@@ -272,48 +307,6 @@ public class AppContact {
         this.lastName2 = lastName2;
     }
 
-    public static String getName(AppContact t) {
-        String n = t.getFullName();
-        if (n != null && n.trim().length() > 0) {
-            return n.trim();
-        }
-        StringBuilder s = new StringBuilder();
-        if (t.getFirstName() != null && t.getFirstName().trim().length() > 0) {
-            s.append(t.getFirstName().trim());
-        }
-        if (t.getLastName() != null && t.getLastName().trim().length() > 0) {
-            if (s.length() > 0) {
-                s.append(" ");
-            }
-            s.append(t.getLastName().trim());
-        }
-        if (s.length() == 0) {
-            s.append("San Nom");
-        }
-        return s.toString();
-    }
-
-    public static String getName2(AppContact t) {
-        String n = t.getFullName2();
-        if (n != null && n.trim().length() > 0) {
-            return n.trim();
-        }
-        StringBuilder s = new StringBuilder();
-        if (t.getFirstName2() != null && t.getFirstName2().trim().length() > 0) {
-            s.append(t.getFirstName2().trim());
-        }
-        if (t.getLastName2() != null && t.getLastName2().trim().length() > 0) {
-            if (s.length() > 0) {
-                s.append(" ");
-            }
-            s.append(t.getLastName2().trim());
-        }
-        if (s.length() == 0) {
-            s.append(getName(t));
-        }
-        return s.toString();
-    }
-
     public String getFullTitle() {
         return fullTitle;
     }
@@ -353,5 +346,5 @@ public class AppContact {
     public void setUpdateDate(Timestamp updateDate) {
         this.updateDate = updateDate;
     }
-    
+
 }

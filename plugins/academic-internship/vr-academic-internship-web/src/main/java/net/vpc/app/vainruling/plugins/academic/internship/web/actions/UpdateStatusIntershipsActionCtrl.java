@@ -1,25 +1,21 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.internship.web.actions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
-import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.plugins.academic.internship.service.AcademicInternshipPlugin;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipStatus;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternship;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternshipBoard;
+import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternshipGroup;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import org.primefaces.context.RequestContext;
@@ -27,8 +23,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.model.SelectItem;
+import java.util.*;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @Component
@@ -38,15 +38,16 @@ public class UpdateStatusIntershipsActionCtrl {
 
     private static final Logger log = Logger.getLogger(UpdateStatusIntershipsActionCtrl.class.getName());
     @Autowired
-    private CorePlugin core;
-    @Autowired
     AcademicInternshipPlugin pi;
     @Autowired
     AcademicPlugin ap;
+    @Autowired
+    private CorePlugin core;
     private Model model = new Model();
 
-    public void openDialog() {
+    public void openDialog(List<String> itemIds) {
         resetModel();
+        getModel().setSelectionIdList(itemIds == null ? new ArrayList<String>() : itemIds);
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
         options.put("draggable", false);
@@ -56,15 +57,28 @@ public class UpdateStatusIntershipsActionCtrl {
     }
 
     public void reloadInternshipBoards() {
-        List<SelectItem> all = new ArrayList<>();
+        List<SelectItem> internshipBoardsItems = new ArrayList<>();
         AcademicTeacher tt = ap.getCurrentTeacher();
+
         List<AcademicInternshipBoard> internshipBoards = pi.findEnabledInternshipBoardsByDepartment(tt.getDepartment().getId());
         for (AcademicInternshipBoard t : internshipBoards) {
             String n = t.getName();
-            all.add(new SelectItem(String.valueOf(t.getId()), n));
+            internshipBoardsItems.add(new SelectItem(String.valueOf(t.getId()), n));
         }
-        getModel().setBoards(all);
+        getModel().setBoards(internshipBoardsItems);
+
         reloadInternshipStatuses();
+    }
+
+    public void reloadInternshipGroups() {
+        List<SelectItem> internshipGroupsItems = new ArrayList<>();
+        AcademicTeacher tt = ap.getCurrentTeacher();
+        List<AcademicInternshipGroup> internshipGroups = pi.findEnabledInternshipGroupsByDepartment(tt.getDepartment().getId());
+        for (AcademicInternshipGroup t : internshipGroups) {
+            String n = t.getName();
+            internshipGroupsItems.add(new SelectItem(String.valueOf(t.getId()), n));
+        }
+        getModel().setGroups(internshipGroupsItems);
     }
 
     public void reloadInternshipStatuses() {
@@ -90,26 +104,43 @@ public class UpdateStatusIntershipsActionCtrl {
         getModel().setDisabled(false);
         getModel().setMessage("");
         reloadInternshipBoards();
+        reloadInternshipGroups();
         getModel().setSelectedBoard(null);
         getModel().setSelectedStatusFrom(null);
         getModel().setSelectedStatusTo(null);
+        getModel().setUserSelectedOnly(false);
     }
 
     public void apply() {
-        if (!StringUtils.isEmpty(getModel().getSelectedBoard())
-                && !StringUtils.isEmpty(getModel().getSelectedStatusFrom())
-                && !StringUtils.isEmpty(getModel().getSelectedStatusTo())) {
+        if (    //xor between board and group
+                !StringUtils.isEmpty(getModel().getSelectedStatusFrom())
+                        && !StringUtils.isEmpty(getModel().getSelectedStatusTo())) {
             PersistenceUnit pu = UPA.getPersistenceUnit();
-            int boardId = Integer.parseInt(getModel().getSelectedBoard());
-            int from = Integer.parseInt(getModel().getSelectedStatusFrom());
+            int boardId = Convert.toInteger(getModel().getSelectedBoard(), IntegerParserConfig.LENIENT_F);
+            int groupId = Convert.toInteger(getModel().getSelectedGroup(), IntegerParserConfig.LENIENT_F);
+            boolean userSelectedOnly = getModel().isUserSelectedOnly();
+            int from = StringUtils.isEmpty(getModel().getSelectedStatusFrom()) ? -1 : Integer.parseInt(getModel().getSelectedStatusFrom());
             int to = Integer.parseInt(getModel().getSelectedStatusTo());
             AcademicInternshipStatus toObj = pi.findInternshipStatus(to);
-            List<AcademicInternship> all = pi.findInternships(-1, boardId, -1, -1, true);
-            for (AcademicInternship ii : all) {
-                AcademicInternshipStatus s = ii.getInternshipStatus();
-                if (s != null && s.getId() == from) {
-                    ii.setInternshipStatus(toObj);
-                    pu.merge(ii);
+
+            if (userSelectedOnly && boardId < 0 && groupId < 0) {
+                List<AcademicInternship> all = pi.findInternships(-1, groupId, boardId, -1, -1, true);
+                Set<String> selectionIdList = new HashSet<>(getModel().getSelectionIdList());
+                for (AcademicInternship ii : all) {
+                    AcademicInternshipStatus s = ii.getInternshipStatus();
+                    if (s != null && (s.getId() == from || selectionIdList.contains(String.valueOf(ii.getId())))) {
+                        ii.setInternshipStatus(toObj);
+                        pu.merge(ii);
+                    }
+                }
+            } else {
+                List<AcademicInternship> all = pi.findInternships(-1, groupId, boardId, -1, -1, true);
+                for (AcademicInternship ii : all) {
+                    AcademicInternshipStatus s = ii.getInternshipStatus();
+                    if (s != null && s.getId() == from) {
+                        ii.setInternshipStatus(toObj);
+                        pu.merge(ii);
+                    }
                 }
             }
         }
@@ -127,15 +158,23 @@ public class UpdateStatusIntershipsActionCtrl {
         RequestContext.getCurrentInstance().closeDialog(null);
     }
 
+    public Model getModel() {
+        return model;
+    }
+
     public static class Model {
 
         private boolean disabled;
         private String message;
+        private List<String> selectionIdList;
         private AcademicInternship internship;
         private String selectedBoard;
+        private String selectedGroup;
         private String selectedStatusFrom;
         private String selectedStatusTo;
+        private boolean userSelectedOnly;
         private List<SelectItem> boards = new ArrayList<SelectItem>();
+        private List<SelectItem> groups = new ArrayList<SelectItem>();
         private List<SelectItem> statuses = new ArrayList<SelectItem>();
 
         public AcademicInternship getInternship() {
@@ -202,10 +241,37 @@ public class UpdateStatusIntershipsActionCtrl {
             this.selectedStatusTo = selectedStatusTo;
         }
 
-    }
+        public boolean isUserSelectedOnly() {
+            return userSelectedOnly;
+        }
 
-    public Model getModel() {
-        return model;
+        public void setUserSelectedOnly(boolean userSelectedOnly) {
+            this.userSelectedOnly = userSelectedOnly;
+        }
+
+        public List<String> getSelectionIdList() {
+            return selectionIdList;
+        }
+
+        public void setSelectionIdList(List<String> selectionIdList) {
+            this.selectionIdList = selectionIdList;
+        }
+
+        public String getSelectedGroup() {
+            return selectedGroup;
+        }
+
+        public void setSelectedGroup(String selectedGroup) {
+            this.selectedGroup = selectedGroup;
+        }
+
+        public List<SelectItem> getGroups() {
+            return groups;
+        }
+
+        public void setGroups(List<SelectItem> groups) {
+            this.groups = groups;
+        }
     }
 
 }

@@ -1,21 +1,17 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.util;
 
-import com.fathzer.soft.javaluator.AbstractEvaluator;
-import com.fathzer.soft.javaluator.BracketPair;
-import com.fathzer.soft.javaluator.Constant;
-import com.fathzer.soft.javaluator.Operator;
-import com.fathzer.soft.javaluator.Parameters;
+import com.fathzer.soft.javaluator.*;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 
 /**
- *
  * @author vpc
  */
 public class InSetEvaluator extends AbstractEvaluator<Boolean> {
@@ -53,6 +49,7 @@ public class InSetEvaluator extends AbstractEvaluator<Boolean> {
         evalParams.addConstants(Arrays.asList(new Constant("none")));
         evalParams.setFunctionArgumentSeparator('\0');
     }
+
     private Set<String> items;
 
     public InSetEvaluator(Set<String> set) {
@@ -62,7 +59,7 @@ public class InSetEvaluator extends AbstractEvaluator<Boolean> {
 
     @Override
     protected Boolean toValue(String item, Object o) {
-        if(item.equals("all")){
+        if (item.equals("all")) {
             return true;
         }
         return items.contains(item.toLowerCase());
@@ -70,23 +67,23 @@ public class InSetEvaluator extends AbstractEvaluator<Boolean> {
 
     @Override
     protected Boolean evaluate(Constant constant, Object evaluationContext) {
-        if(constant.getName().equals("all")){
+        if (constant.getName().equals("all")) {
             return true;
         }
-        if(constant.getName().equals("none")){
+        if (constant.getName().equals("none")) {
             return false;
         }
         return false;
     }
 
-    
+
     @Override
     protected Boolean evaluate(Operator operator, Iterator<Boolean> operands,
-            Object evaluationContext) {
+                               Object evaluationContext) {
         Boolean o1 = operands.next();
         Boolean o2 = operands.next();
         Boolean result;
-        if (operator == OR || operator == OR2 || operator == OR3|| operator == OR4) {
+        if (operator == OR || operator == OR2 || operator == OR3 || operator == OR4) {
             result = o1 || o2;
         } else if (operator == AND || operator == AND2 || operator == AND3) {
             result = o1 && o2;

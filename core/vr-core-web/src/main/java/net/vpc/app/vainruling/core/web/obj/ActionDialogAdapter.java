@@ -1,20 +1,20 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.obj;
 
-import java.util.List;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
-import net.vpc.app.vainruling.core.service.util.Reflector;
+import net.vpc.app.vainruling.core.service.util.PlatformReflector;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
+import java.util.List;
+
 /**
- *
  * @author vpc
  */
 public class ActionDialogAdapter {
@@ -28,12 +28,12 @@ public class ActionDialogAdapter {
 
     public ActionDialogAdapter(ActionDialog instance) {
         this.instance = instance;
-        EntityAction a = (EntityAction) Reflector.getTargetClass(instance).getAnnotation(EntityAction.class);
+        EntityAction a = (EntityAction) PlatformReflector.getTargetClass(instance).getAnnotation(EntityAction.class);
         entityType = a.entityType();
         dialog = a.dialog();
         actionName = a.actionName();
         style = a.actionLabel();
-        actionName = StringUtils.isEmpty(actionName) ? Reflector.getTargetClass(instance).getSimpleName() : actionName;
+        actionName = StringUtils.isEmpty(actionName) ? PlatformReflector.getTargetClass(instance).getSimpleName() : actionName;
         label = a.actionLabel();
         label = StringUtils.isEmpty(label) ? actionName : label;
     }
@@ -61,8 +61,8 @@ public class ActionDialogAdapter {
         return actionName;
     }
 
-    public boolean isEnabled(Class entityType, EditCtrlMode mode,Object value) {
-        boolean b = instance.isEnabled(entityType, mode,value);
+    public boolean isEnabled(Class entityType, EditCtrlMode mode, Object value) {
+        boolean b = instance.isEnabled(entityType, mode, value);
         if (b) {
             PersistenceUnit e = UPA.getPersistenceUnit();
             return e.getSecurityManager().isAllowedKey(e.getEntity(entityType), getId());

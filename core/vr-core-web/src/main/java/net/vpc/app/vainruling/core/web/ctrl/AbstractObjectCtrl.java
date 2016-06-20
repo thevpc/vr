@@ -1,25 +1,25 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.ctrl;
 
+import net.vpc.app.vainruling.core.service.obj.ObjFieldSelection;
 import net.vpc.app.vainruling.core.service.obj.ObjSearch;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.service.obj.ObjFieldSelection;
 
 /**
- *
  * @author vpc
  */
 public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
 
-    protected Model<T> model;
     private static final Logger log = Logger.getLogger(AbstractObjectCtrl.class.getName());
+    protected Model<T> model;
 
     protected AbstractObjectCtrl(Model<T> model) {
         this.model = model;
@@ -34,7 +34,7 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
     public void reloadPage() {
         reloadPage(true);
     }
-        
+
     public void reloadPage(boolean enableCustomization) {
         try {
             reloadPage(getModel().getCmd(), enableCustomization);
@@ -152,6 +152,11 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
         }
     }
 
+    public static interface SelectionListener<T> {
+
+        void onSelect(T c);
+    }
+
     public static class Model<T> {
 
         private EditCtrlMode mode = EditCtrlMode.LIST;
@@ -189,16 +194,16 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
             return current;
         }
 
+        public void setCurrent(T current) {
+            this.current = current;
+        }
+
         public EditCtrlMode getMode() {
             return mode;
         }
 
         public void setMode(EditCtrlMode mode) {
             this.mode = mode;
-        }
-
-        public void setCurrent(T current) {
-            this.current = current;
         }
 
         public List<T> getList() {
@@ -209,10 +214,5 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
             this.list = list;
         }
 
-    }
-
-    public static interface SelectionListener<T> {
-
-        void onSelect(T c);
     }
 }

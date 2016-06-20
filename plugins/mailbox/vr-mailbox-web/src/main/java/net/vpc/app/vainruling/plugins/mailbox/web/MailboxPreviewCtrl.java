@@ -1,34 +1,33 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.mailbox.web;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-
+import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.notification.PollAware;
-import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
+import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
 
+import javax.annotation.PostConstruct;
+import javax.faces.bean.ManagedBean;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author vpc
  */
 @UCtrl(
         breadcrumb = {
-            @UPathItem(title = "Site", css = "fa-dashboard", ctrl = "")},
+                @UPathItem(title = "Site", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Apercu Messages",
         securityKey = "Custom.Inbox"
@@ -48,7 +47,7 @@ public class MailboxPreviewCtrl implements PollAware {
     public void onRefresh() {
         MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
         AppUser user = VrApp.getBean(UserSession.class).getUser();
-        if(user!=null) {
+        if (user != null) {
             int userId = user.getId();
             List<MailboxReceived> loadUnreadInbox = p.loadLocalMailbox(userId, 3, true, MailboxFolder.CURRENT);
             List<MessagePreview> previews = new ArrayList<>();
@@ -62,7 +61,7 @@ public class MailboxPreviewCtrl implements PollAware {
             }
             model.setInbox(previews);
             model.setUnreadCount(p.getLocalUnreadInboxCount(userId));
-        }else{
+        } else {
             model.setInbox(new ArrayList<MessagePreview>());
             model.setUnreadCount(0);
         }
@@ -77,6 +76,15 @@ public class MailboxPreviewCtrl implements PollAware {
         private String from;
         private String text;
         private String date;
+
+        public MessagePreview(String from, String text, String date) {
+            this.from = from;
+            this.text = text;
+            this.date = date;
+        }
+
+        public MessagePreview() {
+        }
 
         public String getFrom() {
             return from;
@@ -100,15 +108,6 @@ public class MailboxPreviewCtrl implements PollAware {
 
         public void setDate(String date) {
             this.date = date;
-        }
-
-        public MessagePreview(String from, String text, String date) {
-            this.from = from;
-            this.text = text;
-            this.date = date;
-        }
-
-        public MessagePreview() {
         }
 
     }

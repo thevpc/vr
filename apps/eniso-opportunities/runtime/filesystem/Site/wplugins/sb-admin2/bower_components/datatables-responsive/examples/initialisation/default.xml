@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <dt-example table-type="html-wide" table-class="display nowrap" order="5">
 
-<css lib="datatables responsive" />
-<js lib="jquery datatables responsive">
-<![CDATA[
+    <css lib="datatables responsive"/>
+    <js lib="jquery datatables responsive">
+        <![CDATA[
 
 $.extend( $.fn.dataTable.defaults, {
     responsive: true
@@ -14,11 +14,11 @@ $(document).ready(function() {
 } );
 
 ]]>
-</js>
+    </js>
 
-<title lib="Responsive">Default initialisation</title>
+    <title lib="Responsive">Default initialisation</title>
 
-<info><![CDATA[
+    <info><![CDATA[
 
 It can often be useful to be able to set a default value for DataTables' initialisation options, providing a common starting point for initialisation when working with multiple tables over many pages or even just on a single page. DataTables provides that ability through the `$.fn.dataTable.defaults` object which can have any of the [initialisation options](//datatables.net/reference/option) set.
 

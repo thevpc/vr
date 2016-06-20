@@ -23,7 +23,7 @@
  *         { type: 'datetime-us', targets: 0 }
  *       ]
  *    } );
-*/
+ */
 jQuery.extend(jQuery.fn.dataTableExt.oSort, {
     "datetime-us-pre": function (a) {
         var b = a.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4}) (\d{1,2}):(\d{1,2}) (am|pm|AM|PM|Am|Pm)/),
@@ -67,7 +67,7 @@ jQuery.extend(jQuery.fn.dataTableExt.oSort, {
     },
 
     "datetime-us-asc": function (a, b) {
-            return a - b;
+        return a - b;
     },
 
     "datetime-us-desc": function (a, b) {

@@ -1,9 +1,12 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.security;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -12,11 +15,7 @@ import java.util.Map;
 //import net.acs.dal.dto.PermissionDTO;
 //import net.acs.service.core.Constants;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
 /**
- *
  * @author dev01
  */
 @Service

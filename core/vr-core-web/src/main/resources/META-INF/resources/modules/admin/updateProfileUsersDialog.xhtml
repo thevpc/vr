@@ -1,70 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
+
 and open the template in the editor.
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"   
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
-      >
+        >
 
-    <h:head>
-        <title><h:outputText value="Utilisateurs"/></title>
-        <style type="text/css">
-            /*
-            .ui-widget {    
-                font-size: 90%;
-            }
+<h:head>
+    <title><h:outputText value="Utilisateurs"/></title>
+    <style type="text/css">
+        /*
+        .ui-widget {
+            font-size: 90%;
+        }
 
-            .ui-selectonemenu-list,
-            .ui-selectonemenu-panel,
-            .ui-widget-content 
-            {
-                height:50% !important
-            }
-
-
-            .ui-selectonemenu-items-wrapper
-            {
-                height:100% !important
-            }
-            .ui-dialog {
-                width: auto !important;
-                min-height: 370px !important;
-            }
-            */
-
-        </style>
-        <link href="${jsfCtrl.context}/css/app.css" rel="stylesheet" type="text/css"/>
-    </h:head>
-
-    <h:body>
+        .ui-selectonemenu-list,
+        .ui-selectonemenu-panel,
+        .ui-widget-content
+        {
+            height:50% !important
+        }
 
 
+        .ui-selectonemenu-items-wrapper
+        {
+            height:100% !important
+        }
+        .ui-dialog {
+            width: auto !important;
+            min-height: 370px !important;
+        }
+        */
 
-        <div class="row">
-            <h:form id="listForm">
-                <p:pickList value="#{updateProfileUsersActionCtrl.model.values}" var="v" effect="bounce"
-                            itemValue="#{v.login}" itemLabel="#{v.contact eq null ? v.login : v.contact.fullName} (#{v.type.name},#{v.contact eq null ? '' : v.contact.positionTitle1})" 
-                            showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
-                            >
+    </style>
+    <link href="#{jsfCtrl.context}/css/app.css" rel="stylesheet" type="text/css"/>
+</h:head>
 
-                    <f:facet name="sourceCaption">Disponibles</f:facet>
-                    <f:facet name="targetCaption">Affectés</f:facet>
+<h:body>
 
-                </p:pickList>
 
-                <p:separator/>
+    <div class="row">
+        <h:form id="listForm">
+            <p:pickList value="#{updateProfileUsersActionCtrl.model.values}" var="v" effect="bounce"
+                        itemValue="#{v.login}"
+                        itemLabel="#{v.contact eq null ? v.login : v.contact.fullName} (#{v.type.name},#{v.contact eq null ? '' : v.contact.positionTitle1})"
+                        showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
+                    >
 
-                <p:commandButton value="Enregistrer" actionListener="#{updateProfileUsersActionCtrl.save}" 
-                                 style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
-                <p:commandButton value="Fermer" actionListener="#{updateProfileRightsActionCtrl.fireEventExtraDialogClosed}" style="margin-left: 20px;margin-right: 20px;margin-top: 5px;" />
-            </h:form>
-        </div>
-    </h:body>
+                <f:facet name="sourceCaption">Disponibles</f:facet>
+                <f:facet name="targetCaption">Affectés</f:facet>
+
+            </p:pickList>
+
+            <p:separator/>
+
+            <p:commandButton value="Enregistrer" actionListener="#{updateProfileUsersActionCtrl.save}"
+                             style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
+            <p:commandButton value="Fermer" actionListener="#{updateProfileRightsActionCtrl.fireEventExtraDialogClosed}"
+                             style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
+        </h:form>
+    </div>
+</h:body>
 
 </html>

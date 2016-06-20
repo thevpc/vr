@@ -1,69 +1,37 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.service;
 
-import net.vpc.common.vfs.VFile;
-import net.vpc.common.vfs.VFS;
-import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseLevel;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
-import net.vpc.common.util.Convert;
-import net.vpc.common.util.DoubleParserConfig;
-import net.vpc.common.util.IntegerParserConfig;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseGroup;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherSemestrialLoad;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppCivility;
-import net.vpc.app.vainruling.core.service.model.AppCompany;
-import net.vpc.app.vainruling.core.service.model.AppConfig;
-import net.vpc.app.vainruling.core.service.model.AppContact;
-import net.vpc.app.vainruling.core.service.model.AppDepartment;
-import net.vpc.app.vainruling.core.service.model.AppGender;
-import net.vpc.app.vainruling.core.service.model.AppProfile;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicBac;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicPreClass;
+import net.vpc.app.vainruling.core.service.model.*;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.*;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.util.Chronometer;
-import net.vpc.common.util.PlatformTypes;
+import net.vpc.common.util.*;
+import net.vpc.common.vfs.VFS;
+import net.vpc.common.vfs.VFile;
 import net.vpc.upa.Action;
-
-import net.vpc.upa.bulk.DataReader;
 import net.vpc.upa.UPA;
+import net.vpc.upa.bulk.DataReader;
 import net.vpc.upa.bulk.DataRow;
 import net.vpc.upa.bulk.ParseFormatManager;
 import net.vpc.upa.bulk.SheetParser;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 public class XlsxLoadImporter {
@@ -158,22 +126,6 @@ public class XlsxLoadImporter {
         log.log(Level.INFO, "importTeacherDegrees from {0} in {1}", new Object[]{file, ch.stop()});
     }
 
-    private static class ImportFile implements Comparable<ImportFile> {
-
-        VFile file;
-        int order;
-
-        public ImportFile(VFile file, int order) {
-            this.file = file;
-            this.order = order;
-        }
-
-        @Override
-        public int compareTo(ImportFile o) {
-            return order - o.order;
-        }
-    }
-
     private List<ImportFile> locateImportFile(VFile file, ImportOptions importOptions) throws IOException {
         if (importOptions == null) {
             importOptions = new ImportOptions();
@@ -213,7 +165,7 @@ public class XlsxLoadImporter {
         return Collections.EMPTY_LIST;
     }
 
-    public int importFile(VFile file, ImportOptions importOptions) throws IOException {
+    public int importFile(int periodId, VFile file, ImportOptions importOptions) throws IOException {
         if (importOptions == null) {
             importOptions = new ImportOptions();
         }
@@ -233,7 +185,7 @@ public class XlsxLoadImporter {
                 List<ImportFile> locateImportFile = locateImportFile(file, importOptions);
                 Collections.sort(locateImportFile);
                 for (ImportFile f : locateImportFile) {
-                    count += importFile(f.file, i);
+                    count += importFile(periodId, f.file, i);
                 }
             }
             return count;
@@ -262,7 +214,7 @@ public class XlsxLoadImporter {
         }
         if (file.getName().equals("course-assignments.xlsx")) {
             count++;
-            importCourseAssignments(file, importOptions);
+            importCourseAssignments(periodId, file, importOptions);
         }
         long end = System.currentTimeMillis();
         if (count > 0) {
@@ -304,21 +256,12 @@ public class XlsxLoadImporter {
             academicTeacherImport.setEmail(Convert.toString(values[COL_EMAIL]));
             academicTeacherImport.setDiscipline(Convert.toString(values[COL_DISCIPLINE]));
             academicTeacherImport.setWeekLoads(new int[]{
-                Convert.toInteger(values[COL_WEEK_LOAD_1], IntegerParserConfig.LENIENT),
-                Convert.toInteger(values[COL_WEEK_LOAD_2], IntegerParserConfig.LENIENT)
+                    Convert.toInteger(values[COL_WEEK_LOAD_1], IntegerParserConfig.LENIENT),
+                    Convert.toInteger(values[COL_WEEK_LOAD_2], IntegerParserConfig.LENIENT)
             });
             return academicTeacherImport;
         }
         return null;
-    }
-
-    public class ImportTeacherContext {
-
-        AppCompany mainCompany;
-        Map<String, AppGender> gendersByName;
-        Map<Integer, AppGender> gendersById;
-        Map<String, AppCivility> civilityByName;
-        Map<Integer, AppCivility> civilityById;
     }
 
     public void importTeacher(AcademicTeacherImport a, ImportTeacherContext ctx) throws IOException {
@@ -371,6 +314,7 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Department Not Found " + a.getDepartmentName());
             }
         }
+        int mainPeriodId = core.findAppConfig().getMainPeriod().getId();
         AppPeriod period = null;
         if (a.getStartPeriodId() != null) {
             period = core.findPeriod(a.getStartPeriodId());
@@ -498,7 +442,7 @@ public class XlsxLoadImporter {
 
         }, null);
 //                service.add(tal);
-        final List<AcademicTeacherSemestrialLoad> academicTeacherSemestrialLoads = service.findTeacherSemestrialLoads(academicTeacher.getId());
+        final List<AcademicTeacherSemestrialLoad> academicTeacherSemestrialLoads = service.findTeacherSemestrialLoadsByTeacher(mainPeriodId, academicTeacher.getId());
         for (AcademicTeacherSemestrialLoad sload : semestrialLoads) {
             boolean found = false;
             for (AcademicTeacherSemestrialLoad al : academicTeacherSemestrialLoads) {
@@ -577,16 +521,6 @@ public class XlsxLoadImporter {
             return a;
         }
         return null;
-    }
-
-    public static class ImportStudentContext {
-
-        Map<String, AppGender> gendersByName;
-        Map<Integer, AppGender> gendersById;
-        Map<String, AppCivility> civilityByName;
-        Map<Integer, AppCivility> civilityById;
-        Map<String, AppProfile> profiles;
-        AppCompany mainCompany;
     }
 
     public void importStudent(AcademicStudentImport a, ImportStudentContext ctx) throws IOException {
@@ -831,10 +765,15 @@ public class XlsxLoadImporter {
         return count;
     }
 
-    public void importCourseAssignments(VFile file, ImportOptions importOptions) throws IOException {
+    public void importCourseAssignments(int periodId, VFile file, ImportOptions importOptions) throws IOException {
         final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
+        final CorePlugin core = VrApp.getBean(CorePlugin.class);
         if (importOptions == null) {
             importOptions = new ImportOptions();
+        }
+        AppPeriod period = core.findPeriod(periodId);
+        if (period == null) {
+            throw new IllegalArgumentException("Missing Period");
         }
         Chronometer ch = new Chronometer();
         log.log(Level.INFO, "importCourseAssignments from {0}", file);
@@ -884,6 +823,7 @@ public class XlsxLoadImporter {
                     || "oui".equalsIgnoreCase(ignoreString))) {
                 ignoreRow = true;
             }
+            AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
 
             if (!ignoreRow) {
                 AcademicCourseType courseType = null;
@@ -1036,26 +976,28 @@ public class XlsxLoadImporter {
                         double effWeek = (Math.ceil(valueC / 15.0) + Math.floor(valueTP / 15.0)) * 1.5;
                         String coursePlanName = courseName;
                         for (String suffix : new String[]{
-                            "- TP", "- C", "- PS", "- PM",
-                            "\u2013 TP", "\u2013 C", "\u2013 PS", "\u2013 PM",
-                            "-TP", "-C", "-PS", "-PM",
-                            "\u2013TP", "\u2013C", "\u2013PS", "\u2013PM",}) {
+                                "- TP", "- C", "- PS", "- PM",
+                                "\u2013 TP", "\u2013 C", "\u2013 PS", "\u2013 PM",
+                                "-TP", "-C", "-PS", "-PM",
+                                "\u2013TP", "\u2013C", "\u2013PS", "\u2013PM",}) {
                             if (courseName.toUpperCase().endsWith(suffix)) {
                                 coursePlanName = courseName.substring(0, courseName.length() - suffix.length()).trim();
                                 break;
                             }
                         }
-                        AcademicCoursePlan coursePlan = service.findCoursePlan(studentClass.getId(), semester.getId(), coursePlanName);
+                        AcademicCoursePlan coursePlan = service.findCoursePlan(periodId, studentClass.getId(), semester.getId(), coursePlanName);
                         if (coursePlan == null) {
                             coursePlan = new AcademicCoursePlan();
                             coursePlan.setName(coursePlanName);
                             coursePlan.setCourseLevel(courseLevel);
                             coursePlan.setCourseGroup(courseGroup);
                             coursePlan.setDiscipline(discipline);
+                            coursePlan.setPeriod(period);
                             coursePlan.setValueC(0);
                             coursePlan.setValueTD(0);
                             coursePlan.setValueTP(0);
                             coursePlan.setValuePM(0);
+                            coursePlan.setPeriod(mainPeriod);
                             service.add(coursePlan);
                         }
                         AcademicCourseAssignment d = new AcademicCourseAssignment();
@@ -1084,7 +1026,7 @@ public class XlsxLoadImporter {
         TraceService trace = VrApp.getBean(TraceService.class);
         trace.trace("importCourseAssignments", "importTeachers from " + file + " in " + ch.stop() + " (" + count + " rows)", null, getClass().getSimpleName(), Level.INFO);
         log.log(Level.INFO, "importCourseAssignments from {0} in {1}", new Object[]{file, ch.stop()});
-        service.updateAllCoursePlanValuesByLoadValues();
+        service.updateAllCoursePlanValuesByLoadValues(periodId);
     }
 
     private String[] codeAndName(String s) {
@@ -1102,5 +1044,40 @@ public class XlsxLoadImporter {
             name = s;
         }
         return new String[]{code, name};
+    }
+
+    private static class ImportFile implements Comparable<ImportFile> {
+
+        VFile file;
+        int order;
+
+        public ImportFile(VFile file, int order) {
+            this.file = file;
+            this.order = order;
+        }
+
+        @Override
+        public int compareTo(ImportFile o) {
+            return order - o.order;
+        }
+    }
+
+    public static class ImportStudentContext {
+
+        Map<String, AppGender> gendersByName;
+        Map<Integer, AppGender> gendersById;
+        Map<String, AppCivility> civilityByName;
+        Map<Integer, AppCivility> civilityById;
+        Map<String, AppProfile> profiles;
+        AppCompany mainCompany;
+    }
+
+    public class ImportTeacherContext {
+
+        AppCompany mainCompany;
+        Map<String, AppGender> gendersByName;
+        Map<Integer, AppGender> gendersById;
+        Map<String, AppCivility> civilityByName;
+        Map<Integer, AppCivility> civilityById;
     }
 }

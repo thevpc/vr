@@ -1,27 +1,22 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.obj;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.Entity;
-import net.vpc.upa.FieldModifier;
 import net.vpc.upa.Field;
+import net.vpc.upa.FieldModifier;
 import net.vpc.upa.filters.Fields;
 
+import java.util.*;
+
 /**
- *
  * @author vpc
  */
 public class ObjFieldFieldSelection extends ObjFieldSelection {

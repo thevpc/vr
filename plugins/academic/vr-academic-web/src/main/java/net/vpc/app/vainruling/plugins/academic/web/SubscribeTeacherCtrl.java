@@ -1,14 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.web;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.faces.bean.ManagedBean;
-import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCivility;
@@ -24,13 +20,17 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTea
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
 import net.vpc.common.jsf.FacesUtils;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.model.SelectItem;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author vpc
  */
 @UCtrl(
         breadcrumb = {
-            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Inscription Enseignant",
         url = "modules/academic/subscribeteacher",
@@ -41,74 +41,6 @@ import net.vpc.common.jsf.FacesUtils;
 public class SubscribeTeacherCtrl {
 
     private Model model = new Model();
-
-    public class Model {
-
-        AcademicTeacherImport teacher = new AcademicTeacherImport();
-        List<SelectItem> genders = new ArrayList<>();
-        List<SelectItem> civilities = new ArrayList<>();
-        List<SelectItem> periods = new ArrayList<>();
-        List<SelectItem> degrees = new ArrayList<>();
-        List<SelectItem> situations = new ArrayList<>();
-        List<SelectItem> departments = new ArrayList<>();
-
-        public AcademicTeacherImport getTeacher() {
-            return teacher;
-        }
-
-        public void setTeacher(AcademicTeacherImport teacher) {
-            this.teacher = teacher;
-        }
-
-        public List<SelectItem> getGenders() {
-            return genders;
-        }
-
-        public void setGenders(List<SelectItem> genders) {
-            this.genders = genders;
-        }
-
-        public List<SelectItem> getCivilities() {
-            return civilities;
-        }
-
-        public void setCivilities(List<SelectItem> civilities) {
-            this.civilities = civilities;
-        }
-
-        public List<SelectItem> getPeriods() {
-            return periods;
-        }
-
-        public void setPeriods(List<SelectItem> periods) {
-            this.periods = periods;
-        }
-
-        public List<SelectItem> getDegrees() {
-            return degrees;
-        }
-
-        public void setDegrees(List<SelectItem> degrees) {
-            this.degrees = degrees;
-        }
-
-        public List<SelectItem> getSituations() {
-            return situations;
-        }
-
-        public void setSituations(List<SelectItem> situations) {
-            this.situations = situations;
-        }
-
-        public List<SelectItem> getDepartments() {
-            return departments;
-        }
-
-        public void setDepartments(List<SelectItem> departments) {
-            this.departments = departments;
-        }
-
-    }
 
     public Model getModel() {
         return model;
@@ -179,12 +111,80 @@ public class SubscribeTeacherCtrl {
         getModel().setTeacher(new AcademicTeacherImport());
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         int semesterMaxWeeks = ap.getSemesterMaxWeeks();
-        getModel().getTeacher().setWeekLoads(new int[]{semesterMaxWeeks,semesterMaxWeeks});
+        getModel().getTeacher().setWeekLoads(new int[]{semesterMaxWeeks, semesterMaxWeeks});
         updateLists();
     }
 
     public void onFiltersChanged() {
         //onRefresh();
+    }
+
+    public class Model {
+
+        AcademicTeacherImport teacher = new AcademicTeacherImport();
+        List<SelectItem> genders = new ArrayList<>();
+        List<SelectItem> civilities = new ArrayList<>();
+        List<SelectItem> periods = new ArrayList<>();
+        List<SelectItem> degrees = new ArrayList<>();
+        List<SelectItem> situations = new ArrayList<>();
+        List<SelectItem> departments = new ArrayList<>();
+
+        public AcademicTeacherImport getTeacher() {
+            return teacher;
+        }
+
+        public void setTeacher(AcademicTeacherImport teacher) {
+            this.teacher = teacher;
+        }
+
+        public List<SelectItem> getGenders() {
+            return genders;
+        }
+
+        public void setGenders(List<SelectItem> genders) {
+            this.genders = genders;
+        }
+
+        public List<SelectItem> getCivilities() {
+            return civilities;
+        }
+
+        public void setCivilities(List<SelectItem> civilities) {
+            this.civilities = civilities;
+        }
+
+        public List<SelectItem> getPeriods() {
+            return periods;
+        }
+
+        public void setPeriods(List<SelectItem> periods) {
+            this.periods = periods;
+        }
+
+        public List<SelectItem> getDegrees() {
+            return degrees;
+        }
+
+        public void setDegrees(List<SelectItem> degrees) {
+            this.degrees = degrees;
+        }
+
+        public List<SelectItem> getSituations() {
+            return situations;
+        }
+
+        public void setSituations(List<SelectItem> situations) {
+            this.situations = situations;
+        }
+
+        public List<SelectItem> getDepartments() {
+            return departments;
+        }
+
+        public void setDepartments(List<SelectItem> departments) {
+            this.departments = departments;
+        }
+
     }
 
 }

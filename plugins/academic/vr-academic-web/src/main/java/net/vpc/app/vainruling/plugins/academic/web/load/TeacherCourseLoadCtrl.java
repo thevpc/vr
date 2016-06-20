@@ -1,14 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.web.load;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.faces.bean.ManagedBean;
-import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
@@ -16,13 +12,17 @@ import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.model.SelectItem;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author vpc
  */
 @UCtrl(
         breadcrumb = {
-            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Charge par Enseignant",
         url = "modules/academic/teachercourseload",
@@ -31,29 +31,6 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 )
 @ManagedBean
 public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
-
-    public class ModelExt extends Model {
-
-        String teacherId;
-        List<SelectItem> teachers = new ArrayList<SelectItem>();
-
-        public List<SelectItem> getTeachers() {
-            return teachers;
-        }
-
-        public void setTeachers(List<SelectItem> teachers) {
-            this.teachers = teachers;
-        }
-
-        public String getTeacherId() {
-            return teacherId;
-        }
-
-        public void setTeacherId(String teacherId) {
-            this.teacherId = teacherId;
-        }
-
-    }
 
     public TeacherCourseLoadCtrl() {
         super();
@@ -75,7 +52,7 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
             }
         }
     }
-    
+
     @OnPageLoad
     @Override
     public void onRefresh(String cmd) {
@@ -100,5 +77,28 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
 
     public ModelExt getModel() {
         return (ModelExt) super.getModel();
+    }
+
+    public class ModelExt extends Model {
+
+        String teacherId;
+        List<SelectItem> teachers = new ArrayList<SelectItem>();
+
+        public List<SelectItem> getTeachers() {
+            return teachers;
+        }
+
+        public void setTeachers(List<SelectItem> teachers) {
+            this.teachers = teachers;
+        }
+
+        public String getTeacherId() {
+            return teacherId;
+        }
+
+        public void setTeacherId(String teacherId) {
+            this.teacherId = teacherId;
+        }
+
     }
 }

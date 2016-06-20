@@ -1,19 +1,22 @@
 package net.vpc.app.vainruling.plugins.academic.internship.service.model.planning;
 
+import org.joda.time.Days;
+import org.joda.time.LocalDateTime;
+import org.joda.time.Minutes;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import org.joda.time.*;
 
 /**
  * Created by vpc on 5/19/16.
  */
-public class PlanningTime implements Comparable<PlanningTime>{
-    public static final SimpleDateFormat DEFAULT_FORMAT =new SimpleDateFormat("yyyy-MM-dd HH:mm");
-    public static final SimpleDateFormat DATE_FORMAT =new SimpleDateFormat("yyyy-MM-dd");
-    public static final SimpleDateFormat TIME_FORMAT =new SimpleDateFormat("HH:mm");
-//    private String day;
+public class PlanningTime implements Comparable<PlanningTime> {
+    public static final SimpleDateFormat DEFAULT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
+    //    private String day;
 //    private String time;
 //    private int index;
 //    private int dayIndex;
@@ -56,7 +59,7 @@ public class PlanningTime implements Comparable<PlanningTime>{
 //    }
 //
 
-    public String getName(){
+    public String getName() {
         return DEFAULT_FORMAT.format(time);
     }
 
@@ -74,7 +77,7 @@ public class PlanningTime implements Comparable<PlanningTime>{
         instance.set(Calendar.MILLISECOND, 0);
         instance.set(Calendar.SECOND, 0);
         instance.set(Calendar.MINUTE, 0);
-        instance.set(Calendar.HOUR_OF_DAY,0);
+        instance.set(Calendar.HOUR_OF_DAY, 0);
         return instance.getTime();
     }
 
@@ -85,7 +88,7 @@ public class PlanningTime implements Comparable<PlanningTime>{
 
     @Override
     public String toString() {
-        return getName() ;
+        return getName();
     }
 
 
@@ -94,11 +97,11 @@ public class PlanningTime implements Comparable<PlanningTime>{
         return this.getTime().compareTo(o.getTime());
     }
 
-    public int dayDistance(PlanningTime o){
+    public int dayDistance(PlanningTime o) {
         return Days.daysBetween(new LocalDateTime(this.getTime()), new LocalDateTime(o.getTime())).getDays();
     }
 
-    public int minutesDistance(PlanningTime o){
+    public int minutesDistance(PlanningTime o) {
         return Minutes.minutesBetween(new LocalDateTime(this.getTime()), new LocalDateTime(o.getTime())).getMinutes();
     }
 

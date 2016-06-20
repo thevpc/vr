@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.history;
@@ -8,17 +8,12 @@ package net.vpc.app.vainruling.plugins.academic.service.model.history;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "name")
@@ -42,7 +37,7 @@ public class AcademicHistCourseAssignment {
     private double valueTP;
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private double valuePM;
-//    private double valueDU;
+    //    private double valueDU;
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private double valueEffWeek;
     @Field(modifiers = UserFieldModifier.SUMMARY)
@@ -124,7 +119,7 @@ public class AcademicHistCourseAssignment {
         this.valueTP = valueTP;
     }
 
-//    public double getValueDU() {
+    //    public double getValueDU() {
 //        return valueDU;
 //    }
 //

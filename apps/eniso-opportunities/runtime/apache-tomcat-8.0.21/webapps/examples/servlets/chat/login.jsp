@@ -18,15 +18,15 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <html>
 <head>
-   <title>JSP Chat</title>
+    <title>JSP Chat</title>
 </head>
 
 <body bgcolor="#FFFFFF">
 
 <form method="POST" action='chat' target="_top" name="loginForm">
-<input type="hidden" name="action" value="login">
-Nickname: <input type="text" name="nickname">
-<input type="submit">
+    <input type="hidden" name="action" value="login">
+    Nickname: <input type="text" name="nickname">
+    <input type="submit">
 </form>
 
 </body>

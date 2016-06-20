@@ -1,17 +1,17 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.notification;
 
+import net.vpc.common.strings.StringUtils;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
-import net.vpc.common.strings.StringUtils;
 
 /**
- *
  * @author vpc
  */
 public class VrNotificationEvent {

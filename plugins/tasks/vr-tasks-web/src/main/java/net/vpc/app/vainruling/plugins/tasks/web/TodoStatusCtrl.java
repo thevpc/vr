@@ -1,32 +1,32 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.tasks.web;
 
-import java.util.List;
-import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;
-import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatus;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.ctrl.AbstractNameCtrl;
+import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
+import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;
+import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
+import javax.faces.bean.ManagedBean;
+import java.util.List;
+
 /**
- *
  * @author vpc
  */
 @UCtrl(
         breadcrumb = {
-            @UPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = ""),
+                @UPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = ""),
         }
-        ,css = "fa-table"
-        ,title = "Etats Todo"
-        ,url = "modules/todo/config-todo-status"
+        , css = "fa-table"
+        , title = "Etats Todo"
+        , url = "modules/todo/config-todo-status"
 )
 @ManagedBean
 @Scope(value = "session")

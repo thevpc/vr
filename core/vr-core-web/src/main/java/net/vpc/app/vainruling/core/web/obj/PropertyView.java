@@ -1,41 +1,41 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.obj;
 
+import jersey.repackaged.com.google.common.base.Objects;
+import net.vpc.common.util.Convert;
+import net.vpc.upa.Entity;
+import net.vpc.upa.EntityBuilder;
+import net.vpc.upa.KeyType;
+import net.vpc.upa.NamedId;
+import net.vpc.upa.types.DataType;
+import net.vpc.upa.types.EnumType;
+import net.vpc.upa.types.ManyToOneType;
+
+import javax.faces.event.ValueChangeEvent;
+import javax.faces.event.ValueChangeListener;
+import javax.faces.model.SelectItem;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.faces.event.ValueChangeEvent;
-import javax.faces.event.ValueChangeListener;
-import javax.faces.model.SelectItem;
-import jersey.repackaged.com.google.common.base.Objects;
-import net.vpc.app.vainruling.core.service.obj.NamedId;
-import net.vpc.common.util.Convert;
-import net.vpc.upa.Entity;
-import net.vpc.upa.EntityBuilder;
-import net.vpc.upa.KeyType;
-import net.vpc.upa.types.DataType;
-import net.vpc.upa.types.EntityType;
-import net.vpc.upa.types.EnumType;
 
 /**
- *
  * @author vpc
  */
 public class PropertyView implements Serializable {
 
+    protected Object value;
+    protected Object selectedItem;
     private Object referrer;
     private Object rootReferrer;
     private String name;
     private String header;
-    protected Object value;
     private DataType dataType;
-    protected Object selectedItem;
     private List<SelectItem> items = new ArrayList<>();
     //TODO change this to simple NamedId values (no need to bother of all Entity Values
     private List<NamedId> values = new ArrayList<>();
@@ -83,36 +83,36 @@ public class PropertyView implements Serializable {
         return header;
     }
 
+    public void setHeader(String header) {
+        this.header = header;
+    }
+
     public Object getReferrer() {
         return referrer;
-    }
-
-    public String getCtrlType() {
-        return ctrlType;
-    }
-
-    public int getColspan() {
-        return colspan;
-    }
-
-    public int getRowpan() {
-        return rowpan;
     }
 
     public void setReferrer(Object referrer) {
         this.referrer = referrer;
     }
 
-    public void setHeader(String header) {
-        this.header = header;
+    public String getCtrlType() {
+        return ctrlType;
     }
 
     public void setCtrlType(String ctrlType) {
         this.ctrlType = ctrlType;
     }
 
+    public int getColspan() {
+        return colspan;
+    }
+
     public void setColspan(int colspan) {
         this.colspan = colspan;
+    }
+
+    public int getRowpan() {
+        return rowpan;
     }
 
     public void setRowpan(int rowpan) {
@@ -135,6 +135,10 @@ public class PropertyView implements Serializable {
 
     public Object getValue() {
         return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
     }
 
     public Integer getValueInteger() {
@@ -181,10 +185,6 @@ public class PropertyView implements Serializable {
         return value;
     }
 
-    public void setValue(Object value) {
-        this.value = value;
-    }
-
     public boolean isRequired() {
         return required;
     }
@@ -220,8 +220,8 @@ public class PropertyView implements Serializable {
         if (selectedItem != null) {
             DataType dataType = getDataType();
             if (dataType != null) {
-                if (dataType instanceof EntityType) {
-                    EntityType et = (EntityType) dataType;
+                if (dataType instanceof ManyToOneType) {
+                    ManyToOneType et = (ManyToOneType) dataType;
                     Entity masterEntity = et.getRelationship().getTargetRole().getEntity();
                     EntityBuilder mconverter = masterEntity.getBuilder();
                     for (NamedId v : values) {
@@ -232,12 +232,12 @@ public class PropertyView implements Serializable {
                             break;
                         }
                     }
-                }else if (dataType instanceof KeyType) {
+                } else if (dataType instanceof KeyType) {
                     KeyType et = (KeyType) dataType;
                     Entity masterEntity = et.getEntity();
                     EntityBuilder mbuilder = masterEntity.getBuilder();
                     for (Object v : values) {
-                        Object id = mbuilder.objectToId(v);
+                        Object id = (v instanceof NamedId) ? ((NamedId) v).getId() : mbuilder.objectToId(v);
                         if (Objects.equal(Convert.toString(selectedItem), Convert.toString(id))) {
                             someUpdates |= !Objects.equal(value, v);
                             value = v;
@@ -280,15 +280,15 @@ public class PropertyView implements Serializable {
     }
 
     public void storeToMap(Map<String, Object> map) {
-       
+
     }
 
     public void storeTo(Object o) {
-        
+
     }
 
     public void loadFrom(Object o) {
-       
+
     }
 
     public boolean isDisabled() {
@@ -404,7 +404,7 @@ public class PropertyView implements Serializable {
         return this;
     }
 
-    public void refresh(){
+    public void refresh() {
 
     }
 }

@@ -9,7 +9,7 @@
  *
  *  @name Time (dd/mm/YY)
  *  @summary Sort Times in the formats: `hh:mm, hh:mm:ss, hh:mm tt, hh:mm:ss tt`
- *    e.g. '22:50, 22:50:40, 10:50 pm, 10:50:40 pm' 
+ *    e.g. '22:50, 22:50:40, 10:50 pm, 10:50:40 pm'
  *    am and pm are not case sensitive. white space is not compulsory
  *  @author David Stoneham
  *  @deprecated

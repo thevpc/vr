@@ -1,15 +1,13 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.config;
 
-import java.sql.Timestamp;
-import java.util.Objects;
-import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicBac;
@@ -17,17 +15,12 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCla
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicPreClass;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Formula;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Properties;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
+
+import java.sql.Timestamp;
+import java.util.Objects;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "contact.fullName")
@@ -108,28 +101,28 @@ public class AcademicStudent {
         this.user = user;
     }
 
-    public void setLastClass1(AcademicClass lastLevel1) {
-        this.lastClass1 = lastLevel1;
-    }
-
-    public void setLastClass2(AcademicClass lastLevel2) {
-        this.lastClass2 = lastLevel2;
-    }
-
-    public void setLastClass3(AcademicClass lastLevel3) {
-        this.lastClass3 = lastLevel3;
-    }
-
     public AcademicClass getLastClass1() {
         return lastClass1;
+    }
+
+    public void setLastClass1(AcademicClass lastLevel1) {
+        this.lastClass1 = lastLevel1;
     }
 
     public AcademicClass getLastClass2() {
         return lastClass2;
     }
 
+    public void setLastClass2(AcademicClass lastLevel2) {
+        this.lastClass2 = lastLevel2;
+    }
+
     public AcademicClass getLastClass3() {
         return lastClass3;
+    }
+
+    public void setLastClass3(AcademicClass lastLevel3) {
+        this.lastClass3 = lastLevel3;
     }
 
     public boolean isDeleted() {

@@ -1,24 +1,23 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 
+import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.app.vainruling.core.web.obj.*;
+import net.vpc.upa.Field;
+import net.vpc.upa.NamedId;
+import net.vpc.upa.types.DataType;
+
+import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.faces.model.SelectItem;
-
-import net.vpc.app.vainruling.core.service.obj.NamedId;
-import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.app.vainruling.core.web.obj.*;
-import net.vpc.upa.Field;
-import net.vpc.upa.types.DataType;
 
 /**
- *
  * @author vpc
  */
 public class EnumTypePropertyViewFactory implements PropertyViewFactory {
@@ -27,9 +26,9 @@ public class EnumTypePropertyViewFactory implements PropertyViewFactory {
 
     @Override
     public PropertyView[] createPropertyView(String componentId, Field field, DataType datatype, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext) {
-        FieldPropertyViewInfo nfo = FieldPropertyViewInfo.build(field, datatype,configuration);
+        FieldPropertyViewInfo nfo = FieldPropertyViewInfo.build(field, datatype, configuration);
         String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.SELECT);
-        PropertyView propView = new FieldPropertyView(componentId, field, datatype,controlType, manager);
+        PropertyView propView = new FieldPropertyView(componentId, field, datatype, controlType, manager);
         propView.setValues(manager.getPropertyViewValuesProvider(field, nfo.dataType).resolveValues(propView, field, nfo.dataType, viewContext));
 //        EnumType t = (EnumType) dataType;
 //        boolean main = field.getModifiers().contains(FieldModifier.MAIN);

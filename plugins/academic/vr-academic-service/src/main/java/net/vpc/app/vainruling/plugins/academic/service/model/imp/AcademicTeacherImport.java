@@ -1,12 +1,11 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.imp;
 
 /**
- *
  * @author vpc
  */
 public class AcademicTeacherImport {
@@ -32,7 +31,7 @@ public class AcademicTeacherImport {
     private String startPeriodName;
     private Integer startPeriodId;
     private String email;
-    private int[] weekLoads=new int[]{0,0};
+    private int[] weekLoads = new int[]{0, 0};
 
     public String getFirstName() {
         return firstName;

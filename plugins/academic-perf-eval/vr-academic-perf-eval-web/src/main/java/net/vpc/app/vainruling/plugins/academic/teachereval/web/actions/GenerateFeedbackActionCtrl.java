@@ -1,14 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.teachereval.web.actions;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
@@ -19,8 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.faces.bean.ManagedBean;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @Component
@@ -32,38 +32,6 @@ public class GenerateFeedbackActionCtrl {
     @Autowired
     private CorePlugin core;
     private Model model = new Model();
-
-    public static class Config {
-
-        private String type;
-        private int modelId;
-        private String title;
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public int getModelId() {
-            return modelId;
-        }
-
-        public void setModelId(int modelId) {
-            this.modelId = modelId;
-        }
-
-    }
 
     public void openDialog(String config) {
         openDialog(VrHelper.parseJSONObject(config, Config.class));
@@ -109,6 +77,42 @@ public class GenerateFeedbackActionCtrl {
         RequestContext.getCurrentInstance().closeDialog(null);
     }
 
+    public Model getModel() {
+        return model;
+    }
+
+    public static class Config {
+
+        private String type;
+        private int modelId;
+        private String title;
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public int getModelId() {
+            return modelId;
+        }
+
+        public void setModelId(int modelId) {
+            this.modelId = modelId;
+        }
+
+    }
+
     public static class Model {
 
         private String title;
@@ -139,10 +143,6 @@ public class GenerateFeedbackActionCtrl {
             this.modelId = modelId;
         }
 
-    }
-
-    public Model getModel() {
-        return model;
     }
 
 }

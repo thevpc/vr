@@ -1,11 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 
-import java.util.Map;
 import jersey.repackaged.com.google.common.base.Objects;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.I18n;
@@ -15,10 +14,11 @@ import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
 import net.vpc.upa.Record;
 import net.vpc.upa.types.DataType;
-import net.vpc.upa.types.EntityType;
+import net.vpc.upa.types.ManyToOneType;
+
+import java.util.Map;
 
 /**
- *
  * @author vpc
  */
 public class FieldPropertyView extends PropertyView {
@@ -43,7 +43,7 @@ public class FieldPropertyView extends PropertyView {
         }
     }
 
-    public Object getObjectValue(){
+    public Object getObjectValue() {
         return value;
     }
 
@@ -59,41 +59,29 @@ public class FieldPropertyView extends PropertyView {
         }
     }
 
-    protected static class SelectValue {
-
-        Object value;
-        Object selectedItem;
-        Entity entity;
-
-        public SelectValue(Object value, Object selectedItem, Entity entity) {
-            this.value = value;
-            this.selectedItem = selectedItem;
-            this.entity = entity;
-        }
-
-    }
-    public Entity getEntity(){
+    public Entity getEntity() {
         return getField().getEntity();
     }
+
     public void loadFrom(Object obj) {
         String expr = getComponentId();
         SelectValue sv = null;
         if (obj != null) {
             String[] exprArr = expr.split("\\.");
             Object rootReferrer = getRootReferrer();
-            Entity rr=null;
-            if(rootReferrer instanceof Entity){
-                rr=(Entity) rootReferrer;
-            }else{
-                rr=getField().getEntity();
+            Entity rr = null;
+            if (rootReferrer instanceof Entity) {
+                rr = (Entity) rootReferrer;
+            } else {
+                rr = getField().getEntity();
             }
             sv = new SelectValue(obj, obj, rr);
             for (String n : exprArr) {
                 Field field = sv.entity.getField(n);
                 DataType dataType = field.getDataType();
                 Object oo = sv.value == null ? null : field.getValue(sv.value);
-                if (dataType instanceof EntityType) {
-                    EntityType et = (EntityType) dataType;
+                if (dataType instanceof ManyToOneType) {
+                    ManyToOneType et = (ManyToOneType) dataType;
                     Entity e2 = et.getRelationship().getTargetRole().getEntity();
                     Object newSelectedItem = e2.getBuilder().objectToId(oo);
                     sv = new SelectValue(oo, newSelectedItem, e2);
@@ -118,6 +106,20 @@ public class FieldPropertyView extends PropertyView {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + getComponentId() + ')';
+    }
+
+    protected static class SelectValue {
+
+        Object value;
+        Object selectedItem;
+        Entity entity;
+
+        public SelectValue(Object value, Object selectedItem, Entity entity) {
+            this.value = value;
+            this.selectedItem = selectedItem;
+            this.entity = entity;
+        }
+
     }
 
 }

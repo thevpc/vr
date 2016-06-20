@@ -1,12 +1,11 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.menu;
 
 /**
- *
  * @author vpc
  */
 public class BreadcrumbItem {
@@ -33,36 +32,36 @@ public class BreadcrumbItem {
         this.cmd = cmd;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setCss(String css) {
-        this.css = css;
-    }
-
-    public void setCtrl(String ctrl) {
-        this.ctrl = ctrl;
-    }
-
     public boolean isActive() {
         return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public String getTitle() {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getCss() {
         return css;
     }
 
+    public void setCss(String css) {
+        this.css = css;
+    }
+
     public String getCtrl() {
         return ctrl;
+    }
+
+    public void setCtrl(String ctrl) {
+        this.ctrl = ctrl;
     }
 
 }

@@ -1,21 +1,21 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.ctrl;
 
-import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.util.AppVersion;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import org.springframework.context.annotation.Scope;
 
+import javax.annotation.PostConstruct;
+import javax.faces.bean.ManagedBean;
+
 /**
- *
  * @author vpc
  */
 @UCtrl(
@@ -41,47 +41,22 @@ public class AppInfoCtrl extends BasePageCtrl {
 
     @OnPageLoad
     public void reloadPage(String cmd) {
-        getModel().setPluginsCount(VrApp.getBean(CorePlugin.class).getPlugins().length);
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        getModel().setPluginsCount(core.getPlugins().length);
+        getModel().setVersion(core.getAppVersion());
     }
 
     public static class Model {
 
-        private String appVersion = "1.0.49";
-        private String appDate = "2016-06-03";
-        private String appBuild = "49";
-        private String author = "Taha BEN SALAH (c)";
+        private AppVersion version;
         private int pluginsCount = 0;
 
-        public String getAppVersion() {
-            return appVersion;
+        public AppVersion getVersion() {
+            return version;
         }
 
-        public void setAppVersion(String appVersion) {
-            this.appVersion = appVersion;
-        }
-
-        public String getAppDate() {
-            return appDate;
-        }
-
-        public void setAppDate(String appDate) {
-            this.appDate = appDate;
-        }
-
-        public String getAppBuild() {
-            return appBuild;
-        }
-
-        public void setAppBuild(String appBuild) {
-            this.appBuild = appBuild;
-        }
-
-        public String getAuthor() {
-            return author;
-        }
-
-        public void setAuthor(String author) {
-            this.author = author;
+        public void setVersion(AppVersion version) {
+            this.version = version;
         }
 
         public int getPluginsCount() {

@@ -24,13 +24,13 @@
           <element id="library" level="project" name="Maven: org.aspectj:aspectjweaver:1.8.9" />
           <element id="library" level="project" name="Maven: org.springframework:spring-jdbc:4.1.2.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-tx:4.1.2.RELEASE" />
-          <element id="archive" name="upa-api-1.2.0.22.jar">
+          <element id="archive" name="upa-api-1.2.0.23.jar">
             <element id="module-output" name="upa-api" />
           </element>
-          <element id="archive" name="upa-impl-1.2.0.22.0.jar">
+          <element id="archive" name="upa-impl-1.2.0.23.0.jar">
             <element id="module-output" name="upa-impl" />
           </element>
-          <element id="library" level="project" name="Maven: cglib:cglib:3.2.2" />
+          <element id="library" level="project" name="Maven: cglib:cglib:3.2.3" />
           <element id="library" level="project" name="Maven: org.ow2.asm:asm:5.0.4" />
           <element id="library" level="project" name="Maven: org.apache.ant:ant:1.9.6" />
           <element id="library" level="project" name="Maven: org.apache.ant:ant-launcher:1.9.6" />
@@ -46,14 +46,14 @@
           <element id="archive" name="strings-1.2.1.jar">
             <element id="module-output" name="strings" />
           </element>
-          <element id="archive" name="utils-1.0.jar">
+          <element id="archive" name="utils-1.1.jar">
             <element id="module-output" name="utils" />
           </element>
           <element id="archive" name="streams-1.0.jar">
             <element id="module-output" name="streams" />
           </element>
           <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.3.1" />
-          <element id="archive" name="vfs-1.3.jar">
+          <element id="archive" name="vfs-1.4.jar">
             <element id="module-output" name="vfs" />
           </element>
           <element id="library" level="project" name="Maven: com.fathzer:javaluator:3.0.0" />
@@ -79,7 +79,7 @@
           <element id="archive" name="vr-mailbox-service-1.0.jar">
             <element id="module-output" name="vr-mailbox-service" />
           </element>
-          <element id="archive" name="gomail-1.2.2.jar">
+          <element id="archive" name="gomail-1.2.3.jar">
             <element id="module-output" name="gomail" />
           </element>
           <element id="library" level="project" name="Maven: javax.mail:mail:1.5.0-b01" />
@@ -103,9 +103,6 @@
           <element id="library" level="project" name="Maven: commons-cli:commons-cli:1.0" />
           <element id="library" level="project" name="Maven: tablelayout:TableLayout:20050920" />
           <element id="library" level="project" name="Maven: net.sf.jcgrid:jcgrid:0.05" />
-          <element id="archive" name="vr-academic-addressbook-service-1.0.jar">
-            <element id="module-output" name="vr-academic-addressbook-service" />
-          </element>
           <element id="archive" name="vr-academic-report-service-1.0.jar">
             <element id="module-output" name="vr-academic-report-service" />
           </element>
@@ -190,9 +187,6 @@
           <element id="archive" name="vr-academic-internship-web-1.0.jar">
             <element id="module-output" name="vr-academic-internship-web" />
           </element>
-          <element id="archive" name="vr-academic-addressbook-web-1.0.jar">
-            <element id="module-output" name="vr-academic-addressbook-web" />
-          </element>
           <element id="archive" name="vr-academic-report-web-1.0.jar">
             <element id="module-output" name="vr-academic-report-web" />
           </element>
@@ -211,7 +205,6 @@
           <element id="archive" name="vr-dev-toolbox-web-1.0.jar">
             <element id="module-output" name="vr-dev-toolbox-web" />
           </element>
-          <element id="library" level="project" name="Maven: net.vpc.app.vain-ruling.plugins.themes:vr-ui-app-theme-infusion:1.0" />
           <element id="library" level="project" name="Maven: org.primefaces.themes:glass-x:1.0.6" />
         </element>
       </element>

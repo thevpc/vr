@@ -1,9 +1,19 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.util;
+
+import jxl.CellType;
+import jxl.Workbook;
+import jxl.read.biff.BiffException;
+import jxl.write.*;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.PlatformTypes;
+import net.vpc.common.vfs.VFS;
+import net.vpc.common.vfs.VFile;
+import org.springframework.util.PropertyPlaceholderHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,27 +23,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jxl.CellType;
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
-import jxl.write.Label;
-import jxl.write.WritableCell;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
-import jxl.write.WriteException;
-import net.vpc.common.util.Convert;
-import net.vpc.common.util.PlatformTypes;
-import net.vpc.common.vfs.VFS;
-import net.vpc.common.vfs.VFile;
-import org.springframework.util.PropertyPlaceholderHelper;
 
 /**
- *
  * @author vpc
  */
 public class ExcelTemplate {
 
     private static PropertyPlaceholderHelper hp = new PropertyPlaceholderHelper("${", "}");
+    private static PropertyPlaceholderHelper hv = new PropertyPlaceholderHelper("#", "#");
 
     public static void generateExcel(VFile template, VFile output, Map<String, Object> dataSet) throws IOException {
         try {
@@ -128,8 +125,6 @@ public class ExcelTemplate {
         }
 
     }
-
-    private static PropertyPlaceholderHelper hv = new PropertyPlaceholderHelper("#", "#");
 
     private static class Prop {
 

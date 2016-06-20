@@ -1,468 +1,745 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
+
 and open the template in the editor.
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"   
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 
-      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+        >
 
-    <h:head>
-    </h:head>
+<h:head>
+</h:head>
 
-    <h:body>
+<h:body>
 
 
-        <ui:composition template="/templates/private-template.xhtml">
-            <ui:define name="content">
-                <h:form id="buttonsForm">
-                    <p:confirmDialog message="Are you sure, you want to delete ?"  header="Initiating deleting process"  widgetVar="confirmationDelete">  
-                        <p:commandButton value="Yes Sure"  onclick="PF('confirmationDelete').hide();
+    <ui:composition template="/templates/private-template.xhtml">
+        <ui:define name="content">
+            <h:form id="buttonsForm">
+                <p:confirmDialog message="Are you sure, you want to delete ?" header="Initiating deleting process"
+                                 widgetVar="confirmationDelete">
+                    <p:commandButton value="Yes Sure" onclick="PF('confirmationDelete').hide();
                                 processOnDeleteCurrent();"/>
-                        <p:commandButton value="Not Yet" onclick="PF('confirmationDelete').hide()" type="button" />   
-                    </p:confirmDialog>
+                    <p:commandButton value="Not Yet" onclick="PF('confirmationDelete').hide()" type="button"/>
+                </p:confirmDialog>
 
-                    <!-- /.row -->
-                    <!--                    <div class="row">
-                                            <p:outputLabel id="buttons">
-                                                <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {allTeachersCourseLoadCtrl.onRefresh}"  update=":listForm"/>
-                                            </p:outputLabel>
-                                        </div>-->
+                <!-- /.row -->
+                <!--                    <div class="row">
+                                        <p:outputLabel id="buttons">
+                                            <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {allTeachersCourseLoadCtrl.onRefresh}"  update=":listForm"/>
+                                        </p:outputLabel>
+                                    </div>-->
 
 
-                    <!-- /.row -->
-                </h:form>
-                <h:form id="genForm">
-                    <p:growl id="growl" showDetail="true" sticky="true" />
-                    <p:outputLabel value="Version" style="margin-right: 7px;"/> <p:inputText value="#{allTeachersCourseLoadCtrl.model.version}" style="margin-right: 7px;"/>
-                    <p:commandButton value="Génerer" actionListener="#{allTeachersCourseLoadCtrl.generateTeachingLoad}" update="growl"/>
-                    <p:separator/>
-                </h:form>
-                <h:form id="listForm">
+                <!-- /.row -->
+            </h:form>
+            <h:form id="genForm">
+                <p:growl id="growl" showDetail="true" sticky="true"/>
+                <p:outputLabel value="Version" style="margin-right: 7px;"/> <p:inputText
+                    value="#{allTeachersCourseLoadCtrl.model.version}" style="margin-right: 7px;"/>
+                <p:commandButton value="Génerer" actionListener="#{allTeachersCourseLoadCtrl.generateTeachingLoad}"
+                                 update="growl"/>
+                <p:separator/>
+            </h:form>
+            <h:form id="listForm">
 
-                    <div class="row">
-                        <div class="table-responsive">
-                            <p:selectManyCheckbox value="#{allTeachersCourseLoadCtrl.model.filters}" layout="grid" columns="5">
-                                <p:ajax listener="#{allTeachersCourseLoadCtrl.onFiltersChanged}" update=":listForm"/>
-                                <f:selectItem itemLabel="grade" itemValue="degree" />
-                                <f:selectItem itemLabel="situation" itemValue="situation" />
-                                <f:selectItem itemLabel="semaines" itemValue="weeks" />
-                                <f:selectItem itemLabel="du" itemValue="due" />
-                                <f:selectItem itemLabel="charge" itemValue="value" />
-                                <f:selectItem itemLabel="H. Supp." itemValue="extra" />
-                                <f:selectItem itemLabel="du / Sem" itemValue="dueWeek" />
-                                <f:selectItem itemLabel="charge / Sem" itemValue="valueWeek" />
-                                <f:selectItem itemLabel="H. Supp. / Sem" itemValue="extraWeek" />
-                                <f:selectItem itemLabel="cours" itemValue="c" />
-                                <f:selectItem itemLabel="tp" itemValue="tp" />
-                                <f:selectItem itemLabel="td" itemValue="td" />
-                                <f:selectItem itemLabel="pm" itemValue="pm" />
-                            </p:selectManyCheckbox>
-                        </div>
-                        <div class="table-responsive">
-                            <p:selectManyCheckbox value="#{allTeachersCourseLoadCtrl.model.refreshFilter}" layout="grid" columns="5">
-                                <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                                <f:selectItem itemLabel="Inclure les Voeux" itemValue="intents" />
-                            </p:selectManyCheckbox>
-                        </div>
+                <div class="row">
+                    <div class="table-responsive">
+                        <p:selectManyCheckbox value="#{allTeachersCourseLoadCtrl.model.filters}" layout="grid"
+                                              columns="5">
+                            <p:ajax listener="#{allTeachersCourseLoadCtrl.onFiltersChanged}" update=":listForm"/>
+                            <f:selectItem itemLabel="grade" itemValue="degree"/>
+                            <f:selectItem itemLabel="situation" itemValue="situation"/>
+                            <f:selectItem itemLabel="semaines" itemValue="weeks"/>
+                            <f:selectItem itemLabel="du" itemValue="due"/>
+                            <f:selectItem itemLabel="charge" itemValue="value"/>
+                            <f:selectItem itemLabel="H. Supp." itemValue="extra"/>
+                            <f:selectItem itemLabel="du / Sem" itemValue="dueWeek"/>
+                            <f:selectItem itemLabel="charge / Sem" itemValue="valueWeek"/>
+                            <f:selectItem itemLabel="H. Supp. / Sem" itemValue="extraWeek"/>
+                            <f:selectItem itemLabel="cours" itemValue="c"/>
+                            <f:selectItem itemLabel="tp" itemValue="tp"/>
+                            <f:selectItem itemLabel="td" itemValue="td"/>
+                            <f:selectItem itemLabel="pm" itemValue="pm"/>
+                        </p:selectManyCheckbox>
                     </div>
-                    <div class="row">
-                        <div class="table-responsive">
-                            <h1>Charge globale</h1>
-                            <p:dataTable var="i" value="#{allTeachersCourseLoadCtrl.model.year}" class="table table-bordered table-hover"
-                                         paginatorAlwaysVisible="false"
-                                         paginator="true"
-                                         paginatorPosition="bottom"
-                                         rows="10"
-                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                         rowsPerPageTemplate="10,20,50,100,200,1000"
-                                         emptyMessage="Aucune charge"
-                                         >
-                                <p:column headerText="Enseignant" width="10%">
-                                    <h:outputText value="#{i.teacher.contact.fullName}" />
-                                </p:column>
-
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('degree')}" headerText="grade" width="5%">
-                                    <h:outputText value="#{i.teacher.degree.name}" ></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('situation')}" headerText="sit." width="5%">
-                                    <h:outputText value="#{i.teacher.situation.name}" ></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('weeks')}" headerText="# sem." width="5%">
-                                    <h:outputText value="#{i.weeks}" ><f:convertNumber pattern="#0.#"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="du C" width="5%">
-                                    <h:outputText value="#{i.due.c != 0 ? i.due.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="du TD" width="5%">
-                                    <h:outputText value="#{i.due.td != 0 ? i.due.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="du TP" width="5%">
-                                    <h:outputText value="#{i.due.tp != 0 ? i.due.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="du PM" width="5%">
-                                    <h:outputText value="#{i.due.pm != 0 ? i.due.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="du Eq" width="5%">
-                                    <h:outputText value="#{i.due.equiv != 0 ? i.due.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="C" width="5%">
-                                    <h:outputText value="#{i.value.c != 0 ? i.value.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="TD" width="5%">
-                                    <h:outputText value="#{i.value.td != 0 ? i.value.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="TP" width="5%">
-                                    <h:outputText value="#{i.value.tp != 0 ? i.value.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="PM" width="5%">
-                                    <h:outputText value="#{i.value.pm != 0 ? i.value.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="Eq" width="5%">
-                                    <h:outputText value="#{i.value.equiv != 0 ? i.value.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="Supp C" width="5%">
-                                    <h:outputText value="#{i.extra.c != 0 ? i.extra.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="Supp TD" width="5%">
-                                    <h:outputText value="#{i.extra.td != 0 ? i.extra.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="Supp TP" width="5%">
-                                    <h:outputText value="#{i.extra.tp != 0 ? i.extra.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="Supp PM" width="5%">
-                                    <h:outputText value="#{i.extra.pm != 0 ? i.extra.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="Supp Eq" width="5%">
-                                    <h:outputText value="#{i.extra.equiv != 0 ? i.extra.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-
-
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="C" width="5%">
-                                    <h:outputText value="#{i.dueWeek.c != 0 ? i.dueWeek.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="du TD/sem" width="5%">
-                                    <h:outputText value="#{i.dueWeek.td != 0 ? i.dueWeek.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="du TP/sem" width="5%">
-                                    <h:outputText value="#{i.dueWeek.tp != 0 ? i.dueWeek.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="du PM/sem" width="5%">
-                                    <h:outputText value="#{i.dueWeek.pm != 0 ? i.dueWeek.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="du Eq/sem" width="5%">
-                                    <h:outputText value="#{i.dueWeek.equiv != 0 ? i.dueWeek.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-
-
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="C/sem" width="5%">
-                                    <h:outputText value="#{i.valueWeek.c != 0 ? i.valueWeek.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="TD/sem" width="5%">
-                                    <h:outputText value="#{i.valueWeek.td != 0 ? i.valueWeek.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="TP/sem" width="5%">
-                                    <h:outputText value="#{i.valueWeek.tp != 0 ? i.valueWeek.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="PM/sem" width="5%">
-                                    <h:outputText value="#{i.valueWeek.pm != 0 ? i.valueWeek.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="Eq/sem" width="5%">
-                                    <h:outputText value="#{i.valueWeek.equiv != 0 ? i.valueWeek.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-
-
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="supp C/sem" width="5%">
-                                    <h:outputText value="#{i.extraWeek.c != 0 ? i.extraWeek.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="supp TD/sem" width="5%">
-                                    <h:outputText value="#{i.extraWeek.td != 0 ? i.extraWeek.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="supp TP/sem" width="5%">
-                                    <h:outputText value="#{i.extraWeek.tp != 0 ? i.extraWeek.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="supp PM/sem" width="5%">
-                                    <h:outputText value="#{i.extraWeek.pm != 0 ? i.extraWeek.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="supp Eq/sem" width="5%">
-                                    <h:outputText value="#{i.extraWeek.equiv != 0 ? i.extraWeek.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-
-                            </p:dataTable>
-                        </div>
-
+                    <div class="table-responsive">
+                        <p:selectManyCheckbox value="#{allTeachersCourseLoadCtrl.model.refreshFilter}" layout="grid"
+                                              columns="5">
+                            <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                            <f:selectItem itemLabel="Inclure les Voeux" itemValue="intents"/>
+                        </p:selectManyCheckbox>
                     </div>
+                </div>
+                <div class="row">
+                    <div class="table-responsive">
+                        <h1>Charge globale</h1>
+                        <p:dataTable var="i" value="#{allTeachersCourseLoadCtrl.model.year}"
+                                     class="table table-bordered table-hover"
+                                     paginatorAlwaysVisible="false"
+                                     paginator="true"
+                                     paginatorPosition="bottom"
+                                     rows="10"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="10,20,50,100,200,1000"
+                                     emptyMessage="Aucune charge"
+                                >
+                            <p:column headerText="Enseignant" width="10%">
+                                <h:outputText value="#{i.teacher.contact.fullName}"/>
+                            </p:column>
 
-                    <div class="row">
-                        <div class="table-responsive">
-                            <h1>Semestre 1</h1>
-                            <p:dataTable var="i" value="#{allTeachersCourseLoadCtrl.model.semester1}" class="table table-bordered table-hover"
-                                         paginatorAlwaysVisible="false"
-                                         paginator="true"
-                                         paginatorPosition="bottom"
-                                         rows="10"
-                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                         rowsPerPageTemplate="10,20,50,100,200,1000"
-                                         emptyMessage="Aucune charge"
-                                         >
-                                <p:column headerText="Enseignant" width="10%">
-                                    <h:outputText value="#{i.teacherStat.teacher.contact.fullName}" />
-                                </p:column>
+                            <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('degree')}"
+                                      headerText="grade" width="5%">
+                                <h:outputText value="#{i.teacher.degree.name}"></h:outputText>
+                            </p:column>
+                            <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('situation')}"
+                                      headerText="sit." width="5%">
+                                <h:outputText value="#{i.teacher.situation.name}"></h:outputText>
+                            </p:column>
+                            <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('weeks')}"
+                                      headerText="# sem." width="5%">
+                                <h:outputText value="#{i.weeks}"><f:convertNumber pattern="#0.#"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="du C" width="5%">
+                                <h:outputText value="#{i.due.c != 0 ? i.due.c : ''}"><f:convertNumber pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="du TD" width="5%">
+                                <h:outputText value="#{i.due.td != 0 ? i.due.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="du TP" width="5%">
+                                <h:outputText value="#{i.due.tp != 0 ? i.due.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="du PM" width="5%">
+                                <h:outputText value="#{i.due.pm != 0 ? i.due.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="du Eq" width="5%">
+                                <h:outputText value="#{i.due.equiv != 0 ? i.due.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
 
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('degree')}" headerText="grade" width="5%">
-                                    <h:outputText value="#{i.teacherStat.teacher.degree.name}" ></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('situation')}" headerText="sit." width="5%">
-                                    <h:outputText value="#{i.teacherStat.teacher.situation.name}" ></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('weeks')}" headerText="# sem." width="5%">
-                                    <h:outputText value="#{i.weeks}" ><f:convertNumber pattern="#0.#"/></h:outputText>
-                                </p:column>
-
-
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="due C" width="5%">
-                                    <h:outputText value="#{i.due.c != 0 ? i.due.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="due TD" width="5%">
-                                    <h:outputText value="#{i.due.td != 0 ? i.due.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="due TP" width="5%">
-                                    <h:outputText value="#{i.due.tp != 0 ? i.due.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="due PM" width="5%">
-                                    <h:outputText value="#{i.due.pm != 0 ? i.due.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="due Eq" width="5%">
-                                    <h:outputText value="#{i.due.equiv != 0 ? i.due.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-
-
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="C" width="5%">
-                                    <h:outputText value="#{i.value.c != 0 ? i.value.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="TD" width="5%">
-                                    <h:outputText value="#{i.value.td != 0 ? i.value.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="TP" width="5%">
-                                    <h:outputText value="#{i.value.tp != 0 ? i.value.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="PM" width="5%">
-                                    <h:outputText value="#{i.value.pm != 0 ? i.value.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="Eq" width="5%">
-                                    <h:outputText value="#{i.value.equiv != 0 ? i.value.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-
-
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="supp. C" width="5%">
-                                    <h:outputText value="#{i.extra.c != 0 ? i.extra.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="supp. TD" width="5%">
-                                    <h:outputText value="#{i.extra.td != 0 ? i.extra.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="supp. TP" width="5%">
-                                    <h:outputText value="#{i.extra.tp != 0 ? i.extra.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="supp. PM" width="5%">
-                                    <h:outputText value="#{i.extra.pm != 0 ? i.extra.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="supp. Eq" width="5%">
-                                    <h:outputText value="#{i.extra.equiv != 0 ? i.extra.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-
-
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="du C/sem" width="5%">
-                                    <h:outputText value="#{i.dueWeek.c != 0 ? i.dueWeek.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="du TD/sem" width="5%">
-                                    <h:outputText value="#{i.dueWeek.td != 0 ? i.dueWeek.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="du TP/sem" width="5%">
-                                    <h:outputText value="#{i.dueWeek.tp != 0 ? i.dueWeek.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="du PM/sem" width="5%">
-                                    <h:outputText value="#{i.dueWeek.pm != 0 ? i.dueWeek.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="du Eq/sem" width="5%">
-                                    <h:outputText value="#{i.dueWeek.equiv != 0 ? i.dueWeek.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="C/sem" width="5%">
-                                    <h:outputText value="#{i.valueWeek.c != 0 ? i.valueWeek.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="TD/sem" width="5%">
-                                    <h:outputText value="#{i.valueWeek.td != 0 ? i.valueWeek.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="TP/sem" width="5%">
-                                    <h:outputText value="#{i.valueWeek.tp != 0 ? i.valueWeek.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="PM/sem" width="5%">
-                                    <h:outputText value="#{i.valueWeek.pm != 0 ? i.valueWeek.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="Eq/sem" width="5%">
-                                    <h:outputText value="#{i.valueWeek.equiv != 0 ? i.valueWeek.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="C" width="5%">
+                                <h:outputText value="#{i.value.c != 0 ? i.value.c : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="TD" width="5%">
+                                <h:outputText value="#{i.value.td != 0 ? i.value.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="TP" width="5%">
+                                <h:outputText value="#{i.value.tp != 0 ? i.value.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="PM" width="5%">
+                                <h:outputText value="#{i.value.pm != 0 ? i.value.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="Eq" width="5%">
+                                <h:outputText value="#{i.value.equiv != 0 ? i.value.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="Supp C" width="5%">
+                                <h:outputText value="#{i.extra.c != 0 ? i.extra.c : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="Supp TD" width="5%">
+                                <h:outputText value="#{i.extra.td != 0 ? i.extra.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="Supp TP" width="5%">
+                                <h:outputText value="#{i.extra.tp != 0 ? i.extra.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="Supp PM" width="5%">
+                                <h:outputText value="#{i.extra.pm != 0 ? i.extra.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="Supp Eq" width="5%">
+                                <h:outputText value="#{i.extra.equiv != 0 ? i.extra.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
 
 
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="supp. C/sem" width="5%">
-                                    <h:outputText value="#{i.extraWeek.c != 0 ? i.extraWeek.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="supp. TD/sem" width="5%">
-                                    <h:outputText value="#{i.extraWeek.td != 0 ? i.extraWeek.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="supp. TP/sem" width="5%">
-                                    <h:outputText value="#{i.extraWeek.tp != 0 ? i.extraWeek.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="supp. PM/sem" width="5%">
-                                    <h:outputText value="#{i.extraWeek.pm != 0 ? i.extraWeek.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="supp. Eq/sem" width="5%">
-                                    <h:outputText value="#{i.extraWeek.equiv != 0 ? i.extraWeek.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="C" width="5%">
+                                <h:outputText value="#{i.dueWeek.c != 0 ? i.dueWeek.c : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="du TD/sem" width="5%">
+                                <h:outputText value="#{i.dueWeek.td != 0 ? i.dueWeek.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="du TP/sem" width="5%">
+                                <h:outputText value="#{i.dueWeek.tp != 0 ? i.dueWeek.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="du PM/sem" width="5%">
+                                <h:outputText value="#{i.dueWeek.pm != 0 ? i.dueWeek.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="du Eq/sem" width="5%">
+                                <h:outputText value="#{i.dueWeek.equiv != 0 ? i.dueWeek.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
 
-                            </p:dataTable>
-                        </div>
 
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="C/sem" width="5%">
+                                <h:outputText value="#{i.valueWeek.c != 0 ? i.valueWeek.c : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="TD/sem" width="5%">
+                                <h:outputText value="#{i.valueWeek.td != 0 ? i.valueWeek.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="TP/sem" width="5%">
+                                <h:outputText value="#{i.valueWeek.tp != 0 ? i.valueWeek.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="PM/sem" width="5%">
+                                <h:outputText value="#{i.valueWeek.pm != 0 ? i.valueWeek.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="Eq/sem" width="5%">
+                                <h:outputText
+                                        value="#{i.valueWeek.equiv != 0 ? i.valueWeek.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+
+
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="supp C/sem" width="5%">
+                                <h:outputText value="#{i.extraWeek.c != 0 ? i.extraWeek.c : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="supp TD/sem" width="5%">
+                                <h:outputText value="#{i.extraWeek.td != 0 ? i.extraWeek.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="supp TP/sem" width="5%">
+                                <h:outputText value="#{i.extraWeek.tp != 0 ? i.extraWeek.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="supp PM/sem" width="5%">
+                                <h:outputText value="#{i.extraWeek.pm != 0 ? i.extraWeek.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="supp Eq/sem" width="5%">
+                                <h:outputText
+                                        value="#{i.extraWeek.equiv != 0 ? i.extraWeek.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+
+                        </p:dataTable>
                     </div>
 
-                    <div class="row">
-                        <div class="table-responsive">
-                            <h1>Semestre 2</h1>
-                            <p:dataTable var="i" value="#{allTeachersCourseLoadCtrl.model.semester2}" class="table table-bordered table-hover"
-                                         paginatorAlwaysVisible="false"
-                                         paginator="true"
-                                         paginatorPosition="bottom"
-                                         rows="10"
-                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                         rowsPerPageTemplate="10,20,50,100,200,1000"
-                                         emptyMessage="Aucune charge"
-                                         >
-                                <p:column headerText="Enseignant" width="10%">
-                                    <h:outputText value="#{i.teacherStat.teacher.contact.fullName}" />
-                                </p:column>
+                </div>
 
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('degree')}" headerText="grade" width="5%">
-                                    <h:outputText value="#{i.teacherStat.teacher.degree.name}" ></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('situation')}" headerText="sit." width="5%">
-                                    <h:outputText value="#{i.teacherStat.teacher.situation.name}" ></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('weeks')}" headerText="# sem." width="5%">
-                                    <h:outputText value="#{i.weeks}" ><f:convertNumber pattern="#0.#"/></h:outputText>
-                                </p:column>
+                <div class="row">
+                    <div class="table-responsive">
+                        <h1>Semestre 1</h1>
+                        <p:dataTable var="i" value="#{allTeachersCourseLoadCtrl.model.semester1}"
+                                     class="table table-bordered table-hover"
+                                     paginatorAlwaysVisible="false"
+                                     paginator="true"
+                                     paginatorPosition="bottom"
+                                     rows="10"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="10,20,50,100,200,1000"
+                                     emptyMessage="Aucune charge"
+                                >
+                            <p:column headerText="Enseignant" width="10%">
+                                <h:outputText value="#{i.teacherStat.teacher.contact.fullName}"/>
+                            </p:column>
 
-
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="du C" width="5%">
-                                    <h:outputText value="#{i.due.c != 0 ? i.due.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="du TD" width="5%">
-                                    <h:outputText value="#{i.due.td != 0 ? i.due.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="du TP" width="5%">
-                                    <h:outputText value="#{i.due.tp != 0 ? i.due.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="du PM" width="5%">
-                                    <h:outputText value="#{i.due.pm != 0 ? i.due.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="du Eq" width="5%">
-                                    <h:outputText value="#{i.due.equiv != 0 ? i.due.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
+                            <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('degree')}"
+                                      headerText="grade" width="5%">
+                                <h:outputText value="#{i.teacherStat.teacher.degree.name}"></h:outputText>
+                            </p:column>
+                            <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('situation')}"
+                                      headerText="sit." width="5%">
+                                <h:outputText value="#{i.teacherStat.teacher.situation.name}"></h:outputText>
+                            </p:column>
+                            <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('weeks')}"
+                                      headerText="# sem." width="5%">
+                                <h:outputText value="#{i.weeks}"><f:convertNumber pattern="#0.#"/></h:outputText>
+                            </p:column>
 
 
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="C" width="5%">
-                                    <h:outputText value="#{i.value.c != 0 ? i.value.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="TD" width="5%">
-                                    <h:outputText value="#{i.value.td != 0 ? i.value.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="TP" width="5%">
-                                    <h:outputText value="#{i.value.tp != 0 ? i.value.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="PM" width="5%">
-                                    <h:outputText value="#{i.value.pm != 0 ? i.value.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="Eq" width="5%">
-                                    <h:outputText value="#{i.value.equiv != 0 ? i.value.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="due C" width="5%">
+                                <h:outputText value="#{i.due.c != 0 ? i.due.c : ''}"><f:convertNumber pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="due TD" width="5%">
+                                <h:outputText value="#{i.due.td != 0 ? i.due.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="due TP" width="5%">
+                                <h:outputText value="#{i.due.tp != 0 ? i.due.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="due PM" width="5%">
+                                <h:outputText value="#{i.due.pm != 0 ? i.due.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="due Eq" width="5%">
+                                <h:outputText value="#{i.due.equiv != 0 ? i.due.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
 
 
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="supp. C" width="5%">
-                                    <h:outputText value="#{i.extra.c != 0 ? i.extra.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="supp. TD" width="5%">
-                                    <h:outputText value="#{i.extra.td != 0 ? i.extra.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="supp. Eq" width="5%">
-                                    <h:outputText value="#{i.extra.equiv != 0 ? i.extra.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="C" width="5%">
+                                <h:outputText value="#{i.value.c != 0 ? i.value.c : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="TD" width="5%">
+                                <h:outputText value="#{i.value.td != 0 ? i.value.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="TP" width="5%">
+                                <h:outputText value="#{i.value.tp != 0 ? i.value.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="PM" width="5%">
+                                <h:outputText value="#{i.value.pm != 0 ? i.value.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="Eq" width="5%">
+                                <h:outputText value="#{i.value.equiv != 0 ? i.value.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
 
 
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="du C/sem" width="5%">
-                                    <h:outputText value="#{i.dueWeek.c != 0 ? i.dueWeek.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="du TD/sem" width="5%">
-                                    <h:outputText value="#{i.dueWeek.td != 0 ? i.dueWeek.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="du TP/sem" width="5%">
-                                    <h:outputText value="#{i.dueWeek.tp != 0 ? i.dueWeek.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="du PM/sem" width="5%">
-                                    <h:outputText value="#{i.dueWeek.pm != 0 ? i.dueWeek.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="du Eq/sem" width="5%">
-                                    <h:outputText value="#{i.dueWeek.equiv != 0 ? i.dueWeek.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="supp. C" width="5%">
+                                <h:outputText value="#{i.extra.c != 0 ? i.extra.c : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="supp. TD" width="5%">
+                                <h:outputText value="#{i.extra.td != 0 ? i.extra.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="supp. TP" width="5%">
+                                <h:outputText value="#{i.extra.tp != 0 ? i.extra.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="supp. PM" width="5%">
+                                <h:outputText value="#{i.extra.pm != 0 ? i.extra.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="supp. Eq" width="5%">
+                                <h:outputText value="#{i.extra.equiv != 0 ? i.extra.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
 
 
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="C/sem" width="5%">
-                                    <h:outputText value="#{i.valueWeek.c != 0 ? i.valueWeek.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="TD/sem" width="5%">
-                                    <h:outputText value="#{i.valueWeek.td != 0 ? i.valueWeek.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}" headerText="TP/sem" width="5%">
-                                    <h:outputText value="#{i.valueWeek.tp != 0 ? i.valueWeek.tp : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}" headerText="PM/sem" width="5%">
-                                    <h:outputText value="#{i.valueWeek.pm != 0 ? i.valueWeek.pm : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="Eq/sem" width="5%">
-                                    <h:outputText value="#{i.valueWeek.equiv != 0 ? i.valueWeek.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="du C/sem" width="5%">
+                                <h:outputText value="#{i.dueWeek.c != 0 ? i.dueWeek.c : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="du TD/sem" width="5%">
+                                <h:outputText value="#{i.dueWeek.td != 0 ? i.dueWeek.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="du TP/sem" width="5%">
+                                <h:outputText value="#{i.dueWeek.tp != 0 ? i.dueWeek.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="du PM/sem" width="5%">
+                                <h:outputText value="#{i.dueWeek.pm != 0 ? i.dueWeek.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="du Eq/sem" width="5%">
+                                <h:outputText value="#{i.dueWeek.equiv != 0 ? i.dueWeek.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="C/sem" width="5%">
+                                <h:outputText value="#{i.valueWeek.c != 0 ? i.valueWeek.c : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="TD/sem" width="5%">
+                                <h:outputText value="#{i.valueWeek.td != 0 ? i.valueWeek.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="TP/sem" width="5%">
+                                <h:outputText value="#{i.valueWeek.tp != 0 ? i.valueWeek.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="PM/sem" width="5%">
+                                <h:outputText value="#{i.valueWeek.pm != 0 ? i.valueWeek.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="Eq/sem" width="5%">
+                                <h:outputText
+                                        value="#{i.valueWeek.equiv != 0 ? i.valueWeek.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
 
 
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}" headerText="supp. C/sem" width="5%">
-                                    <h:outputText value="#{i.extraWeek.c != 0 ? i.extraWeek.c : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}" headerText="supp. TD/sem" width="5%">
-                                    <h:outputText value="#{i.extraWeek.td != 0 ? i.extraWeek.td : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
-                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}" headerText="supp. PM/sem" width="5%">
-                                    <h:outputText value="#{i.extraWeek.equiv != 0 ? i.extraWeek.equiv : ''}" ><f:convertNumber pattern="#0.00"/></h:outputText>
-                                </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="supp. C/sem" width="5%">
+                                <h:outputText value="#{i.extraWeek.c != 0 ? i.extraWeek.c : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="supp. TD/sem" width="5%">
+                                <h:outputText value="#{i.extraWeek.td != 0 ? i.extraWeek.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="supp. TP/sem" width="5%">
+                                <h:outputText value="#{i.extraWeek.tp != 0 ? i.extraWeek.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="supp. PM/sem" width="5%">
+                                <h:outputText value="#{i.extraWeek.pm != 0 ? i.extraWeek.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="supp. Eq/sem" width="5%">
+                                <h:outputText
+                                        value="#{i.extraWeek.equiv != 0 ? i.extraWeek.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
 
-                            </p:dataTable>
-                        </div>
-
+                        </p:dataTable>
                     </div>
 
-                </h:form>
+                </div>
+
+                <div class="row">
+                    <div class="table-responsive">
+                        <h1>Semestre 2</h1>
+                        <p:dataTable var="i" value="#{allTeachersCourseLoadCtrl.model.semester2}"
+                                     class="table table-bordered table-hover"
+                                     paginatorAlwaysVisible="false"
+                                     paginator="true"
+                                     paginatorPosition="bottom"
+                                     rows="10"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="10,20,50,100,200,1000"
+                                     emptyMessage="Aucune charge"
+                                >
+                            <p:column headerText="Enseignant" width="10%">
+                                <h:outputText value="#{i.teacherStat.teacher.contact.fullName}"/>
+                            </p:column>
+
+                            <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('degree')}"
+                                      headerText="grade" width="5%">
+                                <h:outputText value="#{i.teacherStat.teacher.degree.name}"></h:outputText>
+                            </p:column>
+                            <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('situation')}"
+                                      headerText="sit." width="5%">
+                                <h:outputText value="#{i.teacherStat.teacher.situation.name}"></h:outputText>
+                            </p:column>
+                            <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('weeks')}"
+                                      headerText="# sem." width="5%">
+                                <h:outputText value="#{i.weeks}"><f:convertNumber pattern="#0.#"/></h:outputText>
+                            </p:column>
 
 
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="du C" width="5%">
+                                <h:outputText value="#{i.due.c != 0 ? i.due.c : ''}"><f:convertNumber pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="du TD" width="5%">
+                                <h:outputText value="#{i.due.td != 0 ? i.due.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="du TP" width="5%">
+                                <h:outputText value="#{i.due.tp != 0 ? i.due.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="du PM" width="5%">
+                                <h:outputText value="#{i.due.pm != 0 ? i.due.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="du Eq" width="5%">
+                                <h:outputText value="#{i.due.equiv != 0 ? i.due.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
 
-            </ui:define>
+
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="C" width="5%">
+                                <h:outputText value="#{i.value.c != 0 ? i.value.c : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="TD" width="5%">
+                                <h:outputText value="#{i.value.td != 0 ? i.value.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="TP" width="5%">
+                                <h:outputText value="#{i.value.tp != 0 ? i.value.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="PM" width="5%">
+                                <h:outputText value="#{i.value.pm != 0 ? i.value.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="Eq" width="5%">
+                                <h:outputText value="#{i.value.equiv != 0 ? i.value.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
 
 
-        </ui:composition>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="supp. C" width="5%">
+                                <h:outputText value="#{i.extra.c != 0 ? i.extra.c : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="supp. TD" width="5%">
+                                <h:outputText value="#{i.extra.td != 0 ? i.extra.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="supp. Eq" width="5%">
+                                <h:outputText value="#{i.extra.equiv != 0 ? i.extra.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
 
 
-    </h:body>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="du C/sem" width="5%">
+                                <h:outputText value="#{i.dueWeek.c != 0 ? i.dueWeek.c : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="du TD/sem" width="5%">
+                                <h:outputText value="#{i.dueWeek.td != 0 ? i.dueWeek.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="du TP/sem" width="5%">
+                                <h:outputText value="#{i.dueWeek.tp != 0 ? i.dueWeek.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="du PM/sem" width="5%">
+                                <h:outputText value="#{i.dueWeek.pm != 0 ? i.dueWeek.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="du Eq/sem" width="5%">
+                                <h:outputText value="#{i.dueWeek.equiv != 0 ? i.dueWeek.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+
+
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="C/sem" width="5%">
+                                <h:outputText value="#{i.valueWeek.c != 0 ? i.valueWeek.c : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="TD/sem" width="5%">
+                                <h:outputText value="#{i.valueWeek.td != 0 ? i.valueWeek.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
+                                    headerText="TP/sem" width="5%">
+                                <h:outputText value="#{i.valueWeek.tp != 0 ? i.valueWeek.tp : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
+                                    headerText="PM/sem" width="5%">
+                                <h:outputText value="#{i.valueWeek.pm != 0 ? i.valueWeek.pm : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="Eq/sem" width="5%">
+                                <h:outputText
+                                        value="#{i.valueWeek.equiv != 0 ? i.valueWeek.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+
+
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}"
+                                    headerText="supp. C/sem" width="5%">
+                                <h:outputText value="#{i.extraWeek.c != 0 ? i.extraWeek.c : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
+                                    headerText="supp. TD/sem" width="5%">
+                                <h:outputText value="#{i.extraWeek.td != 0 ? i.extraWeek.td : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+                            <p:column
+                                    rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
+                                    headerText="supp. PM/sem" width="5%">
+                                <h:outputText
+                                        value="#{i.extraWeek.equiv != 0 ? i.extraWeek.equiv : ''}"><f:convertNumber
+                                        pattern="#0.00"/></h:outputText>
+                            </p:column>
+
+                        </p:dataTable>
+                    </div>
+
+                </div>
+
+            </h:form>
+
+
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
 
 </html>

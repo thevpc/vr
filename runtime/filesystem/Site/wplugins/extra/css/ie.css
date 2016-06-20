@@ -1,3 +1,11 @@
-.buttons a {background: #616a78;}
-.links .num {background: #4c95cd;}
-.buttons .num {background: #950707;}
+.buttons a {
+    background: #616a78;
+}
+
+.links .num {
+    background: #4c95cd;
+}
+
+.buttons .num {
+    background: #950707;
+}

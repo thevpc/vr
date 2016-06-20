@@ -1,9 +1,5 @@
 package net.vpc.app.vainruling.service.test;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.common.gomail.GoMail;
@@ -12,30 +8,17 @@ import net.vpc.common.gomail.GoMailFormat;
 import net.vpc.common.gomail.modules.GoMailModuleProcessor;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @Service
 public class GoMailServiceTest {
 
     public static void main(String[] args) {
         VrAppTest.runStandalone();
         VrApp.getBean(GoMailServiceTest.class).run();
-    }
-
-    public void run() {
-        try {
-            MailboxPlugin s = VrApp.getBean(MailboxPlugin.class);
-//            XMail m = s.read(XMailFormat.TEXT, new File("/home/vpc/Data/eniso/contacts/reprise-examens.xmail"));
-//            String file="/home/vpc/Data/eniso/students/students-aid-fitr-karim.xmail";
-            String file="/home/vpc/Data/eniso/students/students-pfe-soutenance-technique.xmail";
-//            String file="/home/vpc/Data/eniso/teaching-load/2015-2016/emails/teachers-vr-problem.xmail";
-//            String file="/home/vpc/Data/eniso/emails/companies-aid-fitr.xmail";
-            GoMail m = s.read(GoMailFormat.TEXT, new File(file));
-            m.setSimulate(false);
-//            System.out.println(m);
-            s.sendExternalMail(m,null,null);
-        }
-        catch (IOException ex) {
-            Logger.getLogger(GoMailServiceTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     public static void main0(String[] args) {
@@ -58,9 +41,9 @@ public class GoMailServiceTest {
             m.body("<html><body>Hello world</body></html>", "text/html");
             m.footer(
                     "<p><strong>Taha Ben Salah</strong></p>\n"
-                    + "<p>Directeur departmrnt Informatique Industrielle</p>\n"
-                    + "<p>Ecole Nationale D'ingenieurs de Sousse (ENISo)</p>\n"
-                    + "<img src=\"cid:part1\" alt=\"ATTACHMENT\"/>\n", "text/html");
+                            + "<p>Directeur departmrnt Informatique Industrielle</p>\n"
+                            + "<p>Ecole Nationale D'ingenieurs de Sousse (ENISo)</p>\n"
+                            + "<img src=\"cid:part1\" alt=\"ATTACHMENT\"/>\n", "text/html");
             m.attachment(new File("/home/vpc/Data/eniso/visual-identity/eniso-ii-half.jpg").toURI().toURL(), null);
             m.repeatDatasource(GoMailDataSourceFactory.forPattern(new File("/home/vpc/var/xmail-ds.xlsx").toURI().toURL().toString()));
             m.setSimulate(true);
@@ -81,10 +64,26 @@ public class GoMailServiceTest {
 //                System.out.println("Why?");
 //            }
             //XMailProcessor p = new XMailProcessor();
-            service.sendExternalMail(m,null,null);
-        }
-        catch (Exception ex) {
+            service.sendExternalMail(m, null, null);
+        } catch (Exception ex) {
             Logger.getLogger(GoMailModuleProcessor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void run() {
+        try {
+            MailboxPlugin s = VrApp.getBean(MailboxPlugin.class);
+//            XMail m = s.read(XMailFormat.TEXT, new File("/home/vpc/Data/eniso/contacts/reprise-examens.xmail"));
+//            String file="/home/vpc/Data/eniso/students/students-aid-fitr-karim.xmail";
+            String file = "/home/vpc/Data/eniso/students/students-pfe-soutenance-technique.xmail";
+//            String file="/home/vpc/Data/eniso/teaching-load/2015-2016/emails/teachers-vr-problem.xmail";
+//            String file="/home/vpc/Data/eniso/emails/companies-aid-fitr.xmail";
+            GoMail m = s.read(GoMailFormat.TEXT, new File(file));
+            m.setSimulate(false);
+//            System.out.println(m);
+            s.sendExternalMail(m, null, null);
+        } catch (IOException ex) {
+            Logger.getLogger(GoMailServiceTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

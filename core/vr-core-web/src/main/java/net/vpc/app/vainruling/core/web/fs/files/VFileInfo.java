@@ -1,33 +1,39 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.fs.files;
 
-import java.util.Date;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.common.vfs.VFile;
 
+import java.util.Date;
+
 /**
- *
  * @author vpc
  */
 public class VFileInfo implements Comparable<VFileInfo> {
 
-    private String name;
-    private String css;
-    private String desc;
     VFile file;
+    private String name;
+    private String iconCss;
+    private String labelCss;
+    private String desc;
     private boolean selected;
     private long downloads;
 
-    public VFileInfo(String name, VFile file, String css, long downloads, String desc) {
+    public VFileInfo(String name, VFile file, String labelCss,String iconCss, long downloads, String desc) {
         this.name = name;
         this.file = file;
-        this.css = css;
+        this.iconCss = iconCss;
+        this.labelCss = labelCss;
         this.downloads = downloads;
         this.desc = desc;
+    }
+
+    public String getLabelCss() {
+        return labelCss;
     }
 
     public String getDesc() {
@@ -100,20 +106,20 @@ public class VFileInfo implements Comparable<VFileInfo> {
         return file;
     }
 
-    public Date getLastModifiedDate() {
-        return new Date(file.lastModified());
-    }
-
     public void setFile(VFile file) {
         this.file = file;
     }
 
-    public String getCss() {
-        return css;
+    public Date getLastModifiedDate() {
+        return new Date(file.lastModified());
     }
 
-    public void setCss(String css) {
-        this.css = css;
+    public String getIconCss() {
+        return iconCss;
+    }
+
+    public void setIconCss(String iconCss) {
+        this.iconCss = iconCss;
     }
 
     @Override

@@ -2,16 +2,16 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/../../abyss/tool/vpc-devtools" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/../vain-ruling-apps/eniso-info/eniso-info-service" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/../vain-ruling-apps/eniso-info/eniso-info-web" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/../vain-ruling-apps/eniso-info/plugins/themes/eniso-info-theme-infusion" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/apps/eniso-info/eniso-info-service" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/apps/eniso-info/eniso-info-web" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apps/wpm/plugins/themes/wpm-theme-infusion" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apps/wpm/plugins/wpm-payroll/wpm-payroll-service" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apps/wpm/plugins/wpm-payroll/wpm-payroll-web" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apps/wpm/wpm-service" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apps/wpm/wpm-web" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/core/vr-core-service" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/core/vr-core-web" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/plugins/academic-addressbook/vr-academic-addressbook-service" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/plugins/academic-addressbook/vr-academic-addressbook-web" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/academic-eval/vr-academic-eval-service" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/academic-eval/vr-academic-eval-web" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-service" charset="UTF-8" />
@@ -30,18 +30,13 @@
     <file url="file://$PROJECT_DIR$/plugins/dev-toolbox/vr-dev-toolbox-service" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/dev-toolbox/vr-dev-toolbox-web" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/equipments/vr-equipments-service" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/plugins/filesystem/vr-filesystem-service" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/plugins/filesystem/vr-filesystem-web" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/forum/vr-forum-service" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/inventory/vr-inventory-service" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/mailbox/vr-mailbox-service" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/mailbox/vr-mailbox-web" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/tasks/vr-tasks-service" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/tasks/vr-tasks-web" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/plugins/themes/eniso-info-theme-infusion" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/vr-app-service" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/vr-app-service-test" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/vr-app-web" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../../common/gomail" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../../common/streams" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../../common/strings" charset="UTF-8" />

@@ -1,24 +1,15 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.mailbox.web.actions;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
-import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
@@ -29,8 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.faces.bean.ManagedBean;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @Component
@@ -42,29 +37,6 @@ public class SendWelcomeMailActionCtrl {
     @Autowired
     private CorePlugin core;
     private Model model = new Model();
-
-    public static class Config {
-
-        private String type;
-        private String title;
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-    }
 
     public void openDialog(String config) {
         openDialog(VrHelper.parseJSONObject(config, Config.class));
@@ -126,6 +98,33 @@ public class SendWelcomeMailActionCtrl {
         RequestContext.getCurrentInstance().closeDialog(null);
     }
 
+    public Model getModel() {
+        return model;
+    }
+
+    public static class Config {
+
+        private String type;
+        private String title;
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+    }
+
     public static class Model {
 
         private String title;
@@ -143,7 +142,7 @@ public class SendWelcomeMailActionCtrl {
         public List<VrNotificationEvent> getEvents() {
             List<VrNotificationEvent> evts = VrApp.getBean(VrNotificationSession.class).findAll(MailboxPlugin.SEND_WELCOME_MAIL_QUEUE);
             if (errorsOnly) {
-                for (Iterator<VrNotificationEvent> i = evts.iterator(); i.hasNext();) {
+                for (Iterator<VrNotificationEvent> i = evts.iterator(); i.hasNext(); ) {
                     VrNotificationEvent v = i.next();
                     if (v.getLevel().intValue() < Level.WARNING.intValue()) {
                         i.remove();
@@ -176,10 +175,6 @@ public class SendWelcomeMailActionCtrl {
             this.errorsOnly = errorOnly;
         }
 
-    }
-
-    public Model getModel() {
-        return model;
     }
 
 }

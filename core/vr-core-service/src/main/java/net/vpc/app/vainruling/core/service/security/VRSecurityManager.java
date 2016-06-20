@@ -1,37 +1,32 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.security;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Level;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.upa.DefaultUserPrincipal;
-import net.vpc.upa.Entity;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.UPA;
-import net.vpc.upa.PersistenceGroupSecurityManager;
-import net.vpc.upa.UserPrincipal;
+import net.vpc.upa.*;
 import net.vpc.upa.config.SecurityContext;
 import net.vpc.upa.exceptions.UPAException;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
+
 /**
- *
  * @author vpc
  */
 @SecurityContext
 public class VRSecurityManager implements PersistenceGroupSecurityManager {
 
-    private static final String INTERNAL_LOGIN = "<internal>";
     public static final Set<String> denyAdmin = new HashSet<String>();
     public static final Set<String> allowOthers = new HashSet<String>();
     public static final Set<String> denyOthers = new HashSet<String>();
+    private static final String INTERNAL_LOGIN = "<internal>";
 
     static {
         for (String e : CorePlugin.ADMIN_ENTITIES) {
@@ -172,10 +167,10 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
             //
         }
         if (user != null) {
-            trace.trace("login", "successfull", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO,sm == null ? null : sm.getClientIpAddress());
+            trace.trace("login", "successfull", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO, sm == null ? null : sm.getClientIpAddress());
             return new DefaultUserPrincipal(login, user);
         } else {
-            trace.trace("login", "failed", login + "/" + credentials, getClass().getSimpleName(), null, null, "anonymous", -1, Level.SEVERE,sm == null ? null : sm.getClientIpAddress());
+            trace.trace("login", "failed", login + "/" + credentials, getClass().getSimpleName(), null, null, "anonymous", -1, Level.SEVERE, sm == null ? null : sm.getClientIpAddress());
             throw new UPAException("InvalidLogin");
         }
     }

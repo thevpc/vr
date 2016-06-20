@@ -1,31 +1,25 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.service.test;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
 import net.vpc.common.gomail.GoMail;
 import net.vpc.common.gomail.GoMailBodyPosition;
-import net.vpc.upa.Action;
+import net.vpc.upa.*;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 //import ;
-import net.vpc.upa.Entity;
-import net.vpc.upa.Field;
-import net.vpc.upa.FieldModifier;
-import net.vpc.upa.Record;
-import net.vpc.upa.Relationship;
-import net.vpc.upa.UPA;
-import net.vpc.upa.UPAObject;
 
 /**
- *
  * @author vpc
  */
 public class I18nChecker {
@@ -39,7 +33,7 @@ public class I18nChecker {
 
             @Override
             public Object run() {
-                AcademicFeedback f=new AcademicFeedback();
+                AcademicFeedback f = new AcademicFeedback();
                 UPA.getPersistenceUnit().updateFormulas();
                 Record rr = UPA.getPersistenceUnit().findRecordById(AcademicCoursePlan.class, 121);
                 System.out.println(rr.getObject("fullName"));

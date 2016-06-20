@@ -1,14 +1,11 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.web.load;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import javax.faces.bean.ManagedBean;
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
@@ -18,13 +15,17 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSeme
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.GlobalStat;
 import org.primefaces.model.chart.PieChartModel;
 
+import javax.faces.bean.ManagedBean;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
- *
  * @author vpc
  */
 @UCtrl(
         breadcrumb = {
-            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Stats Charge",
         url = "modules/academic/globalstat",
@@ -35,6 +36,68 @@ import org.primefaces.model.chart.PieChartModel;
 public class GlobalStatCtrl {
 
     private Model model = new Model();
+
+    public Model getModel() {
+        return model;
+    }
+
+    public boolean containsFilter(String s) {
+        String[] f = getModel().getFilters();
+        if (f == null || f.length == 0) {
+            return "value".equals(s);
+        }
+        return Arrays.asList(f).indexOf(s) >= 0;
+    }
+
+    public boolean containsRefreshFilter(String s) {
+        String[] f = getModel().getRefreshFilter();
+        return Arrays.asList(f).indexOf(s) >= 0;
+    }
+
+    public void onRefresh() {
+        AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
+        CorePlugin c = VrApp.getBean(CorePlugin.class);
+
+        getModel().setStat(p.evalGlobalStat(c.findAppConfig().getMainPeriod().getId(), containsRefreshFilter("intents"), null));
+        getModel().setSemesters(p.findSemesters());
+
+        PieChartModel pieModel1 = new PieChartModel();
+
+        pieModel1.set("Permanents", getModel().getStat().getTeachersPermanentCount());
+        pieModel1.set("Contactuels", getModel().getStat().getTeachersContractualCount());
+        pieModel1.set("Vacataires", getModel().getStat().getTeachersTemporaryCount());
+        pieModel1.set("Autres", getModel().getStat().getTeachersOtherCount());
+        pieModel1.setTitle("Repartition Enseignants");
+        pieModel1.setLegendPosition("s");
+        pieModel1.setShowDataLabels(true);
+
+        PieChartModel pieModel2 = new PieChartModel();
+
+        pieModel2.set("Permanents", getModel().getStat().getTeachersPermanentCount());
+        pieModel2.set("Assistants pour combler Charges Supplémentaires hors du", getModel().getStat().getNeededAbsolute().getTeachersCount());
+        pieModel2.set("Assistants pour combler Charges Supplémentaires", getModel().getStat().getNeededRelative().getTeachersCount());
+        pieModel2.set("Enseignants restant à recruter", getModel().getStat().getMissing().getTeachersCount());
+        pieModel2.setTitle("Manque Enseignants");
+        pieModel2.setLegendPosition("s");
+        pieModel2.setShowDataLabels(true);
+
+        getModel().chart1 = pieModel1;
+        getModel().chart2 = pieModel2;
+    }
+
+    @OnPageLoad
+    public void onRefresh(String cmd) {
+        onRefresh();
+
+    }
+
+    public void onFiltersChanged() {
+        //onRefresh();
+    }
+
+    public void onRefreshFiltersChanged() {
+        onRefresh();
+    }
 
     public class Model {
 
@@ -94,67 +157,7 @@ public class GlobalStatCtrl {
         public void setChart2(PieChartModel chart2) {
             this.chart2 = chart2;
         }
-        
 
-    }
 
-    public Model getModel() {
-        return model;
-    }
-
-    public boolean containsFilter(String s) {
-        String[] f = getModel().getFilters();
-        if (f == null || f.length == 0) {
-            return "value".equals(s);
-        }
-        return Arrays.asList(f).indexOf(s) >= 0;
-    }
-
-    public boolean containsRefreshFilter(String s) {
-        String[] f = getModel().getRefreshFilter();
-        return Arrays.asList(f).indexOf(s) >= 0;
-    }
-
-    public void onRefresh() {
-        AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-        getModel().setStat(p.evalGlobalStat(containsRefreshFilter("intents"), null));
-        getModel().setSemesters(p.findSemesters());
-        
-        PieChartModel pieModel1 = new PieChartModel();
-         
-        pieModel1.set("Permanents", getModel().getStat().getTeachersPermanentCount());
-        pieModel1.set("Contactuels", getModel().getStat().getTeachersContractualCount());
-        pieModel1.set("Vacataires", getModel().getStat().getTeachersTemporaryCount());
-        pieModel1.set("Autres", getModel().getStat().getTeachersOtherCount());
-        pieModel1.setTitle("Repartition Enseignants");
-        pieModel1.setLegendPosition("s");
-        pieModel1.setShowDataLabels(true);
-        
-        PieChartModel pieModel2 = new PieChartModel();
-         
-        pieModel2.set("Permanents", getModel().getStat().getTeachersPermanentCount());
-        pieModel2.set("Assistants pour combler Charges Supplémentaires hors du", getModel().getStat().getNeededAbsolute().getTeachersCount());
-        pieModel2.set("Assistants pour combler Charges Supplémentaires", getModel().getStat().getNeededRelative().getTeachersCount());
-        pieModel2.set("Enseignants restant à recruter", getModel().getStat().getMissing().getTeachersCount());
-        pieModel2.setTitle("Manque Enseignants");
-        pieModel2.setLegendPosition("s");
-        pieModel2.setShowDataLabels(true);
-        
-        getModel().chart1=pieModel1;
-        getModel().chart2=pieModel2;
-    }
-
-    @OnPageLoad
-    public void onRefresh(String cmd) {
-        onRefresh();
-
-    }
-
-    public void onFiltersChanged() {
-        //onRefresh();
-    }
-
-    public void onRefreshFiltersChanged() {
-        onRefresh();
     }
 }

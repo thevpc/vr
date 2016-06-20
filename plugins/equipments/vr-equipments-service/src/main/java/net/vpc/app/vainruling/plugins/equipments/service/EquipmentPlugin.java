@@ -1,37 +1,21 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.equipments.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import net.vpc.app.vainruling.core.service.*;
-import net.vpc.app.vainruling.core.service.model.AppContact;
-import net.vpc.app.vainruling.core.service.model.AppArea;
-import net.vpc.app.vainruling.core.service.model.AppAreaType;
-import net.vpc.app.vainruling.core.service.model.AppProfile;
-import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.model.AppUserType;
-import net.vpc.app.vainruling.plugins.equipments.service.model.Equipment;
-import net.vpc.app.vainruling.plugins.equipments.service.model.EquipmentBrand;
-import net.vpc.app.vainruling.plugins.equipments.service.model.EquipmentBrandLine;
-import net.vpc.app.vainruling.plugins.equipments.service.model.EquipmentProperty;
-import net.vpc.app.vainruling.plugins.equipments.service.model.EquipmentStatusType;
-import net.vpc.app.vainruling.plugins.equipments.service.model.EquipmentType;
-import net.vpc.app.vainruling.plugins.equipments.service.model.EquipmentTypeGroup;
+import net.vpc.app.vainruling.core.service.model.*;
+import net.vpc.app.vainruling.plugins.equipments.service.model.*;
 import net.vpc.common.util.Utils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.*;
+
 /**
- *
  * @author vpc
  */
 @AppPlugin(version = "1.2", dependsOn = "commonModel")
@@ -143,15 +127,6 @@ public class EquipmentPlugin {
         core.userAddProfile(tech2.getId(), "Technician");
     }
 
-    private static class InitData {
-
-        AppAreaType areaType_etablissement = new AppAreaType("etablissement");
-        AppAreaType areaType_bloc = new AppAreaType("bloc");
-        AppAreaType areaType_salle = new AppAreaType("salle");
-        AppAreaType areaType_armoire = new AppAreaType("armoire");
-        AppAreaType areaType_rangement = new AppAreaType("rangement");
-    }
-
     @InstallDemo
     public void installDemoService() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -191,14 +166,14 @@ public class EquipmentPlugin {
         Map<String, Object> cached = new HashMap<String, Object>();
 
         for (String n : new String[]{
-            "Materiel Info/PC Desktop/HP/Pavillon/Pavillon 123",
-            "Materiel Info/PC Portable/HP/Pavillon/Pavillon 456",
-            "Materiel Info/PC Desktop/TOSHIBA/Satellite/Sat 222",
-            "Materiel Info/PC Portable/TOSHIBA/Satellite/Expatria",
-            "Materiel Info/Imprimante/CANON/LBP/LBP2900",
-            "Materiel Info/Imprimante/CANON/LBP/LBP2900B",
-            "Materiel Info/Scanner/CANON/ScanLite/ScanLite200",
-            "Materiel Info/PC Portable/IBM/Thinkpad/T200",}) {
+                "Materiel Info/PC Desktop/HP/Pavillon/Pavillon 123",
+                "Materiel Info/PC Portable/HP/Pavillon/Pavillon 456",
+                "Materiel Info/PC Desktop/TOSHIBA/Satellite/Sat 222",
+                "Materiel Info/PC Portable/TOSHIBA/Satellite/Expatria",
+                "Materiel Info/Imprimante/CANON/LBP/LBP2900",
+                "Materiel Info/Imprimante/CANON/LBP/LBP2900B",
+                "Materiel Info/Scanner/CANON/ScanLite/ScanLite200",
+                "Materiel Info/PC Portable/IBM/Thinkpad/T200",}) {
             String[] nn = n.split("/");
             String eqTypeGroupName = nn[0];
             String eqTypeName = nn[1];
@@ -248,7 +223,7 @@ public class EquipmentPlugin {
             e.setStatusType(Utils.rand(EquipmentStatusType.class));
             e.setLocation(Utils.rand(salles));
             e = core.findOrCreate(e);
-            int count = pu.createQueryBuilder(EquipmentProperty.class).setExpression("equipmentId=" + e.getId()).getEntityList().size();
+            int count = pu.createQueryBuilder(EquipmentProperty.class).byExpression("equipmentId=" + e.getId()).getEntityList().size();
             if (count == 0) {
                 for (String nnn : new String[]{"Color", "Width", "Height"}) {
                     EquipmentProperty x = new EquipmentProperty();
@@ -259,6 +234,15 @@ public class EquipmentPlugin {
                 }
             }
         }
+    }
+
+    private static class InitData {
+
+        AppAreaType areaType_etablissement = new AppAreaType("etablissement");
+        AppAreaType areaType_bloc = new AppAreaType("bloc");
+        AppAreaType areaType_salle = new AppAreaType("salle");
+        AppAreaType areaType_armoire = new AppAreaType("armoire");
+        AppAreaType areaType_rangement = new AppAreaType("rangement");
     }
 
 }

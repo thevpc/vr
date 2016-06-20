@@ -27,7 +27,6 @@
  *    alert( 'Visible Column 1 data index: '+table.fnVisibleToColumnIndex(1) );
  */
 
-jQuery.fn.dataTableExt.oApi.fnVisibleToColumnIndex = function ( oSettings, iMatch )
-{
-	return oSettings.oApi._fnVisibleToColumnIndex( oSettings, iMatch );
+jQuery.fn.dataTableExt.oApi.fnVisibleToColumnIndex = function (oSettings, iMatch) {
+    return oSettings.oApi._fnVisibleToColumnIndex(oSettings, iMatch);
 };

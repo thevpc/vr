@@ -10,7 +10,7 @@
  * Note that the HTML5 `data-sort` attribute can be [used to supply sorting data
  * to DataTables](//datatables.net/manual/orthogonal-data) and is preferable to
  * using this method, which is therefore marked as deprecated.
- * 
+ *
  *  @name Hidden title numeric sorting
  *  @summary Sort data numerically based on an attribute on an empty element.
  *  @deprecated
@@ -24,17 +24,17 @@
  *    } );
  */
 
-jQuery.extend( jQuery.fn.dataTableExt.oSort, {
-	"title-numeric-pre": function ( a ) {
-		var x = a.match(/title="*(-?[0-9\.]+)/)[1];
-		return parseFloat( x );
-	},
+jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+    "title-numeric-pre": function (a) {
+        var x = a.match(/title="*(-?[0-9\.]+)/)[1];
+        return parseFloat(x);
+    },
 
-	"title-numeric-asc": function ( a, b ) {
-		return ((a < b) ? -1 : ((a > b) ? 1 : 0));
-	},
+    "title-numeric-asc": function (a, b) {
+        return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+    },
 
-	"title-numeric-desc": function ( a, b ) {
-		return ((a < b) ? 1 : ((a > b) ? -1 : 0));
-	}
-} );
+    "title-numeric-desc": function (a, b) {
+        return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+    }
+});

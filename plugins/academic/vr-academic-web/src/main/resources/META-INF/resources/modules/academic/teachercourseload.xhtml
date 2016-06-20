@@ -1,338 +1,445 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
+
 and open the template in the editor.
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"   
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 
-      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+        >
 
-    <h:head>
-    </h:head>
+<h:head>
+</h:head>
 
-    <h:body>
+<h:body>
 
 
-        <ui:composition template="/templates/private-template.xhtml">
-            <ui:define name="links">
-                <style type="text/css">
+    <ui:composition template="/templates/private-template.xhtml">
+        <ui:define name="links">
+            <style type="text/css">
 
-                </style>
-            </ui:define>
-            <ui:define name="content">
-                <h:form id="buttonsForm">
-                    <p:confirmDialog message="Are you sure, you want to delete ?"  header="Initiating deleting process"  widgetVar="confirmationDelete">  
-                        <p:commandButton value="Yes Sure"  onclick="PF('confirmationDelete').hide();
+            </style>
+        </ui:define>
+        <ui:define name="content">
+            <h:form id="buttonsForm">
+                <p:confirmDialog message="Are you sure, you want to delete ?" header="Initiating deleting process"
+                                 widgetVar="confirmationDelete">
+                    <p:commandButton value="Yes Sure" onclick="PF('confirmationDelete').hide();
                                 processOnDeleteCurrent();"/>
-                        <p:commandButton value="Not Yet" onclick="PF('confirmationDelete').hide()" type="button" />   
-                    </p:confirmDialog>
+                    <p:commandButton value="Not Yet" onclick="PF('confirmationDelete').hide()" type="button"/>
+                </p:confirmDialog>
 
-                    <!-- /.row -->
-                    <div class="row">
-                        <p:selectOneMenu value="#{teacherCourseLoadCtrl.model.teacherId}">
-                            <p:ajax listener="#{teacherCourseLoadCtrl.onTeacherChanged}" update=":buttonsForm :listForm"/>
-                            <f:selectItem itemLabel="Selectionner Enseignant..." itemValue="" />
-                            <f:selectItems value="#{teacherCourseLoadCtrl.model.teachers}" />
-                        </p:selectOneMenu>
-                        <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
+                <!-- /.row -->
+                <div class="row">
+                    <p:selectOneMenu value="#{teacherCourseLoadCtrl.model.teacherId}">
+                        <p:ajax listener="#{teacherCourseLoadCtrl.onTeacherChanged}" update=":buttonsForm :listForm"/>
+                        <f:selectItem itemLabel="Selectionner Enseignant..." itemValue=""/>
+                        <f:selectItems value="#{teacherCourseLoadCtrl.model.teachers}"/>
+                    </p:selectOneMenu>
+                    <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
+                </div>
+
+
+            </h:form>
+            <h:form id="listForm">
+                <div class="row">
+                    <div class="table-responsive">
+                        <h1><p:outputLabel style="font-weight: bold"
+                                           value="#{teacherCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.teacher.situation.name}"/>
+                        </h1>
+                        <p:panelGrid>
+                            <p:row>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Semaines"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="C"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="TD"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="TP"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="PM"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="TP+PM"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Total Du"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Total Charge"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="Total H.Supp."/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Du / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="Total Charge / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="H.Supp. / Sem"/></p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="Charge Annuelle"/></p:column>
+                                <p:column><p:outputLabel value=""/></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.value.c}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.value.td}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.value.tp}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.value.pm}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.value.tppm}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.due.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.value.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.extra.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.dueWeek.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.valueWeek.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.extraWeek.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Charge S1"/></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semestrialLoad[0].weeksLoad}"><f:convertNumber
+                                        pattern="#0.#"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.c}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.td}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.tp}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.pm}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.tppm}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].due.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].extra.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].dueWeek.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].valueWeek.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].extraWeek.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Charge S2"/></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semestrialLoad[1].weeksLoad}"><f:convertNumber
+                                        pattern="#0.#"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.c}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.td}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.tp}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.pm}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.tppm}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].due.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].extra.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].dueWeek.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].valueWeek.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].extraWeek.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                            </p:row>
+                        </p:panelGrid>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="table-responsive">
+                        <h1>Semestre 1</h1>
+                        <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.mineS1}"
+                                     class="table table-bordered table-hover"
+                                     paginatorAlwaysVisible="false"
+                                     paginator="true"
+                                     paginatorPosition="bottom"
+                                     rows="10"
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="10,20,50"
+                                     emptyMessage="Aucune charge"
+                                >
+                            <p:column style="padding: 0;" styleClass="ui-widget-header" headerText="" width="5%">
+                                <p:menuButton value="...">
+                                    <p:menuitem value="Ajouter Voeux"
+                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
+                                                actionListener="#{teacherCourseLoadCtrl.addToMine(i.assignment.id)}"
+                                                update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:menuitem value="Supp. Voeux"
+                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
+                                                actionListener="#{teacherCourseLoadCtrl.removeFromMine(i.assignment.id)}"
+                                                update=":listForm" icon="ui-icon-close"/>
+                                    <p:separator/>
+                                    <p:menuitem value="Affecter"
+                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
+                                                actionListener="#{teacherCourseLoadCtrl.doAssign(i.assignment.id)}"
+                                                update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:menuitem value="Supp. Affectation"
+                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
+                                                actionListener="#{teacherCourseLoadCtrl.doUnAssign(i.assignment.id)}"
+                                                update=":listForm" icon="ui-icon-close"/>
+                                </p:menuButton>
+                            </p:column>
+                            <p:column headerText="" width="10%">
+                                <h:outputText value="#{i.assignment.coursePlan.courseLevel.semester.name}"/>
+                            </p:column>
+                            <p:column headerText="" width="10%">
+                                <h:outputText value="#{i.assignment.coursePlan.courseLevel.academicClass.name}"/>
+                            </p:column>
+                            <p:column headerText="Module">
+                                <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}"
+                                               styleClass="#{i.assigned?'vr-assigned-course':''}"
+                                               value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}"/>
+                            </p:column>
+                            <p:column headerText="C" width="5%">
+                                <h:outputText value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}"/>
+                            </p:column>
+                            <p:column headerText="TD" width="5%">
+                                <h:outputText value="#{i.assignment.valueTD != 0 ? i.assignment.valueTD : ''}"/>
+                            </p:column>
+                            <p:column headerText="TP" width="5%">
+                                <h:outputText value="#{i.assignment.valueTP != 0 ? i.assignment.valueTP : ''}"/>
+                            </p:column>
+                            <p:column headerText="PM" width="5%">
+                                <h:outputText value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM : ''}"/>
+                            </p:column>
+                            <p:column headerText="Grp" width="5%">
+                                <h:outputText value="#{i.assignment.groupCount}"><f:convertNumber
+                                        pattern="#0.#"/></h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Voeux" width="20%">
+                                <h:outputText value="#{i.intents}"/>
+                            </p:column>
+
+                        </p:dataTable>
                     </div>
 
+                </div>
 
-                </h:form>
-                <h:form id="listForm">
-                    <div class="row">
-                        <div class="table-responsive">
-                            <h1><p:outputLabel style="font-weight: bold" value="#{teacherCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.teacher.situation.name}"/></h1>
-                            <p:panelGrid>
-                                <p:row>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel  value=""/></p:column>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel  value="Semaines"/></p:column>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel  value="C"/></p:column>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel  value="TD"/></p:column>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel  value="TP"/></p:column>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel  value="PM"/></p:column>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel  value="TP+PM"/></p:column>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel  value="Total Du"/></p:column>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel  value="Total Charge"/></p:column>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel  value="Total H.Supp."/></p:column>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel  value="Du / Sem"/></p:column>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel  value="Total Charge / Sem"/></p:column>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel  value="H.Supp. / Sem"/></p:column>
-                                </p:row>
-                                <p:row>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel value="Charge Annuelle"/></p:column>
-                                    <p:column><p:outputLabel value=""/></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.value.c}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.value.td}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.value.tp}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.value.pm}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.value.tppm}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.due.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.value.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.extra.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.dueWeek.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.valueWeek.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.extraWeek.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                </p:row>
-                                <p:row>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel value="Charge S1"/></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semestrialLoad[0].weeksLoad}"><f:convertNumber pattern="#0.#"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.c}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.td}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.tp}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.pm}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.tppm}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[0].due.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[0].extra.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[0].dueWeek.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[0].valueWeek.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[0].extraWeek.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                </p:row>
-                                <p:row>
-                                    <p:column styleClass="ui-widget-header"  ><p:outputLabel value="Charge S2"/></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semestrialLoad[1].weeksLoad}"><f:convertNumber pattern="#0.#"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.c}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.td}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.tp}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.pm}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.tppm}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[1].due.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[1].extra.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[1].dueWeek.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[1].valueWeek.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel value="#{teacherCourseLoadCtrl.model.stat.semesters[1].extraWeek.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
-                                </p:row>
-                            </p:panelGrid>
-                        </div>
+                <div class="row">
+                    <div class="table-responsive">
+                        <h1>Semestre 2</h1>
+                        <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.mineS2}"
+                                     class="table table-bordered table-hover"
+                                     paginatorAlwaysVisible="false"
+                                     paginator="true"
+                                     paginatorPosition="bottom"
+                                     rows="10"
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="10,20,50"
+                                     emptyMessage="Aucune charge"
+                                >
+                            <p:column style="padding: 0;" styleClass="ui-widget-header" headerText="" width="5%">
+                                <p:menuButton value="...">
+                                    <p:menuitem value="Aj. Voeux"
+                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
+                                                actionListener="#{teacherCourseLoadCtrl.addToMine(i.assignment.id)}"
+                                                update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:menuitem value="Supp. Voeux"
+                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
+                                                actionListener="#{teacherCourseLoadCtrl.removeFromMine(i.assignment.id)}"
+                                                update=":listForm" icon="ui-icon-close"/>
+                                    <p:separator/>
+                                    <p:menuitem value="Affecter"
+                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
+                                                actionListener="#{teacherCourseLoadCtrl.doAssign(i.assignment.id)}"
+                                                update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:menuitem value="Supp. Affectation"
+                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
+                                                actionListener="#{teacherCourseLoadCtrl.doUnAssign(i.assignment.id)}"
+                                                update=":listForm" icon="ui-icon-close"/>
+                                </p:menuButton>
+
+                            </p:column>
+                            <p:column headerText="" width="10%">
+                                <h:outputText
+                                        value="#{i.assignment.coursePlan.courseLevel.academicClass.program.name}-#{i.assignment.coursePlan.courseLevel.academicClass.name}"/>
+                            </p:column>
+                            <p:column headerText="Module">
+                                <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}"
+                                               value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}"
+                                               styleClass="#{i.assigned?'vr-assigned-course':''}"/>
+                            </p:column>
+                            <p:column headerText="C" width="5%">
+                                <h:outputText value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}"/>
+                            </p:column>
+                            <p:column headerText="TD" width="5%">
+                                <h:outputText value="#{i.assignment.valueTD != 0 ? i.assignment.valueTD : ''}"/>
+                            </p:column>
+                            <p:column headerText="TP" width="5%">
+                                <h:outputText value="#{i.assignment.valueTP != 0 ? i.assignment.valueTP : ''}"/>
+                            </p:column>
+                            <p:column headerText="PM" width="5%">
+                                <h:outputText value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM  : ''}"/>
+                            </p:column>
+                            <p:column headerText="Grp" width="5%">
+                                <h:outputText value="#{i.assignment.groupCount}"><f:convertNumber
+                                        pattern="#0.#"/></h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Voeux" width="20%">
+                                <h:outputText value="#{i.intents}"/>
+                            </p:column>
+
+                        </p:dataTable>
                     </div>
+                </div>
 
-                    <div class="row">
-                        <div class="table-responsive">
-                            <h1>Semestre 1</h1>
-                            <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.mineS1}" class="table table-bordered table-hover"
-                                         paginatorAlwaysVisible="false"
-                                         paginator="true"
-                                         paginatorPosition="bottom"
-                                         rows="10"
-                                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                         rowsPerPageTemplate="10,20,50"
-                                         emptyMessage="Aucune charge"
-                                         >
-                                <p:column style="padding: 0;" styleClass="ui-widget-header"  headerText="" width="5%">
-                                    <p:menuButton value="...">
-                                        <p:menuitem value="Ajouter Voeux" 
-                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
-                                                    actionListener="#{teacherCourseLoadCtrl.addToMine(i.assignment.id)}" update=":listForm" icon="ui-icon-arrowrefresh-1-w" />
-                                        <p:menuitem value="Supp. Voeux" 
-                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
-                                                    actionListener="#{teacherCourseLoadCtrl.removeFromMine(i.assignment.id)}" update=":listForm" icon="ui-icon-close" />
-                                        <p:separator />
-                                        <p:menuitem value="Affecter" 
-                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
-                                                    actionListener="#{teacherCourseLoadCtrl.doAssign(i.assignment.id)}" update=":listForm" icon="ui-icon-arrowrefresh-1-w" />
-                                        <p:menuitem value="Supp. Affectation" 
-                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
-                                                    actionListener="#{teacherCourseLoadCtrl.doUnAssign(i.assignment.id)}" update=":listForm" icon="ui-icon-close" />
-                                    </p:menuButton>
-                                </p:column>
-                                <p:column headerText="" width="10%">
-                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.semester.name}" />
-                                </p:column>
-                                <p:column headerText="" width="10%">
-                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.academicClass.name}" />
-                                </p:column>
-                                <p:column  headerText="Module">
-                                    <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}" styleClass="#{i.assigned?'vr-assigned-course':''}" value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" />
-                                </p:column>
-                                <p:column headerText="C" width="5%">
-                                    <h:outputText value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}" />
-                                </p:column>
-                                <p:column headerText="TD" width="5%">
-                                    <h:outputText value="#{i.assignment.valueTD != 0 ? i.assignment.valueTD : ''}" />
-                                </p:column>
-                                <p:column headerText="TP" width="5%">
-                                    <h:outputText value="#{i.assignment.valueTP != 0 ? i.assignment.valueTP : ''}" />
-                                </p:column>
-                                <p:column headerText="PM" width="5%">
-                                    <h:outputText value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM : ''}" />
-                                </p:column>
-                                <p:column headerText="Grp" width="5%">
-                                    <h:outputText value="#{i.assignment.groupCount}" ><f:convertNumber pattern="#0.#"/></h:outputText>
-                                </p:column>
 
-                                <p:column headerText="Voeux" width="20%">
-                                    <h:outputText value="#{i.intents}" />
-                                </p:column>
+                <p:separator/>
 
-                            </p:dataTable>
-                        </div>
+                <div class="row">
+                    <div class="table-responsive">
+                        <h1>Autres modules</h1>
+                        <p:selectManyCheckbox value="#{teacherCourseLoadCtrl.model.othersFilters}"
+                                              layout="grid" columns="5"
+                                              style="font-size: x-small;margin-left: 20px;"
+                                >
+                            <!--<p:ajax listener="# {teacherCourseLoadCtrl.onOthersFiltersChanged}" update="@all"/>-->
+                            <f:selectItem itemLabel="Modules Affectés" itemValue="assigned"/>
+                            <f:selectItem itemLabel="Modules Non Affectés" itemValue="non-assigned"/>
+                            <f:selectItem itemLabel="Modules Demandés" itemValue="intended"/>
+                            <f:selectItem itemLabel="Modules Non Demandés" itemValue="non-intended"/>
+                            <f:selectItem itemLabel="Modules En Conflits" itemValue="conflict"/>
+                            <f:selectItems value="#{teacherCourseLoadCtrl.model.filterSelectItems}"/>
+                        </p:selectManyCheckbox>
 
+                        <p:commandButton value="Filter" style="margin-top: 20px;margin-bottom: 20px;margin-left: 100px;"
+                                         action="#{teacherCourseLoadCtrl.onOthersFiltersChanged}" update=":listForm"/>
+
+                        <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.others}"
+                                     class="table table-bordered table-hover"
+                                     paginatorAlwaysVisible="false"
+                                     paginator="true"
+                                     paginatorPosition="bottom"
+                                     rows="20"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="20,50,100,200,1000"
+                                     widgetVar="othersTable"
+                                     emptyMessage="Aucune charge"
+                                >
+                            <p:column style="padding: 0;" styleClass="ui-widget-header" headerText="" width="5%">
+                                <p:menuButton value="...">
+                                    <p:menuitem
+                                            value="Aj. Voeux à #{teacherCourseLoadCtrl.model.currentTeacher.contact.firstName}"
+                                            disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id) or (teacherCourseLoadCtrl.model.currentTeacher eq null)}"
+                                            actionListener="#{teacherCourseLoadCtrl.addToMine(i.assignment.id)}"
+                                            update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:menuitem value="Supp. tous les Voeux"
+                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
+                                                actionListener="#{teacherCourseLoadCtrl.removeAllIntents(i.assignment.id)}"
+                                                update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:separator/>
+                                    <p:menuitem
+                                            value="Affecter à #{teacherCourseLoadCtrl.model.currentTeacher.contact.firstName}"
+                                            disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id) or (teacherCourseLoadCtrl.model.currentTeacher eq null)}"
+                                            actionListener="#{teacherCourseLoadCtrl.doAssign(i.assignment.id)}"
+                                            update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:menuitem value="Confirmer Aff."
+                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
+                                                actionListener="#{teacherCourseLoadCtrl.doAssignByIntent(i.assignment.id)}"
+                                                update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:menuitem value="Supp. Affectation"
+                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
+                                                actionListener="#{teacherCourseLoadCtrl.doUnAssign(assignementId)}"
+                                                update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                </p:menuButton>
+                            </p:column>
+                            <p:column headerText="" width="10%">
+                                <h:outputText value="#{i.assignment.coursePlan.courseLevel.semester.name}"/>
+                            </p:column>
+                            <p:column headerText="" width="10%">
+                                <h:outputText
+                                        value="#{i.assignment.coursePlan.courseLevel.academicClass.program.name}-#{i.assignment.coursePlan.courseLevel.academicClass.name}"/>
+                            </p:column>
+                            <p:column headerText="Module" filterBy="#{i.assignment.coursePlan.name}">
+                                <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}"
+                                               styleClass="#{i.assigned?'vr-assigned-course':''}"
+                                               value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}"/>
+                            </p:column>
+                            <p:column headerText="C" width="5%">
+                                <h:outputText value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}"/>
+                            </p:column>
+                            <p:column headerText="TD" width="5%">
+                                <h:outputText value="#{i.assignment.valueTD !=0 ? i.assignment.valueTD : ''}"/>
+                            </p:column>
+                            <p:column headerText="TP" width="5%">
+                                <h:outputText value="#{i.assignment.valueTP !=0 ? i.assignment.valueTP : ''}"/>
+                            </p:column>
+                            <p:column headerText="PM" width="5%">
+                                <h:outputText value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM : ''}"/>
+                            </p:column>
+                            <p:column headerText="Grp" width="5%">
+                                <h:outputText value="#{i.assignment.groupCount}"><f:convertNumber
+                                        pattern="#0.#"/></h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Voeux" width="20%">
+                                <h:outputText value="#{i.intents}"/>
+                            </p:column>
+
+                            <f:facet name="footer">
+                                <p:outputLabel value="Total #{teacherCourseLoadCtrl.model.others.size()}"/>
+                            </f:facet>
+                        </p:dataTable>
                     </div>
+                </div>
 
-                    <div class="row">
-                        <div class="table-responsive">
-                            <h1>Semestre 2</h1>
-                            <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.mineS2}" class="table table-bordered table-hover"
-                                         paginatorAlwaysVisible="false"
-                                         paginator="true"
-                                         paginatorPosition="bottom"
-                                         rows="10"
-                                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                         rowsPerPageTemplate="10,20,50"
-                                         emptyMessage="Aucune charge"
-                                         >
-                                <p:column  style="padding: 0;" styleClass="ui-widget-header"   headerText="" width="5%">
-                                    <p:menuButton value="...">
-                                        <p:menuitem value="Aj. Voeux" 
-                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
-                                                    actionListener="#{teacherCourseLoadCtrl.addToMine(i.assignment.id)}" update=":listForm" icon="ui-icon-arrowrefresh-1-w" />
-                                        <p:menuitem value="Supp. Voeux" 
-                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
-                                                    actionListener="#{teacherCourseLoadCtrl.removeFromMine(i.assignment.id)}" update=":listForm" icon="ui-icon-close" />
-                                        <p:separator />
-                                        <p:menuitem value="Affecter" 
-                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
-                                                    actionListener="#{teacherCourseLoadCtrl.doAssign(i.assignment.id)}" update=":listForm" icon="ui-icon-arrowrefresh-1-w" />
-                                        <p:menuitem value="Supp. Affectation" 
-                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
-                                                    actionListener="#{teacherCourseLoadCtrl.doUnAssign(i.assignment.id)}" update=":listForm" icon="ui-icon-close" />
-                                    </p:menuButton>
-
-                                </p:column>
-                                <p:column  headerText="" width="10%">
-                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.academicClass.program.name}-#{i.assignment.coursePlan.courseLevel.academicClass.name}" />
-                                </p:column>
-                                <p:column headerText="Module">
-                                    <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}" value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" styleClass="#{i.assigned?'vr-assigned-course':''}"/>
-                                </p:column>
-                                <p:column headerText="C" width="5%">
-                                    <h:outputText value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}" />
-                                </p:column>
-                                <p:column headerText="TD" width="5%">
-                                    <h:outputText value="#{i.assignment.valueTD != 0 ? i.assignment.valueTD : ''}" />
-                                </p:column>
-                                <p:column headerText="TP" width="5%">
-                                    <h:outputText value="#{i.assignment.valueTP != 0 ? i.assignment.valueTP : ''}" />
-                                </p:column>
-                                <p:column headerText="PM" width="5%">
-                                    <h:outputText value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM  : ''}" />
-                                </p:column>
-                                <p:column headerText="Grp" width="5%">
-                                    <h:outputText value="#{i.assignment.groupCount}" ><f:convertNumber pattern="#0.#"/></h:outputText>
-                                </p:column>
-
-                                <p:column headerText="Voeux" width="20%">
-                                    <h:outputText value="#{i.intents}" />
-                                </p:column>
-
-                            </p:dataTable>
-                        </div>
-                    </div>
+            </h:form>
 
 
-                    <p:separator />
-                    <div class="row">
-                        <div class="table-responsive">
-                            <h1>Autres modules</h1>
-                            <p:selectManyCheckbox value="#{teacherCourseLoadCtrl.model.othersFilters}" 
-                                                  layout="grid" columns="5"
-                                                  style="font-size: x-small;margin-left: 20px;"
-                                                  >
-                                <!--<p:ajax listener="# {teacherCourseLoadCtrl.onOthersFiltersChanged}" update="@all"/>-->
-                                <f:selectItem  itemLabel="Modules Affectés" itemValue="assigned" />
-                                <f:selectItem itemLabel="Modules Non Affectés" itemValue="non-assigned" />
-                                <f:selectItem itemLabel="Modules Demandés" itemValue="intended" />
-                                <f:selectItem itemLabel="Modules Non Demandés" itemValue="non-intended" />
-                                <f:selectItem itemLabel="Modules En Conflits" itemValue="conflict" />
-                                <f:selectItems value="#{teacherCourseLoadCtrl.model.filterSelectItems}"/>
-                            </p:selectManyCheckbox>
-
-                            <p:commandButton value="Filter" style="margin-top: 20px;margin-bottom: 20px;margin-left: 100px;" action="#{teacherCourseLoadCtrl.onOthersFiltersChanged}" update=":listForm"/>
-
-                            <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.others}" class="table table-bordered table-hover"
-                                         paginatorAlwaysVisible="false"
-                                         paginator="true"
-                                         paginatorPosition="bottom"
-                                         rows="20"
-                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                         rowsPerPageTemplate="20,50,100,200,1000"
-                                         widgetVar="othersTable"
-                                         emptyMessage="Aucune charge"
-                                         >
-                                <p:column   style="padding: 0;" styleClass="ui-widget-header"  headerText="" width="5%">
-                                    <p:menuButton value="...">
-                                        <p:menuitem value="Aj. Voeux à #{teacherCourseLoadCtrl.model.currentTeacher.contact.firstName}"
-                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id) or (teacherCourseLoadCtrl.model.currentTeacher eq null)}"
-                                                    actionListener="#{teacherCourseLoadCtrl.addToMine(i.assignment.id)}" update=":listForm" icon="ui-icon-arrowrefresh-1-w" />
-                                        <p:menuitem value="Supp. tous les Voeux" 
-                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
-                                                    actionListener="#{teacherCourseLoadCtrl.removeAllIntents(i.assignment.id)}" update=":listForm" icon="ui-icon-arrowrefresh-1-w" />
-                                        <p:separator />
-                                        <p:menuitem value="Affecter à #{teacherCourseLoadCtrl.model.currentTeacher.contact.firstName}"
-                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id) or (teacherCourseLoadCtrl.model.currentTeacher eq null)}"
-                                                    actionListener="#{teacherCourseLoadCtrl.doAssign(i.assignment.id)}" update=":listForm" icon="ui-icon-arrowrefresh-1-w" />
-                                        <p:menuitem value="Confirmer Aff." 
-                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
-                                                    actionListener="#{teacherCourseLoadCtrl.doAssignByIntent(i.assignment.id)}" update=":listForm" icon="ui-icon-arrowrefresh-1-w" />
-                                        <p:menuitem value="Supp. Affectation" 
-                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
-                                                    actionListener="#{teacherCourseLoadCtrl.doUnAssign(assignementId)}" update=":listForm" icon="ui-icon-arrowrefresh-1-w" />
-                                    </p:menuButton>
-                                </p:column>
-                                <p:column headerText="" width="10%">
-                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.semester.name}" />
-                                </p:column>
-                                <p:column headerText="" width="10%">
-                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.academicClass.program.name}-#{i.assignment.coursePlan.courseLevel.academicClass.name}" />
-                                </p:column>
-                                <p:column headerText="Module" filterBy="#{i.assignment.coursePlan.name}">
-                                    <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}" styleClass="#{i.assigned?'vr-assigned-course':''}" value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}" />
-                                </p:column>
-                                <p:column headerText="C" width="5%">
-                                    <h:outputText value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}" />
-                                </p:column>
-                                <p:column headerText="TD" width="5%">
-                                    <h:outputText value="#{i.assignment.valueTD !=0 ? i.assignment.valueTD : ''}" />
-                                </p:column>
-                                <p:column headerText="TP" width="5%">
-                                    <h:outputText value="#{i.assignment.valueTP !=0 ? i.assignment.valueTP : ''}" />
-                                </p:column>
-                                <p:column headerText="PM" width="5%">
-                                    <h:outputText value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM : ''}" />
-                                </p:column>
-                                <p:column headerText="Grp" width="5%">
-                                    <h:outputText value="#{i.assignment.groupCount}" ><f:convertNumber pattern="#0.#"/></h:outputText>
-                                </p:column>
-
-                                <p:column headerText="Voeux" width="20%">
-                                    <h:outputText value="#{i.intents}" />
-                                </p:column>
-
-                                <f:facet name="footer">
-                                    <p:outputLabel value="Total #{teacherCourseLoadCtrl.model.others.size()}"/>
-                                </f:facet>
-                            </p:dataTable>
-                        </div>
-                    </div>
-
-                </h:form>
+        </ui:define>
 
 
-
-            </ui:define>
-
-
-        </ui:composition>
+    </ui:composition>
 
 
-    </h:body>
+</h:body>
 
 </html>

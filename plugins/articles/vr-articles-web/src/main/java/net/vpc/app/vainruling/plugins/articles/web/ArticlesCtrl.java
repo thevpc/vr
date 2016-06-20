@@ -1,16 +1,12 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.articles.web;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.UpaAware;
+import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
@@ -20,8 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import javax.faces.bean.ManagedBean;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author vpc
  */
 @Controller
@@ -33,34 +33,34 @@ public class ArticlesCtrl {
     private ArticlesPlugin articles;
     private Model model = new Model();
     private String[] imageSwitchEffects = new String[]{
-"blindX",
-"blindY",
-"blindZ",
-"cover",
-"curtainX",
-"curtainY",
-"fade",
-"fadeZoom",
-"growX",
-"growY",
-"none",
-"scrollUp",
-"scrollDown",
-"scrollLeft",
-"scrollRight",
-"scrollVert",
-"shuffle",
-"slideX",
-"slideY",
-"toss",
-"turnUp",
-"turnDown",
-"turnLeft",
-"turnRight",
-"uncover",
-"wipe",
-"zoom"
-};
+            "blindX",
+            "blindY",
+            "blindZ",
+            "cover",
+            "curtainX",
+            "curtainY",
+            "fade",
+            "fadeZoom",
+            "growX",
+            "growY",
+            "none",
+            "scrollUp",
+            "scrollDown",
+            "scrollLeft",
+            "scrollRight",
+            "scrollVert",
+            "shuffle",
+            "slideX",
+            "slideY",
+            "toss",
+            "turnUp",
+            "turnDown",
+            "turnLeft",
+            "turnRight",
+            "uncover",
+            "wipe",
+            "zoom"
+    };
 
     public Model getModel() {
         return model;
@@ -69,40 +69,18 @@ public class ArticlesCtrl {
     public void refesh() {
     }
 
-    public static class Model {
-
-        private FullArticle current;
-        private Map<String,List<FullArticle>> articles=new HashMap<>();
-
-        public FullArticle getCurrent() {
-            return current;
-        }
-
-        public void setCurrent(FullArticle current) {
-            this.current = current;
-        }
-
-        public Map<String, List<FullArticle>> getArticles() {
-            return articles;
-        }
-
-        public void setArticles(Map<String, List<FullArticle>> articles) {
-            this.articles = articles;
-        }
+    public void loadArticles(String name) {
+        getModel().getArticles().put(name, findArticles(name));
     }
 
-    public void loadArticles(String name){
-        getModel().getArticles().put(name,findArticles(name));
+    public List<FullArticle> getMainRow1Articles() {
+        return findArticles("Main.Row1");
     }
 
 //    public List<FullArticle> getWelcomeArticles() {
 //        getModel().getArticles().put("Welcome",findArticles("Welcome"))
 //        return findArticles("Welcome");
 //    }
-
-    public List<FullArticle> getMainRow1Articles() {
-        return findArticles("Main.Row1");
-    }
 
     public List<FullArticle> getMainRow2Articles() {
         return findArticles("Main.Row2");
@@ -119,7 +97,6 @@ public class ArticlesCtrl {
     public String getImageSwitchRandomEffect() {
         return imageSwitchEffects[(int) (Math.random() * imageSwitchEffects.length)];
     }
-
 
     public List<FullArticle> getMainRow4Articles() {
         return findArticles("Main.Row4");
@@ -145,5 +122,27 @@ public class ArticlesCtrl {
 
     public List<ArticlesFile> findArticlesFiles(int articleId) {
         return articles.findArticlesFiles(articleId);
+    }
+
+    public static class Model {
+
+        private FullArticle current;
+        private Map<String, List<FullArticle>> articles = new HashMap<>();
+
+        public FullArticle getCurrent() {
+            return current;
+        }
+
+        public void setCurrent(FullArticle current) {
+            this.current = current;
+        }
+
+        public Map<String, List<FullArticle>> getArticles() {
+            return articles;
+        }
+
+        public void setArticles(Map<String, List<FullArticle>> articles) {
+            this.articles = articles;
+        }
     }
 }

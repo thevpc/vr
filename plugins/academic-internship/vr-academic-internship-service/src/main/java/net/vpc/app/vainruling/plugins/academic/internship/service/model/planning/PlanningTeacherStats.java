@@ -97,7 +97,7 @@ public class PlanningTeacherStats {
                 ", examiner=" + examiner +
                 ", activities=" + activities +
                 ", chairBalance=" + chairBalance +
-                ", examinerBalance=" + examinerBalance+
+                ", examinerBalance=" + examinerBalance +
                 ", days=" + days +
                 ", times=" + times +
                 '}';

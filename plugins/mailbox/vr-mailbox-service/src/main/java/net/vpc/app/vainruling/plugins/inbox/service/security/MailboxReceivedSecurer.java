@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.inbox.service.security;
@@ -15,18 +15,17 @@ import net.vpc.upa.expressions.Expression;
 import net.vpc.upa.expressions.UserExpression;
 
 /**
- *
  * @author vpc
  */
 @SecurityContext(entity = "MailboxReceived")
-public class MailboxReceivedSecurer extends DefaultEntitySecurityManager{
+public class MailboxReceivedSecurer extends DefaultEntitySecurityManager {
 
     @Override
     public Expression getEntityFilter(Entity entity) throws UPAException {
-        if(VrApp.getBean(CorePlugin.class).isActualAdmin()){
+        if (VrApp.getBean(CorePlugin.class).isActualAdmin()) {
             return null;
         }
         return new UserExpression("this.deleted=false and this.sender.login=currentUser()");
     }
-    
+
 }

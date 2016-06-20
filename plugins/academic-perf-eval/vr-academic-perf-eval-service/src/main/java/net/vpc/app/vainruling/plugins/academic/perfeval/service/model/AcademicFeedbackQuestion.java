@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.perfeval.service.model;
@@ -8,16 +8,9 @@ package net.vpc.app.vainruling.plugins.academic.perfeval.service.model;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.RelationshipType;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.ManyToOne;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
 
 /**
- *
  * @author vpc
  */
 @Entity
@@ -33,7 +26,7 @@ public class AcademicFeedbackQuestion {
     private String observations;
     private int position;
     @Field(modifiers = UserFieldModifier.SUMMARY)
-    private boolean mandatory=true;
+    private boolean mandatory = true;
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicFeedbackGroup parent;
 
@@ -89,7 +82,6 @@ public class AcademicFeedbackQuestion {
     public String toString() {
         return String.valueOf(name);
     }
-    
-    
+
 
 }

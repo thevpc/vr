@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.obj;
@@ -63,7 +63,7 @@ public class ColumnView implements Serializable {
     private String displayPropertyExpression;
     private String type;
 
-    public ColumnView(String header, String property, String displayPropertyExpression,String type) {
+    public ColumnView(String header, String property, String displayPropertyExpression, String type) {
         this.header = header;
         this.property = property;
         this.displayPropertyExpression = displayPropertyExpression;
@@ -74,7 +74,7 @@ public class ColumnView implements Serializable {
         return displayPropertyExpression;
     }
 
-    
+
     public String getType() {
         return type;
     }

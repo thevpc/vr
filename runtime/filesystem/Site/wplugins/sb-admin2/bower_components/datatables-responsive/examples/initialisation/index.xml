@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <dt-example order="0">
 
-<title lib="Responsive">Initialisation</title>
+    <title lib="Responsive">Initialisation</title>
 
-<info><![CDATA[
+    <info><![CDATA[
 
 Responsive can be run on a DataTable in a number of different ways:
 

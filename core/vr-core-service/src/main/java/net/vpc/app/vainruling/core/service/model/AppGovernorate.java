@@ -1,20 +1,15 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "name")
@@ -34,6 +29,14 @@ public class AppGovernorate {
     @Field(modifiers = {UserFieldModifier.SUMMARY})
     private AppCountryRegion region;
 
+    public AppGovernorate() {
+    }
+
+    public AppGovernorate(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public AppCountryRegion getRegion() {
         return region;
     }
@@ -48,14 +51,6 @@ public class AppGovernorate {
 
     public void setCountry(AppCountry country) {
         this.country = country;
-    }
-
-    public AppGovernorate() {
-    }
-
-    public AppGovernorate(int id, String name) {
-        this.id = id;
-        this.name = name;
     }
 
     public int getId() {

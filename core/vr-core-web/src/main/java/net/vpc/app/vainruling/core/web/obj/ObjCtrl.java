@@ -1,74 +1,31 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.obj;
 
-import net.vpc.app.vainruling.core.service.UpaAware;
-import net.vpc.app.vainruling.core.service.obj.ObjSimpleSearch;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import net.vpc.app.vainruling.core.service.util.UIConstants;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.el.ELContext;
-import javax.el.ValueExpression;
-import javax.faces.FacesException;
-import javax.faces.bean.ManagedBean;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.UpaAware;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.obj.ObjFieldSelection;
-import net.vpc.app.vainruling.core.service.obj.ObjManagerService;
-import net.vpc.app.vainruling.core.service.obj.ObjSearch;
-import net.vpc.app.vainruling.core.service.obj.ObjFieldFieldSelection;
+import net.vpc.app.vainruling.core.service.obj.*;
 import net.vpc.app.vainruling.core.service.util.I18n;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
-import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
-import net.vpc.app.vainruling.core.web.UCtrlData;
-import net.vpc.app.vainruling.core.web.UCtrlProvider;
-import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
+import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
+import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
+import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.obj.defaultimpl.EntityDetailPropertyView;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.PlatformTypes;
-import net.vpc.upa.AccessLevel;
-import net.vpc.upa.Entity;
-import net.vpc.upa.EntityBuilder;
-import net.vpc.upa.Field;
-import net.vpc.upa.FieldModifier;
+import net.vpc.upa.*;
 import net.vpc.upa.Package;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.Record;
-import net.vpc.upa.Relationship;
-import net.vpc.upa.RelationshipType;
-import net.vpc.upa.UPA;
-import net.vpc.upa.UPASecurityManager;
 import net.vpc.upa.filters.Fields;
-import net.vpc.upa.types.DataType;
-import net.vpc.upa.types.EntityType;
-import net.vpc.upa.types.EnumType;
-import net.vpc.upa.types.IntType;
-import net.vpc.upa.types.StringType;
-import net.vpc.upa.types.TemporalType;
+import net.vpc.upa.types.*;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.extensions.model.dynaform.DynaFormControl;
@@ -78,13 +35,25 @@ import org.primefaces.extensions.model.dynaform.DynaFormRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
+import javax.el.ELContext;
+import javax.el.ValueExpression;
+import javax.faces.FacesException;
+import javax.faces.bean.ManagedBean;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author vpc
  */
 @UCtrl(
         breadcrumb = {
-            @UPathItem(title = "Entité", css = "fa-dashboard", ctrl = "")},
+                @UPathItem(title = "Entité", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Liste Entités",
         url = "modules/obj/objects"
@@ -93,6 +62,10 @@ import org.springframework.context.annotation.Scope;
 @Scope(value = "session")
 public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider {
 
+    private static final Logger log = Logger.getLogger(ObjCtrl.class.getName());
+    private final List<ColumnView> columns = new ArrayList<>();
+    private final List<PropertyView> properties = new ArrayList<>();
+    private final Map<String, Boolean> enabledButtons = new HashMap<>();
     @Autowired
     private ObjManagerService objService;
     @Autowired
@@ -101,11 +74,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     private PropertyViewManager propertyViewManager;
     @Autowired
     private I18n i18n;
-    private final List<ColumnView> columns = new ArrayList<>();
-    private final List<PropertyView> properties = new ArrayList<>();
-    private final Map<String, Boolean> enabledButtons = new HashMap<>();
     private DynaFormModel dynModel = new DynaFormModel();
-    private static final Logger log = Logger.getLogger(ObjCtrl.class.getName());
 
     public ObjCtrl() {
         super(null);
@@ -121,6 +90,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             d.setTitle(getPageTitleString(entity, EditCtrlMode.LIST));
             d.setUrl("modules/obj/objects");
             d.setCss("fa-table");
+            d.setSecurityKey(entity.getAbsoluteName() + ".DefaultEditor");
             List<BreadcrumbItem> items = new ArrayList<>();
 
             Package p = entity.getParent();
@@ -303,18 +273,6 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         return getModel().getEntityName();
     }
 
-    public Entity getEntity() {
-        return UPA.getPersistenceUnit().getEntity(getModel().getEntityName());
-    }
-
-    @Override
-    protected void updateMode(EditCtrlMode m) {
-        enabledButtons.clear();
-        super.updateMode(m);
-        updateModelFromConfig();
-        updateView();
-    }
-
     public void setEntityName(String entityName) {
         enabledButtons.clear();
         try {
@@ -328,6 +286,18 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             log.log(Level.SEVERE, "Error", ex);
 //            throw ex;
         }
+    }
+
+    public Entity getEntity() {
+        return UPA.getPersistenceUnit().getEntity(getModel().getEntityName());
+    }
+
+    @Override
+    protected void updateMode(EditCtrlMode m) {
+        enabledButtons.clear();
+        super.updateMode(m);
+        updateModelFromConfig();
+        updateView();
     }
 
     public DynaFormModel getDynModel() {
@@ -454,7 +424,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
-    @OnPageLoad @UpaAware
+    @OnPageLoad
+    @UpaAware
     public void onPageLoad(String cmd) {
         reloadPage(cmd, false);
     }
@@ -536,6 +507,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             throw ex;
         }
     }
+
     @UpaAware
     public void loadList() {
         List<Record> found = objService.findRecordsByFilter(getEntityName(), getModel().getConfig().listFilter, getModel().getSearch());
@@ -617,7 +589,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             Object v = field.getMainValue(o);
 
             if (v != null) {
-                DataType d = (DataType) field.getDataType();
+                DataType d = field.getDataType();
                 if (d instanceof EnumType) {
                     v = i18n.getEnum(v);
                 }
@@ -631,91 +603,6 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     public String getObjectName(Object obj) {
         return objService.getObjectName(getEntityName(), obj);
-    }
-
-    public class PModel extends Model<ObjRow> {
-
-        private String entityName;
-        private List<ObjFormAction> actions = new ArrayList<ObjFormAction>();
-        private Config config;
-        private Set<String> disabledFields = new HashSet<String>();
-
-        public PModel() {
-            setCurrent(null);
-        }
-
-        public List<ObjFormAction> getActions() {
-            return actions;
-        }
-
-        public void setActions(List<ObjFormAction> actions) {
-            this.actions = actions;
-        }
-
-        public String getEntityName() {
-            return entityName;
-        }
-
-        public void setEntityName(String entityName) {
-            this.entityName = entityName;
-        }
-
-        public List getSelectedObjects() {
-            switch (getMode()) {
-                case UPDATE:
-                case NEW: {
-                    return Arrays.asList(getCurrentRecord());
-                }
-                case LIST: {
-                    List all = new ArrayList();
-                    for (ObjRow objRow : getList()) {
-                        if (objRow.isSelected()) {
-                            all.add(objRow.getRecord());
-                        }
-                    }
-                    return all;
-                }
-            }
-            return Collections.emptyList();
-        }
-
-        public Record getCurrentRecord() {
-            ObjRow c = getCurrent();
-            if (c == null) {
-                return null;
-            }
-            return c.getRecord();
-        }
-
-        public ObjRow getCurrent() {
-            return super.getCurrent();
-        }
-
-        public List<ObjRow> getList() {
-            return super.getList();
-        }
-
-        @Override
-        public void setCurrent(ObjRow current) {
-            super.setCurrent(current); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        public Config getConfig() {
-            return config;
-        }
-
-        public void setConfig(Config config) {
-            this.config = config;
-        }
-
-        public Set<String> getDisabledFields() {
-            return disabledFields;
-        }
-
-        public void setDisabledFields(Set<String> disabledFields) {
-            this.disabledFields = disabledFields;
-        }
-
     }
 
     protected Record createInitializedRecord() {
@@ -795,8 +682,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                         if (set) {
                             builder.setProperty(o, fieldName, v);
                         }
-                    } else if (t instanceof EntityType) {
-                        EntityType et = (EntityType) t;
+                    } else if (t instanceof ManyToOneType) {
+                        ManyToOneType et = (ManyToOneType) t;
                         Entity re = UPA.getPersistenceUnit().getEntity(et.getReferencedEntityName());
                         List<Field> rpp = re.getPrimaryFields();
                         if (rpp.size() == 1 && PlatformTypes.isInteger(fieldValueString)) {
@@ -866,18 +753,22 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             //reset table state
             FacesContext currentInstance = FacesContext.getCurrentInstance();
             try {
-                if(currentInstance!=null) {
+                if (currentInstance != null) {
                     UIComponent table = currentInstance.getViewRoot().findComponent(":listForm:listTable");
-                    table.setValueExpression("sortBy", null);
+                    if (table != null) {
+                        table.setValueExpression("sortBy", null);
+                    }
                 }
             } catch (Exception ex) {
                 //ignore
             }
             try {
                 VrApp.getBean(VrMenuManager.class).getModel().getTitleCrumb().setTitle(getPageTitleString(getEntity(), getModel().getMode()));
-                if(currentInstance!=null) {
+                if (currentInstance != null) {
                     UIComponent table = currentInstance.getViewRoot().findComponent(":listForm:listTable");
-                    table.setValueExpression("sortBy", null);
+                    if (table != null) {
+                        table.setValueExpression("sortBy", null);
+                    }
                 }
             } catch (Exception ex) {
                 //ignore
@@ -909,8 +800,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 }
                 String property = field.getName();
                 String propertyExpr = field.getName();
-                if (field.getDataType() instanceof EntityType) {
-                    EntityType e = (EntityType) field.getDataType();
+                if (field.getDataType() instanceof ManyToOneType) {
+                    ManyToOneType e = (ManyToOneType) field.getDataType();
                     propertyExpr += "." + e.getRelationship().getTargetEntity().getMainField().getName();
                 }
                 columns.add(new ColumnView(i18n.get(field), property, propertyExpr, type));
@@ -1033,58 +924,6 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
-        }
-    }
-
-    private static class FormHelper {
-
-        DynaFormModel dynModel = new DynaFormModel();
-        DynaFormRow row = null;
-        int cols = 0;
-        int maxcols = 4;
-
-        private void revalidateRow() {
-            if (row == null) {
-                row = dynModel.createRegularRow();
-            }
-        }
-
-        private void newLine() {
-            cols = 0;
-            row = null;
-        }
-
-        public DynaFormControl addControl(Object data, String type, int colspan, int rowspan) {
-            revalidateRow();
-            colspan = validColspan(colspan);
-            rowspan = validRowspan(rowspan);
-            DynaFormControl cc = row.addControl(data, type, colspan, rowspan);
-            nextPosition(colspan, rowspan);
-            return cc;
-        }
-
-        public DynaFormLabel addLabel(String data, int colspan, int rowspan) {
-            revalidateRow();
-            colspan = validColspan(colspan);
-            rowspan = validRowspan(rowspan);
-            DynaFormLabel lab = row.addLabel(data, colspan, rowspan);
-            nextPosition(colspan, rowspan);
-            return lab;
-        }
-
-        private int validColspan(int colspan) {
-            return (colspan <= 0 || colspan == Integer.MAX_VALUE) ? maxcols - cols : colspan;
-        }
-
-        private int validRowspan(int rowspan) {
-            return (rowspan <= 0 || rowspan == Integer.MAX_VALUE) ? 1 : rowspan;
-        }
-
-        private void nextPosition(int colspan, int rowspan) {
-            cols += colspan;
-            if (cols >= maxcols) {
-                newLine();
-            }
         }
     }
 
@@ -1243,17 +1082,6 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         return properties;
     }
 
-    public static final class Config {
-
-        public String entity;
-        public String id;
-        public String listFilter;
-        public Map<String, String> values;
-        public String[] disabledFields;
-        public String[] selectedFields;
-        public String searchExpr;
-    }
-
     public boolean filterByProperty(Object value, Object filter, Locale locale) {
         String filterText = (filter == null) ? null : filter.toString().trim();
         if (filterText == null || filterText.equals("")) {
@@ -1380,5 +1208,153 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         if (p != null) {
             p.setValue(o.getValue());
         }
+    }
+
+    private static class FormHelper {
+
+        DynaFormModel dynModel = new DynaFormModel();
+        DynaFormRow row = null;
+        int cols = 0;
+        int maxcols = 4;
+
+        private void revalidateRow() {
+            if (row == null) {
+                row = dynModel.createRegularRow();
+            }
+        }
+
+        private void newLine() {
+            cols = 0;
+            row = null;
+        }
+
+        public DynaFormControl addControl(Object data, String type, int colspan, int rowspan) {
+            revalidateRow();
+            colspan = validColspan(colspan);
+            rowspan = validRowspan(rowspan);
+            DynaFormControl cc = row.addControl(data, type, colspan, rowspan);
+            nextPosition(colspan, rowspan);
+            return cc;
+        }
+
+        public DynaFormLabel addLabel(String data, int colspan, int rowspan) {
+            revalidateRow();
+            colspan = validColspan(colspan);
+            rowspan = validRowspan(rowspan);
+            DynaFormLabel lab = row.addLabel(data, colspan, rowspan);
+            nextPosition(colspan, rowspan);
+            return lab;
+        }
+
+        private int validColspan(int colspan) {
+            return (colspan <= 0 || colspan == Integer.MAX_VALUE) ? maxcols - cols : colspan;
+        }
+
+        private int validRowspan(int rowspan) {
+            return (rowspan <= 0 || rowspan == Integer.MAX_VALUE) ? 1 : rowspan;
+        }
+
+        private void nextPosition(int colspan, int rowspan) {
+            cols += colspan;
+            if (cols >= maxcols) {
+                newLine();
+            }
+        }
+    }
+
+    public static final class Config {
+
+        public String entity;
+        public String id;
+        public String listFilter;
+        public Map<String, String> values;
+        public String[] disabledFields;
+        public String[] selectedFields;
+        public String searchExpr;
+    }
+
+    public class PModel extends Model<ObjRow> {
+
+        private String entityName;
+        private List<ObjFormAction> actions = new ArrayList<ObjFormAction>();
+        private Config config;
+        private Set<String> disabledFields = new HashSet<String>();
+
+        public PModel() {
+            setCurrent(null);
+        }
+
+        public List<ObjFormAction> getActions() {
+            return actions;
+        }
+
+        public void setActions(List<ObjFormAction> actions) {
+            this.actions = actions;
+        }
+
+        public String getEntityName() {
+            return entityName;
+        }
+
+        public void setEntityName(String entityName) {
+            this.entityName = entityName;
+        }
+
+        public List getSelectedObjects() {
+            switch (getMode()) {
+                case UPDATE:
+                case NEW: {
+                    return Arrays.asList(getCurrentRecord());
+                }
+                case LIST: {
+                    List all = new ArrayList();
+                    for (ObjRow objRow : getList()) {
+                        if (objRow.isSelected()) {
+                            all.add(objRow.getRecord());
+                        }
+                    }
+                    return all;
+                }
+            }
+            return Collections.emptyList();
+        }
+
+        public Record getCurrentRecord() {
+            ObjRow c = getCurrent();
+            if (c == null) {
+                return null;
+            }
+            return c.getRecord();
+        }
+
+        public ObjRow getCurrent() {
+            return super.getCurrent();
+        }
+
+        @Override
+        public void setCurrent(ObjRow current) {
+            super.setCurrent(current); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        public List<ObjRow> getList() {
+            return super.getList();
+        }
+
+        public Config getConfig() {
+            return config;
+        }
+
+        public void setConfig(Config config) {
+            this.config = config;
+        }
+
+        public Set<String> getDisabledFields() {
+            return disabledFields;
+        }
+
+        public void setDisabledFields(Set<String> disabledFields) {
+            this.disabledFields = disabledFields;
+        }
+
     }
 }

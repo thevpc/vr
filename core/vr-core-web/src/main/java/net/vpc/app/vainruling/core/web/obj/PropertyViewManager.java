@@ -1,13 +1,11 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.obj;
 
 import net.vpc.app.vainruling.core.web.obj.defaultimpl.DefaultPropertyViewFactory;
-import java.util.HashMap;
-import java.util.Map;
 import net.vpc.common.util.ClassMap;
 import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
@@ -16,23 +14,23 @@ import net.vpc.upa.types.DataType;
 import net.vpc.upa.types.TypesFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- *
  * @author vpc
  */
 @Service
 public class PropertyViewManager {
 
-    private PropertyViewFactory defaultPropertyViewFactory = new DefaultPropertyViewFactory();
-    private PropertyViewValuesProvider defaultPropertyViewValuesProvider = new DefaultPropertyViewValuesProvider();
-
     private final Map<String, PropertyViewValuesProvider> propertyViewValuesProviderByField = new HashMap<>();
     private final ClassMap<PropertyViewValuesProvider> propertyViewValuesProviderByDataType = new ClassMap<>(Object.class, PropertyViewValuesProvider.class);
     private final ClassMap<PropertyViewValuesProvider> propertyViewValuesProviderByPlatformType = new ClassMap<>(Object.class, PropertyViewValuesProvider.class);
-
     private final Map<String, PropertyViewFactory> propertyViewFactoryByField = new HashMap<>();
     private final ClassMap<PropertyViewFactory> propertyViewFactoryByDataType = new ClassMap<>(Object.class, PropertyViewFactory.class);
     private final ClassMap<PropertyViewFactory> propertyViewFactoryByPlatformType = new ClassMap<>(Object.class, PropertyViewFactory.class);
+    private PropertyViewFactory defaultPropertyViewFactory = new DefaultPropertyViewFactory();
+    private PropertyViewValuesProvider defaultPropertyViewValuesProvider = new DefaultPropertyViewValuesProvider();
 
     public PropertyViewValuesProvider getPropertyViewValuesProvider(Field field, DataType dt) {
         PropertyViewValuesProvider v = null;

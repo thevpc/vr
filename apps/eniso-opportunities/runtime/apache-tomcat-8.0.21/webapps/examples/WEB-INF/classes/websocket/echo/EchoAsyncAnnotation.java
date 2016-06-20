@@ -16,6 +16,9 @@
  */
 package websocket.echo;
 
+import javax.websocket.OnMessage;
+import javax.websocket.PongMessage;
+import javax.websocket.Session;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -24,15 +27,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.websocket.OnMessage;
-import javax.websocket.PongMessage;
-import javax.websocket.Session;
-
 /**
  * The three annotated echo endpoints can be used to test with Autobahn and
  * the following command "wstest -m fuzzingclient -s servers.json". See the
  * Autobahn documentation for setup and general information.
- *
+ * <p>
  * Note: This one is disabled by default since it allocates memory, and needs
  * to be enabled back.
  */
@@ -89,7 +88,7 @@ public class EchoAsyncAnnotation {
     /**
      * Process a received pong. This is a NO-OP.
      *
-     * @param pm    Ignored.
+     * @param pm Ignored.
      */
     @OnMessage
     public void echoPongMessage(PongMessage pm) {

@@ -1,24 +1,18 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.perfeval.service.model;
 
-import java.sql.Timestamp;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.RelationshipType;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Formula;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.ManyToOne;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
+
+import java.sql.Timestamp;
 
 /**
- *
  * @author vpc
  */
 @Entity
@@ -93,5 +87,5 @@ public class AcademicFeedbackResponse {
         return "AcademicFeedbackResponse{" + "feedback=" + feedback + ", question=" + question + ", response=" + response + '}';
     }
 
-    
+
 }

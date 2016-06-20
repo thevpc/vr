@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.stat;
@@ -8,11 +8,11 @@ package net.vpc.app.vainruling.plugins.academic.service.model.stat;
 import java.text.DecimalFormat;
 
 /**
- *
  * @author vpc
  */
 public class LoadValue {
 
+    private static final DecimalFormat f = new DecimalFormat("#0.000");
     private double c;
     private double td;
     private double tp;
@@ -38,18 +38,19 @@ public class LoadValue {
         this.equivC = equivC;
         this.equivTD = equivTD;
     }
-    private static final DecimalFormat f = new DecimalFormat("#0.000");
+
     public static void main(String[] args) {
         System.out.println(new LoadValue(15, 6, 15, 42, 66.3, 0, 0, 0).formatString());
     }
-    private String formatF(double d){
-        double r = ((int)d);
-        if(r==d){
-            return String.valueOf((int)d);
+
+    private String formatF(double d) {
+        double r = ((int) d);
+        if (r == d) {
+            return String.valueOf((int) d);
         }
         return String.valueOf(d);
     }
-    
+
     public String formatString() {
         StringBuilder b = new StringBuilder();
         b.append(f.format(equiv));
@@ -216,22 +217,22 @@ public class LoadValue {
         return this;
     }
 
+    public double getEquivC() {
+        return equivC;
+    }
+
     public LoadValue setEquivC(double equivC) {
         this.equivC = equivC;
         return this;
     }
 
+    public double getEquivTD() {
+        return equivTD;
+    }
+
     public LoadValue setEquivTD(double equivTD) {
         this.equivTD = equivTD;
         return this;
-    }
-
-    public double getEquivC() {
-        return equivC;
-    }
-
-    public double getEquivTD() {
-        return equivTD;
     }
 
     @Override

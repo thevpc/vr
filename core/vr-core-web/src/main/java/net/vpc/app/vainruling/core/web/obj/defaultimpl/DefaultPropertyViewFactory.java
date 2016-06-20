@@ -1,26 +1,25 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import net.vpc.app.vainruling.core.web.obj.*;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.app.vainruling.core.web.obj.*;
 import net.vpc.common.util.PlatformTypes;
 import net.vpc.upa.Field;
 import net.vpc.upa.KeyType;
 import net.vpc.upa.types.DataType;
 import net.vpc.upa.types.DateType;
-import net.vpc.upa.types.EntityType;
 import net.vpc.upa.types.EnumType;
+import net.vpc.upa.types.ManyToOneType;
+
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- *
  * @author vpc
  */
 public class DefaultPropertyViewFactory implements PropertyViewFactory {
@@ -36,7 +35,7 @@ public class DefaultPropertyViewFactory implements PropertyViewFactory {
         if (!nfo.visible) {
             return null;
         }
-        if (nfo.dataType instanceof EntityType || nfo.dataType instanceof KeyType) {
+        if (nfo.dataType instanceof ManyToOneType || nfo.dataType instanceof KeyType) {
             return entityTypePropertyViewFactory.createPropertyView(componentId, field, nfo.dataType, configuration, manager, viewContext);
         } else if (nfo.dataType instanceof EnumType) {
             return enumTypePropertyViewFactory.createPropertyView(componentId, field, nfo.dataType, configuration, manager, viewContext);

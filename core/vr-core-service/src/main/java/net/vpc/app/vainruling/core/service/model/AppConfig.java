@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.model;
@@ -12,7 +12,6 @@ import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Path;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "mainPeriod.name desc")
@@ -20,7 +19,7 @@ import net.vpc.upa.config.Path;
 public class AppConfig {
 
     @Id
-    private int id=1;
+    private int id = 1;
     @Field(modifiers = {UserFieldModifier.MAIN})
     private AppPeriod mainPeriod;
     @Field(modifiers = {UserFieldModifier.SUMMARY})

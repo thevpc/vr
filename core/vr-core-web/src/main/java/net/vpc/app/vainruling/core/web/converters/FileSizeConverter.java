@@ -1,38 +1,37 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.converters;
 
-import java.text.DecimalFormat;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import java.text.DecimalFormat;
 
 /**
- *
  * @author vpc
  */
 @FacesConverter("fileSizeConverter")
 public class FileSizeConverter implements Converter {
 
-    DecimalFormat f = new DecimalFormat("0.0");
     final int KO = 1024;
     final int MO = KO * KO;
     final int GO = KO * MO;
     final int TO = KO * GO;
+    DecimalFormat f = new DecimalFormat("0.0");
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component,
-            String value) {
+                              String value) {
         return value;
     }
 
     @Override
     public String getAsString(FacesContext context, UIComponent component,
-            Object value) {
+                              Object value) {
         if (value == null) {
             return "";
         }

@@ -1,23 +1,19 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.history;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import java.util.Objects;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
+
+import java.util.Objects;
 
 /**
- *
  * @author vpc
  */
 @Entity
@@ -28,16 +24,16 @@ public class AcademicHistTeacherAnnualLoad {
     @Sequence
 
     private int id;
-    
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private AcademicTeacher teacher;
-    
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private AcademicHistTeacherDegree degree;
-    
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private AcademicTeacherSituation situation;
-    
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private AppPeriod academicYear;
 

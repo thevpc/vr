@@ -24,7 +24,7 @@
 
 (function (window, document, $, undefined) {
 
-    $.fn.dataTable.SelectedLengthMenu = function(oSettings) {
+    $.fn.dataTable.SelectedLengthMenu = function (oSettings) {
         if (oSettings.oScroll.bInfinite) {
             return null;
         }
@@ -50,7 +50,7 @@
         // select box to show all or only selected items
         var oFilterSelectedOptions = oSettings.oLanguage.oFilterSelectedOptions;
         if (!oFilterSelectedOptions)
-            oFilterSelectedOptions = { "AllText": "All Items", "SelectedText": "Selected Items" };
+            oFilterSelectedOptions = {"AllText": "All Items", "SelectedText": "Selected Items"};
 
         var sSelectedMenu = '<select name="' + oSettings.sTableId + '_selectedFilter">';
         if (typeof oFilterSelectedOptions === 'object') {
@@ -61,7 +61,6 @@
             sSelectedMenu += '<option value="Selected">' + oFilterSelectedOptions[1] + '</option>';
         }
         sSelectedMenu += '</select>';
-
 
 
         var nLength = document.createElement('div');
@@ -78,7 +77,7 @@
         var $lengthSelect = $('select[name="' + oSettings.sTableId + '_length"]', nLength);
         if ($lengthSelect.length == 0)
             $lengthSelect = $('select :eq(0)', nLength);
-        
+
         /*
          * Set the length to the current display length - thanks to Andrea Pavlovic for this fix,
          * and Stefan Skopnik for fixing the fix!
@@ -86,7 +85,7 @@
         $lengthSelect.find('option[value="' + oSettings._iDisplayLength + '"]', nLength).attr("selected", true);
 
 
-        $lengthSelect.bind('change.DT', function(e) {
+        $lengthSelect.bind('change.DT', function (e) {
             var iVal = $(this).val();
 
             /* Update all other length options for the new display */
@@ -127,7 +126,7 @@
             oSettings._sFilterSelected = $(this).val();
             $('#' + oSettings.sTableId).dataTable().fnDraw();
         });
-        
+
 
         $('select', nLength).attr('aria-controls', oSettings.sTableId);
 
@@ -162,7 +161,6 @@
         "cFeature": "O",
         "sFeature": "SelectedLengthMenu"
     });
-    
 
 
 })(window, document, jQuery);

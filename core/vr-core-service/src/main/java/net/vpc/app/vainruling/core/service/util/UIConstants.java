@@ -1,12 +1,11 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.util;
 
 /**
- *
  * @author vpc
  */
 public final class UIConstants {
@@ -60,10 +59,10 @@ public final class UIConstants {
         public static final String DISCIPLINE = "discipline";
         public static final String FILE = "file";
     }
-    
-    public static final class Grid{
+
+    public static final class Grid {
         public static final String COLUMN_STYLE = "ui.list-column-style";
         public static final String ROW_STYLE = "ui.list-row-style";
-        
+
     }
 }

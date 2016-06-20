@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.cache;
@@ -12,10 +12,12 @@ import net.vpc.upa.UPA;
 import net.vpc.upa.callbacks.PersistEvent;
 import net.vpc.upa.callbacks.RemoveEvent;
 import net.vpc.upa.callbacks.UpdateEvent;
-import net.vpc.upa.config.*;
+import net.vpc.upa.config.Callback;
+import net.vpc.upa.config.OnPersist;
+import net.vpc.upa.config.OnRemove;
+import net.vpc.upa.config.OnUpdate;
 
 /**
- *
  * @author vpc
  */
 @Callback(
@@ -26,12 +28,12 @@ public class CacheServiceCallback {
     @OnPersist
     public void onPersist(PersistEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
-        if(!UPA.getPersistenceUnit().getName().equals(pu.getName())){
+        if (!UPA.getPersistenceUnit().getName().equals(pu.getName())) {
             return;
         }
         Entity entity = event.getEntity();
         CacheService service = getEntityCacheService();
-        if (service != null ) {
+        if (service != null) {
             service.invalidate(entity, event.getPersistedRecord());
         }
     }
@@ -39,13 +41,13 @@ public class CacheServiceCallback {
     @OnUpdate
     public void onUpdate(UpdateEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
-        if(!UPA.getPersistenceUnit().getName().equals(pu.getName())){
+        if (!UPA.getPersistenceUnit().getName().equals(pu.getName())) {
             event.getContext().setObject("silenced", true);
             return;
         }
         CacheService service = getEntityCacheService();
         Entity entity = event.getEntity();
-        if (service != null ) {
+        if (service != null) {
             service.invalidate(entity, event.getUpdatesRecord());
         }
     }
@@ -53,17 +55,16 @@ public class CacheServiceCallback {
     @OnRemove
     public void onRemove(RemoveEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
-        if(!UPA.getPersistenceUnit().getName().equals(pu.getName())){
+        if (!UPA.getPersistenceUnit().getName().equals(pu.getName())) {
             event.getContext().setObject("silenced", true);
             return;
         }
         CacheService service = getEntityCacheService();
         Entity entity = event.getEntity();
-        if (service != null ) {
+        if (service != null) {
             service.invalidate(entity, event.getFilterExpression());
         }
     }
-
 
 
     private CacheService getEntityCacheService() {

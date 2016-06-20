@@ -1,28 +1,25 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.admin.actions;
 
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppTrace;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.common.jsf.FacesUtils;
-import net.vpc.upa.UPA;
 
 import java.util.List;
 
 /**
- *
  * @author vpc
  */
 @EntityAction(entityType = AppTrace.class,
-        actionLabel = "Archiver la trace", actionStyle = "fa-calculator",
+        actionLabel = "Arch", actionStyle = "fa-calculator",
         dialog = false
 )
 public class PurgeTraceAction implements ActionDialog {

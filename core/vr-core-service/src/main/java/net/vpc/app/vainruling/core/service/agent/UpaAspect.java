@@ -5,8 +5,6 @@ import net.vpc.upa.UPA;
 import net.vpc.upa.exceptions.ExecutionException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.springframework.stereotype.Component;
 
 /**
  * Created by vpc on 5/17/16.
@@ -22,10 +20,12 @@ public class UpaAspect {
     public Object aroundUpaMethods1(final ProceedingJoinPoint pjp) throws Throwable {
         return aroundUpaMethods0(pjp);
     }
+
     @Around("@annotation(net.vpc.app.vainruling.core.service.UpaAware)")
     public Object aroundUpaMethods2(final ProceedingJoinPoint pjp) throws Throwable {
         return aroundUpaMethods0(pjp);
     }
+
     public Object aroundUpaMethods0(final ProceedingJoinPoint pjp) throws Throwable {
         try {
             return UPA.getContext().invoke(new Action<Object>() {

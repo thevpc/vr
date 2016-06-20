@@ -7,9 +7,8 @@
  *  @author [Allan Jardine](http://sprymedia.co.uk)
  */
 
-$.fn.dataTable.ext.order['dom-checkbox'] = function  ( settings, col )
-{
-	return this.api().column( col, {order:'index'} ).nodes().map( function ( td, i ) {
-		return $('input', td).prop('checked') ? '1' : '0';
-	} );
+$.fn.dataTable.ext.order['dom-checkbox'] = function (settings, col) {
+    return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
+        return $('input', td).prop('checked') ? '1' : '0';
+    });
 };

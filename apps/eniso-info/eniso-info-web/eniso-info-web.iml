@@ -16,6 +16,9 @@
         </sourceRoots>
       </configuration>
     </facet>
+    <facet type="Spring" name="Spring">
+      <configuration />
+    </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
@@ -43,7 +46,7 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-tx:4.1.2.RELEASE" level="project" />
     <orderEntry type="module" module-name="upa-api" />
     <orderEntry type="module" module-name="upa-impl" scope="RUNTIME" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: cglib:cglib:3.2.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: cglib:cglib:3.2.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm:5.0.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant:1.9.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant-launcher:1.9.6" level="project" />
@@ -88,7 +91,6 @@
     <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.0" level="project" />
     <orderEntry type="library" name="Maven: tablelayout:TableLayout:20050920" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jcgrid:jcgrid:0.05" level="project" />
-    <orderEntry type="module" module-name="vr-academic-addressbook-service" />
     <orderEntry type="module" module-name="vr-academic-report-service" />
     <orderEntry type="module" module-name="vr-academic-eval-service" />
     <orderEntry type="module" module-name="vr-academic-perf-eval-service" />
@@ -148,14 +150,12 @@
     <orderEntry type="module" module-name="vr-articles-web" />
     <orderEntry type="module" module-name="vr-academic-web" />
     <orderEntry type="module" module-name="vr-academic-internship-web" />
-    <orderEntry type="module" module-name="vr-academic-addressbook-web" />
     <orderEntry type="module" module-name="vr-academic-report-web" />
     <orderEntry type="module" module-name="vr-academic-planning-web" />
     <orderEntry type="module" module-name="vr-academic-eval-web" />
     <orderEntry type="module" module-name="vr-academic-perf-eval-web" />
     <orderEntry type="module" module-name="vr-mailbox-web" />
     <orderEntry type="module" module-name="vr-dev-toolbox-web" />
-    <orderEntry type="library" name="Maven: net.vpc.app.vain-ruling.plugins.themes:vr-ui-app-theme-infusion:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.primefaces.themes:glass-x:1.0.6" level="project" />
   </component>
 </module>

@@ -1,16 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.devtoolbox.web;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.MultiRecord;
@@ -20,8 +14,10 @@ import net.vpc.upa.persistence.Parameter;
 import net.vpc.upa.persistence.QueryResult;
 import org.springframework.context.annotation.Scope;
 
+import javax.faces.bean.ManagedBean;
+import java.util.*;
+
 /**
- *
  * @author vpc
  */
 @UCtrl(
@@ -32,86 +28,6 @@ import org.springframework.context.annotation.Scope;
 public class DevToolsCtrl {
 
     private Model model = new Model();
-
-    public static class Model {
-
-        private String query;
-        private String lang = "sql";
-        private List<List<Object>> rows = new ArrayList<>();
-        private List<ColDef> rowNames = new ArrayList<>();
-
-        public String getQuery() {
-            return query;
-        }
-
-        public void setQuery(String query) {
-            this.query = query;
-        }
-
-        public boolean isSql() {
-            return "sql".equals(lang);
-        }
-        
-        public boolean isupql() {
-            return "upql".equals(lang);
-        }
-
-        public void setLang(String lang) {
-            this.lang = lang;
-        }
-
-        public String getLang() {
-            return lang;
-        }
-
-        public List<List<Object>> getRows() {
-            return rows;
-        }
-
-        public void setRows(List<List<Object>> rows) {
-            this.rows = rows;
-        }
-
-        public List<ColDef> getRowNames() {
-            return rowNames;
-        }
-
-        public void setRowNames(List<ColDef> rowNames) {
-            this.rowNames = rowNames;
-        }
-
-    }
-
-    public class ColDef {
-
-        private String name;
-        private int index;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        public void setIndex(int index) {
-            this.index = index;
-        }
-
-        public ColDef() {
-        }
-
-        public ColDef(String name, int index) {
-            this.name = name;
-            this.index = index;
-        }
-
-    }
 
     public Model getModel() {
         return model;
@@ -217,5 +133,85 @@ public class DevToolsCtrl {
                 }
             }
         }
+    }
+
+    public static class Model {
+
+        private String query;
+        private String lang = "sql";
+        private List<List<Object>> rows = new ArrayList<>();
+        private List<ColDef> rowNames = new ArrayList<>();
+
+        public String getQuery() {
+            return query;
+        }
+
+        public void setQuery(String query) {
+            this.query = query;
+        }
+
+        public boolean isSql() {
+            return "sql".equals(lang);
+        }
+
+        public boolean isupql() {
+            return "upql".equals(lang);
+        }
+
+        public String getLang() {
+            return lang;
+        }
+
+        public void setLang(String lang) {
+            this.lang = lang;
+        }
+
+        public List<List<Object>> getRows() {
+            return rows;
+        }
+
+        public void setRows(List<List<Object>> rows) {
+            this.rows = rows;
+        }
+
+        public List<ColDef> getRowNames() {
+            return rowNames;
+        }
+
+        public void setRowNames(List<ColDef> rowNames) {
+            this.rowNames = rowNames;
+        }
+
+    }
+
+    public class ColDef {
+
+        private String name;
+        private int index;
+
+        public ColDef() {
+        }
+
+        public ColDef(String name, int index) {
+            this.name = name;
+            this.index = index;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public void setIndex(int index) {
+            this.index = index;
+        }
+
     }
 }

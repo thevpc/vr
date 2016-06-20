@@ -2,13 +2,13 @@ package net.vpc.app.vainruling.core.service.obj;
 
 ///*
 // * To change this license header, choose License Headers in Project Properties.
-// * To change this template file, choose Tools | Templates
+// *
 // * and open the template in the editor.
 // */
 //package net.vpc.app.vainruling.api.core;
 //
 //import net.vpc.app.vainruling.api.EntityAction;
-//import net.vpc.app.vainruling.core.service.util.Reflector;
+//import net.vpc.app.vainruling.core.service.util.PlatformReflector;
 //import net.vpc.upa.Entity;
 //import net.vpc.upa.UPA;
 //
@@ -18,7 +18,7 @@ package net.vpc.app.vainruling.core.service.obj;
 // */
 //public class MethodActionInfo extends ActionInfo {
 //
-//    private Reflector.InstanceInvoker p;
+//    private PlatformReflector.InstanceInvoker p;
 //
 //    @Override
 //    public <T> T invoke(Class entityType, String actionName, Object obj, Object[] args) {

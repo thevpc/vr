@@ -1,22 +1,15 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.inbox.service.model;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Properties;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "name")
@@ -32,14 +25,14 @@ public class MailboxMessageFormat {
     private boolean preferFormattedText;
     @Field(max = "1024")
     private String subject;
-    @Field(max = "20000")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL,value = UIConstants.ControlType.TEXTAREA)
+    @Field(max = "max")
+    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
     private String plainBody;
-    @Field(max = "30000")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL,value = UIConstants.ControlType.TEXTAREA)
+    @Field(max = "max")
+    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
     private String formattedBody;
     @Field(max = "512")
-    @Properties({@Property(name = UIConstants.FIELD_FORM_CONTROL,value = UIConstants.ControlType.FILE),
+    @Properties({@Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
             @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")})
     private String footerEmbeddedImage;
 

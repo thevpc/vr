@@ -16,14 +16,13 @@
 */
 package examples;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Locale;
-
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Locale;
 
 /**
  * Display the sources of the JSP file.
@@ -40,13 +39,13 @@ public class ShowSource extends TagSupport {
 
     @Override
     public int doEndTag() throws JspException {
-        if ((jspFile.indexOf( ".." ) >= 0) ||
-            (jspFile.toUpperCase(Locale.ENGLISH).indexOf("/WEB-INF/") != 0) ||
-            (jspFile.toUpperCase(Locale.ENGLISH).indexOf("/META-INF/") != 0))
+        if ((jspFile.indexOf("..") >= 0) ||
+                (jspFile.toUpperCase(Locale.ENGLISH).indexOf("/WEB-INF/") != 0) ||
+                (jspFile.toUpperCase(Locale.ENGLISH).indexOf("/META-INF/") != 0))
             throw new JspTagException("Invalid JSP file " + jspFile);
 
         try (InputStream in
-            = pageContext.getServletContext().getResourceAsStream(jspFile)) {
+                     = pageContext.getServletContext().getResourceAsStream(jspFile)) {
 
             if (in == null)
                 throw new JspTagException("Unable to find JSP file: " + jspFile);

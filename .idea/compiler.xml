@@ -30,8 +30,6 @@
         <module name="upa-vfs" />
         <module name="upa-web" />
         <module name="vpc-devtools" />
-        <module name="vr-academic-addressbook-service" />
-        <module name="vr-academic-addressbook-web" />
         <module name="vr-academic-eval-service" />
         <module name="vr-academic-eval-web" />
         <module name="vr-academic-internship-service" />
@@ -60,6 +58,10 @@
         <module name="vr-mailbox-web" />
         <module name="vr-tasks-service" />
         <module name="vr-tasks-web" />
+        <module name="wpm-payroll-service" />
+        <module name="wpm-payroll-web" />
+        <module name="wpm-service" />
+        <module name="wpm-theme-infusion" />
       </profile>
       <profile default="false" name="Annotation profile for vr-app-web" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -151,6 +153,13 @@
         <processorPath useClasspath="true" />
         <module name="eniso-info-web" />
       </profile>
+      <profile default="false" name="Annotation profile for wpm-web" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="wpm-web" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="eniso-info" target="1.5" />
@@ -215,6 +224,12 @@
       <module name="vr-tasks-web" target="1.7" />
       <module name="vr-ui-app-theme-infusion" target="1.7" />
       <module name="web-jsf" target="1.7" />
+      <module name="wpm" target="1.5" />
+      <module name="wpm-payroll-service" target="1.7" />
+      <module name="wpm-payroll-web" target="1.7" />
+      <module name="wpm-service" target="1.7" />
+      <module name="wpm-theme-infusion" target="1.7" />
+      <module name="wpm-web" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>

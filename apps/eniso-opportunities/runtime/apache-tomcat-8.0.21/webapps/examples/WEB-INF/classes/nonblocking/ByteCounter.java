@@ -16,18 +16,12 @@
  */
 package nonblocking;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import javax.servlet.AsyncContext;
-import javax.servlet.ReadListener;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
+import javax.servlet.*;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * This doesn't do anything particularly useful - it just counts the total
@@ -84,7 +78,7 @@ public class ByteCounter extends HttpServlet {
         private byte[] buffer = new byte[8192];
 
         private CounterListener(AsyncContext ac, ServletInputStream sis,
-                ServletOutputStream sos) {
+                                ServletOutputStream sos) {
             this.ac = ac;
             this.sis = sis;
             this.sos = sos;

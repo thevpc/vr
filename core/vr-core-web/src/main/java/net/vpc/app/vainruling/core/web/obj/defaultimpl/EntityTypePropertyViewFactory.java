@@ -1,17 +1,9 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.obj.defaultimpl;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-import javax.faces.event.AbortProcessingException;
-import javax.faces.event.ValueChangeEvent;
-import javax.faces.event.ValueChangeListener;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.core.web.obj.*;
@@ -19,10 +11,17 @@ import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
 import net.vpc.upa.KeyType;
 import net.vpc.upa.types.DataType;
-import net.vpc.upa.types.EntityType;
+import net.vpc.upa.types.ManyToOneType;
+
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.ValueChangeEvent;
+import javax.faces.event.ValueChangeListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 /**
- *
  * @author vpc
  */
 public class EntityTypePropertyViewFactory implements PropertyViewFactory {
@@ -54,8 +53,8 @@ public class EntityTypePropertyViewFactory implements PropertyViewFactory {
             return null;
         }
         Entity me = null;
-        if (nfo.dataType instanceof EntityType) {
-            EntityType t = (EntityType) nfo.dataType;
+        if (nfo.dataType instanceof ManyToOneType) {
+            ManyToOneType t = (ManyToOneType) nfo.dataType;
             me = t.getRelationship().getTargetRole().getEntity();
         } else if (nfo.dataType instanceof KeyType) {
             KeyType t = (KeyType) nfo.dataType;
@@ -77,9 +76,9 @@ public class EntityTypePropertyViewFactory implements PropertyViewFactory {
                     if (r0 != null) {
                         r0.setName(field.getName() + " / " + r0.getName());
                         r0.setComponentId(propView.getComponentId() + "." + r0.getComponentId());
-                        Object rootReferrer=propView.getRootReferrer();
-                        if(rootReferrer==null && propView.getReferrer() instanceof Field){
-                            rootReferrer=((Field) propView.getReferrer()).getEntity();
+                        Object rootReferrer = propView.getRootReferrer();
+                        if (rootReferrer == null && propView.getReferrer() instanceof Field) {
+                            rootReferrer = ((Field) propView.getReferrer()).getEntity();
                         }
                         r0.setRootReferrer(rootReferrer);
                         if (nfo.disabled) {

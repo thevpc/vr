@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web;
@@ -8,7 +8,6 @@ package net.vpc.app.vainruling.core.web;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 
 /**
- *
  * @author vpc
  */
 public class UCtrlData {
@@ -16,6 +15,7 @@ public class UCtrlData {
     private String title;
 
     private String url;
+    private String securityKey;
 
     private String css;
 
@@ -24,10 +24,11 @@ public class UCtrlData {
     public UCtrlData() {
     }
 
-    public UCtrlData(String title, String url, String css, BreadcrumbItem ... breadcrumb) {
+    public UCtrlData(String title, String url, String css, String securityKey, BreadcrumbItem... breadcrumb) {
         this.title = title;
         this.url = url;
         this.css = css;
+        this.securityKey = securityKey;
         this.breadcrumb = breadcrumb;
     }
 
@@ -67,4 +68,11 @@ public class UCtrlData {
         return this;
     }
 
+    public String getSecurityKey() {
+        return securityKey;
+    }
+
+    public void setSecurityKey(String securityKey) {
+        this.securityKey = securityKey;
+    }
 }

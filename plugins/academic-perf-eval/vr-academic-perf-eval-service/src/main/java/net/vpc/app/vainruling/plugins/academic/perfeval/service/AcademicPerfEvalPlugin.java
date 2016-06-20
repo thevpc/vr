@@ -1,12 +1,13 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.perfeval.service;
 
 import net.vpc.app.vainruling.core.service.*;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.*;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.servicemodel.FeedbacksStats;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
@@ -45,6 +46,23 @@ public class AcademicPerfEvalPlugin {
         return pu.findById(AcademicFeedback.class, feedbackId);
     }
 
+    public FeedbacksStats findFeedbacksStats(
+            Integer teacherId,
+            Integer periodId,
+            Integer semesterIndex,
+            Boolean validated,
+            Boolean archived,
+            Boolean enabled
+    ) {
+//        select
+//                (select count(1) from ACADEMIC_FEEDBACK_RESPONSE) `all`,
+//        (select count(1) from ACADEMIC_FEEDBACK_RESPONSE where RESPONSE is not NULL) ok,
+//                (select count(1) from ACADEMIC_FEEDBACK_RESPONSE where RESPONSE is NULL) ko,
+//                (select count(1) from ACADEMIC_FEEDBACK_RESPONSE where RESPONSE is not NULL)*100/(select count(1) from ACADEMIC_FEEDBACK_RESPONSE) `ok%`,
+//        (select count(1) from ACADEMIC_FEEDBACK_RESPONSE where RESPONSE is NULL)*100/(select count(1) from ACADEMIC_FEEDBACK_RESPONSE) `ko%`
+        return null;
+    }
+
     public List<AcademicCourseAssignment> findAssignmentsWithFeedbacks(int teacherId, Boolean validated, Boolean archived, Boolean enabled) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (enabled != null && enabled) {
@@ -61,7 +79,7 @@ public class AcademicPerfEvalPlugin {
                         + (enabled != null ? (" and u.enableCourseFeedback=" + enabled) : "")
         )
                 .setParameter("teacherId", teacherId)
-                .setHint("navigationDepth", 3)
+                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
                 .getEntityList();
     }
 
@@ -80,10 +98,10 @@ public class AcademicPerfEvalPlugin {
                         + (archived != null ? (" and f.archived=" + archived) : "")
                         + ")"
                         + (enabled != null ? (" and u.enableCourseFeedback=" + enabled) : "")
-                +")"
+                        + ")"
         )
                 .setParameter("teacherId", teacherId)
-                .setHint("navigationDepth", 3)
+                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
                 .getEntityList();
     }
 
@@ -97,16 +115,16 @@ public class AcademicPerfEvalPlugin {
         }
         return pu.createQuery("Select x from AcademicCourseType x where exists(Select u from AcademicCourseAssignment u " +
                         " where u.teacherId=:teacherId " +
-                        " and  u.courseTypeId=x.id "+
+                        " and  u.courseTypeId=x.id " +
                         " and u.id in (Select f.courseId from AcademicFeedback f where 1=1 "
                         + (validated != null ? (" and f.validated=" + validated) : "")
                         + (archived != null ? (" and f.archived=" + archived) : "")
                         + ")"
                         + (enabled != null ? (" and u.enableCourseFeedback=" + enabled) : "")
-                +")"
+                        + ")"
         )
                 .setParameter("teacherId", teacherId)
-                .setHint("navigationDepth", 3)
+                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
                 .getEntityList();
     }
 
@@ -118,7 +136,7 @@ public class AcademicPerfEvalPlugin {
                         + " order by f.name"
         )
                 .setParameter("academicCourseAssignmentId", academicCourseAssignmentId)
-                .setHint("navigationDepth", 3)
+                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
                 .getEntityList();
     }
 
@@ -132,48 +150,48 @@ public class AcademicPerfEvalPlugin {
     ) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         //AcademicCoursePlan coursePlan
-        StringBuilder sb=new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         QueryBuilder q = pu.createQueryBuilder("AcademicFeedback");
         q.setEntityAlias("f");
-        if(teacherId!=null){
-            q.addAndExpression("f.course.teacherId=:teacherId");
-            q.setParameter("teacherId",teacherId);
+        if (teacherId != null) {
+            q.byExpression("f.course.teacherId=:teacherId");
+            q.setParameter("teacherId", teacherId);
         }
-        if(coursePlanId!=null){
-            q.addAndExpression("f.course.coursePlan.id= :coursePlanId");
-            q.setParameter("coursePlanId",coursePlanId);
+        if (coursePlanId != null) {
+            q.byExpression("f.course.coursePlan.id= :coursePlanId");
+            q.setParameter("coursePlanId", coursePlanId);
         }
-        if(courseTypeId!=null){
-            q.addAndExpression("f.course.courseTypeId= :courseTypeId");
-            q.setParameter("courseTypeId",courseTypeId);
+        if (courseTypeId != null) {
+            q.byExpression("f.course.courseTypeId= :courseTypeId");
+            q.setParameter("courseTypeId", courseTypeId);
         }
-        if(classId!=null){
+        if (classId != null) {
             AcademicPlugin aca = VrApp.getBean(AcademicPlugin.class);
             AcademicClass cc = aca.findAcademicClass(classId);
-            if(cc==null){
+            if (cc == null) {
                 return Collections.emptyList();
             }
             List<AcademicClass> classes = aca.findAcademicDownHierarchyList(new AcademicClass[]{cc}, null);
-            if(classes.isEmpty()){
+            if (classes.isEmpty()) {
                 return Collections.emptyList();
             }
-            StringBuilder csb=new StringBuilder();
+            StringBuilder csb = new StringBuilder();
             for (int i = 0; i < classes.size(); i++) {
                 AcademicClass aClass = classes.get(i);
-                if(i>0){
+                if (i > 0) {
                     csb.append(",");
                 }
                 csb.append(aClass.getId());
             }
-            q.addAndExpression("(f.course.subClassId in ("+csb+") or f.course.coursePlan.courseLevel.academicClassId in ("+csb+") )");
+            q.byExpression("(f.course.subClassId in (" + csb + ") or f.course.coursePlan.courseLevel.academicClassId in (" + csb + ") )");
         }
-        if(validated!=null){
-            q.addAndExpression("f.validated=" + validated);
+        if (validated != null) {
+            q.byExpression("f.validated=" + validated);
         }
-        if(archived!=null){
-            q.addAndExpression("f.archived=" + archived);
+        if (archived != null) {
+            q.byExpression("f.archived=" + archived);
         }
-        q.setHint("navigationDepth", 3);
+        q.setHint(QueryHints.NAVIGATION_DEPTH, 3);
         return q.getEntityList();
     }
 
@@ -198,7 +216,7 @@ public class AcademicPerfEvalPlugin {
                         + " order by f.name"
         )
                 .setParameter("studentId", studentId)
-                .setHint("navigationDepth", 3)
+                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
                 .getEntityList();
     }
 
@@ -210,17 +228,17 @@ public class AcademicPerfEvalPlugin {
     }
 
     public List<AcademicFeedbackResponse> findStudentFeedbackResponses(int[] feedbackIds) {
-        if(feedbackIds.length==0){
+        if (feedbackIds.length == 0) {
             return Collections.emptyList();
         }
-        StringBuilder sb=new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append(feedbackIds[0]);
         for (int i = 1; i < feedbackIds.length; i++) {
             sb.append(",");
             sb.append(feedbackIds[i]);
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery("Select f from AcademicFeedbackResponse f where f.feedbackId in (" + sb +")")
+        return pu.createQuery("Select f from AcademicFeedbackResponse f where f.feedbackId in (" + sb + ")")
                 .getEntityList();
     }
 

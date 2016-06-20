@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by vpc on 5/26/16.
  */
-public class PlanningInternship implements Comparable<PlanningInternship>{
+public class PlanningInternship implements Comparable<PlanningInternship> {
     private int id;
     private String code;
     private String name;
@@ -26,9 +26,9 @@ public class PlanningInternship implements Comparable<PlanningInternship>{
         this.student = student;
         this.disciplines = disciplines;
         this.supervisors = new ArrayList<>();
-        if(supervisors!=null){
+        if (supervisors != null) {
             for (String supervisor : supervisors) {
-                if(!StringUtils.isEmpty(supervisor)){
+                if (!StringUtils.isEmpty(supervisor)) {
                     this.supervisors.add(supervisor);
                 }
             }
@@ -112,19 +112,20 @@ public class PlanningInternship implements Comparable<PlanningInternship>{
 
     @Override
     public int compareTo(PlanningInternship o) {
-        int c=getCode().compareTo(o.getCode());
-        if(c!=0){
+        int c = getCode().compareTo(o.getCode());
+        if (c != 0) {
             return 0;
         }
-        c=getName().compareTo(o.getName());
-        if(c!=0){
+        c = getName().compareTo(o.getName());
+        if (c != 0) {
             return 0;
         }
         return c;
     }
-    public PlanningInternship copy(){
+
+    public PlanningInternship copy() {
         return new PlanningInternship(
-                id, code, name, student, disciplines,supervisors.toArray(new String[supervisors.size()])
+                id, code, name, student, disciplines, supervisors.toArray(new String[supervisors.size()])
         );
     }
 

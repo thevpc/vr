@@ -1,9 +1,12 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.menu;
+
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.web.util.JsfCtrl;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -13,11 +16,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.util.JsfCtrl;
-
 /**
- *
  * @author vpc
  */
 public class VRMenuDef {
@@ -40,12 +39,12 @@ public class VRMenuDef {
     }
 
     public String getPrettyURL() {
-        JsfCtrl c= VrApp.getBean(JsfCtrl.class);
+        JsfCtrl c = VrApp.getBean(JsfCtrl.class);
         String context = c.getContext();
-        if(!context.endsWith("/")){
-            context=context+"/";
+        if (!context.endsWith("/")) {
+            context = context + "/";
         }
-        String p = context+"/p/" + type;
+        String p = context + "/p/" + type;
         if (!net.vpc.common.strings.StringUtils.isEmpty(command)) {
             try {
                 p += "?a=" + URLEncoder.encode(command, "UTF-8");
@@ -60,16 +59,16 @@ public class VRMenuDef {
         return icon;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getSecurityKey() {
         return securityKey;
     }
 
     public List<VRMenuDef> getChildren() {
         return children;
+    }
+
+    public void setChildren(List<VRMenuDef> children) {
+        this.children = children;
     }
 
     public List<VRMenuDef> getChildren(String type) {
@@ -102,12 +101,12 @@ public class VRMenuDef {
         return all;
     }
 
-    public void setChildren(List<VRMenuDef> children) {
-        this.children = children;
-    }
-
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPath() {

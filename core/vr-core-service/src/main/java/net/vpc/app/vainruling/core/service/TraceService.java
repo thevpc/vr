@@ -1,12 +1,22 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service;
 
-import net.vpc.app.vainruling.core.service.fs.FileSystemService;
+import net.vpc.app.vainruling.core.service.model.AppTrace;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.common.strings.StringUtils;
+import net.vpc.upa.*;
+import net.vpc.upa.bulk.DataWriter;
+import net.vpc.upa.bulk.ImportExportManager;
+import net.vpc.upa.expressions.Expression;
+import net.vpc.upa.types.DataType;
+import net.vpc.upa.types.ManyToOneType;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,26 +24,8 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
-import net.vpc.app.vainruling.core.service.model.AppTrace;
-import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
-import net.vpc.common.strings.StringUtils;
-import net.vpc.upa.Action;
-import net.vpc.upa.Entity;
-import net.vpc.upa.EntityModifier;
-import net.vpc.upa.Field;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.Record;
-import net.vpc.upa.UPA;
-import net.vpc.upa.VoidAction;
-import net.vpc.upa.bulk.*;
-import net.vpc.upa.expressions.Expression;
-import net.vpc.upa.types.DataType;
-import net.vpc.upa.types.EntityType;
-import org.springframework.stereotype.Service;
 
 /**
- *
  * @author vpc
  */
 @Service
@@ -110,16 +102,16 @@ public class TraceService {
         };
     }
 
-    public static void runSilenced(final VoidAction r){
-            runSilenced(r);
+    public static void runSilenced(final VoidAction r) {
+        runSilenced(r);
     }
 
-    public static void runSilenced(final Runnable r){
-            runSilenced(r);
+    public static void runSilenced(final Runnable r) {
+        runSilenced(r);
     }
 
-    public static <T> T runSilenced(final Action<T> r){
-            return makeSilenced(r).run();
+    public static <T> T runSilenced(final Action<T> r) {
+        return makeSilenced(r).run();
     }
 
     public boolean accept(Entity entity) {
@@ -142,7 +134,7 @@ public class TraceService {
         trace(action, message, data, module, null, null, level);
     }
 
-    public void inserted(String entityName,Object o, String module, Level level) {
+    public void inserted(String entityName, Object o, String module, Level level) {
         if (isSilenced()) {
             return;
         }
@@ -151,7 +143,7 @@ public class TraceService {
         trace("added", e.getName() + " added", dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
     }
 
-    public void updated(String entityName,Object o, Object old, String module, Level level) {
+    public void updated(String entityName, Object o, Object old, String module, Level level) {
         if (isSilenced()) {
             return;
         }
@@ -160,7 +152,7 @@ public class TraceService {
         trace("updated", e.getName() + " updated", dumpDiff(old, o, e), module, e.getName(), e.getBuilder().objectToId(o), level);
     }
 
-    public void removed(String entityName,Object o, String module, Level level) {
+    public void removed(String entityName, Object o, String module, Level level) {
         if (isSilenced()) {
             return;
         }
@@ -171,7 +163,7 @@ public class TraceService {
         }
     }
 
-    public void softremoved(String entityName,Object o, String module, Level level) {
+    public void softremoved(String entityName, Object o, String module, Level level) {
         if (isSilenced()) {
             return;
         }
@@ -180,7 +172,7 @@ public class TraceService {
         trace("soft-removed", e.getName(), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
     }
 
-    public void archived(String entityName,Object o, String module, Level level) {
+    public void archived(String entityName, Object o, String module, Level level) {
         if (isSilenced()) {
             return;
         }
@@ -239,7 +231,7 @@ public class TraceService {
         return dump(o, e, e.getFields());
     }
 
-    public String name(Object o,Entity e) {
+    public String name(Object o, Entity e) {
         if (o == null) {
             return "null";
         }
@@ -320,15 +312,15 @@ public class TraceService {
         return "'" + (val) + "'";
     }
 
-    private String getFieldStringValue(Object val,Field field) {
-        if(val instanceof Expression){
+    private String getFieldStringValue(Object val, Field field) {
+        if (val instanceof Expression) {
             return "<expr>";
         }
         DataType dt = field.getDataType();
-        if (dt instanceof EntityType) {
-            EntityType et=(EntityType)dt;
+        if (dt instanceof ManyToOneType) {
+            ManyToOneType et = (ManyToOneType) dt;
             Entity tentity = et.getRelationship().getTargetRole().getEntity();
-            return name(val,tentity);
+            return name(val, tentity);
         } else {
             return toStringValue(val);
         }
@@ -340,8 +332,8 @@ public class TraceService {
         Record rec2 = e.getBuilder().objectToRecord(o2, true);
         boolean first = true;
         for (String fieldName : rec2.keySet()) {
-            Field field=e.findField(fieldName);
-            if(field!=null) {
+            Field field = e.findField(fieldName);
+            if (field != null) {
                 String val1 = getFieldStringValue(rec1.getObject(fieldName), field);
                 String val2 = getFieldStringValue(rec2.getObject(fieldName), field);
                 if (field.isId()) {
@@ -380,33 +372,33 @@ public class TraceService {
                 instance.set(Calendar.MINUTE, 0);
                 instance.set(Calendar.SECOND, 0);
                 instance.set(Calendar.MILLISECOND, 0);
-                instance.add(Calendar.DAY_OF_YEAR, -fromLastDays+1);
+                instance.add(Calendar.DAY_OF_YEAR, -fromLastDays + 1);
                 PersistenceUnit pu = UPA.getPersistenceUnit();
                 List<AppTrace> all = pu.createQuery("Select u from AppTrace u where u.time<:dte")
                         .setParameter("dte", instance.getTime())
                         .setLazyListLoadingEnabled(true)
                         .getEntityList();
-                int currRows=-1;
-                String rootFolder=VrApp.getBean(FileSystemService.class).getNativeFileSystemPath();
-                String rootLog=(StringUtils.isEmpty(rootFolder)?System.getProperty("user.home"):rootFolder)+"/logs";
-                String fileNamePattern="vr-app-*.log";
+                int currRows = -1;
+                String rootFolder = VrApp.getBean(CorePlugin.class).getNativeFileSystemPath();
+                String rootLog = (StringUtils.isEmpty(rootFolder) ? System.getProperty("user.home") : rootFolder) + "/logs";
+                String fileNamePattern = "vr-app-*.log";
                 new File(rootLog).mkdirs();
-                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss.S");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss.S");
                 DataWriter f = null;
                 ImportExportManager importExportManager = pu.getImportExportManager();
                 try {
                     for (AppTrace t : all) {
-                        if(currRows<0){
-                            currRows=rowsPerFile;
-                            if(f!=null){
+                        if (currRows < 0) {
+                            currRows = rowsPerFile;
+                            if (f != null) {
                                 f.close();
                             }
-                            String name=fileNamePattern.replace("*", sdf.format(new Date()));
-                            f= importExportManager.createTextCSVFormatter(new File(rootLog, name))
+                            String name = fileNamePattern.replace("*", sdf.format(new Date()));
+                            f = importExportManager.createTextCSVFormatter(new File(rootLog, name))
                                     .setSupportsDoubleQuote(true)
-                                    .setDataRowConverter(importExportManager.createEntityConverter(AppTrace.class.getSimpleName(),null))
+                                    .setDataRowConverter(importExportManager.createEntityConverter(AppTrace.class.getSimpleName(), null))
                                     .createWriter();
-                        }else{
+                        } else {
                             currRows--;
                         }
                         f.writeObject(t);
@@ -414,7 +406,7 @@ public class TraceService {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                if(f!=null){
+                if (f != null) {
                     f.close();
                 }
 

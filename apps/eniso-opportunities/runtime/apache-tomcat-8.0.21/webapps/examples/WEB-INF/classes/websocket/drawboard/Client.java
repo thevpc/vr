@@ -16,8 +16,10 @@
  */
 package websocket.drawboard;
 
-import java.io.IOException;
-import java.util.LinkedList;
+import websocket.drawboard.wsmessages.AbstractWebsocketMessage;
+import websocket.drawboard.wsmessages.BinaryWebsocketMessage;
+import websocket.drawboard.wsmessages.CloseWebsocketMessage;
+import websocket.drawboard.wsmessages.StringWebsocketMessage;
 
 import javax.websocket.CloseReason;
 import javax.websocket.CloseReason.CloseCodes;
@@ -25,11 +27,8 @@ import javax.websocket.RemoteEndpoint.Async;
 import javax.websocket.SendHandler;
 import javax.websocket.SendResult;
 import javax.websocket.Session;
-
-import websocket.drawboard.wsmessages.AbstractWebsocketMessage;
-import websocket.drawboard.wsmessages.BinaryWebsocketMessage;
-import websocket.drawboard.wsmessages.CloseWebsocketMessage;
-import websocket.drawboard.wsmessages.StringWebsocketMessage;
+import java.io.IOException;
+import java.util.LinkedList;
 
 /**
  * Represents a client with methods to send messages asynchronously.
@@ -59,6 +58,42 @@ public class Client {
      * over a linked list.
      */
     private volatile long messagesToSendLength = 0;
+    /**
+     * SendHandler that will continue to send buffered messages.
+     */
+    private final SendHandler sendHandler = new SendHandler() {
+        @Override
+        public void onResult(SendResult result) {
+            if (!result.isOK()) {
+                // Message could not be sent. In this case, we don't
+                // set isSendingMessage to false because we must assume the connection
+                // broke (and onClose will be called), so we don't try to send
+                // other messages.
+                // As a precaution, we close the session (e.g. if a send timeout occured).
+                // TODO: session.close() blocks, while this handler shouldn't block.
+                // Ideally, there should be some abort() method that cancels the
+                // connection immediately...
+                try {
+                    session.close();
+                } catch (IOException ex) {
+                    // Ignore
+                }
+            }
+            synchronized (messagesToSend) {
+
+                if (!messagesToSend.isEmpty()) {
+                    AbstractWebsocketMessage msg = messagesToSend.remove();
+                    messagesToSendLength -= calculateMessageLength(msg);
+
+                    internalSendMessageAsync(msg);
+
+                } else {
+                    isSendingMessage = false;
+                }
+
+            }
+        }
+    };
 
     public Client(Session session) {
         this.session = session;
@@ -78,8 +113,9 @@ public class Client {
      * Sends the given message asynchronously to the client.
      * If there is already a async sending in progress, then the message
      * will be buffered and sent when possible.<br><br>
-     *
+     * <p>
      * This method can be called from multiple threads.
+     *
      * @param msg
      */
     public void sendMessage(AbstractWebsocketMessage msg) {
@@ -164,6 +200,7 @@ public class Client {
 
     /**
      * Internally sends the messages asynchronously.
+     *
      * @param msg
      */
     private void internalSendMessageAsync(AbstractWebsocketMessage msg) {
@@ -180,50 +217,11 @@ public class Client {
                 // Close the session.
                 session.close();
             }
-        } catch (IllegalStateException|IOException ex) {
+        } catch (IllegalStateException | IOException ex) {
             // Trying to write to the client when the session has
             // already been closed.
             // Ignore
         }
     }
-
-
-
-    /**
-     * SendHandler that will continue to send buffered messages.
-     */
-    private final SendHandler sendHandler = new SendHandler() {
-        @Override
-        public void onResult(SendResult result) {
-            if (!result.isOK()) {
-                // Message could not be sent. In this case, we don't
-                // set isSendingMessage to false because we must assume the connection
-                // broke (and onClose will be called), so we don't try to send
-                // other messages.
-                // As a precaution, we close the session (e.g. if a send timeout occured).
-                // TODO: session.close() blocks, while this handler shouldn't block.
-                // Ideally, there should be some abort() method that cancels the
-                // connection immediately...
-                try {
-                    session.close();
-                } catch (IOException ex) {
-                    // Ignore
-                }
-            }
-            synchronized (messagesToSend) {
-
-                if (!messagesToSend.isEmpty()) {
-                    AbstractWebsocketMessage msg = messagesToSend.remove();
-                    messagesToSendLength -= calculateMessageLength(msg);
-
-                    internalSendMessageAsync(msg);
-
-                } else {
-                    isSendingMessage = false;
-                }
-
-            }
-        }
-    };
 
 }

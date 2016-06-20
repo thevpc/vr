@@ -8,7 +8,7 @@
  * 
  * build on 2014-08-04
  * released under MIT License, 2012
-*/ 
+ */
 (function ($) {
     // plugin options, default values
     var defaultOptions = {
@@ -39,7 +39,8 @@
             },
 
             // callbacks
-            onHover: function (flotItem, $tooltipEl) {},
+            onHover: function (flotItem, $tooltipEl) {
+            },
 
             $compat: false
         }
@@ -90,17 +91,17 @@
             var $tip = that.getDomElement();
 
             // bind event
-            $( plot.getPlaceholder() ).bind("plothover", plothover);
+            $(plot.getPlaceholder()).bind("plothover", plothover);
 
             $(eventHolder).bind('mousemove', mouseMove);
         });
 
-        plot.hooks.shutdown.push(function (plot, eventHolder){
+        plot.hooks.shutdown.push(function (plot, eventHolder) {
             $(plot.getPlaceholder()).unbind("plothover", plothover);
             $(eventHolder).unbind("mousemove", mouseMove);
         });
 
-        function mouseMove(e){
+        function mouseMove(e) {
             var pos = {};
             pos.x = e.pageX;
             pos.y = e.pageY;
@@ -116,18 +117,18 @@
             // Here is some voodoo magic for determining the distance to a line form a given point {x, y}.
             var dotLineLength = function (x, y, x0, y0, x1, y1, o) {
                 if (o && !(o =
-                    function (x, y, x0, y0, x1, y1) {
-                        if (typeof x0 !== 'undefined') return { x: x0, y: y };
-                        else if (typeof y0 !== 'undefined') return { x: x, y: y0 };
+                        function (x, y, x0, y0, x1, y1) {
+                            if (typeof x0 !== 'undefined') return {x: x0, y: y};
+                            else if (typeof y0 !== 'undefined') return {x: x, y: y0};
 
-                        var left,
-                            tg = -1 / ((y1 - y0) / (x1 - x0));
+                            var left,
+                                tg = -1 / ((y1 - y0) / (x1 - x0));
 
-                        return {
-                            x: left = (x1 * (x * tg - y + y0) + x0 * (x * -tg + y - y1)) / (tg * (x1 - x0) + y0 - y1),
-                            y: tg * left - tg * x + y
-                        };
-                    } (x, y, x0, y0, x1, y1),
+                            return {
+                                x: left = (x1 * (x * tg - y + y0) + x0 * (x * -tg + y - y1)) / (tg * (x1 - x0) + y0 - y1),
+                                y: tg * left - tg * x + y
+                            };
+                        }(x, y, x0, y0, x1, y1),
                     o.x >= Math.min(x0, x1) && o.x <= Math.max(x0, x1) && o.y >= Math.min(y0, y1) && o.y <= Math.max(y0, y1))
                 ) {
                     var l1 = lineDistance(x, y, x0, y0), l2 = lineDistance(x, y, x1, y1);
@@ -163,15 +164,15 @@
                         return;
                     }
 
-                    var pointPrev = { x: series.data[xBeforeIndex][0], y: series.data[xBeforeIndex][1] },
-                        pointNext = { x: series.data[xAfterIndex][0], y: series.data[xAfterIndex][1] };
+                    var pointPrev = {x: series.data[xBeforeIndex][0], y: series.data[xBeforeIndex][1]},
+                        pointNext = {x: series.data[xAfterIndex][0], y: series.data[xAfterIndex][1]};
 
                     var distToLine = dotLineLength(pos.x, pos.y, pointPrev.x, pointPrev.y, pointNext.x, pointNext.y, false);
 
                     if (distToLine < that.tooltipOptions.lines.threshold) {
 
                         var closestIndex = lineDistance(pointPrev.x, pointPrev.y, pos.x, pos.y) <
-                            lineDistance(pos.x, pos.y, pointNext.x, pointNext.y) ? xBeforeIndex : xAfterIndex;
+                        lineDistance(pos.x, pos.y, pointNext.x, pointNext.y) ? xBeforeIndex : xAfterIndex;
 
                         var pointSize = series.datapoints.pointsize;
 
@@ -206,46 +207,46 @@
             }
         }
 
-	    // Quick little function for setting the tooltip position.
-	    plot.setTooltipPosition = function (pos) {
-	        var $tip = that.getDomElement();
+        // Quick little function for setting the tooltip position.
+        plot.setTooltipPosition = function (pos) {
+            var $tip = that.getDomElement();
 
-	        var totalTipWidth = $tip.outerWidth() + that.tooltipOptions.shifts.x;
-	        var totalTipHeight = $tip.outerHeight() + that.tooltipOptions.shifts.y;
-	        if ((pos.x - $(window).scrollLeft()) > ($(window)[that.wfunc]() - totalTipWidth)) {
-	            pos.x -= totalTipWidth;
-	        }
-	        if ((pos.y - $(window).scrollTop()) > ($(window)[that.hfunc]() - totalTipHeight)) {
-	            pos.y -= totalTipHeight;
-	        }
-	        that.tipPosition.x = pos.x;
-	        that.tipPosition.y = pos.y;
-	    };
+            var totalTipWidth = $tip.outerWidth() + that.tooltipOptions.shifts.x;
+            var totalTipHeight = $tip.outerHeight() + that.tooltipOptions.shifts.y;
+            if ((pos.x - $(window).scrollLeft()) > ($(window)[that.wfunc]() - totalTipWidth)) {
+                pos.x -= totalTipWidth;
+            }
+            if ((pos.y - $(window).scrollTop()) > ($(window)[that.hfunc]() - totalTipHeight)) {
+                pos.y -= totalTipHeight;
+            }
+            that.tipPosition.x = pos.x;
+            that.tipPosition.y = pos.y;
+        };
 
-	    // Quick little function for showing the tooltip.
-	    plot.showTooltip = function (target, position) {
-	        var $tip = that.getDomElement();
+        // Quick little function for showing the tooltip.
+        plot.showTooltip = function (target, position) {
+            var $tip = that.getDomElement();
 
-	        // convert tooltip content template to real tipText
-	        var tipText = that.stringFormat(that.tooltipOptions.content, target);
+            // convert tooltip content template to real tipText
+            var tipText = that.stringFormat(that.tooltipOptions.content, target);
 
-	        $tip.html(tipText);
-	        plot.setTooltipPosition({ x: position.pageX, y: position.pageY });
-	        $tip.css({
-	            left: that.tipPosition.x + that.tooltipOptions.shifts.x,
-	            top: that.tipPosition.y + that.tooltipOptions.shifts.y
-	        }).show();
+            $tip.html(tipText);
+            plot.setTooltipPosition({x: position.pageX, y: position.pageY});
+            $tip.css({
+                left: that.tipPosition.x + that.tooltipOptions.shifts.x,
+                top: that.tipPosition.y + that.tooltipOptions.shifts.y
+            }).show();
 
-	        // run callback
-	        if (typeof that.tooltipOptions.onHover === 'function') {
-	            that.tooltipOptions.onHover(target, $tip);
-	        }
-	    };
+            // run callback
+            if (typeof that.tooltipOptions.onHover === 'function') {
+                that.tooltipOptions.onHover(target, $tip);
+            }
+        };
 
-	    // Quick little function for hiding the tooltip.
-	    plot.hideTooltip = function () {
-	        that.getDomElement().hide().html('');
-	    };
+        // Quick little function for hiding the tooltip.
+        plot.hideTooltip = function () {
+            that.getDomElement().hide().html('');
+        };
     };
 
     /**
@@ -255,11 +256,11 @@
     FlotTooltip.prototype.getDomElement = function () {
         var $tip = $('#' + this.tooltipOptions.id);
 
-        if( $tip.length === 0 ){
+        if ($tip.length === 0) {
             $tip = $('<div />').attr('id', this.tooltipOptions.id);
             $tip.appendTo('body').hide().css({position: 'absolute'});
 
-            if(this.tooltipOptions.defaultTheme) {
+            if (this.tooltipOptions.defaultTheme) {
                 $tip.css({
                     'background': '#fff',
                     'z-index': '1040',
@@ -327,7 +328,7 @@
             p = item.series.percent;
         } else if (typeof (item.series.percents) !== 'undefined') {
             p = item.series.percents[item.dataIndex];
-        }        
+        }
         if (typeof p === 'number') {
             content = this.adjustValPrecision(percentPattern, content, p);
         }
@@ -360,7 +361,7 @@
         if (this.isTimeMode('xaxis', item) && this.isXDateFormat(item)) {
             content = content.replace(xPattern, this.timestampToDate(x, this.tooltipOptions.xDateFormat, item.series.xaxis.options));
         }
-		if (this.isTimeMode('yaxis', item) && this.isYDateFormat(item)) {
+        if (this.isTimeMode('yaxis', item) && this.isYDateFormat(item)) {
             content = content.replace(yPattern, this.timestampToDate(y, this.tooltipOptions.yDateFormat, item.series.yaxis.options));
         }
 
@@ -450,8 +451,8 @@
 
         var precision;
         var matchResult = content.match(pattern);
-        if( matchResult !== null ) {
-            if(RegExp.$1 !== '') {
+        if (matchResult !== null) {
+            if (RegExp.$1 !== '') {
                 precision = RegExp.$1;
                 value = value.toFixed(precision);
 
@@ -476,7 +477,7 @@
 
     //
     var init = function (plot) {
-      new FlotTooltip(plot);
+        new FlotTooltip(plot);
     };
 
     // define Flot plugin

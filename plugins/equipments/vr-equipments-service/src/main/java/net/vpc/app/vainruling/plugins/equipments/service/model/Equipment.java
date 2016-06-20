@@ -1,28 +1,19 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.equipments.service.model;
 
 import net.vpc.app.vainruling.core.service.model.AppArea;
-import java.sql.Timestamp;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Formula;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Sequence;
-import net.vpc.upa.config.Hierarchy;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Properties;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.ToString;
+import net.vpc.upa.config.*;
+
+import java.sql.Timestamp;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "name")
@@ -78,7 +69,7 @@ public class Equipment {
     private Timestamp deletedOn;
 
     @Field(modifiers = UserFieldModifier.SUMMARY)
-    @Formula(value = "currentTimestamp()",type = FormulaType.PERSIST)
+    @Formula(value = "currentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp createdOn;
 
     public int getId() {

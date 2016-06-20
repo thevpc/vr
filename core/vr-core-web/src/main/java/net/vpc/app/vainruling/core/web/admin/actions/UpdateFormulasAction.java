@@ -1,20 +1,20 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.web.admin.actions;
 
-import java.util.List;
-import net.vpc.app.vainruling.core.service.obj.EntityAction;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
+import net.vpc.app.vainruling.core.service.obj.EntityAction;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.UPA;
 
+import java.util.List;
+
 /**
- *
  * @author vpc
  */
 @EntityAction(entityType = AppConfig.class,

@@ -1,7 +1,5 @@
 package net.vpc.app.vainruling.plugins.academic.internship.service.model.planning;
 
-import net.vpc.app.vainruling.plugins.academic.internship.service.model.planning.ChromosomeMarshaller;
-import net.vpc.app.vainruling.plugins.academic.internship.service.model.planning.PlanningActivityTableExt;
 import org.jgap.Configuration;
 import org.jgap.Gene;
 import org.jgap.IChromosome;
@@ -11,7 +9,7 @@ import org.jgap.impl.IntegerGene;
 /**
  * Created by vpc on 5/20/16.
  */
-public class ChairMarshaller extends BaseMarshaller{
+public class ChairMarshaller extends BaseMarshaller {
 
     public ChairMarshaller(int activity, int index, Configuration conf) {
         super(activity, index, conf);
@@ -25,7 +23,7 @@ public class ChairMarshaller extends BaseMarshaller{
     @Override
     public void unmarshall(IChromosome iChromosome, PlanningActivityTableExt activityTable) {
         Object allele = (iChromosome.getGene(getIndex())).getAllele();
-        String chair = allele==null?null:activityTable.getTable().getChairs().get((int) allele);
+        String chair = allele == null ? null : activityTable.getTable().getChairs().get((int) allele);
         activityTable.getTable().getActivities().get(getActivity()).setChair(chair);
     }
 }

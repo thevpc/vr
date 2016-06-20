@@ -1,42 +1,42 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.planning.web;
+
+import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
+import net.vpc.app.vainruling.plugins.academic.service.model.PlanningHour;
+import net.vpc.common.strings.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
-import net.vpc.app.vainruling.plugins.academic.service.model.PlanningHour;
-import net.vpc.common.strings.StringUtils;
 
 /**
- *
  * @author vpc
  */
 public class AbstractPlanningCtrl {
 
     public static final String[] colorsCourse = new String[]{
-        "#DDE6CB",
-        "#C0F7BA",
-        "aliceblue",
-        "#E6E7F9",
-        "#EAD3F9",
-        "#FBFFBE",
-        "bisque",
-        "beige",
-        "#FDD5E0"
+            "#DDE6CB",
+            "#C0F7BA",
+            "aliceblue",
+            "#E6E7F9",
+            "#EAD3F9",
+            "#FBFFBE",
+            "bisque",
+            "beige",
+            "#FDD5E0"
     };
     public static final String[] colorsClass = new String[]{
-        "mediumseagreen",
-        "#3FB3B3",
-        "#B563FF",
-        "darkorange",
-        "darksalmon",
-        "deeppink"
+            "mediumseagreen",
+            "#3FB3B3",
+            "#B563FF",
+            "darkorange",
+            "darksalmon",
+            "deeppink"
     };
 
     protected Model model;

@@ -47,8 +47,7 @@ public final class SessionListener implements ServletContextListener,
     /**
      * Record the fact that a servlet context attribute was added.
      *
-     * @param event
-     *            The session attribute event
+     * @param event The session attribute event
      */
     @Override
     public void attributeAdded(HttpSessionBindingEvent event) {
@@ -61,8 +60,7 @@ public final class SessionListener implements ServletContextListener,
     /**
      * Record the fact that a servlet context attribute was removed.
      *
-     * @param event
-     *            The session attribute event
+     * @param event The session attribute event
      */
     @Override
     public void attributeRemoved(HttpSessionBindingEvent event) {
@@ -75,8 +73,7 @@ public final class SessionListener implements ServletContextListener,
     /**
      * Record the fact that a servlet context attribute was replaced.
      *
-     * @param event
-     *            The session attribute event
+     * @param event The session attribute event
      */
     @Override
     public void attributeReplaced(HttpSessionBindingEvent event) {
@@ -89,8 +86,7 @@ public final class SessionListener implements ServletContextListener,
     /**
      * Record the fact that this web application has been destroyed.
      *
-     * @param event
-     *            The servlet context event
+     * @param event The servlet context event
      */
     @Override
     public void contextDestroyed(ServletContextEvent event) {
@@ -103,8 +99,7 @@ public final class SessionListener implements ServletContextListener,
     /**
      * Record the fact that this web application has been initialized.
      *
-     * @param event
-     *            The servlet context event
+     * @param event The servlet context event
      */
     @Override
     public void contextInitialized(ServletContextEvent event) {
@@ -117,8 +112,7 @@ public final class SessionListener implements ServletContextListener,
     /**
      * Record the fact that a session has been created.
      *
-     * @param event
-     *            The session event
+     * @param event The session event
      */
     @Override
     public void sessionCreated(HttpSessionEvent event) {
@@ -130,8 +124,7 @@ public final class SessionListener implements ServletContextListener,
     /**
      * Record the fact that a session has been destroyed.
      *
-     * @param event
-     *            The session event
+     * @param event The session event
      */
     @Override
     public void sessionDestroyed(HttpSessionEvent event) {
@@ -145,8 +138,7 @@ public final class SessionListener implements ServletContextListener,
     /**
      * Log a message to the servlet context application log.
      *
-     * @param message
-     *            Message to be logged
+     * @param message Message to be logged
      */
     private void log(String message) {
 

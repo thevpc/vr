@@ -1,27 +1,20 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.forum.service.model;
 
-import java.sql.Timestamp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.RelationshipType;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.ManyToOne;
-import net.vpc.upa.config.Sequence;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Properties;
-import net.vpc.upa.config.Property;
+import net.vpc.upa.config.*;
 import net.vpc.upa.types.DateTime;
 
+import java.sql.Timestamp;
+
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "sendTime desc")
@@ -31,32 +24,32 @@ public class ForumPost {
     @Id
     @Sequence
     private int id;
-    
+
     @Field(modifiers = UserFieldModifier.MAIN)
     private String subject;
-    
+
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA))
-    @Field(max = "4000")
+    @Field(max = "max")
     private String content;
-    
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Flags"))
     private boolean read;
-    
+
     @Properties(
             @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Time"))
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private DateTime sendTime;
-    
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private AppUser user;
-    
+
     @Field(modifiers = UserFieldModifier.SUMMARY)
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private ForumThread thread;
-    
+
     private ForumPost baseMessage;
 
     @Properties(

@@ -1,17 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.security;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
@@ -19,8 +12,10 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
+import java.util.*;
+
 /**
- *
  * @author vpc
  */
 @Service
@@ -38,13 +33,15 @@ public class UserSession implements Serializable {
     private String sessionId;
     private String clientIpAddress;
     private String lastVisitedPage;
-//    private String componentsTheme="glass-x";
-    private String componentsTheme="eniso-green";
+    //    private String componentsTheme="glass-x";
+    private String componentsTheme = "eniso-green";
     private Locale locale;
     private Set<String> rights = new HashSet<>();
     private List<AppProfile> profiles = new ArrayList<>();
     private String profilesString;
     private Set<String> profileNames = new HashSet<>();
+    private Object platformSession;
+    private Map platformSessionMap;
 
     public static UserSession getCurrentSession() {
         try {
@@ -71,12 +68,12 @@ public class UserSession implements Serializable {
         return destroyed;
     }
 
-    public boolean isImpersonating() {
-        return rootUser != null;
-    }
-
     public void setDestroyed(boolean destroyed) {
         this.destroyed = destroyed;
+    }
+
+    public boolean isImpersonating() {
+        return rootUser != null;
     }
 
     public String getSessionId() {
@@ -99,12 +96,28 @@ public class UserSession implements Serializable {
         return admin;
     }
 
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
     public AppUser getUser() {
         return user;
     }
 
+    public void setUser(AppUser user) {
+        this.user = user;
+        if (user != null) {
+            connected = true;
+            rights.clear();
+        } else {
+            connected = false;
+            admin = false;
+            rights.clear();
+        }
+    }
+
     public boolean isFemale() {
-        if (user == null || user.getContact()==null || user.getContact().getGender() == null || user.getContact().getGender().getName() == null) {
+        if (user == null || user.getContact() == null || user.getContact().getGender() == null || user.getContact().getGender().getName() == null) {
             return false;
         }
         return user.getContact().getGender().getName().equals("F");
@@ -124,22 +137,6 @@ public class UserSession implements Serializable {
 
     public void setProfileNames(Set<String> profileNames) {
         this.profileNames = profileNames;
-    }
-
-    public void setUser(AppUser user) {
-        this.user = user;
-        if (user != null) {
-            connected = true;
-            rights.clear();
-        } else {
-            connected = false;
-            admin = false;
-            rights.clear();
-        }
-    }
-
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
     }
 
     public boolean isConnected() {
@@ -183,12 +180,12 @@ public class UserSession implements Serializable {
         return profiles;
     }
 
-    public String getProfilesString() {
-        return profilesString;
-    }
-
     public void setProfiles(List<AppProfile> profiles) {
         this.profiles = profiles;
+    }
+
+    public String getProfilesString() {
+        return profilesString;
     }
 
     public void setProfilesString(String profilesString) {
@@ -229,5 +226,20 @@ public class UserSession implements Serializable {
     public void setComponentsTheme(String componentsTheme) {
         this.componentsTheme = componentsTheme;
     }
-    
+
+    public Object getPlatformSession() {
+        return platformSession;
+    }
+
+    public void setPlatformSession(Object platformSession) {
+        this.platformSession = platformSession;
+    }
+
+    public Map getPlatformSessionMap() {
+        return platformSessionMap;
+    }
+
+    public void setPlatformSessionMap(Map platformSessionMap) {
+        this.platformSessionMap = platformSessionMap;
+    }
 }

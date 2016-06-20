@@ -27,12 +27,11 @@ import java.util.Random;
 public class NumberGuessBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private final Random random = new Random();
     private int answer;
     private String hint;
     private int numGuesses;
     private boolean success;
-    private final Random random = new Random();
 
     public NumberGuessBean() {
         reset();
@@ -54,12 +53,12 @@ public class NumberGuessBean implements Serializable {
         this.hint = hint;
     }
 
-    public void setNumGuesses(int numGuesses) {
-        this.numGuesses = numGuesses;
-    }
-
     public int getNumGuesses() {
         return numGuesses;
+    }
+
+    public void setNumGuesses(int numGuesses) {
+        this.numGuesses = numGuesses;
     }
 
     public boolean getSuccess() {

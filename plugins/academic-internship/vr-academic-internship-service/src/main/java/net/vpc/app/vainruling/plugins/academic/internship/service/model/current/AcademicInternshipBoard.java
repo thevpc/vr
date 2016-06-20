@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.internship.service.model.current;
@@ -12,15 +12,9 @@ import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.A
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Property;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
 
 /**
- *
  * @author vpc
  */
 @Entity(listOrder = "name")
@@ -51,7 +45,7 @@ public class AcademicInternshipBoard {
     @Field(modifiers = UserFieldModifier.SUMMARY)
     private AcademicInternshipType internshipType;
     @Field(defaultValue = "true")
-    private boolean multipleSupervisers;
+    private boolean multipleSupervisors;
 
     public int getId() {
         return id;
@@ -125,12 +119,12 @@ public class AcademicInternshipBoard {
         this.internshipType = internshipType;
     }
 
-    public boolean isMultipleSupervisers() {
-        return multipleSupervisers;
+    public boolean isMultipleSupervisors() {
+        return multipleSupervisors;
     }
 
-    public void setMultipleSupervisers(boolean multipleSupervisers) {
-        this.multipleSupervisers = multipleSupervisers;
+    public void setMultipleSupervisors(boolean multipleSupervisors) {
+        this.multipleSupervisors = multipleSupervisors;
     }
 
 }

@@ -1,18 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.planning.web;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-import javax.faces.bean.ManagedBean;
-import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
@@ -28,13 +20,16 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStud
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.common.strings.StringUtils;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.model.SelectItem;
+import java.util.*;
+
 /**
- *
  * @author vpc
  */
 @UCtrl(
         breadcrumb = {
-            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Mon Emploi du temps",
         url = "modules/academic/planning/myplanninglist",
@@ -43,38 +38,6 @@ import net.vpc.common.strings.StringUtils;
 )
 @ManagedBean
 public class MyPlanningListCtrl extends AbstractPlanningCtrl {
-
-    public class ModelExt extends Model {
-
-        String groupName;
-        List<SelectItem> groups = new ArrayList<SelectItem>();
-        Map<String, PlanningData> plannings = new HashMap<>();
-
-        public List<SelectItem> getGroups() {
-            return groups;
-        }
-
-        public void setGroups(List<SelectItem> groups) {
-            this.groups = groups;
-        }
-
-        public String getGroupName() {
-            return groupName;
-        }
-
-        public void setGroupName(String groupName) {
-            this.groupName = groupName;
-        }
-
-        public Map<String, PlanningData> getPlannings() {
-            return plannings;
-        }
-
-        public void setPlannings(Map<String, PlanningData> plannings) {
-            this.plannings = plannings;
-        }
-
-    }
 
     public MyPlanningListCtrl() {
         super();
@@ -269,5 +232,37 @@ public class MyPlanningListCtrl extends AbstractPlanningCtrl {
 
     public ModelExt getModel() {
         return (ModelExt) super.getModel();
+    }
+
+    public class ModelExt extends Model {
+
+        String groupName;
+        List<SelectItem> groups = new ArrayList<SelectItem>();
+        Map<String, PlanningData> plannings = new HashMap<>();
+
+        public List<SelectItem> getGroups() {
+            return groups;
+        }
+
+        public void setGroups(List<SelectItem> groups) {
+            this.groups = groups;
+        }
+
+        public String getGroupName() {
+            return groupName;
+        }
+
+        public void setGroupName(String groupName) {
+            this.groupName = groupName;
+        }
+
+        public Map<String, PlanningData> getPlannings() {
+            return plannings;
+        }
+
+        public void setPlannings(Map<String, PlanningData> plannings) {
+            this.plannings = plannings;
+        }
+
     }
 }

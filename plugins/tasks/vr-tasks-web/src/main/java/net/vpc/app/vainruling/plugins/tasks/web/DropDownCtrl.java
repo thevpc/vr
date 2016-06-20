@@ -1,18 +1,18 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.tasks.web;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoPriority;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatusType;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.model.SelectItem;
+
 /**
- *
  * @author vpc
  */
 @UCtrl
@@ -30,7 +30,7 @@ public class DropDownCtrl {
         items[i++] = new SelectItem(TodoPriority.EXTREMELY_URGENT, "immediate");
         return items;
     }
-    
+
     public SelectItem[] getTodoStatusTypes() {
         SelectItem[] items = new SelectItem[TodoStatusType.values().length];
         int i = 0;

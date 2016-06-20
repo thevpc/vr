@@ -1,82 +1,22 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.core.service.fs;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author vpc
  */
 public class VrFSTable {
 
     private final List<VrFSEntry> entries = new ArrayList<>();
-
-    public VrFSEntry[] getEntries() {
-        return entries.toArray(new VrFSEntry[entries.size()]);
-    }
-
-    public VrFSEntry[] getEntries(String filterName, String filterType) {
-        List<VrFSEntry> lentries = new ArrayList<>();
-        for (VrFSEntry e : this.entries) {
-            if (e.getFilterName() != null && e.getFilterName().equalsIgnoreCase(filterName)
-                    && e.getFilterType() != null && e.getFilterType().equalsIgnoreCase(filterType)) {
-                lentries.add(e);
-            }
-        }
-        return lentries.toArray(new VrFSEntry[lentries.size()]);
-    }
-
-    public VrFSEntry[] getEntriesByType(String filterType) {
-        List<VrFSEntry> lentries = new ArrayList<>();
-        for (VrFSEntry e : this.entries) {
-            if (e.getFilterType() != null && e.getFilterType().equalsIgnoreCase(filterType)) {
-                lentries.add(e);
-            }
-        }
-        return lentries.toArray(new VrFSEntry[lentries.size()]);
-    }
-
-    public void load(InputStream in) throws IOException {
-        if (in == null) {
-            return;
-        }
-        BufferedReader r = new BufferedReader(new InputStreamReader(in));
-        String line = null;
-        while ((line = r.readLine()) != null) {
-            VrFSEntry e = parseVrFSEntry(line);
-            if (e != null) {
-                entries.add(e);
-            }
-        }
-
-    }
-
-    public void loadString(String text) {
-        BufferedReader r = new BufferedReader(new StringReader(text));
-        String line = null;
-        try {
-            while ((line = r.readLine()) != null) {
-                VrFSEntry e = parseVrFSEntry(line);
-                if (e != null) {
-                    entries.add(e);
-                }
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(VrFSTable.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
 
     private static VrFSEntry parseVrFSEntry(String line) {
         if (line != null) {
@@ -197,5 +137,60 @@ public class VrFSTable {
             }
         }
         return null;
+    }
+
+    public VrFSEntry[] getEntries() {
+        return entries.toArray(new VrFSEntry[entries.size()]);
+    }
+
+    public VrFSEntry[] getEntries(String filterName, String filterType) {
+        List<VrFSEntry> lentries = new ArrayList<>();
+        for (VrFSEntry e : this.entries) {
+            if (e.getFilterName() != null && e.getFilterName().equalsIgnoreCase(filterName)
+                    && e.getFilterType() != null && e.getFilterType().equalsIgnoreCase(filterType)) {
+                lentries.add(e);
+            }
+        }
+        return lentries.toArray(new VrFSEntry[lentries.size()]);
+    }
+
+    public VrFSEntry[] getEntriesByType(String filterType) {
+        List<VrFSEntry> lentries = new ArrayList<>();
+        for (VrFSEntry e : this.entries) {
+            if (e.getFilterType() != null && e.getFilterType().equalsIgnoreCase(filterType)) {
+                lentries.add(e);
+            }
+        }
+        return lentries.toArray(new VrFSEntry[lentries.size()]);
+    }
+
+    public void load(InputStream in) throws IOException {
+        if (in == null) {
+            return;
+        }
+        BufferedReader r = new BufferedReader(new InputStreamReader(in));
+        String line = null;
+        while ((line = r.readLine()) != null) {
+            VrFSEntry e = parseVrFSEntry(line);
+            if (e != null) {
+                entries.add(e);
+            }
+        }
+
+    }
+
+    public void loadString(String text) {
+        BufferedReader r = new BufferedReader(new StringReader(text));
+        String line = null;
+        try {
+            while ((line = r.readLine()) != null) {
+                VrFSEntry e = parseVrFSEntry(line);
+                if (e != null) {
+                    entries.add(e);
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(VrFSTable.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

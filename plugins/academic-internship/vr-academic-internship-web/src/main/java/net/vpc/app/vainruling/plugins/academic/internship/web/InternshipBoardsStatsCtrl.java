@@ -1,16 +1,10 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.internship.web;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
@@ -29,6 +23,9 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 import org.primefaces.model.chart.DonutChartModel;
 import org.primefaces.model.chart.PieChartModel;
 
+import javax.faces.bean.ManagedBean;
+import java.util.*;
+
 /**
  * internships for teachers
  *
@@ -36,7 +33,7 @@ import org.primefaces.model.chart.PieChartModel;
  */
 @UCtrl(
         breadcrumb = {
-            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Stats Stages",
         menu = "/Education/Internship",
@@ -50,8 +47,8 @@ public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
     public void onPageLoad() {
         super.onPageLoad();
     }
-    
-  @Override
+
+    @Override
     public List<AcademicInternshipBoard> findEnabledInternshipBoardsByTeacherAndBoard(int teacherId, int boardId) {
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         AcademicInternshipPlugin pi = VrApp.getBean(AcademicInternshipPlugin.class);
@@ -66,14 +63,14 @@ public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
     public AcademicInternshipExtList findActualInternshipsByTeacherAndBoard(int teacherId, int boardId, int internshipTypeId) {
         AcademicInternshipPlugin pi = VrApp.getBean(AcademicInternshipPlugin.class);
         AcademicTeacher t = getCurrentTeacher();
-            return pi.findInternshipsByTeacherExt(
-                    -1, 
-                    boardId, 
-                    (t!=null && t.getDepartment()!=null)?t.getDepartment().getId():-1,
-                    internshipTypeId,
-                    true
-            );
-    }    
+        return pi.findInternshipsByTeacherExt(
+                -1,
+                boardId,
+                (t != null && t.getDepartment() != null) ? t.getDepartment().getId() : -1,
+                internshipTypeId,
+                true
+        );
+    }
 
     protected void onRefreshStats() {
         getModel().setDonut1(null);
@@ -84,7 +81,7 @@ public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
         getModel().setBar1(null);
         getModel().setPie1(null);
         getModel().setPie2(null);
-        
+
         if (!getModel().getInternshipInfos().isEmpty()) {
             {
                 //Etats stages
@@ -218,12 +215,12 @@ public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
                 Map<String, Number> circle2 = new LinkedHashMap<String, Number>();
 
                 CorePlugin cp = VrApp.getBean(CorePlugin.class);
-                AppCompany currentCompany=cp.findAppConfig().getMainCompany();
+                AppCompany currentCompany = cp.findAppConfig().getMainCompany();
                 MyInternshipBoardsCtrl.LocationInfo currentLocation = resolveLocation(currentCompany);
                 String id_company = currentLocation.companyName;
-                String id_governorate = currentLocation.governorateName+" Sauf "+currentLocation.companyName;
-                String id_region = currentLocation.regionName+" Sauf "+currentLocation.governorateName;
-                String id_country = currentLocation.countryName+" Sauf "+currentLocation.regionName;
+                String id_governorate = currentLocation.governorateName + " Sauf " + currentLocation.companyName;
+                String id_region = currentLocation.regionName + " Sauf " + currentLocation.governorateName;
+                String id_country = currentLocation.countryName + " Sauf " + currentLocation.regionName;
                 String id_International = "Intenational";
                 String id_Unknown = "Inconnu";
                 circle1.put(id_company, 0);
@@ -326,7 +323,7 @@ public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
                     } else if (first_diff.equals(id_company)) {
                         best_id = id_governorate;
                     }
-                    if(best_id==null){
+                    if (best_id == null) {
                         if (same_country != null) {
                             if (same_country) {
                                 if (same_region != null) {
@@ -348,10 +345,10 @@ public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
                             }
                         }
                     }
-                    if(best_id!=null){
-                        Integer old=((Integer) circle1.get(best_id));
-                        if(old==null){
-                            old=0;
+                    if (best_id != null) {
+                        Integer old = ((Integer) circle1.get(best_id));
+                        if (old == null) {
+                            old = 0;
                         }
                         circle1.put(best_id, old + 1);
                     }
@@ -383,7 +380,7 @@ public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
 //                        circle2.put(entry.getKey(), 0);
 //                    }
 //                }
-                ChartUtils.mergeMapKeys(circle1,circle2);
+                ChartUtils.mergeMapKeys(circle1, circle2);
                 d1.addCircle(circle1);
                 d1.addCircle(circle2);
             }
@@ -443,10 +440,9 @@ public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
 //                d1.addCircle(circle1);
 //                d1.addCircle(circle2);
 //            }
-            
-            
-            
-             // disciplines & technologies
+
+
+            // disciplines & technologies
             {
                 PieChartModel d1 = new PieChartModel();
                 d1.setTitle("Disciplines");
@@ -543,9 +539,9 @@ public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
                 d1.addCircle(circle1);
                 d1.addCircle(circle2);
             }
-            
+
             //Teachers
-            
+
 
         }
     }
@@ -553,9 +549,8 @@ public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
     @Override
     public void onRefreshListMode() {
         super.onRefreshListMode();
-        onRefreshStats();    
+        onRefreshStats();
     }
 
-        
 
 }

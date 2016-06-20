@@ -1,6 +1,6 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.stat;
@@ -8,7 +8,6 @@ package net.vpc.app.vainruling.plugins.academic.service.model.stat;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 
 /**
- *
  * @author vpc
  */
 public class TeacherSemesterStat {
@@ -47,12 +46,12 @@ public class TeacherSemesterStat {
         return extraWeek;
     }
 
-    public LoadValue getDueWeek() {
-        return dueWeek;
-    }
-
     public void setExtraWeek(LoadValue extraWeek) {
         this.extraWeek = extraWeek;
+    }
+
+    public LoadValue getDueWeek() {
+        return dueWeek;
     }
 
     public LoadValue getValue() {

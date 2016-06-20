@@ -1,9 +1,23 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.inbox.service;
+
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
+import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxSent;
+import net.vpc.app.vainruling.plugins.inbox.service.model.RecipientType;
+import net.vpc.common.gomail.*;
+import net.vpc.common.gomail.modules.DefaultGoMailAgent;
+import net.vpc.common.gomail.modules.GoMailAgent;
+import net.vpc.upa.PersistenceUnit;
+import net.vpc.upa.UPA;
+import net.vpc.upa.types.DateTime;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,36 +27,16 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
-import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxSent;
-import net.vpc.app.vainruling.plugins.inbox.service.model.RecipientType;
-import net.vpc.common.gomail.GoMail;
-import net.vpc.common.gomail.GoMailBody;
-import net.vpc.common.gomail.GoMailBodyContent;
-import net.vpc.common.gomail.GoMailBodyList;
-import net.vpc.common.gomail.GoMailBodyPath;
-import net.vpc.common.gomail.GoMailBodyPosition;
-import net.vpc.common.gomail.GoMailContext;
-import net.vpc.common.gomail.modules.DefaultGoMailAgent;
-import net.vpc.common.gomail.modules.GoMailAgent;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.UPA;
-import net.vpc.upa.types.DateTime;
 
 /**
- *
  * @author vpc
  */
 class VrLocalMailAgent implements GoMailAgent {
 
-    private GoMail email;
-    private MailboxSent fms;
     boolean persistOutbox;
     int total;
+    private GoMail email;
+    private MailboxSent fms;
 
     public VrLocalMailAgent(GoMail email, boolean persistOutbox) {
         this.email = email;
@@ -158,7 +152,7 @@ class VrLocalMailAgent implements GoMailAgent {
         contentStr.append(baos.toString());
         return contentStr.toString();
     }
-    
+
     public void writeGoMailBodyList(GoMailBodyList f, OutputStream stream) throws IOException {
 
         if (f != null) {

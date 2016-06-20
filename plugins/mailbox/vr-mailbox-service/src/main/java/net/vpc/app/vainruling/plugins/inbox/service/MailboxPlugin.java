@@ -1,66 +1,50 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.inbox.service;
 
 import net.vpc.app.vainruling.core.service.*;
-import net.vpc.app.vainruling.core.service.fs.FileSystemService;
-import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.service.obj.AppEntityExtendedPropertiesProvider;
+import net.vpc.app.vainruling.core.service.model.AppProfile;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
-import net.vpc.app.vainruling.core.service.model.AppProfile;
-import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.plugins.inbox.service.model.EmailType;
-import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
-import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
-import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxSent;
-import net.vpc.common.streams.InputStreamSource;
-import net.vpc.common.streams.OutputStreamSource;
-import net.vpc.common.strings.StringUtils;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.UPA;
-import net.vpc.upa.types.DateTime;
-import net.vpc.common.vfs.VFile;
-import net.vpc.common.vfs.VirtualFileSystem;
-import net.vpc.common.gomail.GoMail;
-import net.vpc.common.gomail.GoMailDataSource;
-import net.vpc.common.gomail.GoMailFactory;
-import net.vpc.common.gomail.GoMailFormat;
-import net.vpc.common.gomail.GoMailListener;
+import net.vpc.app.vainruling.core.service.obj.AppEntityExtendedPropertiesProvider;
+import net.vpc.app.vainruling.plugins.inbox.service.model.*;
+import net.vpc.common.gomail.*;
 import net.vpc.common.gomail.dataource.StringsGoMailDataSource;
 import net.vpc.common.gomail.modules.GoMailAgent;
 import net.vpc.common.gomail.modules.GoMailModuleProcessor;
 import net.vpc.common.gomail.modules.GoMailModuleSerializer;
+import net.vpc.common.streams.InputStreamSource;
+import net.vpc.common.streams.OutputStreamSource;
+import net.vpc.common.strings.StringUtils;
+import net.vpc.common.vfs.VFile;
+import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.Action;
+import net.vpc.upa.PersistenceUnit;
+import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
+import net.vpc.upa.types.DateTime;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- *
  * @author vpc
  */
 @AppPlugin(version = "1.6")
 @UpaAware
 public class MailboxPlugin {
 
-//    public void
+    //    public void
     public static final String HEADER_PRIORITY = "header.X-Priority";
     public static final String HEADER_TO_PROFILES = "header.X-App-ToProfiles";
     public static final String HEADER_CC_PROFILES = "header.X-App-CCProfiles";
@@ -69,8 +53,24 @@ public class MailboxPlugin {
     public static final String SEND_WELCOME_MAIL_QUEUE = "sendWelcomeMailQueue";
 
     public GoMailFactory gomail = new GoMailFactory();
-//    public GoMailModuleProcessor externalMailProcessor = new GoMailModuleProcessor(new VrExternalMailAgent());
+    //    public GoMailModuleProcessor externalMailProcessor = new GoMailModuleProcessor(new VrExternalMailAgent());
     public GoMailModuleSerializer serializer = new GoMailModuleSerializer();
+    GoMailListener notifPusher = new GoMailListener() {
+        @Override
+        public void onBeforeSend(GoMail mail) {
+
+        }
+
+        @Override
+        public void onAfterSend(GoMail mail) {
+            VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_WELCOME_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject(), null, Level.INFO));
+        }
+
+        @Override
+        public void onSendError(GoMail mail, Throwable exc) {
+            VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_WELCOME_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject() + " : " + exc, null, Level.SEVERE));
+        }
+    };
 
     public MailboxPlugin() {
     }
@@ -305,7 +305,7 @@ public class MailboxPlugin {
 
             @Override
             public Integer run() {
-                return ((Number)UPA.getPersistenceUnit()
+                return ((Number) UPA.getPersistenceUnit()
                         .createQuery("Select Count(1) from MailboxReceived u where u.ownerId=:userId and u.read=false and u.deleted=false and u.archived=false")
                         .setParameter("userId", userId).getSingleValue()).intValue();
             }
@@ -337,6 +337,7 @@ public class MailboxPlugin {
         prepareBody(
                 data.getSubject(),
                 data.getBody(),
+                data.isRichText(),
                 m,
                 userId, mailTemplate);
 
@@ -347,10 +348,10 @@ public class MailboxPlugin {
         return m;
     }
 
-    public void prepareRecipients(GoMail m, EmailType etype, String recipientProfiles, String filterExpression, boolean preferLogin) {
+    public void prepareRecipients(GoMail m, EmailDestinationType etype, String recipientProfiles, String filterExpression, boolean preferLogin) {
         MailboxPlugin emailPlugin = VrApp.getBean(MailboxPlugin.class);
         if (etype == null) {
-            etype = EmailType.TOEACH;
+            etype = EmailDestinationType.TOEACH;
         }
         switch (etype) {
             case TO: {
@@ -374,23 +375,6 @@ public class MailboxPlugin {
             }
         }
     }
-
-    GoMailListener notifPusher = new GoMailListener() {
-        @Override
-        public void onBeforeSend(GoMail mail) {
-
-        }
-
-        @Override
-        public void onAfterSend(GoMail mail) {
-            VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_WELCOME_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject(), null, Level.INFO));
-        }
-
-        @Override
-        public void onSendError(GoMail mail, Throwable exc) {
-            VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_WELCOME_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject() + " : " + exc, null, Level.SEVERE));
-        }
-    };
 
     public void sendWelcomeEmail(List<AppUser> users, boolean applyFilter) {
         for (AppUser u : users) {
@@ -472,7 +456,7 @@ public class MailboxPlugin {
                         m2.setTo(createUsersEmails(m.to()));
                         m2.setCc(createUsersEmails(m.cc()));
                         m2.setBcc(createUsersEmails(m.bcc()));
-                        m2.setToeach(createUsersEmails(m.toeach()));
+                        m2.setToEach(createUsersEmails(m.toeach()));
                         sendExternalMail(m2, null, null);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -527,7 +511,7 @@ public class MailboxPlugin {
             mailTemplate = getMailTemplate(templateId);
         }
         if (mailTemplate != null) {
-            prepareBody(message.getSubject(), message.getContent(), m, null, mailTemplate);
+            prepareBody(message.getSubject(), message.getContent(), message.isRichText(), m, null, mailTemplate);
         } else {
             m.subject(message.getSubject());
             m.body().add(message.getContent(), GoMail.HTML_CONTENT_TYPE, message.isTemplateMessage());
@@ -545,7 +529,7 @@ public class MailboxPlugin {
 //                m2.setTo(createUsersEmails(m.to()));
 //                m2.setCc(createUsersEmails(m.cc()));
 //                m2.setBcc(createUsersEmails(m.bcc()));
-//                m2.setToeach(createUsersEmails(m.toeach()));
+//                m2.ssetToEachcreateUsersEmails(m.toeach()));
 //                if (message.isTemplateMessage()) {
 //
 //                    MailboxMessageFormat mailTemplate = getExternalMailTemplate();
@@ -567,7 +551,7 @@ public class MailboxPlugin {
         sendLocalMail(m, false, message.isExternalMessage());
     }
 
-//    public void sendExternalMail(GoMail mail) throws IOException {
+    //    public void sendExternalMail(GoMail mail) throws IOException {
 //        sendExternalMail(mail, null, null);
 //    }
     public void sendExternalMail(GoMail email, Properties roProperties, GoMailListener listener) throws IOException {
@@ -634,7 +618,7 @@ public class MailboxPlugin {
     public Set<String> createUsersEmails(String recipientProfiles) {
         Set<String> rows = new HashSet<>();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles,null)) {
+        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null)) {
             String email = p.getContact() == null ? null : p.getContact().getEmail();
             if (!StringUtils.isEmpty(email)) {
                 rows.add(email);
@@ -646,7 +630,7 @@ public class MailboxPlugin {
     public Set<String> createUsersLogins(String recipientProfiles) {
         Set<String> rows = new HashSet<>();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles,null)) {
+        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null)) {
             String login = p.getLogin();
             if (!StringUtils.isEmpty(login)) {
                 rows.add(login);
@@ -671,7 +655,7 @@ public class MailboxPlugin {
         }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         List<String[]> rows = new ArrayList<>();
-        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles,null)) {
+        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null)) {
             String email = p.getContact().getEmail();
             if (!StringUtils.isEmpty(email)) {
                 Map<String, Object> allValues = new HashMap<>();
@@ -752,15 +736,15 @@ public class MailboxPlugin {
     public void prepareToEach(GoMail m, String recipientProfiles, String filterExpression, boolean preferLogin) {
         m.namedDataSources().put("all", createUsersEmailDatasource(recipientProfiles));
         m.repeatDatasource(GoMailModuleSerializer.deserializeDataSource(
-                "all "
-                + (StringUtils.isEmpty(filterExpression) ? "" : " where " + filterExpression)
-        )
+                        "all "
+                                + (StringUtils.isEmpty(filterExpression) ? "" : " where " + filterExpression)
+                )
         );
         String mailAddr = preferLogin ? "login" : "email";
         m.to().add("${" + mailAddr + "}");
     }
 
-    public void prepareBody(String subject, String content, GoMail m, Integer userId, MailboxMessageFormat mailTemplate) {
+    public void prepareBody(String subject, String content, boolean richText,GoMail m, Integer userId, MailboxMessageFormat mailTemplate) {
         AppUser u = null;
         if (userId != null) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
@@ -774,7 +758,6 @@ public class MailboxPlugin {
         }
         String emailContent = null;
         String emailSubject = null;
-        boolean richText = mailTemplate == null ? false : mailTemplate.isPreferFormattedText();
         String footerEmbeddedImage = mailTemplate == null ? null : mailTemplate.getFooterEmbeddedImage();
         if (mailTemplate == null) {
             emailContent = content;
@@ -819,7 +802,7 @@ public class MailboxPlugin {
 
                 if (u != null) {
                     if (!StringUtils.isEmpty(footerEmbeddedImage)) {
-                        FileSystemService fs = VrApp.getBean(FileSystemService.class);
+                        CorePlugin fs = VrApp.getBean(CorePlugin.class);
                         VirtualFileSystem ufs = fs.getUserFileSystem(u.getLogin());
                         VirtualFileSystem allfs = fs.getFileSystem();
                         if (ufs.exists(footerEmbeddedImage)) {

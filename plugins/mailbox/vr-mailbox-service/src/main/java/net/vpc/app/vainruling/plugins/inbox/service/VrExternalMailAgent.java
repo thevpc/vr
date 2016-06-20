@@ -1,24 +1,25 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ *
  * and open the template in the editor.
  */
 package net.vpc.app.vainruling.plugins.inbox.service;
 
-import java.io.IOException;
-import java.util.Properties;
 import net.vpc.common.gomail.GoMail;
 import net.vpc.common.gomail.GoMailContext;
 import net.vpc.common.gomail.modules.DefaultGoMailAgent;
 import net.vpc.common.gomail.modules.GoMailAgent;
 
+import java.io.IOException;
+import java.util.Properties;
+
 /**
- *
  * @author vpc
  */
 public class VrExternalMailAgent implements GoMailAgent {
-    
+
     private DefaultGoMailAgent baseAgent = new DefaultGoMailAgent();
+
     public VrExternalMailAgent() {
     }
 
@@ -35,5 +36,5 @@ public class VrExternalMailAgent implements GoMailAgent {
         //            }
         //            return 1;
     }
-    
+
 }
