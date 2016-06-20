@@ -1909,6 +1909,7 @@ public class CorePlugin {
                 s.setUser(user);
                 buildSession(s, user);
             }
+            onPoll();
             return user;
         } else {
             trace.trace(
@@ -1954,6 +1955,7 @@ public class CorePlugin {
             getUserSession().setConnexionTime(user.getLastConnexionDate());
             getUserSession().setUser(user);
             buildSession(s, user);
+            onPoll();
         } else {
             UserSession s = getUserSession();
             s.reset();

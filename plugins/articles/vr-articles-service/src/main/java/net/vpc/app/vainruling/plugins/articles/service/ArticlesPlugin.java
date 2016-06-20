@@ -142,7 +142,7 @@ public class ArticlesPlugin {
             @Override
             public String getProfilePattern(ArticlesItem t) {
                 AppUser s = t.getSender();
-                String author = s.getLogin();
+                String author = s==null?null:s.getLogin();
                 String p = t.getRecipientProfiles();
                 if (StringUtils.isEmpty(p)) {
                     return p;

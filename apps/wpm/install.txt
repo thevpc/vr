@@ -1,0 +1,15 @@
+mysqladmin -u root password "rombatakaya#!"
+or
+mysqladmin -u root -p'oldpassword' password newpass
+
+
+CREATE DATABASE pmpayrolldb DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+CREATE USER 'pmpayrolluser'@'localhost' IDENTIFIED BY 'pmpayroll77';
+GRANT ALL PRIVILEGES ON pmpayrolldb . * TO 'pmpayrolluser'@'localhost';
+FLUSH PRIVILEGES;
+
+
+mysqldump -u MY_USERNAME -pMY_PASSWORD -databases MY_DATABASE_NAME | gzip > MY_DATABASE_NAME-`date +%Y%m%d`.sql.zip
+
+
+

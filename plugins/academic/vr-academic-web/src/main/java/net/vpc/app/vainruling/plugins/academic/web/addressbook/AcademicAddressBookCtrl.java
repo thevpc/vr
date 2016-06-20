@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppGender;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
@@ -20,9 +21,11 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTea
 import net.vpc.app.vainruling.plugins.academic.web.AcademicCtrlUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
+import net.vpc.upa.filters.ObjectFilter;
 
 import javax.faces.bean.ManagedBean;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -57,13 +60,67 @@ public class AcademicAddressBookCtrl {
         return "en";
     }
 
+    @OnPageLoad
+    public String onPageLoad() {
+        onUpdatePermanentList();
+        return "ignore-me";
+    }
+
+    public void onUpdatePermanentList() {
+        List<Contact> teachers = loadList(new ObjectFilter<Object>() {
+            @Override
+            public boolean accept(Object obj) {
+                if (obj instanceof AcademicTeacher) {
+                    AcademicTeacher t = (AcademicTeacher) obj;
+                    if (t.getSituation() == null) {
+                        return false;
+                    }
+                    if (t.getDepartment() == null) {
+                        return false;
+                    }
+                    return "II".equals(t.getDepartment().getCode()) && "Permanent".equals(t.getSituation().getName());
+                }
+                return false;
+            }
+        }, "teachers");
+        Collections.shuffle(teachers);
+        getModel().setPermanentList(teachers);
+    }
+
     public void onSearch() {
         String query = getModel().getQuery();
         if (query == null) {
             query = "";
         }
         query = query.trim();
+        final String fquery=query;
         String qt = getModel().getQueryType();
+        getModel().setLastQuery(getModel().getQuery());
+        getModel().setLastQueryType(getModel().getQueryType());
+        getModel().setList(loadList(new ObjectFilter<Object>() {
+            @Override
+            public boolean accept(Object obj) {
+                if (fquery.length() == 0) {
+                    return true;
+                }
+                if (obj instanceof AcademicTeacher) {
+                    AcademicTeacher t = (AcademicTeacher) obj;
+                    return t.getContact().getFullName().toLowerCase().contains(fquery.toLowerCase());
+                }
+                if (obj instanceof AcademicStudent) {
+                    AcademicStudent t = (AcademicStudent) obj;
+                    return t.getContact().getFullName().toLowerCase().contains(fquery.toLowerCase());
+                }
+                if (obj instanceof AcademicFormerStudent) {
+                    AcademicFormerStudent t = (AcademicFormerStudent) obj;
+                    return t.getStudent().getContact().getFullName().toLowerCase().contains(fquery.toLowerCase());
+                }
+                return false;
+            }
+        }, qt));
+    }
+
+    public List<Contact> loadList(ObjectFilter<Object> query,String qt) {
         List<Contact> cc = new ArrayList<>();
         if (!StringUtils.isEmpty(qt)) {
             if (true) //q.length() > 0
@@ -71,7 +128,7 @@ public class AcademicAddressBookCtrl {
                 if (qt.equals("teachers")) {
                     AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
                     for (AcademicTeacher t : ap.findEnabledTeachers()) {
-                        if (query.isEmpty() || t.getContact().getFullName().toLowerCase().contains(query.toLowerCase())) {
+                        if (query.accept(t)) {
                             Contact ct = new Contact();
                             ct.setName(t.getContact().getFullName());
                             if (t.getDepartment() != null) {
@@ -102,7 +159,7 @@ public class AcademicAddressBookCtrl {
                     }
                 } else if (qt.endsWith("students")) {
                     for (AcademicStudent t : VrApp.getBean(AcademicPlugin.class).findStudents()) {
-                        if (query.isEmpty() || t.getContact().getFullName().toLowerCase().contains(query.toLowerCase())) {
+                        if (query.accept(t)) {
                             Contact ct = new Contact();
                             ct.setName(t.getContact().getFullName());
                             if (t.getFirstSubscription() != null) {
@@ -139,7 +196,7 @@ public class AcademicAddressBookCtrl {
                     }
                 } else if (qt.endsWith("graduated")) {
                     for (AcademicFormerStudent t : VrApp.getBean(AcademicPlugin.class).findGraduatedStudents()) {
-                        if (query.isEmpty() || t.getStudent().getContact().getFullName().toLowerCase().contains(query.toLowerCase())) {
+                        if (query.accept(t)) {
                             Contact ct = new Contact();
                             ct.setName(t.getStudent().getContact().getFullName());
                             if (t.getStudent().getStage() == AcademicStudentStage.GRADUATED) {
@@ -175,9 +232,7 @@ public class AcademicAddressBookCtrl {
                 }
             }
         }
-        getModel().setLastQuery(getModel().getQuery());
-        getModel().setLastQueryType(getModel().getQueryType());
-        getModel().setList(cc);
+        return cc;
     }
 
     public String findTeacherPhoto(int id) {
@@ -274,6 +329,7 @@ public class AcademicAddressBookCtrl {
         private String query;
         private String queryType = "teachers";
         private List<Contact> list = new ArrayList<>();
+        private List<Contact> permanentList = new ArrayList<>();
 
         public String getLastQuery() {
             return lastQuery;
@@ -317,6 +373,14 @@ public class AcademicAddressBookCtrl {
 //                }
 //            }
             return list;
+        }
+
+        public List<Contact> getPermanentList() {
+            return permanentList;
+        }
+
+        public void setPermanentList(List<Contact> permanentList) {
+            this.permanentList = permanentList;
         }
 
         public void setList(List<Contact> list) {

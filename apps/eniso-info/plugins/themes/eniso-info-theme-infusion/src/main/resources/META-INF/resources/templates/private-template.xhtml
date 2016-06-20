@@ -138,9 +138,9 @@ and open the template in the editor.
                                 </ui:repeat>
                                 <ui:fragment id="inboxCount" rendered="#{mailboxPreviewCtrl.model.inbox.size() ne 0}">
                                     <li>
-                                        <a class="text-center" href="#">
+                                        <h:outputLink class="text-center" value="#{jsfCtrl.context}/p/mailbox">
                                             <strong>Lire #{mailboxPreviewCtrl.model.unreadCount} Message(s)</strong>
-                                        </a>
+                                        </h:outputLink>
                                     </li>
                                 </ui:fragment>
                                 <ui:fragment id="inboxCount0" rendered="#{mailboxPreviewCtrl.model.inbox.size() eq 0}">

@@ -23,6 +23,7 @@
 
         </ui:define>
         <ui:define name="row3">
+            <h:inputHidden value="#{academicAddressBookCtrl.onPageLoad()}"/>
             <div class="text-inter">
                 <div class="container">
                     <div class="row">
@@ -126,6 +127,7 @@
                                         </div>
                                     </div>
                                 </div>
+
                             </h:form>
                         </div>
                     </div>
@@ -134,7 +136,40 @@
             <div class="shadow"></div>
         </ui:define>
         <ui:define name="row4">
+            <h:form>
+            <p:dataGrid var="i" value="#{academicAddressBookCtrl.model.permanentList}" columns="3" layout="grid"
+                        rows="12" paginator="true"
+                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                        rowsPerPageTemplate="6,12,16">
 
+                <f:facet name="header">
+                    Department Permanent Teachers
+                </f:facet>
+
+                <p:panel header="#{i.name}" style="text-align:center">
+                    <p:panelGrid columns="2" style="width:100%;height: 100%;">
+                        <p:column>
+                            <h:commandLink
+                                    rendered="#{i.urlCommand ne null and i.urlCommand ne ''}"
+                                    action="#{vrMenuManager.gotoPage(i.urlCommand, i.urlArgs)}"
+                                    >
+                                <h:graphicImage value="#{i.photo}"
+                                                style="width: 40px; margin-left: 0 !important; margin-left: 5px;margin-right: 5px;">
+                                </h:graphicImage>
+                            </h:commandLink>
+                        </p:column>
+                        <p:column colspan="2">
+                            <p:dataList value="#{i.titles}" var="j"
+                                        style="width:100%;height: 100px;font-size: x-small;margin: 0;border-style: none;border-width: 0px;list-style-type: none;">
+                                <p:outputLabel rendered="#{j ne null and j ne ''}"
+                                               value="#{j}" style="font-size: x-small"/>
+                            </p:dataList>
+                        </p:column>
+                    </p:panelGrid>
+                </p:panel>
+
+            </p:dataGrid>
+            </h:form>
         </ui:define>
         <ui:define name="row5">
 
