@@ -19,9 +19,9 @@ public class TodoListProfile {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private TodoList list;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppProfile profile;
 
     public int getId() {

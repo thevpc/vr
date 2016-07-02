@@ -16,60 +16,77 @@
 
         </ui:define>
         <ui:define name="row3">
-            <h:form>
+            <h:form id="newsForm">
                 <div class="text-inter">
                     <div class="container">
-
-                        #{articlesCtrl.loadArticles('News')}
-                        <p:dataGrid var="i" value="#{articlesCtrl.model.articles['News']}" columns="2" layout="grid"
-                                    rows="10" paginator="true"
-                                    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                    rowsPerPageTemplate="10,20,50,1000"
-                                    paginatorAlwaysVisible="false"
-                                    paginatorPosition="bottom"
-                                >
-                            <div style="text-align: justify;text-justify: inter-word;color: #929da5;">
-                                <h3>#{i.content.subject}</h3>
-                                <p:imageSwitch effect="zoom" slideshowAuto="true" style="float: left; 
-                                               margin-right: 10px; 
+                        <div class="row">
+                            #{articlesCtrl.loadArticles('News')}
+                            <div class="col-md-9">
+                                <h:panelGrid id="curr" rendered="#{articlesCtrl.model.current ne null}" style="width: 100%;">
+                                    <div style="text-align: justify;text-justify: inter-word;color: #929da5;">
+                                        <h3>#{articlesCtrl.model.current.content.subject}</h3>
+                                        <p:imageSwitch effect="zoom" slideshowAuto="true" style="float: left;
+                                               margin-right: 10px;
                                                margin-bottom: 10px;
                                                ">
-                                    <ui:repeat value="#{i.imageAttachments}" var="im">
-                                        <p:graphicImage value="#{jsfCtrl.url(im.path)}" alt="#{im.name}" width="400"
-                                                        height="200"/>
-                                    </ui:repeat>
-                                </p:imageSwitch>
+                                            <ui:repeat value="#{articlesCtrl.model.current.imageAttachments}" var="im">
+                                                <p:graphicImage value="#{jsfCtrl.url(im.path)}" alt="#{im.name}"
+                                                                width="400"
+                                                                height="200"/>
+                                            </ui:repeat>
+                                        </p:imageSwitch>
 
-                                <p>
-                                    <h:outputText value="#{jsfCtrl.pureHtml(i.content.content)}" escape="false"/>
-                                </p>
-                                <ui:repeat value="#{i.attachments}" var="att">
-                                    <h:outputLink rendered="#{!jsfCtrl.isFSPath(att.path)}"
-                                                  value="#{jsfCtrl.url(att.path)}"
-                                                  styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
-                                                  style="margin-left: 3px;margin-right: 3px;"
-                                            >
-                                        <h:outputText value="#{att.name}"/>
-                                    </h:outputLink>
+                                        <p>
+                                            <h:outputText value="#{jsfCtrl.pureHtml(articlesCtrl.model.current.content.content)}"
+                                                          escape="false"/>
+                                        </p>
+                                        <ui:repeat value="#{articlesCtrl.model.current.attachments}" var="att">
+                                            <h:outputLink rendered="#{!jsfCtrl.isFSPath(att.path)}"
+                                                          value="#{jsfCtrl.url(att.path)}"
+                                                          styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
+                                                          style="margin-left: 3px;margin-right: 3px;"
+                                                    >
+                                                <h:outputText value="#{att.name}"/>
+                                            </h:outputLink>
 
-                                    <p:commandLink rendered="#{jsfCtrl.isFSPath(att.path)}"
-                                                   value="#{att.name}"
-                                                   styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
-                                                   style="margin-left: 3px;margin-right: 3px;"
-                                                   ajax="false"
-                                            >
-                                        <p:fileDownload value="#{documentsCtrl.downloadPath(att.path)}"/>
-                                    </p:commandLink>
-                                </ui:repeat>
-                                <p:separator style="border-color: #63C6AE;"/>
-
-                                <p style="margin-top: 0px;">
-                                    <h:outputText style="float: right; margin-right: 10px;"
-                                                  value="by #{i.content.sender.contact.fullName}, #{jsfCtrl.date(i.content.sendTime,jsfCtrl.getLocale('en'))}"/>
-                                </p>
+                                            <p:commandLink rendered="#{jsfCtrl.isFSPath(att.path)}"
+                                                           value="#{att.name}"
+                                                           styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
+                                                           style="margin-left: 3px;margin-right: 3px;"
+                                                           ajax="false"
+                                                    >
+                                                <p:fileDownload value="#{documentsCtrl.downloadPath(att.path)}"/>
+                                            </p:commandLink>
+                                        </ui:repeat>
+                                        <p:separator style="border-color: #63C6AE;margin-bottom: 0px;"/>
+                                        <h:outputText style="margin-top: 0px;float: right; margin-right: 10px;"
+                                                      value="by #{articlesCtrl.model.current.content.sender.contact.fullName}, #{jsfCtrl.date(articlesCtrl.model.current.content.sendTime,jsfCtrl.getLocale('en'))}"/>
+                                    </div>
+                                </h:panelGrid>
                             </div>
-
-                        </p:dataGrid>
+                            <div class="col-md-3">
+                                <h2 style="
+                                    padding: 15px 10px 10px 10px;
+                                    background: #EFEFEF;
+                                    border-bottom: 1px solid #CCCCCC;
+                                    text-transform: uppercase;
+                                    font-size: 100%;
+                                    font-size: small;
+                                    margin-bottom: 1px;
+                                "><span style="color: red;">Recent</span> News &amp; Updates</h2>
+                                <p:dataGrid var="i" value="#{articlesCtrl.model.articles['News']}" columns="1"
+                                            layout="grid"
+                                            rows="5" paginator="true"
+                                            paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                            rowsPerPageTemplate="5,10,20,50,1000"
+                                            paginatorAlwaysVisible="false"
+                                            paginatorPosition="bottom"
+                                        >
+                                        <h3 style="font-size: small;margin-top: 0px;margin-bottom: 0px;padding-top: 0px;"><span style="padding: 0 5px;background: #1777B1;color: #FFFFFF;">#{jsfCtrl.date(i.content.sendTime,'dd/MM')}:</span> #{i.content.subject}</h3>
+                                        <p style="font-size: x-small"><p:commandLink action="#{articlesCtrl.model.setCurrent(i)}" update=":newsForm:curr">#{jsfCtrl.strcut(jsfCtrl.html2txt(i.content.content),100)}…</p:commandLink></p>
+                                </p:dataGrid>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="shadow"></div>

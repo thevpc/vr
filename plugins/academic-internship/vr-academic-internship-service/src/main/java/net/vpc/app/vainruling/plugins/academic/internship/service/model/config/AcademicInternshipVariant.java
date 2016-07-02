@@ -20,7 +20,7 @@ public class AcademicInternshipVariant {
     @Sequence
 
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicInternshipType internshipType;

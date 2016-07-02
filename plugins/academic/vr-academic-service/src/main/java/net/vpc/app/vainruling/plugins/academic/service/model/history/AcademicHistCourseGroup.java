@@ -28,7 +28,7 @@ public class AcademicHistCourseGroup {
     private String name;
 
     private AcademicCourseLevel courseLevel;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppPeriod academicYear;
 
     public AcademicHistCourseGroup() {

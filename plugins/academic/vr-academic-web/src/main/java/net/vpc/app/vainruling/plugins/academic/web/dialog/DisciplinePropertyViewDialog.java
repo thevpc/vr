@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class DisciplinePropertyViewDialog implements PropertyViewDialog {
     @Override
     public String getControlType() {
-        return UIConstants.ControlType.DISCIPLINE;
+        return UIConstants.Control.DISCIPLINE;
     }
 
     @Override

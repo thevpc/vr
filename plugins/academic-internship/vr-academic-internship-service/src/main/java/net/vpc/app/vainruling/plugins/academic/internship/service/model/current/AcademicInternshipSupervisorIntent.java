@@ -22,9 +22,9 @@ public class AcademicInternshipSupervisorIntent {
 
     private int id;
     @ManyToOne(type = RelationshipType.COMPOSITION)
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private AcademicInternship internship;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicTeacher teacher;
 
     public int getId() {

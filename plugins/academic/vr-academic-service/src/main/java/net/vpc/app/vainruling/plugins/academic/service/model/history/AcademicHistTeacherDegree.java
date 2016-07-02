@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.plugins.academic.service.model.history;
 
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicLoadConversionRule;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
@@ -24,22 +25,25 @@ public class AcademicHistTeacherDegree {
     private int id;
     @Field(modifiers = {UserFieldModifier.MAIN})
     private String code;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private String name;
     private String name2;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+
+    private AcademicLoadConversionRule conversionRule;
+
+    @Summary
     private double valueC;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private double valueTD;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private double valueTP;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private double valueDU;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private double valuePM;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private int position;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppPeriod academicYear;
 
     public AcademicHistTeacherDegree() {
@@ -199,4 +203,11 @@ public class AcademicHistTeacherDegree {
         return true;
     }
 
+    public AcademicLoadConversionRule getConversionRule() {
+        return conversionRule;
+    }
+
+    public void setConversionRule(AcademicLoadConversionRule conversionRule) {
+        this.conversionRule = conversionRule;
+    }
 }

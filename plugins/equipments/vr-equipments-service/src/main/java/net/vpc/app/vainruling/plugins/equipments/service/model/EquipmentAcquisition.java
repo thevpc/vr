@@ -23,21 +23,21 @@ public class EquipmentAcquisition {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Date date;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
     private AppCompany provider;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppUser user;
     private AppUser orderUser;
     private Date orderDate;
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
     @Field(max = "4000")
     private String orderObs;
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
     @Field(max = "4000")
     private String admissionObs;
 

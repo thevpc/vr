@@ -14,8 +14,8 @@ import java.sql.Timestamp;
 /**
  * @author vpc
  */
-@Entity(listOrder = "propertyName")
-@Path("Admin")
+@Entity(listOrder = "idName")
+@Path("Admin/Config")
 public class AppDataStore {
 
     @Id

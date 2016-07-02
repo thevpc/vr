@@ -25,24 +25,24 @@ public class AcademicInternshipBoard {
     @Sequence
 
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String observations;
     private boolean enabled;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppPeriod period;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppDepartment department;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicProgram program;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicClass academicClass;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicInternshipType internshipType;
     @Field(defaultValue = "true")
     private boolean multipleSupervisors;

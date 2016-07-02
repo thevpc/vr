@@ -101,6 +101,9 @@ public class I18n implements Serializable {
         }
         return null;
     }
+    public String getOrNull(UPAObject s, Object... params) {
+        return getOrNull(s.getI18NString(),params);
+    }
 
     public String getOrNull(String key, Object... params) {
         return getResourceBundleSuite().get(key, null, params);

@@ -23,28 +23,28 @@ public class AcademicFeedbackHistory {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppPeriod period;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicTeacher teacher;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String className;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String programName;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String semesterName;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String course;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String questionGroup;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String question;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String student;
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String observations;
     private int position;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String response;
     private Timestamp updateDate;
 

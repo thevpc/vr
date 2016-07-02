@@ -11,6 +11,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.core.web.*;
+import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.core.web.util.JsfCtrl;
 import net.vpc.app.vainruling.core.web.util.VRWebHelper;
 import net.vpc.common.strings.StringUtils;
@@ -216,6 +217,13 @@ public class VrMenuManager {
 
     public String gotoPage(String command, String arguments) {
         return gotoPage(command, arguments, true);
+    }
+
+    public String gotoPageObjItem(String entity, String id) {
+        ObjCtrl.Config c = new ObjCtrl.Config();
+        c.entity = entity;
+        c.id = id;
+        return gotoPage("obj", VrHelper.formatJSONObject(c));
     }
 
     private String gotoPage(String command, String arguments, boolean addtoHistory) {

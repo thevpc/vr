@@ -5,13 +5,16 @@
  */
 package net.vpc.app.vainruling.plugins.academic.internship.web;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.internship.service.AcademicInternshipPlugin;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternship;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternshipGroup;
+import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternshipSessionType;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.planning.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
@@ -56,6 +59,8 @@ public class InternshipsPlanningCtrl {
 
     private Model model = new Model();
     @Autowired
+    private CorePlugin core;
+    @Autowired
     private AcademicPlugin academicPlugin;
     @Autowired
     private AcademicInternshipPlugin academicInternshipPlugin;
@@ -69,7 +74,8 @@ public class InternshipsPlanningCtrl {
 
     @OnPageLoad
     public void onPageLoad() {
-        getModel().setManager(academicPlugin.isCurrentHeadOfDepartment());
+        UserSession userSession = core.getUserSession();
+        getModel().setManager(userSession.isDepartmentManager());
         getModel().setGenerationDays(6);
         getModel().setGenerationMinutesPerSession(60);
         getModel().setGenerationSessionsPerDay(6);
@@ -78,11 +84,16 @@ public class InternshipsPlanningCtrl {
         getModel().setGenerationRoomPerDay(8);
         getModel().setSelectedGroup(null);
         reloadInternshipGroups();
+        reloadInternshipSessionTypes();
         reloadActivityTable();
     }
 
     public void onGroupChanged() {
         reloadActivityTable();
+    }
+
+    public void onSessionTypeChanged() {
+        updateTable();
     }
 
     public StreamedContent downloadFetXml() {
@@ -91,17 +102,24 @@ public class InternshipsPlanningCtrl {
             PlanningActivityTable table = getModel().getTable();
             PlanningActivityTable table2 = table.copy();
             ArrayList<PlanningActivity> activities = new ArrayList<>();
-            List<Row> rows = getModel().getRows();
+            List<Row> rows = getModel().getVisibleRows();
             for (int i = 0; i < rows.size(); i++) {
                 Row row = rows.get(i);
                 if (row.isVisible()) {
-                    activities.add(table.getActivities().get(i).copy());
+                    activities.add(row.activity.copy());
                 }
             }
             table2.setActivities(activities);
             VrApp.getBean(PlanningService.class).storeFetXml(table2, byteArrayOutputStream);
             InputStream stream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-            return new DefaultStreamedContent(stream, "text/xml", "planning.fet");
+            AcademicInternshipGroup g = UPA.getPersistenceUnit().findById(AcademicInternshipGroup.class, Integer.parseInt(getModel().getSelectedGroup()));
+            String groupName = g.getName();
+            groupName=groupName.replace(" ","-");
+            String selectedSessionType = getModel().getSelectedSessionType();
+            if(!StringUtils.isEmpty(selectedSessionType)){
+                selectedSessionType="-"+selectedSessionType.replace(" ","-");
+            }
+            return new DefaultStreamedContent(stream, "text/xml", "planning-"+groupName+selectedSessionType +".fet");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -216,21 +234,28 @@ public class InternshipsPlanningCtrl {
         }
 
         List<Row> visibleRows = new ArrayList<>();
+        String s = getModel().getSelectedSessionType();
         if (!getModel().isShowVisibleRowsOnly()) {
             for (Row row : getModel().getRows()) {
-                if (row.isVisible() || !getModel().isShowVisibleRowsOnly()) {
+                if (
+                        (StringUtils.isEmpty(s) || s.equals(row.activity.getInternship().getSession()))
+                    && (row.isVisible() || !getModel().isShowVisibleRowsOnly())
+                        ) {
                     visibleRows.add(row);
                 }
             }
         } else {
             for (Row row : getModel().getRows()) {
-                if (row.isVisible()) {
+                if (
+                        (StringUtils.isEmpty(s) || s.equals(row.activity.getInternship().getSession()))
+                    &&
+                        row.isVisible()
+                        ) {
                     visibleRows.add(row);
                 }
             }
         }
         getModel().setVisibleRows(visibleRows);
-
         List<Column> visibleColumns = new ArrayList<>();
         if (!getModel().isShowVisibleColumnsOnly()) {
             for (Column column : columns) {
@@ -604,6 +629,18 @@ public class InternshipsPlanningCtrl {
         getModel().setGroups(internshipGroupsItems);
     }
 
+    public void reloadInternshipSessionTypes() {
+        List<SelectItem> sessionTypeItems = new ArrayList<>();
+        AcademicTeacher tt = academicPlugin.getCurrentTeacher();
+        List<AcademicInternshipSessionType> sessionType = academicInternshipPlugin.findAcademicInternshipSessionType();
+        for (AcademicInternshipSessionType t : sessionType) {
+            String n = t.getName();
+            //no id used because in Planning only session name is mentioned
+            sessionTypeItems.add(new SelectItem(n, n));
+        }
+        getModel().setSessionTypes(sessionTypeItems);
+    }
+
 
     public enum ColumnType {
         STATIC,
@@ -615,6 +652,8 @@ public class InternshipsPlanningCtrl {
         private List<String> teachers;
         private List<SelectItem> groups = new ArrayList<SelectItem>();
         private String selectedGroup;
+        private List<SelectItem> sessionTypes = new ArrayList<SelectItem>();
+        private String selectedSessionType;
         private List<AcademicInternship> internshipsList;
         private Map<Integer, AcademicInternship> internshipsListMap;
         private List<Column> columns = new ArrayList<>();
@@ -808,6 +847,22 @@ public class InternshipsPlanningCtrl {
 
         public void setSelectedGroup(String selectedGroup) {
             this.selectedGroup = selectedGroup;
+        }
+
+        public List<SelectItem> getSessionTypes() {
+            return sessionTypes;
+        }
+
+        public void setSessionTypes(List<SelectItem> sessionTypes) {
+            this.sessionTypes = sessionTypes;
+        }
+
+        public String getSelectedSessionType() {
+            return selectedSessionType;
+        }
+
+        public void setSelectedSessionType(String selectedSessionType) {
+            this.selectedSessionType = selectedSessionType;
         }
     }
 

@@ -25,7 +25,7 @@ public class AcademicReportTitleProperty {
     private AppPropertyTypeKind propertyType = AppPropertyTypeKind.STRING;
     @Field(modifiers = {UserFieldModifier.SUMMARY}, max = "4096")
     private String propertyConstraints;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicReportTitle reportTitle;
 

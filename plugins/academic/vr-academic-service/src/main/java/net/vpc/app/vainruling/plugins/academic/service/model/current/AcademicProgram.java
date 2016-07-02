@@ -30,13 +30,16 @@ public class AcademicProgram {
     @Field(modifiers = {UserFieldModifier.MAIN})
     private String name;
     private String name2;
+    private String name3;
 
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppDepartment department;
+    @Summary
+    private AcademicProgramType programType;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
@@ -103,5 +106,19 @@ public class AcademicProgram {
         this.updateDate = updateDate;
     }
 
+    public String getName3() {
+        return name3;
+    }
 
+    public void setName3(String name3) {
+        this.name3 = name3;
+    }
+
+    public AcademicProgramType getProgramType() {
+        return programType;
+    }
+
+    public void setProgramType(AcademicProgramType programType) {
+        this.programType = programType;
+    }
 }

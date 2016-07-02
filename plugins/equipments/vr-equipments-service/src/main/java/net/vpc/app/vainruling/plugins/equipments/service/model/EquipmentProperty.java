@@ -21,10 +21,10 @@ public class EquipmentProperty {
     private int id;
 
     @ManyToOne(type = RelationshipType.COMPOSITION)
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Equipment equipment;
 
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
 
     @Field(max = "400", modifiers = UserFieldModifier.SUMMARY)

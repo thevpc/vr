@@ -25,7 +25,7 @@ public class AcademicReportProperty {
     @Field(modifiers = {UserFieldModifier.SUMMARY}, max = "4096")
     private String propertyValue;
     private AppPropertyTypeKind propertyType = AppPropertyTypeKind.STRING;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicReport report;
 

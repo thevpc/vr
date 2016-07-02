@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
@@ -18,7 +19,7 @@ import java.sql.Timestamp;
  *
  * @author vpc
  */
-@Entity(listOrder = "name")
+@Entity(listOrder = "period.name desc, fullName,name")
 @Path("Education")
 public class AcademicCoursePlan {
 
@@ -27,7 +28,7 @@ public class AcademicCoursePlan {
 
     private int id;
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:120px")
     )
@@ -35,6 +36,9 @@ public class AcademicCoursePlan {
 
     @Field(defaultValue = "?")
     private String code;
+    @Properties(
+            @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+    )
     private String name;
     @Field(modifiers = {UserFieldModifier.MAIN})
     @Formula(
@@ -46,7 +50,7 @@ public class AcademicCoursePlan {
     private String name2;
 
 
-//    @Field(modifiers = {UserFieldModifier.SUMMARY})
+//    @Summary
 //    @Properties(
 //            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
 //    )
@@ -54,37 +58,39 @@ public class AcademicCoursePlan {
 
     private String discipline;
 
-//    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    private AcademicOfficialDiscipline officialDiscipline;
+
+//    @Summary
 //    private AcademicClass studentClass;
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:120px")
     )
     private AcademicCourseLevel courseLevel;
 
-//    @Field(modifiers = {UserFieldModifier.SUMMARY})
+//    @Summary
 //    @Properties(
 //            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
 //    )
 //    private AcademicSemester semester;
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
     private double valueC;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
     private double valueTD;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
     private double valueTP;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
@@ -96,7 +102,7 @@ public class AcademicCoursePlan {
     private double ects;
     //    private double valueDU;
     //Unite enseignement/UE
-//    @Field(modifiers = {UserFieldModifier.SUMMARY})
+//    @Summary
     private AcademicCourseGroup courseGroup;
     private int position;
     private int groupCountC = 1;
@@ -109,13 +115,14 @@ public class AcademicCoursePlan {
     private int weeksTP = 0;
     private int weeksPM = 0;
     private int weeksTPPM = 0;
-    //@Field(modifiers = UserFieldModifier.SUMMARY)
+    //@Summary
     private String roomConstraintsC;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String roomConstraintsTP;
+    private String labels;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
@@ -408,5 +415,21 @@ public class AcademicCoursePlan {
 
     public void setPeriod(AppPeriod period) {
         this.period = period;
+    }
+
+    public String getLabels() {
+        return labels;
+    }
+
+    public void setLabels(String labels) {
+        this.labels = labels;
+    }
+
+    public AcademicOfficialDiscipline getOfficialDiscipline() {
+        return officialDiscipline;
+    }
+
+    public void setOfficialDiscipline(AcademicOfficialDiscipline officialDiscipline) {
+        this.officialDiscipline = officialDiscipline;
     }
 }

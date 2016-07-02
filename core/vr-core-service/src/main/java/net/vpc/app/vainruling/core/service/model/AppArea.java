@@ -22,14 +22,14 @@ public class AppArea {
     @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
     private String name;
     @Field(modifiers = UserFieldModifier.SUMMARY, max = "4000")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Hierarchy
     private AppArea parent;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppAreaType type;
 
     public AppArea() {

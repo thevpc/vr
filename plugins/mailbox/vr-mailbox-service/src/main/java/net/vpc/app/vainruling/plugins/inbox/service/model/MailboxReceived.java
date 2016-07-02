@@ -25,29 +25,29 @@ public class MailboxReceived {
     @Sequence
     private int id;
 
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String subject;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
 //    @Field(max = "30000")
     @Field(max = "max")
     private String content;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Flags"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Flags"))
     private boolean read;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private boolean important;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "SourceAndDestination"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
     private AppUser sender;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String toProfiles;
 
     private String ccProfiles;
@@ -55,17 +55,17 @@ public class MailboxReceived {
     private AppUser owner;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Time"))
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Time"))
+    @Summary
     private DateTime sendTime;
 
     private DateTime readTime;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String category;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     private boolean archived;
 
     private boolean deleted;

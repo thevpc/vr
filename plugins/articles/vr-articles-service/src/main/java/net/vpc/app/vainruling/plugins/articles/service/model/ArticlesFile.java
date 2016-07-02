@@ -23,15 +23,15 @@ public class ArticlesFile {
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private ArticlesItem article;
 
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
 
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
-            @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
+            @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
     )
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String path;
 
 

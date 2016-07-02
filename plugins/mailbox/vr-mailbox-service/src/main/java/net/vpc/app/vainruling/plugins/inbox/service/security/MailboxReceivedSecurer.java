@@ -22,7 +22,7 @@ public class MailboxReceivedSecurer extends DefaultEntitySecurityManager {
 
     @Override
     public Expression getEntityFilter(Entity entity) throws UPAException {
-        if (VrApp.getBean(CorePlugin.class).isActualAdmin()) {
+        if (VrApp.getBean(CorePlugin.class).isUserSessionAdmin()) {
             return null;
         }
         return new UserExpression("this.deleted=false and this.sender.login=currentUser()");

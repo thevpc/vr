@@ -44,7 +44,7 @@ public class UPAObjectHelper {
     }
 
     public static void applyLayout(UPAObject f, PropertyView pv) {
-        String newline = findStringProperty(f, UIConstants.FIELD_FORM_NEWLINE, null, "");
+        String newline = findStringProperty(f, UIConstants.Form.NEWLINE, null, "");
         for (String s : newline.split(", ")) {
             if (s.equalsIgnoreCase("before")) {
                 pv.setPrependNewLine(true);
@@ -54,8 +54,8 @@ public class UPAObjectHelper {
                 pv.setLabelNewLine(true);
             }
         }
-        pv.setNoLabel(findBooleanProperty(f, UIConstants.FIELD_FORM_NOLABEL, null, pv.isNoLabel()));
-        String span = findStringProperty(f, UIConstants.FIELD_FORM_SPAN, null, "");
+        pv.setNoLabel(findBooleanProperty(f, UIConstants.Form.NO_LABEL, null, pv.isNoLabel()));
+        String span = findStringProperty(f, UIConstants.Form.SPAN, null, "");
         if (span.length() > 0) {
             String[] spanned = span.split(",x");
             if (spanned.length > 0) {
@@ -73,9 +73,9 @@ public class UPAObjectHelper {
                 }
             }
         }
-        pv.setPrependEmptyCells(findIntProperty(f, UIConstants.FIELD_FORM_EMPTY_PREFIX, null, pv.getPrependEmptyCells()));
-        pv.setAppendEmptyCells(findIntProperty(f, UIConstants.FIELD_FORM_EMPTY_SUFFIX, null, pv.getAppendEmptyCells()));
-        pv.setSeparatorText(findStringProperty(f, UIConstants.FIELD_FORM_SEPARATOR, null, pv.getSeparatorText()));
+        pv.setPrependEmptyCells(findIntProperty(f, UIConstants.Form.EMPTY_PREFIX, null, pv.getPrependEmptyCells()));
+        pv.setAppendEmptyCells(findIntProperty(f, UIConstants.Form.EMPTY_SUFFIX, null, pv.getAppendEmptyCells()));
+        pv.setSeparatorText(findStringProperty(f, UIConstants.Form.SEPARATOR, null, pv.getSeparatorText()));
         if (f instanceof Field) {
             Field ff = (Field) f;
             Entity ffe = ((Field) f).getEntity();

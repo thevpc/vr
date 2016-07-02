@@ -35,13 +35,13 @@ public class AppUser {
 
     @Field(modifiers = {UserFieldModifier.MAIN})
     private AppContact contact;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppDepartment department;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppUserType type;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})

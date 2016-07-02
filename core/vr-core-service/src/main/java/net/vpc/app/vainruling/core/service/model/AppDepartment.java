@@ -28,7 +28,7 @@ public class AppDepartment {
     @Hierarchy
     private AppDepartment parent;
     @Field(modifiers = UserFieldModifier.SUMMARY, max = "4000")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
 
     public AppDepartment getParent() {

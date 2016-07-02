@@ -32,35 +32,35 @@ public class AcademicInternship {
 
     private int id;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicInternshipGroup mainGroup;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicInternshipBoard board;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String code;
 
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
 
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     @Field(max = "4000")
     private String description;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.DISCIPLINE))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.DISCIPLINE))
     private String mainDiscipline;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicInternshipStatus internshipStatus;
 
-    @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     private String technologies;
 
     private AcademicInternshipVariant internshipVariant;
 
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Details"),}
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Details"),}
     )
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
     private AcademicStudent student;
@@ -68,9 +68,11 @@ public class AcademicInternship {
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
     private AcademicTeacher supervisor;
     private AcademicTeacher secondSupervisor;
+    private AcademicTeacher recordedSupervisor;
+    private AcademicTeacher recordedSecondSupervisor;
     @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
     private AppCompany company;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String companyOther;
     private AppContact companyMentor;
     private String companyMentorOther;
@@ -80,15 +82,15 @@ public class AcademicInternship {
     private java.util.Date startDate;
     private java.util.Date endDate;
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Evaluation"),
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
-            @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Evaluation"),
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
+            @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
     )
     private String specFilePath;
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
-            @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
+            @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
     )
     private String midTermReportFilePath;
@@ -117,8 +119,8 @@ public class AcademicInternship {
     private String midTermTeacherObs;
 
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
-            @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
+            @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
     )
     private String reportFilePath;
@@ -130,25 +132,26 @@ public class AcademicInternship {
     private Timestamp examDate;
     private String examLocation;
     private AcademicInternshipSessionType sessionType;
+    private boolean preEmployment;
 
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace")}
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace")}
     )
     private Timestamp lastStudentUpdateTime;
     private Timestamp lastTeacherUpdateTime;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Timestamp lastUpdateTime;
 
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Observations")}
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Observations")}
     )
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     @Field(max = "512")
     private String studentObservations;
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     @Field(max = "512")
     private String validationObservations;
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     @Field(max = "512")
     private String evaluationObservations;
 
@@ -606,5 +609,37 @@ public class AcademicInternship {
 
     public void setSessionType(AcademicInternshipSessionType sessionType) {
         this.sessionType = sessionType;
+    }
+
+    public boolean isPreEmployment() {
+        return preEmployment;
+    }
+
+    public void setPreEmployment(boolean preEmployment) {
+        this.preEmployment = preEmployment;
+    }
+
+    public AcademicInternshipGroup getMainGroup() {
+        return mainGroup;
+    }
+
+    public void setMainGroup(AcademicInternshipGroup mainGroup) {
+        this.mainGroup = mainGroup;
+    }
+
+    public AcademicTeacher getRecordedSupervisor() {
+        return recordedSupervisor;
+    }
+
+    public void setRecordedSupervisor(AcademicTeacher recordedSupervisor) {
+        this.recordedSupervisor = recordedSupervisor;
+    }
+
+    public AcademicTeacher getRecordedSecondSupervisor() {
+        return recordedSecondSupervisor;
+    }
+
+    public void setRecordedSecondSupervisor(AcademicTeacher recordedSecondSupervisor) {
+        this.recordedSecondSupervisor = recordedSecondSupervisor;
     }
 }

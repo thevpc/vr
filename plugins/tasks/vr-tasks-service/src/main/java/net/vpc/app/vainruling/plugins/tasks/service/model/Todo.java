@@ -22,26 +22,26 @@ public class Todo {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
     @Field(max = "4000")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
     private Timestamp creationTime;
     private Timestamp startTime;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Timestamp deadline;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppUser responsible;
     private AppUser initiator;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private TodoCategory category;
     private TodoList list;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private TodoStatus status;
     @ToString
     private TodoPriority priority;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private int progress;
     private int estimation;
     private double reEstimation;

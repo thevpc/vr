@@ -21,7 +21,7 @@ public class EquipmentTypeProperty {
     private String name;
     @Field(max = "400", modifiers = UserFieldModifier.MAIN)
     private String value;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private EquipmentType equipmentType;
 
     public int getId() {

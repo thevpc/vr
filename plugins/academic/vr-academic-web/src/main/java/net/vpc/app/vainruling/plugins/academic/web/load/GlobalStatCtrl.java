@@ -11,14 +11,13 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.CourseFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.GlobalStat;
 import org.primefaces.model.chart.PieChartModel;
 
 import javax.faces.bean.ManagedBean;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author vpc
@@ -54,11 +53,41 @@ public class GlobalStatCtrl {
         return Arrays.asList(f).indexOf(s) >= 0;
     }
 
+    public CourseFilter getCourseFilter(){
+        CourseFilter filter = new CourseFilter();
+        boolean nolabel=false;
+        for (String rf : getModel().getRefreshFilter()) {
+            if(rf.equals("intents")){
+                filter.setIncludeIntents(true);
+            }else if(rf.startsWith("label:")){
+                Set<String> labels = filter.getLabels();
+                if(labels==null){
+                    labels=new HashSet<>();
+                    filter.setLabels(labels);
+                }
+                labels.add(rf.substring(rf.indexOf(":")+1));
+            }else if(rf.startsWith("AcademicProgramType:")){
+                Set<Integer> types = filter.getProgramTypes();
+                if(types==null){
+                    types=new HashSet<>();
+                    filter.setProgramTypes(types);
+                }
+                types.add(Integer.parseInt(rf.substring(rf.indexOf(":") + 1)));
+            }else if(rf.equals("nolabel")){
+                nolabel=true;
+            }
+        }
+        if(nolabel){
+            filter.setLabels(new HashSet<String>());
+        }
+        return filter;
+    }
+
     public void onRefresh() {
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         CorePlugin c = VrApp.getBean(CorePlugin.class);
 
-        getModel().setStat(p.evalGlobalStat(c.findAppConfig().getMainPeriod().getId(), containsRefreshFilter("intents"), null));
+        getModel().setStat(p.evalGlobalStat(c.findAppConfig().getMainPeriod().getId(), getCourseFilter(), null));
         getModel().setSemesters(p.findSemesters());
 
         PieChartModel pieModel1 = new PieChartModel();

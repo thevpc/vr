@@ -21,9 +21,9 @@ public class AcademicInternshipTeacherRole {
     @Sequence
 
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private AcademicInternship internship;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicTeacher teacher;
     @ToString
     private AcademicInternshipTeacherRoleType role;

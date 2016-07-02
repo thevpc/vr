@@ -42,57 +42,57 @@ public class DefaultPropertyViewFactory implements PropertyViewFactory {
         } else {
             Class t = nfo.dataType.getPlatformType();
             if (t.equals(String.class)) {
-                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.TEXT);
+                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.TEXT);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
-                if (nfo.main || controlType.equals(UIConstants.ControlType.TEXTAREA) || controlType.equals(UIConstants.ControlType.RICHTEXTAREA)) {
+                if (nfo.main || controlType.equals(UIConstants.Control.TEXTAREA) || controlType.equals(UIConstants.Control.RICHTEXTAREA)) {
                     propView.setPrependNewLine(true);
                     propView.setColspan(Integer.MAX_VALUE);
                     propView.setAppendNewLine(true);
                 }
             } else if (PlatformTypes.isIntegerType(t)) {
-                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.INTEGER);
+                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.INTEGER);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
             } else if (PlatformTypes.isLongType(t)) {
-                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.LONG);
+                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.LONG);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
             } else if (PlatformTypes.isFloatType(t)) {
-                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.FLOAT);
+                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.FLOAT);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
             } else if (PlatformTypes.isDoubleType(t)) {
-                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.DOUBLE);
+                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.DOUBLE);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
             } else if (PlatformTypes.isAnyIntegerType(t)) {
-                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.TEXT);
+                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.TEXT);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
             } else if (PlatformTypes.isAnyFloatType(t)) {
-                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.TEXT);
+                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.TEXT);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
             } else if (PlatformTypes.isDateType(t)) {
                 if (nfo.dataType instanceof DateType) {
                     DateType ddt = (DateType) nfo.dataType;
                     if (ddt.isDateOnly()) {
-                        String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.DATE);
+                        String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.DATE);
                         propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
                     }
                     if (ddt.isTimeOnly()) {
-                        String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.TIME);
+                        String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.TIME);
                         propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
                     }
                     if (ddt.isTimestamp()) {
-                        String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.DATETIME);
+                        String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.DATETIME);
                         propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
                     }
                     if (ddt.isDateTime()) {
-                        String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.DATETIME);
+                        String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.DATETIME);
                         propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
                     }
                 }
                 if (propView == null) {
-                    String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.DATE);
+                    String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.DATE);
                     propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
                 }
             } else if (PlatformTypes.isBooleanType(t)) {
-                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.CHECKBOX);
+                String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.CHECKBOX);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
                 propView.setRequired(false);//no threestate
             } else {

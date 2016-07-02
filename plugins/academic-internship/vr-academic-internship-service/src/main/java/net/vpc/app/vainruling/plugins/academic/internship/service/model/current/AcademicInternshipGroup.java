@@ -21,11 +21,11 @@ public class AcademicInternshipGroup {
     @Sequence
 
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
     private AppDepartment department;
     private boolean enabled = true;
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     @Field(max = "4000")
     private String observations;
 

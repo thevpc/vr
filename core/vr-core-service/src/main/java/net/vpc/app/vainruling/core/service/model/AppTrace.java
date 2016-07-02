@@ -22,19 +22,19 @@ public class AppTrace {
     @Sequence
     private int id;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
     )
     private Timestamp time;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:8%")
     )
     private String action;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:9%")
     )
@@ -44,7 +44,7 @@ public class AppTrace {
 
     private String objectId;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:9%")
     )
@@ -54,7 +54,7 @@ public class AppTrace {
 
     private int levelId;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:7%")
     )

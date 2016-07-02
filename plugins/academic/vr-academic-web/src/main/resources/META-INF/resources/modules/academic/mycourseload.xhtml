@@ -38,6 +38,16 @@ and open the template in the editor.
 
 
                 <!-- /.row -->
+                <div class="row">
+                    <p:outputLabel value="Période" style="margin-right: 10px;vertical-align: super;"/>
+                    <p:selectOneMenu value="#{myCourseLoadCtrl.model.selectedPeriod}">
+                        <p:ajax listener="#{myCourseLoadCtrl.onPeriodChanged}" update=":buttonsForm :listForm"/>
+                        <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
+                        <f:selectItems value="#{myCourseLoadCtrl.model.periods}"/>
+                    </p:selectOneMenu>
+                    <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
+                </div>
+
             </h:form>
             <h:form id="listForm">
 
@@ -145,8 +155,10 @@ and open the template in the editor.
                                      emptyMessage="Aucune charge"
                                 >
                             <p:column styleClass="ui-widget-header" headerText="" width="5%">
-                                <p:commandButton value="-"
-                                                 disabled="#{i.assigned}"
+                                <p:commandButton
+                                        rendered="#{myCourseLoadCtrl.model.enableLoadEditing}"
+                                         disabled="#{i.assigned}"
+                                        value="-"
                                                  actionListener="#{myCourseLoadCtrl.removeFromMine(i.assignment.id)}"
                                                  update=":listForm" title="Clickez ici pour supprimer le voeux"/>
                             </p:column>
@@ -197,7 +209,7 @@ and open the template in the editor.
                                      emptyMessage="Aucune charge"
                                 >
                             <p:column styleClass="ui-widget-header" headerText="" width="5%">
-                                <p:commandButton disabled="#{i.assigned}" value="-"
+                                <p:commandButton rendered="#{myCourseLoadCtrl.model.enableLoadEditing}" disabled="#{i.assigned}" value="-"
                                                  actionListener="#{myCourseLoadCtrl.removeFromMine(i.assignment.id)}"
                                                  update=":listForm" title="Clickez ici pour supprimer le voeux"/>
                             </p:column>
@@ -259,7 +271,7 @@ and open the template in the editor.
                                      emptyMessage="Aucune charge"
                                 >
                             <p:column styleClass="ui-widget-header" headerText="" width="5%">
-                                <p:commandButton disabled="#{i.assigned}" value="+"
+                                <p:commandButton disabled="#{i.assigned or !myCourseLoadCtrl.model.enableLoadEditing}" value="+"
                                                  actionListener="#{myCourseLoadCtrl.addToMine(i.assignment.id)}"
                                                  update=":listForm" title="Clickez ici pour exprimez votre voeux"/>
                             </p:column>

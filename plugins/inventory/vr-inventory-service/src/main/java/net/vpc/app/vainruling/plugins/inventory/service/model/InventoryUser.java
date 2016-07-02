@@ -21,9 +21,9 @@ public class InventoryUser {
     @Sequence
     private int id;
     @ManyToOne(type = RelationshipType.COMPOSITION)
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Inventory inventory;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppUser user;
 
     public int getId() {

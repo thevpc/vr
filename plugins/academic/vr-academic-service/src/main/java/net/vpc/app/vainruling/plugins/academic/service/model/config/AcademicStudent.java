@@ -30,25 +30,25 @@ public class AcademicStudent {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private AppContact contact;
     private String subscriptionNumber;
     private AppDepartment department;
     private AppUser user;
     private AppPeriod firstSubscription;
     private AppPeriod lastSubscription;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AcademicClass lastClass1;
     private AcademicClass lastClass2;
     private AcademicClass lastClass3;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AcademicStudentStage stage = AcademicStudentStage.ATTENDING;
 
     @Field(max = "4000")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String publicObservations;
     @Field(max = "4000")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String privateObservations;
 
     private AcademicPreClass preClass;
@@ -58,7 +58,7 @@ public class AcademicStudent {
     private double baccalaureateScore;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})

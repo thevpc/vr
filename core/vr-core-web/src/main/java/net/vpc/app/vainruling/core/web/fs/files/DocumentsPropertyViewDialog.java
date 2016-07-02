@@ -19,7 +19,7 @@ public class DocumentsPropertyViewDialog implements PropertyViewDialog {
 
     @Override
     public String getControlType() {
-        return UIConstants.ControlType.FILE;
+        return UIConstants.Control.FILE;
     }
 
     @Override

@@ -5,46 +5,31 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service;
 
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
-import jxl.write.WriteException;
 import net.vpc.app.vainruling.core.service.*;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.obj.AppEntityExtendedPropertiesProvider;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.util.ExcelTemplate;
-import net.vpc.app.vainruling.core.service.util.NamedDoubles;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.plugins.academic.service.helper.AcademicConversionTableHelper;
+import net.vpc.app.vainruling.plugins.academic.service.helper.CopyAcademicDataHelper;
+import net.vpc.app.vainruling.plugins.academic.service.helper.TeacherGenerationHelper;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.history.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.*;
-import net.vpc.common.streams.PathInfo;
 import net.vpc.common.strings.MapStringConverter;
 import net.vpc.common.strings.StringComparator;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
-import net.vpc.common.vfs.VFS;
 import net.vpc.common.vfs.VFile;
-import net.vpc.common.vfs.VirtualFileSystem;
-import net.vpc.common.vfs.impl.NativeVFS;
-import net.vpc.common.vfs.impl.VZipOptions;
-import net.vpc.common.vfs.impl.VZipUtils;
 import net.vpc.upa.*;
 import net.vpc.upa.types.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.PropertyPlaceholderHelper;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,14 +43,17 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     public static final int DEFAULT_SEMESTER_MAX_WEEKS = 14;
     private static final Logger log = Logger.getLogger(AcademicPlugin.class.getName());
-    private static PropertyPlaceholderHelper h = new PropertyPlaceholderHelper("${", "}");
-    private static DecimalFormat FF = new DecimalFormat("0.0#");
     @Autowired
     TraceService trace;
     @Autowired
     CorePlugin core;
     @Autowired
     CacheService cacheService;
+    private CopyAcademicDataHelper copyAcademicDataHelper = new CopyAcademicDataHelper();
+    private TeacherGenerationHelper teacherGenerationHelper = new TeacherGenerationHelper();
+
+    public AcademicPlugin() {
+    }
 
     //    protected void generatePrintableTeacherListLoadFile(int yearId, Integer[] teacherIds, String semester, String template, String output) throws IOException {
 //        TeacherStat[] stats = evalTeachersStat(yearId, teacherIds, semester);
@@ -74,16 +62,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //    private void generatePrintableTeacherLoadSheet(int yearId, int teacherId, WritableSheet sheet) throws IOException {
 //        ExcelTemplate.generateExcelSheet(sheet, preparePrintableTeacherLoadProperties(yearId,teacherId));
 //    }
-    private static String dformat(double d) {
-        return FF.format(d);
-    }
-
-    private static String iformat(double d) {
-        if (Math.floor(d) == d) {
-            return String.valueOf((int) d);
-        }
-        return FF.format(d);
-    }
 
     public int getSemesterMaxWeeks() {
         try {
@@ -108,25 +86,25 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
     }
 
-    public TeacherStat evalTeacherStat(
+    public TeacherPeriodStat evalTeacherStat(
             int periodId,
             int teacherId,
-            boolean includeIntent,
+            CourseFilter filter,
             StatCache cache) {
         AcademicTeacher teacher = cache.getAcademicTeacherMap().get(teacherId);
         if (teacher == null) {
             return null;
         }
-        return evalTeacherStat(periodId, teacherId, null, null, null, includeIntent, cache);
+        return evalTeacherStat(periodId, teacherId, null, null, null, filter, cache);
     }
 
-    public TeacherStat evalTeacherStat(
+    public TeacherPeriodStat evalTeacherStat(
             int periodId,
             int teacherId,
             AcademicTeacher teacher,
             List<AcademicTeacherSemestrialLoad> findTeacherSemestrialLoads,
             List<AcademicCourseAssignment> modules,
-            boolean includeIntent,
+            CourseFilter filter,
             StatCache cache
     ) {
         Chronometer ch = new Chronometer();
@@ -138,13 +116,13 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
 //        int teacherId = tal.getTeacher().getId();
         if (modules == null) {
-            modules = findCourseAssignments(periodId, teacherId, null, includeIntent, cache);
+            modules = findCourseAssignments(periodId, teacherId, null, filter, cache);
             if (modules == null) {
                 log.severe("No assignements found for teacherId=" + teacherId + " (" + teacher + ")");
             }
         }
-        TeacherStat teacher_stat = new TeacherStat();
-        teacher_stat.setIncludeIntents(includeIntent);
+        TeacherPeriodStat teacher_stat = new TeacherPeriodStat();
+        teacher_stat.setCourseFilter(filter);
         teacher_stat.setTeacher(teacher);
         teacher_stat.setTeacherPeriod(findAcademicTeacherPeriod(periodId, teacher_stat.getTeacher()));
         AcademicTeacherDegree degree = teacher_stat.getTeacherPeriod().getDegree();
@@ -159,8 +137,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             teacher_stat.getDue().setEquivC(0);
             teacher_stat.getDue().setEquivTD(0);
         }
+        StatCache.PeriodCache periodCache = cache.forPeriod(periodId);
         if (findTeacherSemestrialLoads == null) {
-            findTeacherSemestrialLoads = cache.forPeriod(periodId).getAcademicTeacherSemestrialLoadByTeacherIdMap().get(teacherId);
+            findTeacherSemestrialLoads = periodCache.getAcademicTeacherSemestrialLoadByTeacherIdMap().get(teacherId);
             if (findTeacherSemestrialLoads == null) {
                 log.severe("teacherSemestrialLoads not found for teacherId=" + teacherId + " (" + teacher + ")");
                 findTeacherSemestrialLoads = new ArrayList<>();
@@ -176,6 +155,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         LoadValue teacher_extraWeek = teacher_stat.getExtraWeek();
         LoadValue teacher_extra = teacher_stat.getExtra();
         int maxWeeks = cache.getSemesterMaxWeeks();
+        AcademicConversionTableHelper conversionTable = periodCache.getConversionTable();
         for (int i = 0; i < sems.length; i++) {
             AcademicSemester ss = semesters.get(i);
             TeacherSemesterStat sem = new TeacherSemesterStat();
@@ -215,7 +195,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 sem_extraWeek.setEquiv(sem_valueWeek.getEquiv() - td.getValueDU() * (semesterWeeks / sem.getMaxWeeks()));
                 sem_extra.setEquiv(sem_value.getEquiv() - td.getValueDU() * semesterWeeks);
                 AcademicTeacherDegree dd = td;
-                sem_value.setTppm(sem_value.getTp() + sem_value.getPm() * (dd.getValuePM() / dd.getValueTP()));
+                AcademicLoadConversionRow r = conversionTable.get(dd.getConversionRule().getId());
+                sem_value.setTppm(sem_value.getTp() + sem_value.getPm() * (r.getValuePM() / r.getValueTP()));
                 sem_valueWeek.setTppm(sem_value.getTppm() / semesterWeeks);
 
                 teacher_stat.getValue().add(sem_value);
@@ -226,7 +207,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     teacher_extra.add(sem_extraWeek.copy().mul(semesterWeeks));
                 }
             }
-            sem_value.setEquiv(evalValueEquiv(sem_value, degree));
+            sem_value.setEquiv(evalValueEquiv(sem_value, degree, conversionTable));
             sems[i] = sem;
         }
         if (sum_semester_weeks == 0) {
@@ -237,7 +218,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             teacher_extraWeek.set(new LoadValue());
             teacher_extra.set(new LoadValue());
         } else {
-            teacher_stat.getValue().setEquiv(evalValueEquiv(teacher_stat.getValue(), degree));
+            teacher_stat.getValue().setEquiv(evalValueEquiv(teacher_stat.getValue(), degree, conversionTable));
             teacher_stat.getValueWeek().set(teacher_stat.getValue().copy().div(sum_semester_weeks));
             if (hasDU) {
                 teacher_stat.getDue().set(teacher_stat.getDueWeek().copy().mul(sum_semester_weeks));
@@ -247,8 +228,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (hasDU) {
             teacher_extraWeek.setEquiv(teacher_stat.getValueWeek().getEquiv() - teacher_stat.getDueWeek().getEquiv());
             teacher_extra.setEquiv(teacher_stat.getValue().getEquiv() - teacher_stat.getDueWeek().getEquiv() * sum_semester_weeks);
-
-            if (degree.getValueC() == 1) {
+            AcademicLoadConversionRow cr = conversionTable.get(degree.getConversionRule().getId());
+            if (cr.getValueC() == 1) {
                 teacher_extraWeek.setC(teacher_extraWeek.getEquiv());
                 teacher_extra.setC(teacher_extra.getEquiv());
                 teacher_stat.getDueWeek().setC(teacher_stat.getDueWeek().getEquiv());
@@ -256,7 +237,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 for (TeacherSemesterStat sem : sems) {
                     sem.getExtraWeek().setC(sem.getExtraWeek().getEquiv());
                 }
-            } else if (degree.getValueTD() == 1) {
+            } else if (cr.getValueTD() == 1) {
                 teacher_extraWeek.setTd(teacher_extraWeek.getEquiv());
                 teacher_extra.setTd(teacher_extra.getEquiv());
                 teacher_stat.getDueWeek().setTd(teacher_stat.getDueWeek().getEquiv());
@@ -264,7 +245,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 for (TeacherSemesterStat sem : sems) {
                     sem.getExtraWeek().setTd(sem.getExtraWeek().getEquiv());
                 }
-            } else if (degree.getValueTP() == 1) {
+            } else if (cr.getValueTP() == 1) {
                 teacher_extraWeek.setTp(teacher_extraWeek.getEquiv());
                 teacher_extra.setTp(teacher_extra.getEquiv());
                 teacher_stat.getDueWeek().setTp(teacher_stat.getDueWeek().getEquiv());
@@ -293,6 +274,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (cache == null) {
             cache = new StatCache();
         }
+        StatCache.PeriodCache periodCache = cache.forPeriod(periodId);
         AcademicCourseAssignment module = cache.forPeriod(periodId).getAcademicCourseAssignmentMap().get(courseAssignmentId);
         LoadValue mod_val = new LoadValue(module.getValueC(), module.getValueTD(), module.getValueTP(), module.getValuePM(), 0, 0, 0, 0);
         ModuleStat ms = new ModuleStat();
@@ -326,7 +308,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     s.getValue().set(mod_val.copy().mul(module.getGroupCount() * module.getShareCount()));
                     s.setValueEffWeek(module.getValueEffWeek() * module.getGroupCount() * module.getShareCount());
                     AcademicTeacherPeriod trs = findAcademicTeacherPeriod(periodId, tal);
-                    s.getValue().setEquiv(evalValueEquiv(s.getValue(), trs.getDegree()));
+                    s.getValue().setEquiv(evalValueEquiv(s.getValue(), trs.getDegree(), periodCache.getConversionTable()));
                     ms.getValue().set(s.getValue());
                     ms.setValueEffWeek(s.getValueEffWeek());
 
@@ -339,24 +321,26 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return ms;
     }
 
-    public double evalValueEquiv(LoadValue value, String degree) {
+    public double evalValueEquiv(LoadValue value, String degree,AcademicConversionTableHelper table) {
         AcademicTeacherDegree dd = findTeacherDegree(degree);
-        return evalValueEquiv(value, dd);
+        return evalValueEquiv(value, dd,table);
     }
 
-    public void updateEquivCandTP(LoadValue v, StatCache cache) {
-        v.setEquivC(evalValueEquiv(v, cache.getAcademicTeacherDegreesByCodeMap().get("P")));
-        v.setEquivTD(evalValueEquiv(v, cache.getAcademicTeacherDegreesByCodeMap().get("MA")));
+    public void updateEquivCandTP(int periodId,LoadValue v, StatCache cache) {
+        AcademicConversionTableHelper conversionTable = cache.forPeriod(periodId).getConversionTable();
+        v.setEquivC(evalValueEquiv(v, cache.getAcademicTeacherDegreesByCodeMap().get("P"),conversionTable));
+        v.setEquivTD(evalValueEquiv(v, cache.getAcademicTeacherDegreesByCodeMap().get("MA"),conversionTable));
     }
 
-    public double evalValueEquiv(LoadValue v, AcademicTeacherDegree dd) {
+    public double evalValueEquiv(LoadValue v, AcademicTeacherDegree dd,AcademicConversionTableHelper table) {
         if (dd == null) {
             return 0;
         }
-        return dd.getValueC() * v.getC()
-                + dd.getValueTD() * v.getTd()
-                + dd.getValueTP() * v.getTp()
-                + dd.getValuePM() * v.getPm();
+        AcademicLoadConversionRow r = table.get(dd.getConversionRule().getId());
+        return r.getValueC() * v.getC()
+                + r.getValueTD() * v.getTd()
+                + r.getValueTP() * v.getTp()
+                + r.getValuePM() * v.getPm();
     }
 
     public AcademicTeacher findTeacherByUser(Integer userId) {
@@ -456,7 +440,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 .getEntityList();
     }
 
-    public List<AcademicCourseIntent> findCourseIntentsByAssignment(int periodId, int assignment, String semester, StatCache cache) {
+    public List<AcademicCourseIntent> findCourseIntentsByAssignment(int periodId, int assignment, String semester, CourseFilter filter,StatCache cache) {
         if (cache != null) {
             return cache.forPeriod(periodId).getAcademicCourseIntentByAssignmentAndSemester(assignment, semester);
         }
@@ -469,7 +453,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         for (AcademicCourseIntent value : intents) {
             if (semester == null || (value.getAssignment().getCoursePlan().getCourseLevel().getSemester() != null
                     && value.getAssignment().getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
-                m.add(value);
+                if(acceptAssignment(value.getAssignment(),filter)) {
+                    m.add(value);
+                }
             }
         }
         return m;
@@ -482,7 +468,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 .getEntityList();
     }
 
-    public List<AcademicCourseIntent> findCourseIntentsByTeacher(int periodId, Integer teacher, String semester, StatCache cache) {
+    public List<AcademicCourseIntent> findCourseIntentsByTeacher(int periodId, Integer teacher, String semester, CourseFilter filter, StatCache cache) {
         if (cache != null) {
             return cache.forPeriod(periodId).getAcademicCourseIntentByTeacherAndSemester(teacher, semester);
         }
@@ -503,27 +489,83 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         for (AcademicCourseIntent value : intents) {
             if (semester == null || (value.getAssignment().getCoursePlan().getCourseLevel().getSemester() != null
                     && value.getAssignment().getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
-                m.add(value);
+                if(acceptAssignment(value.getAssignment(),filter)) {
+                    m.add(value);
+                }
             }
         }
         return m;
     }
 
-    public List<AcademicCourseAssignment> findCourseAssignments(int periodId, Integer teacher, String semester, boolean includeIntents, StatCache cache) {
-        if (includeIntents) {
-            List<AcademicCourseAssignment> all = new ArrayList<>();
-            for (AcademicCourseAssignmentInfo i : findCourseAssignmentsAndIntents(periodId, teacher, semester, cache)) {
-                all.add(i.getAssignment());
-            }
-            return all;
+    private List<AcademicCourseAssignment> filterAssignments(List<AcademicCourseAssignment> base, CourseFilter filter) {
+        if (filter == null) {
+            return base;
         }
-        return cache.forPeriod(periodId).getAcademicCourseAssignmentsByTeacherAndSemester(teacher, semester);
+        List<AcademicCourseAssignment> ret = new ArrayList<>();
+        for (AcademicCourseAssignment academicCourseAssignment : base) {
+            if(acceptAssignment(academicCourseAssignment,filter)){
+                ret.add(academicCourseAssignment);
+            }
+        }
+        return ret;
     }
 
-    public List<AcademicCourseAssignmentInfo> findCourseAssignmentsAndIntents(int periodId, Integer teacher, String semester, StatCache cache) {
+    public boolean acceptAssignment(AcademicCourseAssignment academicCourseAssignment, CourseFilter filter) {
+        if (filter == null) {
+            return true;
+        }
+        List<AcademicCourseAssignment> ret = new ArrayList<>();
+        boolean accept = true;
+        if (filter.getLabels() == null) {
+            // nothing
+        } else if (filter.getLabels().size() == 0) {
+            if (buildCoursePlanLabelsFromString(academicCourseAssignment.getCoursePlan().getLabels()).size() > 0) {
+                accept = false;
+            }
+        } else {
+            Set<String> foundLabels = buildCoursePlanLabelsFromString(academicCourseAssignment.getCoursePlan().getLabels());
+            for (String lab : filter.getLabels()) {
+                if(lab.startsWith("!")){
+                    if(foundLabels.contains(lab.substring(1))){
+                        accept=false;
+                    }
+                }else{
+                    if(!foundLabels.contains(lab)){
+                        accept=false;
+                    }
+                }
+            }
+        }
+        if (filter.getProgramTypes() != null && filter.getProgramTypes().size() > 0) {
+            AcademicProgramType t = academicCourseAssignment.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getProgramType();
+            if (t == null) {
+                throw new RuntimeException("Null Program Type");
+            }
+            if (!filter.getProgramTypes().contains(t.getId())) {
+                accept = false;
+            }
+        }
+        return (accept);
+    }
+
+    public List<AcademicCourseAssignment> findCourseAssignments(int periodId, Integer teacher, String semester, CourseFilter filter, StatCache cache) {
+        List<AcademicCourseAssignment> base = null;
+        if (filter.isIncludeIntents()) {
+            List<AcademicCourseAssignment> all = new ArrayList<>();
+            for (AcademicCourseAssignmentInfo i : findCourseAssignmentsAndIntents(periodId, teacher, semester, filter,cache)) {
+                all.add(i.getAssignment());
+            }
+            base = all;
+        } else {
+            base = cache.forPeriod(periodId).getAcademicCourseAssignmentsByTeacherAndSemester(teacher, semester, filter);
+        }
+        return base;
+    }
+
+    public List<AcademicCourseAssignmentInfo> findCourseAssignmentsAndIntents(int periodId, Integer teacher, String semester, CourseFilter filter,StatCache cache) {
         List<AcademicCourseAssignmentInfo> all = new ArrayList<>();
         HashSet<Integer> visited = new HashSet<>();
-        for (AcademicCourseAssignment a : cache.forPeriod(periodId).getAcademicCourseAssignmentsByTeacherAndSemester(teacher, semester)) {
+        for (AcademicCourseAssignment a : cache.forPeriod(periodId).getAcademicCourseAssignmentsByTeacherAndSemester(teacher, semester,filter)) {
             if (!visited.contains(a.getId())) {
                 visited.add(a.getId());
                 AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
@@ -532,7 +574,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 all.add(b);
             }
         }
-        for (AcademicCourseIntent a : findCourseIntentsByTeacher(periodId, teacher, semester, cache)) {
+        for (AcademicCourseIntent a : findCourseIntentsByTeacher(periodId, teacher, semester, filter,cache)) {
             if (!visited.contains(a.getAssignment().getId())) {
                 visited.add(a.getAssignment().getId());
                 AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
@@ -542,7 +584,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             }
         }
         for (AcademicCourseAssignmentInfo a : all) {
-            List<AcademicCourseIntent> b = findCourseIntentsByAssignment(periodId, a.getAssignment().getId(), semester, cache);
+            List<AcademicCourseIntent> b = findCourseIntentsByAssignment(periodId, a.getAssignment().getId(), semester, filter,cache);
             TreeSet<String> allIntents = new TreeSet<>();
             TreeSet<Integer> allIntentIds = new TreeSet<>();
             for (AcademicCourseIntent b1 : b) {
@@ -590,42 +632,34 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return all;
     }
 
-    //    protected void generatePrintableTeacherLoadFolder(int yearId, Integer[] teacherIds, String semester, String template, String output) throws IOException {
-//        TeacherStat[] stats = evalTeachersStat(yearId, teacherIds, semester);
-//        generateTeacherAssignmentsFolder(stats, template, output);
-//    }
-    private void generateTeacherAssignmentsFolder(int periodId, TeacherStat[] stats, StatCache cache, VFile template, VFile output, boolean writeVars) throws IOException {
-//        if (!output.endsWith(File.separator) && !output.endsWith("/")) {
-//            output = output + File.separator;
-//        }
-        String soutput = output.getPath();
-        if (!soutput.contains("*")) {
-            soutput = soutput + "*";
-        }
-        if (!soutput.toLowerCase().endsWith(".xls")) {
-            soutput = soutput + ".xls";
-        }
-        for (TeacherStat st : stats) {
-            String pp = soutput.replace("*", AppContact.getName(st.getTeacher().getContact()));
-            VFile f2 = getFileSystem().get(pp);
-            f2.getParentFile().mkdirs();
-            Map<String, Object> p = preparePrintableTeacherLoadProperties(periodId, st, cache);
-            if (writeVars) {
-                writeVars(p, f2);
-            }
-            AppUser u = st.getTeacher().getUser();
-            if (u != null) {
-                VFile mydocs = core.getUserDocumentsFolder(u.getLogin());
-                mydocs.get("Charges").mkdirs();
-                ExcelTemplate.generateExcel(template, f2, p);
-                f2.copyTo(mydocs.get("Charges").get(f2.getName()));
-            }
-        }
+
+    public List<AcademicProgramType> findProgramTypes() {
+        return UPA.getPersistenceUnit().findAll(AcademicProgramType.class);
     }
 
-    public List<TeacherSemesterStat> evalTeacherSemesterStatList(int periodId, Integer[] teachers, String semester, boolean includeIntents, final StatCache cache) {
+    public Set<String> findCoursePlanLabels(int periodId) {
+        HashSet<String> labels = new HashSet<>();
+        for (AcademicCoursePlan plan : findCoursePlans(periodId)) {
+            labels.addAll(buildCoursePlanLabelsFromString(plan.getLabels()));
+        }
+        return labels;
+    }
+
+    public Set<String> buildCoursePlanLabelsFromString(String string) {
+        HashSet<String> labels = new HashSet<>();
+        if (string != null) {
+            for (String s : string.split(",|;| |:")) {
+                if (s.length() > 0) {
+                    labels.add(s);
+                }
+            }
+        }
+        return labels;
+    }
+
+    public List<TeacherSemesterStat> evalTeacherSemesterStatList(int periodId, String semester, Integer[] teachers, CourseFilter filter, final StatCache cache) {
         List<TeacherSemesterStat> all = new ArrayList<>();
-        for (TeacherStat s : evalTeacherStatList(periodId, teachers, semester, includeIntents, cache)) {
+        for (TeacherPeriodStat s : evalTeacherStatList(periodId, teachers, semester, filter, cache)) {
             if (semester == null) {
                 all.addAll(Arrays.asList(s.getSemesters()));
             } else {
@@ -639,9 +673,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return all;
     }
 
-    public List<TeacherStat> evalTeacherStatList(final int periodId, Integer[] teachers, String semester, boolean includeIntents, final StatCache cache) {
+    public List<TeacherPeriodStat> evalTeacherStatList(final int periodId, Integer[] teachers, String semester, CourseFilter filter, final StatCache cache) {
         Chronometer ch = new Chronometer();
-
         if (teachers == null || teachers.length == 0) {
             Set<Integer> all = cache.getAcademicTeacherMap().keySet();
             teachers = all.toArray(new Integer[all.size()]);
@@ -702,9 +735,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             }
         });
         teachersSet.addAll(Arrays.asList(teachers));
-        List<TeacherStat> stats = new ArrayList<>();
+        List<TeacherPeriodStat> stats = new ArrayList<>();
         for (Integer teacherId : teachersSet) {
-            TeacherStat st = evalTeacherStat(periodId, teacherId, null, null, null, includeIntents, cache);
+            TeacherPeriodStat st = evalTeacherStat(periodId, teacherId, null, null, null, filter, cache);
             if (st != null) {
                 boolean ok = false;
                 if (st.getValue().getEquiv() > 0) {
@@ -736,7 +769,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return stats;//.toArray(new TeacherStat[stats.size()]);
     }
 
-    public GlobalStat evalGlobalStat(int periodId, boolean includeIntents, StatCache cache) {
+    public GlobalStat evalGlobalStat(int periodId, CourseFilter filter, StatCache cache) {
         GlobalStat s = new GlobalStat();
         if (cache == null) {
             cache = new StatCache();
@@ -748,8 +781,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
         List<AcademicSemester> findSemesters = cache.getAcademicSemesterList();
 
-        List<TeacherStat> ts = evalTeacherStatList(periodId, teachersIds.toArray(new Integer[teachersIds.size()]), null, includeIntents, cache);
-        for (TeacherStat t : ts) {
+        List<TeacherPeriodStat> ts = evalTeacherStatList(periodId, teachersIds.toArray(new Integer[teachersIds.size()]), null, filter, cache);
+        for (TeacherPeriodStat t : ts) {
             AcademicTeacherPeriod trs = findAcademicTeacherPeriod(periodId, t.getTeacher());
             AcademicTeacherSituation situation = trs.getSituation();
             AcademicTeacherDegree degree = trs.getDegree();
@@ -820,7 +853,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         AcademicTeacherDegree assistant = findTeacherDegree("A");
 
         List<AcademicCoursePlan> coursePlans = findCoursePlans(periodId);
-        List<AcademicCourseAssignment> courseAssignments = cache.forPeriod(periodId).getAcademicCourseAssignmentList();
+        StatCache.PeriodCache periodCache = cache.forPeriod(periodId);
+        List<AcademicCourseAssignment> courseAssignments = periodCache.getAcademicCourseAssignmentList();
         s.setCoursePlanCount(coursePlans.size());
         s.setCourseAssignmentCount(courseAssignments.size());
         for (AcademicCourseAssignment value : courseAssignments) {
@@ -834,7 +868,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     value.getValuePM() * grp * shr,
                     0, 0, 0, 0
             );
-            double g = evalValueEquiv(loadValue, assistant);
+            double g = evalValueEquiv(loadValue, assistant, periodCache.getConversionTable());
             loadValue.setEquiv(g);
             if (value.getTeacher() == null) {
                 s.getAssignment(semester, null, null).getMissingAssignments().add(loadValue);
@@ -969,213 +1003,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return s;
     }
 
-    public void generate(TeacherGenerationOptions filter) throws IOException {
-        generate(filter, null);
-    }
-
-    public void generate(TeacherGenerationOptions options, StatCache cache) throws IOException {
-        if (cache == null) {
-            cache = new StatCache();
-        }
-        Chronometer ch = new Chronometer();
-        if (options == null) {
-            options = new TeacherGenerationOptions();
-        }
-        Integer[] teacherIds = options.getTeacherIds();
-        String semester = options.getSemester();
-        String templateFolder = options.getTemplateFolder();
-        String outputFolder = options.getOutputFolder();
-        String outputNamePattern = options.getOutputNamePattern();
-        AppPeriod period = options.getPeriod();
-        if (period == null) {
-            period = VrApp.getBean(CorePlugin.class).findAppConfig().getMainPeriod();
-        }
-        int periodId = period.getId();
-        if (!outputNamePattern.contains("*")) {
-            outputNamePattern = "*-" + outputNamePattern;
-        }
-        //remove extensions!, remove leading path, retain just name part
-        {
-            PathInfo uu = PathInfo.create(outputNamePattern);
-            outputNamePattern = uu.getNamePart();
-        }
-        List<TeacherStat> stats = null;
-        Set<GeneratedContent> requestedContents = options.getContents() == null ? new HashSet() : new HashSet<>(Arrays.asList(options.getContents()));
-
-        if (requestedContents.isEmpty()) {
-            requestedContents.addAll(Arrays.asList(GeneratedContent.values()));
-        }
-        boolean writeVars = requestedContents.contains(GeneratedContent.Vars);
-        final VirtualFileSystem fs = getFileSystem();
-        if (requestedContents.contains(GeneratedContent.TeacherListAssignmentsSummary)) {
-            if (stats == null) {
-                stats = evalTeacherStatList(periodId, teacherIds, semester, options.isIncludeIntents(), cache);
-            }
-            String teacherListAssignmentsSummaryFile_template = templateFolder + "/teacher-list-assignments-summary-template.xls";
-
-            generateTeacherListAssignmentsSummaryFile(periodId, stats.toArray(new TeacherStat[stats.size()]),
-                    cache, fs.get(teacherListAssignmentsSummaryFile_template), fs.get(outputFolder + File.separator + outputNamePattern.replace("*", "teacher-list-assignments-summary") + ".xls"), writeVars);
-        }
-        String teacherAssignments_template = templateFolder + "/teacher-assignments-template.xls";
-        String teacherAssignments_filename = outputFolder + File.separator + outputNamePattern.replace("*", "teacher-assignments") + ".xls";
-        PathInfo uu = PathInfo.create(teacherAssignments_filename);
-        if (requestedContents.contains(GeneratedContent.TeacherAssignments)) {
-            if (stats == null) {
-                stats = evalTeacherStatList(periodId, teacherIds, semester, options.isIncludeIntents(), cache);
-            }
-            generateTeacherAssignmentsFolder(periodId, stats.toArray(new TeacherStat[stats.size()]), cache, fs.get(teacherAssignments_template), fs.get(uu.getDirName() + File.separator + uu.getNamePart() + "-details/" + outputNamePattern + ".xls"), writeVars);
-        }
-        if (requestedContents.contains(GeneratedContent.GroupedTeacherAssignments)) {
-            if (stats == null) {
-                stats = evalTeacherStatList(periodId, teacherIds, semester, options.isIncludeIntents(), cache);
-            }
-            generateTeacherAssignmentsFile(periodId, stats.toArray(new TeacherStat[stats.size()]), cache, fs.get(teacherAssignments_template), fs.get(teacherAssignments_filename)
-            );
-        }
-        if (requestedContents.contains(GeneratedContent.CourseListLoads)) {
-            String courseListLoads_template = templateFolder + "/course-list-loads-template.xls";
-            VFile t = fs.get(courseListLoads_template);
-            generateCourseListLoadsFile(periodId, t, fs.get(outputFolder + File.separator + outputNamePattern.replace("*", "course-list-loads") + ".xls"));
-
-            courseListLoads_template = templateFolder + "/course-assignments-template.xls";
-            t = fs.get(courseListLoads_template);
-            generateCourseListAssignmentsFile(periodId, t, fs.get(outputFolder + File.separator + outputNamePattern.replace("*", "course-assignments") + ".xls"));
-        }
-        if (requestedContents.contains(GeneratedContent.Bundle)) {
-            Chronometer c2 = new Chronometer();
-            String zipFile = outputFolder + File.separator + outputNamePattern.replace("*", "bundle") + ".zip";
-            log.log(Level.FINE, "creating bundle {0} from {1}", new Object[]{(zipFile), outputFolder});
-            VZipUtils.zip(fs.get(zipFile), new VZipOptions()
-                            .setSkipRoots(true)
-                            .setTempFileSystem(new NativeVFS())
-                            .setTempFile(true),
-                    fs.get(outputFolder)
-            );
-            log.log(Level.FINE, "created bundle in {0}", c2.stop());
-        }
-        System.out.println("data generated in " + ch.stop());
-    }
-
-    private void generateTeacherAssignmentsFile(int periodId, TeacherStat[] stats, StatCache cache, VFile template, VFile output) throws IOException {
-        if (stats.length == 0) {
-            throw new IllegalArgumentException("No valid Teacher found");
-        }
-        try {
-            Workbook workbook;
-            InputStream in = null;
-            try {
-                try {
-                    in = template.getInputStream();
-                    workbook = Workbook.getWorkbook(in);
-                } finally {
-                    if (in != null) {
-                        in.close();
-                    }
-                }
-            } catch (BiffException ex) {
-                throw new IOException(ex);
-            }
-            final VFile p = output.getParentFile();
-            if (p != null) {
-                p.mkdirs();
-            }
-            File ff = null;
-            try {
-                ff = File.createTempFile("tmp", "tmp." + output.getFileName().getShortExtension());
-                WritableWorkbook copy = Workbook.createWorkbook(ff, workbook);
-
-                int count0 = copy.getSheets().length;
-                int count = count0;
-                for (TeacherStat st : stats) {
-                    copy.copySheet(0, AppContact.getName(st.getTeacher().getContact()), count);
-                    WritableSheet sheet2 = copy.getSheet(count);
-//                    sheet2.setName(st.getTeacher().getName());
-                    ExcelTemplate.generateExcelSheet(sheet2, preparePrintableTeacherLoadProperties(periodId, st, cache));
-                    count++;
-                }
-                while (count0 > 0) {
-                    count0--;
-                    copy.removeSheet(0);
-                }
-                copy.write();
-                workbook.close();
-                copy.close();
-
-                VFS.createNativeFS().copyTo(ff.getPath(), output);
-            } finally {
-                if (ff != null) {
-                    ff.delete();
-                }
-//                if (out != null) {
-//                    out.close();
-//                }
-            }
-        } catch (WriteException ex) {
-            throw new IOException(ex);
-        }
-    }
-
-    protected void generatePrintableTeacherLoadFile(int periodId, int teacherId, boolean includeIntents, VFile template, VFile output, boolean writeVars, StatCache cache) throws IOException {
-        Map<String, Object> p = preparePrintableTeacherLoadProperties(periodId, teacherId, includeIntents, cache);
-        if (writeVars) {
-            writeVars(p, output);
-        }
-        ExcelTemplate.generateExcel(template, output, p);
-    }
-
-    private void writeVars(Map<String, Object> p, VFile baseOutput) throws IOException {
-        PathInfo uu = PathInfo.create(baseOutput.getPath());
-        baseOutput.getFileSystem().get(uu.getDirName() + "/vars/").mkdirs();
-        String varsFile = uu.getDirName() + "/vars/" + uu.getNamePart() + ".config";
-        TreeSet<String> keys = new TreeSet<>(p.keySet());
-        PrintStream out = null;
-        try {
-            out = new PrintStream(baseOutput.getFileSystem().getOutputStream(varsFile));
-            for (String key : keys) {
-                out.println(key + "=" + p.get(key));
-            }
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-        }
-    }
-
-    public void generateTeacherListAssignmentsSummaryFile(int periodId, TeacherStat[] stats, StatCache cache, VFile template, VFile output, boolean writeVarFiles) throws IOException {
-        Chronometer ch = new Chronometer();
-        Map<String, Object> p = new HashMap<String, Object>();
-        for (int i = 0; i < stats.length; i++) {
-            TeacherStat stat = stats[i];
-            Map<String, Object> p0 = preparePrintableTeacherLoadProperties(periodId, stat, cache);
-            copyPrefixed(p0, p, "row(" + (i + 1) + ")");
-        }
-        if (writeVarFiles) {
-            writeVars(p, output);
-        }
-        ExcelTemplate.generateExcel(template, output, p);
-        log.log(Level.FINE, "generateTeacherListAssignmentsSummaryFile {0} teachers in {1}", new Object[]{stats.length, ch.stop()});
-    }
-
-    public void generateCourseListLoadsFile(int periodId, VFile template, VFile output) throws IOException {
-        Chronometer ch = new Chronometer();
-        Map<String, Object> p = new HashMap<String, Object>();
-        NamedDoubles inc = new NamedDoubles();
-
-        for (AcademicCoursePlan c : findCoursePlans(periodId)) {
-
-            String prefix;
-//            prefix = "all.row";
-//            prefix = prefix+"(" + (int)inc.inc(prefix) + ").";
-//            fillCoursePlanProps(c, p, prefix);
-
-            prefix = c.getCourseLevel().getAcademicClass().getProgram().getName() + "." + c.getCourseLevel().getName();
-            prefix = prefix + "(" + (int) inc.inc(prefix) + ").";
-            fillCoursePlanProps(c, p, prefix);
-        }
-        writeVars(p, output);
-        ExcelTemplate.generateExcel(template, output, p);
-        log.log(Level.FINE, "generateCourseListLoadsFile in {0}", new Object[]{ch.stop()});
-    }
 
     public AcademicTeacher findCurrentHeadOfDepartment() {
         UserSession sm = VrApp.getBean(UserSession.class);
@@ -1186,7 +1013,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return findHeadOfDepartment(user.getDepartment().getId());
     }
 
-    public boolean isCurrentManager() {
+    public boolean isUserSessionManager() {
         UserSession sm = VrApp.getBean(UserSession.class);
         AppUser user = (sm == null) ? null : sm.getUser();
         if (user == null || user.getDepartment() == null) {
@@ -1210,309 +1037,27 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return false;
     }
 
-    public boolean isCurrentHeadOfDepartment() {
-        UserSession sm = VrApp.getBean(UserSession.class);
-        AppUser user = (sm == null) ? null : sm.getUser();
-        if (user == null || user.getDepartment() == null) {
-            return false;
-        }
-        AcademicTeacher d = findHeadOfDepartment(user.getDepartment().getId());
-        if (d.getUser() != null && d.getUser().getId() == user.getId()) {
-            return true;
-        }
-        return false;
-    }
-
     public AcademicTeacher findHeadOfDepartment(int depId) {
-        for (AppUser u : core.findUsersByProfile(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT)) {
-            if (u.getDepartment() != null && u.getDepartment().getId() == depId) {
-                return findTeacherByUser(u.getId());
-            }
+        AppUser u = core.findHeadOfDepartment(depId);
+        if (u != null) {
+            return findTeacherByUser(u.getId());
         }
         return null;
     }
 
-    public void generateCourseListAssignmentsFile(int periodId, VFile template, VFile output) throws IOException {
-        Chronometer ch = new Chronometer();
-        Map<String, Object> p = new HashMap<String, Object>();
-        NamedDoubles inc = new NamedDoubles();
 
-        for (AcademicCourseAssignment c : findCourseAssignments(periodId)) {
-
-            String prefix;
-//            prefix = "all.row";
-//            prefix = prefix+"(" + (int)inc.inc(prefix) + ").";
-//            fillCoursePlanProps(c, p, prefix);
-
-            prefix = "row(" + (int) inc.inc("x") + ").";
-            fillCourseAssignementPlanProps(c, p, prefix);
-        }
-        String year = (String) core.findAppConfig().getMainPeriod().getName();
-        String version = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01");
-        p.put("version", version);
-        p.put("year", year);
-        writeVars(p, output);
-        ExcelTemplate.generateExcel(template, output, p);
-        log.log(Level.FINE, "generateCourseListLoadsFile in {0}", new Object[]{ch.stop()});
-    }
-
-    private void fillCourseAssignementPlanProps(AcademicCourseAssignment c, Map<String, Object> p, String prefix) {
-        if (!prefix.endsWith(".")) {
-            prefix = prefix + ".";
-        }
-        AcademicCoursePlan coursePlan = c.getCoursePlan();
-        AcademicClass cls = c.getSubClass();
-        if (cls == null && coursePlan != null) {
-            cls = coursePlan.getCourseLevel().getAcademicClass();
-        }
-        p.put(prefix + "name", c.getName());
-        p.put(prefix + "name2", c.getName2());
-        p.put(prefix + "c", c.getValueC());
-        p.put(prefix + "td", c.getValueTD());
-        p.put(prefix + "tp", c.getValueTP());
-        p.put(prefix + "pm", c.getValuePM());
-        if (coursePlan != null) {
-            double wc = coursePlan.getWeeksC();
-            if (wc == 0) {
-                wc = 1;
-            }
-            double wtd = coursePlan.getWeeksTD();
-            if (wtd == 0) {
-                wtd = 1;
-            }
-            double wtp = coursePlan.getWeeksTP();
-            if (wtp == 0) {
-                wtp = 1;
-            }
-            double wpm = coursePlan.getWeeksPM();
-            if (wpm == 0) {
-                wpm = 1;
-            }
-            double wtppm = coursePlan.getWeeksTPPM();
-            if (wtppm == 0) {
-                wtppm = 1;
-            }
-            p.put(prefix + "type", StringUtils.nonNull(c.getCourseType() == null ? null : c.getCourseType().getName()));
-            p.put(prefix + "discipline", coursePlan.getDiscipline());
-            p.put(prefix + "roomConstraintsC", coursePlan.getRoomConstraintsC());
-            p.put(prefix + "roomConstraintsTP", coursePlan.getRoomConstraintsTP());
-            if (c.getValueC() != 0 && c.getValueTP() == 0) {
-                p.put(prefix + "roomConstraints", coursePlan.getRoomConstraintsC());
-            } else if (c.getValueC() == 0 && c.getValueTP() != 0) {
-                p.put(prefix + "roomConstraints", coursePlan.getRoomConstraintsTP());
-            } else {
-                StringBuilder s = new StringBuilder();
-                if (c.getValueC() != 0 && !StringUtils.isEmpty(coursePlan.getRoomConstraintsC())) {
-                    s.append("C:").append(coursePlan.getRoomConstraintsC().trim());
-                }
-                if (c.getValueTP() != 0 && !StringUtils.isEmpty(coursePlan.getRoomConstraintsTP())) {
-                    if (s.length() > 0) {
-                        s.append(", ");
-                    }
-                    s.append("TP:").append(coursePlan.getRoomConstraintsTP().trim());
-                }
-                p.put(prefix + "roomConstraints", s.toString());
-            }
-            p.put(prefix + "sem.code", coursePlan.getCourseLevel().getSemester().getCode());
-            p.put(prefix + "sem.name", coursePlan.getCourseLevel().getSemester().getName());
-            p.put(prefix + "sem.name2", coursePlan.getCourseLevel().getSemester().getName2());
-            p.put(prefix + "ue", coursePlan.getCourseGroup() == null ? "" : coursePlan.getCourseGroup().getName());
-            p.put(prefix + "lvl", coursePlan.getCourseLevel().getName());
-            p.put(prefix + "grp", c.getGroupCount());
-            p.put(prefix + "share", c.getShareCount());
-            p.put(prefix + "c.grp", coursePlan.getGroupCountC());
-            p.put(prefix + "td.grp", coursePlan.getGroupCountTD());
-            p.put(prefix + "tp.grp", coursePlan.getGroupCountTP());
-            p.put(prefix + "pm.grp", coursePlan.getGroupCountPM());
-            p.put(prefix + "tppm.grp", coursePlan.getGroupCountTPPM());
-
-            p.put(prefix + "w.c", wc);
-            p.put(prefix + "w.td", wtd);
-            p.put(prefix + "w.tp", wtp);
-            p.put(prefix + "w.pm", wpm);
-            p.put(prefix + "w.tppm", wtppm);
-
-            p.put(prefix + "w1.c", c.getValueC() / wc);
-            p.put(prefix + "w1.td", c.getValueTD() / wtd);
-            p.put(prefix + "w1.tp", c.getValueTP() / wtp);
-            p.put(prefix + "w1.pm", c.getValuePM() / wpm);
-            p.put(prefix + "w1.tppm", coursePlan.getValueTPPM() / wtppm);
-            if (cls != null) {
-                p.put(prefix + "class.name", cls.getName());
-                p.put(prefix + "class.name2", cls.getName2());
-                p.put(prefix + "program.name", cls.getProgram().getName());
-                p.put(prefix + "program.name2", cls.getProgram().getName2());
-                p.put(prefix + "department.code", cls.getProgram().getDepartment().getCode());
-                p.put(prefix + "department.name", cls.getProgram().getDepartment().getName());
-                p.put(prefix + "department.name2", cls.getProgram().getDepartment().getName2());
-            }
-        }
-        p.put(prefix + "teacher.name", c.getTeacher() == null ? null : getValidName(c.getTeacher()));
-        p.put(prefix + "teacher.name2", (c.getTeacher() == null || c.getTeacher().getContact() == null) ? null : c.getTeacher().getContact().getFullName2());
-        p.put(prefix + "teacher.discipline", c.getTeacher() == null ? null : c.getTeacher().getDiscipline());
-    }
-
-    private void fillCoursePlanProps(AcademicCoursePlan c, Map<String, Object> p, String prefix) {
-        if (!prefix.endsWith(".")) {
-            prefix = prefix + ".";
-        }
-        double wc = c.getWeeksC();
-        if (wc == 0) {
-            wc = 1;
-        }
-        double wtd = c.getWeeksTD();
-        if (wtd == 0) {
-            wtd = 1;
-        }
-        double wtp = c.getWeeksTP();
-        if (wtp == 0) {
-            wtp = 1;
-        }
-        double wpm = c.getWeeksPM();
-        if (wpm == 0) {
-            wpm = 1;
-        }
-        double wtppm = c.getWeeksTPPM();
-        if (wtppm == 0) {
-            wtppm = 1;
-        }
-        p.put(prefix + "name", c.getName());
-        p.put(prefix + "name2", c.getName2());
-        p.put(prefix + "sem.code", c.getCourseLevel().getSemester().getCode());
-        p.put(prefix + "sem.name", c.getCourseLevel().getSemester().getName());
-        p.put(prefix + "sem.name2", c.getCourseLevel().getSemester().getName2());
-        p.put(prefix + "ue", c.getCourseGroup() == null ? "" : c.getCourseGroup().getName());
-        p.put(prefix + "lvl", c.getCourseLevel().getName());
-        p.put(prefix + "c.grp", c.getGroupCountC());
-        p.put(prefix + "td.grp", c.getGroupCountTD());
-        p.put(prefix + "tp.grp", c.getGroupCountTP());
-        p.put(prefix + "pm.grp", c.getGroupCountPM());
-        p.put(prefix + "tppm.grp", c.getGroupCountTPPM());
-        p.put(prefix + "c", c.getValueC());
-        p.put(prefix + "td", c.getValueTD());
-        p.put(prefix + "tp", c.getValueTP());
-        p.put(prefix + "pm", c.getValuePM());
-
-        p.put(prefix + "w.c", wc);
-        p.put(prefix + "w.td", wtd);
-        p.put(prefix + "w.tp", wtp);
-        p.put(prefix + "w.pm", wpm);
-        p.put(prefix + "w.tppm", wtppm);
-
-        p.put(prefix + "w1.c", c.getValueC() / wc);
-        p.put(prefix + "w1.td", c.getValueTD() / wtd);
-        p.put(prefix + "w1.tp", c.getValueTP() / wtp);
-        p.put(prefix + "w1.pm", c.getValuePM() / wpm);
-        p.put(prefix + "w1.tppm", c.getValueTPPM() / wtppm);
-
-        p.put(prefix + "class.name", c.getCourseLevel().getAcademicClass().getName());
-        p.put(prefix + "class.name2", c.getCourseLevel().getAcademicClass().getName2());
-        p.put(prefix + "program.name", c.getCourseLevel().getAcademicClass().getProgram().getName());
-        p.put(prefix + "class.name2", c.getCourseLevel().getAcademicClass().getProgram().getName2());
-        p.put(prefix + "department.name", c.getCourseLevel().getAcademicClass().getProgram().getDepartment().getName());
-        p.put(prefix + "department.name2", c.getCourseLevel().getAcademicClass().getProgram().getDepartment().getName2());
-    }
-
-    private Map<String, Object> copyPrefixed(Map<String, Object> p, Map<String, Object> p2, String prefix) {
-        if (p2 == null) {
-            p2 = new HashMap<String, Object>();
-        }
-        if (prefix == null || prefix.isEmpty()) {
-            prefix = "";
-        } else if (!prefix.endsWith(".")) {
-            prefix = prefix + ".";
-        }
-        for (Map.Entry<String, Object> entrySet : p.entrySet()) {
-            p2.put(prefix + entrySet.getKey(), entrySet.getValue());
-        }
-        return p2;
-    }
-
-    public Map<String, Object> preparePrintableTeacherLoadProperties(int periodId, int teacher, boolean includeIntents, StatCache cache) throws IOException {
-        return preparePrintableTeacherLoadProperties(periodId, evalTeacherStat(periodId, teacher, null, null, null, includeIntents, cache), cache);
-    }
-
-    private Map<String, Object> preparePrintableTeacherLoadProperties(int periodId, TeacherStat stat, StatCache cache) throws IOException {
-        AcademicTeacher t = stat.getTeacher();
-        if (t == null) {
-            throw new IllegalArgumentException("Teacher not found ");
-        }
-        AcademicTeacher tal = stat.getTeacher();
-        Map<String, Object> p = new HashMap<>();
-        p.put("teacher.name", AppContact.getName(t.getContact()));
-        p.put("teacher.firstName", t.getContact().getFirstName());
-        p.put("teacher.lastName", t.getContact().getLastName());
-        AcademicTeacherPeriod academicTeacherPeriod = findAcademicTeacherPeriod(periodId, tal);
-        AcademicTeacherDegree degree = academicTeacherPeriod.getDegree();
-        p.put("teacher.degree", degree == null ? null : degree.getName());
-        p.put("teacher.situation", academicTeacherPeriod.getSituation().getName());
-        for (TeacherSemesterStat semester : stat.getSemesters()) {
-            AcademicSemester sem = semester.getSemester();
-            int moduleIndex = 1;
-            String semesterPrefix = "sem(" + sem.getName() + ")";
-            for (AcademicCourseAssignment m : findCourseAssignments(periodId, t.getId(), sem.getName(), stat.isIncludeIntents(), cache)) {
-                if ((Math.abs(m.getValueC()) + Math.abs(m.getValuePM()) + Math.abs(m.getValueTD()) + Math.abs(m.getValueTP())) * Math.abs(m.getGroupCount() * m.getShareCount()) != 0) {
-                    String modulePrefix = semesterPrefix + ".mod(" + moduleIndex + ")";
-                    p.put(modulePrefix + ".name", m.getName());
-                    p.put(modulePrefix + ".c", m.getValueC() != 0 ? dformat(m.getValueC()) : "");
-                    p.put(modulePrefix + ".td", m.getValueTD() != 0 ? dformat(m.getValueTD()) : "");
-                    p.put(modulePrefix + ".tp", m.getValueTP() != 0 ? dformat(m.getValueTP()) : "");
-                    p.put(modulePrefix + ".pm", m.getValuePM() != 0 ? dformat(m.getValuePM()) : "");
-                    p.put(modulePrefix + ".grp", iformat(m.getGroupCount()));
-                    p.put(modulePrefix + ".sh", iformat(m.getShareCount()));
-                    p.put(modulePrefix + ".grpsh", iformat(m.getGroupCount() * m.getShareCount()));
-                    AcademicCoursePlan coursePlan = m.getCoursePlan();
-                    p.put(modulePrefix + ".class", StringUtils.nonNull(coursePlan.getCourseLevel().getAcademicClass()));
-                    p.put(modulePrefix + ".level", StringUtils.nonNull(coursePlan.getCourseLevel()));
-                    p.put(modulePrefix + ".type", StringUtils.nonNull(m.getCourseType()));
-                    p.put(modulePrefix + ".program", StringUtils.nonNull(coursePlan.getCourseLevel().getAcademicClass().getProgram()));
-                    moduleIndex++;
-                }
-            }
-            p.put(semesterPrefix + ".c", dformat(semester.getValue().getC()));
-            p.put(semesterPrefix + ".td", dformat(semester.getValue().getTd()));
-            p.put(semesterPrefix + ".tp", dformat(semester.getValue().getTp()));
-            p.put(semesterPrefix + ".pm", dformat(semester.getValue().getPm()));
-            p.put(semesterPrefix + ".tppm", dformat(semester.getValue().getTppm()));
-            p.put(semesterPrefix + ".c.w", dformat(semester.getValueWeek().getC()));
-            p.put(semesterPrefix + ".td.w", dformat(semester.getValueWeek().getTd()));
-            p.put(semesterPrefix + ".tp.w", dformat(semester.getValueWeek().getTp()));
-            p.put(semesterPrefix + ".pm.w", dformat(semester.getValueWeek().getPm()));
-            p.put(semesterPrefix + ".tppm.w", dformat(semester.getValueWeek().getTppm()));
-            p.put(semesterPrefix + ".load", dformat(semester.getValue().getEquiv()));
-            p.put(semesterPrefix + ".load.w", dformat(semester.getValueWeek().getEquiv()));
-            p.put(semesterPrefix + ".extra", dformat(semester.getExtraWeek().getEquiv()));
-            p.put(semesterPrefix + ".extra.c", dformat(semester.getExtraWeek().getC()));
-            p.put(semesterPrefix + ".extra.td", dformat(semester.getExtraWeek().getTd()));
-            p.put(semesterPrefix + ".extra.tp", dformat(semester.getExtraWeek().getTp()));
-            p.put(semesterPrefix + ".extra.tppm", dformat(semester.getExtraWeek().getTppm()));
-            p.put(semesterPrefix + ".w", iformat(semester.getWeeks()));
-            p.put(semesterPrefix + ".mw", iformat(semester.getMaxWeeks()));
-        }
-        p.put("tot.load", dformat(stat.getValue().getEquiv()));
-        p.put("tot.load.w", dformat(stat.getValueWeek().getEquiv()));
-        p.put("tot.w", dformat(stat.getWeeks()));
-        p.put("tot.mw", dformat(stat.getMaxWeeks()));
-        p.put("tot.extra", dformat(stat.getExtraWeek().getEquiv()));
-        p.put("tot.extra.c", dformat(stat.getExtraWeek().getC()));
-        p.put("tot.extra.td", dformat(stat.getExtraWeek().getTd()));
-        p.put("tot.extra.tp", dformat(stat.getExtraWeek().getTp()));
-        p.put("tot.extra.tppm", dformat(stat.getExtraWeek().getTppm()));
-        p.put("du.c", dformat(stat.getDueWeek().getC()));
-        p.put("du.td", dformat(stat.getDueWeek().getTd()));
-        p.put("du.tp", dformat(stat.getDueWeek().getTp()));
-        p.put("du.tppm", dformat(stat.getDueWeek().getTppm()));
-        return p;
-    }
-
-    public void importStudent(AcademicStudentImport s) throws IOException {
+    public void importStudent(int periodId, AcademicStudentImport s) throws IOException {
         XlsxLoadImporter i = new XlsxLoadImporter();
-        i.importStudent(s, null);
+        XlsxLoadImporter.ImportStudentContext ctx = new XlsxLoadImporter.ImportStudentContext();
+        ctx.mainPeriod = core.findPeriodOrMain(periodId);
+        i.importStudent(s, ctx);
     }
 
-    public void importTeacher(AcademicTeacherImport t) throws IOException {
+    public void importTeacher(int periodId, AcademicTeacherImport t) throws IOException {
         XlsxLoadImporter i = new XlsxLoadImporter();
-        i.importTeacher(t, null);
+        XlsxLoadImporter.ImportTeacherContext ctx = new XlsxLoadImporter.ImportTeacherContext();
+        ctx.mainPeriod = core.findPeriodOrMain(periodId);
+        i.importTeacher(t, ctx);
     }
 
     public int importFile(int periodId, VFile folder, ImportOptions importOptions) throws IOException {
@@ -1758,6 +1303,28 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return UPA.getPersistenceUnit().
                 createQuery("Select a from AcademicTeacherDegree a where a.code=:t")
                 .setParameter("t", t)
+                .getEntity();
+    }
+
+    public AcademicLoadConversionRule findLoadConversionRule(String t) {
+        return UPA.getPersistenceUnit().
+                createQuery("Select a from AcademicLoadConversionRule a where a.name=:t")
+                .setParameter("t", t)
+                .getEntity();
+    }
+
+    public AcademicLoadConversionTable findLoadConversionTable(String t) {
+        return UPA.getPersistenceUnit().
+                createQuery("Select a from AcademicLoadConversionTable a where a.name=:t")
+                .setParameter("t", t)
+                .getEntity();
+    }
+
+    public AcademicLoadConversionRow findLoadConversionRow(int tableId,int ruleId) {
+        return UPA.getPersistenceUnit().
+                createQuery("Select a from AcademicLoadConversionRow a where a.conversionTableId=:tid and a.ruleId=:rid")
+                .setParameter("tid", tableId)
+                .setParameter("rid", ruleId)
                 .getEntity();
     }
 
@@ -2056,10 +1623,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 .getEntity();
     }
 
-    protected VirtualFileSystem getFileSystem() {
-        return core.getFileSystem();
-    }
-
     ////////////////////////////////////////////////////////////////////////////
     public AppPeriod addAcademicYearSnapshot(String year, String snapshotName) {
         AppPeriod s = createAcademicYear(year, snapshotName);
@@ -2076,11 +1639,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             h.setName(m.getName());
             h.setName2(m.getName2());
             h.setPosition(m.getPosition());
-            h.setValueC(m.getValueC());
-            h.setValueDU(m.getValueDU());
-            h.setValuePM(m.getValuePM());
-            h.setValueTD(m.getValueTD());
-            h.setValueTP(m.getValueTP());
+            h.setConversionRule(m.getConversionRule());
             h.setAcademicYear(s);
             histTeacherDegreeMap.put(h.getCode(), h);
             add(h);
@@ -2175,7 +1734,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                                 .createQueryBuilder(AcademicTeacherPeriod.class)
                                 .setEntityAlias("o")
                                 .byExpression("o.periodId=:periodId")
-                                .setHint(QueryHints.NAVIGATION_DEPTH, 2)
+                                .setHint(QueryHints.NAVIGATION_DEPTH, 4)
                                 .setParameter("periodId", periodId)
                                 .getEntityList();
                 Map<Integer, AcademicTeacherPeriod> t = new HashMap<Integer, AcademicTeacherPeriod>();
@@ -2442,7 +2001,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     @Start
     public void startService() {
-
+        core.getManagerProfiles().add("Director");
+        core.getManagerProfiles().add("DirectorOfStudies");
     }
 
     @Install
@@ -2558,45 +2118,13 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             }
         }
         for (AcademicTeacher academicTeacher : findTeachers()) {
-            updateTeacherPeriod(mainPeriod.getId(), academicTeacher.getId());
+            updateTeacherPeriod(mainPeriod.getId(), academicTeacher.getId(), -1);
         }
     }
 
+
     public void copyAcademicData(int fromPeriodId, int toPeriodId) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        AppPeriod toPeriod = core.findPeriod(toPeriodId);
-        EntityBuilder academicCoursePlanBuilder = pu.getEntity(AcademicCoursePlan.class).getBuilder();
-        EntityBuilder academicCourseAssignmentBuilder = pu.getEntity(AcademicCourseAssignment.class).getBuilder();
-        EntityBuilder academicCourseIntentBuilder = pu.getEntity(AcademicCourseIntent.class).getBuilder();
-
-        Map<Integer, AcademicCoursePlan> academicCoursePlanMap = new HashMap<>();
-        Map<Integer, AcademicCourseAssignment> oldCoursePlanAssignmentsMap = new HashMap<>();
-
-        for (AcademicCoursePlan old : findCoursePlans(fromPeriodId)) {
-            AcademicCoursePlan v = academicCoursePlanBuilder.copyObject(old);
-            v.setId(0);
-            v.setPeriod(toPeriod);
-            pu.persist(v);
-            academicCoursePlanMap.put(old.getId(), v);
-        }
-
-        for (AcademicCourseAssignment old : findCourseAssignments(fromPeriodId)) {
-            AcademicCourseAssignment v = academicCourseAssignmentBuilder.copyObject(old);
-            v.setId(0);
-            v.setCoursePlan(academicCoursePlanMap.get(old.getCoursePlan() == null ? null : old.getCoursePlan().getId()));
-            pu.persist(v);
-            oldCoursePlanAssignmentsMap.put(old.getId(), v);
-        }
-        academicCoursePlanMap.clear();
-
-        for (AcademicCourseIntent old : findCourseIntents(fromPeriodId)) {
-            AcademicCourseIntent v = academicCourseIntentBuilder.copyObject(old);
-            v.setId(0);
-            v.setAssignment(oldCoursePlanAssignmentsMap.get(old.getAssignment() == null ? null : old.getAssignment().getId()));
-            pu.persist(v);
-        }
-        oldCoursePlanAssignmentsMap.clear();
-
+        copyAcademicDataHelper.copyAcademicData(fromPeriodId, toPeriodId);
     }
 
     private String[] codeAndName(String s) {
@@ -2616,10 +2144,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return new String[]{code, name};
     }
 
-    public void importTeachingLoad() {
+    public void importTeachingLoad(int periodId) {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         try {
-            AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
+            AppPeriod mainPeriod = core.findPeriodOrMain(periodId);
             String year = (String) mainPeriod.getName();
             String version = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01");
             String dir = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.configFolder", null, "/Config/Import/${year}");
@@ -2643,74 +2171,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         } catch (Exception ex) {
             Logger.getLogger(XlsxLoadImporter.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    public void generateTeachingLoad(String version0) throws IOException {
-        CorePlugin core = VrApp.getBean(CorePlugin.class);
-//        try {
-        AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
-        String year = (String) mainPeriod.getName();
-        String version = (!StringUtils.isEmpty(version0)) ? version0 : ((String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01"));
-        String dir = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.configFolder", null, "/Config/Import/import/${year}");
-        String namePattern = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.namePattern", null, "*-eniso-ii-${year}-${version}");
-        Map<String, String> vars = new HashMap<>();
-        vars.put("home", System.getProperty("user.home"));
-        vars.put("year", year);
-        vars.put("version", version);
-
-        dir = StringUtils.replaceDollarPlaceHolders(dir, new MapStringConverter(vars));
-        ///Output/${year}/${version}
-        String outdir = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.outputFolder", null, "/Documents/ByProfile/DirectorOfStudies/Charges/${year}/${version}");
-
-        outdir = StringUtils.replaceDollarPlaceHolders(outdir, new MapStringConverter(vars));
-
-//            String dataFolder = dir + "/data";
-        String templatesFolder = dir + "/templates";
-
-        namePattern = StringUtils.replaceDollarPlaceHolders(namePattern, new MapStringConverter(vars));
-
-        AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
-
-        net.vpc.common.vfs.VirtualFileSystem fs = getFileSystem();
-        fs.get(outdir).mkdirs();
-        //TODO should export from DB all this information
-//            VFS.copy(fs.get(dataFolder), fs.get(outdir), new VFileFilter() {
-//
-//                @Override
-//                public boolean accept(VFile pathname) {
-//                    return pathname.isDirectory() || (pathname.isFile()
-//                            && (pathname.getName().toLowerCase().endsWith(".xls")
-//                            || pathname.getName().toLowerCase().endsWith(".xlsx")));
-//                }
-//            });
-        s.generate(
-                new TeacherGenerationOptions()
-                        //                    .setTeacherIds(new Integer[]{s.findTeacher(StringComparators.ilike("*zarrouk*")).getId()})
-                        //                    .setSemester(null)
-                        .setContents(
-                                //                            GeneratedContent.CourseListLoads,
-                                GeneratedContent.GroupedTeacherAssignments,
-                                GeneratedContent.TeacherAssignments,
-                                GeneratedContent.CourseListLoads,
-                                GeneratedContent.TeacherListAssignmentsSummary,
-                                GeneratedContent.Bundle
-                        )
-                        .setTemplateFolder(templatesFolder)
-                        .setOutputFolder(outdir)
-                        .setOutputNamePattern(namePattern)
-                        .setIncludeIntents(true)
-                        .setPeriod(mainPeriod)
-        );
-//            XMailService mails = new XMailService();
-//            XMail m=mails.read(XMailFormat.TEXT, new File(dir+"/notification-charge.xmail"));
-//            m.setSimulate(true);
-//            mails.send(m);
-//            for () {
-//                break;
-//            }
-//        } catch (Exception ex) {
-//            Logger.getLogger(XlsxLoadImporter.class.getName()).log(Level.SEVERE, null, ex);
-//        }
     }
 
     public void addUserForTeacher(AcademicTeacher academicTeacher) {
@@ -2838,12 +2298,13 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (o instanceof AppUser) {
             AcademicTeacher t = findTeacherByUser(((AppUser) o).getId());
             if (t != null) {
+                AcademicTeacherPeriod pp = findAcademicTeacherPeriod(core.findAppConfig().getMainPeriod().getId(), t);
                 HashMap<String, Object> m = new HashMap<>();
                 m.put("discipline", t.getDiscipline());
-                m.put("degree", t.getDegree() == null ? null : t.getDegree().getName());
-                m.put("degreeCode", t.getDegree() == null ? null : t.getDegree().getCode());
-                m.put("situation", t.getSituation() == null ? null : t.getSituation().getName());
-                m.put("enabled", t.isEnabled());
+                m.put("degree", pp.getDegree() == null ? null : pp.getDegree().getName());
+                m.put("degreeCode", pp.getDegree() == null ? null : pp.getDegree().getCode());
+                m.put("situation", pp.getSituation() == null ? null : pp.getSituation().getName());
+                m.put("enabled", pp.isEnabled());
                 return m;
             }
         }
@@ -3159,7 +2620,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 //find classes teached by  teacher
                 List<AcademicClass> myClasses = new ArrayList<>();
                 Set<String> myPrograms = new HashSet<>();
-                for (AcademicCourseAssignment a : findCourseAssignments(periodId, s.getId(), null, false, statCache)) {
+                for (AcademicCourseAssignment a : findCourseAssignments(periodId, s.getId(), null, new CourseFilter().setIncludeIntents(false), statCache)) {
                     myPrograms.add(a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getName());
                     myClasses.add(a.getSubClass());
                     myClasses.add(a.getCoursePlan().getCourseLevel().getAcademicClass());
@@ -3296,7 +2757,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }, null);
     }
 
-    public void updateTeacherPeriod(int periodId, int teacherId) {
+    public void updateTeacherPeriod(int periodId, int teacherId, int copyFromPeriod) {
 //        AppPeriod p = core.findAppConfig().getMainPeriod();
         AcademicTeacher teacher = findTeacher(teacherId);
         AppPeriod period = core.findPeriod(periodId);
@@ -3311,14 +2772,65 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             item.setPeriod(period);
             item.setTeacher(teacher);
         }
-        item.setDegree(teacher.getDegree());
-        item.setSituation(teacher.getSituation());
-        item.setEnabled(teacher.isEnabled());
-        item.setDepartment(teacher.getDepartment());
+        if (copyFromPeriod <= 0) {
+            item.setDegree(teacher.getDegree());
+            item.setSituation(teacher.getSituation());
+            item.setEnabled(teacher.isEnabled());
+            item.setDepartment(teacher.getDepartment());
+        } else {
+            AcademicTeacherPeriod other = findAcademicTeacherPeriod(copyFromPeriod, teacher);
+            item.setDegree(other.getDegree());
+            item.setSituation(other.getSituation());
+            item.setEnabled(other.isEnabled());
+            item.setDepartment(other.getDepartment());
+        }
         if (toPersist) {
             pu.persist(item);
         } else {
             pu.merge(item);
         }
+    }
+
+    public void generateTeachingLoad(int periodId, CourseFilter courseFilter, String version0) throws IOException {
+        teacherGenerationHelper.generateTeachingLoad(periodId, courseFilter, version0);
+    }
+
+    public Record getAppDepartmentPeriodRecord(int periodId, int departmentId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.findRecordById(AppDepartmentPeriod.class, getAppDepartmentPeriod(periodId, departmentId).getId());
+    }
+
+    public AppDepartmentPeriod getAppDepartmentPeriod(int periodId, int departmentId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AppDepartmentPeriod d = pu.createQueryBuilder(AppDepartmentPeriod.class)
+                .byField("periodId", periodId)
+                .byField("departmentId", departmentId).getEntity();
+        if (d == null) {
+            d = new AppDepartmentPeriod();
+            d.setDepartment(core.findDepartment(departmentId));
+            d.setPeriod(core.findPeriod(periodId));
+            if (d.getDepartment() == null || d.getPeriod() == null) {
+                throw new RuntimeException("Invalid");
+            }
+            pu.persist(d);
+        }
+        return d;
+    }
+
+    public AcademicConversionTableHelper buildAcademicConversionTable(int id){
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AcademicLoadConversionTable t = pu.findById(AcademicLoadConversionTable.class, id);
+        if(t==null){
+            return null;
+        }
+        List<AcademicLoadConversionRow> rows = pu
+                .createQueryBuilder(AcademicLoadConversionRow.class)
+                .byField("conversionTableId",t.getId())
+                .getResultList();
+        AcademicConversionTableHelper h=new AcademicConversionTableHelper(t);
+        for (AcademicLoadConversionRow row : rows) {
+            h.add(row);
+        }
+        return h;
     }
 }

@@ -47,16 +47,31 @@ public class XlsxLoadImporter {
     public void importTeacherDegrees() throws IOException {
         AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
         int pos = 1;
-        service.add(new AcademicTeacherDegree("A",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ 0.69,/*PM*/ 0.69 * (2.0 / 3.0),/*DU*/ 11.0, pos++));
-        service.add(new AcademicTeacherDegree("MA",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ (2.0 / 3.0),/*PM*/ (2.0 / 3.0) * (2.0 / 3.0),/*DU*/ 9.5, pos++));
-        service.add(new AcademicTeacherDegree("MC",/*C*/ 1.0,/*TD*/ 1.0 / 1.33,/*TP*/ 0.5,/*PM*/ 0.5 * (2.0 / 3.0),/*DU*/ 5.5, pos++));
-        service.add(new AcademicTeacherDegree("P",/*C*/ 1.0,/*TD*/ 1.0 / 1.33,/*TP*/ 0.5,/*PM*/ 0.5 * (2.0 / 3.0),/*DU*/ 5.5, pos++));
-        service.add(new AcademicTeacherDegree("C",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ 0.69,/*PM*/ 0.69 * (2.0 / 3.0),/*DU*/ 11, pos++));
-        service.add(new AcademicTeacherDegree("CD",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ 0.69,/*PM*/ 0.69 * (2.0 / 3.0),/*DU*/ 8, pos++));
-        service.add(new AcademicTeacherDegree("V",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ 0.69,/*PM*/ 0.69 * (2.0 / 3.0),/*DU*/ 0, pos++));
-        service.add(new AcademicTeacherDegree("A'",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ 0.69,/*PM*/ 0.69 * (2.0 / 3.0),/*DU*/ 0, pos++));
-        service.add(new AcademicTeacherDegree("MA'",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ (2.0 / 3.0),/*PM*/ (2.0 / 3.0) * (2.0 / 3.0),/*DU*/ 0, pos++));
-        service.add(new AcademicTeacherDegree("MC'",/*C*/ 1.0,/*TD*/ 1.0 / 1.33,/*TP*/ 0.5,/*PM*/ 0.5 * (2.0 / 3.0),/*DU*/ 0, pos++));
+//        service.add(new AcademicTeacherDegree("A",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ 0.69,/*PM*/ 0.69 * (2.0 / 3.0),/*DU*/ 11.0, pos++));
+//        service.add(new AcademicTeacherDegree("MA",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ (2.0 / 3.0),/*PM*/ (2.0 / 3.0) * (2.0 / 3.0),/*DU*/ 9.5, pos++));
+//        service.add(new AcademicTeacherDegree("MC",/*C*/ 1.0,/*TD*/ 1.0 / 1.33,/*TP*/ 0.5,/*PM*/ 0.5 * (2.0 / 3.0),/*DU*/ 5.5, pos++));
+//        service.add(new AcademicTeacherDegree("P",/*C*/ 1.0,/*TD*/ 1.0 / 1.33,/*TP*/ 0.5,/*PM*/ 0.5 * (2.0 / 3.0),/*DU*/ 5.5, pos++));
+//        service.add(new AcademicTeacherDegree("C",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ 0.69,/*PM*/ 0.69 * (2.0 / 3.0),/*DU*/ 11, pos++));
+//        service.add(new AcademicTeacherDegree("CD",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ 0.69,/*PM*/ 0.69 * (2.0 / 3.0),/*DU*/ 8, pos++));
+//        service.add(new AcademicTeacherDegree("V",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ 0.69,/*PM*/ 0.69 * (2.0 / 3.0),/*DU*/ 0, pos++));
+//        service.add(new AcademicTeacherDegree("A'",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ 0.69,/*PM*/ 0.69 * (2.0 / 3.0),/*DU*/ 0, pos++));
+//        service.add(new AcademicTeacherDegree("MA'",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ (2.0 / 3.0),/*PM*/ (2.0 / 3.0) * (2.0 / 3.0),/*DU*/ 0, pos++));
+//        service.add(new AcademicTeacherDegree("MC'",/*C*/ 1.0,/*TD*/ 1.0 / 1.33,/*TP*/ 0.5,/*PM*/ 0.5 * (2.0 / 3.0),/*DU*/ 0, pos++));
+    }
+    //TODO fix me
+    public void importLoadConversionTable() throws IOException {
+        AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
+        int pos = 1;
+//        service.add(new AcademicTeacherDegree("A",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ 0.69,/*PM*/ 0.69 * (2.0 / 3.0),/*DU*/ 11.0, pos++));
+//        service.add(new AcademicTeacherDegree("MA",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ (2.0 / 3.0),/*PM*/ (2.0 / 3.0) * (2.0 / 3.0),/*DU*/ 9.5, pos++));
+//        service.add(new AcademicTeacherDegree("MC",/*C*/ 1.0,/*TD*/ 1.0 / 1.33,/*TP*/ 0.5,/*PM*/ 0.5 * (2.0 / 3.0),/*DU*/ 5.5, pos++));
+//        service.add(new AcademicTeacherDegree("P",/*C*/ 1.0,/*TD*/ 1.0 / 1.33,/*TP*/ 0.5,/*PM*/ 0.5 * (2.0 / 3.0),/*DU*/ 5.5, pos++));
+//        service.add(new AcademicTeacherDegree("C",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ 0.69,/*PM*/ 0.69 * (2.0 / 3.0),/*DU*/ 11, pos++));
+//        service.add(new AcademicTeacherDegree("CD",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ 0.69,/*PM*/ 0.69 * (2.0 / 3.0),/*DU*/ 8, pos++));
+//        service.add(new AcademicTeacherDegree("V",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ 0.69,/*PM*/ 0.69 * (2.0 / 3.0),/*DU*/ 0, pos++));
+//        service.add(new AcademicTeacherDegree("A'",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ 0.69,/*PM*/ 0.69 * (2.0 / 3.0),/*DU*/ 0, pos++));
+//        service.add(new AcademicTeacherDegree("MA'",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ (2.0 / 3.0),/*PM*/ (2.0 / 3.0) * (2.0 / 3.0),/*DU*/ 0, pos++));
+//        service.add(new AcademicTeacherDegree("MC'",/*C*/ 1.0,/*TD*/ 1.0 / 1.33,/*TP*/ 0.5,/*PM*/ 0.5 * (2.0 / 3.0),/*DU*/ 0, pos++));
     }
 
     public void importDepartments(VFile file) throws IOException {
@@ -108,16 +123,71 @@ public class XlsxLoadImporter {
             } else {
                 d = old;
             }
-            d.setValueC(Convert.toDouble(values[1]));
-            d.setValueTD(Convert.toDouble(values[2]));
-            d.setValueTP(Convert.toDouble(values[3]));
-            d.setValuePM(Convert.toDouble(values[4]));
+//            d.setValueC(Convert.toDouble(values[1]));
+//            d.setValueTD(Convert.toDouble(values[2]));
+//            d.setValueTP(Convert.toDouble(values[3]));
+//            d.setValuePM(Convert.toDouble(values[4]));
             d.setValueDU(Convert.toDouble(values[5]));
             d.setPosition(Convert.toInteger(values[6]));
             if (old == null) {
                 service.add(d);
             } else {
                 service.update(d);
+            }
+            count++;
+        }
+        TraceService trace = VrApp.getBean(TraceService.class);
+        trace.trace("importTeacherDegrees", "importDepartments from " + file + " in " + ch.stop() + " (" + count + " rows)", null, getClass().getSimpleName(), Level.INFO);
+        log.log(Level.INFO, "importTeacherDegrees from {0} in {1}", new Object[]{file, ch.stop()});
+    }
+
+    public void importLoadConversionTable(VFile file) throws IOException {
+        AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
+        Chronometer ch = new Chronometer();
+        File tmp = VFS.copyNativeTempFile(file);
+        SheetParser sp = pfm.createSheetParser(tmp);
+        sp.setContainsHeader(true);
+        DataReader rows = sp.parse();
+        long count = 0;
+        AcademicLoadConversionTable table = null;
+        while (rows.hasNext()) {
+            DataRow row = rows.readRow();
+            Object[] values = row.getValues();
+            String tableName = Convert.toString(values[0]);
+            if (table == null) {
+                if(StringUtils.isEmpty(tableName)){
+                    tableName="Table";
+                }
+                table=service.findLoadConversionTable(tableName);
+                if(table==null) {
+                    table = new AcademicLoadConversionTable();
+                    table.setName("Table");
+                    service.add(table);
+                }
+            }
+
+            AcademicLoadConversionRule rule = service.findLoadConversionRule(tableName);
+            if (rule == null) {
+                rule=new AcademicLoadConversionRule();
+                rule.setName(Convert.toString(values[1]));
+                service.add(rule);
+            }
+            AcademicLoadConversionRow trow = service.findLoadConversionRow(table.getId(), rule.getId());
+            if (trow == null) {
+                trow = new AcademicLoadConversionRow();
+                trow.setConversionTable(table);
+                trow.setRule(rule);
+                trow.setValueC(Convert.toDouble(values[2]));
+                trow.setValueTD(Convert.toDouble(values[3]));
+                trow.setValueTP(Convert.toDouble(values[4]));
+                trow.setValuePM(Convert.toDouble(values[5]));
+                service.add(trow);
+            }else{
+                trow.setValueC(Convert.toDouble(values[2]));
+                trow.setValueTD(Convert.toDouble(values[3]));
+                trow.setValueTP(Convert.toDouble(values[4]));
+                trow.setValuePM(Convert.toDouble(values[5]));
+                service.update(trow);
             }
             count++;
         }
@@ -194,7 +264,17 @@ public class XlsxLoadImporter {
         if (file.getName().equals("departments.xlsx")) {
             importDepartments(file);
         }
-        if (file.getName().equals("teacher-degrees.xlsx")) {
+        if (file.getName().equals("load-conversion-table.xlsx")) {
+            if (file.length() > 0) {
+                count++;
+                importLoadConversionTable(file);
+            } else {
+                count++;
+                trace.trace("importLoadConversionTable", "Import Default Conversion Table", null, getClass().getSimpleName(), Level.INFO);
+                XlsxLoadImporter.this.importLoadConversionTable();
+            }
+        }
+        if (file.getName().equals("load-degrees.xlsx")) {
             if (file.length() > 0) {
                 count++;
                 importTeacherDegrees(file);
@@ -206,11 +286,11 @@ public class XlsxLoadImporter {
         }
         if (file.getName().equals("teachers.xlsx") || file.getName().endsWith(".teachers.xlsx")) {
             count++;
-            importTeachers(file);
+            importTeachers(periodId, file);
         }
         if (file.getName().equals("students.xlsx") || file.getName().endsWith(".students.xlsx")) {
             count++;
-            importStudents(file);
+            importStudents(periodId, file);
         }
         if (file.getName().equals("course-assignments.xlsx")) {
             count++;
@@ -275,6 +355,10 @@ public class XlsxLoadImporter {
             AppConfig appConfig = core.findAppConfig();
             ctx.mainCompany = appConfig == null ? null : appConfig.getMainCompany();
         }
+        if (ctx.mainPeriod == null) {
+            AppConfig appConfig = core.findAppConfig();
+            ctx.mainPeriod = appConfig == null ? null : appConfig.getMainPeriod();
+        }
         if (ctx.gendersById == null) {
             ctx.gendersByName = new HashMap<>();
             ctx.gendersById = new HashMap<>();
@@ -314,7 +398,7 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Department Not Found " + a.getDepartmentName());
             }
         }
-        int mainPeriodId = core.findAppConfig().getMainPeriod().getId();
+        int mainPeriodId = ctx.mainPeriod.getId();
         AppPeriod period = null;
         if (a.getStartPeriodId() != null) {
             period = core.findPeriod(a.getStartPeriodId());
@@ -459,7 +543,7 @@ public class XlsxLoadImporter {
         }
     }
 
-    public void importTeachers(VFile file) throws IOException {
+    public void importTeachers(int periodId, VFile file) throws IOException {
         Chronometer ch = new Chronometer();
         log.log(Level.INFO, "importTeachers from {0}", file);
         File tmp = VFS.copyNativeTempFile(file);
@@ -474,6 +558,7 @@ public class XlsxLoadImporter {
             Object[] values = row.getValues();
             AcademicTeacherImport aa = parseAcademicTeacherImport(values);
             ImportTeacherContext ctx = new ImportTeacherContext();
+            ctx.mainPeriod = VrApp.getBean(CorePlugin.class).findPeriodOrMain(periodId);
             if (aa != null) {
                 importTeacher(aa, ctx);
                 count++;
@@ -736,7 +821,7 @@ public class XlsxLoadImporter {
         }, null);
     }
 
-    public int importStudents(VFile file) throws IOException {
+    public int importStudents(int periodId, VFile file) throws IOException {
         final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
         Chronometer ch = new Chronometer();
         log.log(Level.INFO, "importStudents from {0}", file);
@@ -749,6 +834,7 @@ public class XlsxLoadImporter {
 
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         ImportStudentContext importStudentContext = new ImportStudentContext();
+        importStudentContext.mainPeriod = core.findPeriodOrMain(periodId);
         int count = 0;
         while (rows.hasNext()) {
             DataRow row = rows.readRow();
@@ -823,7 +909,6 @@ public class XlsxLoadImporter {
                     || "oui".equalsIgnoreCase(ignoreString))) {
                 ignoreRow = true;
             }
-            AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
 
             if (!ignoreRow) {
                 AcademicCourseType courseType = null;
@@ -997,7 +1082,6 @@ public class XlsxLoadImporter {
                             coursePlan.setValueTD(0);
                             coursePlan.setValueTP(0);
                             coursePlan.setValuePM(0);
-                            coursePlan.setPeriod(mainPeriod);
                             service.add(coursePlan);
                         }
                         AcademicCourseAssignment d = new AcademicCourseAssignment();
@@ -1070,10 +1154,12 @@ public class XlsxLoadImporter {
         Map<Integer, AppCivility> civilityById;
         Map<String, AppProfile> profiles;
         AppCompany mainCompany;
+        AppPeriod mainPeriod;
     }
 
-    public class ImportTeacherContext {
+    public static class ImportTeacherContext {
 
+        AppPeriod mainPeriod;
         AppCompany mainCompany;
         Map<String, AppGender> gendersByName;
         Map<Integer, AppGender> gendersById;

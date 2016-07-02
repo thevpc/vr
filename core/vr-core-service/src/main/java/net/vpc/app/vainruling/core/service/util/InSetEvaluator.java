@@ -43,6 +43,8 @@ public class InSetEvaluator extends AbstractEvaluator<Boolean> {
         evalParams.add(OR);
         evalParams.add(OR2);
         evalParams.add(OR3);
+
+        evalParams.add(EXCEPT);
         // Add the parentheses
         evalParams.addExpressionBracket(BracketPair.PARENTHESES);
         evalParams.addConstants(Arrays.asList(new Constant("all")));

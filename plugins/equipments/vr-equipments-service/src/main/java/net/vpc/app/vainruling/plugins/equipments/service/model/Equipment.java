@@ -24,51 +24,51 @@ public class Equipment {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String serial;
     private String stockSerial;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
     @Field(max = "400")
     private String description;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double quantity;
     private AppArea location;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @ToString
     private EquipmentStatusType statusType;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Category"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Category"))
     private EquipmentType type;
 
-//    @Field(modifiers = UserFieldModifier.SUMMARY)
+//    @Summary
 //    @Formula(value = "this.brandLine.brand", type = FormulaType.LIVE)
 //    private EquipmentBrand brand;
 
     private EquipmentAcquisition acquisition;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_NEWLINE, value = "before,after"))
+            @Property(name = UIConstants.Form.NEWLINE, value = "before,after"))
     private EquipmentBrandLine brandLine;
     @Hierarchy
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_NEWLINE, value = "before,after"))
+            @Property(name = UIConstants.Form.NEWLINE, value = "before,after"))
     private Equipment relativeTo;
 
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     private boolean archived;
     private boolean deleted;
     private String deletedBy;
     private Timestamp deletedOn;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Formula(value = "currentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp createdOn;
 

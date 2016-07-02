@@ -20,14 +20,14 @@ public class AcademicFeedback {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     @Formula("concat(this.course.fullName,' - ',Coalesce(this.student.contact.fullTitle,''))")
     private String name;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicCourseAssignment course;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicStudent student;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicFeedbackModel model;
     @Field(defaultValue = "true")
     private boolean validated;

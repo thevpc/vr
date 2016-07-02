@@ -25,16 +25,16 @@ public class AcademicHistTeacherAnnualLoad {
 
     private int id;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicTeacher teacher;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicHistTeacherDegree degree;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicTeacherSituation situation;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppPeriod academicYear;
 
     public int getId() {

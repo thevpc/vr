@@ -21,9 +21,11 @@ public class AppPeriod {
     private int id;
     @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
     private String name;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private String snapshotName;
     private DateTime creationTime;
+    private boolean navigatable=true;
+    private boolean readOnly=false;
 
     public AppPeriod() {
     }
@@ -67,5 +69,21 @@ public class AppPeriod {
     @Override
     public String toString() {
         return String.valueOf(name);
+    }
+
+    public boolean isNavigatable() {
+        return navigatable;
+    }
+
+    public void setNavigatable(boolean navigatable) {
+        this.navigatable = navigatable;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 }

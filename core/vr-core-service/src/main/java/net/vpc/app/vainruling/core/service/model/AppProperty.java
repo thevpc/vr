@@ -16,7 +16,7 @@ import java.sql.Timestamp;
  * @author vpc
  */
 @Entity(listOrder = "propertyName")
-@Path("Admin")
+@Path("Admin/Config")
 public class AppProperty {
 
     @Id
@@ -27,12 +27,12 @@ public class AppProperty {
     @Field(/*modifiers = {UserFieldModifier.SUMMARY},*/max = "4096")
     private String propertyValue;
     private String propertyType;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppUser user;
     private boolean enabled = true;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})

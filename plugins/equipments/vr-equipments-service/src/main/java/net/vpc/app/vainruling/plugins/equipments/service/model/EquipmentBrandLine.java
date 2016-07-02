@@ -20,9 +20,9 @@ public class EquipmentBrandLine {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private EquipmentBrand brand;
 
     public int getId() {

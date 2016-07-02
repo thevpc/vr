@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.service.test;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.CourseFilter;
 import net.vpc.app.vainruling.plugins.academic.service.XlsxLoadImporter;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.common.gomail.GoMail;
@@ -76,8 +77,8 @@ public class TeachersLoadTest {
             core.setAppProperty("AcademicPlugin.import.version", null, "21bis");
 //        s.resetTeachers();
             s.resetModuleTeaching();
-            s.importTeachingLoad();
-            s.generateTeachingLoad(null);
+            s.importTeachingLoad(-1);
+            s.generateTeachingLoad(-1, new CourseFilter(), null);
         } catch (IOException ex) {
             Logger.getLogger(TeachersLoadTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -97,7 +98,7 @@ public class TeachersLoadTest {
             core.setAppProperty("AcademicPlugin.import.outputFolder", null, outputFolder);
 
             AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
-            s.generateTeachingLoad(null);
+            s.generateTeachingLoad(-1, new CourseFilter(), null);
 //            net.vpc.vfs.VirtualFileSystem fs = core.getFileSystem();
 //            fs = new NativeVFS();
 //            VFS.copy(fs.get(dataFolder), fs.get(outputFolder), new VFileFilter() {
@@ -129,7 +130,7 @@ public class TeachersLoadTest {
 //                    .setTemplateFolder(templatesFolder)
 //                    .setOutputFolder(outputFolder)
 //                    .setOutputNamePattern(namePattern)
-//                    .setIncludeIntents(true)
+//                    .setCourseFilter(true)
 //            );
 //            XMailService mails = new XMailService();
 //            XMail m=mails.read(XMailFormat.TEXT, new File(dir+"/notification-charge.xmail"));

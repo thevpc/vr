@@ -53,46 +53,92 @@ and open the template in the editor.
                                                 </h:panelGrid>
                                             </p:fieldset>-->
 
-                    #{articlesCtrl.loadArticles('Welcome')}
-                    <p:dataGrid var="a" value="#{articlesCtrl.model.articles['Welcome']}" columns="1" layout="grid"
-                                rows="10" paginator="true"
-                                paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                rowsPerPageTemplate="10,20,50,1000"
-                                paginatorAlwaysVisible="false"
-                                paginatorPosition="bottom"
-                                styleClass="noBorderGrid"
-                                emptyMessage=""
-                            >
-                        <p:panel header="#{a.content.subject}"
-                                 footer="écrit par #{(a.content.sender eq null)?'//inconnu//':a.content.sender.contact.fullName} #{(a.content.sendTime eq null)?'' : (jsfCtrl.str(' - (le ',jsfCtrl.date(a.content.sendTime,'dd MMM yyyy') ,')'))}"
-                                 style="margin-bottom:10px"
-                                 styleClass="noBorderGrid"
-                                >
-                            <h:panelGrid columns="1" cellpadding="10">
-                                <h:outputText value="#{a.content.content}" escape="false"/>
-                                <p:outputPanel rendered="#{a.attachments.size() ne 0}">
-                                    <ui:repeat value="#{a.attachments}" var="att">
-                                        <h:outputLink rendered="#{!jsfCtrl.isFSPath(att.path)}"
-                                                      value="#{jsfCtrl.url(att.path)}"
-                                                      styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
-                                                      style="margin-left: 3px;margin-right: 3px;"
-                                                >
-                                            <h:outputText value="#{att.name}"/>
-                                        </h:outputLink>
+                    <p:tabView>
+                        <p:tab title="Principale">
+                            #{articlesCtrl.loadArticles('Welcome')}
+                            <p:dataGrid var="a" value="#{articlesCtrl.model.articles['Welcome']}" columns="1" layout="grid"
+                                        rows="10" paginator="true"
+                                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                        rowsPerPageTemplate="10,20,50,1000"
+                                        paginatorAlwaysVisible="false"
+                                        paginatorPosition="bottom"
+                                        styleClass="noBorderGrid"
+                                        emptyMessage=""
+                                    >
+                                <p:panel header="#{a.content.subject}"
+                                         footer="écrit par #{(a.content.sender eq null)?'//inconnu//':a.content.sender.contact.fullName} #{(a.content.sendTime eq null)?'' : (jsfCtrl.str(' - (le ',jsfCtrl.date(a.content.sendTime,'dd MMM yyyy') ,')'))}"
+                                         style="margin-bottom:10px"
+                                         styleClass="noBorderGrid"
+                                        >
+                                    <h:panelGrid columns="1" cellpadding="10">
+                                        <h:outputText value="#{a.content.content}" escape="false"/>
+                                        <p:outputPanel rendered="#{a.attachments.size() ne 0}">
+                                            <ui:repeat value="#{a.attachments}" var="att">
+                                                <h:outputLink rendered="#{!jsfCtrl.isFSPath(att.path)}"
+                                                              value="#{jsfCtrl.url(att.path)}"
+                                                              styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
+                                                              style="margin-left: 3px;margin-right: 3px;"
+                                                        >
+                                                    <h:outputText value="#{att.name}"/>
+                                                </h:outputLink>
 
-                                        <p:commandLink rendered="#{jsfCtrl.isFSPath(att.path)}"
-                                                       value="#{att.name}"
-                                                       styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
-                                                       style="margin-left: 3px;margin-right: 3px;"
-                                                       ajax="false"
-                                                >
-                                            <p:fileDownload value="#{documentsCtrl.downloadPath(att.path)}"/>
-                                        </p:commandLink>
-                                    </ui:repeat>
-                                </p:outputPanel>
-                            </h:panelGrid>
-                        </p:panel>
-                    </p:dataGrid>
+                                                <p:commandLink rendered="#{jsfCtrl.isFSPath(att.path)}"
+                                                               value="#{att.name}"
+                                                               styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
+                                                               style="margin-left: 3px;margin-right: 3px;"
+                                                               ajax="false"
+                                                        >
+                                                    <p:fileDownload value="#{documentsCtrl.downloadPath(att.path)}"/>
+                                                </p:commandLink>
+                                            </ui:repeat>
+                                        </p:outputPanel>
+                                    </h:panelGrid>
+                                </p:panel>
+                            </p:dataGrid>
+                        </p:tab>
+                        <p:tab title="News">
+                            #{articlesCtrl.loadArticles('News')}
+                            <p:dataGrid var="a" value="#{articlesCtrl.model.articles['News']}" columns="1" layout="grid"
+                                        rows="10" paginator="true"
+                                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                        rowsPerPageTemplate="10,20,50,1000"
+                                        paginatorAlwaysVisible="false"
+                                        paginatorPosition="bottom"
+                                        styleClass="noBorderGrid"
+                                        emptyMessage=""
+                                    >
+                                <p:panel header="#{a.content.subject}"
+                                         footer="écrit par #{(a.content.sender eq null)?'//inconnu//':a.content.sender.contact.fullName} #{(a.content.sendTime eq null)?'' : (jsfCtrl.str(' - (le ',jsfCtrl.date(a.content.sendTime,'dd MMM yyyy') ,')'))}"
+                                         style="margin-bottom:10px"
+                                         styleClass="noBorderGrid"
+                                        >
+                                    <h:panelGrid columns="1" cellpadding="10">
+                                        <h:outputText value="#{a.content.content}" escape="false"/>
+                                        <p:outputPanel rendered="#{a.attachments.size() ne 0}">
+                                            <ui:repeat value="#{a.attachments}" var="att">
+                                                <h:outputLink rendered="#{!jsfCtrl.isFSPath(att.path)}"
+                                                              value="#{jsfCtrl.url(att.path)}"
+                                                              styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
+                                                              style="margin-left: 3px;margin-right: 3px;"
+                                                        >
+                                                    <h:outputText value="#{att.name}"/>
+                                                </h:outputLink>
+
+                                                <p:commandLink rendered="#{jsfCtrl.isFSPath(att.path)}"
+                                                               value="#{att.name}"
+                                                               styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
+                                                               style="margin-left: 3px;margin-right: 3px;"
+                                                               ajax="false"
+                                                        >
+                                                    <p:fileDownload value="#{documentsCtrl.downloadPath(att.path)}"/>
+                                                </p:commandLink>
+                                            </ui:repeat>
+                                        </p:outputPanel>
+                                    </h:panelGrid>
+                                </p:panel>
+                            </p:dataGrid>
+                        </p:tab>
+                    </p:tabView>
                 </div>
             </h:form>
         </ui:define>

@@ -22,19 +22,19 @@ public class ForumThread {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String subject;
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
     @Field(max = "max")
     private String content;
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "SourceAndDestination"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
     private AppUser user;
     private String recipientProfiles;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     private boolean archived;
     private boolean deleted;
     private String deletedBy;

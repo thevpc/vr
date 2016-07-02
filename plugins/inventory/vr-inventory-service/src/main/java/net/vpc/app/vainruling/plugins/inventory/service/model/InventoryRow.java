@@ -25,23 +25,23 @@ public class InventoryRow {
     @Sequence
     private int id;
     @ManyToOne(type = RelationshipType.COMPOSITION)
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Inventory inventory;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppUser user;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Date date;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Equipment equipment;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppArea area;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double expectedQuantity;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Double quantity1;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Double quantity2;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Double quantity3;
 
     public int getId() {

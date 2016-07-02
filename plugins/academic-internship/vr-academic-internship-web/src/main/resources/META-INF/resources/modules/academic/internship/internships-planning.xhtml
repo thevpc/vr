@@ -133,6 +133,13 @@ and open the template in the editor.
                                     <f:selectItems value="#{internshipsPlanningCtrl.model.groups}"/>
                                 </p:selectOneMenu>
 
+                                <p:selectOneMenu style="margin-left: 20px;height: 40px;" value="#{internshipsPlanningCtrl.model.selectedSessionType}">
+                                    <p:ajax listener="#{internshipsPlanningCtrl.onSessionTypeChanged}"
+                                            update=":listForm"/>
+                                    <f:selectItem itemLabel="Selectionner Session..." itemValue=""/>
+                                    <f:selectItems value="#{internshipsPlanningCtrl.model.sessionTypes}"/>
+                                </p:selectOneMenu>
+
                                 <p:scrollPanel style="margin-top: 10px;">
                                     <p:dataTable id="juryTable" styleClass="noBorderGrid"
                                                  style="border-style: none;border-width: 0px;width:#{internshipsPlanningCtrl.model.bestWidth}px;"

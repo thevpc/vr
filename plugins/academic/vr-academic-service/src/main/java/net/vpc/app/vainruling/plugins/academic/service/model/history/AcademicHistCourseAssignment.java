@@ -27,22 +27,22 @@ public class AcademicHistCourseAssignment {
     @Field(modifiers = {UserFieldModifier.MAIN})
     private String name;
     private String name2;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicTeacher teacher;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double valueC;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double valueTD;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double valueTP;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double valuePM;
     //    private double valueDU;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double valueEffWeek;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double groupCount = 1;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicCourseType courseType;
     /**
      * number of teachers or Masters sharing the same Course load
@@ -50,7 +50,7 @@ public class AcademicHistCourseAssignment {
     private double shareCount = 1;
 
     private AcademicCoursePlan coursePlan;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppPeriod academicYear;
 
     private AppDepartment ownerDepartment;

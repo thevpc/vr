@@ -22,13 +22,13 @@ public class AcademicReportTitle {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicTeacher teacher;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Date creationDate;
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String observations;
 
     public int getId() {

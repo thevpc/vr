@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.stat;
 
+import net.vpc.app.vainruling.plugins.academic.service.CourseFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherSemestrialLoad;
@@ -12,22 +13,16 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTea
 /**
  * @author vpc
  */
-public class TeacherStat {
-
-    private AcademicTeacher teacher;
-    private AcademicTeacherPeriod teacherPeriod;
-    private AcademicTeacherSemestrialLoad[] semestrialLoad;
+public abstract class TeacherBaseStat {
     private LoadValue value = new LoadValue();
-    private LoadValue extra = new LoadValue();
-    private LoadValue due = new LoadValue();
     private LoadValue valueWeek = new LoadValue();
     private LoadValue extraWeek = new LoadValue();
+    private LoadValue extra = new LoadValue();
+    private LoadValue due = new LoadValue();
     private LoadValue dueWeek = new LoadValue();
-    //    private double valueWeekEquiv;
     private double weeks;
     private double maxWeeks;
-    private boolean includeIntents;
-    private TeacherSemesterStat[] semesters;
+
 
     public LoadValue getExtra() {
         return extra;
@@ -45,28 +40,6 @@ public class TeacherStat {
         this.due = due;
     }
 
-    //    public double getValueWeekEquiv() {
-//        return valueWeekEquiv;
-//    }
-//
-//    public void setValueWeekEquiv(double valueWeekEquiv) {
-//        this.valueWeekEquiv = valueWeekEquiv;
-//    }
-    public AcademicTeacher getTeacher() {
-        return teacher;
-    }
-
-    public void setTeacher(AcademicTeacher teacher) {
-        this.teacher = teacher;
-    }
-
-    public TeacherSemesterStat[] getSemesters() {
-        return semesters;
-    }
-
-    public void setSemesters(TeacherSemesterStat[] semesters) {
-        this.semesters = semesters;
-    }
 
     public LoadValue getValue() {
         return value;
@@ -92,14 +65,6 @@ public class TeacherStat {
         this.maxWeeks = maxWeeks;
     }
 
-    public AcademicTeacherSemestrialLoad[] getSemestrialLoad() {
-        return semestrialLoad;
-    }
-
-    public void setSemestrialLoad(AcademicTeacherSemestrialLoad[] semestrialLoad) {
-        this.semestrialLoad = semestrialLoad;
-    }
-
     public LoadValue getExtraWeek() {
         return extraWeek;
     }
@@ -120,19 +85,5 @@ public class TeacherStat {
         return valueWeek;
     }
 
-    public boolean isIncludeIntents() {
-        return includeIntents;
-    }
-
-    public void setIncludeIntents(boolean includeIntents) {
-        this.includeIntents = includeIntents;
-    }
-
-    public AcademicTeacherPeriod getTeacherPeriod() {
-        return teacherPeriod;
-    }
-
-    public void setTeacherPeriod(AcademicTeacherPeriod teacherPeriod) {
-        this.teacherPeriod = teacherPeriod;
-    }
+    public abstract AcademicTeacher getTeacher();
 }

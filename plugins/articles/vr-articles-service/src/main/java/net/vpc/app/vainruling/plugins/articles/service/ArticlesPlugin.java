@@ -293,6 +293,7 @@ public class ArticlesPlugin {
             mailData.setToFilter(a.getFilterExpression());
             mailData.setCategory("Article");
             mailData.setEmailType(etype);
+            mailData.setRichText(true);
             mailData.setExternal(true);
 
 //            GoMail m = new GoMail();
@@ -431,7 +432,7 @@ public class ArticlesPlugin {
             return emailType;
         }
 
-        public void setEmailType(EmailDestinationType mailType) {
+        public void setEmailType(EmailDestinationType emailType) {
             this.emailType = emailType;
         }
 

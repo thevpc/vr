@@ -21,19 +21,19 @@ public class MailboxMessageFormat {
     private int id;
     @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
     private String name;
-    @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     private boolean preferFormattedText;
     @Field(max = "1024")
     private String subject;
     @Field(max = "max")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String plainBody;
     @Field(max = "max")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String formattedBody;
     @Field(max = "512")
-    @Properties({@Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
-            @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")})
+    @Properties({@Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
+            @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")})
     private String footerEmbeddedImage;
 
     public MailboxMessageFormat() {

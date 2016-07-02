@@ -16,7 +16,7 @@ import net.vpc.upa.config.*;
 /**
  * @author vpc
  */
-@Entity(listOrder = "contact.fullName")
+@Entity()
 @Path("Contact")
 @Properties(
         @Property(name = "cache.navigationDepth", type = "int", value = "1")
@@ -27,17 +27,17 @@ public class AcademicTeacherPeriod {
     @Sequence
 
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private AppPeriod period;
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicTeacher teacher;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicTeacherDegree degree;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicTeacherSituation situation;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppDepartment department;
     @Field(defaultValue = "true", modifiers = {UserFieldModifier.SUMMARY})
     @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")

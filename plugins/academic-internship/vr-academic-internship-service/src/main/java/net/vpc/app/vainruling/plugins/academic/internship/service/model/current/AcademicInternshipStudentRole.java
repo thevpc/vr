@@ -20,9 +20,9 @@ public class AcademicInternshipStudentRole {
     @Sequence
 
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private AcademicInternship internship;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicStudent student;
 
     public int getId() {

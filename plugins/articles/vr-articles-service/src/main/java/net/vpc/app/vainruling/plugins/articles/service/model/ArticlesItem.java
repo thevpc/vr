@@ -30,28 +30,28 @@ public class ArticlesItem {
     @Sequence
     private int id;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.PROFILE_EXPRESSION))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION))
     private String recipientProfiles;
 
     private boolean includeSender;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private ArticlesDisposition disposition;
 
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String subject;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.RICHTEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.RICHTEXTAREA))
     @Field(max = "max")
     private String content;
 
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Attatchment"),
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
-            @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Attatchment"),
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
+            @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
     )
     @Field(max = "1024")
@@ -62,17 +62,17 @@ public class ArticlesItem {
     private String linkClassStyle;
 
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
-            @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
+            @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
     )
     private String imageURL;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Flags"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Flags"))
     @Field(defaultValue = "0", modifiers = UserFieldModifier.SUMMARY)
     private int position;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private boolean important;
 
     @Field(modifiers = UserFieldModifier.SUMMARY,
@@ -80,7 +80,7 @@ public class ArticlesItem {
             updateAccessLevel = AccessLevel.PROTECTED
     )
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "SourceAndDestination"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
     private AppUser sender;
 
     @Field(modifiers = UserFieldModifier.SUMMARY,
@@ -88,14 +88,14 @@ public class ArticlesItem {
     )
     private String filterExpression;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private DateTime sendTime;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     private boolean archived;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private boolean deleted;
 
     private String deletedBy;

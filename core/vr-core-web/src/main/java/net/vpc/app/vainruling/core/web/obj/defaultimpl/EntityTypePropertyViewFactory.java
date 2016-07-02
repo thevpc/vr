@@ -46,8 +46,8 @@ public class EntityTypePropertyViewFactory implements PropertyViewFactory {
 //        boolean forceInvisible = configuration != null && configuration.get("invisible") != null && (Boolean.TRUE.equals(configuration.get("invisible")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("invisible"))));
 //        boolean visible
 //                = insertMode
-//                        ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_CREATE, null, true)
-//                        : updateMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_UPDATE, null, true)
+//                        ? UPAObjectHelper.findBooleanProperty(field, UIConstants.Form.VISIBLE_ON_CREATE, null, true)
+//                        : updateMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.Form.VISIBLE_ON_UPDATE, null, true)
 //                                : true;
         if (!nfo.visible) {
             return null;
@@ -60,7 +60,7 @@ public class EntityTypePropertyViewFactory implements PropertyViewFactory {
             KeyType t = (KeyType) nfo.dataType;
             me = t.getEntity();
         }
-        String controlType = field == null ? UIConstants.ControlType.ENTITY : UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.ENTITY);
+        String controlType = field == null ? UIConstants.Control.ENTITY : UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.ENTITY);
         final EntityTypePropertyView propView = new EntityTypePropertyView(componentId, field, nfo.dataType, controlType, manager);
         propView.update(viewContext);
 
@@ -89,8 +89,8 @@ public class EntityTypePropertyViewFactory implements PropertyViewFactory {
                         }
                         all.add(r0);
                         if (i == (r.length - 1)) {
-                            if (r0.getCtrlType().equals(UIConstants.ControlType.ENTITY)) {
-                                r0.setCtrlType(UIConstants.ControlType.ENTITY + "_onchange");
+                            if (r0.getCtrlType().equals(UIConstants.Control.ENTITY)) {
+                                r0.setCtrlType(UIConstants.Control.ENTITY + "_onchange");
                             }
                             r0.setSubmitOnChange(true);
                             r0.setChangeListener(new ValueChangeListener() {

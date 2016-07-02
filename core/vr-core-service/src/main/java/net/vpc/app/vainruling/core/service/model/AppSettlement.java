@@ -20,9 +20,9 @@ public class AppSettlement {
     @Sequence
 
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
-    @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     private String name2;
     private AppGovernorate governorate;
 

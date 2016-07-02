@@ -40,14 +40,23 @@ public class VrConfigureInstall {
             return false;
         }
         String rp = servletContext.getRealPath("/") + LOCK_PATH;
-        if (new File(rp).exists()) {
+        File lockFile = new File(rp);
+        if (lockFile.exists()) {
             return false;
         }
         AppProperty p = findSystemProperty("System.FileSystem");
         getModel().setRootPath(p == null ? null : p.getPropertyValue());
         String s = getModel().getRootPath();
-        if (StringUtils.isEmpty(s) || new File(s).exists()) {
+        if (StringUtils.isEmpty(s) || !new File(s).exists() || !new File(s).isDirectory()) {
             return true;
+        }
+        try {
+            if(lockFile.getParentFile()!=null) {
+                lockFile.getParentFile().mkdirs();
+            }
+            lockFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return false;
     }

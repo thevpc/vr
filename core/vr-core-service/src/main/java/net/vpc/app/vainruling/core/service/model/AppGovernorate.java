@@ -24,9 +24,9 @@ public class AppGovernorate {
     private String name;
     private String name2;
     private String name3;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppCountry country;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppCountryRegion region;
 
     public AppGovernorate() {

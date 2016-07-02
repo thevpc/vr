@@ -5,17 +5,14 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.plugins.academic.service.helper.AcademicConversionTableHelper;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseIntent;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherSemestrialLoad;
-import net.vpc.upa.Entity;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.QueryHints;
-import net.vpc.upa.UPA;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
+import net.vpc.upa.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +32,7 @@ public class StatCache {
     private Integer semesterMaxWeeks;
     private List<AcademicSemester> academicSemesterList;
     private Map<Integer, PeriodCache> periods = new HashMap<>();
+    private Map<Integer, AcademicConversionTableHelper> conversionTables = new HashMap<>();
 
     public static <K, V> Map<K, V> toMap(List<V> entityList) {
         Map<K, V> m = new HashMap<>();
@@ -48,6 +46,17 @@ public class StatCache {
             m.put(k, e);
         }
         return m;
+    }
+
+    public AcademicConversionTableHelper getConversionTable(int id) {
+        AcademicConversionTableHelper h = conversionTables.get(id);
+        if(h==null){
+            h=VrApp.getBean(AcademicPlugin.class).buildAcademicConversionTable(id);
+            if(h!=null){
+                conversionTables.put(id,h);
+            }
+        }
+        return h;
     }
 
     public PeriodCache forPeriod(int periodId) {
@@ -117,6 +126,8 @@ public class StatCache {
     public static class PeriodCache {
         StatCache global;
         int periodId;
+        int loadConversionTableId=-1;
+        AcademicLoadConversionTable conversionTable;
         private Map<Integer, List<AcademicCourseAssignment>> academicCourseAssignmentListByTeacherId;
         private List<AcademicTeacherSemestrialLoad> academicTeacherSemestrialLoadList;
         private Map<Integer, List<AcademicTeacherSemestrialLoad>> academicTeacherSemestrialLoadByTeacherIdMap;
@@ -129,6 +140,20 @@ public class StatCache {
         public PeriodCache(int periodId, StatCache global) {
             this.global = global;
             this.periodId = periodId;
+        }
+
+        public AcademicConversionTableHelper getConversionTable() {
+            if(loadConversionTableId<=0) {
+                Integer id = UPA.getPersistenceUnit()
+                        .createQuery("Select a.loadConversionTableId from AppPeriod a where a.id=:id")
+                        .setParameter("id", periodId)
+                        .getInteger();
+                if(id==null){
+                    throw new IllegalArgumentException("Missing Conversion Table for Period "+periodId+" : "+VrApp.getBean(CorePlugin.class).findPeriod(periodId));
+                }
+                loadConversionTableId = id;
+            }
+            return global.getConversionTable(loadConversionTableId);
         }
 
         public Map<Integer, AcademicCourseAssignment> getAcademicCourseAssignmentMap() {
@@ -156,7 +181,7 @@ public class StatCache {
 //                    .setHint(QueryHints.NAVIGATION_DEPTH, 5)
 //                    .getEntityList();
                 academicCourseIntentList = UPA.getPersistenceUnit().createQuery("Select u from AcademicCourseIntent u where u.assignment.coursePlan.periodId=:periodId")
-                        .setHint(QueryHints.NAVIGATION_DEPTH, 3)
+                        .setHint(QueryHints.NAVIGATION_DEPTH, 4)
                         .setParameter("periodId", periodId)
                         .getEntityList();
             }
@@ -219,20 +244,24 @@ public class StatCache {
             return academicCourseAssignmentListByTeacherId;
         }
 
-        public List<AcademicCourseAssignment> getAcademicCourseAssignmentsByTeacherAndSemester(Integer teacher, String semester) {
+        public List<AcademicCourseAssignment> getAcademicCourseAssignmentsByTeacherAndSemester(Integer teacher, String semester,CourseFilter filter) {
             List<AcademicCourseAssignment> m = new ArrayList<>();
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
             if (teacher == null) {
                 for (AcademicCourseAssignment value : getAcademicCourseAssignmentList()) {
                     if (semester == null || (value.getCoursePlan().getCourseLevel().getSemester() != null && value.getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
-                        m.add(value);
+                        if(a.acceptAssignment(value,filter)) {
+                            m.add(value);
+                        }
                     }
                 }
             } else {
                 List<AcademicCourseAssignment> list = getAcademicCourseAssignmentListByTeacherId().get(teacher);
+                AcademicTeacher tt = global.getAcademicTeacherMap().get(teacher);
+                AcademicTeacherPeriod tp = tt==null?null: a.findAcademicTeacherPeriod(periodId, tt);
                 if (list == null) {
-                    AcademicTeacher tt = global.getAcademicTeacherMap().get(teacher);
                     if (tt != null) {
-                        if (!tt.isEnabled()) {
+                        if (!tp.isEnabled()) {
                             //this is okkay!
                         } else {
                             System.out.println("No assignments for teacherId=" + teacher + " : " + tt);
@@ -241,13 +270,14 @@ public class StatCache {
                         System.out.println("No assignments for teacherId=" + teacher + " : " + tt);
                     }
                 } else {
-                    AcademicTeacher tt = global.getAcademicTeacherMap().get(teacher);
-                    if (tt != null && !tt.isEnabled()) {
+                    if (tt != null && !tp.isEnabled()) {
                         System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled!");
                     }
                     for (AcademicCourseAssignment value : list) {
                         if (semester == null || (value.getCoursePlan().getCourseLevel().getSemester() != null && value.getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
-                            m.add(value);
+                            if(a.acceptAssignment(value,filter)) {
+                                m.add(value);
+                            }
                         }
                     }
                 }

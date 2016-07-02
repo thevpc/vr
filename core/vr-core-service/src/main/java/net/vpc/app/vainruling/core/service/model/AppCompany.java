@@ -23,17 +23,17 @@ public class AppCompany {
     @Sequence
 
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
-    @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     private String name2;
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String address;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppCountry country;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppGovernorate governorate;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppSettlement settlement;
     private AppIndustry industry;
     private String postalCode;
@@ -44,7 +44,7 @@ public class AppCompany {
     private String mainWebSite;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})

@@ -25,26 +25,26 @@ public class EquipmentStatusLog {
     /**
      * description of the status, for instance when borrowed tell why
      */
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
 
     @Field(modifiers = UserFieldModifier.SUMMARY, max = "1024")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Timestamp startDate;
 
     /**
      * may be borrow return date if status=borrowed
      */
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Timestamp endDate;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Equipment equipment;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @ToString
     private EquipmentStatusType type;
 

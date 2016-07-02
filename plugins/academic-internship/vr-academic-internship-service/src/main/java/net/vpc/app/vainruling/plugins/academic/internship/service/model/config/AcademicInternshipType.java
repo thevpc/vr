@@ -19,7 +19,7 @@ public class AcademicInternshipType {
     @Sequence
 
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
 
     @Field(defaultValue = "false")

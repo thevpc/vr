@@ -684,7 +684,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                         }
                     } else if (t instanceof ManyToOneType) {
                         ManyToOneType et = (ManyToOneType) t;
-                        Entity re = UPA.getPersistenceUnit().getEntity(et.getReferencedEntityName());
+                        Entity re = UPA.getPersistenceUnit().getEntity(et.getTargetEntityName());
                         List<Field> rpp = re.getPrimaryFields();
                         if (rpp.size() == 1 && PlatformTypes.isInteger(fieldValueString)) {
                             Object v = re.findById(Integer.parseInt(fieldValueString));
@@ -777,7 +777,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             Entity ot = UPA.getPersistenceUnit().getEntity(getEntityName());
             columns.clear();
             properties.clear();
-            boolean adm = VrApp.getBean(CorePlugin.class).isActualAdmin();
+            boolean adm = VrApp.getBean(CorePlugin.class).isUserSessionAdmin();
 
             List<Field> fields = new ArrayList<Field>();
             if (getModel().getFieldSelection() == null) {
@@ -794,9 +794,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                         continue;
                     }
                 }
-                String type = UIConstants.ControlType.TEXT;
+                String type = UIConstants.Control.TEXT;
                 if (PlatformTypes.isBooleanType(field.getDataType().getPlatformType())) {
-                    type = UIConstants.ControlType.CHECKBOX;
+                    type = UIConstants.Control.CHECKBOX;
                 }
                 String property = field.getName();
                 String propertyExpr = field.getName();
@@ -832,7 +832,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 for (Relationship relation : ot.getRelationships()) {
                     if (relation.getTargetEntity().getName().equals(ot.getName())) {
                         if (relation.getRelationshipType() == RelationshipType.COMPOSITION) {
-                            EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.ControlType.ENTITY_DETAIL, propertyViewManager);
+                            EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
                             details.setPrependNewLine((counter % maxPerLine) == 0);
                             details.setAppendNewLine(false);
                             details.setColspan(1);
@@ -850,7 +850,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 for (Relationship relation : ot.getRelationships()) {
                     if (relation.getTargetEntity().getName().equals(ot.getName())) {
                         if (relation.getRelationshipType() == RelationshipType.AGGREGATION) {
-                            EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.ControlType.ENTITY_DETAIL, propertyViewManager);
+                            EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
                             details.setPrependNewLine((counter % maxPerLine) == 0);
                             details.setAppendNewLine(false);
                             details.setColspan(1);
@@ -870,7 +870,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     if (relation.getTargetEntity().getName().equals(ot.getName())) {
                         final RelationshipType t = relation.getRelationshipType();
                         if (t != RelationshipType.AGGREGATION && t != RelationshipType.COMPOSITION) {
-                            EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.ControlType.ENTITY_DETAIL, propertyViewManager);
+                            EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
                             details.setPrependNewLine((counter % maxPerLine) == 0);
                             details.setAppendNewLine(false);
                             details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
@@ -899,7 +899,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     h.addLabel("", 1, 1);
                 }
                 if (hasSeparator) {
-                    h.addControl(ctrl.getSeparatorText(), UIConstants.ControlType.SEPARATOR, Integer.MAX_VALUE, 1);
+                    h.addControl(ctrl.getSeparatorText(), UIConstants.Control.SEPARATOR, Integer.MAX_VALUE, 1);
                 }
                 if (!ctrl.isNoLabel()) {
                     label = h.addLabel(ctrl.getName(), 1, 1);

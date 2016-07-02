@@ -11,6 +11,7 @@ import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
@@ -46,8 +47,10 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
         super.onRefresh();
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         getModel().setTeachers(new ArrayList<SelectItem>());
+        int periodId = getPeriodId();
         for (AcademicTeacher t : p.findTeachers()) {
-            if (t.isEnabled()) {
+            AcademicTeacherPeriod tp = p.findAcademicTeacherPeriod(periodId, t);
+            if (tp.isEnabled()) {
                 getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), t.getContact().getFullName()));
             }
         }

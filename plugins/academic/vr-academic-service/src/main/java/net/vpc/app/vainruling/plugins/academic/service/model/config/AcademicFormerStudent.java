@@ -7,10 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.service.model.config;
 
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
+import net.vpc.upa.config.*;
 
 import java.util.Date;
 import java.util.Objects;
@@ -23,7 +20,7 @@ import java.util.Objects;
 public class AcademicFormerStudent {
 
     @Id
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private AcademicStudent student;
     private Date graduationDate;
     private String eliminationReason;
@@ -40,7 +37,7 @@ public class AcademicFormerStudent {
     @Field(defaultValue = "0")
     private int lastSalary;
     private String lastJobPosition;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppCompany lastJobCompany;
 
     public String getLastJobPosition() {

@@ -36,6 +36,13 @@ and open the template in the editor.
 
                 <!-- /.row -->
                 <div class="row">
+                    <p:outputLabel value="Période" style="margin-left: 10px;margin-right: 10px; vertical-align: super;"/>
+                    <p:selectOneMenu value="#{teacherCourseLoadCtrl.model.selectedPeriod}">
+                        <p:ajax listener="#{teacherCourseLoadCtrl.onPeriodChanged}" update=":buttonsForm :listForm"/>
+                        <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
+                        <f:selectItems value="#{teacherCourseLoadCtrl.model.periods}"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="Enseignant" style="margin-left: 10px;margin-right: 10px; vertical-align: super;"/>
                     <p:selectOneMenu value="#{teacherCourseLoadCtrl.model.teacherId}">
                         <p:ajax listener="#{teacherCourseLoadCtrl.onTeacherChanged}" update=":buttonsForm :listForm"/>
                         <f:selectItem itemLabel="Selectionner Enseignant..." itemValue=""/>
@@ -49,7 +56,9 @@ and open the template in the editor.
             <h:form id="listForm">
                 <div class="row">
                     <div class="table-responsive">
-                        <h1><p:outputLabel style="font-weight: bold"
+                        <h1>
+                            <p:commandLink action="#{vrMenuManager.gotoPageObjItem('AcademicTeacher',jsfCtrl.str(teacherCourseLoadCtrl.model.currentTeacher.id))}"
+                                           style="font-weight: bold"
                                            value="#{teacherCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.teacher.situation.name}"/>
                         </h1>
                         <p:panelGrid>
@@ -387,7 +396,7 @@ and open the template in the editor.
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     <p:menuitem value="Supp. Affectation"
                                                 disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
-                                                actionListener="#{teacherCourseLoadCtrl.doUnAssign(assignementId)}"
+                                                actionListener="#{teacherCourseLoadCtrl.doUnAssign(i.assignment.id)}"
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                 </p:menuButton>
                             </p:column>

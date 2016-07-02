@@ -24,27 +24,31 @@ public class AcademicTeacherDegree {
     @Sequence
 
     private int id;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private String code;
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private String name;
     private String name2;
     private String name3;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
-    private double valueC;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
-    private double valueTD;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
-    private double valueTP;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
+    private AcademicLoadConversionRule conversionRule;
+
+    @Summary
     private double valueDU;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
-    private double valuePM;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+
+//    @Summary
+//    private double valueC;
+//    @Summary
+//    private double valueTD;
+//    @Summary
+//    private double valueTP;
+//    @Summary
+//    private double valuePM;
+//    @Summary
     private int position;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
@@ -53,15 +57,15 @@ public class AcademicTeacherDegree {
     public AcademicTeacherDegree() {
     }
 
-    public AcademicTeacherDegree(String name, double valueC, double valueTD, double valueTP, double valuePM, double valueDU, int position) {
-        this.name = name;
-        this.valueC = valueC;
-        this.valueTD = valueTD;
-        this.valueTP = valueTP;
-        this.valueDU = valueDU;
-        this.valuePM = valuePM;
-        this.position = position;
-    }
+//    public AcademicTeacherDegree(String name, double valueC, double valueTD, double valueTP, double valuePM, double valueDU, int position) {
+//        this.name = name;
+//        this.valueC = valueC;
+//        this.valueTD = valueTD;
+//        this.valueTP = valueTP;
+//        this.valueDU = valueDU;
+//        this.valuePM = valuePM;
+//        this.position = position;
+//    }
 
     public String getCode() {
         return code;
@@ -103,29 +107,29 @@ public class AcademicTeacherDegree {
         this.name = name;
     }
 
-    public double getValueC() {
-        return valueC;
-    }
-
-    public void setValueC(double valueC) {
-        this.valueC = valueC;
-    }
-
-    public double getValueTD() {
-        return valueTD;
-    }
-
-    public void setValueTD(double valueTD) {
-        this.valueTD = valueTD;
-    }
-
-    public double getValueTP() {
-        return valueTP;
-    }
-
-    public void setValueTP(double valueTP) {
-        this.valueTP = valueTP;
-    }
+//    public double getValueC() {
+//        return valueC;
+//    }
+//
+//    public void setValueC(double valueC) {
+//        this.valueC = valueC;
+//    }
+//
+//    public double getValueTD() {
+//        return valueTD;
+//    }
+//
+//    public void setValueTD(double valueTD) {
+//        this.valueTD = valueTD;
+//    }
+//
+//    public double getValueTP() {
+//        return valueTP;
+//    }
+//
+//    public void setValueTP(double valueTP) {
+//        this.valueTP = valueTP;
+//    }
 
     public double getValueDU() {
         return valueDU;
@@ -135,63 +139,68 @@ public class AcademicTeacherDegree {
         this.valueDU = valueDU;
     }
 
-    public double getValuePM() {
-        return valuePM;
-    }
+//    public double getValuePM() {
+//        return valuePM;
+//    }
+//
+//    public void setValuePM(double valuePM) {
+//        this.valuePM = valuePM;
+//    }
 
-    public void setValuePM(double valuePM) {
-        this.valuePM = valuePM;
-    }
 
     @Override
     public String toString() {
-        return "TeacherDegree{" + "name=" + name + ", valueC=" + valueC + ", valueTD=" + valueTD + ", valueTP=" + valueTP + ", valueDU=" + valueDU + ", valuePM=" + valuePM + '}';
+        return "AcademicTeacherDegree{" +
+                "id=" + id +
+                ", code='" + code + '\'' +
+                ", name='" + name + '\'' +
+                ", name2='" + name2 + '\'' +
+                ", name3='" + name3 + '\'' +
+                ", conversionRule=" + conversionRule +
+                ", valueDU=" + valueDU +
+                ", position=" + position +
+                ", creationDate=" + creationDate +
+                ", updateDate=" + updateDate +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AcademicTeacherDegree)) return false;
+
+        AcademicTeacherDegree that = (AcademicTeacherDegree) o;
+
+        if (id != that.id) return false;
+        if (Double.compare(that.valueDU, valueDU) != 0) return false;
+        if (position != that.position) return false;
+        if (code != null ? !code.equals(that.code) : that.code != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (name2 != null ? !name2.equals(that.name2) : that.name2 != null) return false;
+        if (name3 != null ? !name3.equals(that.name3) : that.name3 != null) return false;
+        if (conversionRule != null ? !conversionRule.equals(that.conversionRule) : that.conversionRule != null)
+            return false;
+        if (creationDate != null ? !creationDate.equals(that.creationDate) : that.creationDate != null) return false;
+        return !(updateDate != null ? !updateDate.equals(that.updateDate) : that.updateDate != null);
+
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 59 * hash + this.id;
-        hash = 59 * hash + Objects.hashCode(this.name);
-        hash = 59 * hash + (int) (Double.doubleToLongBits(this.valueC) ^ (Double.doubleToLongBits(this.valueC) >>> 32));
-        hash = 59 * hash + (int) (Double.doubleToLongBits(this.valueTD) ^ (Double.doubleToLongBits(this.valueTD) >>> 32));
-        hash = 59 * hash + (int) (Double.doubleToLongBits(this.valueTP) ^ (Double.doubleToLongBits(this.valueTP) >>> 32));
-        hash = 59 * hash + (int) (Double.doubleToLongBits(this.valueDU) ^ (Double.doubleToLongBits(this.valueDU) >>> 32));
-        hash = 59 * hash + (int) (Double.doubleToLongBits(this.valuePM) ^ (Double.doubleToLongBits(this.valuePM) >>> 32));
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final AcademicTeacherDegree other = (AcademicTeacherDegree) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        if (Double.doubleToLongBits(this.valueC) != Double.doubleToLongBits(other.valueC)) {
-            return false;
-        }
-        if (Double.doubleToLongBits(this.valueTD) != Double.doubleToLongBits(other.valueTD)) {
-            return false;
-        }
-        if (Double.doubleToLongBits(this.valueTP) != Double.doubleToLongBits(other.valueTP)) {
-            return false;
-        }
-        if (Double.doubleToLongBits(this.valueDU) != Double.doubleToLongBits(other.valueDU)) {
-            return false;
-        }
-        if (Double.doubleToLongBits(this.valuePM) != Double.doubleToLongBits(other.valuePM)) {
-            return false;
-        }
-        return true;
+        int result;
+        long temp;
+        result = id;
+        result = 31 * result + (code != null ? code.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (name2 != null ? name2.hashCode() : 0);
+        result = 31 * result + (name3 != null ? name3.hashCode() : 0);
+        result = 31 * result + (conversionRule != null ? conversionRule.hashCode() : 0);
+        temp = Double.doubleToLongBits(valueDU);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + position;
+        result = 31 * result + (creationDate != null ? creationDate.hashCode() : 0);
+        result = 31 * result + (updateDate != null ? updateDate.hashCode() : 0);
+        return result;
     }
 
     public String getName3() {
@@ -218,5 +227,11 @@ public class AcademicTeacherDegree {
         this.updateDate = updateDate;
     }
 
+    public AcademicLoadConversionRule getConversionRule() {
+        return conversionRule;
+    }
 
+    public void setConversionRule(AcademicLoadConversionRule conversionRule) {
+        this.conversionRule = conversionRule;
+    }
 }

@@ -19,10 +19,10 @@ import net.vpc.upa.config.*;
 public class AcademicTeacherCV {
 
     @Id
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private AcademicTeacher teacher;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String title1;
     private String subTitle1;
 
@@ -34,27 +34,27 @@ public class AcademicTeacherCV {
 
     @Field(max = "max")
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.RICHTEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.RICHTEXTAREA))
     private String aboutText;
 
     @Field(max = "max")
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.RICHTEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.RICHTEXTAREA))
     private String teachingText;
 
     @Field(max = "max")
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.RICHTEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.RICHTEXTAREA))
     private String researchText;
 
     @Field(max = "max")
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.RICHTEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.RICHTEXTAREA))
     private String educationText;
 
     @Field(max = "max")
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.RICHTEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.RICHTEXTAREA))
     private String projectsText;
 
     private String extraImage;
@@ -62,7 +62,7 @@ public class AcademicTeacherCV {
     private String extraTitle;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.RICHTEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.RICHTEXTAREA))
     @Field(max = "max")
     private String extraText;
 

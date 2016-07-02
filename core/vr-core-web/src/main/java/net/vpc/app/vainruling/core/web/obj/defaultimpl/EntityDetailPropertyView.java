@@ -14,6 +14,7 @@ import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
 import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
 import net.vpc.upa.Relationship;
+import net.vpc.upa.RelationshipRole;
 
 /**
  * @author vpc
@@ -24,8 +25,21 @@ public class EntityDetailPropertyView extends PropertyView {
     private Relationship relation;
     private long count;
 
+    private static String resolveLabel(RelationshipRole rols){
+        String orNull = VrApp.getBean(I18n.class).getOrNull(rols);
+        if(orNull==null){
+            orNull=VrApp.getBean(I18n.class).getOrNull("Entity."+rols.getEntity().getName()+".ListTitle");
+            if(orNull==null){
+                orNull=VrApp.getBean(I18n.class).getOrNull(rols.getEntity());
+            }
+        }
+        if(orNull==null){
+            orNull=VrApp.getBean(I18n.class).get(rols);
+        }
+        return orNull;
+    }
     public EntityDetailPropertyView(String componentId, Relationship relation, String ctrlType, PropertyViewManager manager) {
-        super(componentId, VrApp.getBean(I18n.class).get(relation.getSourceRole()), relation, ctrlType, manager);
+        super(componentId, resolveLabel(relation.getSourceRole()), relation, ctrlType, manager);
         setHeader(VrApp.getBean(I18n.class).get(relation.getSourceRole()));
         setDataType(relation.getDataType());
         setPrependNewLine(true);

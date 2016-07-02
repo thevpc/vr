@@ -24,30 +24,30 @@ public class AcademicReport {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String subject;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicReportTitle title;
     private AppUser user;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicStudent student;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicClass academicClass;
     private String owner;
 
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String ownerDetails;
 
     private String observationPrivateShort;
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String observationPrivateLong;
 
     private String observationPublicShort;
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String observationPublicLong;
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.FILE),
-            @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
+            @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
     )
     private String mainAttachment;
@@ -56,23 +56,23 @@ public class AcademicReport {
     private Date createDateEnd;
     private boolean createAllowed;
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.PROFILE_EXPRESSION))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION))
     private String createProfiles;
 
     private Date updateDateStart;
     private Date updateDateEnd;
     private boolean updateAllowed;
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.PROFILE_EXPRESSION))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION))
     private String updateProfiles;
 
     private String evaluationPrivateShort;
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String evaluationPrivateLong;
 
     private String evaluationPublicShort;
     private double evaluationPublicNumber;
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String evaluationPublicLong;
 
     public int getId() {

@@ -23,9 +23,9 @@ public class AcademicInternshipBoardTeacher {
 
     private int id;
     @ManyToOne(type = RelationshipType.COMPOSITION)
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicInternshipBoard board;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicTeacher teacher;
     @Field(defaultValue = "false", modifiers = UserFieldModifier.SUMMARY)
     private boolean manager;

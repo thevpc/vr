@@ -21,22 +21,22 @@ public class AcademicInternshipStatus {
     @Sequence
 
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicInternshipType internshipType;
     @Field(max = "4000")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
 
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "General")}
+            @Property(name = UIConstants.Form.SEPARATOR, value = "General")}
     )
     @Field(defaultValue = "false")
     private boolean studentUpdatesDescr;
 
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Encadrants")}
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Encadrants")}
     )
 
     @Field(defaultValue = "false")
@@ -46,7 +46,7 @@ public class AcademicInternshipStatus {
     private boolean studentUpdatesSupervisors;
 
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Rapports")}
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Rapports")}
     )
 
     @Field(defaultValue = "false")
@@ -68,20 +68,20 @@ public class AcademicInternshipStatus {
     private boolean studentUpdatesReport3;
 
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Evaluation")}
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Evaluation")}
     )
 
     @Field(defaultValue = "false")
     private boolean studentSeesEvaluators;
 
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Enseignants")}
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Enseignants")}
     )
     @Field(defaultValue = "false")
     private boolean supervisorRequestable;
 
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Comité")}
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Comité")}
     )
     @Field(defaultValue = "false")
     private boolean boardUpdatesDescr;
@@ -93,7 +93,7 @@ public class AcademicInternshipStatus {
     private boolean boardUpdatesEvaluators;
 
     @Properties({
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Cloture")}
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Cloture")}
     )
     @Field(defaultValue = "false")
     private boolean closed;

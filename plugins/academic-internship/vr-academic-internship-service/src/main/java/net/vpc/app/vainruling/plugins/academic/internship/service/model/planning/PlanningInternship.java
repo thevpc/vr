@@ -13,18 +13,20 @@ public class PlanningInternship implements Comparable<PlanningInternship> {
     private String code;
     private String name;
     private String student;
+    private String session;
     private String disciplines;
     private List<String> supervisors;
 
     public PlanningInternship() {
     }
 
-    public PlanningInternship(int id, String code, String name, String student, String disciplines, String... supervisors) {
+    public PlanningInternship(int id, String code, String name, String student, String disciplines, String session,String... supervisors) {
         this.id = id;
         this.code = code;
         this.name = name;
         this.student = student;
         this.disciplines = disciplines;
+        this.session = session;
         this.supervisors = new ArrayList<>();
         if (supervisors != null) {
             for (String supervisor : supervisors) {
@@ -34,6 +36,7 @@ public class PlanningInternship implements Comparable<PlanningInternship> {
             }
         }
     }
+
 
     public String getStudent() {
         return student;
@@ -125,8 +128,16 @@ public class PlanningInternship implements Comparable<PlanningInternship> {
 
     public PlanningInternship copy() {
         return new PlanningInternship(
-                id, code, name, student, disciplines, supervisors.toArray(new String[supervisors.size()])
+                id, code, name, student, disciplines, session,supervisors.toArray(new String[supervisors.size()])
         );
+    }
+
+    public String getSession() {
+        return session;
+    }
+
+    public void setSession(String session) {
+        this.session = session;
     }
 
     @Override

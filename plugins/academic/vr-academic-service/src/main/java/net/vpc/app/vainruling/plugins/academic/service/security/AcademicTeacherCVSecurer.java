@@ -27,7 +27,7 @@ public class AcademicTeacherCVSecurer extends DefaultEntitySecurityManager {
     @Override
     public Expression getEntityFilter(Entity entity) throws UPAException {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        if (core.isActualAdmin()) {
+        if (core.isUserSessionAdmin()) {
             return null;
         }
         return new UserExpression("this.teacher.user.login=currentUser()");
@@ -36,7 +36,7 @@ public class AcademicTeacherCVSecurer extends DefaultEntitySecurityManager {
 //    @Override
 //    public boolean getAllowedReadPermission(Field field) throws UPAException {
 //        if(field.getAbsoluteName().equals("AcademicTeacherCV.viewsCounter")){
-//           return VrApp.getBean(CorePlugin.class).isActualAdmin();
+//           return VrApp.getBean(CorePlugin.class).isUserSessionAdmin();
 //        }
 //        return super.getAllowedReadPermission(field);
 //    }
@@ -44,7 +44,7 @@ public class AcademicTeacherCVSecurer extends DefaultEntitySecurityManager {
 //    @Override
 //    public boolean getAllowedWritePermission(Field field) throws UPAException {
 //        if(field.getAbsoluteName().equals("AcademicTeacherCV.viewsCounter")){
-//           return VrApp.getBean(CorePlugin.class).isActualAdmin();
+//           return VrApp.getBean(CorePlugin.class).isUserSessionAdmin();
 //        }
 //        return super.getAllowedReadPermission(field);
 //    }

@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.security.UserSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.faces.application.ViewExpiredException;
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
@@ -82,6 +83,15 @@ public class AppSecurityFilter implements Filter {
             try {
                 chain.doFilter(request, response);
             } catch (Exception e) {
+                if(e instanceof ServletException) {
+                    Throwable rootCause = ((ServletException) e).getRootCause();
+                    if (rootCause instanceof ViewExpiredException) {
+                        HttpServletResponse webresponse=(HttpServletResponse) response;
+                        webresponse.sendRedirect("/vr/r/index.xhtml?faces-redirect=true");
+                        return;
+                    }
+                }
+
                 log.log(Level.SEVERE, "Unhandled Error", e);
 //                HttpServletResponse res = (HttpServletResponse) response;
 //                res.sendError(500);

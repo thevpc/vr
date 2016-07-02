@@ -20,10 +20,10 @@ public class AppUserProfileBinding {
     @Sequence
     private int id;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppUser user;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AppProfile profile;
 

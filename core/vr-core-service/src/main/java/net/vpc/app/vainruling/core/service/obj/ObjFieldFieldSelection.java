@@ -52,7 +52,7 @@ public class ObjFieldFieldSelection extends ObjFieldSelection {
     private void updateFields(Entity entity, Set<String> selectedFieldNames) {
         fields.clear();
         int pos = 0;
-        boolean admin = VrApp.getBean(CorePlugin.class).isActualAdmin();
+        boolean admin = VrApp.getBean(CorePlugin.class).isUserSessionAdmin();
         I18n i18n = VrApp.getBean(I18n.class);
         for (Field field : entity.getFields()) {
             //should test on field visibility

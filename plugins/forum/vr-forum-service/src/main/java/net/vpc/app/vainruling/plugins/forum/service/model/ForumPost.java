@@ -25,35 +25,35 @@ public class ForumPost {
     @Sequence
     private int id;
 
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String subject;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
     @Field(max = "max")
     private String content;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Flags"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Flags"))
     private boolean read;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Time"))
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Time"))
+    @Summary
     private DateTime sendTime;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppUser user;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private ForumThread thread;
 
     private ForumPost baseMessage;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     private boolean archived;
     private boolean deleted;
     private String deletedBy;

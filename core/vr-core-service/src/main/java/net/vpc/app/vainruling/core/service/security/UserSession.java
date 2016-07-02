@@ -42,6 +42,8 @@ public class UserSession implements Serializable {
     private Set<String> profileNames = new HashSet<>();
     private Object platformSession;
     private Map platformSessionMap;
+    private int departmentManager =-1;
+    private boolean manager;
 
     public static UserSession getCurrentSession() {
         try {
@@ -241,5 +243,29 @@ public class UserSession implements Serializable {
 
     public void setPlatformSessionMap(Map platformSessionMap) {
         this.platformSessionMap = platformSessionMap;
+    }
+
+    public int getDepartmentManager() {
+        return departmentManager;
+    }
+
+    public boolean isDepartmentManager(int deptId) {
+        return departmentManager==deptId;
+    }
+
+    public boolean isDepartmentManager() {
+        return getUser()!=null && getUser().getDepartment()!=null && isDepartmentManager(getUser().getDepartment().getId());
+    }
+
+    public void setDepartmentManager(int departmentManager) {
+        this.departmentManager = departmentManager;
+    }
+
+    public boolean isManager() {
+        return manager;
+    }
+
+    public void setManager(boolean manager) {
+        this.manager = manager;
     }
 }

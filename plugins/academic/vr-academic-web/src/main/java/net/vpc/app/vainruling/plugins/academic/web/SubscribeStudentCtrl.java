@@ -50,7 +50,7 @@ public class SubscribeStudentCtrl {
     public void onImport() {
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         try {
-            p.importStudent(getModel().getStudent());
+            p.importStudent(-1,getModel().getStudent());
             FacesUtils.addInfoMessage(null, "Inscription reussie");
             getModel().setStudent(new AcademicStudentImport());
         } catch (Exception e) {

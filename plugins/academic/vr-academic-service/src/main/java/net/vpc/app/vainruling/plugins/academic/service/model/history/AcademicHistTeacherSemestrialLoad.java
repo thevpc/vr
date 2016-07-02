@@ -21,16 +21,16 @@ public class AcademicHistTeacherSemestrialLoad {
     @Sequence
     private int id;
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicHistTeacherAnnualLoad annualLoad;
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private int semester;
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private int weeksLoad;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppPeriod academicYear;
 
     public int getId() {

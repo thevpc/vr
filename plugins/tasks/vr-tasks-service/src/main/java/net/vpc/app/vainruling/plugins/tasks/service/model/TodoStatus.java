@@ -20,10 +20,10 @@ public class TodoStatus {
     private int id;
     @Field(modifiers = {UserFieldModifier.MAIN})
     private String name;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @ToString
     private TodoStatusType type;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private TodoList list;
 
     public int getId() {

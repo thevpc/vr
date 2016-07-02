@@ -28,31 +28,31 @@ public class AcademicHistCoursePlan {
     @Field(modifiers = {UserFieldModifier.MAIN})
     private String name;
     private String name2;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AcademicHistProgram program;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private String discipline;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AcademicClass studentClass;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AcademicCourseLevel courseLevel;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AcademicSemester semester;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppPeriod academicYear;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private double valueC;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private double valueTD;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private double valueTP;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private double valuePM;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private double valueTPPM;
     //    private double valueDU;
     //Unite enseignement/UE
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AcademicHistCourseGroup courseGroup;
     private int position;
     private int groupCountC = 0;

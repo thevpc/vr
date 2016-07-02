@@ -12,6 +12,7 @@ import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.CourseFilter;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.vfs.VFS;
 import net.vpc.upa.UPA;
@@ -44,10 +45,10 @@ public class AcademicAdminToolsCtrl {
         return model;
     }
 
-    public void generateTeachingLoad(String version) {
+    public void generateTeachingLoad(int periodId,String version) {
         try {
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-            p.generateTeachingLoad(version);
+            p.generateTeachingLoad(periodId, new CourseFilter(), version);
             FacesUtils.addInfoMessage("Successful Operation");
         } catch (Exception ex) {
             Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);
@@ -86,7 +87,7 @@ public class AcademicAdminToolsCtrl {
     public void importTeachingLoad() {
         try {
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-            p.importTeachingLoad();
+            p.importTeachingLoad(-1);
             FacesUtils.addInfoMessage("Successful Operation");
         } catch (Exception ex) {
             Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);

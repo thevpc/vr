@@ -24,14 +24,14 @@ public class AcademicTeacherSemestrialLoad {
 
     private AppPeriod period;
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicTeacher teacher;
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private int semester;
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private int weeksLoad;
 
     public int getId() {

@@ -68,6 +68,7 @@ public class CorePlugin {
     private boolean updatingPoll = false;
     private Plugin[] plugins;
     private AppVersion appVersion;
+    private Set<String> managerProfiles=new HashSet<>(Arrays.asList("Director"));
 //    private final Map<String,Object> globalCache=new HashMap<>();
 
     public void onPoll() {
@@ -323,7 +324,8 @@ public class CorePlugin {
                 .setParameter("userId", userId)
                 .setParameter("name", profileCode)
                 .isEmpty()) {
-            AppUser u = findUser(userId);
+            //should not call findUser because cache is not yet invalidated!
+            AppUser u = pu.findById(AppUser.class,userId);
             if (u == null) {
                 throw new IllegalArgumentException("Unknown User " + userId);
             }
@@ -882,9 +884,12 @@ public class CorePlugin {
 //                    FileHandler f=(FileHandler) handler;
 //                }
 //            }
-            FileHandler handler = new FileHandler(path + PATH_LOG+"/application-stats.log", 5 * 1024 * 1024, 5, true);
-            handler.setFormatter(new CustomTextFormatter());
-            LOG_APPLICATION_STATS.addHandler(handler);
+
+            if(LOG_APPLICATION_STATS.getHandlers().length==0) {
+                FileHandler handler = new FileHandler(path + PATH_LOG + "/application-stats.log", 5 * 1024 * 1024, 5, true);
+                handler.setFormatter(new CustomTextFormatter());
+                LOG_APPLICATION_STATS.addHandler(handler);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1520,7 +1525,7 @@ public class CorePlugin {
         return null;
     }
 
-    public boolean isActualAdminOrUser(String login) {
+    public boolean isUserSessionAdminOrUser(String login) {
         UserSession us = VrApp.getBean(UserSession.class);
         UserPrincipal up = UPA.getPersistenceUnit().getUserPrincipal();
         if (up != null && up.getObject() instanceof AppUser) {
@@ -1554,7 +1559,7 @@ public class CorePlugin {
         return us != null && us.isAdmin();
     }
 
-    public boolean isActualAdmin() {
+    public boolean isUserSessionAdmin() {
         UserSession us = null;
         try {
             us = VrApp.getBean(UserSession.class);
@@ -1810,7 +1815,7 @@ public class CorePlugin {
         if (StringUtils.isEmpty(login)) {
             login = getActualLogin();
         }
-        if (isActualAdmin()) {
+        if (isUserSessionAdmin()) {
             AppUser u = findUser(login);
             if (u == null) {
                 throw new RuntimeException("User not found " + login);
@@ -1828,8 +1833,16 @@ public class CorePlugin {
         }
     }
 
+    public AppPeriod findPeriodOrMain(int id) {
+        AppPeriod p = findPeriod(id);
+        if(p==null){
+            p=findAppConfig().getMainPeriod();
+        }
+        return p;
+    }
+
     public AppPeriod findPeriod(int id) {
-        return (AppPeriod) cacheService.get(AppPeriod.class).getValues().get(id);
+        return (AppPeriod) cacheService.get(AppPeriod.class).getValues().getByKey(id);
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        return (AppPeriod) pu.createQuery("Select u from AppPeriod u where u.id=:id")
 //                .setParameter("id", id).getEntity();
@@ -1837,7 +1850,13 @@ public class CorePlugin {
 
     public List<AppPeriod> findValidPeriods() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery("Select u from AppPeriod u where (u.snapshotName=null or u.snapshotName='') order by u.name")
+        return pu.createQuery("Select u from AppPeriod u where (u.snapshotName=null or u.snapshotName='') order by u.name desc")
+                .getEntityList();
+    }
+
+    public List<AppPeriod> findNavigatablePeriods() {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select u from AppPeriod u where u.navigatable=true and (u.snapshotName=null or u.snapshotName='') order by u.name  desc")
                 .getEntityList();
     }
 
@@ -1996,11 +2015,25 @@ public class CorePlugin {
         s.setProfileNames(userProfilesNames);
         s.setProfilesString(ps.toString());
         s.setAdmin(false);
+        s.setDepartmentManager(-1);
+        s.setManager(false);
         s.setRights(core.findUserRights(user.getId()));
         if (user.getLogin().equalsIgnoreCase("admin") || userProfilesNames.contains(CorePlugin.PROFILE_ADMIN)) {
             s.setAdmin(true);
         }
-
+        if (userProfilesNames.contains(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT)) {
+            if(user.getDepartment()!=null) {
+                AppUser d = findHeadOfDepartment(user.getDepartment().getId());
+                if(d.getDepartment()!=null) {
+                    s.setManager(true);
+                }
+            }
+        }
+        for (String mp : getManagerProfiles()) {
+            if (userProfilesNames.contains(mp)){
+                s.setManager(true);
+            }
+        }
     }
 
     private AppUser findEnabledUser(String login, String password) {
@@ -2170,14 +2203,7 @@ public class CorePlugin {
                         mfs.mount("/" + FOLDER_ALL_DOCUMENTS, fileSystem);
                     }
                 }
-                VrFSTable t = new VrFSTable();
-                try {
-                    if (fileSystem.exists("/Config/fstab")) {
-                        t.load(fileSystem.getInputStream("/Config/fstab"));
-                    }
-                } catch (Exception exx) {
-                    //ignore it
-                }
+                VrFSTable t = getVrFSTable();
                 for (AppProfile p : profiles) {
                     String profileMountPoint = "/" + p.getName() + " Documents";
                     mfs.mount(profileMountPoint, getProfileFileSystem(p.getName(), t));
@@ -2224,14 +2250,7 @@ public class CorePlugin {
             MountableFS mfs = null;
             try {
                 if (t == null) {
-                    t = new VrFSTable();
-                    try {
-                        if (fileSystem.exists("/Config/fstab")) {
-                            t.load(fileSystem.getInputStream("/Config/fstab"));
-                        }
-                    } catch (Exception exx) {
-                        //ignore it
-                    }
+                    t = getVrFSTable();
                 }
                 mfs = VFS.createMountableFS("profile:" + profileName);
                 mfs.mount("/", pfs);
@@ -2249,6 +2268,18 @@ public class CorePlugin {
         } else {
             return VFS.createEmptyFS();
         }
+    }
+
+    private VrFSTable getVrFSTable() {
+        VrFSTable t = new VrFSTable();
+        try {
+            if (fileSystem.exists("/Config/fstab")) {
+                t.load(fileSystem.getInputStream("/Config/fstab"));
+            }
+        } catch (Exception exx) {
+            //ignore it
+        }
+        return t;
     }
 
     public long getDownloadsCount(final VFile file) {
@@ -2309,5 +2340,32 @@ public class CorePlugin {
         List<AppCivility> civilities;
         List<AppGender> genders;
         List<AppDepartment> departments;
+    }
+
+
+    public boolean isUserSessionHeadOfDepartment() {
+        UserSession sm = VrApp.getBean(UserSession.class);
+        AppUser user = (sm == null) ? null : sm.getUser();
+        if (user == null || user.getDepartment() == null) {
+            return false;
+        }
+        AppUser d = findHeadOfDepartment(user.getDepartment().getId());
+        if (d != null && d.getId() == user.getId()) {
+            return true;
+        }
+        return false;
+    }
+
+    public AppUser findHeadOfDepartment(int depId) {
+        for (AppUser u : findUsersByProfile(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT)) {
+            if (u.getDepartment() != null && u.getDepartment().getId() == depId) {
+                return u;
+            }
+        }
+        return null;
+    }
+
+    public Set<String> getManagerProfiles() {
+        return managerProfiles;
     }
 }

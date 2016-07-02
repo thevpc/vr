@@ -10,34 +10,36 @@ package net.vpc.app.vainruling.core.service.util;
  */
 public final class UIConstants {
 
-    public static final String FIELD_FORM_VISIBLE_ON_CREATE = "ui.form.visibleOnInsert";
-    public static final String FIELD_FORM_VISIBLE_ON_UPDATE = "ui.form.visibleOnUpdate";
-    public static final String FIELD_FORM_CONTROL = "ui.form.control";
-    /**
-     * colspan and rowspan separated with , example : 3,4
-     */
-    public static final String FIELD_FORM_SPAN = "ui.form.span";
-    /**
-     * List (separated with ,) of [before|after|label] before : prepend newline
-     * after : append newline label : add newline after label
-     */
-    public static final String FIELD_FORM_NEWLINE = "ui.form.newline";
-    public static final String FIELD_FORM_NOLABEL = "ui.form.nolabel";
-
-    /**
-     * number or cells prefixing control that should be emptied
-     */
-    public static final String FIELD_FORM_EMPTY_PREFIX = "ui.form.empty.prefix";
-    public static final String FIELD_FORM_SEPARATOR = "ui.form.separator";
-
-    /**
-     * number or cells suffixing control that should be emptied
-     */
-    public static final String FIELD_FORM_EMPTY_SUFFIX = "ui.form.empty.suffix";
 
     public static final String ENTITY_ID_HIERARCHY = "ui.id-hierarchy";
 
-    public static final class ControlType {
+    public static final class Form {
+        public static final String VISIBLE_ON_CREATE = "ui.form.visibleOnInsert";
+        public static final String VISIBLE_ON_UPDATE = "ui.form.visibleOnUpdate";
+        public static final String CONTROL = "ui.form.control";
+        /**
+         * colspan and rowspan separated with , example : 3,4
+         */
+        public static final String SPAN = "ui.form.span";
+        /**
+         * List (separated with ,) of [before|after|label] before : prepend newline
+         * after : append newline label : add newline after label
+         */
+        public static final String NEWLINE = "ui.form.newline";
+        public static final String NO_LABEL = "ui.form.nolabel";
+
+        /**
+         * number or cells prefixing control that should be emptied
+         */
+        public static final String EMPTY_PREFIX = "ui.form.empty.prefix";
+        public static final String SEPARATOR = "ui.form.separator";
+
+        /**
+         * number or cells suffixing control that should be emptied
+         */
+        public static final String EMPTY_SUFFIX = "ui.form.empty.suffix";
+    }
+    public static final class Control {
 
         public static final String RICHTEXTAREA = "richtextarea";
         public static final String TEXTAREA = "textarea";
@@ -61,8 +63,8 @@ public final class UIConstants {
     }
 
     public static final class Grid {
-        public static final String COLUMN_STYLE = "ui.list-column-style";
-        public static final String ROW_STYLE = "ui.list-row-style";
+        public static final String COLUMN_STYLE = "ui.grid.list-column-style";
+        public static final String ROW_STYLE = "ui.grid.list-row-style";
 
     }
 }

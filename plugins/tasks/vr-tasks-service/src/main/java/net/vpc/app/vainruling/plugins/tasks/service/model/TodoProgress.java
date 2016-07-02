@@ -20,14 +20,14 @@ public class TodoProgress {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private int progress;
     private Timestamp date;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String message;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private TodoStatus status;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Todo todo;
     private double reEstimation;
     private double consumption;

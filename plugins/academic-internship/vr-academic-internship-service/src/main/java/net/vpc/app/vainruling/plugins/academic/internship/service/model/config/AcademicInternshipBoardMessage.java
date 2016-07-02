@@ -26,7 +26,7 @@ public class AcademicInternshipBoardMessage {
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicInternship internship;
     @Field(max = "4000")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String privateObservations;
     private Date obsUpdateDate;
 

@@ -1,5 +1,6 @@
 package net.vpc.app.vainruling.core.service.util;
 
+import net.vpc.common.util.Converter;
 import net.vpc.common.util.MapList;
 import net.vpc.upa.Entity;
 
@@ -21,7 +22,7 @@ public class EntityMapList<K, V> extends MapList<K, V> {
         this.entity = e;
     }
 
-    private static class EntityMapper<K, V> implements Mapper<K, V> {
+    private static class EntityMapper<K, V> implements Converter<K, V> {
         Entity entity;
 
         public EntityMapper(Entity entity) {
@@ -29,7 +30,7 @@ public class EntityMapList<K, V> extends MapList<K, V> {
         }
 
         @Override
-        public K resolveKey(V value) {
+        public K convert(V value) {
             return (K) entity.getBuilder().objectToId(value);
         }
     }

@@ -30,13 +30,13 @@ public class AcademicCourseLevel {
     @Formula("concat(this.academicClass.name,'-',this.semester.code)")
     @Field(modifiers = {UserFieldModifier.MAIN})
     private String name;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AcademicClass academicClass;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AcademicSemester semester;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})

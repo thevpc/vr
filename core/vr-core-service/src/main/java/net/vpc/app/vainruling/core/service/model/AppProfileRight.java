@@ -24,12 +24,12 @@ public class AppProfileRight {
     @Field(modifiers = {UserFieldModifier.MAIN})
     private AppRightName right;
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AppProfile profile;
 
     @Field(max = "4000")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
 
     public int getId() {

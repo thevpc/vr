@@ -18,9 +18,9 @@ public class EquipmentType {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private EquipmentTypeGroup typeGroup;
 
     public int getId() {

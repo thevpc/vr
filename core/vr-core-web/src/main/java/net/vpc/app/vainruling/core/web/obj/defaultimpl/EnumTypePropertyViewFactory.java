@@ -27,7 +27,7 @@ public class EnumTypePropertyViewFactory implements PropertyViewFactory {
     @Override
     public PropertyView[] createPropertyView(String componentId, Field field, DataType datatype, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext) {
         FieldPropertyViewInfo nfo = FieldPropertyViewInfo.build(field, datatype, configuration);
-        String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.FIELD_FORM_CONTROL, null, UIConstants.ControlType.SELECT);
+        String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.SELECT);
         PropertyView propView = new FieldPropertyView(componentId, field, datatype, controlType, manager);
         propView.setValues(manager.getPropertyViewValuesProvider(field, nfo.dataType).resolveValues(propView, field, nfo.dataType, viewContext));
 //        EnumType t = (EnumType) dataType;
@@ -43,8 +43,8 @@ public class EnumTypePropertyViewFactory implements PropertyViewFactory {
 //        boolean forceDisabled = configuration != null && (configuration.get("disabled") != null && Boolean.TRUE.equals(configuration.get("disabled")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("disabled"))));
 //        boolean forceInvisible = configuration != null && (configuration.get("invisible") != null && Boolean.TRUE.equals(configuration.get("invisible")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("invisible"))));
 //        boolean visible
-//                = insertMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_CREATE, null, true)
-//                        : updateMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_UPDATE, null, true)
+//                = insertMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.Form.VISIBLE_ON_CREATE, null, true)
+//                        : updateMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.Form.VISIBLE_ON_UPDATE, null, true)
 //                                : true;
         if (!nfo.visible) {
             return null;

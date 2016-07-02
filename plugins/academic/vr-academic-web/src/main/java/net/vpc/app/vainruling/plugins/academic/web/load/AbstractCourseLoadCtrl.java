@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.web.load;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
@@ -15,6 +16,7 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.CourseFilter;
 import net.vpc.app.vainruling.plugins.academic.service.StatCache;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
@@ -22,7 +24,8 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCla
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfo;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherStat;
+import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherPeriodStat;
+import net.vpc.common.strings.StringUtils;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
@@ -42,7 +45,7 @@ public abstract class AbstractCourseLoadCtrl {
         getModel().setMineS2(new ArrayList<AcademicCourseAssignmentInfo>());
         getModel().setOthers(new ArrayList<AcademicCourseAssignmentInfo>());
         getModel().setAll(new HashMap<Integer, AcademicCourseAssignmentInfo>());
-        TeacherStat teacherStat = new TeacherStat();
+        TeacherPeriodStat teacherStat = new TeacherPeriodStat();
         teacherStat.setTeacher(new AcademicTeacher());
 
         getModel().setStat(teacherStat);
@@ -52,6 +55,24 @@ public abstract class AbstractCourseLoadCtrl {
 
     @OnPageLoad
     public void onRefresh(String cmd) {
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
+        AppDepartment userDepartment = getUserDepartment();
+        getModel().setEnableLoadEditing(
+                userDepartment == null ? false :
+                        ap.getAppDepartmentPeriodRecord(getPeriodId(), userDepartment.getId()).getBoolean("enableLoadEditing", false)
+        );
+        List<AppPeriod> navigatablePeriods = core.findNavigatablePeriods();
+        AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
+        getModel().setSelectedPeriod(null);
+        getModel().getPeriods().clear();
+        for (AppPeriod p : navigatablePeriods) {
+            getModel().getPeriods().add(new SelectItem(String.valueOf(p.getId()), p.getName()));
+            if(mainPeriod!=null && p.getId()==mainPeriod.getId()){
+                getModel().setSelectedPeriod(String.valueOf(p.getId()));
+            }
+        }
+
         onRefresh();
     }
 
@@ -80,9 +101,26 @@ public abstract class AbstractCourseLoadCtrl {
         return null;
     }
 
+    public int getPeriodId(){
+        String p = getModel().getSelectedPeriod();
+        if(StringUtils.isEmpty(p)){
+            CorePlugin core = VrApp.getBean(CorePlugin.class);
+            return core.findAppConfig().getMainPeriod().getId();
+        }
+        return Integer.parseInt(p);
+    }
+
+    public void onPeriodChanged() {
+        onRefresh();
+    }
+
+    public CourseFilter getCourseFilter(){
+        return new CourseFilter();
+    }
+
     public void onRefresh() {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        int periodId = core.findAppConfig().getMainPeriod().getId();
+        int periodId = getPeriodId();
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         List<SelectItem> allValidFilters = new ArrayList<>();
         for (AcademicSemester s : a.findSemesters()) {
@@ -121,14 +159,15 @@ public abstract class AbstractCourseLoadCtrl {
         reset();
 
         Map<Integer, AcademicCourseAssignmentInfo> all = new HashMap<>();
-        for (AcademicCourseAssignmentInfo b : a.findCourseAssignmentsAndIntents(periodId, null, null, cache)) {
+        CourseFilter courseFilter = getCourseFilter();
+        for (AcademicCourseAssignmentInfo b : a.findCourseAssignmentsAndIntents(periodId, null, null, courseFilter,cache)) {
             all.put(b.getAssignment().getId(), b);
         }
         getModel().setAll(all);
         HashSet<Integer> visited = new HashSet<Integer>();
         if (t != null) {
-            getModel().setMineS1(a.findCourseAssignmentsAndIntents(periodId, t.getId(), "S1", cache));
-            getModel().setMineS2(a.findCourseAssignmentsAndIntents(periodId, t.getId(), "S2", cache));
+            getModel().setMineS1(a.findCourseAssignmentsAndIntents(periodId, t.getId(), "S1", courseFilter, cache));
+            getModel().setMineS2(a.findCourseAssignmentsAndIntents(periodId, t.getId(), "S2", courseFilter, cache));
             List<AcademicCourseAssignment> mine = new ArrayList<>();
             for (AcademicCourseAssignmentInfo m : getModel().getMineS1()) {
                 mine.add(m.getAssignment());
@@ -138,11 +177,11 @@ public abstract class AbstractCourseLoadCtrl {
                 mine.add(m.getAssignment());
                 visited.add(m.getAssignment().getId());
             }
-            getModel().setStat(a.evalTeacherStat(periodId, t.getId(), null, null, mine, false, cache));
+            getModel().setStat(a.evalTeacherStat(periodId, t.getId(), null, null, mine, courseFilter.copy().setIncludeIntents(false), cache));
         }
 
         List<AcademicCourseAssignmentInfo> others = new ArrayList<>();
-        for (AcademicCourseAssignmentInfo c : a.findCourseAssignmentsAndIntents(periodId, null, null, cache)) {
+        for (AcademicCourseAssignmentInfo c : a.findCourseAssignmentsAndIntents(periodId, null, null, courseFilter, cache)) {
             if (!visited.contains(c.getAssignment().getId())) {
                 boolean _assigned = c.isAssigned();
                 HashSet<String> s = new HashSet<>(c.getIntentsSet());
@@ -240,6 +279,19 @@ public abstract class AbstractCourseLoadCtrl {
 
     public void onOthersFiltersChanged() {
         onRefresh();
+    }
+
+    public AppDepartment getUserDepartment(){
+        //enableLoadEditing
+        UserSession userSession = VrApp.getBean(UserSession.class);
+        if (userSession == null) {
+            return null;
+        }
+        AppUser user = userSession.getUser();
+        if (user == null) {
+            return null;
+        }
+        return user.getDepartment();
     }
 
     public boolean isAllowedUpdateMineIntents(Integer assignementId) {
@@ -364,8 +416,9 @@ public abstract class AbstractCourseLoadCtrl {
         List<AcademicCourseAssignmentInfo> mineS2 = new ArrayList<>();
         List<AcademicCourseAssignmentInfo> others = new ArrayList<>();
         Map<Integer, AcademicCourseAssignmentInfo> all = new HashMap<>();
-        TeacherStat stat;
+        TeacherPeriodStat stat;
         boolean nonIntentedOnly = false;
+        boolean enableLoadEditing = false;
         AcademicCourseAssignmentInfo selectedFromOthers = null;
         AcademicCourseAssignmentInfo selectedFromMine1 = null;
         AcademicCourseAssignmentInfo selectedFromMine2 = null;
@@ -373,6 +426,8 @@ public abstract class AbstractCourseLoadCtrl {
         String[] defaultFilters = {"situation", "degree", "valueWeek", "extraWeek", "c", "td", "tp", "pm"};
         String[] othersFilters = defaultFilters;
         SelectItem[] filterSelectItems = new SelectItem[0];
+        List<SelectItem> periods = new ArrayList<>();
+        String selectedPeriod = null;
 
         AcademicTeacher currentTeacher;
 
@@ -416,11 +471,11 @@ public abstract class AbstractCourseLoadCtrl {
             this.others = others;
         }
 
-        public TeacherStat getStat() {
+        public TeacherPeriodStat getStat() {
             return stat;
         }
 
-        public void setStat(TeacherStat stat) {
+        public void setStat(TeacherPeriodStat stat) {
             this.stat = stat;
         }
 
@@ -480,5 +535,28 @@ public abstract class AbstractCourseLoadCtrl {
             this.filterSelectItems = filterSelectItems;
         }
 
+        public List<SelectItem> getPeriods() {
+            return periods;
+        }
+
+        public void setPeriods(List<SelectItem> periods) {
+            this.periods = periods;
+        }
+
+        public String getSelectedPeriod() {
+            return selectedPeriod;
+        }
+
+        public void setSelectedPeriod(String selectedPeriod) {
+            this.selectedPeriod = selectedPeriod;
+        }
+
+        public boolean isEnableLoadEditing() {
+            return enableLoadEditing;
+        }
+
+        public void setEnableLoadEditing(boolean enableLoadEditing) {
+            this.enableLoadEditing = enableLoadEditing;
+        }
     }
 }

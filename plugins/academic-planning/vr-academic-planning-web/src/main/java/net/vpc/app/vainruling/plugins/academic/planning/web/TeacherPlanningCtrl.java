@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.planning.web;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
@@ -14,6 +15,7 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningData;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
 import net.vpc.common.strings.StringUtils;
 
 import javax.faces.bean.ManagedBean;
@@ -45,12 +47,22 @@ public class TeacherPlanningCtrl extends AbstractPlanningCtrl {
         onRefresh();
     }
 
+    public int getPeriodId(){
+        String p = "";//getModel().getSelectedPeriod();
+        if(StringUtils.isEmpty(p)){
+            CorePlugin core = VrApp.getBean(CorePlugin.class);
+            return core.findAppConfig().getMainPeriod().getId();
+        }
+        return Integer.parseInt(p);
+    }
+
     public void onRefresh() {
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         AcademicPlanningPlugin pl = VrApp.getBean(AcademicPlanningPlugin.class);
         getModel().setTeachers(new ArrayList<SelectItem>());
         for (AcademicTeacher t : p.findTeachers()) {
-            if (t.isEnabled()) {
+            AcademicTeacherPeriod tp = p.findAcademicTeacherPeriod(getPeriodId(), t);
+            if (tp.isEnabled()) {
                 getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), t.getContact().getFullName()));
             }
         }

@@ -54,7 +54,7 @@ public class TeacherStatFeedbackCtrl {
     @OnPageLoad
     public void onLoad() {
         getModel().setValidate(false);
-        getModel().setTeacherListEnabled(academic.isCurrentManager());
+        getModel().setTeacherListEnabled(academic.isUserSessionManager());
         ArrayList<SelectItem> academicTeachers = new ArrayList<>();
         for (AcademicTeacher f : academic.findTeachers()) {
             academicTeachers.add(new SelectItem(String.valueOf(f.getId()), f.getContact().getFullTitle()));

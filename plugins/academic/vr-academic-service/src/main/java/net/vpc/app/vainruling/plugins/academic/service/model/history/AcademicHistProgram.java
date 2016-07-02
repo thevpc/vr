@@ -28,10 +28,10 @@ public class AcademicHistProgram {
     private String name;
     private String name2;
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppPeriod academicYear;
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppDepartment department;
 
     public AcademicHistProgram() {

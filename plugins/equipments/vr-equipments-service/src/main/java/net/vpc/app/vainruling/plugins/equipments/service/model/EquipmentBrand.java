@@ -17,7 +17,7 @@ public class EquipmentBrand {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
 
     public int getId() {

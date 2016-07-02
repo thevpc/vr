@@ -24,6 +24,13 @@ public class AcademicCourseAssignment {
 
     private int id;
 
+    @Summary
+    @Formula(
+            value = "(this.coursePlan.period.name)",
+            type = {FormulaType.PERSIST, FormulaType.UPDATE}
+    )
+    private String periodLabel;
+
     @Formula(
             value = "concat((select a.name from AcademicCoursePlan a where a.id=this.coursePlanId),'-',(select a.name from AcademicCourseType a where a.id=this.courseTypeId))",
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
@@ -39,55 +46,56 @@ public class AcademicCourseAssignment {
 
     private String name2;
 
+
     private AcademicCoursePlan coursePlan;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicClass subClass;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
     )
     private AcademicTeacher teacher;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
     private double valueC;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
     private double valueTD;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
     private double valueTP;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
     private double valuePM;
 //    private double valueDU;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
     private double valueEffWeek;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
     private double groupCount = 1;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
@@ -97,7 +105,7 @@ public class AcademicCourseAssignment {
      */
     private double shareCount = 1;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
     )

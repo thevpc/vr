@@ -21,7 +21,7 @@ public class TodoCategory {
     @Field(modifiers = {UserFieldModifier.MAIN})
     private String name;
     private String shortName;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @ManyToOne
     private TodoList list;
 

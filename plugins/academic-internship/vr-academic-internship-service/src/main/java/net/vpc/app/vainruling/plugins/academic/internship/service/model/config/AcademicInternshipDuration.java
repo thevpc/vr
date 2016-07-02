@@ -21,7 +21,7 @@ public class AcademicInternshipDuration {
     @Sequence
 
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
     private int count;
     private DurationType durationType;

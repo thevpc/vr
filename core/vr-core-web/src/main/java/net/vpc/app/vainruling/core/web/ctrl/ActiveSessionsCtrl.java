@@ -71,7 +71,7 @@ public class ActiveSessionsCtrl implements PollAware {
                 ArrayList<TypeStat> sli = new ArrayList<TypeStat>(stats.values());
                 Collections.sort(sli);
                 getModel().setTypeStats(sli);
-                getModel().setAdmin(VrApp.getBean(CorePlugin.class).isActualAdmin());
+                getModel().setAdmin(VrApp.getBean(CorePlugin.class).isUserSessionAdmin());
 
                 {
                     getModel().setDonut1(null);

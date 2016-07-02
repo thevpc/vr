@@ -40,35 +40,35 @@ public class AppContact {
 
     private String positionSuffix;
 
-    @Property(name = UIConstants.FIELD_FORM_SPAN, value = "MAX_VALUE")
+    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     private String fullName2;
     private String firstName2;
     private String lastName2;
     private AppGender gender;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Details"))
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Details"))
+    @Summary
     private String email;
     private AppCompany company;
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private String phone1;
     private String phone2;
     private String phone3;
 
 
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private String positionTitle1;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private String positionTitle2;
     private String positionTitle3;
     @Field(max = "4000")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA)
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})

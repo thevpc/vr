@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class ProfileExprPropertyViewDialog implements PropertyViewDialog {
     @Override
     public String getControlType() {
-        return UIConstants.ControlType.PROFILE_EXPRESSION;
+        return UIConstants.Control.PROFILE_EXPRESSION;
     }
 
     @Override

@@ -6,10 +6,7 @@
 package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
+import net.vpc.upa.config.*;
 
 /**
  * @author vpc
@@ -22,7 +19,7 @@ public class AppConfig {
     private int id = 1;
     @Field(modifiers = {UserFieldModifier.MAIN})
     private AppPeriod mainPeriod;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppCompany mainCompany;
 
     public AppConfig() {

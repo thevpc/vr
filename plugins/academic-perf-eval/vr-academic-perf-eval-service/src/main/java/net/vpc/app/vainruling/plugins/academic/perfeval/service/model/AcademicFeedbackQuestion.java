@@ -20,12 +20,12 @@ public class AcademicFeedbackQuestion {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private String name;
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String observations;
     private int position;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private boolean mandatory = true;
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicFeedbackGroup parent;

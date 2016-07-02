@@ -6,10 +6,7 @@
 package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.upa.UserFieldModifier;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Field;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
+import net.vpc.upa.config.*;
 import net.vpc.upa.types.Timestamp;
 
 /**
@@ -22,9 +19,9 @@ public class AppVersion {
     @Id
     @Field(modifiers = {UserFieldModifier.MAIN})
     private String serviceName;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private String serviceVersion;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private boolean active;
     @Field(defaultValue = "true", modifiers = {UserFieldModifier.SUMMARY})
     private boolean coherent;

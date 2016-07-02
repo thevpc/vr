@@ -21,7 +21,7 @@ public class AcademicCourseIntent {
     private int id;
     @Field(modifiers = {UserFieldModifier.MAIN})
     private AcademicCourseAssignment assignment;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AcademicTeacher teacher;
 
     public int getId() {

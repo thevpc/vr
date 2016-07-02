@@ -25,14 +25,14 @@ public class TodoList {
     private int id;
     @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
     private String name;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
-    @Properties(@Property(name = UIConstants.FIELD_FORM_CONTROL, value = UIConstants.ControlType.TEXTAREA))
+    @Summary
+    @Properties(@Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
     private String description;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private boolean systemList;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppUser respUser;
-    @Field(modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private AppProfile respProfile;
 
     public int getId() {

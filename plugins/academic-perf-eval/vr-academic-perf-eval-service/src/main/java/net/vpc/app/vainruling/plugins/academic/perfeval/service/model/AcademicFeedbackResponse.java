@@ -22,14 +22,14 @@ public class AcademicFeedbackResponse {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicFeedback feedback;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicFeedbackQuestion question;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String response;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private boolean valid;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;

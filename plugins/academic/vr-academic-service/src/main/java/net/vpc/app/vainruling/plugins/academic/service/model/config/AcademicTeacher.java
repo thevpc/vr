@@ -32,16 +32,17 @@ public class AcademicTeacher {
     @Sequence
 
     private int id;
-    @Field(modifiers = UserFieldModifier.MAIN)
+    @Main
     private AppContact contact;
     private AppUser user;
     private String discipline;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    private AcademicOfficialDiscipline officialDiscipline;
+    @Summary
     private AcademicTeacherDegree degree;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AcademicTeacherSituation situation;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private AppDepartment department;
     @Field(defaultValue = "true", modifiers = {UserFieldModifier.SUMMARY})
     @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
@@ -54,14 +55,14 @@ public class AcademicTeacher {
     private String otherNames;
 
     @Field(max = "4000")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String publicObservations;
     @Field(max = "4000")
-    @Property(name = UIConstants.FIELD_FORM_CONTROL, value = "textarea")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String privateObservations;
 
     @Properties(
-            @Property(name = UIConstants.FIELD_FORM_SEPARATOR, value = "Trace"))
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
@@ -260,4 +261,11 @@ public class AcademicTeacher {
         this.updateDate = updateDate;
     }
 
+    public AcademicOfficialDiscipline getOfficialDiscipline() {
+        return officialDiscipline;
+    }
+
+    public void setOfficialDiscipline(AcademicOfficialDiscipline officialDiscipline) {
+        this.officialDiscipline = officialDiscipline;
+    }
 }

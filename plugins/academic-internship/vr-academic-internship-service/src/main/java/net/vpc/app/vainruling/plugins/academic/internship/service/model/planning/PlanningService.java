@@ -131,6 +131,7 @@ public class PlanningService {
                     a.getInternship().setStudent(cols[6]);
                     a.getInternship().setId((int) Double.parseDouble(cols[7]));
                     a.getInternship().setDisciplines(cols[8]);
+                    a.getInternship().setDisciplines(cols[9]);
                     t.getActivities().add(a);
                     break;
                 }
@@ -199,7 +200,8 @@ public class PlanningService {
                         a.getInternship().getName(),
                         a.getInternship().getStudent(),
                         a.getInternship().getId(),
-                        a.getInternship().getDisciplines()
+                        a.getInternship().getDisciplines(),
+                        a.getInternship().getSession()
                 });
             }
             writer.close();
@@ -534,6 +536,38 @@ public class PlanningService {
         }
     }
 
+    private String buildTeacherAcronym(String teacherName){
+        StringBuilder sb=new StringBuilder();
+        for (int i = 0; i < teacherName.length(); i++) {
+            if(i==0 || teacherName.charAt(i-1)==' '){
+                sb.append(Character.toUpperCase(teacherName.charAt(i)));
+            }
+        }
+        return sb.toString();
+    }
+
+    private String buildSubjectLabel(PlanningActivity activity){
+        StringBuilder activityLabel = new StringBuilder()
+                .append(activity.getInternship().getCode())
+                .append("-").append(activity.getInternship()
+                        .getName()).append("-")
+                .append(activity.getInternship().getStudent());
+        activityLabel.append(" (");
+        for (String s : activity.getInternship().getSupervisors()) {
+            if(activityLabel.charAt(activityLabel.length()-1)!='('){
+                activityLabel.append(",");
+            }
+            activityLabel.append("E:");
+            activityLabel.append(buildTeacherAcronym(s));
+        }
+        activityLabel.append(",P:");
+        activityLabel.append(buildTeacherAcronym(activity.getChair()));
+        activityLabel.append(",R:");
+        activityLabel.append(buildTeacherAcronym(activity.getExaminer()));
+        activityLabel.append(')');
+        return activityLabel.toString();
+    }
+
     public void storeFetXml(PlanningActivityTable activityTable, OutputStream out) throws ParserConfigurationException, TransformerException {
         TreeSet<String> hours = new TreeSet<>();
         TreeSet<String> dtes = new TreeSet<>();
@@ -642,8 +676,7 @@ public class PlanningService {
 
             Element Name = doc.createElement("Name");
             Subject.appendChild(Name);
-            String activityLabel = activity.getInternship().getCode() + "-" + activity.getInternship().getName() + "-" + activity.getInternship().getStudent();
-            Name.setTextContent(activityLabel);
+            Name.setTextContent(buildSubjectLabel(activity));
         }
 
 
@@ -665,8 +698,7 @@ public class PlanningService {
             }
             Element Subject = doc.createElement("Subject");
             Activity.appendChild(Subject);
-            String activityLabel = activity.getInternship().getCode() + "-" + activity.getInternship().getName() + "-" + activity.getInternship().getStudent();
-            Subject.setTextContent(activityLabel);
+            Subject.setTextContent(buildSubjectLabel(activity));
             //<Duration>1</Duration>
             Element Duration = doc.createElement("Duration");
             Activity.appendChild(Duration);
@@ -735,6 +767,9 @@ public class PlanningService {
                     if (maxDays > dtes.size()) {
                         maxDays = dtes.size();
                     }
+                    if(maxDays<dtes.size()) {
+                        maxDays++;
+                    }
                     Element ConstraintTeacherMaxDaysPerWeek = doc.createElement("ConstraintTeacherMaxDaysPerWeek");
                     Time_Constraints_List.appendChild(ConstraintTeacherMaxDaysPerWeek);
 
@@ -755,6 +790,51 @@ public class PlanningService {
         }
 
         {
+            Element Space_Constraints_List = doc.createElement("Space_Constraints_List");
+            fet.appendChild(Space_Constraints_List);
+
+            Element ConstraintBasicCompulsorySpace = doc.createElement("ConstraintBasicCompulsorySpace");
+            Space_Constraints_List.appendChild(ConstraintBasicCompulsorySpace);
+
+            Element Weight_Percentage = doc.createElement("Weight_Percentage");
+            ConstraintBasicCompulsorySpace.appendChild(Weight_Percentage);
+            Weight_Percentage.setTextContent("100");
+
+            Element ConstraintActivityPreferredRooms = doc.createElement("ConstraintActivityPreferredRooms");
+            Space_Constraints_List.appendChild(ConstraintActivityPreferredRooms);
+
+            Weight_Percentage = doc.createElement("Weight_Percentage");
+            ConstraintActivityPreferredRooms.appendChild(Weight_Percentage);
+            Weight_Percentage.setTextContent("100");
+
+            for (PlanningActivity activity : activityTable.getActivities()) {
+                Element Activity_Id = doc.createElement("Activity_Id");
+                ConstraintActivityPreferredRooms.appendChild(Activity_Id);
+                Weight_Percentage.setTextContent(String.valueOf(activity.getInternship().getId()));
+
+                Element Number_of_Preferred_Rooms = doc.createElement("Number_of_Preferred_Rooms");
+                ConstraintActivityPreferredRooms.appendChild(Number_of_Preferred_Rooms);
+                Number_of_Preferred_Rooms.setTextContent(String.valueOf(activityTable.getRooms().size()));
+
+                for (PlanningRoom room : activityTable.getRooms()) {
+                    Element Preferred_Room = doc.createElement("Preferred_Room");
+                    ConstraintActivityPreferredRooms.appendChild(Preferred_Room);
+                    Preferred_Room.setTextContent(room.getName());
+                }
+            }
+        }
+        {
+//            <ConstraintActivityPreferredRooms>
+//            <Weight_Percentage>100</Weight_Percentage>
+//            <Activity_Id>13</Activity_Id>
+//            <Number_of_Preferred_Rooms>5</Number_of_Preferred_Rooms>
+//            <Preferred_Room>R1</Preferred_Room>
+//            <Preferred_Room>R2</Preferred_Room>
+//            <Preferred_Room>R3</Preferred_Room>
+//            <Preferred_Room>R4</Preferred_Room>
+//            <Preferred_Room>R5</Preferred_Room>
+//            </ConstraintActivityPreferredRooms>
+
             Element Space_Constraints_List = doc.createElement("Space_Constraints_List");
             fet.appendChild(Space_Constraints_List);
 

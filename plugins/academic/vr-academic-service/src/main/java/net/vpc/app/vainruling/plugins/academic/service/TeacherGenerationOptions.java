@@ -18,7 +18,7 @@ public class TeacherGenerationOptions {
     private String templateFolder;
     private String outputFolder;
     private String outputNamePattern;
-    private boolean includeIntents;
+    private CourseFilter courseFilter;
     private AppPeriod period;
 
     public Integer[] getTeacherIds() {
@@ -75,12 +75,12 @@ public class TeacherGenerationOptions {
         return this;
     }
 
-    public boolean isIncludeIntents() {
-        return includeIntents;
+    public CourseFilter getCourseFilter() {
+        return courseFilter;
     }
 
-    public TeacherGenerationOptions setIncludeIntents(boolean inclueIntents) {
-        this.includeIntents = inclueIntents;
+    public TeacherGenerationOptions setCourseFilter(CourseFilter inclueIntents) {
+        this.courseFilter = inclueIntents;
         return this;
     }
 

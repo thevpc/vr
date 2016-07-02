@@ -45,6 +45,7 @@ public class PlanningActivityTable {
                 academicInternship.getName(),
                 academicInternship.getStudent().getContact().getFullName(),
                 academicInternship.getMainDiscipline(),
+                academicInternship.getSessionType()==null?null:academicInternship.getSessionType().getName(),
                 academicInternship.getSupervisor().getContact().getFullName()
         ));
         if (chair != null) {

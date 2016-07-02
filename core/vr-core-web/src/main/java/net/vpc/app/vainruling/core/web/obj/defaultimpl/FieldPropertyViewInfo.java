@@ -56,8 +56,8 @@ public class FieldPropertyViewInfo {
         updateMode = objCtrl.getModel().getMode() == EditCtrlMode.UPDATE;
         if (field != null) {
             visible
-                    = insertMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_CREATE, null, !insert_seq)
-                    : updateMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.FIELD_FORM_VISIBLE_ON_UPDATE, null, !insert_seq)
+                    = insertMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.Form.VISIBLE_ON_CREATE, null, !insert_seq)
+                    : updateMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.Form.VISIBLE_ON_UPDATE, null, !insert_seq)
                     : true;
         } else {
             visible = true;
@@ -82,7 +82,7 @@ public class FieldPropertyViewInfo {
         if (visible && forceInvisible) {
             visible = false;
         }
-        boolean admin = VrApp.getBean(CorePlugin.class).isActualAdmin();
+        boolean admin = VrApp.getBean(CorePlugin.class).isUserSessionAdmin();
 
         if (visible && field != null) {
             AccessLevel rl = field.getReadAccessLevel();

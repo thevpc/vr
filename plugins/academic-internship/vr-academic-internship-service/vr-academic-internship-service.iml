@@ -36,8 +36,8 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-tx:4.1.2.RELEASE" level="project" />
     <orderEntry type="module" module-name="upa-api" />
     <orderEntry type="module" module-name="upa-impl" scope="RUNTIME" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: cglib:cglib:3.2.3" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm:5.0.4" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: cglib:cglib:3.2.4" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm:5.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant:1.9.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant-launcher:1.9.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.poi:poi:3.9" level="project" />
