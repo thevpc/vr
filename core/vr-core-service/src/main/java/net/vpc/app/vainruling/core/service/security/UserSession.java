@@ -16,7 +16,7 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Service
 @DependsOn("bootstrapService")
@@ -34,7 +34,8 @@ public class UserSession implements Serializable {
     private String clientIpAddress;
     private String lastVisitedPage;
     //    private String componentsTheme="glass-x";
-    private String componentsTheme = "eniso-green";
+//    private String componentsTheme = "eniso-green";
+    private String theme = "infusion";
     private Locale locale;
     private Set<String> rights = new HashSet<>();
     private List<AppProfile> profiles = new ArrayList<>();
@@ -42,7 +43,7 @@ public class UserSession implements Serializable {
     private Set<String> profileNames = new HashSet<>();
     private Object platformSession;
     private Map platformSessionMap;
-    private int departmentManager =-1;
+    private int departmentManager = -1;
     private boolean manager;
 
     public static UserSession getCurrentSession() {
@@ -92,6 +93,10 @@ public class UserSession implements Serializable {
 
     public void setLang(String lang) {
         this.lang = lang;
+    }
+
+    public boolean isSuperAdmin() {
+        return "admin".equals(user == null ? null : user.getLogin()) && admin;
     }
 
     public boolean isAdmin() {
@@ -221,13 +226,13 @@ public class UserSession implements Serializable {
         this.lastVisitedPage = lastVisitedPage;
     }
 
-    public String getComponentsTheme() {
-        return componentsTheme;
-    }
-
-    public void setComponentsTheme(String componentsTheme) {
-        this.componentsTheme = componentsTheme;
-    }
+//    public String getComponentsTheme() {
+//        return componentsTheme;
+//    }
+//
+//    public void setComponentsTheme(String componentsTheme) {
+//        this.componentsTheme = componentsTheme;
+//    }
 
     public Object getPlatformSession() {
         return platformSession;
@@ -250,11 +255,11 @@ public class UserSession implements Serializable {
     }
 
     public boolean isDepartmentManager(int deptId) {
-        return departmentManager==deptId;
+        return departmentManager == deptId;
     }
 
     public boolean isDepartmentManager() {
-        return getUser()!=null && getUser().getDepartment()!=null && isDepartmentManager(getUser().getDepartment().getId());
+        return getUser() != null && getUser().getDepartment() != null && isDepartmentManager(getUser().getDepartment().getId());
     }
 
     public void setDepartmentManager(int departmentManager) {
@@ -267,5 +272,13 @@ public class UserSession implements Serializable {
 
     public void setManager(boolean manager) {
         this.manager = manager;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
     }
 }

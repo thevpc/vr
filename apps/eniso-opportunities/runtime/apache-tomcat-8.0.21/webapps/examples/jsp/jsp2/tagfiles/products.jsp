@@ -37,14 +37,7 @@
       </jsp:attribute>
       <jsp:attribute name="onSale">
         Item: ${name}<
-      br / >
-      < font
-      color = "red" > < strike > Was
-      : ${origPrice}<
-      /strike></
-      font > < br / >
-      < b > Now
-      : ${salePrice}</
+      br${origPrice}<${salePrice}</
       b >
       </jsp:attribute>
 </tags:displayProducts>
@@ -58,7 +51,7 @@
         <
         b >${name}</
       b >
-      @ ${salePrice} ea. (was
+      @ ${salePrice} ea. (was;
       : ${origPrice})
       </jsp:attribute>
 </tags:displayProducts>

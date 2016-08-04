@@ -6,20 +6,20 @@
 package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.upa.FormulaType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "idName")
 @Path("Admin/Config")
 public class AppDataStore {
 
     @Id
-    @Field(modifiers = {UserFieldModifier.MAIN}, max = "255")
+    @Main
+    @Field(max = "255")
     private String idName;
     @Field(max = "maximum")
     private String propertyValue;

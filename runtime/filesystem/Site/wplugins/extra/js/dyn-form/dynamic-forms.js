@@ -91,7 +91,7 @@ angular.module('dynform', [])
                                 buildFields = function (field, id) {
                                     if (String(id).charAt(0) == '$') {
                                         // Don't process keys added by Angular...  See GitHub Issue #29
-                                        return;
+
                                     }
                                     else if (!angular.isDefined(supported[field.type]) || supported[field.type] === false) {
                                         //  Unsupported.  Create SPAN with field.label as contents

@@ -7,5 +7,8 @@
       <user-name>enisoinfouser</user-name>
     </data-source>
     <data-source name="MySQL - wpm" uuid="fe4e9e21-9f96-466f-b24b-383ae90a19ad" />
+    <data-source name="Derby - Embedded-upatest" uuid="d67b2ce8-f1f1-49d3-b213-35b29e63de26">
+      <secret-storage>master_key</secret-storage>
+    </data-source>
   </component>
 </project>

@@ -35,12 +35,12 @@
         <dependency>
             <groupId>net.vpc.upa</groupId>
             <artifactId>upa-api</artifactId>
-            <version>1.2.0.23</version>
+            <version>1.2.0.24</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.upa</groupId>
             <artifactId>upa-impl</artifactId>
-            <version>1.2.0.23.0</version>
+            <version>1.2.0.24.0</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -56,7 +56,7 @@
         <dependency>
             <groupId>net.vpc.common</groupId>
             <artifactId>utils</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.common</groupId>
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>net.vpc.common</groupId>
             <artifactId>vfs</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
         </dependency>
         <!--        <dependency>
             <groupId>net.vpc.upa.extensions</groupId>

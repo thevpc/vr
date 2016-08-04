@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.logging.Level;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Component
 public class VrApp implements ApplicationContextAware {

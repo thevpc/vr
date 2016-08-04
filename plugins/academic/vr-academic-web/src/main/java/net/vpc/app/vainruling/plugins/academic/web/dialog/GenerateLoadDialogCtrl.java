@@ -33,7 +33,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Component
 @ManagedBean
@@ -58,28 +58,28 @@ public class GenerateLoadDialogCtrl {
         options.put("draggable", false);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/dialog/generateload", options, null);
+        RequestContext.getCurrentInstance().openDialog("/modules/academic/dialog/generate-load-dialog", options, null);
 
     }
 
-    String getVersion(int periodId){
+    String getVersion(int periodId) {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         final AppPeriod period = core.findPeriod(periodId);
         return UPA.getContext().invokePrivileged(new Action<String>() {
             @Override
             public String run() {
-                return (String) VrApp.getBean(CorePlugin.class).getOrCreateAppPropertyValue("AcademicPlugin.generate."+period.getName()+".version", null, "v01");
+                return (String) VrApp.getBean(CorePlugin.class).getOrCreateAppPropertyValue("AcademicPlugin.generate." + period.getName() + ".version", null, "v01");
             }
         });
     }
 
-    void setVersion(int periodId,final String value){
+    void setVersion(int periodId, final String value) {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         final AppPeriod period = core.findPeriod(periodId);
         UPA.getContext().invokePrivileged(new VoidAction() {
             @Override
             public void run() {
-                VrApp.getBean(CorePlugin.class).setAppProperty("AcademicPlugin.generate."+period.getName()+".version", null, value);
+                VrApp.getBean(CorePlugin.class).setAppProperty("AcademicPlugin.generate." + period.getName() + ".version", null, value);
             }
         });
     }
@@ -98,10 +98,10 @@ public class GenerateLoadDialogCtrl {
 
         getModel().getPeriods().clear();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        AppPeriod curr= core.findAppConfig().getMainPeriod();
+        AppPeriod curr = core.findAppConfig().getMainPeriod();
         for (AppPeriod period : core.findNavigatablePeriods()) {
             SelectItem item = new SelectItem(String.valueOf(period.getId()), period.getName());
-            if(!period.isReadOnly()){
+            if (!period.isReadOnly()) {
                 getModel().getPeriods().add(item);
             }
         }
@@ -109,14 +109,14 @@ public class GenerateLoadDialogCtrl {
 
     }
 
-    public void onChangePeriod(){
+    public void onChangePeriod() {
         int periodId = getPeriodId();
         getModel().setVersion(getVersion(periodId));
     }
 
-    public int getPeriodId(){
+    public int getPeriodId() {
         String p = getModel().getPeriod();
-        if(StringUtils.isEmpty(p)){
+        if (StringUtils.isEmpty(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
             return core.findAppConfig().getMainPeriod().getId();
         }

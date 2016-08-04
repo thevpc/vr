@@ -23,39 +23,44 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @WebServlet(name = "FSServlet", urlPatterns = "/fs/*")
 public class FSServlet extends HttpServlet {
-
+    final int DEFAULT_BUFFER_SIZE = 4 * 1024 * 1024;
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         VFile file = getFile(request);
-        if (file!=null) {
+        if (file != null) {
 //            response.setHeader("Content-Type", file.probeContentType());
 //            response.setHeader("Content-Length", String.valueOf(file.length()));
             response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
             response.setContentType(file.probeContentType());
-            response.setContentLengthLong(file.length());
+            long length = file.length();
+            response.setContentLengthLong(length);
             InputStream in = null;
             try {
                 in = file.getInputStream();
-                FileUtils.copy(in, response.getOutputStream());
-                in.close();
-            }finally{
-                if(in!=null) {
+                int buffezSize = DEFAULT_BUFFER_SIZE;
+                if (length > 0 && length < DEFAULT_BUFFER_SIZE) {
+                    buffezSize = (int) length;
+                }
+                response.setBufferSize(buffezSize);
+                FileUtils.copy(in, response.getOutputStream(), buffezSize);
+            } finally {
+                if (in != null) {
                     in.close();
                 }
             }
         } else {
-            response.sendError(404);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
     @Override
     protected long getLastModified(HttpServletRequest request) {
         VFile file = getFile(request);
-        if (file!=null) {
+        if (file != null) {
             return file.lastModified();
         }
         return -1;
@@ -64,19 +69,19 @@ public class FSServlet extends HttpServlet {
     @Override
     protected void doHead(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         VFile file = getFile(request);
-        if (file!=null) {
+        if (file != null) {
             response.setStatus(HttpServletResponse.SC_OK);
             response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
             response.setContentType(file.probeContentType());
             response.setContentLengthLong(file.length());
         } else {
-            response.sendError(404);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
     protected VFile getFile(HttpServletRequest request) {
         String pathInfo = request.getPathInfo();
-        if(StringUtils.isEmpty(pathInfo)){
+        if (StringUtils.isEmpty(pathInfo)) {
             return null;
         }
         CorePlugin core = VrApp.getBean(CorePlugin.class);

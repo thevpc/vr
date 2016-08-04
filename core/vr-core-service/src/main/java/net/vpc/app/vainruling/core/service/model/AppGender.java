@@ -6,11 +6,10 @@
 package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.common.strings.StringUtils;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Admin/Config")
@@ -20,9 +19,9 @@ public class AppGender {
     @Sequence
 
     private int id;
-    //    @Field(modifiers = {UserFieldModifier.UNIQUE})
+    //    @Unique
     private String code;
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private String name;
     private String name2;
     private String name3;

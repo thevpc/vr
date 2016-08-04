@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class VRMenuDef {
 
@@ -153,10 +153,7 @@ public class VRMenuDef {
         if (!Objects.equals(this.command, other.command)) {
             return false;
         }
-        if (!Objects.equals(this.securityKey, other.securityKey)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.securityKey, other.securityKey);
     }
 
     @Override

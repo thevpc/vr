@@ -16,7 +16,7 @@ import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AppUser.class,
         actionName = "sendWelcomeMail",

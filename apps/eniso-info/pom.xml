@@ -10,5 +10,6 @@
         <module>eniso-info-service</module>
         <module>eniso-info-web</module>
         <module>plugins/themes/eniso-info-theme-infusion</module>
+        <module>plugins/themes/eniso-info-theme-th2016</module>
     </modules>
 </project>

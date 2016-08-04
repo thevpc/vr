@@ -19,7 +19,7 @@ and open the template in the editor.
 <h:body>
 
 
-    <ui:composition template="/templates/private-template.xhtml">
+    <ui:composition template="#{jsfCtrl.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <!--                <h:form id="buttonsForm">
 
@@ -126,14 +126,16 @@ and open the template in the editor.
                                     <p:fileDownload value="#{internshipsPlanningCtrl.downloadFetXml()}"/>
                                 </p:commandButton>
 
-                                <p:selectOneMenu style="margin-left: 20px;height: 40px;" value="#{internshipsPlanningCtrl.model.selectedGroup}">
+                                <p:selectOneMenu style="margin-left: 20px;height: 40px;"
+                                                 value="#{internshipsPlanningCtrl.model.selectedGroup}">
                                     <p:ajax listener="#{internshipsPlanningCtrl.onGroupChanged}"
                                             update=":listForm"/>
                                     <f:selectItem itemLabel="Selectionner Groupe..." itemValue=""/>
                                     <f:selectItems value="#{internshipsPlanningCtrl.model.groups}"/>
                                 </p:selectOneMenu>
 
-                                <p:selectOneMenu style="margin-left: 20px;height: 40px;" value="#{internshipsPlanningCtrl.model.selectedSessionType}">
+                                <p:selectOneMenu style="margin-left: 20px;height: 40px;"
+                                                 value="#{internshipsPlanningCtrl.model.selectedSessionType}">
                                     <p:ajax listener="#{internshipsPlanningCtrl.onSessionTypeChanged}"
                                             update=":listForm"/>
                                     <f:selectItem itemLabel="Selectionner Session..." itemValue=""/>
@@ -152,7 +154,7 @@ and open the template in the editor.
                                                     rendered="#{(col.index eq 0)}"
                                                     action="#{internshipsPlanningCtrl.onChangeRowVisibility(row)}"
                                                     styleClass="vr-tiny-button"
-                                                    value="V" update=":listForm"
+                                                    value="C" update=":listForm"
                                                     />
                                             <p:commandButton
                                                     rendered="#{(col.index eq 0)}"
@@ -201,7 +203,7 @@ and open the template in the editor.
                                                             rendered="#{(col.index ge internshipsPlanningCtrl.model.firstJuryColumn)}"
                                                             action="#{internshipsPlanningCtrl.onChangeColumnVisibility(col)}"
                                                             styleClass="vr-tiny-button"
-                                                            value="V" update=":listForm"
+                                                            value="C" update=":listForm"
                                                             />
                                                     <p:commandButton
                                                             rendered="#{(col.index ge internshipsPlanningCtrl.model.firstJuryColumn)}"

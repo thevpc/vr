@@ -10,6 +10,7 @@ public class AppVersion {
     private String buildDate = "2016-06-17";
     private String buildNumber = "54";
     private String author = "Taha BEN SALAH (c)";
+    private String defaultTheme = "default";
 
     public String getVersion() {
         return version;
@@ -57,5 +58,13 @@ public class AppVersion {
 
     public void setLongName(String longName) {
         this.longName = longName;
+    }
+
+    public String getDefaultTheme() {
+        return defaultTheme;
+    }
+
+    public void setDefaultTheme(String defaultTheme) {
+        this.defaultTheme = defaultTheme;
     }
 }

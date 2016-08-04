@@ -9,7 +9,6 @@ import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
 import net.vpc.upa.FormulaType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
@@ -17,10 +16,10 @@ import java.sql.Timestamp;
 /**
  * cours (dans un plan d'études) Module
  *
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "period.name desc, fullName,name")
-@Path("Education")
+@Path("Education/StudyPlan")
 public class AcademicCoursePlan {
 
     @Id
@@ -40,7 +39,7 @@ public class AcademicCoursePlan {
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     )
     private String name;
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     @Formula(
             value = "concat((select a.name from AcademicCourseLevel a where a.id=this.courseLevelId),'-',Coalesce(this.code,'X'),'-',this.name)",
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
@@ -96,13 +95,40 @@ public class AcademicCoursePlan {
     )
     private double valuePM;
     private double valueTPPM;
+    @Summary
+    @Properties(
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
+    )
     @Field(defaultValue = "0")
     private double credits;
+
+    @Summary
+    @Properties(
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
+    )
     @Field(defaultValue = "0")
     private double ects;
     //    private double valueDU;
     //Unite enseignement/UE
 //    @Summary
+    @Summary
+    @Properties(
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "#{concat('width:60px;','background-color:'," +
+                    " if(this.courseGroup.name like '%UE1') then '{bgcolor1}'" +
+                    "  elseif (this.courseGroup.name like '%UE2') then '{bgcolor2}' " +
+                    "  elseif (this.courseGroup.name like '%UE3') then '{bgcolor3}' " +
+                    "  elseif (this.courseGroup.name like '%UE4') then '{bgcolor4}' " +
+                    "  elseif (this.courseGroup.name like '%UE5') then '{bgcolor5}' " +
+                    "  elseif (this.courseGroup.name like '%UE6') then '{bgcolor6}' " +
+                    "  elseif (this.courseGroup.name like '%UE7') then '{bgcolor7}' " +
+                    "  elseif (this.courseGroup.name like '%UE8') then '{bgcolor8}' " +
+                    "  elseif (this.courseGroup.name like '%UE9') then '{bgcolor9}' " +
+                    "  elseif (this.courseGroup.name like '%UE10') then '{bgcolor10}' " +
+                    " end" +
+                    ")" +
+                    "}")
+    )
+    @ManyToOne(filter = "that.period.id=this.period.id and that.academicClass.id=this.courseLevel.academicClass.id")
     private AcademicCourseGroup courseGroup;
     private int position;
     private int groupCountC = 1;
@@ -116,10 +142,56 @@ public class AcademicCoursePlan {
     private int weeksPM = 0;
     private int weeksTPPM = 0;
     //@Summary
+    private String labels;
+
+    @Properties(
+            {
+                    @Property(name = UIConstants.Form.SEPARATOR, value = "Contenu"),
+                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA)
+            }
+    )
+    @Field(max = "max")
+    private String overviewDetails;
+    @Field(max = "512")
+    private String prerequisites;
+
     private String roomConstraintsC;
+    @Properties(
+            {
+                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA)
+            }
+    )
+    @Field(max = "max")
+    private String cDetails;
+
+    @Properties(
+            {
+                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA)
+            }
+    )
+
     @Summary
     private String roomConstraintsTP;
-    private String labels;
+
+    @Field(max = "max")
+    private String tpDetails;
+
+    @Properties(
+            {
+                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA)
+            }
+    )
+    @Field(max = "max")
+    private String prDetails;
+
+    @Properties(
+            {
+                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA)
+            }
+    )
+    @Field(max = "max")
+    private String referenceDetails;
+
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
@@ -431,5 +503,53 @@ public class AcademicCoursePlan {
 
     public void setOfficialDiscipline(AcademicOfficialDiscipline officialDiscipline) {
         this.officialDiscipline = officialDiscipline;
+    }
+
+    public String getOverviewDetails() {
+        return overviewDetails;
+    }
+
+    public void setOverviewDetails(String overviewDetails) {
+        this.overviewDetails = overviewDetails;
+    }
+
+    public String getPrerequisites() {
+        return prerequisites;
+    }
+
+    public void setPrerequisites(String prerequisites) {
+        this.prerequisites = prerequisites;
+    }
+
+    public String getcDetails() {
+        return cDetails;
+    }
+
+    public void setcDetails(String cDetails) {
+        this.cDetails = cDetails;
+    }
+
+    public String getTpDetails() {
+        return tpDetails;
+    }
+
+    public void setTpDetails(String tpDetails) {
+        this.tpDetails = tpDetails;
+    }
+
+    public String getPrDetails() {
+        return prDetails;
+    }
+
+    public void setPrDetails(String prDetails) {
+        this.prDetails = prDetails;
+    }
+
+    public String getReferenceDetails() {
+        return referenceDetails;
+    }
+
+    public void setReferenceDetails(String referenceDetails) {
+        this.referenceDetails = referenceDetails;
     }
 }

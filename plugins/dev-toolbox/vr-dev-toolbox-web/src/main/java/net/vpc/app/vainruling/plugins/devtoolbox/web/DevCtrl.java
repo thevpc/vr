@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Scope;
 import javax.faces.bean.ManagedBean;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         title = "Developer Upgrade",

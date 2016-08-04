@@ -14,7 +14,7 @@ import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AppProfile.class,
         actionLabel = "auth", actionStyle = "fa-envelope-o",

@@ -5,12 +5,12 @@
  */
 package net.vpc.app.vainruling.plugins.inbox.service;
 
-import net.vpc.app.vainruling.plugins.inbox.service.model.EmailDestinationType;
+import net.vpc.common.gomail.RecipientType;
 
 import java.util.Properties;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class MailData {
 
@@ -20,7 +20,7 @@ public class MailData {
     private String to;
     private String toFilter;
     private String category;
-    private EmailDestinationType emailType;
+    private RecipientType emailType;
     private Integer templateId;
     private boolean external;
     private boolean richText;
@@ -74,11 +74,11 @@ public class MailData {
         this.templateId = templateId;
     }
 
-    public EmailDestinationType getEmailType() {
+    public RecipientType getEmailType() {
         return emailType;
     }
 
-    public void setEmailType(EmailDestinationType emailType) {
+    public void setEmailType(RecipientType emailType) {
         this.emailType = emailType;
     }
 

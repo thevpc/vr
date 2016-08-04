@@ -13,7 +13,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @FacesConverter("periodToMinutesConverter")
 public class PeriodToMinutesConverter implements Converter {

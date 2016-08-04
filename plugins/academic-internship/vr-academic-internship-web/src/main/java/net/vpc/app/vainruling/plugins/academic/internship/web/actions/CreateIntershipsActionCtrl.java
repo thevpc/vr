@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Component
 @ManagedBean
@@ -50,7 +50,7 @@ public class CreateIntershipsActionCtrl {
         options.put("resizable", false);
         options.put("draggable", false);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/internship/createintershipsDialog", options, null);
+        RequestContext.getCurrentInstance().openDialog("/modules/academic/internship/create-interships-dialog", options, null);
 
     }
 

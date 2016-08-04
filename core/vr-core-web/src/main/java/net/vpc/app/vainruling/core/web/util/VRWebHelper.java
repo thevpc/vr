@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class VRWebHelper {
 
@@ -22,6 +22,11 @@ public class VRWebHelper {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest req = attr.getRequest();
         UserSession s = VrApp.getContext().getBean(UserSession.class);
+        if (s != null && s.getUser() != null) {
+            s.setTheme(VrApp.getBean(JsfCtrl.class).getUserTheme(s.getUser().getLogin()).getId());
+        } else {
+            s.setTheme(VrApp.getBean(JsfCtrl.class).getAppTheme().getId());
+        }
         if (s.getSessionId() == null) {
             HttpSession session = req.getSession(true); // true == allow create
             s.setSessionId(session.getId());

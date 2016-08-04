@@ -16,8 +16,8 @@ import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
 import net.vpc.app.vainruling.core.web.obj.ViewContext;
 import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
-import net.vpc.app.vainruling.plugins.inbox.service.model.EmailDestinationType;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
+import net.vpc.common.gomail.RecipientType;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.NamedId;
@@ -33,7 +33,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Component
 @ManagedBean
@@ -57,7 +57,7 @@ public class SendExternalMailActionCtrl {
         }
 
         ViewContext viewContext = new ViewContext();
-        PropertyView emailType = propertyViewManager.createPropertyView("emailType", EmailDestinationType.class, null, viewContext)[0];
+        PropertyView emailType = propertyViewManager.createPropertyView("emailType", RecipientType.class, null, viewContext)[0];
         getModel().setEmailType(emailType);
         //MailboxMessageFormat
         getModel().setMailboxMessageFormat(propertyViewManager.createPropertyView("mailboxMessageFormat", MailboxMessageFormat.class, null, viewContext)[0]);
@@ -70,7 +70,7 @@ public class SendExternalMailActionCtrl {
         options.put("draggable", false);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/articles/sendExternalMailDialog", options, null);
+        RequestContext.getCurrentInstance().openDialog("/modules/articles/send-external-mail-dialog", options, null);
 
     }
 
@@ -81,7 +81,7 @@ public class SendExternalMailActionCtrl {
     public void startExec() {
         VrApp.getBean(VrNotificationSession.class).clear(ArticlesPlugin.SEND_EXTERNAL_MAIL_QUEUE);
         ArticlesPlugin.SendExternalMailConfig c = new ArticlesPlugin.SendExternalMailConfig();
-        c.setEmailType((EmailDestinationType) getModel().getEmailType().getValue());
+        c.setEmailType((RecipientType) getModel().getEmailType().getValue());
         Object value = getModel().getMailboxMessageFormat().getValue();
         if (value instanceof NamedId) {
             value = UPA.getPersistenceUnit().findById(MailboxMessageFormat.class, ((NamedId) value).getId());

@@ -24,7 +24,9 @@ import net.vpc.common.util.Convert;
 import net.vpc.common.util.PlatformTypes;
 import net.vpc.upa.*;
 import net.vpc.upa.Package;
-import net.vpc.upa.filters.Fields;
+import net.vpc.upa.expressions.Expression;
+import net.vpc.upa.expressions.Literal;
+import net.vpc.upa.filters.FieldFilters;
 import net.vpc.upa.types.*;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
@@ -49,7 +51,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
@@ -569,9 +571,32 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         return val;
     }
 
-    public Object getPropertyColumnStyle(String property) {
+    public Object getPropertyColumnStyle(String property, ObjRow row) {
         Field p = getEntity().getField(property);
         String v = p.getProperties().getString(UIConstants.Grid.COLUMN_STYLE);
+        if (v != null) {
+            v = v.trim();
+            if (v.startsWith("#{") && v.endsWith("}")) {
+                VrColorTable table = VrApp.getBean(VrColorTable.class);
+                PersistenceUnit pu = UPA.getPersistenceUnit();
+                Map<String, Object> map = new HashMap<>();
+                map.put("this", row == null ? null : row.getRecord());
+                Record r = pu.getFactory().createObject(Record.class);
+                r.setObject("pos", row == null ? -1 : row.getRowPos());
+                map.put("ui", r);
+                String expr = v.substring(2, v.length() - 1);
+                Expression expression = pu.getExpressionManager().simplifyExpression(expr, map);
+                if (expression instanceof Literal) {
+                    Object t = ((Literal) expression).getValue();
+                    String ret = t == null ? "" : t.toString().trim();
+                    for (int i = 0; i < 20; i++) {
+                        ret = ret.replace("{bgcolor" + i + "}", table.getBgColor(i));
+                        ret = ret.replace("{fgcolor" + i + "}", table.getFgColor(i));
+                    }
+                    return ret;
+                }
+            }
+        }
         return v;
     }
 
@@ -781,7 +806,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
             List<Field> fields = new ArrayList<Field>();
             if (getModel().getFieldSelection() == null) {
-                fields = ot.getFields(Fields.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY));
+                fields = ot.getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY));
             } else {
                 fields = getModel().getFieldSelection().getVisibleFields();
             }
@@ -811,7 +836,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
             ViewContext viewContext = new ViewContext();
             List<OrderedPropertyView> propertyViews = new ArrayList<OrderedPropertyView>();
-            for (Field field : ot.getFields(Fields.byModifiersNoneOf(FieldModifier.SYSTEM))) {
+            for (Field field : ot.getFields(FieldFilters.byModifiersNoneOf(FieldModifier.SYSTEM))) {
                 Map<String, Object> config = new HashMap<>();
                 if (getModel().getDisabledFields().contains(field.getName())) {
                     config.put("disabled", true);
@@ -929,10 +954,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     public boolean isEnabledSelectNext() {
         ObjRow objRow = getModel().getCurrent();
-        if (objRow != null && objRow.getRowPos() >= 0 && objRow.getRowPos() + 1 < getModel().getList().size()) {
-            return true;
-        }
-        return false;
+        return objRow != null && objRow.getRowPos() >= 0 && objRow.getRowPos() + 1 < getModel().getList().size();
     }
 
     public void onSelectNext() {
@@ -945,10 +967,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     public boolean isEnabledSelectPrevious() {
         ObjRow objRow = getModel().getCurrent();
-        if (objRow != null && objRow.getRowPos() > 0 && getModel().getList().size() > 0) {
-            return true;
-        }
-        return false;
+        return objRow != null && objRow.getRowPos() > 0 && getModel().getList().size() > 0;
     }
 
     public void onSelectPrevious() {
@@ -1014,7 +1033,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         options.put("resizable", false);
         options.put("draggable", false);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/obj/objsimplesearchdialog", options, null);
+        RequestContext.getCurrentInstance().openDialog("/modules/obj/obj-simple-search-dialog", options, null);
     }
 
     public void onSimpleFieldSelection() {
@@ -1028,7 +1047,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         options.put("resizable", false);
         options.put("draggable", false);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/obj/objsimplefieldseldialog", options, null);
+        RequestContext.getCurrentInstance().openDialog("/modules/obj/obj-simple-field-sel-dialog", options, null);
     }
 
     public void onDoNothing() {
@@ -1210,6 +1229,16 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
+    public void switchWikiTextArea(PropertyView p) {
+        String componentState = p.getComponentState();
+        if ("Default".equals(componentState)) {
+            p.setComponentState("Edit");
+        } else if ("Edit".equals(componentState)) {
+            p.setComponentState("Default");
+        } else {
+            p.setComponentState("Default");
+        }
+    }
     private static class FormHelper {
 
         DynaFormModel dynModel = new DynaFormModel();

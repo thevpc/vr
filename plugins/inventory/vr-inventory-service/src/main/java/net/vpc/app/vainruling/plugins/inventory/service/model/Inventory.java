@@ -5,13 +5,12 @@
  */
 package net.vpc.app.vainruling.plugins.inventory.service.model;
 
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.util.Date;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "startDate desc, name")
 @Path("Equipment/Inventory")
@@ -20,7 +19,8 @@ public class Inventory {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
+    @Main
+    @Unique
     private String name;
     private Date startDate;
     private Date endDate;

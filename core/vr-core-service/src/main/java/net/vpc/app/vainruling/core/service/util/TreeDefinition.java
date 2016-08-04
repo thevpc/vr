@@ -8,12 +8,12 @@ package net.vpc.app.vainruling.core.service.util;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public interface TreeDefinition<T> {
 
-    public T getRoot();
+    T getRoot();
 
-    public List<T> getChildren(T t);
+    List<T> getChildren(T t);
 
 }

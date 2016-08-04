@@ -18,7 +18,7 @@ import javax.faces.bean.ManagedBean;
 import java.util.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         title = "Developer Tools", css = "fa-dashboard", url = "modules/devtoolbox/dev-ql", menu = "/Admin", securityKey = "Custom.DevTools"
@@ -61,21 +61,21 @@ public class DevToolsCtrl {
                     } catch (Exception e) {
                         List<Object> row1 = Arrays.asList((Object) e.getMessage());
                         List<Object> row2 = Arrays.asList((Object) StringUtils.verboseStacktraceToString(e));
-                        getModel().getRows().add((List<Object>) row1);
-                        getModel().getRows().add((List<Object>) row2);
+                        getModel().getRows().add(row1);
+                        getModel().getRows().add(row2);
                         getModel().getRowNames().add(new ColDef("<Error>", 0));
                     }
                 } else {
                     try {
                         int r = UPA.getPersistenceUnit().getConnection().executeNonQuery(q, new ArrayList<Parameter>(), new ArrayList<Parameter>());
                         List<Object> row = Arrays.asList((Object) r);
-                        getModel().getRows().add((List<Object>) row);
+                        getModel().getRows().add(row);
                         getModel().getRowNames().add(new ColDef("<Result>", 0));
                     } catch (Exception e) {
                         List<Object> row1 = Arrays.asList((Object) e.getMessage());
                         List<Object> row2 = Arrays.asList((Object) StringUtils.verboseStacktraceToString(e));
-                        getModel().getRows().add((List<Object>) row1);
-                        getModel().getRows().add((List<Object>) row2);
+                        getModel().getRows().add(row1);
+                        getModel().getRows().add(row2);
                         getModel().getRowNames().add(new ColDef("<Error>", 0));
                     }
                 }
@@ -110,8 +110,8 @@ public class DevToolsCtrl {
                         List<Object> row1 = Arrays.asList((Object) e.getMessage());
                         List<Object> row2 = Arrays.asList((Object) StringUtils.verboseStacktraceToString(e));
                         getModel().getRows().clear();
-                        getModel().getRows().add((List<Object>) row1);
-                        getModel().getRows().add((List<Object>) row2);
+                        getModel().getRows().add(row1);
+                        getModel().getRows().add(row2);
                         getModel().getRowNames().clear();
                         getModel().getRowNames().add(new ColDef("<Error>", 0));
                     }
@@ -119,14 +119,14 @@ public class DevToolsCtrl {
                     try {
                         int r = UPA.getPersistenceUnit().createQuery(q).executeNonQuery();
                         List<Object> row = Arrays.asList((Object) r);
-                        getModel().getRows().add((List<Object>) row);
+                        getModel().getRows().add(row);
                         getModel().getRowNames().add(new ColDef("<Result>", 0));
                     } catch (Exception e) {
                         List<Object> row1 = Arrays.asList((Object) e.getMessage());
                         List<Object> row2 = Arrays.asList((Object) StringUtils.verboseStacktraceToString(e));
                         getModel().getRows().clear();
-                        getModel().getRows().add((List<Object>) row1);
-                        getModel().getRows().add((List<Object>) row2);
+                        getModel().getRows().add(row1);
+                        getModel().getRows().add(row2);
                         getModel().getRowNames().clear();
                         getModel().getRowNames().add(new ColDef("<Error>", 0));
                     }

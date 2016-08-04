@@ -8,7 +8,6 @@ package net.vpc.app.vainruling.plugins.academic.service.model.current;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.FormulaType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
@@ -16,16 +15,16 @@ import java.sql.Timestamp;
 /**
  * Classe
  *
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
-@Path("Education")
+@Path("Education/StudyPlan")
 public class AcademicClass {
 
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private String name;
     private String name2;
     private String otherNames;

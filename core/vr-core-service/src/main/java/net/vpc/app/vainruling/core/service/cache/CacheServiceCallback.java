@@ -18,7 +18,7 @@ import net.vpc.upa.config.OnRemove;
 import net.vpc.upa.config.OnUpdate;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Callback(
         //config = @Config(persistenceUnit = "main")

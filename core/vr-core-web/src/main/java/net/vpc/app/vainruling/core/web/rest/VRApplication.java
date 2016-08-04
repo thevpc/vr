@@ -12,7 +12,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class VRApplication extends ResourceConfig {
 

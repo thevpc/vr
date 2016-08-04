@@ -1,6 +1,5 @@
 package net.vpc.app.vr.wpm.plugins.payroll.service.model;
 
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
@@ -13,7 +12,8 @@ public class EmployeeGrade {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
+    @Main
+    @Unique
     private String name;
 
     public int getId() {

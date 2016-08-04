@@ -6,16 +6,14 @@
 package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.FormulaType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Education/Config")
@@ -25,12 +23,13 @@ public class AcademicLoadConversionTable {
     @Sequence
 
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
+    @Main
+    @Unique
     private String name;
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
-    @Field(updateAccessLevel = AccessLevel.PRIVATE )
+    @Field(updateAccessLevel = AccessLevel.PRIVATE)
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})

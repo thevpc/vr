@@ -13,7 +13,7 @@ import net.vpc.upa.config.*;
 import java.util.Date;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Education/Config")

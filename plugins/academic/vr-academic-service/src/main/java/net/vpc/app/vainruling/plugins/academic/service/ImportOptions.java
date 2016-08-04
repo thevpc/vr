@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.service;
 /**
  * just option holder, is not used yet!
  *
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class ImportOptions implements Cloneable {
 

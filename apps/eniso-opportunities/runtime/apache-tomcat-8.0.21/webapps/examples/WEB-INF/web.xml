@@ -30,7 +30,7 @@
     <!-- Define example filters -->
     <filter>
         <filter-name>Timing Filter</filter-name>
-        <filter-class>filters.ExampleFilter</filter-class>
+        <filter-class>columnFilters.ExampleFilter</filter-class>
         <init-param>
             <param-name>attribute</param-name>
             <param-value>filters.ExampleFilter</param-value>

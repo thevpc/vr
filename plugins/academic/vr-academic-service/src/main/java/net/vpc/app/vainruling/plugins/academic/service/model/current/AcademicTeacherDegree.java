@@ -7,14 +7,12 @@ package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.FormulaType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
-import java.util.Objects;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Education/Config")
@@ -36,7 +34,7 @@ public class AcademicTeacherDegree {
     @Summary
     private double valueDU;
 
-//    @Summary
+    //    @Summary
 //    private double valueC;
 //    @Summary
 //    private double valueTD;

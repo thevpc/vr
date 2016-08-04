@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.plugins.inbox.service.model;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public enum MailboxFolder {
     CURRENT,

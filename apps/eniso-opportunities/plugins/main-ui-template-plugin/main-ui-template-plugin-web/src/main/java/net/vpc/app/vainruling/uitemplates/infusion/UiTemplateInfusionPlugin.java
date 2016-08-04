@@ -10,7 +10,7 @@ import net.vpc.app.vainruling.api.Install;
 
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @AppPlugin(version = "1.0")
 public class UiTemplateInfusionPlugin {

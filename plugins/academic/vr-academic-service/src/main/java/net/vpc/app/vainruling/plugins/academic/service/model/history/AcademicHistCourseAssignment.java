@@ -10,11 +10,10 @@ import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Education/History")
@@ -24,7 +23,7 @@ public class AcademicHistCourseAssignment {
     @Sequence
 
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private String name;
     private String name2;
     @Summary

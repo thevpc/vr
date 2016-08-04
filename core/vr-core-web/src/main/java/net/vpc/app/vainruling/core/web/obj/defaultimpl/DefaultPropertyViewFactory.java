@@ -20,23 +20,34 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class DefaultPropertyViewFactory implements PropertyViewFactory {
 
     private static final Logger log = Logger.getLogger(DefaultPropertyViewFactory.class.getName());
-    private EntityTypePropertyViewFactory entityTypePropertyViewFactory = new EntityTypePropertyViewFactory();
+    private ManyToOneTypePropertyViewFactory manyToOneTypePropertyViewFactory = new ManyToOneTypePropertyViewFactory();
     private EnumTypePropertyViewFactory enumTypePropertyViewFactory = new EnumTypePropertyViewFactory();
 
     @Override
+    public PropertyView[] createPropertyView(String componentId, Field field, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext) {
+        return createPropertyView(componentId, field, null, configuration, manager, viewContext);
+    }
+
+    public PropertyView[] createPropertyView(String componentId, DataType datatype, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext) {
+        return createPropertyView(componentId, null, datatype, configuration, manager, viewContext);
+    }
+
     public PropertyView[] createPropertyView(String componentId, Field field, DataType datatype, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext) {
+        if (field != null) {
+            datatype = field.getDataType();
+        }
         PropertyView propView = null;
         FieldPropertyViewInfo nfo = FieldPropertyViewInfo.build(field, datatype, configuration);
         if (!nfo.visible) {
             return null;
         }
         if (nfo.dataType instanceof ManyToOneType || nfo.dataType instanceof KeyType) {
-            return entityTypePropertyViewFactory.createPropertyView(componentId, field, nfo.dataType, configuration, manager, viewContext);
+            return manyToOneTypePropertyViewFactory.createPropertyView(componentId, field, nfo.dataType, configuration, manager, viewContext);
         } else if (nfo.dataType instanceof EnumType) {
             return enumTypePropertyViewFactory.createPropertyView(componentId, field, nfo.dataType, configuration, manager, viewContext);
         } else {
@@ -44,7 +55,11 @@ public class DefaultPropertyViewFactory implements PropertyViewFactory {
             if (t.equals(String.class)) {
                 String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.TEXT);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
-                if (nfo.main || controlType.equals(UIConstants.Control.TEXTAREA) || controlType.equals(UIConstants.Control.RICHTEXTAREA)) {
+                if (nfo.main
+                        || controlType.equals(UIConstants.Control.TEXTAREA)
+                        || controlType.equals(UIConstants.Control.RICHTEXTAREA)
+                        || controlType.equals(UIConstants.Control.WIKITEXTAREA)
+                        ) {
                     propView.setPrependNewLine(true);
                     propView.setColspan(Integer.MAX_VALUE);
                     propView.setAppendNewLine(true);

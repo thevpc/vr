@@ -7,11 +7,10 @@ package net.vpc.app.vainruling.plugins.academic.internship.service.model.config;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.RelationshipType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Education/Config")

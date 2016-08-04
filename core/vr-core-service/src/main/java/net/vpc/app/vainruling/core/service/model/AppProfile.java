@@ -7,13 +7,12 @@ package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.FormulaType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Admin/Security")
@@ -23,7 +22,8 @@ public class AppProfile {
     @Sequence
     private int id;
     private String code;
-    @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
+    @Main
+    @Unique
     private String name;
     private String name2;
     private String name3;

@@ -20,7 +20,7 @@ import javax.faces.bean.ManagedBean;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {

@@ -11,13 +11,12 @@ import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipStatus;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipType;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 import net.vpc.upa.types.Date;
 import net.vpc.upa.types.DateTime;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Education/History")
@@ -56,10 +55,12 @@ public class AcademicHistInternship {
     private String duration;
     private Date startDate;
     private Date endDate;
-    @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
+    @Summary
+    @Field(max = "4000")
     private String firstExaminerName;
     private String secondExaminerName;
-    @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
+    @Summary
+    @Field(max = "4000")
     private String chairExaminerName;
     private AppPeriod academicYear;
     private DateTime examDate;

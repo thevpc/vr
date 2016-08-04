@@ -5,13 +5,10 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.stat;
 
-import net.vpc.app.vainruling.plugins.academic.service.CourseFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherSemestrialLoad;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public abstract class TeacherBaseStat {
     private LoadValue value = new LoadValue();

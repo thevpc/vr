@@ -14,7 +14,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class EnumConverter implements Converter {
     private Class enumClass;

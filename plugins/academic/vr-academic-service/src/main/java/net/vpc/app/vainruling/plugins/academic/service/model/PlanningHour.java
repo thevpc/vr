@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.plugins.academic.service.model;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class PlanningHour {
 

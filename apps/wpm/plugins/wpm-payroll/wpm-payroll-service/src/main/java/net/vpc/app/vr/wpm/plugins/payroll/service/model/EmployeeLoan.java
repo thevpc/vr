@@ -1,6 +1,5 @@
 package net.vpc.app.vr.wpm.plugins.payroll.service.model;
 
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 import net.vpc.upa.types.Date;
 
@@ -13,17 +12,17 @@ public class EmployeeLoan {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Date opDate;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Employee employee;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private EmployeeSalaryPeriod period;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double loadValueAdvance;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double loadValueLending;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double loadValueOpposition;
 
     private double monthRefundValueAdvance;

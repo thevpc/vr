@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class AcademicCourseAssignmentInfo {
 

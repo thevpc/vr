@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Controller
 @ManagedBean
@@ -72,9 +72,9 @@ public class ArticlesCtrl {
     public void loadArticles(String name) {
         List<FullArticle> a = findArticles(name);
         getModel().getArticles().put(name, a);
-        if(a!=null && a.size()>0){
+        if (a != null && a.size() > 0) {
             getModel().setCurrent(a.get(0));
-        }else{
+        } else {
             getModel().setCurrent(null);
         }
     }

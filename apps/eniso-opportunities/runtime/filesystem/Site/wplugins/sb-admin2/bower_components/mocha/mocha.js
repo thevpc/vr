@@ -457,8 +457,7 @@
          */
 
         function EventEmitter() {
-        };
-
+        }
         /**
          * Adds a listener.
          *
@@ -495,8 +494,7 @@
             function on() {
                 self.removeListener(name, on);
                 fn.apply(this, arguments);
-            };
-
+            }
             on.listener = fn;
             this.on(name, on);
 
@@ -877,7 +875,7 @@
          */
 
         function F() {
-        };
+        }
         F.prototype = Runnable.prototype;
         Hook.prototype = new F;
         Hook.prototype.constructor = Hook;
@@ -1252,8 +1250,6 @@
         var Suite = require('../suite')
             , Test = require('../test')
             , utils = require('../utils');
-        ;
-
         /**
          * TDD-style interface:
          *
@@ -1460,7 +1456,7 @@
             this.bail(options.bail);
             this.reporter(options.reporter);
             if (null != options.timeout) this.timeout(options.timeout);
-            this.useColors(options.useColors)
+            this.useColors(options.useColors);
             if (options.slow) this.slow(options.slow);
 
             this.suite.on('pre-require', function (context) {
@@ -1521,12 +1517,10 @@
                     _reporter = require('./reporters/' + reporter);
                 } catch (err) {
                 }
-                ;
                 if (!_reporter) try {
                     _reporter = require(reporter);
                 } catch (err) {
                 }
-                ;
                 if (!_reporter && reporter === 'teamcity')
                     console.warn('The Teamcity reporter was moved to a package named ' +
                         'mocha-teamcity-reporter ' +
@@ -1551,7 +1545,6 @@
                 this._ui = require(name);
             } catch (err) {
             }
-            ;
             if (!this._ui) throw new Error('invalid interface "' + name + '"');
             this._ui = this._ui(this.suite);
             return this;
@@ -2521,7 +2514,7 @@
          */
 
         function F() {
-        };
+        }
         F.prototype = Base.prototype;
         Dot.prototype = new F;
         Dot.prototype.constructor = Dot;
@@ -2644,7 +2637,7 @@
                 , report = fragment('<ul id="mocha-report"></ul>')
                 , stack = [report]
                 , progress
-                , ctx
+                , ctx;
 
             root = root || document.getElementById('mocha');
 
@@ -2976,8 +2969,7 @@
             }
 
             return ret;
-        };
-
+        }
         /**
          * Map jscoverage data for a single source file
          * to a JSON structure suitable for reporting.
@@ -3258,7 +3250,7 @@
                 stream.write(runway());
                 stream.write('\n  ');
                 stream.write(color('runway', Array(col).join('⋅')));
-                stream.write(plane)
+                stream.write(plane);
                 stream.write(color('runway', Array(width - col).join('⋅') + '\n'));
                 stream.write(runway());
                 stream.write('\u001b[0m');
@@ -3276,7 +3268,7 @@
          */
 
         function F() {
-        };
+        }
         F.prototype = Base.prototype;
         Landing.prototype = new F;
         Landing.prototype.constructor = Landing;
@@ -3348,7 +3340,7 @@
          */
 
         function F() {
-        };
+        }
         F.prototype = Base.prototype;
         List.prototype = new F;
         List.prototype.constructor = List;
@@ -3489,7 +3481,7 @@
          */
 
         function F() {
-        };
+        }
         F.prototype = Base.prototype;
         Min.prototype = new F;
         Min.prototype.constructor = Min;
@@ -3685,7 +3677,7 @@
             } else {
                 return '( - .-)';
             }
-        }
+        };
 
         /**
          * Move cursor up `n`.
@@ -3758,7 +3750,7 @@
          */
 
         function F() {
-        };
+        }
         F.prototype = Base.prototype;
         NyanCat.prototype = new F;
         NyanCat.prototype.constructor = NyanCat;
@@ -3853,7 +3845,7 @@
          */
 
         function F() {
-        };
+        }
         F.prototype = Base.prototype;
         Progress.prototype = new F;
         Progress.prototype.constructor = Progress;
@@ -3945,7 +3937,7 @@
          */
 
         function F() {
-        };
+        }
         F.prototype = Base.prototype;
         Spec.prototype = new F;
         Spec.prototype.constructor = Spec;
@@ -4102,7 +4094,7 @@
          */
 
         function F() {
-        };
+        }
         F.prototype = Base.prototype;
         XUnit.prototype = new F;
         XUnit.prototype.constructor = XUnit;
@@ -4213,7 +4205,7 @@
          */
 
         function F() {
-        };
+        }
         F.prototype = EventEmitter.prototype;
         Runnable.prototype = new F;
         Runnable.prototype.constructor = Runnable;
@@ -4476,7 +4468,7 @@
          */
 
         function F() {
-        };
+        }
         F.prototype = EventEmitter.prototype;
         Runner.prototype = new F;
         Runner.prototype.constructor = Runner;
@@ -5006,7 +4998,7 @@
         Runner.prototype.abort = function () {
             debug('aborting');
             this._abort = true;
-        }
+        };
 
         /**
          * Filter leaks with the given globals flagged as `ok`.
@@ -5139,7 +5131,7 @@
          */
 
         function F() {
-        };
+        }
         F.prototype = EventEmitter.prototype;
         Suite.prototype = new F;
         Suite.prototype.constructor = Suite;
@@ -5407,7 +5399,7 @@
          */
 
         function F() {
-        };
+        }
         F.prototype = Runnable.prototype;
         Test.prototype = new F;
         Test.prototype.constructor = Test;
@@ -5542,7 +5534,7 @@
 
         exports.keys = Object.keys || function (obj) {
                 var keys = []
-                    , has = Object.prototype.hasOwnProperty // for `window` on <=IE8
+                    , has = Object.prototype.hasOwnProperty; // for `window` on <=IE8
 
                 for (var key in obj) {
                     if (has.call(obj, key)) {

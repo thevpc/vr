@@ -32,7 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class XlsxLoadImporter {
 
@@ -58,6 +58,7 @@ public class XlsxLoadImporter {
 //        service.add(new AcademicTeacherDegree("MA'",/*C*/ 1.83,/*TD*/ 1.0,/*TP*/ (2.0 / 3.0),/*PM*/ (2.0 / 3.0) * (2.0 / 3.0),/*DU*/ 0, pos++));
 //        service.add(new AcademicTeacherDegree("MC'",/*C*/ 1.0,/*TD*/ 1.0 / 1.33,/*TP*/ 0.5,/*PM*/ 0.5 * (2.0 / 3.0),/*DU*/ 0, pos++));
     }
+
     //TODO fix me
     public void importLoadConversionTable() throws IOException {
         AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
@@ -155,11 +156,11 @@ public class XlsxLoadImporter {
             Object[] values = row.getValues();
             String tableName = Convert.toString(values[0]);
             if (table == null) {
-                if(StringUtils.isEmpty(tableName)){
-                    tableName="Table";
+                if (StringUtils.isEmpty(tableName)) {
+                    tableName = "Table";
                 }
-                table=service.findLoadConversionTable(tableName);
-                if(table==null) {
+                table = service.findLoadConversionTable(tableName);
+                if (table == null) {
                     table = new AcademicLoadConversionTable();
                     table.setName("Table");
                     service.add(table);
@@ -168,7 +169,7 @@ public class XlsxLoadImporter {
 
             AcademicLoadConversionRule rule = service.findLoadConversionRule(tableName);
             if (rule == null) {
-                rule=new AcademicLoadConversionRule();
+                rule = new AcademicLoadConversionRule();
                 rule.setName(Convert.toString(values[1]));
                 service.add(rule);
             }
@@ -182,7 +183,7 @@ public class XlsxLoadImporter {
                 trow.setValueTP(Convert.toDouble(values[4]));
                 trow.setValuePM(Convert.toDouble(values[5]));
                 service.add(trow);
-            }else{
+            } else {
                 trow.setValueC(Convert.toDouble(values[2]));
                 trow.setValueTD(Convert.toDouble(values[3]));
                 trow.setValueTP(Convert.toDouble(values[4]));
@@ -990,11 +991,11 @@ public class XlsxLoadImporter {
                     {
                         String stringVal = Convert.toString(values[COURSE_GROUP_COLUMN]);
                         if (stringVal != null) {
-                            courseGroup = service.findCourseGroup(courseLevel.getId(), stringVal);
+                            courseGroup = service.findCourseGroup(periodId, courseLevel.getAcademicClass().getId(), stringVal);
                             if (courseGroup == null) {
                                 courseGroup = new AcademicCourseGroup();
                                 courseGroup.setName(stringVal);
-                                courseGroup.setCourseLevel(courseLevel);
+                                courseGroup.setAcademicClass(courseLevel.getAcademicClass());
                                 service.add(courseGroup);
                             }
                         }

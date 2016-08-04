@@ -18,7 +18,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @WebFilter(filterName = "VrConfigureInstallFilter", urlPatterns = {"/", "/index.xhtml", "/r/index.xhtml"})
 public class VrConfigureInstallFilter implements Filter {
@@ -86,7 +86,7 @@ public class VrConfigureInstallFilter implements Filter {
         // For example, a logging filter might log the attributes on the
         // request object after the request has been processed.
         /*
-	for (Enumeration en = request.getAttributeNames(); en.hasMoreElements(); ) {
+    for (Enumeration en = request.getAttributeNames(); en.hasMoreElements(); ) {
 	    String name = (String)en.nextElement();
 	    Object value = request.getAttribute(name);
 	    log("attribute: " + name + "=" + value.toString());

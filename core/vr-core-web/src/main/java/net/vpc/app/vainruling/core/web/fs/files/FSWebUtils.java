@@ -20,7 +20,7 @@ import java.io.File;
 import java.util.Date;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class FSWebUtils {
 
@@ -75,7 +75,7 @@ public class FSWebUtils {
     }
 
     public VFile handleFileUploadEvent(FileUploadEvent event) throws Exception {
-        String tempPath = CorePlugin.PATH_TEMP+"/Files/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+        String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
                 + "-" + VrApp.getBean(UserSession.class).getUser().getLogin();
         CorePlugin fsp = VrApp.getBean(CorePlugin.class);
         String p = fsp.getNativeFileSystemPath() + tempPath;

@@ -13,7 +13,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTea
 import java.util.HashMap;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class GlobalAssignmentStat {
 

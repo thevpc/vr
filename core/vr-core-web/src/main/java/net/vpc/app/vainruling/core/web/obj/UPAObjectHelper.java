@@ -13,7 +13,7 @@ import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.upa.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class UPAObjectHelper {
 

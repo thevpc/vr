@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @AppPlugin(version = "1.2", dependsOn = "commonModel")
 @UpaAware
@@ -33,7 +33,7 @@ public class EquipmentPlugin {
     public List<Equipment> findEquipments() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select a from Equipment a order by a.name")
-                .getEntityList();
+                .getResultList();
 
     }
 
@@ -41,7 +41,7 @@ public class EquipmentPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select a from Equipment a where a.typeId=:typeId order by a.name")
                 .setParameter("typeId", typeId)
-                .getEntityList();
+                .getResultList();
 
     }
 
@@ -52,7 +52,7 @@ public class EquipmentPlugin {
                 .setParameter("typeId", typeId)
                 .setParameter("areaId", areaId)
                 .setParameter("deep", deep)
-                .getEntityList();
+                .getResultList();
 
     }
 
@@ -223,7 +223,7 @@ public class EquipmentPlugin {
             e.setStatusType(Utils.rand(EquipmentStatusType.class));
             e.setLocation(Utils.rand(salles));
             e = core.findOrCreate(e);
-            int count = pu.createQueryBuilder(EquipmentProperty.class).byExpression("equipmentId=" + e.getId()).getEntityList().size();
+            int count = pu.createQueryBuilder(EquipmentProperty.class).byExpression("equipmentId=" + e.getId()).getResultList().size();
             if (count == 0) {
                 for (String nnn : new String[]{"Color", "Width", "Height"}) {
                     EquipmentProperty x = new EquipmentProperty();

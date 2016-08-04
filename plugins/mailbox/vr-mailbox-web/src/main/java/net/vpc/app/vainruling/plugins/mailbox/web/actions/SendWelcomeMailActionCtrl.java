@@ -26,7 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Component
 @ManagedBean
@@ -56,7 +56,7 @@ public class SendWelcomeMailActionCtrl {
         options.put("draggable", false);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/mailbox/sendWelcomeMailDialog", options, null);
+        RequestContext.getCurrentInstance().openDialog("/modules/mailbox/send-welcome-mail-dialog", options, null);
 
     }
 

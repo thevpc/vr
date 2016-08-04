@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.service.model.stat;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class ModuleSemesterStat {
 

@@ -6,13 +6,12 @@
 package net.vpc.app.vainruling.plugins.academic.service.model.config;
 
 import net.vpc.common.strings.StringUtils;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
  * semester 1 or 2 ...
  *
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Education/Config")
@@ -23,7 +22,7 @@ public class AcademicSemester {
 
     private int id;
     private String code;
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private String name;
     private String name2;
 

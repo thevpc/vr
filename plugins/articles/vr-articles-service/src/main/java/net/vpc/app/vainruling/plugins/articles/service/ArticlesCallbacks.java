@@ -15,7 +15,7 @@ import net.vpc.upa.config.OnCreate;
 import net.vpc.upa.exceptions.UPAException;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Callback
 public class ArticlesCallbacks {

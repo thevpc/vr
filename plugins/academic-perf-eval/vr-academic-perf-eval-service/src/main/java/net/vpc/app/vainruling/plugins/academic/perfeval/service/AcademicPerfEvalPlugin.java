@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @AppPlugin(dependsOn = "academicPlugin", version = "1.0")
 @UpaAware
@@ -80,7 +80,7 @@ public class AcademicPerfEvalPlugin {
         )
                 .setParameter("teacherId", teacherId)
                 .setHint(QueryHints.NAVIGATION_DEPTH, 3)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicCoursePlan> findAcademicCoursePlansWithFeedbacks(int teacherId, Boolean validated, Boolean archived, Boolean enabled) {
@@ -102,7 +102,7 @@ public class AcademicPerfEvalPlugin {
         )
                 .setParameter("teacherId", teacherId)
                 .setHint(QueryHints.NAVIGATION_DEPTH, 3)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicCourseType> findAcademicCourseTypesWithFeedbacks(int teacherId, Boolean validated, Boolean archived, Boolean enabled) {
@@ -125,7 +125,7 @@ public class AcademicPerfEvalPlugin {
         )
                 .setParameter("teacherId", teacherId)
                 .setHint(QueryHints.NAVIGATION_DEPTH, 3)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicFeedback> findAssignmentFeedbacks(int academicCourseAssignmentId, Boolean validated, Boolean archived) {
@@ -137,7 +137,7 @@ public class AcademicPerfEvalPlugin {
         )
                 .setParameter("academicCourseAssignmentId", academicCourseAssignmentId)
                 .setHint(QueryHints.NAVIGATION_DEPTH, 3)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicFeedback> findFeedbacks(
@@ -192,13 +192,13 @@ public class AcademicPerfEvalPlugin {
             q.byExpression("f.archived=" + archived);
         }
         q.setHint(QueryHints.NAVIGATION_DEPTH, 3);
-        return q.getEntityList();
+        return q.getResultList();
     }
 
     public List<AcademicFeedback> findStudentFeedbacks(int studentId, Boolean validated, Boolean archived, Boolean enabled) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (enabled != null && enabled) {
-            Boolean ok = (Boolean) UPA.getContext().invokePrivileged(new Action<Boolean>() {
+            Boolean ok = UPA.getContext().invokePrivileged(new Action<Boolean>() {
                 @Override
                 public Boolean run() {
                     return (Boolean) VrApp.getBean(CorePlugin.class).getOrCreateAppPropertyValue("AcademicPerfEvalPlugin.EnableStudentFeedbacks", null, true);
@@ -217,14 +217,14 @@ public class AcademicPerfEvalPlugin {
         )
                 .setParameter("studentId", studentId)
                 .setHint(QueryHints.NAVIGATION_DEPTH, 3)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicFeedbackResponse> findStudentFeedbackResponses(int feedbackId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select f from AcademicFeedbackResponse f where f.feedbackId=:feedbackId")
                 .setParameter("feedbackId", feedbackId)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicFeedbackResponse> findStudentFeedbackResponses(int[] feedbackIds) {
@@ -239,35 +239,35 @@ public class AcademicPerfEvalPlugin {
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select f from AcademicFeedbackResponse f where f.feedbackId in (" + sb + ")")
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicFeedbackQuestion> findStudentFeedbackQuestionsByModel(int feedbackModelId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select f from AcademicFeedbackQuestion f where f.parent.modelId=:feedbackModelId order by f.parentId, f.position")
                 .setParameter("feedbackModelId", feedbackModelId)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicFeedbackResponse> findStudentFeedbackResponsesByGroup(int feedbackId, int groupId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select f from AcademicFeedbackResponse f where f.feedbackId=:feedbackId  and f.parentId=:parentId")
                 .setParameter("parentId", groupId)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicFeedbackGroup> findStudentFeedbackGroups(int feedbackModelId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select f from AcademicFeedbackGroup f where f.modelId=:modelId order by f.position")
                 .setParameter("modelId", feedbackModelId)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicFeedbackQuestion> findAcademicFeedbackQuestionByGroup(int groupId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from AcademicFeedbackQuestion u where u.parentId=:id order by u.position")
                 .setParameter("id", groupId)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicCourseAssignment> findEvaluatableAssignments(int[] classes) {
@@ -285,7 +285,7 @@ public class AcademicPerfEvalPlugin {
                         " (a.subClassId in (" + classIdsString + ") or a.coursePlan.courseLevel.academicClassId in (" + classIdsString + ")) " +
                         " and a.teacher.allowCourseFeedback=true " +
                         " and a.coursePlan.allowCourseFeedback=true "
-        ).getEntityList();
+        ).getResultList();
     }
 
     public void generateStudentsFeedbackForm(final int academicFeedbackModelId, final String studentProfileFilter) {
@@ -307,7 +307,7 @@ public class AcademicPerfEvalPlugin {
                                           public void run() {
                                               List<AcademicFeedbackQuestion> academicFeedbackQuestions = pu.createQuery("Select u from AcademicFeedbackQuestion u where u.parent.modelId=:id")
                                                       .setParameter("id", academicFeedbackModelId)
-                                                      .getEntityList();
+                                                      .getResultList();
 
                                               for (AcademicStudent s : a.findStudents(studentProfileFilter, "x.allowCourseFeedback=true")) {
                                                   //allowCourseFeedback

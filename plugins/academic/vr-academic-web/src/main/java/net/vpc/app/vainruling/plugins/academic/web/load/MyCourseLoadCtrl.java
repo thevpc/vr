@@ -14,15 +14,15 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 import javax.faces.bean.ManagedBean;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Ma charge",
-        url = "modules/academic/mycourseload",
-        menu = "/Education",
+        url = "modules/academic/my-course-load",
+        menu = "/Education/Load",
         securityKey = "Custom.Education.MyCourseLoad"
 )
 @ManagedBean

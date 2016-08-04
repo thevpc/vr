@@ -6,13 +6,12 @@
 package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "time desc")
 @Path("Admin/Security")
@@ -60,13 +59,15 @@ public class AppTrace {
     )
     private String level;
 
-    @Field(max = "1024", modifiers = UserFieldModifier.SUMMARY)
+    @Summary
+    @Field(max = "1024")
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:30%")
     )
     private String message;
 
-    @Field(max = "4096", modifiers = UserFieldModifier.SUMMARY)
+    @Summary
+    @Field(max = "4096")
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40%")
     )

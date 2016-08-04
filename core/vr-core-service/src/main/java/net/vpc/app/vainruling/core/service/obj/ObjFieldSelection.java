@@ -7,12 +7,12 @@ package net.vpc.app.vainruling.core.service.obj;
 
 import net.vpc.upa.Entity;
 import net.vpc.upa.FieldModifier;
-import net.vpc.upa.filters.Fields;
+import net.vpc.upa.filters.FieldFilters;
 
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class ObjFieldSelection {
 
@@ -40,7 +40,7 @@ public class ObjFieldSelection {
     }
 
     public List<net.vpc.upa.Field> getVisibleFields() {
-        return getEntity().getFields(Fields.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY));
+        return getEntity().getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY));
     }
 
 }

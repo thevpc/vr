@@ -11,7 +11,7 @@
 <h:body>
 
 
-    <ui:composition template="/templates/error-template.xhtml">
+    <ui:composition template="#{jsfCtrl.themePath}/templates/error-template.xhtml">
         <ui:define name="error-fieldset">
             <p:growl id="growl" showDetail="true" sticky="false"/>
             <p:messages showDetail="true"/>

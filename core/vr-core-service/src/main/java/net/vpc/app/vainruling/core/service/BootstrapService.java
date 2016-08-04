@@ -21,7 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Service
 @DependsOn(value = {"i18n", "vrApp"})
@@ -96,7 +96,10 @@ public class BootstrapService {
         ArrayList<Plugin> toStart = new ArrayList<>();
         for (Plugin pp : VrApp.getBean(CorePlugin.class).getPlugins()) {
             String sver = pp.getVersion();
-            AppVersion v = (AppVersion) pu.findById(AppVersion.class, pp.getBeanName());
+            AppVersion v = pu.findById(AppVersion.class, pp.getBeanName());
+            if (v == null) {
+                v = pu.findById(AppVersion.class, pp.getBeanName());
+            }
             boolean ignore = false;
             if (v == null || !sver.equals(v.getServiceVersion()) || !v.isCoherent()) {
                 if (v != null && !v.isActive()) {
@@ -141,7 +144,7 @@ public class BootstrapService {
                 } catch (Exception e) {
                     nonCoherent.add(plugin.getBeanName());
                     log.log(Level.SEVERE, "Error Starting " + plugin.getBeanName(), e);
-                    AppVersion v = (AppVersion) pu.findById(AppVersion.class, plugin.getBeanName());
+                    AppVersion v = pu.findById(AppVersion.class, plugin.getBeanName());
                     v.setCoherent(false);
                     pu.merge(v);
 
@@ -155,7 +158,7 @@ public class BootstrapService {
                 } catch (Exception e) {
                     nonCoherent.add(plugin.getBeanName());
                     log.log(Level.SEVERE, "Error Starting " + plugin.getBeanName(), e);
-                    AppVersion v = (AppVersion) pu.findById(AppVersion.class, plugin.getBeanName());
+                    AppVersion v = pu.findById(AppVersion.class, plugin.getBeanName());
                     v.setCoherent(false);
                     pu.merge(v);
                 }
@@ -172,7 +175,7 @@ public class BootstrapService {
             } catch (Exception e) {
                 nonCoherent.add(plugin.getBeanName());
                 log.log(Level.SEVERE, "Error Starting " + plugin.getBeanName(), e);
-                AppVersion v = (AppVersion) pu.findById(AppVersion.class, plugin.getBeanName());
+                AppVersion v = pu.findById(AppVersion.class, plugin.getBeanName());
                 v.setCoherent(false);
                 pu.merge(v);
 

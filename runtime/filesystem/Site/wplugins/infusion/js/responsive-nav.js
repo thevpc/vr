@@ -445,7 +445,7 @@
                                 removeClass(document.body, "disable-pointer-events");
                             }, opts.transition + 300);
                         }
-                        return;
+
                     } else {
                         var evt = e || window.event;
                         // If it isn't a right click

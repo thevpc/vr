@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Component
 @ManagedBean
@@ -48,7 +48,7 @@ public class DisciplineDialogCtrl {
         options.put("draggable", false);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/dialog/disciplinedialog", options, null);
+        RequestContext.getCurrentInstance().openDialog("/modules/academic/dialog/discipline-dialog", options, null);
 
     }
 

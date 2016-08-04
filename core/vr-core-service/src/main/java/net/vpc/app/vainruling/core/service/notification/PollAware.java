@@ -6,8 +6,8 @@
 package net.vpc.app.vainruling.core.service.notification;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public interface PollAware {
-    public void onPoll();
+    void onPoll();
 }

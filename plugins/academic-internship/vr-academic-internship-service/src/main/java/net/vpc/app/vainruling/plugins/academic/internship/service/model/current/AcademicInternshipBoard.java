@@ -11,11 +11,10 @@ import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipType;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Education/Internship")

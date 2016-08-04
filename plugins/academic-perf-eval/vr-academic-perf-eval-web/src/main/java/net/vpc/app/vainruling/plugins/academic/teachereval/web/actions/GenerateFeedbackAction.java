@@ -15,7 +15,7 @@ import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFe
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AcademicFeedbackModel.class,
         actionName = "GenerateFeedback",

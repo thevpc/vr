@@ -14,14 +14,13 @@ import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.A
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.config.AcademicInternshipVariant;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
 //import net.vpc.upa.types.DateTime;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Education/Internship")
@@ -62,16 +61,23 @@ public class AcademicInternship {
     @Properties({
             @Property(name = UIConstants.Form.SEPARATOR, value = "Details"),}
     )
-    @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
+    @Summary
+    @Field(max = "4000")
     private AcademicStudent student;
+
     private AcademicStudent secondStudent;
-    @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
+
+    @Summary
+    @Field(max = "4000")
     private AcademicTeacher supervisor;
     private AcademicTeacher secondSupervisor;
     private AcademicTeacher recordedSupervisor;
     private AcademicTeacher recordedSecondSupervisor;
-    @Field(max = "4000", modifiers = UserFieldModifier.SUMMARY)
+
+    @Summary
+    @Field(max = "4000")
     private AppCompany company;
+
     @Summary
     private String companyOther;
     private AppContact companyMentor;
@@ -105,7 +111,9 @@ public class AcademicInternship {
     private int midTermStudentVoiceMeetingExtCount;
     private int midTermStudentTextMeetingExtCount;
     private int midTermStudentProgress;
-    @Field(max = "400", modifiers = UserFieldModifier.SUMMARY)
+
+    @Summary
+    @Field(max = "400")
     private String midTermStudentObs;
 
     private OpinionType midTermTeacherExtMentoringOpinion;
@@ -115,7 +123,9 @@ public class AcademicInternship {
     private OpinionType midTermTeacherCommWorkOpinion;
     private OpinionType midTermTeacherAutonomyOpinion;
     private int midTermTeacherProgress;
-    @Field(max = "400", modifiers = UserFieldModifier.SUMMARY)
+
+    @Summary
+    @Field(max = "400")
     private String midTermTeacherObs;
 
     @Properties({

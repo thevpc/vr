@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public interface AppEntityExtendedPropertiesProvider {
-    public Map<String, Object> getExtendedPropertyValues(Object o);
+    Map<String, Object> getExtendedPropertyValues(Object o);
 
-    public Set<String> getExtendedPropertyNames(Class o);
+    Set<String> getExtendedPropertyNames(Class o);
 }

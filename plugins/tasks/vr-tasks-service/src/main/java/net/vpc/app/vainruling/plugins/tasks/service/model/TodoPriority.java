@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.plugins.tasks.service.model;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public enum TodoPriority {
     VERY_LOW,

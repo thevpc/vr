@@ -10,7 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Component
 public class PropertyViewDialogManager {

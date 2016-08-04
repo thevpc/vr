@@ -20,14 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Emploi par Groupe",
-        url = "modules/academic/planning/classplanning",
+        url = "modules/academic/planning/class-planning",
         menu = "/Education/Planning",
         securityKey = "Custom.Education.ClassPlanning"
 )

@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.service;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class TeacherGenerationOptions {
 

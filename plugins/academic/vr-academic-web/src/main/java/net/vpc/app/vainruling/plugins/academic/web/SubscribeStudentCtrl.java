@@ -27,14 +27,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Inscription Etudiant",
-        url = "modules/academic/subscribestudent",
+        url = "modules/academic/subscribe-student",
         menu = "/Education/Config",
         securityKey = "Custom.Education.SubscribeStudent"
 )
@@ -50,7 +50,7 @@ public class SubscribeStudentCtrl {
     public void onImport() {
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         try {
-            p.importStudent(-1,getModel().getStudent());
+            p.importStudent(-1, getModel().getStudent());
             FacesUtils.addInfoMessage(null, "Inscription reussie");
             getModel().setStudent(new AcademicStudentImport());
         } catch (Exception e) {

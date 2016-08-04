@@ -7,11 +7,10 @@ package net.vpc.app.vainruling.plugins.academic.internship.service.model.current
 
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.RelationshipType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity
 @Path("Education/Internship")

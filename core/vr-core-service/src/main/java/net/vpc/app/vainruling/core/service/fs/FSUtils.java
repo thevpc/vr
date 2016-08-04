@@ -11,7 +11,7 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.common.vfs.VFile;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class FSUtils {
 

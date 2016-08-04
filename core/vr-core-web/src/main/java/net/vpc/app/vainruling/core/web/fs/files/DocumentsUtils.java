@@ -7,27 +7,13 @@ package net.vpc.app.vainruling.core.web.fs.files;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
-import net.vpc.app.vainruling.core.web.UCtrlData;
-import net.vpc.app.vainruling.core.web.UCtrlProvider;
-import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
-import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
-import net.vpc.app.vainruling.core.web.menu.VRMenuDefFactory;
-import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.streams.PathInfo;
-import net.vpc.common.strings.StringUtils;
-import net.vpc.common.vfs.*;
-import net.vpc.upa.UPA;
-import org.primefaces.event.FileUploadEvent;
+import net.vpc.common.vfs.VFile;
+import net.vpc.common.vfs.VirtualFileSystem;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
-import org.springframework.context.annotation.Scope;
 
-import javax.faces.bean.ManagedBean;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -107,15 +93,12 @@ public class DocumentsUtils {
     }
 
 
-
-
     public static VirtualFileSystem createFS() {
         CorePlugin fsp = VrApp.getBean(CorePlugin.class);
         VirtualFileSystem rootfs = fsp.getFileSystem();
         VirtualFileSystem userfs = rootfs.filter(null);
         return userfs;
     }
-
 
 
     public static StreamedContent getContent(VFileInfo i) {
@@ -158,17 +141,17 @@ public class DocumentsUtils {
         String iconCss = "file";
         String labelCss = "";
         long downloads = 0;
-        boolean homeFolder=false;
+        boolean homeFolder = false;
         boolean backFolder = false;
         if (file.isDirectory()) {
             iconCss = "folder";
             homeFolder = file.getPath().equals("/" + CorePlugin.FOLDER_MY_DOCUMENTS);
-            if(homeFolder){
-                iconCss="home";
+            if (homeFolder) {
+                iconCss = "home";
             }
-            backFolder=CorePlugin.FOLDER_BACK.equals(name);
-            if(backFolder){
-                iconCss="parent";
+            backFolder = CorePlugin.FOLDER_BACK.equals(name);
+            if (backFolder) {
+                iconCss = "parent";
             }
         } else {
             String n = file.getName().toLowerCase();
@@ -181,8 +164,8 @@ public class DocumentsUtils {
             downloads = fsp.getDownloadsCount(file);
         }
         String desc = backFolder ? "" : evalVFileDesc(file);
-        labelCss=homeFolder ? "color:#349dc9;font-weight: bold;":backFolder ?"color:#9e9e9e;":"";
-        return new VFileInfo(name, file, labelCss,iconCss, downloads, desc);
+        labelCss = homeFolder ? "color:#349dc9;font-weight: bold;" : backFolder ? "color:#9e9e9e;" : "";
+        return new VFileInfo(name, file, labelCss, iconCss, downloads, desc);
     }
 
 

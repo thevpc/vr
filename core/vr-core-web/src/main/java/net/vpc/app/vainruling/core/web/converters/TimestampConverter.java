@@ -14,7 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @FacesConverter(value = "TimestampConverter")
 public class TimestampConverter implements Converter {

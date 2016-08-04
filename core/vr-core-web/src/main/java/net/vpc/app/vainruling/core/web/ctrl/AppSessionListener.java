@@ -14,7 +14,7 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @WebListener
 public class AppSessionListener implements HttpSessionListener {

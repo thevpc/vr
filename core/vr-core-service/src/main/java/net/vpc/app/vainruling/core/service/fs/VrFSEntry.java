@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.service.fs;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class VrFSEntry {
     private String filterName;

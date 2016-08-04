@@ -25,7 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
@@ -45,7 +45,7 @@ public class AcademicAdminToolsCtrl {
         return model;
     }
 
-    public void generateTeachingLoad(int periodId,String version) {
+    public void generateTeachingLoad(int periodId, String version) {
         try {
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
             p.generateTeachingLoad(periodId, new CourseFilter(), version);
@@ -60,7 +60,7 @@ public class AcademicAdminToolsCtrl {
     public void handleTeachingLoadFileUpload(FileUploadEvent event) {
         try {
             String p = VrApp.getBean(CorePlugin.class).getNativeFileSystemPath()
-                    + CorePlugin.PATH_TEMP+"/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+                    + CorePlugin.PATH_TEMP + "/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
                     + "-" + VrApp.getBean(UserSession.class).getUser().getLogin();
             new File(p).mkdirs();
             File f = new File(p, event.getFile().getFileName());

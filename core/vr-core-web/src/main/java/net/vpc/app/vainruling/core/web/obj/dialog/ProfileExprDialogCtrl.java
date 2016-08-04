@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Component
 @ManagedBean
@@ -50,7 +50,7 @@ public class ProfileExprDialogCtrl {
         options.put("draggable", false);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/obj/profileexprdialog", options, null);
+        RequestContext.getCurrentInstance().openDialog("/modules/obj/profile-expr-dialog", options, null);
 
     }
 

@@ -12,7 +12,7 @@ import net.vpc.app.vainruling.core.service.UpaAware;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @AppPlugin(
         version = "1.0", dependsOn = {"equipmentPlugin"}

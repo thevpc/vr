@@ -1,6 +1,5 @@
 package net.vpc.app.vr.wpm.plugins.payroll.service.model;
 
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 import net.vpc.upa.types.Date;
 
@@ -13,9 +12,10 @@ public class EmployeeSalaryPeriod {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
+    @Main
+    @Unique
     private String name;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Date periodDate;
 
     public int getId() {

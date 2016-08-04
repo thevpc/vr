@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
 
@@ -152,7 +152,7 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
         }
     }
 
-    public static interface SelectionListener<T> {
+    public interface SelectionListener<T> {
 
         void onSelect(T c);
     }

@@ -9,7 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class VrAppTest {
 

@@ -16,7 +16,6 @@ and open the template in the editor.
 <h:head>
     <script>
         function vpcdoit() {
-            alert("hello");
             processOnUpdate();
         }
 
@@ -26,7 +25,7 @@ and open the template in the editor.
 <h:body>
 
 
-    <ui:composition template="/templates/private-template.xhtml">
+    <ui:composition template="#{jsfCtrl.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="buttonsForm">
                 <p:confirmDialog message="Are you sure, you want to delete ?" header="Initiating deleting process"
@@ -276,7 +275,8 @@ and open the template in the editor.
                                             ajax="true" actionListener="#{objCtrl.onSelect(i)}"
 
                                             update=":listForm :itemForm :buttonsForm :pageTitleForm">
-                                        <i class="fa fa-pencil-square-o" style="font-size: 17px;color: cadetblue;"></i>
+                                        <i class="fa fa-pencil-square-o"
+                                           style="font-size: 17px;color: var(--vr-color-main14);"></i>
                                         <f:setPropertyActionListener target="#{objCtrl.model.current}" value="#{i}"/>
                                     </p:commandLink>
                                 </p:column>
@@ -286,7 +286,7 @@ and open the template in the editor.
                                 <p:columns value="#{objCtrl.columns}"
                                            var="column" columnIndexVar="colIndex"
                                            sortBy="#{objCtrl.getSortLayoutPropertyValue(i.record,column.property)}"
-                                           style="#{objCtrl.getPropertyColumnStyle(column.property)}"
+                                           style="#{objCtrl.getPropertyColumnStyle(column.property,i)}"
                                         >
                                     <f:facet name="header">
                                         <h:outputText value="#{column.header}"/>
@@ -418,7 +418,7 @@ and open the template in the editor.
                                 </pe:dynaFormControl>
 
                                 <pe:dynaFormControl type="entity" for="tentity" styleClass="select">
-                                    <p:panelGrid columns="2" style="border-style: hidden"
+                                    <p:panelGrid columns="2" style="border-style: hidden;width: 100%;"
                                                  columnClasses="nopadding,nopadding">
                                         <p:selectOneMenu id="tentity" value="#{data.selectedItem}"
                                                          required="#{data.required}"
@@ -461,20 +461,60 @@ and open the template in the editor.
                                     <p:editor id="trichtextarea" value="#{data.value}" required="#{data.required}"
                                               disabled="#{data.disabled}"/>
                                 </pe:dynaFormControl>
+
+                                <pe:dynaFormControl type="wikitextarea" for="twikiarea">
+                                    <p:panelGrid style="border-style: hidden;width: 100%"
+                                                 columnClasses="nopadding,nopadding">
+                                        <p:row>
+                                            <p:column>
+                                                <p:commandButton value="..."
+                                                                 action="#{objCtrl.switchWikiTextArea(data)}"
+                                                                 update=":listForm"/>
+                                                <h:outputLink target="_blank"
+                                                              value="https://www.mediawiki.org/wiki/Help:Formatting">help?</h:outputLink>
+                                            </p:column>
+                                        </p:row>
+                                        <p:row rendered="#{'Edit'.equals(data.componentState)}">
+                                            <p:column>
+                                                <p:inputTextarea id="twikiarea"
+                                                                 value="#{data.value}" required="#{data.required}"
+                                                                 autoResize="false" disabled="#{data.disabled}"/>
+                                            </p:column>
+                                        </p:row>
+                                        <p:row rendered="#{!('Edit'.equals(data.componentState))}">
+                                            <p:column>
+                                                <p:scrollPanel style="width:100%;height:200px" id="twikiareaRender"
+                                                        >
+                                                    <p:outputLabel
+                                                            value="#{jsfCtrl.wikiToHtml(data.value)}"
+                                                            escape="false"
+                                                            >
+                                                    </p:outputLabel>
+
+                                                </p:scrollPanel>
+                                            </p:column>
+                                        </p:row>
+                                    </p:panelGrid>
+
+                                </pe:dynaFormControl>
+
                                 <pe:dynaFormControl type="checkbox" for="tcheckbox">
                                     <p:selectBooleanCheckbox id="tcheckbox" value="#{data.value}"
                                                              required="#{data.required}" disabled="#{data.disabled}"/>
                                 </pe:dynaFormControl>
+
                                 <pe:dynaFormControl type="rating" for="rat">
                                     <p:rating id="rat" value="#{data.value}" required="#{data.required}"
                                               disabled="#{data.disabled}"/>
                                 </pe:dynaFormControl>
+
                                 <pe:dynaFormControl type="separator" styleClass="separator ui-state-disabled">
                                     <h:panelGrid columns="2" style="width:100%;" columnClasses="separatorText">
                                         <h:outputText value="#{data}"/>
                                         <p:separator/>
                                     </h:panelGrid>
                                 </pe:dynaFormControl>
+
                                 <pe:dynaFormControl type="entityDetail">
                                     <p:commandButton ajax="false" value="#{data.count}" disabled="#{data.disabled}"
                                                      action="#{vrMenuManager.gotoPage('obj', data.buildActionCommand())}"/>
@@ -558,14 +598,15 @@ and open the template in the editor.
 
             <h:outputScript id="dynaFormScript" target="body">
                 /* <![CDATA[ */
-                    function handleComplete(xhr, status, args) { 
-                    if(args && args.isValid) { 
-                    PF('inputValuesWidget').show(); 
-                    } else { 
-                    PF('inputValuesWidget').hide(); 
-                    } 
-                    } 
-                    /* ]]> */
+                function handleComplete(xhr, status, args) {
+                    if (args && args.isValid) {
+                        PF('inputValuesWidget').show();
+                    } else {
+                        PF('inputValuesWidget').hide();
+                    }
+                }
+
+                /* ]]> */
             </h:outputScript>
 
             <h:outputStylesheet id="dynaFormCSS">

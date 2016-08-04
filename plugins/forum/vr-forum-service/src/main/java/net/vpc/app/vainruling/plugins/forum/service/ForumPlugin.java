@@ -10,7 +10,7 @@ import net.vpc.app.vainruling.core.service.Install;
 import net.vpc.app.vainruling.core.service.UpaAware;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @AppPlugin
 @UpaAware

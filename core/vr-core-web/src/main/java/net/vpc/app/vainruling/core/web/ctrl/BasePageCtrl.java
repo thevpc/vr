@@ -10,7 +10,7 @@ import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public abstract class BasePageCtrl extends BaseCtrl {
 

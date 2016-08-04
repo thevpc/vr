@@ -6,14 +6,16 @@
 package net.vpc.app.vainruling.plugins.academic.service.model.config;
 
 import net.vpc.app.vainruling.core.service.model.AppCompany;
-import net.vpc.upa.UserFieldModifier;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.upa.config.*;
 
 import java.util.Date;
 import java.util.Objects;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "student.contact.fullName")
 @Path("Contact")
@@ -22,9 +24,18 @@ public class AcademicFormerStudent {
     @Id
     @Main
     private AcademicStudent student;
+    @Summary
+    private AppPeriod graduationPeriod;
     private Date graduationDate;
+    @Summary
     private String eliminationReason;
+    @Summary
+    private AcademicClass lastClass1;
+    private AcademicClass lastClass2;
+    private AcademicClass lastClass3;
     private String graduationProjectTitle;
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
+    @Field(max = "4000")
     private String graduationProjectSummary;
     private String graduationProjectSupervisor;
     private String graduationProjectJury;
@@ -37,6 +48,14 @@ public class AcademicFormerStudent {
     @Field(defaultValue = "0")
     private int lastSalary;
     private String lastJobPosition;
+    @Properties({
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Curriculum Vitae"),
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
+            @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+    }
+    )
+    private String curriculumVitae;
+    private EmploymentDelay employmentDelay;
     @Summary
     private AppCompany lastJobCompany;
 
@@ -160,6 +179,22 @@ public class AcademicFormerStudent {
         this.student = student;
     }
 
+    public String getCurriculumVitae() {
+        return curriculumVitae;
+    }
+
+    public void setCurriculumVitae(String curriculumVitae) {
+        this.curriculumVitae = curriculumVitae;
+    }
+
+    public EmploymentDelay getEmploymentDelay() {
+        return employmentDelay;
+    }
+
+    public void setEmploymentDelay(EmploymentDelay employmentDelay) {
+        this.employmentDelay = employmentDelay;
+    }
+
     @Override
     public int hashCode() {
         int hash = 5;
@@ -174,6 +209,7 @@ public class AcademicFormerStudent {
         hash = 23 * hash + (int) (Double.doubleToLongBits(this.graduationScoreValue) ^ (Double.doubleToLongBits(this.graduationScoreValue) >>> 32));
         hash = 23 * hash + (int) (Double.doubleToLongBits(this.graduationScoreRank) ^ (Double.doubleToLongBits(this.graduationScoreRank) >>> 32));
         hash = 23 * hash + Objects.hashCode(this.firstJobDate);
+        hash = 23 * hash + Objects.hashCode(this.curriculumVitae);
         hash = 23 * hash + this.firstSalary;
         hash = 23 * hash + this.lastSalary;
         hash = 23 * hash + Objects.hashCode(this.lastJobPosition);
@@ -224,6 +260,9 @@ public class AcademicFormerStudent {
         if (!Objects.equals(this.firstJobDate, other.firstJobDate)) {
             return false;
         }
+        if (!Objects.equals(this.curriculumVitae, other.curriculumVitae)) {
+            return false;
+        }
         if (this.firstSalary != other.firstSalary) {
             return false;
         }
@@ -233,15 +272,44 @@ public class AcademicFormerStudent {
         if (!Objects.equals(this.lastJobPosition, other.lastJobPosition)) {
             return false;
         }
-        if (!Objects.equals(this.lastJobCompany, other.lastJobCompany)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.lastJobCompany, other.lastJobCompany);
     }
 
     @Override
     public String toString() {
         return "AcademicFormerStudent{" + ", student=" + student + ", graduationDate=" + graduationDate + ", eliminationReason=" + eliminationReason + ", graduationProjectTitle=" + graduationProjectTitle + ", graduationProjectSummary=" + graduationProjectSummary + ", graduationProjectSupervisor=" + graduationProjectSupervisor + ", graduationProjectJury=" + graduationProjectJury + ", graduationScoreLetter=" + graduationScoreLetter + ", graduationScoreValue=" + graduationScoreValue + ", graduationScoreRank=" + graduationScoreRank + ", firstJobDate=" + firstJobDate + ", firstSalary=" + firstSalary + ", lastSalary=" + lastSalary + ", lastJobPosition=" + lastJobPosition + ", lastJobCompany=" + lastJobCompany + '}';
+    }
+
+    public AcademicClass getLastClass1() {
+        return lastClass1;
+    }
+
+    public void setLastClass1(AcademicClass lastClass1) {
+        this.lastClass1 = lastClass1;
+    }
+
+    public AcademicClass getLastClass2() {
+        return lastClass2;
+    }
+
+    public void setLastClass2(AcademicClass lastClass2) {
+        this.lastClass2 = lastClass2;
+    }
+
+    public AcademicClass getLastClass3() {
+        return lastClass3;
+    }
+
+    public void setLastClass3(AcademicClass lastClass3) {
+        this.lastClass3 = lastClass3;
+    }
+
+    public AppPeriod getGraduationPeriod() {
+        return graduationPeriod;
+    }
+
+    public void setGraduationPeriod(AppPeriod graduationPeriod) {
+        this.graduationPeriod = graduationPeriod;
     }
 
 }

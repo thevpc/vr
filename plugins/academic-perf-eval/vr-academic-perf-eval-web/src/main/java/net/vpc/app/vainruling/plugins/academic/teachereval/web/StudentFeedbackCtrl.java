@@ -27,16 +27,16 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @ManagedBean
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
-        title = "Mes Retours des enseignements",
+        title = "Fiches Eval. enseignements",
         menu = "/Education/Evaluation",
-        url = "modules/academic/perfeval/studentfeedback",
+        url = "modules/academic/perfeval/student-feedback",
         securityKey = "Custom.Academic.StudentFeedback"
 )
 public class StudentFeedbackCtrl {

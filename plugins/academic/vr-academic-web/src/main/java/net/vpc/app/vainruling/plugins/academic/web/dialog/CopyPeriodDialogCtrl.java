@@ -16,9 +16,6 @@ import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
-import net.vpc.upa.Action;
-import net.vpc.upa.UPA;
-import net.vpc.upa.VoidAction;
 import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -34,7 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Component
 @ManagedBean
@@ -59,7 +56,7 @@ public class CopyPeriodDialogCtrl {
         options.put("draggable", false);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/dialog/copyperiod", options, null);
+        RequestContext.getCurrentInstance().openDialog("/modules/academic/dialog/copy-period-dialog", options, null);
 
     }
 
@@ -78,7 +75,7 @@ public class CopyPeriodDialogCtrl {
         getModel().setToPeriods(new ArrayList<SelectItem>());
         for (AppPeriod period : VrApp.getBean(CorePlugin.class).findValidPeriods()) {
             SelectItem item = new SelectItem(String.valueOf(period.getId()), period.getName());
-            if(!period.isReadOnly()){
+            if (!period.isReadOnly()) {
                 getModel().getToPeriods().add(item);
             }
             getModel().getFromPeriods().add(item);
@@ -89,10 +86,10 @@ public class CopyPeriodDialogCtrl {
         try {
             final CorePlugin cp = VrApp.getBean(CorePlugin.class);
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-            int p1= Convert.toInteger(getModel().getFromPeriod(), IntegerParserConfig.LENIENT_F);
-            int p2= Convert.toInteger(getModel().getToPeriod(), IntegerParserConfig.LENIENT_F);
-            if(p1>0 && p2>0 && p1!=p2){
-                p.copyAcademicData(p1,p2);
+            int p1 = Convert.toInteger(getModel().getFromPeriod(), IntegerParserConfig.LENIENT_F);
+            int p2 = Convert.toInteger(getModel().getToPeriod(), IntegerParserConfig.LENIENT_F);
+            if (p1 > 0 && p2 > 0 && p1 != p2) {
+                p.copyAcademicData(p1, p2);
             }
             FacesUtils.addInfoMessage("Successful Operation");
         } catch (Exception ex) {

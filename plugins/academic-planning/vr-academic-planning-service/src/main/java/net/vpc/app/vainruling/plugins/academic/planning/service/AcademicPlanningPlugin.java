@@ -33,7 +33,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @AppPlugin(dependsOn = "academicPlugin", version = "1.4")
 @UpaAware

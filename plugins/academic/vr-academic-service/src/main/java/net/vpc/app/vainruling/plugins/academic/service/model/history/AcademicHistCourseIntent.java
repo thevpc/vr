@@ -6,11 +6,10 @@
 package net.vpc.app.vainruling.plugins.academic.service.model.history;
 
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity
 @Path("Education/History")
@@ -19,7 +18,7 @@ public class AcademicHistCourseIntent {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private AcademicHistCourseAssignment assignment;
     @Summary
     private AcademicTeacher teacher;

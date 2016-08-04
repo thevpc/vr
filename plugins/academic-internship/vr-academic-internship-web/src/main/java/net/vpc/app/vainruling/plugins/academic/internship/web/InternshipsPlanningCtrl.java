@@ -40,7 +40,7 @@ import java.util.logging.Level;
 /**
  * internships for teachers
  *
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
@@ -114,12 +114,12 @@ public class InternshipsPlanningCtrl {
             InputStream stream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
             AcademicInternshipGroup g = UPA.getPersistenceUnit().findById(AcademicInternshipGroup.class, Integer.parseInt(getModel().getSelectedGroup()));
             String groupName = g.getName();
-            groupName=groupName.replace(" ","-");
+            groupName = groupName.replace(" ", "-");
             String selectedSessionType = getModel().getSelectedSessionType();
-            if(!StringUtils.isEmpty(selectedSessionType)){
-                selectedSessionType="-"+selectedSessionType.replace(" ","-");
+            if (!StringUtils.isEmpty(selectedSessionType)) {
+                selectedSessionType = "-" + selectedSessionType.replace(" ", "-");
             }
-            return new DefaultStreamedContent(stream, "text/xml", "planning-"+groupName+selectedSessionType +".fet");
+            return new DefaultStreamedContent(stream, "text/xml", "planning-" + groupName + selectedSessionType + ".fet");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -239,7 +239,7 @@ public class InternshipsPlanningCtrl {
             for (Row row : getModel().getRows()) {
                 if (
                         (StringUtils.isEmpty(s) || s.equals(row.activity.getInternship().getSession()))
-                    && (row.isVisible() || !getModel().isShowVisibleRowsOnly())
+                                && (row.isVisible() || !getModel().isShowVisibleRowsOnly())
                         ) {
                     visibleRows.add(row);
                 }
@@ -248,8 +248,8 @@ public class InternshipsPlanningCtrl {
             for (Row row : getModel().getRows()) {
                 if (
                         (StringUtils.isEmpty(s) || s.equals(row.activity.getInternship().getSession()))
-                    &&
-                        row.isVisible()
+                                &&
+                                row.isVisible()
                         ) {
                     visibleRows.add(row);
                 }

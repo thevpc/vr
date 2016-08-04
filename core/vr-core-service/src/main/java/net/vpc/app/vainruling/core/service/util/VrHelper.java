@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.core.service.util;
 import com.google.gson.Gson;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.CustomDefaultObject;
 import net.vpc.upa.types.DateTime;
@@ -25,7 +26,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class VrHelper {
 
@@ -79,7 +80,7 @@ public class VrHelper {
         if (value == null) {
             return "";
         }
-        long b = ((Number) value).longValue();
+        long b = value.longValue();
         if (b < 0) {
             return "??" + b;
         }
@@ -101,29 +102,33 @@ public class VrHelper {
         return FILE_SIZE_FORMAT.format((((double) b) / TO)) + " Tb";
     }
 
-    public static String extratPureHTML(String html) {
+    public static String extractPureHTML(String html) {
         if (html == null) {
             html = "";
         }
-        Document d = Jsoup.parse(html == null ? "" : html);
-        for (Element e : d.select("font")) {
-            if (e.childNodeSize() > 0) {
-                e.replaceWith(e.child(0));
-            } else {
-                e.remove();
+        if (html.startsWith("<")) {
+            Document d = Jsoup.parse(html);
+            for (Element e : d.select("font")) {
+                if (e.childNodeSize() > 0) {
+                    e.replaceWith(e.child(0));
+                } else {
+                    e.remove();
+                }
             }
-        }
-        for (Element e : d.select("span")) {
-            String s = e.attr("style");
-            if (!StringUtils.isEmpty(s)) {
-                e.attributes().remove("style");
+            for (Element e : d.select("span")) {
+                String s = e.attr("style");
+                if (!StringUtils.isEmpty(s)) {
+                    e.attributes().remove("style");
+                }
             }
+            StringBuilder sb = new StringBuilder();
+            for (Node cc : d.body().childNodes()) {
+                sb.append(cc);
+            }
+            return sb.toString();
+        } else {
+            return VrWikiParser.convertToHtml(html, "Wiki");
         }
-        StringBuilder sb = new StringBuilder();
-        for (Node cc : d.body().childNodes()) {
-            sb.append(cc);
-        }
-        return sb.toString();
     }
 
     public static String getRelativeDateMessage(Date dte, Locale loc) {

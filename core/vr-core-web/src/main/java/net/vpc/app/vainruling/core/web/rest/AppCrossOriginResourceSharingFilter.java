@@ -11,7 +11,7 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Provider
 public class AppCrossOriginResourceSharingFilter implements ContainerResponseFilter {

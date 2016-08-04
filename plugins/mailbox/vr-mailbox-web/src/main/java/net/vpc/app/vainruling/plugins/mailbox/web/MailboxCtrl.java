@@ -41,7 +41,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl
 @ManagedBean
@@ -330,11 +330,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
                 if ("Cancel".equals(buttonId)) {
                     return true;
                 }
-                if ("Advanced".equals(buttonId)) {
-                    //check rights?
-                    return true;
-                }
-                return false;
+                return "Advanced".equals(buttonId);
             }
             case UPDATE: {
                 if ("Cancel".equals(buttonId)) {
@@ -348,11 +344,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
                     //check rights?
                     return true;
                 }
-                if ("Archive".equals(buttonId)) {
-                    //check rights?
-                    return true;
-                }
-                return false;
+                return "Archive".equals(buttonId);
             }
             case LIST: {
                 if ("Refresh".equals(buttonId)) {

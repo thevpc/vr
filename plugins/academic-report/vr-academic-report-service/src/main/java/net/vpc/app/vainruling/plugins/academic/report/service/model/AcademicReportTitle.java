@@ -7,13 +7,12 @@ package net.vpc.app.vainruling.plugins.academic.report.service.model;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.util.Date;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity
 @Path("Education/Evaluation")

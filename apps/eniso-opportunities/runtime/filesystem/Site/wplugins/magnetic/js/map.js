@@ -19,7 +19,7 @@ jQuery(function ($) {
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             maxZoom: 20,
             disableDefaultUI: true
-        }
+        };
         var map = new google.maps.Map(document.getElementById(canvas), myOptions);
         var marker = new google.maps.Marker({
             position: myLatlng,

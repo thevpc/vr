@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Service
 public class PropertyViewManager {
@@ -31,6 +31,14 @@ public class PropertyViewManager {
     private final ClassMap<PropertyViewFactory> propertyViewFactoryByPlatformType = new ClassMap<>(Object.class, PropertyViewFactory.class);
     private PropertyViewFactory defaultPropertyViewFactory = new DefaultPropertyViewFactory();
     private PropertyViewValuesProvider defaultPropertyViewValuesProvider = new DefaultPropertyViewValuesProvider();
+
+    public PropertyViewValuesProvider getPropertyViewValuesProvider(Field field) {
+        return getPropertyViewValuesProvider(field, null);
+    }
+
+    public PropertyViewValuesProvider getPropertyViewValuesProvider(DataType dt) {
+        return getPropertyViewValuesProvider(null, dt);
+    }
 
     public PropertyViewValuesProvider getPropertyViewValuesProvider(Field field, DataType dt) {
         PropertyViewValuesProvider v = null;
@@ -54,7 +62,15 @@ public class PropertyViewManager {
         return defaultPropertyViewValuesProvider;
     }
 
-    public PropertyViewFactory getPropertyViewFactory(Field field, DataType dt) {
+    public PropertyViewFactory getPropertyViewFactory(Field field) {
+        return getPropertyViewFactory(field, null);
+    }
+
+    public PropertyViewFactory getPropertyViewFactory(DataType dt) {
+        return getPropertyViewFactory(null, dt);
+    }
+
+    private PropertyViewFactory getPropertyViewFactory(Field field, DataType dt) {
         PropertyViewFactory v = null;
         if (field != null) {
             v = propertyViewFactoryByField.get(field.getAbsoluteName());
@@ -77,8 +93,7 @@ public class PropertyViewManager {
     }
 
     public PropertyView[] createPropertyView(String componentId, Field field, Map<String, Object> configuration, ViewContext viewContext) {
-        DataType dt = field.getDataType();
-        return getPropertyViewFactory(field, dt).createPropertyView(componentId, field, dt, configuration, this, viewContext);
+        return getPropertyViewFactory(field).createPropertyView(componentId, field, configuration, this, viewContext);
     }
 
     public PropertyView[] createPropertyView(String componentId, Class dt, Map<String, Object> configuration, ViewContext viewContext) {
@@ -90,7 +105,7 @@ public class PropertyViewManager {
     }
 
     public PropertyView[] createPropertyView(String componentId, DataType dt, Map<String, Object> configuration, ViewContext viewContext) {
-        return getPropertyViewFactory(null, dt).createPropertyView(componentId, null, dt, configuration, this, viewContext);
+        return getPropertyViewFactory(dt).createPropertyView(componentId, dt, configuration, this, viewContext);
     }
 
     public void registerPropertyViewFactory(Field f, PropertyViewFactory factory) {

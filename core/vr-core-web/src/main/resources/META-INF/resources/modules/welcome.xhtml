@@ -17,7 +17,7 @@ and open the template in the editor.
 <h:body>
 
 
-    <ui:composition template="/templates/private-template.xhtml">
+    <ui:composition template="#{jsfCtrl.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="itemForm" enctype="multipart/form-data">
                 <div class="row">
@@ -56,7 +56,8 @@ and open the template in the editor.
                     <p:tabView>
                         <p:tab title="Principale">
                             #{articlesCtrl.loadArticles('Welcome')}
-                            <p:dataGrid var="a" value="#{articlesCtrl.model.articles['Welcome']}" columns="1" layout="grid"
+                            <p:dataGrid var="a" value="#{articlesCtrl.model.articles['Welcome']}" columns="1"
+                                        layout="grid"
                                         rows="10" paginator="true"
                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                         rowsPerPageTemplate="10,20,50,1000"

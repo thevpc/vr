@@ -7,13 +7,12 @@ package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.FormulaType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "propertyName")
 @Path("Admin/Config")
@@ -22,10 +21,12 @@ public class AppProperty {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN}, max = "512")
+    @Main
+    @Field(max = "512")
     private String propertyName;
-    @Field(/*modifiers = {UserFieldModifier.SUMMARY},*/max = "4096")
+    @Field(max = "4096")
     private String propertyValue;
+    @Summary
     private String propertyType;
     @Summary
     private AppUser user;

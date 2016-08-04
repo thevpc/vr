@@ -16,7 +16,7 @@ import net.vpc.upa.config.Callback;
 import net.vpc.upa.config.OnPersist;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Callback
 public class AcademicTeacherCallback {

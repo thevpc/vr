@@ -6,15 +6,14 @@
 package net.vpc.app.vainruling.plugins.academic.service.model.history;
 
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseLevel;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
  * Unite enseignement
  *
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Education/History")
@@ -24,10 +23,10 @@ public class AcademicHistCourseGroup {
     @Sequence
 
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private String name;
 
-    private AcademicCourseLevel courseLevel;
+    private AcademicClass academicClass;
     @Summary
     private AppPeriod academicYear;
 
@@ -55,12 +54,12 @@ public class AcademicHistCourseGroup {
         this.name = name;
     }
 
-    public AcademicCourseLevel getCourseLevel() {
-        return courseLevel;
+    public AcademicClass getAcademicClass() {
+        return academicClass;
     }
 
-    public void setCourseLevel(AcademicCourseLevel courseLevel) {
-        this.courseLevel = courseLevel;
+    public void setAcademicClass(AcademicClass academicClass) {
+        this.academicClass = academicClass;
     }
 
     @Override

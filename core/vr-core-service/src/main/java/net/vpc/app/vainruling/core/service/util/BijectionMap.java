@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.core.service.util;
 import java.util.Map;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class BijectionMap<X, Y> {
 

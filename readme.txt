@@ -1,7 +1,13 @@
+#check mysql installation
+systemctl status mysql
+systemctl enable mysql
+systemctl start mysql
+
 mysqladmin -u root password "rombatakaya#!"
 or
 mysqladmin -u root -p'oldpassword' password newpass
 
+mysql -u root -p"rombatakaya#!"
 
 CREATE DATABASE enisoinfodb DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
 CREATE USER 'enisoinfouser'@'localhost' IDENTIFIED BY 'canard77';

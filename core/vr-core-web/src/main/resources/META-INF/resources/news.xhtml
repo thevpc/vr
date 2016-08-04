@@ -8,7 +8,7 @@
 <h:head>
 </h:head>
 <h:body>
-    <ui:composition template="/templates/public-template.xhtml">
+    <ui:composition template="#{jsfCtrl.themePath}/templates/public-template.xhtml">
         <ui:define name="row1">
 
         </ui:define>
@@ -22,7 +22,8 @@
                         <div class="row">
                             #{articlesCtrl.loadArticles('News')}
                             <div class="col-md-9">
-                                <h:panelGrid id="curr" rendered="#{articlesCtrl.model.current ne null}" style="width: 100%;">
+                                <h:panelGrid id="curr" rendered="#{articlesCtrl.model.current ne null}"
+                                             style="width: 100%;">
                                     <div style="text-align: justify;text-justify: inter-word;color: #929da5;">
                                         <h3>#{articlesCtrl.model.current.content.subject}</h3>
                                         <p:imageSwitch effect="zoom" slideshowAuto="true" style="float: left;
@@ -37,8 +38,9 @@
                                         </p:imageSwitch>
 
                                         <p>
-                                            <h:outputText value="#{jsfCtrl.pureHtml(articlesCtrl.model.current.content.content)}"
-                                                          escape="false"/>
+                                            <h:outputText
+                                                    value="#{jsfCtrl.pureHtml(articlesCtrl.model.current.content.content)}"
+                                                    escape="false"/>
                                         </p>
                                         <ui:repeat value="#{articlesCtrl.model.current.attachments}" var="att">
                                             <h:outputLink rendered="#{!jsfCtrl.isFSPath(att.path)}"
@@ -82,8 +84,14 @@
                                             paginatorAlwaysVisible="false"
                                             paginatorPosition="bottom"
                                         >
-                                        <h3 style="font-size: small;margin-top: 0px;margin-bottom: 0px;padding-top: 0px;"><span style="padding: 0 5px;background: #1777B1;color: #FFFFFF;">#{jsfCtrl.date(i.content.sendTime,'dd/MM')}:</span> #{i.content.subject}</h3>
-                                        <p style="font-size: x-small"><p:commandLink action="#{articlesCtrl.model.setCurrent(i)}" update=":newsForm:curr">#{jsfCtrl.strcut(jsfCtrl.html2txt(i.content.content),100)}…</p:commandLink></p>
+                                    <h3 style="font-size: small;margin-top: 0px;margin-bottom: 0px;padding-top: 0px;">
+                                        <span style="padding: 0 5px;background: #1777B1;color: #FFFFFF;">#{jsfCtrl.date(i.content.sendTime,'dd/MM')}:</span> #{i.content.subject}
+                                    </h3>
+
+                                    <p style="font-size: x-small"><p:commandLink
+                                            action="#{articlesCtrl.model.setCurrent(i)}"
+                                            update=":newsForm:curr">#{jsfCtrl.strcut(jsfCtrl.html2txt(i.content.content),100)}…</p:commandLink>
+                                    </p>
                                 </p:dataGrid>
                             </div>
                         </div>

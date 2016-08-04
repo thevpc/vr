@@ -14,7 +14,7 @@ package net.vpc.app.vainruling.core.service.obj;
 //
 ///**
 // *
-// * @author vpc
+// * @author taha.bensalah@gmail.com
 // */
 //public class MethodActionInfo extends ActionInfo {
 //

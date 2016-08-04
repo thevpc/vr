@@ -27,7 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @AppPlugin(dependsOn = "academicPlugin", version = "1.4")
 @UpaAware
@@ -98,34 +98,34 @@ public class AcademicInternshipPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from AcademicInternshipBoard u where u.enabled=true and u.departmentId=:departmentId")
                 .setParameter("departmentId", departmentId)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicInternshipGroup> findEnabledInternshipGroupsByDepartment(int departmentId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from AcademicInternshipGroup u where u.enabled=true and (u.departmentId=:departmentId or u.departmentId=null)")
                 .setParameter("departmentId", departmentId)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicInternshipSessionType> findAcademicInternshipSessionType() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from AcademicInternshipSessionType u order by u.name")
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicInternshipBoard> findEnabledInternshipBoardsByTeacher(int teacherId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u.board from AcademicInternshipBoardTeacher u where u.board.enabled=true and u.teacherId=:teacherId")
                 .setParameter("teacherId", teacherId)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicInternshipVariant> findInternshipVariantsByType(int typeId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from AcademicInternshipVariant u where u.internshipTypeId=:typeId")
                 .setParameter("typeId", typeId)
-                .getEntityList();
+                .getResultList();
     }
 
     public double findInternshipTeacherInternshipsCount(int teacherId, int yearId, int internshipTypeId) {
@@ -134,7 +134,7 @@ public class AcademicInternshipPlugin {
                 .setParameter("teacherId", teacherId)
                 .setParameter("periodId", yearId)
                 .setParameter("internshipTypeId", internshipTypeId)
-                .getEntityList();
+                .getResultList();
         double count = 0;
         for (AcademicInternship a : list) {
             double m = 1;
@@ -152,7 +152,7 @@ public class AcademicInternshipPlugin {
                 .setHint(QueryHints.NAVIGATION_DEPTH, 1)
                 .setParameter("periodId", yearId)
                 .setParameter("internshipTypeId", internshipTypeId)
-                .getEntityList();
+                .getResultList();
         Map<Integer, Number> map = new HashMap<>();
         for (AcademicInternship a : list) {
             if (a.getSupervisor() == null && a.getSecondSupervisor() == null) {
@@ -196,7 +196,7 @@ public class AcademicInternshipPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from AcademicInternshipBoardTeacher u where u.boardId=:boardId")
                 .setParameter("boardId", boardId)
-                .getEntityList();
+                .getResultList();
     }
 
     public void addBoardMessage(AcademicInternshipBoardMessage m) {
@@ -216,27 +216,38 @@ public class AcademicInternshipPlugin {
         return pu.createQuery("Select u from AcademicInternshipBoardMessage u where u.internshipId=:internshipId order by u.obsUpdateDate desc")
                 .setParameter("internshipId", internshipId)
                 .setHint(QueryHints.NAVIGATION_DEPTH, 3)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicInternshipType> findInternshipTypes() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from AcademicInternshipType u")
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicInternshipStatus> findInternshipStatusesByType(int typeId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from AcademicInternshipStatus u where u.internshipTypeId=:typeId")
                 .setParameter("typeId", typeId)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicInternshipDuration> findInternshipDurationsByType(int typeId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from AcademicInternshipDuration u where u.internshipTypeId=:typeId")
                 .setParameter("typeId", typeId)
-                .getEntityList();
+                .getResultList();
+    }
+
+    public AcademicInternship findStudentPFE(int studentId) {
+        for (AcademicInternship aa : findActualInternshipsByStudent(studentId)) {
+            if (aa.getMainGroup() != null && aa.getMainGroup().getName().toUpperCase().startsWith("PFE")) {
+                //this is the PFE
+                return aa;
+            }
+        }
+        return null;
+
     }
 
     public List<AcademicInternship> findActualInternshipsByStudent(int studentId) {
@@ -244,7 +255,7 @@ public class AcademicInternshipPlugin {
         return pu.createQuery("Select u from AcademicInternship u where u.studentId=:studentId or u.secondStudentId=:studentId and u.internshipStatus.closed=false")
                 .setParameter("studentId", studentId)
 //                .setHint(QueryHints.FETCH_STRATEGY, "select")
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicInternship> findActualInternshipsBySupervisor(int teacherId) {
@@ -252,7 +263,7 @@ public class AcademicInternshipPlugin {
         return pu.createQuery("Select u from AcademicInternship u where u.supervisorId=:teacherId or u.secondSupervisorId=:teacherId and u.internshipStatus.closed=false")
                 .setParameter("teacherId", teacherId)
                 .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AcademicInternship> findInternshipsByDepartment(int departmentId, boolean activeOnly) {
@@ -260,7 +271,7 @@ public class AcademicInternshipPlugin {
         return pu.createQuery("Select u from AcademicInternship u where u.board.departmentId=:departmentId " + (activeOnly ? "and u.internshipStatus.closed=false" : ""))
                 .setParameter("departmentId", departmentId)
                 .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
-                .getEntityList();
+                .getResultList();
     }
 
     public AcademicInternshipExtList findInternshipsByDepartmentExt(int departmentId, boolean openOnly) {
@@ -268,15 +279,15 @@ public class AcademicInternshipPlugin {
         List<AcademicInternship> internships = pu.createQuery("Select u from AcademicInternship u where u.board.departmentId=:departmentId " + (openOnly ? "and u.internshipStatus.closed=false" : ""))
                 .setParameter("departmentId", departmentId)
                 .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
-                .getEntityList();
+                .getResultList();
         List<AcademicInternshipSupervisorIntent> supervisorIntents = pu.createQuery("Select u from AcademicInternshipSupervisorIntent u where (u.internship.board.departmentId=:departmentId)" + (openOnly ? " and u.internship.internshipStatus.closed=false" : ""))
                 .setParameter("departmentId", departmentId)
-                .getEntityList();
+                .getResultList();
         List<AcademicInternshipBoardMessage> messages = pu.createQuery("Select u from AcademicInternshipBoardMessage u where (u.internship.board.departmentId=:departmentId) " + (openOnly ? " and u.internship.internshipStatus.closed=false" : ""))
                 .setParameter("departmentId", departmentId)
                 .setHint(QueryHints.NAVIGATION_DEPTH, 3)
                 .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
-                .getEntityList();
+                .getResultList();
         return mergeAcademicInternshipExt(internships, supervisorIntents, messages);
     }
 
@@ -292,13 +303,13 @@ public class AcademicInternshipPlugin {
                         .setParameter("departmentId", d.getId())
                         .setHint(QueryHints.NAVIGATION_DEPTH, 2)
                         .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
-                        .getEntityList();
+                        .getResultList();
             } else {
                 return pu.createQuery("Select u from AcademicInternship u where u.boardId=:boardId and u.internshipStatus.closed=false")
                         .setParameter("boardId", boardId)
                         .setHint(QueryHints.NAVIGATION_DEPTH, 2)
                         .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
-                        .getEntityList();
+                        .getResultList();
             }
         }
 
@@ -309,7 +320,7 @@ public class AcademicInternshipPlugin {
                         .setParameter("boardId", b.getId())
                         .setHint(QueryHints.NAVIGATION_DEPTH, 2)
                         .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
-                        .getEntityList();
+                        .getResultList();
                 all.addAll(curr);
             }
             return all;
@@ -318,7 +329,7 @@ public class AcademicInternshipPlugin {
                     .setParameter("boardId", boardId)
                     .setHint(QueryHints.NAVIGATION_DEPTH, 2)
                     .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
-                    .getEntityList();
+                    .getResultList();
         }
     }
 
@@ -374,30 +385,30 @@ public class AcademicInternshipPlugin {
                     List<AcademicInternship> internships = pu.createQuery("Select u from AcademicInternship u where (u.boardId==null or u.board.departmentId=:departmentId) " + (openOnly ? "and u.internshipStatus.closed=false" : ""))
                             .setParameter("departmentId", d.getId())
                             .setHint(QueryHints.NAVIGATION_DEPTH, 2)
-                            .getEntityList();
+                            .getResultList();
                     List<AcademicInternshipSupervisorIntent> supervisorIntents = pu.createQuery("Select u from AcademicInternshipSupervisorIntent u where (u.internship.boardId==null or u.internship.board.departmentId=:departmentId)" + (openOnly ? " and u.internship.internshipStatus.closed=false" : ""))
                             .setParameter("departmentId", d.getId())
-                            .getEntityList();
+                            .getResultList();
                     List<AcademicInternshipBoardMessage> messages = pu.createQuery("Select u from AcademicInternshipBoardMessage u where (u.internship.boardId==null or u.internship.board.departmentId=:departmentId) " + (openOnly ? " and u.internship.internshipStatus.closed=false" : ""))
                             .setParameter("departmentId", d.getId())
                             .setHint(QueryHints.NAVIGATION_DEPTH, 3)
-                            .getEntityList();
+                            .getResultList();
                     return mergeAcademicInternshipExt(internships, supervisorIntents, messages);
                 } else {
                     List<AcademicInternship> internships = pu.createQuery("Select u from AcademicInternship u where (u.boardId==null or (u.board.departmentId=:departmentId and u.board.internshipTypeId=:internshipTypeId)) " + (openOnly ? "and u.internshipStatus.closed=false" : ""))
                             .setParameter("departmentId", d.getId())
                             .setParameter("internshipTypeId", internshipTypeId)
                             .setHint(QueryHints.NAVIGATION_DEPTH, 2)
-                            .getEntityList();
+                            .getResultList();
                     List<AcademicInternshipSupervisorIntent> supervisorIntents = pu.createQuery("Select u from AcademicInternshipSupervisorIntent u where (u.internship.boardId==null or (u.internship.board.departmentId=:departmentId  and u.internship.board.internshipTypeId=:internshipTypeId)) " + (openOnly ? " and u.internship.internshipStatus.closed=false" : ""))
                             .setParameter("departmentId", d.getId())
                             .setParameter("internshipTypeId", internshipTypeId)
-                            .getEntityList();
+                            .getResultList();
                     List<AcademicInternshipBoardMessage> messages = pu.createQuery("Select u from AcademicInternshipBoardMessage u where (u.internship.boardId==null or (u.internship.board.departmentId=:departmentId and u.internship.board.internshipTypeId=:internshipTypeId)) " + (openOnly ? " and u.internship.internshipStatus.closed=false" : ""))
                             .setParameter("departmentId", d.getId())
                             .setParameter("internshipTypeId", internshipTypeId)
                             .setHint(QueryHints.NAVIGATION_DEPTH, 3)
-                            .getEntityList();
+                            .getResultList();
                     return mergeAcademicInternshipExt(internships, supervisorIntents, messages);
                 }
             } else {
@@ -405,14 +416,14 @@ public class AcademicInternshipPlugin {
                         + (openOnly ? " and u.internshipStatus.closed=false" : ""))
                         .setParameter("boardId", boardId)
                         .setHint(QueryHints.NAVIGATION_DEPTH, 2)
-                        .getEntityList();
+                        .getResultList();
                 List<AcademicInternshipSupervisorIntent> supervisorIntents = pu.createQuery("Select u from AcademicInternshipSupervisorIntent u where  u.internship.boardId=:boardId " + (openOnly ? " and u.internship.internshipStatus.closed=false" : ""))
                         .setParameter("boardId", boardId)
-                        .getEntityList();
+                        .getResultList();
                 List<AcademicInternshipBoardMessage> messages = pu.createQuery("Select u from AcademicInternshipBoardMessage u where u.internship.boardId=:boardId  " + (openOnly ? " and u.internship.internshipStatus.closed=false" : ""))
                         .setParameter("boardId", boardId)
                         .setHint(QueryHints.NAVIGATION_DEPTH, 3)
-                        .getEntityList();
+                        .getResultList();
                 return mergeAcademicInternshipExt(internships, supervisorIntents, messages);
             }
         }
@@ -426,7 +437,7 @@ public class AcademicInternshipPlugin {
                             + ((teacherId > 0) ? (" and u.teacherId=" + teacherId) : "")
                             + ((internshipTypeId > 0) ? (" and u.board.internshipTypeId=" + internshipTypeId) : "")
             )
-                    .getEntityList();
+                    .getResultList();
             for (AcademicInternshipBoard b : goodBoards) {
                 if (boardList.length() > 0) {
                     boardList.append(",");
@@ -441,26 +452,26 @@ public class AcademicInternshipPlugin {
             }
             List<AcademicInternship> internships = pu.createQuery("Select u from AcademicInternship u where u.boardId in (" + boardList + ") " + (openOnly ? "and u.internshipStatus.closed=false" : ""))
                     .setHint(QueryHints.NAVIGATION_DEPTH, 2)
-                    .getEntityList();
+                    .getResultList();
             List<AcademicInternshipSupervisorIntent> supervisorIntents = pu.createQuery("Select u from AcademicInternshipSupervisorIntent u where  u.internship.boardId in (" + boardList + ")  " + (openOnly ? "and u.internship.internshipStatus.closed=false" : ""))
-                    .getEntityList();
+                    .getResultList();
             List<AcademicInternshipBoardMessage> messages = pu.createQuery("Select u from AcademicInternshipBoardMessage u where u.internship.boardId in (" + boardList + ") " + (openOnly ? "and u.internship.internshipStatus.closed=false" : ""))
                     .setHint(QueryHints.NAVIGATION_DEPTH, 3)
-                    .getEntityList();
+                    .getResultList();
             return mergeAcademicInternshipExt(internships, supervisorIntents, messages);
 
         } else {
             List<AcademicInternship> internships = pu.createQuery("Select u from AcademicInternship u where u.boardId=:boardId and u.internshipStatus.closed=false")
                     .setParameter("boardId", boardId)
                     .setHint(QueryHints.NAVIGATION_DEPTH, 2)
-                    .getEntityList();
+                    .getResultList();
             List<AcademicInternshipSupervisorIntent> supervisorIntents = pu.createQuery("Select u from AcademicInternshipSupervisorIntent u where  u.internship.boardId=:boardId  " + (openOnly ? "and u.internship.internshipStatus.closed=false" : ""))
                     .setParameter("boardId", boardId)
-                    .getEntityList();
+                    .getResultList();
             List<AcademicInternshipBoardMessage> messages = pu.createQuery("Select u from AcademicInternshipBoardMessage u where u.internship.boardId=:boardId " + (openOnly ? "and u.internship.internshipStatus.closed=false" : ""))
                     .setParameter("boardId", boardId)
                     .setHint(QueryHints.NAVIGATION_DEPTH, 3)
-                    .getEntityList();
+                    .getResultList();
             return mergeAcademicInternshipExt(internships, supervisorIntents, messages);
         }
     }
@@ -505,7 +516,7 @@ public class AcademicInternshipPlugin {
                                 + ((teacherId > 0) ? (" and u.teacherId=" + teacherId) : "")
                                 + ((internshipTypeId > 0) ? (" and u.board.internshipTypeId=" + internshipTypeId) : "")
                 )
-                        .getEntityList();
+                        .getResultList();
                 for (AcademicInternshipBoard b : goodBoards) {
                     if (boardList.length() > 0) {
                         boardList.append(",");
@@ -522,7 +533,7 @@ public class AcademicInternshipPlugin {
         return q
                 .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
                 .setHint(QueryHints.NAVIGATION_DEPTH, 2)
-                .getEntityList();
+                .getResultList();
 
 //        if (teacher != null && d != null && teacher.getId() == teacherId) {
 //            if (boardId > 0) {
@@ -530,20 +541,20 @@ public class AcademicInternshipPlugin {
 //                        + (openOnly ? " and u.internshipStatus.closed=false" : ""))
 //                        .setParameter("boardId", boardId)
 //                        .setHint(QueryHints.NAVIGATION_DEPTH, 2)
-//                        .getEntityList();
+//                        .getResultList();
 //            }
 //            if (boardId <= 0) {
 //                if (internshipTypeId < 0) {
 //                    return  pu.createQuery("Select u from AcademicInternship u where (u.boardId==null or u.board.departmentId=:departmentId) " + (openOnly ? "and u.internshipStatus.closed=false" : ""))
 //                            .setParameter("departmentId", d.getId())
 //                            .setHint(QueryHints.NAVIGATION_DEPTH, 2)
-//                            .getEntityList();
+//                            .getResultList();
 //                } else {
 //                    return pu.createQuery("Select u from AcademicInternship u where (u.boardId==null or (u.board.departmentId=:departmentId and u.board.internshipTypeId=:internshipTypeId)) " + (openOnly ? "and u.internshipStatus.closed=false" : ""))
 //                            .setParameter("departmentId", d.getId())
 //                            .setParameter("internshipTypeId", internshipTypeId)
 //                            .setHint(QueryHints.NAVIGATION_DEPTH, 2)
-//                            .getEntityList();
+//                            .getResultList();
 //                }
 //            }
 //        }
@@ -557,7 +568,7 @@ public class AcademicInternshipPlugin {
 //                    + ((teacherId > 0) ? (" and u.teacherId=" + teacherId) : "")
 //                    + ((internshipTypeId > 0) ? (" and u.board.internshipTypeId=" + internshipTypeId) : "")
 //            )
-//                    .getEntityList();
+//                    .getResultList();
 //            for (AcademicInternshipBoard b : goodBoards) {
 //                if (boardList.length() > 0) {
 //                    boardList.append(",");
@@ -570,14 +581,14 @@ public class AcademicInternshipPlugin {
 //            return pu.createQuery("Select u from AcademicInternship u where u.boardId in (" + boardList + ") " + (openOnly ? "and u.internshipStatus.closed=false" : ""))
 //                    .setHint(QueryHints.NAVIGATION_DEPTH, 2)
 //                    .setHint(QueryHints.FETCH_STRATEGY, "select")
-//                    .getEntityList();
+//                    .getResultList();
 //
 //        } else {
 //            return pu.createQuery("Select u from AcademicInternship u where u.boardId=:boardId and u.internshipStatus.closed=false")
 //                    .setParameter("boardId", boardId)
 //                    .setHint(QueryHints.NAVIGATION_DEPTH, 2)
 //                    .setHint(QueryHints.FETCH_STRATEGY, "select")
-//                    .getEntityList();
+//                    .getResultList();
 //        }
     }
 
@@ -604,7 +615,7 @@ public class AcademicInternshipPlugin {
                         + "u.boardId=:boardId "
         )
                 .setParameter("departmentId", internship.getBoard().getId())
-                .getEntityList();
+                .getResultList();
         HashSet<String> validCodes = new HashSet<>();
         for (AcademicInternship vc : allFound) {
             validCodes.add(vc.getCode());
@@ -623,7 +634,7 @@ public class AcademicInternshipPlugin {
                 )
                         .setParameter("studentId", student.getId())
                         .setParameter("boardId", internship.getBoard().getId())
-                        .getEntity();
+                        .getFirstResultOrNull();
 
                 if (i == null) {
                     i = new AcademicInternship();
@@ -700,7 +711,7 @@ public class AcademicInternshipPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         List<AcademicInternshipSupervisorIntent> intents = pu.createQuery("Select u from AcademicInternshipSupervisorIntent u where u.internshipId=:id")
                 .setParameter("id", internship)
-                .getEntityList();
+                .getResultList();
         List<AcademicTeacher> all = new ArrayList<>();
         for (AcademicInternshipSupervisorIntent aa : intents) {
             all.add(aa.getTeacher());
@@ -713,6 +724,6 @@ public class AcademicInternshipPlugin {
         return pu.createQuery("Select u from AcademicInternshipSupervisorIntent u where u.internshipId=:id and u.teacherId=:teacherId")
                 .setParameter("id", internship)
                 .setParameter("teacherId", teacherId)
-                .getEntity();
+                .getFirstResultOrNull();
     }
 }

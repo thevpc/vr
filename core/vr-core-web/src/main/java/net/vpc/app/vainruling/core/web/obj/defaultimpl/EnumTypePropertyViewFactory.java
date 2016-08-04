@@ -18,14 +18,24 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class EnumTypePropertyViewFactory implements PropertyViewFactory {
 
     private static final Logger log = Logger.getLogger(EnumTypePropertyViewFactory.class.getName());
 
-    @Override
+    public PropertyView[] createPropertyView(String componentId, Field field, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext) {
+        return createPropertyView(componentId, field, null, configuration, manager, viewContext);
+    }
+
+    public PropertyView[] createPropertyView(String componentId, DataType datatype, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext) {
+        return createPropertyView(componentId, null, datatype, configuration, manager, viewContext);
+    }
+
     public PropertyView[] createPropertyView(String componentId, Field field, DataType datatype, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext) {
+        if (field != null) {
+            datatype = field.getDataType();
+        }
         FieldPropertyViewInfo nfo = FieldPropertyViewInfo.build(field, datatype, configuration);
         String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.SELECT);
         PropertyView propView = new FieldPropertyView(componentId, field, datatype, controlType, manager);

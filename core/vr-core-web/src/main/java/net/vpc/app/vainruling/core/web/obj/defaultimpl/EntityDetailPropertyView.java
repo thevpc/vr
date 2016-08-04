@@ -17,7 +17,7 @@ import net.vpc.upa.Relationship;
 import net.vpc.upa.RelationshipRole;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class EntityDetailPropertyView extends PropertyView {
 
@@ -25,19 +25,6 @@ public class EntityDetailPropertyView extends PropertyView {
     private Relationship relation;
     private long count;
 
-    private static String resolveLabel(RelationshipRole rols){
-        String orNull = VrApp.getBean(I18n.class).getOrNull(rols);
-        if(orNull==null){
-            orNull=VrApp.getBean(I18n.class).getOrNull("Entity."+rols.getEntity().getName()+".ListTitle");
-            if(orNull==null){
-                orNull=VrApp.getBean(I18n.class).getOrNull(rols.getEntity());
-            }
-        }
-        if(orNull==null){
-            orNull=VrApp.getBean(I18n.class).get(rols);
-        }
-        return orNull;
-    }
     public EntityDetailPropertyView(String componentId, Relationship relation, String ctrlType, PropertyViewManager manager) {
         super(componentId, resolveLabel(relation.getSourceRole()), relation, ctrlType, manager);
         setHeader(VrApp.getBean(I18n.class).get(relation.getSourceRole()));
@@ -60,13 +47,27 @@ public class EntityDetailPropertyView extends PropertyView {
         setActionCommand("{" + argEntity + "," + argListFilter + "," + argValues + "," + argDisabledFields + "}");
     }
 
+    private static String resolveLabel(RelationshipRole rols) {
+        String orNull = VrApp.getBean(I18n.class).getOrNull(rols);
+        if (orNull == null) {
+            orNull = VrApp.getBean(I18n.class).getOrNull("Entity." + rols.getEntity().getName() + ".ListTitle");
+            if (orNull == null) {
+                orNull = VrApp.getBean(I18n.class).getOrNull(rols.getEntity());
+            }
+        }
+        if (orNull == null) {
+            orNull = VrApp.getBean(I18n.class).get(rols);
+        }
+        return orNull;
+    }
+
     @Override
     public void refresh() {
         Field f = relation.getSourceRole().getEntityField();
         if (f == null) {
             f = relation.getSourceRole().getFields().get(0);
         }
-        ObjCtrl ctrl = (ObjCtrl) VrApp.getBean(ObjCtrl.class);
+        ObjCtrl ctrl = VrApp.getBean(ObjCtrl.class);
         String idExpr = "o.`" + f.getName() + "`.`" + relation.getTargetEntity().getPrimaryFields().get(0).getName() + "`";
         Object idVal = getRelationship().getTargetEntity().getBuilder().recordToId(ctrl.getModel().getCurrentRecord());
         if (idVal == null) {
@@ -86,7 +87,7 @@ public class EntityDetailPropertyView extends PropertyView {
     }
 
     public String buildActionCommand() {
-        ObjCtrl ctrl = (ObjCtrl) VrApp.getBean(ObjCtrl.class);
+        ObjCtrl ctrl = VrApp.getBean(ObjCtrl.class);
         Object idVal = getRelationship().getTargetEntity().getBuilder().recordToId(ctrl.getModel().getCurrentRecord());
         if (idVal == null) {
             idVal = "null";
@@ -110,11 +111,11 @@ public class EntityDetailPropertyView extends PropertyView {
         return (Relationship) getReferrer();
     }
 
-    public Entity getMasterEntity() {
-        return getRelationship().getTargetRole().getEntity();
+    public Entity getTargetEntity() {
+        return getRelationship().getTargetEntity();
     }
 
-    public Entity getDetailEntity() {
-        return getRelationship().getSourceRole().getEntity();
+    public Entity getSourceEntity() {
+        return getRelationship().getSourceEntity();
     }
 }

@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.net.URLDecoder;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @WebServlet(name = "PageServlet", urlPatterns = "/p/*")
 public class PageServlet extends HttpServlet {

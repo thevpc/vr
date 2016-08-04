@@ -24,14 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Emploi par Enseignant",
-        url = "modules/academic/planning/teacherplanning",
+        url = "modules/academic/planning/teacher-planning",
         menu = "/Education/Planning",
         securityKey = "Custom.Education.TeacherPlanning"
 )
@@ -47,9 +47,9 @@ public class TeacherPlanningCtrl extends AbstractPlanningCtrl {
         onRefresh();
     }
 
-    public int getPeriodId(){
+    public int getPeriodId() {
         String p = "";//getModel().getSelectedPeriod();
-        if(StringUtils.isEmpty(p)){
+        if (StringUtils.isEmpty(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
             return core.findAppConfig().getMainPeriod().getId();
         }

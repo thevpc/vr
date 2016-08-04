@@ -10,7 +10,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCou
 import java.util.NoSuchElementException;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class ModuleStat {
 

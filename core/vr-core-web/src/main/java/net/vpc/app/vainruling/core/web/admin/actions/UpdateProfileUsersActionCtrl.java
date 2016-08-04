@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Component
 @ManagedBean
@@ -63,9 +63,13 @@ public class UpdateProfileUsersActionCtrl {
         }
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
-        options.put("draggable", false);
+        options.put("draggable", true);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/admin/updateProfileUsersDialog", options, null);
+        options.put("width", 500);
+        options.put("height", 350);
+//        options.put("contentWidth", "100%");
+//        options.put("contentHeight", "100%");
+        RequestContext.getCurrentInstance().openDialog("/modules/admin/update-profile-users-dialog", options, null);
 
     }
 

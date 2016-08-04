@@ -145,8 +145,7 @@
             sourceObj[sourceMethod] = function () {
                 return targetObj[targetMethod].apply(targetObj, arguments);
             };
-        };
-
+        }
         var utc = {
             date: d
         };
@@ -168,8 +167,7 @@
         }
 
         return utc;
-    };
-
+    }
     // select time zone strategy.  This returns a date-like object tied to the
     // desired timezone
 

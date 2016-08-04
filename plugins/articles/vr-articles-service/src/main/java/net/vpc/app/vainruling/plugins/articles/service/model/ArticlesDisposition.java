@@ -5,11 +5,10 @@
  */
 package net.vpc.app.vainruling.plugins.articles.service.model;
 
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("/Social/Config")
@@ -18,9 +17,11 @@ public class ArticlesDisposition {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
+    @Main
+    @Unique
     private String name;
-    @Field(max = "1024", modifiers = UserFieldModifier.SUMMARY)
+    @Summary
+    @Field(max = "1024")
     private String description;
 
     public int getId() {

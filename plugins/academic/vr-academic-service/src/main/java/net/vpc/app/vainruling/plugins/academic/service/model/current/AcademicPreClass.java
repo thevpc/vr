@@ -9,7 +9,6 @@ import net.vpc.app.vainruling.core.service.model.AppGovernorate;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.FormulaType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
@@ -17,7 +16,7 @@ import java.sql.Timestamp;
 /**
  * Classe prépa ou autre
  *
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Education/Config")
@@ -26,7 +25,7 @@ public class AcademicPreClass {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private String name;
     private String name2;
     private String otherNames;

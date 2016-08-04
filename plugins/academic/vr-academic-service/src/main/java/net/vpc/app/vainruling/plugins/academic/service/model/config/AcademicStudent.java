@@ -14,14 +14,13 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicBac
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicPreClass;
 import net.vpc.upa.FormulaType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "contact.fullName")
 @Path("Contact")
@@ -56,6 +55,13 @@ public class AcademicStudent {
     private int preClassRankMax;
     private AcademicBac baccalaureateClass;
     private double baccalaureateScore;
+    @Properties({
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Curriculum Vitae"),
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
+            @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+    }
+    )
+    private String curriculumVitae;
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
@@ -225,10 +231,7 @@ public class AcademicStudent {
         if (!Objects.equals(this.deletedBy, other.deletedBy)) {
             return false;
         }
-        if (!Objects.equals(this.deletedOn, other.deletedOn)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.deletedOn, other.deletedOn);
     }
 
     @Override
@@ -327,4 +330,12 @@ public class AcademicStudent {
         this.preClassRankMax = preClassRankMax;
     }
 
+
+    public String getCurriculumVitae() {
+        return curriculumVitae;
+    }
+
+    public void setCurriculumVitae(String curriculumVitae) {
+        this.curriculumVitae = curriculumVitae;
+    }
 }

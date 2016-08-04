@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.web.ctrl;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public enum EditCtrlMode {
     LIST,

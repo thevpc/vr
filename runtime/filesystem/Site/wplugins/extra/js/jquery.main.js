@@ -14,7 +14,6 @@ function initTabs() {
 /*
  * jQuery Tabs plugin
  */
-;
 (function ($) {
     $.fn.contentTabs = function (o) {
         // default options
@@ -160,7 +159,7 @@ function initTabs() {
 
             autoRotate();
         });
-    }
+    };
 
     // add stylesheet for tabs on DOMReady
     var tabHiddenClass = 'js-tab-hidden';
@@ -233,7 +232,6 @@ function initTabs() {
     }
 }(jQuery));
 /*! HTML5 Shiv vpre3.6 | @afarkas @jdalton @jon_neal @rem | MIT/GPL2 Licensed */
-;
 (function (o, s) {
     var g = o.html5 || {};
     var j = /^<|^(?:button|map|select|textarea|object|iframe|option|optgroup)$/i;

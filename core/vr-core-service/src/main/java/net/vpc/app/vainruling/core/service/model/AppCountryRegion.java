@@ -7,11 +7,10 @@ package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.RelationshipType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Admin/Config")
@@ -21,7 +20,8 @@ public class AppCountryRegion {
     @Sequence
 
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
+    @Main
+    @Unique
     private String name;
     private String name2;
     private String name3;

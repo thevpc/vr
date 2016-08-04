@@ -16,7 +16,7 @@ import javax.faces.convert.FacesConverter;
 import java.util.Date;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @FacesConverter(value = "RelativeDateConverter")
 public class RelativeDateConverter implements Converter {

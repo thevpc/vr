@@ -536,17 +536,17 @@ public class PlanningService {
         }
     }
 
-    private String buildTeacherAcronym(String teacherName){
-        StringBuilder sb=new StringBuilder();
+    private String buildTeacherAcronym(String teacherName) {
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < teacherName.length(); i++) {
-            if(i==0 || teacherName.charAt(i-1)==' '){
+            if (i == 0 || teacherName.charAt(i - 1) == ' ') {
                 sb.append(Character.toUpperCase(teacherName.charAt(i)));
             }
         }
         return sb.toString();
     }
 
-    private String buildSubjectLabel(PlanningActivity activity){
+    private String buildSubjectLabel(PlanningActivity activity) {
         StringBuilder activityLabel = new StringBuilder()
                 .append(activity.getInternship().getCode())
                 .append("-").append(activity.getInternship()
@@ -554,7 +554,7 @@ public class PlanningService {
                 .append(activity.getInternship().getStudent());
         activityLabel.append(" (");
         for (String s : activity.getInternship().getSupervisors()) {
-            if(activityLabel.charAt(activityLabel.length()-1)!='('){
+            if (activityLabel.charAt(activityLabel.length() - 1) != '(') {
                 activityLabel.append(",");
             }
             activityLabel.append("E:");
@@ -767,7 +767,7 @@ public class PlanningService {
                     if (maxDays > dtes.size()) {
                         maxDays = dtes.size();
                     }
-                    if(maxDays<dtes.size()) {
+                    if (maxDays < dtes.size()) {
                         maxDays++;
                     }
                     Element ConstraintTeacherMaxDaysPerWeek = doc.createElement("ConstraintTeacherMaxDaysPerWeek");

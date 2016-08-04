@@ -12,8 +12,8 @@ import net.vpc.upa.types.DataType;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public interface PropertyViewValuesProvider {
-    public List<NamedId> resolveValues(PropertyView propertyView, Field field, DataType dt, ViewContext viewContext);
+    List<NamedId> resolveValues(PropertyView propertyView, Field field, DataType dt, ViewContext viewContext);
 }

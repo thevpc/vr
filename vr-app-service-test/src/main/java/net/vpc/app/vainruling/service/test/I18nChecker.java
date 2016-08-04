@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 //import ;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class I18nChecker {
 

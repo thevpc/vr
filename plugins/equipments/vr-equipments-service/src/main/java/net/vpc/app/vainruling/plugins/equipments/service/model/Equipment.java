@@ -8,13 +8,12 @@ package net.vpc.app.vainruling.plugins.equipments.service.model;
 import net.vpc.app.vainruling.core.service.model.AppArea;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.FormulaType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Equipment")
@@ -35,14 +34,18 @@ public class Equipment {
     private String description;
     @Summary
     private double quantity;
-    private AppArea location;
+
+    @Summary
+    @Properties(
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Category"))
+    private EquipmentType type;
+
     @Summary
     @ToString
     private EquipmentStatusType statusType;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Category"))
-    private EquipmentType type;
+    @Summary
+    private AppArea location;
 
 //    @Summary
 //    @Formula(value = "this.brandLine.brand", type = FormulaType.LIVE)

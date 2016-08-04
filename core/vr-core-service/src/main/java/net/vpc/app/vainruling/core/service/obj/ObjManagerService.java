@@ -24,7 +24,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Service
 public class ObjManagerService {
@@ -219,13 +219,15 @@ public class ObjManagerService {
         }
         Chronometer c = new Chronometer();
         List<Object> entityList = cc
-                .getEntityList();
+                .getResultList();
         entityList.size();
         c.stop();
         return entityList;
     }
 
-    public List<NamedId> findAllNamedIds(String entityName, Map<String, Object> criteria) {
+    public List<NamedId> findAllNamedIds(Relationship r, Map<String, Object> criteria, Object currentInstance) {
+        String entityName = r.getTargetEntity().getName();
+        final String aliasName = "o";
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         Select q = new Select();
@@ -237,7 +239,7 @@ public class ObjManagerService {
             mainField = primaryField;
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("o." + mainField.getName());
+        sb.append(aliasName + "." + mainField.getName());
         while (mainField.getDataType() instanceof ManyToOneType) {
             Entity t = ((ManyToOneType) mainField.getDataType()).getRelationship().getTargetEntity();
             mainField = t.getMainField();
@@ -245,15 +247,55 @@ public class ObjManagerService {
         }
         q.field(sb.toString(), "name");
 
-        q.from(entityName, "o");
+        q.from(entityName, aliasName);
         q.orderBy(entity.getListOrder());
         Expression where = null;
         if (criteria != null) {
             for (Map.Entry<String, Object> entrySet : criteria.entrySet()) {
-                where = And.create(where, new Equals(new UserExpression("o." + entrySet.getKey()), new Literal(entrySet.getValue(), null)));
+                where = And.create(where, new Equals(new UserExpression(aliasName + "." + entrySet.getKey()), new Literal(entrySet.getValue(), null)));
             }
         }
-        q.setWhere(where);
+        q.where(r.createTargetListExpression(currentInstance, aliasName));
+        q.where(where);
+        Chronometer c = new Chronometer();
+        List<NamedId> entityList = pu.createQuery(q)
+                .getTypeList(NamedId.class);
+        entityList.size();
+        c.stop();
+        return entityList;
+    }
+
+    public List<NamedId> findAllNamedIds(Entity r, Map<String, Object> criteria, Object currentInstance) {
+        String entityName = r.getName();
+        final String aliasName = "o";
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity entity = pu.getEntity(entityName);
+        Select q = new Select();
+
+        Field primaryField = entity.getPrimaryFields().get(0);
+        q.field(" o." + primaryField.getName(), "id");
+        Field mainField = entity.getMainField();
+        if (mainField == null) {
+            mainField = primaryField;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(aliasName + "." + mainField.getName());
+        while (mainField.getDataType() instanceof ManyToOneType) {
+            Entity t = ((ManyToOneType) mainField.getDataType()).getRelationship().getTargetEntity();
+            mainField = t.getMainField();
+            sb.append("." + mainField.getName());
+        }
+        q.field(sb.toString(), "name");
+
+        q.from(entityName, aliasName);
+        q.orderBy(entity.getListOrder());
+        Expression where = null;
+        if (criteria != null) {
+            for (Map.Entry<String, Object> entrySet : criteria.entrySet()) {
+                where = And.create(where, new Equals(new UserExpression(aliasName + "." + entrySet.getKey()), new Literal(entrySet.getValue(), null)));
+            }
+        }
+        q.where(where);
         Chronometer c = new Chronometer();
         List<NamedId> entityList = pu.createQuery(q)
                 .getTypeList(NamedId.class);
@@ -311,7 +353,7 @@ public class ObjManagerService {
             q.byExpression(filterExpression);
 
         }
-        List<Object> list = q.getEntityList();
+        List<Object> list = q.getResultList();
         if (objSearch != null) {
             list = objSearch.filterList(list, entityName);
         }
@@ -355,7 +397,7 @@ public class ObjManagerService {
         Entity entity = pu.getEntity(type);
         return pu.createQueryBuilder(type)
                 .orderBy(entity.getListOrder())
-                .getEntityList();
+                .getResultList();
     }
 
     public List<Object> findByField(Class type, String field, Object value) {
@@ -365,7 +407,7 @@ public class ObjManagerService {
         return pu.createQueryBuilder(type)
                 .byExpression(new And(new Var(field), new Literal(value, dt)))
                 .orderBy(entity.getListOrder())
-                .getEntityList();
+                .getResultList();
     }
 
 }

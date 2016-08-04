@@ -8,14 +8,14 @@ package net.vpc.app.vainruling.plugins.inventory.service.model;
 import net.vpc.app.vainruling.core.service.model.AppArea;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.equipments.service.model.Equipment;
+import net.vpc.upa.FormulaType;
 import net.vpc.upa.RelationshipType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.util.Date;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "date desc")
 @Path("Equipment/Inventory")
@@ -30,6 +30,7 @@ public class InventoryRow {
     @Summary
     private AppUser user;
     @Summary
+    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Date date;
     @Summary
     private Equipment equipment;

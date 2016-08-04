@@ -6,11 +6,10 @@
 package net.vpc.app.vainruling.plugins.inbox.service.model;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("/Social/Config")
@@ -19,7 +18,8 @@ public class MailboxMessageFormat {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
+    @Main
+    @Unique
     private String name;
     @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     private boolean preferFormattedText;

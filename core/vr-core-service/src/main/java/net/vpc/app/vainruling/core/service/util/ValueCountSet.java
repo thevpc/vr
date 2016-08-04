@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class ValueCountSet {
 

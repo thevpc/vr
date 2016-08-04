@@ -7,13 +7,12 @@ package net.vpc.app.vainruling.plugins.equipments.service.model;
 
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Equipment")
@@ -28,7 +27,8 @@ public class EquipmentStatusLog {
     @Main
     private String name;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY, max = "1024")
+    @Summary
+    @Field(max = "1024")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
 

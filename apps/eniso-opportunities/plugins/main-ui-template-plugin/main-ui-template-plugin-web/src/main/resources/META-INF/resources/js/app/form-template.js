@@ -256,4 +256,4 @@
         "label": "week",
         "placeholder": "week"
     }
-]
+];

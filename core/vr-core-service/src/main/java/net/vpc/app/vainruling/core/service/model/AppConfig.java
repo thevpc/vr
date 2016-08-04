@@ -5,11 +5,10 @@
  */
 package net.vpc.app.vainruling.core.service.model;
 
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "mainPeriod.name desc")
 @Path("Admin/Config")
@@ -17,7 +16,7 @@ public class AppConfig {
 
     @Id
     private int id = 1;
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private AppPeriod mainPeriod;
     @Summary
     private AppCompany mainCompany;

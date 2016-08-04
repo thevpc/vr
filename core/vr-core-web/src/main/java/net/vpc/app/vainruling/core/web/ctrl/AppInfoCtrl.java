@@ -16,10 +16,10 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "Informations Systeme", css = "fa-dashboard", url = "modules/appinfo"
+        title = "Informations Systeme", css = "fa-dashboard", url = "modules/app-info"
 )
 @ManagedBean
 @Scope(value = "session")

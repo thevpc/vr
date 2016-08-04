@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.core.web.obj;
 import net.vpc.upa.Field;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class CustomTarget {
 

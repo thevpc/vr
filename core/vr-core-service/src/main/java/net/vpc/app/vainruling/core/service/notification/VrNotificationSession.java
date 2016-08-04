@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Component
 @Scope(value = "session")

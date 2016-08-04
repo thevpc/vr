@@ -55,7 +55,7 @@ ko.bindingHandlers.progress = {
 
         ko.applyBindingsToDescendants(viewModel, $element[0]);
     }
-}
+};
 
 // Bind Twitter Alert
 ko.bindingHandlers.alert = {

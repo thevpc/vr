@@ -23,7 +23,7 @@
 //
 ///**
 // *
-// * @author vpc
+// * @author taha.bensalah@gmail.com
 // */
 //@Controller
 //@Path("/mail")

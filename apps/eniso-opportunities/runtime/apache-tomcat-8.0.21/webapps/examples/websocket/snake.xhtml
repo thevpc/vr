@@ -217,7 +217,7 @@ Game.connect = (function (host) {
 
     Game.socket.onmessage = function (message) {
         var packet = JSON.parse(message.data);
-        switch (packet.type) {
+        switch (packet.conversionRule) {
             case 'update':
                 for (var i = 0; i < packet.data.length; i++) {
                     Game.updateSnake(packet.data[i].id, packet.data[i].body);

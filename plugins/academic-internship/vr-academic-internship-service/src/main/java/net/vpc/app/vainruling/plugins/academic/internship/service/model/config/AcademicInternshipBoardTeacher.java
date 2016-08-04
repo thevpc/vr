@@ -8,11 +8,10 @@ package net.vpc.app.vainruling.plugins.academic.internship.service.model.config;
 import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.AcademicInternshipBoard;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.RelationshipType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity()
 @Path("Education/Config")
@@ -27,7 +26,7 @@ public class AcademicInternshipBoardTeacher {
     private AcademicInternshipBoard board;
     @Summary
     private AcademicTeacher teacher;
-    @Field(defaultValue = "false", modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private boolean manager;
 
     public int getId() {

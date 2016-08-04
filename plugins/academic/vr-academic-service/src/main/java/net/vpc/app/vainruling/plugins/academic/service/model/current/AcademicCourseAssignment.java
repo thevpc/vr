@@ -9,11 +9,10 @@ import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.FormulaType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Education/Load")
@@ -25,6 +24,7 @@ public class AcademicCourseAssignment {
     private int id;
 
     @Summary
+    @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
     @Formula(
             value = "(this.coursePlan.period.name)",
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
@@ -37,24 +37,47 @@ public class AcademicCourseAssignment {
     )
     private String name;
 
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     @Formula(
-            value = "concat((select a.fullName from AcademicCoursePlan a where a.id=this.coursePlanId),'-',Coalesce((select a.Name from AcademicClass a where a.id=this.subClassId),'?'),'-',(select a.name from AcademicCourseType a where a.id=this.courseTypeId))",
+            value = "concat(" +
+                    "(select a.fullName from AcademicCoursePlan a where a.id=this.coursePlanId)" +
+                    ",'-',Coalesce((select a.Name from AcademicClass a where a.id=this.subClassId),'?')" +
+                    ",Coalesce(concat('-',this.discriminator),'')" +
+                    ",'-',(select a.name from AcademicCourseType a where a.id=this.courseTypeId)" +
+                    ")",
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String fullName;
 
+    @Properties(
+            {
+                    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+            }
+    )
     private String name2;
 
-
+    @Properties(
+            {
+                    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+            }
+    )
     private AcademicCoursePlan coursePlan;
 
     @Summary
+    @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
     private AcademicClass subClass;
+    /**
+     * this field helps differentiating assignments with same properties
+     */
+    private String discriminator;
+
 
     @Summary
     @Properties(
+            {
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
+                    , @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+            }
     )
     private AcademicTeacher teacher;
 
@@ -244,4 +267,19 @@ public class AcademicCourseAssignment {
         this.subClass = subClass;
     }
 
+    public String getPeriodLabel() {
+        return periodLabel;
+    }
+
+    public void setPeriodLabel(String periodLabel) {
+        this.periodLabel = periodLabel;
+    }
+
+    public String getDiscriminator() {
+        return discriminator;
+    }
+
+    public void setDiscriminator(String discriminator) {
+        this.discriminator = discriminator;
+    }
 }

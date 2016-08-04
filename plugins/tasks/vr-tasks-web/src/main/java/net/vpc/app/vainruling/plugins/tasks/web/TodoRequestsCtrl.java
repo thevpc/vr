@@ -23,11 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
-                @UPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = ""),}, css = "fa-table", title = "Listes", url = "modules/todo/todorequests"
+                @UPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = ""),}, css = "fa-table", title = "Listes", url = "modules/todo/todo-requests"
 )
 @ManagedBean
 @Scope(value = "session")

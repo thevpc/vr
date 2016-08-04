@@ -18,7 +18,7 @@ and open the template in the editor.
 <h:body>
 
 
-    <ui:composition template="/templates/private-template.xhtml">
+    <ui:composition template="#{jsfCtrl.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="buttonsForm">
                 <p:confirmDialog message="Etes vous sur de vouloir supprimer cet élément ?"
@@ -335,7 +335,8 @@ and open the template in the editor.
                                rendered="#{mailboxCtrl.newOrUpdateMode and (mailboxCtrl.model.current ne null and mailboxCtrl.model.current.content ne null)}"
                                style="width: 100%;margin-top: 20px">
                     <h3><h:outputText value="#{mailboxCtrl.model.current.subject}"/></h3>
-                    <p:panel id="basic" style="margin-bottom:20px;width: 100%;border-width: 0px;margin-left: -20px;font-style: italic;">
+                    <p:panel id="basic"
+                             style="margin-bottom:20px;width: 100%;border-width: 0px;margin-left: -20px;font-style: italic;">
                         <p:spacer width="5" height="10"/>
                         <p:outputLabel value="de #{mailboxCtrl.model.current.userFullName} , "/>
                         <p:spacer width="5" height="10"/>
@@ -344,10 +345,12 @@ and open the template in the editor.
                         <p:outputLabel
                                 value="#{jsfCtrl.date(mailboxCtrl.model.current.sendTime, 'dd MMM yyyy à HH:mm')}"/>
                         <p:spacer width="5" height="20"/>
-                        <p:commandButton id="msgDetailsId" value="" style="width: 40px;height: 40px; float: right" type="button"
+                        <p:commandButton id="msgDetailsId" value="" style="width: 40px;height: 40px; float: right"
+                                         type="button"
                                          icon="fa fa-fw fa-edit"/>
                         <p:separator style="margin-top: 20px"/>
-                        <p:outputLabel style="font-style: normal;" value="#{mailboxCtrl.model.current.content}" escape="false"/>
+                        <p:outputLabel style="font-style: normal;" value="#{mailboxCtrl.model.current.content}"
+                                       escape="false"/>
                     </p:panel>
 
 

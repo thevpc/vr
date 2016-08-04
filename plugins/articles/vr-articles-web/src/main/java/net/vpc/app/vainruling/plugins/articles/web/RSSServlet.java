@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.net.URLDecoder;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @WebServlet(name = "RSSServlet", urlPatterns = "/services/rss/*")
 public class RSSServlet extends HttpServlet {

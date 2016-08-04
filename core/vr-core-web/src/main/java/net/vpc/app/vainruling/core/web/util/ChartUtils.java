@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.core.web.util;
 import java.util.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class ChartUtils {
 

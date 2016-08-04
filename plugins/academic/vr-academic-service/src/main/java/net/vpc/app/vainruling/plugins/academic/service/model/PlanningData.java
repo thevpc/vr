@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.service.model;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class PlanningData {
 

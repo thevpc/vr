@@ -5,11 +5,10 @@
  */
 package net.vpc.app.vainruling.plugins.tasks.service.model;
 
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Todo/Config")
@@ -18,7 +17,7 @@ public class TodoStatus {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private String name;
     @Summary
     @ToString

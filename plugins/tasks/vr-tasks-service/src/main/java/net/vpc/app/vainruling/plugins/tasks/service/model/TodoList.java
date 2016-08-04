@@ -8,11 +8,10 @@ package net.vpc.app.vainruling.plugins.tasks.service.model;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Todo")
@@ -23,7 +22,8 @@ public class TodoList {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
+    @Main
+    @Unique
     private String name;
     @Summary
     @Properties(@Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))

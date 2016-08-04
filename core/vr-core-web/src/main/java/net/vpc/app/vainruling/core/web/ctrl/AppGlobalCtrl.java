@@ -15,7 +15,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @ManagedBean
 @ApplicationScoped

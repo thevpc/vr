@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.plugins.devtoolbox.service;
 import org.springframework.stereotype.Service;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Service
 public class DevSrv {

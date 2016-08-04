@@ -20,7 +20,7 @@ public class PlanningInternship implements Comparable<PlanningInternship> {
     public PlanningInternship() {
     }
 
-    public PlanningInternship(int id, String code, String name, String student, String disciplines, String session,String... supervisors) {
+    public PlanningInternship(int id, String code, String name, String student, String disciplines, String session, String... supervisors) {
         this.id = id;
         this.code = code;
         this.name = name;
@@ -128,7 +128,7 @@ public class PlanningInternship implements Comparable<PlanningInternship> {
 
     public PlanningInternship copy() {
         return new PlanningInternship(
-                id, code, name, student, disciplines, session,supervisors.toArray(new String[supervisors.size()])
+                id, code, name, student, disciplines, session, supervisors.toArray(new String[supervisors.size()])
         );
     }
 

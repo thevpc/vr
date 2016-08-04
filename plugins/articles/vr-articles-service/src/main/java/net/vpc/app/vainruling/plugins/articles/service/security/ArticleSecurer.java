@@ -15,7 +15,7 @@ import net.vpc.upa.expressions.Expression;
 import net.vpc.upa.expressions.UserExpression;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @SecurityContext(entity = "ArticlesItem")
 public class ArticleSecurer extends DefaultEntitySecurityManager {

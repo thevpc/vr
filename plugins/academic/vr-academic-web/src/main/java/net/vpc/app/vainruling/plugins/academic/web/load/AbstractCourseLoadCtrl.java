@@ -20,18 +20,16 @@ import net.vpc.app.vainruling.plugins.academic.service.CourseFilter;
 import net.vpc.app.vainruling.plugins.academic.service.StatCache;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfo;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherPeriodStat;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public abstract class AbstractCourseLoadCtrl {
 
@@ -53,27 +51,24 @@ public abstract class AbstractCourseLoadCtrl {
 
     public abstract AcademicTeacher getCurrentTeacher();
 
+    public void onRefreshFiltersChanged() {
+        onRefresh();
+    }
+
     @OnPageLoad
     public void onRefresh(String cmd) {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
-        AppDepartment userDepartment = getUserDepartment();
-        getModel().setEnableLoadEditing(
-                userDepartment == null ? false :
-                        ap.getAppDepartmentPeriodRecord(getPeriodId(), userDepartment.getId()).getBoolean("enableLoadEditing", false)
-        );
         List<AppPeriod> navigatablePeriods = core.findNavigatablePeriods();
         AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
         getModel().setSelectedPeriod(null);
         getModel().getPeriods().clear();
         for (AppPeriod p : navigatablePeriods) {
             getModel().getPeriods().add(new SelectItem(String.valueOf(p.getId()), p.getName()));
-            if(mainPeriod!=null && p.getId()==mainPeriod.getId()){
+            if (mainPeriod != null && p.getId() == mainPeriod.getId()) {
                 getModel().setSelectedPeriod(String.valueOf(p.getId()));
             }
         }
-
-        onRefresh();
+        onPeriodChanged();
     }
 
     public boolean isFiltered(String value) {
@@ -101,9 +96,9 @@ public abstract class AbstractCourseLoadCtrl {
         return null;
     }
 
-    public int getPeriodId(){
+    public int getPeriodId() {
         String p = getModel().getSelectedPeriod();
-        if(StringUtils.isEmpty(p)){
+        if (StringUtils.isEmpty(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
             return core.findAppConfig().getMainPeriod().getId();
         }
@@ -111,26 +106,55 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public void onPeriodChanged() {
+        AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
+        AppDepartment userDepartment = getUserDepartment();
+        getModel().setEnableLoadEditing(
+                userDepartment == null ? false :
+                        ap.getAppDepartmentPeriodRecord(getPeriodId(), userDepartment.getId()).getBoolean("enableLoadEditing", false)
+        );
+
+        List<SelectItem> refreshableFilers = new ArrayList<>();
+        refreshableFilers.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
+        for (AcademicProgramType pt : ap.findProgramTypes()) {
+            refreshableFilers.add(FacesUtils.createSelectItem("AcademicProgramType:" + pt.getId(), pt.getName(), "vr-checkbox"));
+        }
+        int periodId = getPeriodId();
+        for (String label : ap.findCoursePlanLabels(periodId)) {
+            refreshableFilers.add(FacesUtils.createSelectItem("label:" + label, label, "vr-checkbox"));
+            refreshableFilers.add(FacesUtils.createSelectItem("label:!" + label, "!" + label, "vr-checkbox"));
+        }
+        getModel().setRefreshFilterItems(refreshableFilers);
+
         onRefresh();
     }
 
-    public CourseFilter getCourseFilter(){
-        return new CourseFilter();
+
+    public CourseFilter getCourseFilter() {
+        HashSet<String> labels = new HashSet<>(Arrays.asList(getModel().getRefreshFilter()));
+        CourseFilter c = CourseFilter.build(labels);
+        getModel().setRefreshFilter(labels.toArray(new String[labels.size()]));
+        return c;
     }
+
 
     public void onRefresh() {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         int periodId = getPeriodId();
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         List<SelectItem> allValidFilters = new ArrayList<>();
+        allValidFilters.add(FacesUtils.createSelectItem("assigned", "Modules Affectés", "vr-checkbox"));
+        allValidFilters.add(FacesUtils.createSelectItem("non-assigned", "Modules Non Affectés", "vr-checkbox"));
+        allValidFilters.add(FacesUtils.createSelectItem("intended", "Modules Demandés", "vr-checkbox"));
+        allValidFilters.add(FacesUtils.createSelectItem("non-intended", "Modules Non Demandés", "vr-checkbox"));
+        allValidFilters.add(FacesUtils.createSelectItem("conflict", "Modules En Conflits", "vr-checkbox"));
         for (AcademicSemester s : a.findSemesters()) {
-            allValidFilters.add(new SelectItem("semester:" + s.getId(), s.getName()));
+            allValidFilters.add(FacesUtils.createSelectItem("semester:" + s.getId(), s.getName(), "vr-checkbox"));
         }
         for (AcademicCourseType s : a.findCourseTypes()) {
-            allValidFilters.add(new SelectItem("courseType:" + s.getId(), s.getName()));
+            allValidFilters.add(FacesUtils.createSelectItem("courseType:" + s.getId(), s.getName(), "vr-checkbox"));
         }
         for (AcademicClass s : a.findAcademicClasses()) {
-            allValidFilters.add(new SelectItem("class:" + s.getId(), s.getName()));
+            allValidFilters.add(FacesUtils.createSelectItem("class:" + s.getId(), s.getName(), "vr-checkbox"));
         }
         getModel().setFilterSelectItems(allValidFilters.toArray(new SelectItem[allValidFilters.size()]));
 
@@ -160,7 +184,7 @@ public abstract class AbstractCourseLoadCtrl {
 
         Map<Integer, AcademicCourseAssignmentInfo> all = new HashMap<>();
         CourseFilter courseFilter = getCourseFilter();
-        for (AcademicCourseAssignmentInfo b : a.findCourseAssignmentsAndIntents(periodId, null, null, courseFilter,cache)) {
+        for (AcademicCourseAssignmentInfo b : a.findCourseAssignmentsAndIntents(periodId, null, null, courseFilter, cache)) {
             all.put(b.getAssignment().getId(), b);
         }
         getModel().setAll(all);
@@ -229,6 +253,33 @@ public abstract class AbstractCourseLoadCtrl {
 
     }
 
+    public void assignmentsToIntentsAll() {
+        if (getModel().isEnableLoadEditing()) {
+            ArrayList<AcademicCourseAssignmentInfo> assignmentInfos = new ArrayList<>();
+            assignmentInfos.addAll(getModel().getMineS1());
+            assignmentInfos.addAll(getModel().getMineS2());
+            assignmentInfos.addAll(getModel().getOthers());
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            for (AcademicCourseAssignmentInfo aa : assignmentInfos) {
+                AcademicTeacher t = aa.getAssignment().getTeacher();
+                if (t != null) {
+                    a.addIntent(t.getId(), aa.getAssignment().getId());
+                    a.removeTeacherAcademicCourseAssignment(aa.getAssignment().getId());
+                }
+            }
+        }
+    }
+
+    public void assignmentsToIntentsMine() {
+        ArrayList<AcademicCourseAssignmentInfo> a = new ArrayList<>();
+        a.addAll(getModel().getMineS1());
+        a.addAll(getModel().getMineS2());
+        for (AcademicCourseAssignmentInfo aa : a) {
+            addToMine(aa.getAssignment().getId());
+            doUnAssign(aa.getAssignment().getId());
+        }
+    }
+
     public void addToMine(Integer assignementId) {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = getModel().getCurrentTeacher();
@@ -281,7 +332,7 @@ public abstract class AbstractCourseLoadCtrl {
         onRefresh();
     }
 
-    public AppDepartment getUserDepartment(){
+    public AppDepartment getUserDepartment() {
         //enableLoadEditing
         UserSession userSession = VrApp.getBean(UserSession.class);
         if (userSession == null) {
@@ -303,8 +354,13 @@ public abstract class AbstractCourseLoadCtrl {
         if (user == null) {
             return false;
         }
-        if (userSession.isAdmin()) {
+        if (userSession.isSuperAdmin()) {
             return true;
+        }
+
+        AppPeriod period = VrApp.getBean(CorePlugin.class).findPeriod(getPeriodId());
+        if (period == null || period.isReadOnly()) {
+            return false;
         }
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher teacher = a.findTeacherByUser(user.getId());
@@ -349,9 +405,16 @@ public abstract class AbstractCourseLoadCtrl {
         if (user == null) {
             return false;
         }
-        if (userSession.isAdmin()) {
+        AppPeriod period = VrApp.getBean(CorePlugin.class).findPeriod(getPeriodId());
+
+        if (userSession.isSuperAdmin()) {
             return true;
         }
+
+        if (period == null || period.isReadOnly()) {
+            return false;
+        }
+
 
         if (assignementId != null) {
             AcademicCourseAssignmentInfo t0 = getModel().getAll().get(assignementId);
@@ -428,6 +491,8 @@ public abstract class AbstractCourseLoadCtrl {
         SelectItem[] filterSelectItems = new SelectItem[0];
         List<SelectItem> periods = new ArrayList<>();
         String selectedPeriod = null;
+        String[] refreshFilter = {"intents"};
+        List<SelectItem> refreshFilterItems;
 
         AcademicTeacher currentTeacher;
 
@@ -557,6 +622,22 @@ public abstract class AbstractCourseLoadCtrl {
 
         public void setEnableLoadEditing(boolean enableLoadEditing) {
             this.enableLoadEditing = enableLoadEditing;
+        }
+
+        public String[] getRefreshFilter() {
+            return refreshFilter;
+        }
+
+        public void setRefreshFilter(String[] refreshFilter) {
+            this.refreshFilter = refreshFilter;
+        }
+
+        public List<SelectItem> getRefreshFilterItems() {
+            return refreshFilterItems;
+        }
+
+        public void setRefreshFilterItems(List<SelectItem> refreshFilterItems) {
+            this.refreshFilterItems = refreshFilterItems;
         }
     }
 }

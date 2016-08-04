@@ -7,14 +7,14 @@
           <element id="module-output" name="upa-tutorial-webjsf" />
         </element>
         <element id="directory" name="lib">
-          <element id="archive" name="upa-api-1.2.0.23.jar">
+          <element id="archive" name="upa-api-1.2.0.24.jar">
             <element id="module-output" name="upa-api" />
           </element>
-          <element id="archive" name="upa-impl-1.2.0.23.0.jar">
+          <element id="archive" name="upa-impl-1.2.0.24.0.jar">
             <element id="module-output" name="upa-impl" />
           </element>
-          <element id="library" level="project" name="Maven: cglib:cglib:3.2.3" />
-          <element id="library" level="project" name="Maven: org.ow2.asm:asm:5.0.4" />
+          <element id="library" level="project" name="Maven: cglib:cglib:3.2.4" />
+          <element id="library" level="project" name="Maven: org.ow2.asm:asm:5.1" />
           <element id="library" level="project" name="Maven: org.apache.ant:ant:1.9.6" />
           <element id="library" level="project" name="Maven: org.apache.ant:ant-launcher:1.9.6" />
           <element id="library" level="project" name="Maven: org.apache.poi:poi:3.9" />

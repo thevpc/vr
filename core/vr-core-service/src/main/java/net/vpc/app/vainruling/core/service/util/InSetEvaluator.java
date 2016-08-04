@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class InSetEvaluator extends AbstractEvaluator<Boolean> {
 

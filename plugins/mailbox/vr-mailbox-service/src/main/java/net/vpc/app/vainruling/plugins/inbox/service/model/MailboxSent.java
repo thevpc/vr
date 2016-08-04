@@ -7,14 +7,13 @@ package net.vpc.app.vainruling.plugins.inbox.service.model;
 
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 import net.vpc.upa.types.DateTime;
 
 import java.sql.Timestamp;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "sendTime")
 @Path("Social")
@@ -47,10 +46,10 @@ public class MailboxSent {
             @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
     private AppUser sender;
 
-    @Field(defaultValue = "false", modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private boolean templateMessage;
 
-    @Field(defaultValue = "false", modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private boolean externalMessage;
 
     @Summary

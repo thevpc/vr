@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class TreeTraversal {
 

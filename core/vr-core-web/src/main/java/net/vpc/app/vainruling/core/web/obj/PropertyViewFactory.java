@@ -11,9 +11,12 @@ import net.vpc.upa.types.DataType;
 import java.util.Map;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public interface PropertyViewFactory {
 
-    public PropertyView[] createPropertyView(String componentId, Field field, DataType dt, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext);
+    PropertyView[] createPropertyView(String componentId, Field field, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext);
+
+    PropertyView[] createPropertyView(String componentId, DataType dt, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext);
+//    public PropertyView[] createPropertyView(String componentId, Field field, DataType dt, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext);
 }

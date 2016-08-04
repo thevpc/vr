@@ -7,27 +7,35 @@ package net.vpc.app.vainruling.plugins.academic.web.load;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.CourseFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgramType;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.GlobalStat;
+import net.vpc.common.jsf.FacesUtils;
+import net.vpc.common.strings.StringUtils;
 import org.primefaces.model.chart.PieChartModel;
 
 import javax.faces.bean.ManagedBean;
-import java.util.*;
+import javax.faces.model.SelectItem;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Stats Charge",
-        url = "modules/academic/globalstat",
+        url = "modules/academic/global-stat",
         menu = "/Education/Load",
         securityKey = "Custom.Education.GlobalStat"
 )
@@ -38,6 +46,15 @@ public class GlobalStatCtrl {
 
     public Model getModel() {
         return model;
+    }
+
+    public int getPeriodId() {
+        String p = getModel().getSelectedPeriod();
+        if (StringUtils.isEmpty(p)) {
+            CorePlugin core = VrApp.getBean(CorePlugin.class);
+            return core.findAppConfig().getMainPeriod().getId();
+        }
+        return Integer.parseInt(p);
     }
 
     public boolean containsFilter(String s) {
@@ -53,34 +70,27 @@ public class GlobalStatCtrl {
         return Arrays.asList(f).indexOf(s) >= 0;
     }
 
-    public CourseFilter getCourseFilter(){
-        CourseFilter filter = new CourseFilter();
-        boolean nolabel=false;
-        for (String rf : getModel().getRefreshFilter()) {
-            if(rf.equals("intents")){
-                filter.setIncludeIntents(true);
-            }else if(rf.startsWith("label:")){
-                Set<String> labels = filter.getLabels();
-                if(labels==null){
-                    labels=new HashSet<>();
-                    filter.setLabels(labels);
-                }
-                labels.add(rf.substring(rf.indexOf(":")+1));
-            }else if(rf.startsWith("AcademicProgramType:")){
-                Set<Integer> types = filter.getProgramTypes();
-                if(types==null){
-                    types=new HashSet<>();
-                    filter.setProgramTypes(types);
-                }
-                types.add(Integer.parseInt(rf.substring(rf.indexOf(":") + 1)));
-            }else if(rf.equals("nolabel")){
-                nolabel=true;
-            }
+    public void onChangePeriod() {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        List<SelectItem> refreshableFilers = new ArrayList<>();
+        refreshableFilers.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
+        for (AcademicProgramType pt : a.findProgramTypes()) {
+            refreshableFilers.add(FacesUtils.createSelectItem("AcademicProgramType:" + pt.getId(), pt.getName(), "vr-checkbox"));
         }
-        if(nolabel){
-            filter.setLabels(new HashSet<String>());
+        int periodId = getPeriodId();
+        for (String label : a.findCoursePlanLabels(periodId)) {
+            refreshableFilers.add(FacesUtils.createSelectItem("label:" + label, label, "vr-checkbox"));
+            refreshableFilers.add(FacesUtils.createSelectItem("label:!" + label, "!" + label, "vr-checkbox"));
         }
-        return filter;
+        getModel().setRefreshFilterItems(refreshableFilers);
+        onRefresh();
+    }
+
+    public CourseFilter getCourseFilter() {
+        HashSet<String> labels = new HashSet<>(Arrays.asList(getModel().getRefreshFilter()));
+        CourseFilter c = CourseFilter.build(labels);
+        getModel().setRefreshFilter(labels.toArray(new String[labels.size()]));
+        return c;
     }
 
     public void onRefresh() {
@@ -116,8 +126,18 @@ public class GlobalStatCtrl {
 
     @OnPageLoad
     public void onRefresh(String cmd) {
-        onRefresh();
-
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        List<AppPeriod> navigatablePeriods = core.findNavigatablePeriods();
+        AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
+        getModel().setSelectedPeriod(null);
+        getModel().getPeriods().clear();
+        for (AppPeriod p : navigatablePeriods) {
+            getModel().getPeriods().add(new SelectItem(String.valueOf(p.getId()), p.getName()));
+            if (mainPeriod != null && p.getId() == mainPeriod.getId()) {
+                getModel().setSelectedPeriod(String.valueOf(p.getId()));
+            }
+        }
+        onChangePeriod();
     }
 
     public void onFiltersChanged() {
@@ -130,6 +150,7 @@ public class GlobalStatCtrl {
 
     public class Model {
 
+        List<SelectItem> refreshFilterItems;
         PieChartModel chart1;
         PieChartModel chart2;
         GlobalStat stat = new GlobalStat();
@@ -137,6 +158,8 @@ public class GlobalStatCtrl {
         String[] defaultFilters = {"situation", "degree", "valueWeek", "extraWeek", "C", "TD", "TP", "PM"};
         String[] filters = defaultFilters;
         String[] refreshFilter = {};
+        List<SelectItem> periods = new ArrayList<>();
+        String selectedPeriod = null;
 
         public GlobalStat getStat() {
             return stat;
@@ -187,6 +210,28 @@ public class GlobalStatCtrl {
             this.chart2 = chart2;
         }
 
+        public List<SelectItem> getRefreshFilterItems() {
+            return refreshFilterItems;
+        }
 
+        public void setRefreshFilterItems(List<SelectItem> refreshFilterItems) {
+            this.refreshFilterItems = refreshFilterItems;
+        }
+
+        public List<SelectItem> getPeriods() {
+            return periods;
+        }
+
+        public void setPeriods(List<SelectItem> periods) {
+            this.periods = periods;
+        }
+
+        public String getSelectedPeriod() {
+            return selectedPeriod;
+        }
+
+        public void setSelectedPeriod(String selectedPeriod) {
+            this.selectedPeriod = selectedPeriod;
+        }
     }
 }

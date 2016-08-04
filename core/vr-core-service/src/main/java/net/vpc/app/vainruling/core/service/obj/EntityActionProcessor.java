@@ -6,13 +6,13 @@
 package net.vpc.app.vainruling.core.service.obj;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public interface EntityActionProcessor {
 
-    public ActionInfo getInfo();
+    ActionInfo getInfo();
 
-    public <T> T invoke(Class entityType, Object obj, Object[] args);
+    <T> T invoke(Class entityType, Object obj, Object[] args);
 
-    public boolean isEnabled(Class entityType, Object obj);
+    boolean isEnabled(Class entityType, Object obj);
 }

@@ -7,13 +7,12 @@ package net.vpc.app.vainruling.plugins.academic.perfeval.service.model;
 
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.RelationshipType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity
 @Path("/Education/Evaluation")

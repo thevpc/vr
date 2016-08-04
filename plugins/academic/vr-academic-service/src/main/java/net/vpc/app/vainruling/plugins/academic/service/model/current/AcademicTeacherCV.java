@@ -8,11 +8,10 @@ package net.vpc.app.vainruling.plugins.academic.service.model.current;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.AccessLevel;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity
 @Path("Education")
@@ -34,27 +33,27 @@ public class AcademicTeacherCV {
 
     @Field(max = "max")
     @Properties(
-            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.RICHTEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA))
     private String aboutText;
 
     @Field(max = "max")
     @Properties(
-            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.RICHTEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA))
     private String teachingText;
 
     @Field(max = "max")
     @Properties(
-            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.RICHTEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA))
     private String researchText;
 
     @Field(max = "max")
     @Properties(
-            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.RICHTEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA))
     private String educationText;
 
     @Field(max = "max")
     @Properties(
-            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.RICHTEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA))
     private String projectsText;
 
     private String extraImage;
@@ -62,7 +61,7 @@ public class AcademicTeacherCV {
     private String extraTitle;
 
     @Properties(
-            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.RICHTEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA))
     @Field(max = "max")
     private String extraText;
 
@@ -72,8 +71,8 @@ public class AcademicTeacherCV {
     private String socialURL3;
     private String socialURL4;
     private String rssURL;
-    @Field(defaultValue = "0", modifiers = {UserFieldModifier.SUMMARY}, persistAccessLevel = AccessLevel.PROTECTED, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PUBLIC
-    )
+    @Summary
+    @Field(persistAccessLevel = AccessLevel.PROTECTED, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PUBLIC)
     private long viewsCounter;
 
     public AcademicTeacher getTeacher() {

@@ -19,7 +19,7 @@ import net.vpc.upa.types.DataType;
 import java.util.Map;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class FieldPropertyViewInfo {
 

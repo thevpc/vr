@@ -7,11 +7,10 @@ package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.RelationshipType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity
 @Path("Admin/Security")
@@ -21,7 +20,7 @@ public class AppProfileRight {
     @Sequence
     private int id;
 
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private AppRightName right;
 
     @Summary

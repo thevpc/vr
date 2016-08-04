@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.logging.Level;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Service
 public class TraceService {
@@ -377,7 +377,7 @@ public class TraceService {
                 List<AppTrace> all = pu.createQuery("Select u from AppTrace u where u.time<:dte")
                         .setParameter("dte", instance.getTime())
                         .setLazyListLoadingEnabled(true)
-                        .getEntityList();
+                        .getResultList();
                 int currRows = -1;
                 String rootFolder = VrApp.getBean(CorePlugin.class).getNativeFileSystemPath();
                 String rootLog = (StringUtils.isEmpty(rootFolder) ? System.getProperty("user.home") : rootFolder) + "/logs";

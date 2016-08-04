@@ -12,7 +12,7 @@ import javax.faces.convert.FacesConverter;
 import java.text.DecimalFormat;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @FacesConverter("fileSizeConverter")
 public class FileSizeConverter implements Converter {

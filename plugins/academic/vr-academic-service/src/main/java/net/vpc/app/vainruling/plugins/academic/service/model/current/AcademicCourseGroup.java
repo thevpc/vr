@@ -5,11 +5,11 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.RelationshipType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
@@ -17,10 +17,10 @@ import java.sql.Timestamp;
 /**
  * Unite enseignement
  *
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
-@Path("Education/Config")
+@Path("Education/StudyPlan")
 public class AcademicCourseGroup {
 
     @Id
@@ -29,15 +29,20 @@ public class AcademicCourseGroup {
     private int id;
     private String name;
 
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     @Formula(
-            value = "concat((select a.name from AcademicCourseLevel a where a.id=this.courseLevelId),'-',Coalesce(this.name,'X'))",
+            value = "Concat(Coalesce((select a.name from AcademicClass a where a.id=this.academicClassId),'?'),'-',Coalesce(this.name,'X'))",
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String fullName;
+    private String description;
+    @Summary
+    private AppPeriod period;
 
     @ManyToOne(type = RelationshipType.COMPOSITION)
-    private AcademicCourseLevel courseLevel;
+    private AcademicClass academicClass;
+
+    private double credits;
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
@@ -70,12 +75,12 @@ public class AcademicCourseGroup {
         this.name = name;
     }
 
-    public AcademicCourseLevel getCourseLevel() {
-        return courseLevel;
+    public AcademicClass getAcademicClass() {
+        return academicClass;
     }
 
-    public void setCourseLevel(AcademicCourseLevel courseLevel) {
-        this.courseLevel = courseLevel;
+    public void setAcademicClass(AcademicClass academicClass) {
+        this.academicClass = academicClass;
     }
 
     @Override
@@ -107,4 +112,27 @@ public class AcademicCourseGroup {
         this.updateDate = updateDate;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public AppPeriod getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(AppPeriod period) {
+        this.period = period;
+    }
+
+    public double getCredits() {
+        return credits;
+    }
+
+    public void setCredits(double credits) {
+        this.credits = credits;
+    }
 }

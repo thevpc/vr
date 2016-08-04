@@ -94,7 +94,7 @@
 
             callback();
         });
-    }
+    };
 
     $.plot.image.load = function (urls, callback) {
         var missing = urls.length, loaded = {};

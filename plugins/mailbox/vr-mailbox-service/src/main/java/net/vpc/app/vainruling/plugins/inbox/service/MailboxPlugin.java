@@ -12,10 +12,12 @@ import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
 import net.vpc.app.vainruling.core.service.obj.AppEntityExtendedPropertiesProvider;
-import net.vpc.app.vainruling.plugins.inbox.service.model.*;
+import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
+import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
+import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
+import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxSent;
 import net.vpc.common.gomail.*;
-import net.vpc.common.gomail.dataource.StringsGoMailDataSource;
-import net.vpc.common.gomail.modules.GoMailAgent;
+import net.vpc.common.gomail.datasource.StringsGoMailDataSource;
 import net.vpc.common.gomail.modules.GoMailModuleProcessor;
 import net.vpc.common.gomail.modules.GoMailModuleSerializer;
 import net.vpc.common.streams.InputStreamSource;
@@ -38,7 +40,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @AppPlugin(version = "1.6")
 @UpaAware
@@ -52,22 +54,22 @@ public class MailboxPlugin {
     public static final String HEADER_CATEGORY = "header.X-App-Category";
     public static final String SEND_WELCOME_MAIL_QUEUE = "sendWelcomeMailQueue";
 
-    public GoMailFactory gomail = new GoMailFactory();
+    public GoMailFactory gomailFactory = DefaultGoMailFactory.INSTANCE;
     //    public GoMailModuleProcessor externalMailProcessor = new GoMailModuleProcessor(new VrExternalMailAgent());
     public GoMailModuleSerializer serializer = new GoMailModuleSerializer();
     GoMailListener notifPusher = new GoMailListener() {
         @Override
-        public void onBeforeSend(GoMail mail) {
+        public void onBeforeSend(GoMailMessage mail) {
 
         }
 
         @Override
-        public void onAfterSend(GoMail mail) {
+        public void onAfterSend(GoMailMessage mail) {
             VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_WELCOME_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject(), null, Level.INFO));
         }
 
         @Override
-        public void onSendError(GoMail mail, Throwable exc) {
+        public void onSendError(GoMailMessage mail, Throwable exc) {
             VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_WELCOME_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject() + " : " + exc, null, Level.SEVERE));
         }
     };
@@ -179,11 +181,11 @@ public class MailboxPlugin {
                         if (userId >= 0) {
                             list = UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + " u from MailboxReceived u where u.ownerId=:userId and u.deleted=false and u.archived=false " + unreadOnlyQL + " order by u.sendTime desc")
-                                    .setParameter("userId", userId).getEntityList();
+                                    .setParameter("userId", userId).getResultList();
                         } else {
                             list = UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + " u from MailboxReceived u where and u.deleted=false and u.archived=false " + unreadOnlyQL + " order by u.sendTime desc")
-                                    .getEntityList();
+                                    .getResultList();
                         }
                         break;
                     }
@@ -191,11 +193,11 @@ public class MailboxPlugin {
                         if (userId >= 0) {
                             list = UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + "  u from MailboxReceived u where u.ownerId=:userId and u.deleted=true " + unreadOnlyQL + " order by u.sendTime desc")
-                                    .setParameter("userId", userId).getEntityList();
+                                    .setParameter("userId", userId).getResultList();
                         } else {
                             list = UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + "  u from MailboxReceived u where u.deleted=true " + unreadOnlyQL + " order by u.sendTime desc")
-                                    .setParameter("userId", userId).getEntityList();
+                                    .setParameter("userId", userId).getResultList();
                         }
                         break;
                     }
@@ -203,11 +205,11 @@ public class MailboxPlugin {
                         if (userId >= 0) {
                             list = UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + " u from MailboxReceived u where u.ownerId=:userId and u.deleted=false and u.archived=true " + unreadOnlyQL + " order by u.sendTime desc")
-                                    .setParameter("userId", userId).getEntityList();
+                                    .setParameter("userId", userId).getResultList();
                         } else {
                             list = UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + " u from MailboxReceived u where u.deleted=false and u.archived=true " + unreadOnlyQL + " order by u.sendTime desc")
-                                    .getEntityList();
+                                    .getResultList();
                         }
                         break;
                     }
@@ -235,33 +237,33 @@ public class MailboxPlugin {
                         if (userId >= 0) {
                             return UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + " u from MailboxSent u where u.senderId=:userId and u.deleted=false and u.archived=false " + unreadOnlyQL + " order by u.sendTime desc")
-                                    .setParameter("userId", userId).getEntityList();
+                                    .setParameter("userId", userId).getResultList();
                         } else {
                             return UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + " u from MailboxSent u where and u.deleted=false and u.archived=false " + unreadOnlyQL + " order by u.sendTime desc")
-                                    .getEntityList();
+                                    .getResultList();
                         }
                     }
                     case DELETED: {
                         if (userId >= 0) {
                             return UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + "  u from MailboxSent u where u.senderId=:userId and u.deleted=true " + unreadOnlyQL + " order by u.sendTime desc")
-                                    .setParameter("userId", userId).getEntityList();
+                                    .setParameter("userId", userId).getResultList();
                         } else {
                             return UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + "  u from MailboxSent u where u.deleted=true " + unreadOnlyQL + " order by u.sendTime desc")
-                                    .setParameter("userId", userId).getEntityList();
+                                    .setParameter("userId", userId).getResultList();
                         }
                     }
                     case ARCHIVED: {
                         if (userId >= 0) {
                             return UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + " u from MailboxSent u where u.senderId=:userId and u.deleted=false and u.archived=true " + unreadOnlyQL + " order by u.sendTime desc")
-                                    .setParameter("userId", userId).getEntityList();
+                                    .setParameter("userId", userId).getResultList();
                         } else {
                             return UPA.getPersistenceUnit()
                                     .createQuery("Select " + maxCountQL + " u from MailboxSent u where u.deleted=false and u.archived=true " + unreadOnlyQL + " order by u.sendTime desc")
-                                    .getEntityList();
+                                    .getResultList();
                         }
                     }
                 }
@@ -348,10 +350,10 @@ public class MailboxPlugin {
         return m;
     }
 
-    public void prepareRecipients(GoMail m, EmailDestinationType etype, String recipientProfiles, String filterExpression, boolean preferLogin) {
+    public void prepareRecipients(GoMail m, RecipientType etype, String recipientProfiles, String filterExpression, boolean preferLogin) {
         MailboxPlugin emailPlugin = VrApp.getBean(MailboxPlugin.class);
         if (etype == null) {
-            etype = EmailDestinationType.TOEACH;
+            etype = RecipientType.TOEACH;
         }
         switch (etype) {
             case TO: {
@@ -445,19 +447,18 @@ public class MailboxPlugin {
     public void sendLocalMail(GoMail email, final boolean persistOutbox, final boolean sendExternal) throws IOException {
         sendMailByAgent(email, null, new GoMailListener() {
             @Override
-            public void onBeforeSend(GoMail mail) {
+            public void onBeforeSend(GoMailMessage mail) {
             }
 
             @Override
-            public void onAfterSend(GoMail m) {
+            public void onAfterSend(GoMailMessage m) {
                 if (sendExternal) {
                     try {
-                        GoMail m2 = m.copy();
+                        GoMailMessage m2 = m.copy();
                         m2.setTo(createUsersEmails(m.to()));
                         m2.setCc(createUsersEmails(m.cc()));
                         m2.setBcc(createUsersEmails(m.bcc()));
-                        m2.setToEach(createUsersEmails(m.toeach()));
-                        sendExternalMail(m2, null, null);
+                        sendExternalMail(m2.toGoMail(), null, null);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -465,7 +466,7 @@ public class MailboxPlugin {
             }
 
             @Override
-            public void onSendError(GoMail mail, Throwable exc) {
+            public void onSendError(GoMailMessage mail, Throwable exc) {
 
             }
         }, new VrLocalMailAgent(email, persistOutbox));
@@ -557,15 +558,15 @@ public class MailboxPlugin {
     public void sendExternalMail(GoMail email, Properties roProperties, GoMailListener listener) throws IOException {
 //        email.setSimulate(true);
 
-        int count = gomail.createProcessor(new VrExternalMailAgent()).send(email, roProperties, listener);
+        int count = gomailFactory.createProcessor(new VrExternalMailAgent(gomailFactory), null).sendMessage(email, roProperties, listener);
         if (count <= 0) {
             throw new IllegalArgumentException("No valid Address");
         }
     }
 
     public void sendMailByAgent(GoMail email, Properties roProperties, GoMailListener listener, GoMailAgent agent) throws IOException {
-        GoMailModuleProcessor _processor = gomail.createProcessor(agent);
-        int count = _processor.send(email, roProperties, listener);
+        GoMailModuleProcessor _processor = gomailFactory.createProcessor(agent, null);
+        int count = _processor.sendMessage(email, roProperties, listener);
         if (count <= 0) {
             throw new IllegalArgumentException("No valid Address");
         }
@@ -744,7 +745,7 @@ public class MailboxPlugin {
         m.to().add("${" + mailAddr + "}");
     }
 
-    public void prepareBody(String subject, String content, boolean richText,GoMail m, Integer userId, MailboxMessageFormat mailTemplate) {
+    public void prepareBody(String subject, String content, boolean richText, GoMail m, Integer userId, MailboxMessageFormat mailTemplate) {
         AppUser u = null;
         if (userId != null) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);

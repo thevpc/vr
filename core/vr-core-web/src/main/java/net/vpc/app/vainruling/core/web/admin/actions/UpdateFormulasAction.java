@@ -15,10 +15,10 @@ import net.vpc.upa.UPA;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AppConfig.class,
-        actionLabel = "MAJ Formules", actionStyle = "fa-calculator",
+        actionLabel = "u.forml", actionStyle = "fa-calculator",
         dialog = false
 )
 public class UpdateFormulasAction implements ActionDialog {

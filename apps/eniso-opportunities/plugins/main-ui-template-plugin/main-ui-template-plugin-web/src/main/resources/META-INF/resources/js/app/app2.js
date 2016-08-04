@@ -222,7 +222,7 @@ angular.module('app').controller('AppCtrl', ['$scope', function ($scope) {
     $scope.urlFormData = {};
     $scope.indexx = 1;
     $scope.doMyClick = function () {
-        alert("dddd")
+        alert("dddd");
         $scope.indexx++;
         $scope.stdFormTemplate.fieldset.fields['llll' + $scope.indexx] = ((
         {

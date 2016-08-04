@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @AppPlugin(version = "1.0")
 @UpaAware
@@ -39,14 +39,14 @@ public class TaskPlugin {
     public List<AppProfile> findTodoListsProfiles(int todoListId) {
         return UPA.getPersistenceUnit().createQuery("select a.profile from TodoListProfile a where a.listId=:li")
                 .setParameter("li", todoListId)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<TodoList> findProfileTodoLists(int profileId) {
         return UPA.getPersistenceUnit()
                 .createQuery("select a.list from TodoListProfile a where a.profileId=:pi")
                 .setParameter("pi", profileId)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<TodoList> findTodoListsByResp(Integer user) {
@@ -192,7 +192,7 @@ public class TaskPlugin {
     public void removeTodo(int todoId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(Todo.class);
-        Todo t = (Todo) pu.findById(Todo.class, todoId);
+        Todo t = pu.findById(Todo.class, todoId);
         if (t != null) {
             if (!t.isDeleted()) {
                 UserSession session = VrApp.getContext().getBean(UserSession.class);
@@ -207,7 +207,7 @@ public class TaskPlugin {
 
     public void removeTodoList(int todoListId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        TodoList t = (TodoList) pu.findById(TodoList.class, todoListId);
+        TodoList t = pu.findById(TodoList.class, todoListId);
         if (t != null) {
             pu.remove(TodoList.class, RemoveOptions.forId(t.getId()));
 //            UserSession session = VRApp.getContext().getBean(UserSession.class);
@@ -220,7 +220,7 @@ public class TaskPlugin {
 
     public void removeTodoCategory(int todoCategoryId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        TodoCategory t = (TodoCategory) pu.findById(TodoCategory.class, todoCategoryId);
+        TodoCategory t = pu.findById(TodoCategory.class, todoCategoryId);
         if (t != null) {
             pu.remove(TodoCategory.class, RemoveOptions.forId(todoCategoryId));
         }
@@ -228,7 +228,7 @@ public class TaskPlugin {
 
     public void removeTodoStatus(int todoStatusId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        TodoStatus t = (TodoStatus) pu.findById(TodoStatus.class, todoStatusId);
+        TodoStatus t = pu.findById(TodoStatus.class, todoStatusId);
         if (t != null) {
             pu.remove(TodoStatus.class, RemoveOptions.forId(todoStatusId));
         }
@@ -236,7 +236,7 @@ public class TaskPlugin {
 
     public void archiveTodo(int todoId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        Todo t = (Todo) pu.findById(Todo.class, todoId);
+        Todo t = pu.findById(Todo.class, todoId);
         if (t != null) {
             UserSession session = VrApp.getContext().getBean(UserSession.class);
             t.setArchived(true);
@@ -311,7 +311,7 @@ public class TaskPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select a from TodoCategory a where a.listId=:u")
                 .setParameter("u", listId)
-                .getEntityList();
+                .getResultList();
 
     }
 
@@ -319,7 +319,7 @@ public class TaskPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select a from TodoStatus a where a.listId=:u")
                 .setParameter("u", listId)
-                .getEntityList();
+                .getResultList();
 
     }
 
@@ -349,7 +349,7 @@ public class TaskPlugin {
                 params.put("i", responsible);
             }
         }
-        return pu.createQuery(q.toString()).setParameters(params).getEntityList();
+        return pu.createQuery(q.toString()).setParameters(params).getResultList();
     }
 
     public List<Todo> findTodosByInitiator(Integer listId, Integer initiator, TodoStatusType status) {
@@ -377,7 +377,7 @@ public class TaskPlugin {
                 params.put("i", initiator);
             }
         }
-        return pu.createQuery(q.toString()).setParameters(params).getEntityList();
+        return pu.createQuery(q.toString()).setParameters(params).getResultList();
     }
 
     public TodoStatus findStartStatus(int listId) {
@@ -479,7 +479,7 @@ public class TaskPlugin {
             if (pu.createQueryBuilder(TodoCategory.class)
                     .byField("name", s.getName())
                     .byField("list", s.getList())
-                    .getEntity() == null) {
+                    .getFirstResultOrNull() == null) {
                 pu.persist(s);
             }
         }
@@ -491,7 +491,7 @@ public class TaskPlugin {
             if (pu.createQueryBuilder(TodoStatus.class)
                     .byField("name", s.getName())
                     .byField("list", s.getList())
-                    .getEntity() == null) {
+                    .getFirstResultOrNull() == null) {
                 pu.persist(s);
             }
         }
@@ -508,7 +508,7 @@ public class TaskPlugin {
             if (pu.createQueryBuilder(TodoCategory.class)
                     .byField("name", s.getName())
                     .byField("list", s.getList())
-                    .getEntity() == null) {
+                    .getFirstResultOrNull() == null) {
                 pu.persist(s);
             }
         }
@@ -520,7 +520,7 @@ public class TaskPlugin {
             if (pu.createQueryBuilder(TodoStatus.class)
                     .byField("name", s.getName())
                     .byField("list", s.getList())
-                    .getEntity() == null) {
+                    .getFirstResultOrNull() == null) {
                 pu.persist(s);
             }
         }
@@ -530,13 +530,13 @@ public class TaskPlugin {
     public void installDemoService() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         final AppUser admin = core.findUser(CorePlugin.USER_ADMIN);
-        TodoList laboActionsList = (TodoList) pu.findByMainField(TodoList.class, TodoList.LABO_ACTION);
-        TodoList laboTicketsList = (TodoList) pu.findByMainField(TodoList.class, TodoList.LABO_TICKET);
+        TodoList laboActionsList = pu.findByMainField(TodoList.class, TodoList.LABO_ACTION);
+        TodoList laboTicketsList = pu.findByMainField(TodoList.class, TodoList.LABO_TICKET);
 
-        List<TodoCategory> laboActionsCategories = pu.createQueryBuilder(TodoCategory.class).byField("list", laboActionsList).getEntityList();
-        List<TodoStatus> laboActionsStatuses = pu.createQueryBuilder(TodoStatus.class).byField("list", laboActionsList).getEntityList();
-        List<TodoCategory> laboTicketsCategories = pu.createQueryBuilder(TodoCategory.class).byField("list", laboTicketsList).getEntityList();
-        List<TodoStatus> laboTicketsStatuses = pu.createQueryBuilder(TodoStatus.class).byField("list", laboTicketsList).getEntityList();
+        List<TodoCategory> laboActionsCategories = pu.createQueryBuilder(TodoCategory.class).byField("list", laboActionsList).getResultList();
+        List<TodoStatus> laboActionsStatuses = pu.createQueryBuilder(TodoStatus.class).byField("list", laboActionsList).getResultList();
+        List<TodoCategory> laboTicketsCategories = pu.createQueryBuilder(TodoCategory.class).byField("list", laboTicketsList).getResultList();
+        List<TodoStatus> laboTicketsStatuses = pu.createQueryBuilder(TodoStatus.class).byField("list", laboTicketsList).getResultList();
         final Timestamp now = new Timestamp(System.currentTimeMillis());
         for (int i = 0; i < 20; i++) {
             Todo d = new Todo();
@@ -573,7 +573,7 @@ public class TaskPlugin {
             if (pu.createQueryBuilder(Todo.class)
                     .byField("name", d.getName())
                     .byField("list", d.getList())
-                    .getEntity() == null) {
+                    .getFirstResultOrNull() == null) {
                 pu.persist(d);
             }
         }
@@ -610,7 +610,7 @@ public class TaskPlugin {
             if (pu.createQueryBuilder(Todo.class)
                     .byField("name", d.getName())
                     .byField("list", d.getList())
-                    .getEntity() == null) {
+                    .getFirstResultOrNull() == null) {
                 pu.persist(d);
             }
         }

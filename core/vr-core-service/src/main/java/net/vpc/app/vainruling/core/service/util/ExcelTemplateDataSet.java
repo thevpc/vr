@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.service.util;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public interface ExcelTemplateDataSet {
     String getProperty(String name);

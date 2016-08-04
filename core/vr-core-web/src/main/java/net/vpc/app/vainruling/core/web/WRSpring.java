@@ -14,7 +14,7 @@
 //
 ///**
 // *
-// * @author vpc
+// * @author taha.bensalah@gmail.com
 // */
 //@Component
 //public class WRSpring implements ApplicationContextAware {

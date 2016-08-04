@@ -8,13 +8,12 @@ package net.vpc.app.vainruling.plugins.academic.service.model.history;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.util.Objects;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity
 @Path("Education/History")
@@ -114,10 +113,7 @@ public class AcademicHistTeacherAnnualLoad {
         if (!Objects.equals(this.situation, other.situation)) {
             return false;
         }
-        if (!Objects.equals(this.academicYear, other.academicYear)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.academicYear, other.academicYear);
     }
 
 

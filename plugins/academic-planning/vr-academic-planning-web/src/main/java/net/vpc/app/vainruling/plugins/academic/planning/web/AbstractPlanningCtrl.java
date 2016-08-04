@@ -5,6 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.academic.planning.web;
 
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.web.VrColorTable;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningHour;
 import net.vpc.common.strings.StringUtils;
@@ -15,29 +17,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class AbstractPlanningCtrl {
 
-    public static final String[] colorsCourse = new String[]{
-            "#DDE6CB",
-            "#C0F7BA",
-            "aliceblue",
-            "#E6E7F9",
-            "#EAD3F9",
-            "#FBFFBE",
-            "bisque",
-            "beige",
-            "#FDD5E0"
-    };
-    public static final String[] colorsClass = new String[]{
-            "mediumseagreen",
-            "#3FB3B3",
-            "#B563FF",
-            "darkorange",
-            "darksalmon",
-            "deeppink"
-    };
+
 
     protected Model model;
 
@@ -82,7 +66,8 @@ public class AbstractPlanningCtrl {
         if (value == null || value.trim().isEmpty()) {
             return "";
         }
-        return colorsClass[Math.abs(getModel().getClassNames().indexOf(value.trim())) % colorsClass.length];
+        VrColorTable table = VrApp.getBean(VrColorTable.class);
+        return table.getFgColor(getModel().getClassNames().indexOf(value.trim()));
     }
 
     public String resolveCssStyleForCourse(String value) {
@@ -97,8 +82,8 @@ public class AbstractPlanningCtrl {
         if (value == null || value.trim().isEmpty()) {
             return "";
         }
-        return colorsCourse[Math.abs(getModel().getCourseNames().indexOf(value.trim())) % colorsCourse.length];
-
+        VrColorTable table = VrApp.getBean(VrColorTable.class);
+        return table.getBgColor(getModel().getCourseNames().indexOf(value.trim()));
     }
 
     public static class Model {

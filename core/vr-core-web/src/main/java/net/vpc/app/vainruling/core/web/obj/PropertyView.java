@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class PropertyView implements Serializable {
 
@@ -42,6 +42,7 @@ public class PropertyView implements Serializable {
     private boolean required;
     private String componentId;
     private String separatorText;
+    private String componentState = "Default";
     private boolean disabled = false;
     private String ctrlType;
     private int colspan = 1;
@@ -406,5 +407,13 @@ public class PropertyView implements Serializable {
 
     public void refresh() {
 
+    }
+
+    public String getComponentState() {
+        return componentState;
+    }
+
+    public void setComponentState(String componentState) {
+        this.componentState = componentState;
     }
 }

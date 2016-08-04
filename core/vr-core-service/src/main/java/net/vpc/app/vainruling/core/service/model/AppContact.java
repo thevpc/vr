@@ -8,13 +8,12 @@ package net.vpc.app.vainruling.core.service.model;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.FormulaType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "fullName")
 @Path("Contact")
@@ -34,7 +33,7 @@ public class AppContact {
     private String fullName;
     private String firstName;
     private String lastName;
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     @Formula(value = "concat(Coalesce(this.fullName,''),' - ',Coalesce(this.positionSuffix,'?'))")
     private String fullTitle;
 
@@ -74,9 +73,9 @@ public class AppContact {
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
 
-    @Field(defaultValue = "true", modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private boolean enabled;
-    @Field(defaultValue = "false", modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private boolean deleted;
     private String deletedBy;
     private Timestamp deletedOn;

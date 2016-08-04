@@ -5,10 +5,16 @@
  */
 package net.vpc.app.vainruling.core.web.util;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
+import net.vpc.app.vainruling.core.web.themes.VrTheme;
+import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.upa.Action;
+import net.vpc.upa.UPA;
 import org.springframework.stereotype.Controller;
 
 import javax.faces.bean.ManagedBean;
@@ -22,13 +28,68 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @ManagedBean
 @Controller
 public class JsfCtrl {
 
     public JsfCtrl() {
+    }
+
+    public VrTheme getAppTheme() {
+        CorePlugin c = VrApp.getBean(CorePlugin.class);
+        String oldValue = UPA.getPersistenceUnit().invokePrivileged(new Action<String>() {
+            @Override
+            public String run() {
+                CorePlugin c = VrApp.getBean(CorePlugin.class);
+                return (String) c.getOrCreateAppPropertyValue("System.DefaultTheme", null, "");
+            }
+        });
+        if (StringUtils.isEmpty(oldValue)) {
+            oldValue = c.getAppVersion().getDefaultTheme();
+        }
+        if (StringUtils.isEmpty(oldValue)) {
+            oldValue = "default";
+        }
+        VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
+        VrTheme theme = tfactory.getTheme(oldValue);
+        if (theme != null) {
+            return theme;
+        }
+        throw new IllegalArgumentException("Invalid Theme");
+    }
+
+    public VrTheme getUserTheme(String login) {
+        CorePlugin c = VrApp.getBean(CorePlugin.class);
+        String oldValue = (String) c.getAppPropertyValue("System.DefaultTheme", login);
+        if (StringUtils.isEmpty(oldValue)) {
+            oldValue = getAppTheme().getId();
+        }
+        if (StringUtils.isEmpty(oldValue)) {
+            oldValue = "default";
+        }
+        VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
+        VrTheme theme = tfactory.getTheme(oldValue);
+        if (theme != null) {
+            return theme;
+        }
+        throw new IllegalArgumentException("Invalid Theme");
+    }
+
+    public VrTheme getTheme() {
+        UserSession s = UserSession.getCurrentSession();
+        if (s != null) {
+            VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
+            VrTheme theme = tfactory.getTheme(s.getTheme());
+            if (theme != null) {
+                return theme;
+            }
+            if (s.getUser() != null) {
+                return getUserTheme(s.getUser().getLogin());
+            }
+        }
+        return getAppTheme();
     }
 
     public <T> List<List<T>> groupListBy(int groupSize, List<T> anyList) {
@@ -56,10 +117,7 @@ public class JsfCtrl {
         if (StringUtils.isEmpty(path)) {
             return false;
         }
-        if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("ftp://")) {
-            return false;
-        }
-        return true;
+        return !(path.startsWith("http://") || path.startsWith("https://") || path.startsWith("ftp://"));
     }
 
     public String url(String path) {
@@ -257,7 +315,11 @@ public class JsfCtrl {
     }
 
     public String pureHtml(String value) {
-        return VrHelper.extratPureHTML(value);
+        return VrHelper.extractPureHTML(value);
+    }
+
+    public String wikiToHtml(String value) {
+        return VrWikiParser.convertToHtml(value, "Wiki");
     }
 
     public String getFacesContextPrefix() {
@@ -271,6 +333,19 @@ public class JsfCtrl {
     public String getContext() {
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         return req.getContextPath();
+    }
+
+    public String getThemeContext() {
+        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String contextPath = req.getContextPath();
+        return contextPath + "/themes/" + getTheme().getId();
+//        return contextPath+"/META-INF/resources/themes/"+getTheme().getId();
+    }
+
+    public String getThemePath() {
+//        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+//        String contextPath = req.getContextPath();
+        return "/themes/" + getTheme().getId();
     }
 
     public Locale getLocale(String preferred) {

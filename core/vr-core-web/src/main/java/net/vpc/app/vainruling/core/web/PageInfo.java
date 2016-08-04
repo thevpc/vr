@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.core.web;
 import java.util.Objects;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class PageInfo {
     private String command;
@@ -55,10 +55,7 @@ public class PageInfo {
         if (!Objects.equals(this.command, other.command)) {
             return false;
         }
-        if (!Objects.equals(this.arguments, other.arguments)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.arguments, other.arguments);
     }
 
 }

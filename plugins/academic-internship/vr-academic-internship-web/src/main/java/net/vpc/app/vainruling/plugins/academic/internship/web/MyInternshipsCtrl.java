@@ -51,7 +51,7 @@ import java.util.logging.Logger;
 /**
  * internships for students
  *
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
@@ -60,7 +60,7 @@ import java.util.logging.Logger;
         title = "Mes Stages",
         menu = "/Education/Internship",
         securityKey = "Custom.Education.MyInternships",
-        url = "modules/academic/internship/myinternships"
+        url = "modules/academic/internship/my-internships"
 )
 @ManagedBean
 public class MyInternshipsCtrl {
@@ -183,62 +183,41 @@ public class MyInternshipsCtrl {
 
     public boolean isUpdatesDescr() {
         if (isStudent()) {
-            if (!getModel().getInternship().getInternshipStatus().isStudentUpdatesDescr()) {
-                return false;
-            }
-            return true;
+            return getModel().getInternship().getInternshipStatus().isStudentUpdatesDescr();
         }
         if (isTeacher()) {
-            if (!getModel().getInternship().getInternshipStatus().isBoardUpdatesDescr()) {
-                return false;
-            }
-            return true;
+            return getModel().getInternship().getInternshipStatus().isBoardUpdatesDescr();
         }
         return false;
     }
 
     public boolean isUpdatesSupervisors() {
         if (isStudent()) {
-            if (!getModel().getInternship().getInternshipStatus().isStudentUpdatesSupervisors()) {
-                return false;
-            }
-            return true;
+            return getModel().getInternship().getInternshipStatus().isStudentUpdatesSupervisors();
         }
         if (isTeacher()) {
-            if (!getModel().getInternship().getInternshipStatus().isBoardUpdatesSupervisors()) {
-                return false;
-            }
-            return true;
+            return getModel().getInternship().getInternshipStatus().isBoardUpdatesSupervisors();
         }
         return false;
     }
 
     public boolean isUpdatesReport1() {
         if (isStudent()) {
-            if (!getModel().getInternship().getInternshipStatus().isStudentUpdatesReport1()) {
-                return false;
-            }
-            return true;
+            return getModel().getInternship().getInternshipStatus().isStudentUpdatesReport1();
         }
         return false;
     }
 
     public boolean isUpdatesReport2() {
         if (isStudent()) {
-            if (!getModel().getInternship().getInternshipStatus().isStudentUpdatesReport2()) {
-                return false;
-            }
-            return true;
+            return getModel().getInternship().getInternshipStatus().isStudentUpdatesReport2();
         }
         return false;
     }
 
     public boolean isUpdatesReport3() {
         if (isStudent()) {
-            if (!getModel().getInternship().getInternshipStatus().isStudentUpdatesReport3()) {
-                return false;
-            }
-            return true;
+            return getModel().getInternship().getInternshipStatus().isStudentUpdatesReport3();
         }
         return false;
     }
@@ -432,7 +411,7 @@ public class MyInternshipsCtrl {
                     String report = getModel().getRequestUploadType();
                     CorePlugin fs = VrApp.getBean(CorePlugin.class);
                     String login = VrApp.getBean(UserSession.class).getUser().getLogin();
-                    String tempPath = CorePlugin.PATH_TEMP+"/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+                    String tempPath = CorePlugin.PATH_TEMP + "/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
                             + "-" + login;
                     String p = fs.getNativeFileSystemPath() + tempPath;
                     new File(p).mkdirs();

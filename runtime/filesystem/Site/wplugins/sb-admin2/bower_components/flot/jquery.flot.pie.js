@@ -322,7 +322,7 @@
                 if (options.series.pie.tilt <= 0.8) {
                     drawShadow();
                 }
-            } while (!drawPie() && attempts < REDRAW_ATTEMPTS)
+            } while (!drawPie() && attempts < REDRAW_ATTEMPTS);
 
             if (attempts >= REDRAW_ATTEMPTS) {
                 clear();

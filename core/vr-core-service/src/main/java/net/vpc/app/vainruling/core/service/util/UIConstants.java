@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.service.util;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public final class UIConstants {
 
@@ -39,8 +39,10 @@ public final class UIConstants {
          */
         public static final String EMPTY_SUFFIX = "ui.form.empty.suffix";
     }
+
     public static final class Control {
 
+        public static final String WIKITEXTAREA = "wikitextarea";
         public static final String RICHTEXTAREA = "richtextarea";
         public static final String TEXTAREA = "textarea";
         public static final String TEXT = "text";

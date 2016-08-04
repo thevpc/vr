@@ -6,11 +6,10 @@
 package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.upa.RelationshipType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity
 @Path("Admin/Security")

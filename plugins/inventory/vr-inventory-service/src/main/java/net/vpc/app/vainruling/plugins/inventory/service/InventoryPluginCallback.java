@@ -20,7 +20,7 @@ import net.vpc.upa.config.OnPersist;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Callback
 public class InventoryPluginCallback {
@@ -30,7 +30,7 @@ public class InventoryPluginCallback {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
         if (entity.getName().equals("Inventory")) {
-            List<AppUser> inventoryUsers = pu.createQuery("Select o.user from AppUserProfileBinding o where o.profile.name=:name").setParameter("name", "inventory").getEntityList();
+            List<AppUser> inventoryUsers = pu.createQuery("Select o.user from AppUserProfileBinding o where o.profile.name=:name").setParameter("name", "inventory").getResultList();
             for (AppUser u : inventoryUsers) {
                 InventoryUser r = new InventoryUser();
                 r.setInventory((Inventory) event.getPersistedObject());
@@ -39,7 +39,7 @@ public class InventoryPluginCallback {
             }
         } else if (entity.getName().equals("InventoryUser")) {
             InventoryUser eu = (InventoryUser) event.getPersistedObject();
-            List<Equipment> equipments = pu.createQuery("Select o from Equipment o").getEntityList();
+            List<Equipment> equipments = pu.createQuery("Select o from Equipment o").getResultList();
             for (Equipment equipment : equipments) {
                 InventoryRow r = new InventoryRow();
                 r.setInventory(eu.getInventory());
@@ -52,10 +52,10 @@ public class InventoryPluginCallback {
 
         } else if (entity.getName().equals("Equipment")) {
             List<Inventory> currents = pu.createQuery("Select o from Inventory o where o.status <> :closed").setParameter("closed", InventoryStatus.CLOSED)
-                    .getEntityList();
+                    .getResultList();
             Equipment eq = (Equipment) event.getPersistedObject();
             for (Inventory in : currents) {
-                List<AppUser> inventoryUsers = pu.createQuery("Select o.user from InventoryUser o where o.inventory.id=:id").setParameter("id", in.getId()).getEntityList();
+                List<AppUser> inventoryUsers = pu.createQuery("Select o.user from InventoryUser o where o.inventory.id=:id").setParameter("id", in.getId()).getResultList();
                 for (AppUser u : inventoryUsers) {
                     InventoryRow r = new InventoryRow();
                     r.setInventory(in);

@@ -5,11 +5,10 @@
  */
 package net.vpc.app.vainruling.plugins.equipments.service.model;
 
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Equipment/Config")
@@ -19,7 +18,8 @@ public class EquipmentTypeProperty {
     @Sequence
     private int id;
     private String name;
-    @Field(max = "400", modifiers = UserFieldModifier.MAIN)
+    @Main
+    @Field(max = "400")
     private String value;
     @Summary
     private EquipmentType equipmentType;

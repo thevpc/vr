@@ -22,7 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Controller
 public class VrConfigureInstall {
@@ -51,7 +51,7 @@ public class VrConfigureInstall {
             return true;
         }
         try {
-            if(lockFile.getParentFile()!=null) {
+            if (lockFile.getParentFile() != null) {
                 lockFile.getParentFile().mkdirs();
             }
             lockFile.createNewFile();
@@ -66,7 +66,7 @@ public class VrConfigureInstall {
         QueryBuilder q = pu.createQueryBuilder(AppProperty.class);
         q.byField("propertyName", name);
         q.byExpression("(userId = null)");
-        List<AppProperty> props = q.getEntityList();
+        List<AppProperty> props = q.getResultList();
         if (props.isEmpty()) {
             return null;
         }

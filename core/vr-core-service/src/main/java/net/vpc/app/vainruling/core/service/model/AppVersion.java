@@ -5,25 +5,24 @@
  */
 package net.vpc.app.vainruling.core.service.model;
 
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 import net.vpc.upa.types.Timestamp;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "serviceName")
 @Path("Admin")
 public class AppVersion {
 
     @Id
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private String serviceName;
     @Summary
     private String serviceVersion;
     @Summary
     private boolean active;
-    @Field(defaultValue = "true", modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     private boolean coherent;
     private Timestamp installDate;
     private Timestamp updateDate;

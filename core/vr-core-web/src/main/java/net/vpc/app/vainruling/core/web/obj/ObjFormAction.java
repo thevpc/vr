@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.web.obj;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class ObjFormAction {
     //<p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Assign')}" icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton" ajax="true" actionListener="#{objCtrl.onAssignCurrent}" update="buttons :listForm :itemForm"/>

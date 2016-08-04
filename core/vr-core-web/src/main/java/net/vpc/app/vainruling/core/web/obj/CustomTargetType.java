@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.web.obj;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public enum CustomTargetType {
     FIELD, DATATYPE, PLATFORMTYPE

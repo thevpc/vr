@@ -10,11 +10,10 @@ import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 import net.vpc.upa.RelationshipType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity()
 @Path("Contact")
@@ -39,9 +38,12 @@ public class AcademicTeacherPeriod {
     private AcademicTeacherSituation situation;
     @Summary
     private AppDepartment department;
-    @Field(defaultValue = "true", modifiers = {UserFieldModifier.SUMMARY})
+    @Summary
     @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     private boolean enabled = true;
+
+    public AcademicTeacherPeriod() {
+    }
 
     public int getId() {
         return id;

@@ -18,7 +18,10 @@ import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDefFactory;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.vfs.*;
+import net.vpc.common.vfs.VFS;
+import net.vpc.common.vfs.VFile;
+import net.vpc.common.vfs.VFileType;
+import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.UPA;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
@@ -29,12 +32,14 @@ import javax.faces.bean.ManagedBean;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         title = "Documents", css = "fa-dashboard", url = "modules/files/documents"
@@ -48,7 +53,6 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
 
 
     private Model model = new Model();
-
 
 
     @Override
@@ -166,7 +170,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
 
     public StreamedContent getContent(VFileInfo i) {
         StreamedContent content = DocumentsUtils.getContent(i);
-        if(content!=null){
+        if (content != null) {
             onRefresh();
         }
         return content;
@@ -345,7 +349,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
                 Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
                 FacesUtils.addErrorMessage(event.getFile().getFileName() + " uploading failed.", ex.getMessage());
             }
-        }finally{
+        } finally {
             resetArea();
         }
         onRefresh();
@@ -354,7 +358,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
     public void handleUpdatedFile(FileUploadEvent event) {
         try {
             String p = VrApp.getBean(CorePlugin.class).getNativeFileSystemPath()
-                    + CorePlugin.PATH_TEMP+"/Files/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+                    + CorePlugin.PATH_TEMP + "/Files/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
                     + "-" + VrApp.getBean(UserSession.class).getUser().getLogin();
             new File(p).mkdirs();
             File f = new File(p, event.getFile().getFileName());

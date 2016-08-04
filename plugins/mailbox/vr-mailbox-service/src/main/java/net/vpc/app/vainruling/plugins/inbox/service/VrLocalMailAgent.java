@@ -11,10 +11,8 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxSent;
-import net.vpc.app.vainruling.plugins.inbox.service.model.RecipientType;
 import net.vpc.common.gomail.*;
-import net.vpc.common.gomail.modules.DefaultGoMailAgent;
-import net.vpc.common.gomail.modules.GoMailAgent;
+import net.vpc.common.gomail.util.GoMailUtils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import net.vpc.upa.types.DateTime;
@@ -29,7 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 class VrLocalMailAgent implements GoMailAgent {
 
@@ -44,7 +42,7 @@ class VrLocalMailAgent implements GoMailAgent {
     }
 
     @Override
-    public int sendExpandedMail(GoMail mail, Properties roProperties, GoMailContext expr) throws IOException {
+    public int sendMessage(GoMailMessage mail, Properties properties, GoMailContext expr) throws IOException {
         MailboxSent ms = null;
         if (fms == null && persistOutbox) {
             ms = new MailboxSent();
@@ -62,12 +60,12 @@ class VrLocalMailAgent implements GoMailAgent {
             PersistenceUnit pu = UPA.getPersistenceUnit();
             pu.persist(ms);
         }
-        int c = sendLocalExpandedMail(mail, fms);
+        int c = sendLocalMessage(mail, fms);
         total += c;
         return c;
     }
 
-    private int sendLocalExpandedMail(GoMail email, MailboxSent fms) {
+    private int sendLocalMessage(GoMailMessage email, MailboxSent fms) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         int count = 0;
@@ -164,7 +162,7 @@ class VrLocalMailAgent implements GoMailAgent {
                     //
                 } else {
                     GoMailBodyContent c = (GoMailBodyContent) b;
-                    if (DefaultGoMailAgent.isTextContentType(b.getContentType())) {
+                    if (GoMailUtils.isTextContentType(b.getContentType())) {
                         String s = new String(c.getByteArray());
                         out.println();
                         out.println(s);

@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * internships for teachers
  *
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
@@ -31,7 +31,7 @@ import java.util.List;
         title = "Tous les Stages",
         menu = "/Education/Internship",
         securityKey = "Custom.Education.AllInternships",
-        url = "modules/academic/internship/allinternships"
+        url = "modules/academic/internship/all-internships"
 )
 @ManagedBean
 public class AllInternshipBoardsCtrl extends MyInternshipBoardsCtrl {

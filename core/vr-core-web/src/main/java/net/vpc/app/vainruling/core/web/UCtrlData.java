@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.core.web;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class UCtrlData {
 

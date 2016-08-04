@@ -10,7 +10,6 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
-import net.vpc.common.streams.PathInfo;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VirtualFileSystem;
@@ -20,12 +19,15 @@ import org.springframework.stereotype.Component;
 
 import javax.faces.bean.ManagedBean;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Component
 @ManagedBean
@@ -48,7 +50,7 @@ public class DocumentsDialogCtrl {
         options.put("draggable", false);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/files/documentsdialog", options, null);
+        RequestContext.getCurrentInstance().openDialog("/modules/files/documents-dialog", options, null);
 
     }
 
@@ -160,7 +162,6 @@ public class DocumentsDialogCtrl {
     public void onRefresh() {
         getModel().setFiles(DocumentsUtils.loadFiles(getModel().getCurrent().getFile()));
     }
-
 
 
     public Model getModel() {

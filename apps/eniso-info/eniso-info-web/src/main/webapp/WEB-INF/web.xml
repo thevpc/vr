@@ -9,7 +9,7 @@
     </context-param>
     <context-param>
         <param-name>primefaces.THEME</param-name>
-        <param-value>#{userSession.componentsTheme}</param-value>
+        <param-value>#{jsfCtrl.theme.components}</param-value>
     </context-param>
 
     <context-param>
@@ -46,19 +46,23 @@
         </init-param>        -->
         <load-on-startup>1</load-on-startup>
     </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Jersey Servlet</servlet-name>
+        <url-pattern>/resources/*</url-pattern>
+    </servlet-mapping>
+
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    <servlet-mapping>
-        <servlet-name>Jersey Servlet</servlet-name>
-        <url-pattern>/resources/*</url-pattern>
-    </servlet-mapping>
     <context-param>
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
     </context-param>
+
+
     <listener>
         <listener-class>
             org.springframework.web.context.ContextLoaderListener
@@ -73,6 +77,26 @@
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>/r/*</url-pattern>
     </servlet-mapping>
+
+
+    <!-- Java Melody -->
+
+    <filter>
+        <filter-name>javamelody</filter-name>
+        <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
+        <async-supported>true</async-supported>
+    </filter>
+    <filter-mapping>
+        <filter-name>javamelody</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>ASYNC</dispatcher>
+    </filter-mapping>
+    <listener>
+        <listener-class>net.bull.javamelody.SessionListener</listener-class>
+    </listener>
+    <!-- End Java Melody -->
+
     <session-config>
         <session-timeout>
             30

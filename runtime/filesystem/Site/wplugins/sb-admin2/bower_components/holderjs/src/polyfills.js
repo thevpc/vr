@@ -265,6 +265,6 @@ if (!Object.prototype.hasOwnProperty) {
     Object.prototype.hasOwnProperty = function (prop) {
         var proto = this.__proto__ || this.constructor.prototype;
         return (prop in this) && (!(prop in proto) || proto[prop] !== this[prop]);
-    }
+    };
     /*jshint +W001, +W103 */
 }

@@ -51,6 +51,17 @@ public class TeacherGenerationHelper {
     private static PropertyPlaceholderHelper h = new PropertyPlaceholderHelper("${", "}");
     private static DecimalFormat FF = new DecimalFormat("0.0#");
 
+    private static String dformat(double d) {
+        return FF.format(d);
+    }
+
+    private static String iformat(double d) {
+        if (Math.floor(d) == d) {
+            return String.valueOf((int) d);
+        }
+        return FF.format(d);
+    }
+
     public void generate(TeacherGenerationOptions filter) throws IOException {
         generate(filter, null);
     }
@@ -263,7 +274,6 @@ public class TeacherGenerationHelper {
         log.log(Level.FINE, "generateCourseListLoadsFile in {0}", new Object[]{ch.stop()});
     }
 
-
     public Map<String, Object> preparePrintableTeacherLoadProperties(int periodId, int teacher, CourseFilter filter, StatCache cache) throws IOException {
         AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
         return preparePrintableTeacherLoadProperties(periodId, academicPlugin.evalTeacherStat(periodId, teacher, null, null, null, filter, cache), cache);
@@ -283,7 +293,7 @@ public class TeacherGenerationHelper {
         AcademicTeacherPeriod academicTeacherPeriod = academicPlugin.findAcademicTeacherPeriod(periodId, tal);
         AcademicTeacherDegree degree = academicTeacherPeriod.getDegree();
         p.put("teacher.degree", degree == null ? null : degree.getName());
-        p.put("teacher.situation", academicTeacherPeriod.getSituation()==null?null:academicTeacherPeriod.getSituation().getName());
+        p.put("teacher.situation", academicTeacherPeriod.getSituation() == null ? null : academicTeacherPeriod.getSituation().getName());
         for (TeacherSemesterStat semester : stat.getSemesters()) {
             AcademicSemester sem = semester.getSemester();
             int moduleIndex = 1;
@@ -453,17 +463,6 @@ public class TeacherGenerationHelper {
         return p2;
     }
 
-    private static String dformat(double d) {
-        return FF.format(d);
-    }
-
-    private static String iformat(double d) {
-        if (Math.floor(d) == d) {
-            return String.valueOf((int) d);
-        }
-        return FF.format(d);
-    }
-
     public void generateCourseListAssignmentsFile(int periodId, VFile template, VFile output) throws IOException {
         Chronometer ch = new Chronometer();
         Map<String, Object> p = new HashMap<String, Object>();
@@ -481,7 +480,7 @@ public class TeacherGenerationHelper {
             prefix = "row(" + (int) inc.inc("x") + ").";
             fillCourseAssignementPlanProps(c, p, prefix);
         }
-        String year = (String) core.findPeriodOrMain(periodId).getName();
+        String year = core.findPeriodOrMain(periodId).getName();
         String version = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01");
         p.put("version", version);
         p.put("year", year);
@@ -591,7 +590,7 @@ public class TeacherGenerationHelper {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
 //        try {
         AppPeriod mainPeriod = core.findPeriodOrMain(periodId);
-        String year = (String) mainPeriod.getName();
+        String year = mainPeriod.getName();
         String version = (!StringUtils.isEmpty(version0)) ? version0 : ((String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01"));
         String dir = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.configFolder", null, "/Config/Import/import/${year}");
         String namePattern = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.namePattern", null, "*-eniso-ii-${year}-${version}");

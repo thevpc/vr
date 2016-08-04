@@ -28,16 +28,16 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @ManagedBean
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
-        title = "Eval. Mes Enseignements",
+        title = "Stats Eval. Enseignements",
         menu = "/Education/Evaluation",
-        url = "modules/academic/perfeval/teacherstatfeedback",
+        url = "modules/academic/perfeval/teacher-stat-feedback",
         securityKey = "Custom.Academic.TeacherStatFeedback"
 )
 public class TeacherStatFeedbackCtrl {
@@ -62,10 +62,11 @@ public class TeacherStatFeedbackCtrl {
         getModel().setTeachersList(academicTeachers);
 
         ArrayList<SelectItem> filterTypesList = new ArrayList<>();
+        filterTypesList.add(new SelectItem("teacher", "Enseignant"));
         filterTypesList.add(new SelectItem("assignment", "Enseignement"));
         filterTypesList.add(new SelectItem("course", "Cours"));
         getModel().setFilterTypesList(filterTypesList);
-        getModel().setFilterType("assignment");
+        getModel().setFilterType("teacher");
         onReloadFeedbacks();
     }
 
@@ -100,6 +101,12 @@ public class TeacherStatFeedbackCtrl {
                 for (AcademicCourseType f : feedback.findAcademicCourseTypesWithFeedbacks(s.getId(), getModel().getValidatedFilter(), false, true)) {
                     theList.add(new SelectItem(filterType + ":" + String.valueOf(f.getId()), f.getName()));
                     ids.add(filterType + ":" + String.valueOf(f.getId()));
+                }
+            } else if ("teacher".equals(filterType)) {
+                for (AcademicCourseType f : feedback.findAcademicCourseTypesWithFeedbacks(s.getId(), getModel().getValidatedFilter(), false, true)) {
+                    //do nothing
+//                    theList.add(new SelectItem(filterType + ":" + String.valueOf(f.getId()), f.getName()));
+//                    ids.add(filterType + ":" + String.valueOf(f.getId()));
                 }
             }
             if (!ids.contains(getModel().getSelectedFilter())) {
@@ -171,6 +178,24 @@ public class TeacherStatFeedbackCtrl {
                     null,
                     teacherId,
                     courseTypeId,
+                    null,
+                    getModel().getValidatedFilter(),
+                    false
+            );
+        } else if ("teacher".equals(filterType)) {
+            int teacherId = -1;
+            if (getModel().isTeacherListEnabled()) {
+                String selectedTeacher = getModel().getSelectedTeacher();
+                if (!StringUtils.isEmpty(selectedTeacher)) {
+                    teacherId = Integer.parseInt(selectedTeacher);
+                }
+            } else {
+                teacherId = academic.getCurrentTeacher().getId();
+            }
+            return feedback.findFeedbacks(
+                    null,
+                    teacherId,
+                    null,
                     null,
                     getModel().getValidatedFilter(),
                     false

@@ -20,14 +20,14 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "CV Teacher",
-        url = "public/academic/addressbook/teacherCvContent.xhtml"
+        url = "public/academic/addressbook/teacher-cv-content.xhtml"
 )
 @ManagedBean
 public class TeacherCurriculumContentCtrl extends TeacherCurriculumCtrl {

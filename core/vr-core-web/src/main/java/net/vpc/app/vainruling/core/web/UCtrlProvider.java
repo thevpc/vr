@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.web;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public interface UCtrlProvider {
 

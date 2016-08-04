@@ -2,13 +2,16 @@
 <project version="4">
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
-    <list size="6">
+    <list size="9">
       <item index="0" class="java.lang.String" itemvalue="net.vpc.app.vainruling.core.service.Install" />
-      <item index="1" class="java.lang.String" itemvalue="net.vpc.upa.config.Callback" />
-      <item index="2" class="java.lang.String" itemvalue="net.vpc.upa.config.OnPersist" />
-      <item index="3" class="java.lang.String" itemvalue="net.vpc.upa.config.OnPreUpdateFormula" />
-      <item index="4" class="java.lang.String" itemvalue="net.vpc.upa.config.OnRemove" />
-      <item index="5" class="java.lang.String" itemvalue="net.vpc.upa.config.OnUpdate" />
+      <item index="1" class="java.lang.String" itemvalue="net.vpc.app.vainruling.core.web.OnPageLoad" />
+      <item index="2" class="java.lang.String" itemvalue="net.vpc.upa.config.Callback" />
+      <item index="3" class="java.lang.String" itemvalue="net.vpc.upa.config.OnCreate" />
+      <item index="4" class="java.lang.String" itemvalue="net.vpc.upa.config.OnPersist" />
+      <item index="5" class="java.lang.String" itemvalue="net.vpc.upa.config.OnPreInitialize" />
+      <item index="6" class="java.lang.String" itemvalue="net.vpc.upa.config.OnPreUpdateFormula" />
+      <item index="7" class="java.lang.String" itemvalue="net.vpc.upa.config.OnRemove" />
+      <item index="8" class="java.lang.String" itemvalue="net.vpc.upa.config.OnUpdate" />
     </list>
   </component>
   <component name="FrameworkDetectionExcludesConfiguration">
@@ -22,7 +25,6 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
-        <option value="$PROJECT_DIR$/vr-builder/pom.xml" />
         <option value="$PROJECT_DIR$/../../upa/pom.xml" />
         <option value="$PROJECT_DIR$/vr-app-service-test/pom.xml" />
         <option value="$PROJECT_DIR$/../../common/streams/pom.xml" />
@@ -38,6 +40,8 @@
         <option value="$PROJECT_DIR$/apps/wpm/plugins/wpm-payroll/wpm-payroll-web/pom.xml" />
         <option value="$PROJECT_DIR$/apps/wpm/plugins/wpm-payroll/wpm-payroll-service/pom.xml" />
         <option value="$PROJECT_DIR$/apps/wpm/pom.xml" />
+        <option value="$PROJECT_DIR$/../../toolbox/j2cs/pom.xml" />
+        <option value="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
@@ -54,6 +58,7 @@
         <option value="$PROJECT_DIR$/plugins/themes/eniso-info-theme-infusion/pom.xml" />
         <option value="$PROJECT_DIR$/vr-app-service/pom.xml" />
         <option value="$PROJECT_DIR$/vr-app-web/pom.xml" />
+        <option value="$PROJECT_DIR$/vr-builder/pom.xml" />
       </set>
     </option>
   </component>

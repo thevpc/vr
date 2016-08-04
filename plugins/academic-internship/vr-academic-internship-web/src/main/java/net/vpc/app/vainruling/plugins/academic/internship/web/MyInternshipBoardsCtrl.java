@@ -58,7 +58,7 @@ import java.util.logging.Logger;
 /**
  * internships for teachers
  *
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
@@ -67,7 +67,7 @@ import java.util.logging.Logger;
         title = "Mes Comités de Stage",
         menu = "/Education/Internship",
         securityKey = "Custom.Education.MyInternshipBoards",
-        url = "modules/academic/internship/myinternshipboards"
+        url = "modules/academic/internship/my-internship-boards"
 )
 @ManagedBean
 public class MyInternshipBoardsCtrl {
@@ -790,7 +790,7 @@ public class MyInternshipBoardsCtrl {
                 try {
                     String report = getModel().getRequestUploadType();
                     String login = VrApp.getBean(UserSession.class).getUser().getLogin();
-                    String tempPath = CorePlugin.PATH_TEMP+"/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+                    String tempPath = CorePlugin.PATH_TEMP + "/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
                             + "-" + login;
                     String p = core.getNativeFileSystemPath() + tempPath;
                     new File(p).mkdirs();

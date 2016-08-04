@@ -9,7 +9,7 @@ import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.FormulaType;
-import net.vpc.upa.UserFieldModifier;
+import net.vpc.upa.RelationshipType;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
@@ -17,10 +17,10 @@ import java.sql.Timestamp;
 /**
  * 1ere, deuxieme, mastere ....
  *
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
-@Path("Education/Config")
+@Path("Education/StudyPlan")
 public class AcademicCourseLevel {
 
     @Id
@@ -28,9 +28,10 @@ public class AcademicCourseLevel {
 
     private int id;
     @Formula("concat(this.academicClass.name,'-',this.semester.code)")
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private String name;
     @Summary
+    @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicClass academicClass;
     @Summary
     private AcademicSemester semester;

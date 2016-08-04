@@ -17,7 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class PlatformReflector {
     //    invokeBean(String benName,String method,)
@@ -188,32 +188,32 @@ public class PlatformReflector {
         }
     }
 
-    public static interface MethodInvoker {
+    public interface MethodInvoker {
 
-        public <T extends Annotation> T getAnnotation();
+        <T extends Annotation> T getAnnotation();
 
-        public String getName();
+        String getName();
 
-        public Class[] getParameterTypes();
+        Class[] getParameterTypes();
 
-        public Class getReturnType();
+        Class getReturnType();
 
-        public <T> T invoke(Object o, Object... args);
+        <T> T invoke(Object o, Object... args);
     }
 
-    public static interface InstanceInvoker {
+    public interface InstanceInvoker {
 
-        public <T extends Annotation> T getAnnotation();
+        <T extends Annotation> T getAnnotation();
 
-        public Object getInstance();
+        Object getInstance();
 
-        public String getName();
+        String getName();
 
-        public Class getReturnType();
+        Class getReturnType();
 
-        public Class[] getParameterTypes();
+        Class[] getParameterTypes();
 
-        public <T> T invoke(Object... args);
+        <T> T invoke(Object... args);
     }
 
     public static class DefaultInstanceInvoker implements InstanceInvoker {

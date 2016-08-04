@@ -25,14 +25,14 @@ import javax.faces.model.SelectItem;
 import java.util.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Mon Emploi du temps",
-        url = "modules/academic/planning/myplanninglist",
+        url = "modules/academic/planning/my-planning-list",
         menu = "/Education/Planning",
         securityKey = "Custom.Education.MyPlanning"
 )

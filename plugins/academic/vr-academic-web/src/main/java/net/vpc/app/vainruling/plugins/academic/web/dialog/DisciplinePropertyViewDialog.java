@@ -12,7 +12,7 @@ import net.vpc.app.vainruling.core.web.obj.PropertyViewDialog;
 import org.springframework.stereotype.Component;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Component
 public class DisciplinePropertyViewDialog implements PropertyViewDialog {

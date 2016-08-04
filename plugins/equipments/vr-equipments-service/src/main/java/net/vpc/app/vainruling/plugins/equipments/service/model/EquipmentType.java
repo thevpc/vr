@@ -5,11 +5,10 @@
  */
 package net.vpc.app.vainruling.plugins.equipments.service.model;
 
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Equipment/Config")

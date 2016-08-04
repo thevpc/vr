@@ -7,11 +7,10 @@ package net.vpc.app.vainruling.plugins.academic.report.service.model;
 
 import net.vpc.app.vainruling.core.service.model.AppPropertyTypeKind;
 import net.vpc.upa.RelationshipType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "propertyName")
 @Path("Education/Evaluation")
@@ -20,10 +19,12 @@ public class AcademicReportTitleProperty {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN}, max = "512")
+    @Main
+    @Field(max = "512")
     private String propertyName;
     private AppPropertyTypeKind propertyType = AppPropertyTypeKind.STRING;
-    @Field(modifiers = {UserFieldModifier.SUMMARY}, max = "4096")
+    @Summary
+    @Field(max = "4096")
     private String propertyConstraints;
     @Summary
     @ManyToOne(type = RelationshipType.COMPOSITION)

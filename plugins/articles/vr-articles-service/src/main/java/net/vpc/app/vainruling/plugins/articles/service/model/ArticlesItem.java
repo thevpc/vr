@@ -8,14 +8,13 @@ package net.vpc.app.vainruling.plugins.articles.service.model;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.AccessLevel;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 import net.vpc.upa.types.DateTime;
 
 import java.sql.Timestamp;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "deleted, archived, position desc, sendTime desc")
 @Path("Social")
@@ -32,13 +31,24 @@ public class ArticlesItem {
 
     @Summary
     @Properties(
-            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION))
+            {
+                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION)
+                    , @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+            }
+    )
     private String recipientProfiles;
 
-    private boolean includeSender;
 
     @Summary
+    @Properties(
+            {
+                    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+            }
+    )
     private ArticlesDisposition disposition;
+
+    private boolean includeSender;
+    private boolean noSubject;
 
     @Main
     private String subject;
@@ -70,22 +80,21 @@ public class ArticlesItem {
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Flags"))
-    @Field(defaultValue = "0", modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private int position;
     @Summary
     private boolean important;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY,
-            persistAccessLevel = AccessLevel.PROTECTED,
+    @Summary
+    @Field(persistAccessLevel = AccessLevel.PROTECTED,
             updateAccessLevel = AccessLevel.PROTECTED
     )
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
     private AppUser sender;
 
-    @Field(modifiers = UserFieldModifier.SUMMARY,
-            readAccessLevel = AccessLevel.PROTECTED
-    )
+    @Summary
+    @Field(readAccessLevel = AccessLevel.PROTECTED)
     private String filterExpression;
 
     @Summary
@@ -252,5 +261,13 @@ public class ArticlesItem {
 
     public void setIncludeSender(boolean includeSender) {
         this.includeSender = includeSender;
+    }
+
+    public boolean isNoSubject() {
+        return noSubject;
+    }
+
+    public void setNoSubject(boolean noSubject) {
+        this.noSubject = noSubject;
     }
 }

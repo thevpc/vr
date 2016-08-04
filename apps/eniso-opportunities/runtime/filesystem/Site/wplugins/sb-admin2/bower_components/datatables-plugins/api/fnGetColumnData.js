@@ -65,12 +65,12 @@ jQuery.fn.dataTableExt.oApi.fnGetColumnData = function (oSettings, iColumn, bUni
 
         // ignore empty values?
         if (bIgnoreEmpty === true && sValue.length === 0) {
-            continue;
+
         }
 
         // ignore unique values?
         else if (bUnique === true && jQuery.inArray(sValue, asResultData) > -1) {
-            continue;
+
         }
 
         // else push the value onto the result data array

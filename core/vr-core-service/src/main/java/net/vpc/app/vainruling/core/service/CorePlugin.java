@@ -39,26 +39,24 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @AppPlugin(version = "1.10")
 @UpaAware
 public class CorePlugin {
 
     public static final java.util.logging.Logger LOG_APPLICATION_STATS = java.util.logging.Logger.getLogger(CorePlugin.class.getName() + ".Stats");
-    private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePlugin.class.getName());
-
     public static final String PATH_LOG = "/Var/Log";
     public static final String PATH_TEMP = "/Var/Temp";
     public static final String USER_ADMIN = "admin";
     public static final String PROFILE_ADMIN = "Admin";
     public static final String PROFILE_HEAD_OF_DEPARTMENT = "HeadOfDepartment";
+    public static final String RIGHT_FILESYSTEM_WRITE = "Custom.FileSystem.Write";
+    public static final Set<String> ADMIN_ENTITIES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("Trace", "User", "UserProfile", "UserProfileBinding", "UserProfileRight")));
+    private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePlugin.class.getName());
     public static String FOLDER_MY_DOCUMENTS = "Mes Documents";
     public static String FOLDER_ALL_DOCUMENTS = "Tous";
     public static String FOLDER_BACK = "<Dossier Parent>";
-    public static final String RIGHT_FILESYSTEM_WRITE = "Custom.FileSystem.Write";
-
-    public static final Set<String> ADMIN_ENTITIES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("Trace", "User", "UserProfile", "UserProfileBinding", "UserProfileRight")));
     private VirtualFileSystem fileSystem;
     private String nativeFileSystemPath;
     @Autowired
@@ -68,8 +66,25 @@ public class CorePlugin {
     private boolean updatingPoll = false;
     private Plugin[] plugins;
     private AppVersion appVersion;
-    private Set<String> managerProfiles=new HashSet<>(Arrays.asList("Director"));
+    private Set<String> managerProfiles = new HashSet<>(Arrays.asList("Director"));
 //    private final Map<String,Object> globalCache=new HashMap<>();
+
+//    public static void main(String[] args) {
+//        String text=VrWikiParser.convertToHtml("You can ''italicize'' text by putting 2 \n" +
+//                "apostrophes on ''each'' side. \n" +
+//                "\n" +
+//                "3 apostrophes will '''bold''' the text. \n" +
+//                "\n" +
+//                "5 apostrophes will '''''bold and italicize''''' \n" +
+//                "the text.\n" +
+//                "\n" +
+//                "(Using 4 apostrophes doesn't do anything\n" +
+//                "special -- <br /> 3 of them '''bold''' the text as\n" +
+//                "usual; the others are ''''just'''' apostrophes \n" +
+//                "around the text.)","Hello");
+//        System.out.println(text);
+//    }
+
 
     public void onPoll() {
         if (!updatingPoll) {
@@ -155,9 +170,9 @@ public class CorePlugin {
         Map<String, AppRightName> existing = new HashMap<>();
         List<AppRightName> oldRigths = pu.createQuery("Select u.`right` from AppProfileRight u where u.profileId=:profileId")
                 .setParameter("profileId", profileId)
-                .getEntityList();
+                .getResultList();
         List<AppRightName> allRigths = pu.createQuery("Select u from AppRightName u")
-                .getEntityList();
+                .getResultList();
         for (AppRightName r : allRigths) {
             allMap.put(r.getName(), r);
         }
@@ -176,9 +191,9 @@ public class CorePlugin {
         Map<String, AppUser> existing = new HashMap<>();
         List<AppUser> oldRigths = pu.createQuery("Select u.user from AppUserProfileBinding u where u.profileId=:profileId")
                 .setParameter("profileId", profileId)
-                .getEntityList();
+                .getResultList();
         List<AppUser> allRigths = pu.createQuery("Select u from AppUser u")
-                .getEntityList();
+                .getResultList();
         for (AppUser r : allRigths) {
             allMap.put(r.getLogin(), r);
         }
@@ -199,7 +214,7 @@ public class CorePlugin {
         }
         List<AppProfileRight> oldRigths = pu.createQuery("Select u from AppProfileRight u where u.profileId=:profileId")
                 .setParameter("profileId", profileId)
-                .getEntityList();
+                .getResultList();
         Set<String> baseSet = new HashSet<String>();
         Set<String> visitedSet = new HashSet<String>();
         if (rightNames != null) {
@@ -241,7 +256,7 @@ public class CorePlugin {
         }
         List<AppUserProfileBinding> oldUserBindings = pu.createQuery("Select u from AppUserProfileBinding u where u.profileId=:profileId")
                 .setParameter("profileId", profileId)
-                .getEntityList();
+                .getResultList();
         List<AppUser> oldUsers = findUsers();
         Map<String, AppUser> usersByName = new HashMap<String, AppUser>();
         for (AppUser u : oldUsers) {
@@ -294,7 +309,7 @@ public class CorePlugin {
         AppProfileRight pr = pu.createQuery("Select u from AppProfileRight u where u.profileId=:profileId and u.rightName=:rightName")
                 .setParameter("rightName", rightName)
                 .setParameter("profileId", profileId)
-                .getEntity();
+                .getFirstResultOrNull();
         if (pr == null) {
             pr = new AppProfileRight();
             pr.setProfile(p);
@@ -310,7 +325,7 @@ public class CorePlugin {
         AppUserProfileBinding old = pu.createQuery("Select u from AppUserProfileBinding  u where u.userId=:userId and u.profileId=:profileId")
                 .setParameter("userId", userId)
                 .setParameter("profileId", profileId)
-                .getEntity();
+                .getFirstResultOrNull();
         if (old != null) {
             pu.remove(old);
             return true;
@@ -325,7 +340,7 @@ public class CorePlugin {
                 .setParameter("name", profileCode)
                 .isEmpty()) {
             //should not call findUser because cache is not yet invalidated!
-            AppUser u = pu.findById(AppUser.class,userId);
+            AppUser u = pu.findById(AppUser.class, userId);
             if (u == null) {
                 throw new IllegalArgumentException("Unknown User " + userId);
             }
@@ -351,7 +366,7 @@ public class CorePlugin {
         AppUserProfileBinding b = pu.createQuery("Select u from AppUserProfileBinding  u where u.userId=:userId and u.profileId=:profileId")
                 .setParameter("userId", userId)
                 .setParameter("profileId", profileId)
-                .getEntity();
+                .getFirstResultOrNull();
         if (b == null) {
             AppUser u = findUser(userId);
             if (u == null) {
@@ -519,7 +534,7 @@ public class CorePlugin {
 //        Map<Integer,Set<String>> value=(Map<Integer, Set<String>>) getGlobalCache(cacheKey);
 //        if(value==null){
 //            PersistenceUnit pu = UPA.getPersistenceUnit();
-//            List<AppUserProfileBinding> appUserProfileBindings = pu.createQuery("Select u from AppUserProfileBinding  u").getEntityList();
+//            List<AppUserProfileBinding> appUserProfileBindings = pu.createQuery("Select u from AppUserProfileBinding  u").getResultList();
 //            HashMap<Integer, Set<String>> all = new HashMap<>();
 //            for (AppUserProfileBinding o : appUserProfileBindings) {
 //                if(o.getUser()!=null && o.getProfile()!=null){
@@ -543,7 +558,7 @@ public class CorePlugin {
 
 //    public Map<Integer,List<AppProfile>> findProfilesMapByUserId() {
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
-//        List<AppUserProfileBinding> appUserProfileBindings = pu.createQuery("Select u from AppUserProfileBinding  u").getEntityList();
+//        List<AppUserProfileBinding> appUserProfileBindings = pu.createQuery("Select u from AppUserProfileBinding  u").getResultList();
 //        HashMap<Integer, List<AppProfile>> all = new HashMap<>();
 //        for (AppUserProfileBinding o : appUserProfileBindings) {
 //            if(o.getUser()!=null && o.getProfile()!=null){
@@ -587,7 +602,7 @@ public class CorePlugin {
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        return pu.createQuery("Select u.profile from AppUserProfileBinding  u where u.userId=:userId")
 //                .setParameter("userId", userId)
-//                .getEntityList();
+//                .getResultList();
         return all;
     }
 
@@ -621,7 +636,7 @@ public class CorePlugin {
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        return pu.createQuery("Select u.user from AppUserProfileBinding  u where u.profileId=:profileId")
 //                .setParameter("profileId", profileId)
-//                .getEntityList();
+//                .getResultList();
     }
 
     public Integer findUserIdByLogin(String login) {
@@ -660,38 +675,38 @@ public class CorePlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u.user from AppUserProfileBinding  u where u.profile.name=:profileName")
                 .setParameter("profileName", profileName)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AppProfile> findProfiles() {
         return cacheService.getList(AppProfile.class);
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        return pu.createQuery("Select u from AppProfile u")
-//                .getEntityList();
+//                .getResultList();
     }
 
     public List<AppUser> findUsers() {
         return cacheService.getList(AppUser.class);
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        return pu.createQuery("Select u from AppUser  u")
-//                .getEntityList();
+//                .getResultList();
     }
 
     public List<AppUser> findEnabledUsers(Integer userType) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (userType == null) {
             return pu.createQuery("Select u from AppUser  u where u.enabled=true and u.deleted=false")
-                    .getEntityList();
+                    .getResultList();
         }
         return pu.createQuery("Select u from AppUser  u where u.enabled=true and u.deleted=false and u.typeId=:userType")
                 .setParameter("userType", userType)
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AppUser> findEnabledUsers() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from AppUser  u where u.enabled=true and u.deleted=false")
-                .getEntityList();
+                .getResultList();
     }
 
     public AppUser findUser(String login, String password) {
@@ -703,7 +718,7 @@ public class CorePlugin {
                         + "and u.password=:password")
                 .setParameter("login", login)
                 .setParameter("password", password)
-                .getEntity();
+                .getFirstResultOrNull();
     }
 
     public AppDepartment findDepartment(int id) {
@@ -718,7 +733,7 @@ public class CorePlugin {
         return UPA.getPersistenceUnit().
                 createQuery("Select a from AppDepartment a where a.code=:code or a.name=:code or a.name2=:code")
                 .setParameter("code", code)
-                .getEntity();
+                .getFirstResultOrNull();
     }
 
     public AppCivility findCivility(String t) {
@@ -737,7 +752,7 @@ public class CorePlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return (AppCompany) pu.createQuery("Select u from AppCompany u where u.id=:id").setParameter("id", id)
                 .setHint(QueryHints.NAVIGATION_DEPTH, 3)
-                .getEntity();
+                .getFirstResultOrNull();
 //        return (AppCompany) pu.findById(AppCompany.class, id);
     }
 
@@ -745,7 +760,7 @@ public class CorePlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return (AppCompany) pu.createQuery("Select u from AppCompany u where u.name=:name").setParameter("name", name)
                 .setHint(QueryHints.NAVIGATION_DEPTH, 3)
-                .getEntity();
+                .getFirstResultOrNull();
 //
 //        return (AppCompany) UPA.getPersistenceUnit().findByMainField(AppCompany.class, name);
     }
@@ -885,7 +900,7 @@ public class CorePlugin {
 //                }
 //            }
 
-            if(LOG_APPLICATION_STATS.getHandlers().length==0) {
+            if (LOG_APPLICATION_STATS.getHandlers().length == 0) {
                 FileHandler handler = new FileHandler(path + PATH_LOG + "/application-stats.log", 5 * 1024 * 1024, 5, true);
                 handler.setFormatter(new CustomTextFormatter());
                 LOG_APPLICATION_STATS.addHandler(handler);
@@ -967,7 +982,7 @@ public class CorePlugin {
         Entity e = pu.getEntity(o.getClass());
         Object value = e.getBuilder().objectToRecord(o, true).getObject(field);
         T t = pu.createQueryBuilder(o.getClass()).byExpression(new Equals(new Var(field), new Literal(value, e.getField(field).getDataType())))
-                .getEntity();
+                .getFirstResultOrNull();
         if (t == null) {
             pu.persist(o);
             return o;
@@ -1061,7 +1076,7 @@ public class CorePlugin {
 //            usersProfilesByUserId = ;
 //            cache.put("usersProfilesByUserId", usersProfilesByUserId);
 //        }
-        Set<String> foundProfileNames = (userId == null) ? (new HashSet<String>()) : (Set<String>) findUniformProfileNamesMapByUserId(true).get(userId);
+        Set<String> foundProfileNames = (userId == null) ? (new HashSet<String>()) : findUniformProfileNamesMapByUserId(true).get(userId);
         if (foundProfileNames == null) {
             foundProfileNames = new HashSet<>();
         }
@@ -1087,7 +1102,7 @@ public class CorePlugin {
 //            x.append("/");
 //            return pu.createQuery("Select u from AppProfile u where :expr like concat('%/',u.name,'/%')")
 //                    .setParameter("expr", x.toString())
-//                    .getEntityList();
+//                    .getResultList();
 //        }
 //        return Collections.EMPTY_LIST;
 //    }
@@ -1134,7 +1149,7 @@ public class CorePlugin {
         }
         return UPA.getPersistenceUnit()
                 .createQuery("Select x from AppUser x where x.id in (" + ids + ") " + expression)
-                .getEntityList();
+                .getResultList();
     }
 
     private List<AppUser> filterUsersByExpression(int[] all, String expression) {
@@ -1153,7 +1168,7 @@ public class CorePlugin {
         }
         return UPA.getPersistenceUnit()
                 .createQuery("Select x from AppUser x where x.id in (" + ids + ") " + expression)
-                .getEntityList();
+                .getResultList();
     }
 
     public void setAppProperty(String propertyName, String userLogin, Object propertyValue) {
@@ -1203,7 +1218,7 @@ public class CorePlugin {
 //            }
 //            return pu.createQuery("Select u.user from AppUserProfileBinding u where :expr like concat('/',u.profile.name,'/')")
 //                    .setParameter("expr", x.toString())
-//                    .getEntityList();
+//                    .getResultList();
 //        }
 //        return Collections.EMPTY_LIST;
 //    }
@@ -1311,11 +1326,11 @@ public class CorePlugin {
         return d;
     }
 
-    public long updateMaxAppDataStoreLong(String propertyName,long value,boolean doLog) {
+    public long updateMaxAppDataStoreLong(String propertyName, long value, boolean doLog) {
         long oldValue = (Long) getAppDataStoreValue(propertyName, Long.class, 0L);
         if (value > oldValue) {
             setAppDataStoreValue(propertyName, value);
-            if(doLog) {
+            if (doLog) {
                 LOG_APPLICATION_STATS.info("update " + propertyName + " : " + value);
             }
         }
@@ -1427,7 +1442,7 @@ public class CorePlugin {
 //        } else {
 //            q.byExpression("(userId = null)");
 //        }
-//        List<AppProperty> props = q.getEntityList();
+//        List<AppProperty> props = q.getResultList();
 //        List<AppProperty> all = new ArrayList<AppProperty>(props);
 //        Collections.sort(all, new Comparator<AppProperty>() {
 //
@@ -1470,7 +1485,7 @@ public class CorePlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AppProperty old = pu.createQueryBuilder(AppProperty.class)
                 .byField("propertyName", ap.getPropertyName())
-                .getEntity();
+                .getFirstResultOrNull();
         if (old == null) {
             pu.persist(ap);
         } else {
@@ -1485,7 +1500,7 @@ public class CorePlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQueryBuilder(AppUser.class)
                 .byField("contactId", contactId)
-                .getEntity();
+                .getFirstResultOrNull();
     }
 
     public AppContact findOrCreateContact(AppContact c) {
@@ -1493,7 +1508,7 @@ public class CorePlugin {
         if (!StringUtils.isEmpty(c.getNin())) {
             AppContact oldAcademicTeacher = pu.createQueryBuilder(AppContact.class)
                     .byField("nin", c.getNin())
-                    .getEntity();
+                    .getFirstResultOrNull();
             if (oldAcademicTeacher != null) {
                 return oldAcademicTeacher;
             }
@@ -1501,7 +1516,7 @@ public class CorePlugin {
             AppContact oldAcademicTeacher = pu.createQueryBuilder(AppContact.class)
                     .byField("firstName", c.getFirstName())
                     .byField("lastName", c.getLastName())
-                    .getEntity();
+                    .getFirstResultOrNull();
             if (oldAcademicTeacher != null) {
                 return oldAcademicTeacher;
             }
@@ -1835,8 +1850,8 @@ public class CorePlugin {
 
     public AppPeriod findPeriodOrMain(int id) {
         AppPeriod p = findPeriod(id);
-        if(p==null){
-            p=findAppConfig().getMainPeriod();
+        if (p == null) {
+            p = findAppConfig().getMainPeriod();
         }
         return p;
     }
@@ -1851,19 +1866,19 @@ public class CorePlugin {
     public List<AppPeriod> findValidPeriods() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from AppPeriod u where (u.snapshotName=null or u.snapshotName='') order by u.name desc")
-                .getEntityList();
+                .getResultList();
     }
 
     public List<AppPeriod> findNavigatablePeriods() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from AppPeriod u where u.navigatable=true and (u.snapshotName=null or u.snapshotName='') order by u.name  desc")
-                .getEntityList();
+                .getResultList();
     }
 
     public AppPeriod findPeriod(String name) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return (AppPeriod) pu.createQuery("Select u from AppPeriod u where (u.snapshotName=null or u.snapshotName='') and u.name=:name")
-                .setParameter("name", name).getEntity();
+                .setParameter("name", name).getFirstResultOrNull();
     }
 
     public UserSession getUserSession() {
@@ -1884,7 +1899,7 @@ public class CorePlugin {
                 );
                 s.setUser(s.getRootUser());
                 s.setRootUser(null);
-                buildSession(s, user);
+                buildSession(s, s.getUser());
             } else {
                 trace.trace("logout", "successful logout " + login,
                         login,
@@ -2022,15 +2037,15 @@ public class CorePlugin {
             s.setAdmin(true);
         }
         if (userProfilesNames.contains(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT)) {
-            if(user.getDepartment()!=null) {
+            if (user.getDepartment() != null) {
                 AppUser d = findHeadOfDepartment(user.getDepartment().getId());
-                if(d.getDepartment()!=null) {
+                if (d.getDepartment() != null) {
                     s.setManager(true);
                 }
             }
         }
         for (String mp : getManagerProfiles()) {
-            if (userProfilesNames.contains(mp)){
+            if (userProfilesNames.contains(mp)) {
                 s.setManager(true);
             }
         }
@@ -2048,7 +2063,7 @@ public class CorePlugin {
                         + "")
                 .setParameter("login", login)
                 .setParameter("password", password)
-                .getEntity();
+                .getFirstResultOrNull();
     }
 
 
@@ -2091,12 +2106,13 @@ public class CorePlugin {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                _appVersion.setShortName(p.getProperty("shortName"));
-                _appVersion.setLongName(p.getProperty("longName"));
+                _appVersion.setShortName(p.getProperty("short-name"));
+                _appVersion.setLongName(p.getProperty("long-name"));
                 _appVersion.setVersion(p.getProperty("version"));
-                _appVersion.setBuildNumber(p.getProperty("buildNumber"));
-                _appVersion.setBuildDate(p.getProperty("buildDate"));
+                _appVersion.setBuildNumber(p.getProperty("build-number"));
+                _appVersion.setBuildDate(p.getProperty("build-date"));
                 _appVersion.setAuthor(p.getProperty("author"));
+                _appVersion.setDefaultTheme(p.getProperty("default-theme"));
 
             }
             appVersion = _appVersion;
@@ -2331,18 +2347,6 @@ public class CorePlugin {
         });
     }
 
-    private static class InitData {
-
-        long now;
-        AppProfile adminProfile;
-        AppUser admin;
-        AppUserType adminType;
-        List<AppCivility> civilities;
-        List<AppGender> genders;
-        List<AppDepartment> departments;
-    }
-
-
     public boolean isUserSessionHeadOfDepartment() {
         UserSession sm = VrApp.getBean(UserSession.class);
         AppUser user = (sm == null) ? null : sm.getUser();
@@ -2350,10 +2354,7 @@ public class CorePlugin {
             return false;
         }
         AppUser d = findHeadOfDepartment(user.getDepartment().getId());
-        if (d != null && d.getId() == user.getId()) {
-            return true;
-        }
-        return false;
+        return d != null && d.getId() == user.getId();
     }
 
     public AppUser findHeadOfDepartment(int depId) {
@@ -2367,5 +2368,16 @@ public class CorePlugin {
 
     public Set<String> getManagerProfiles() {
         return managerProfiles;
+    }
+
+    private static class InitData {
+
+        long now;
+        AppProfile adminProfile;
+        AppUser admin;
+        AppUserType adminType;
+        List<AppCivility> civilities;
+        List<AppGender> genders;
+        List<AppDepartment> departments;
     }
 }

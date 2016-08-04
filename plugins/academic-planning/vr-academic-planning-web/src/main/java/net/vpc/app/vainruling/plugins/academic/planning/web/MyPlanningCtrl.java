@@ -24,7 +24,7 @@ package net.vpc.app.vainruling.plugins.academic.planning.web;
 //
 ///**
 // *
-// * @author vpc
+// * @author taha.bensalah@gmail.com
 // */
 ////@UCtrl(
 ////        breadcrumb = {

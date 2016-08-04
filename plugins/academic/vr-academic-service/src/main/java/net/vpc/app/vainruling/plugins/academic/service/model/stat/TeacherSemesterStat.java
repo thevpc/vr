@@ -9,9 +9,9 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSeme
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
-public class TeacherSemesterStat extends TeacherBaseStat{
+public class TeacherSemesterStat extends TeacherBaseStat {
 
     private TeacherPeriodStat teacherStat;
     private AcademicSemester semester;

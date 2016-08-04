@@ -19,14 +19,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "Charge par Enseignant",
-        url = "modules/academic/teachercourseload",
+        url = "modules/academic/teacher-course-load",
         menu = "/Education/Load",
         securityKey = "Custom.Education.TeacherCourseLoad"
 )

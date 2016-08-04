@@ -31,7 +31,7 @@ import java.util.*;
 //import net.vpc.app.vainruling.tasks.model.TodoList;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl
 @ManagedBean
@@ -298,7 +298,7 @@ public class VrMenuManager {
 
     //    public String invoke(String name) {
 //        try {
-//            return (String) getClass().getMethod(name).invoke(this);
+//            return (String) getClass().findPlatformMethod(name).invoke(this);
 //        } catch (Exception ex) {
 //            Logger.getLogger(VrMenu.class.getName()).log(Level.SEVERE, null, ex);
 //            return null;
@@ -431,14 +431,6 @@ public class VrMenuManager {
             setBreadcrumb(Arrays.asList(breadcrumb));
         }
 
-        public String getCurrentPageId() {
-            return currentPageId;
-        }
-
-        public void setCurrentPageId(String currentPageId) {
-            this.currentPageId = currentPageId;
-        }
-
         public void setBreadcrumb(List<BreadcrumbItem> breadcrumb) {
             this.breadcrumb = breadcrumb;
             for (int i = 0; i < breadcrumb.size(); i++) {
@@ -450,6 +442,14 @@ public class VrMenuManager {
             } else {
                 titleCrumb = breadcrumb.get(breadcrumb.size() - 1);
             }
+        }
+
+        public String getCurrentPageId() {
+            return currentPageId;
+        }
+
+        public void setCurrentPageId(String currentPageId) {
+            this.currentPageId = currentPageId;
         }
 
         public BreadcrumbItem getTitleCrumb() {
@@ -566,7 +566,7 @@ public class VrMenuManager {
                         if (pp2 != null) {
                             List<Entity> entities = filterEntities(pp2.getEntities(), new DefaultEntityFilter().setAcceptSystem(false));
                             for (Entity ee : entities) {
-                                if (ee.getCompositionRelation() == null) {
+                                if (ee.getCompositionRelation() == null || ee.getCompositionRelation().getHierarchyExtension() != null) {
                                     try {
                                         ee.getShield().checkNavigate();
                                         if (UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(

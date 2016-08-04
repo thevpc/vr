@@ -1,6 +1,7 @@
-shortName = ENISo info
-longName = ENISo info
-version = 1.0.54
-buildDate = 2016-06-17
-buildNumber = 54
+short-name = ENISo info
+long-name = ENISo info
+version = 1.0.61
+build-date = 2016-08-01
+build-number = 60
 author = Taha BEN SALAH (c)
+default-theme = infusion

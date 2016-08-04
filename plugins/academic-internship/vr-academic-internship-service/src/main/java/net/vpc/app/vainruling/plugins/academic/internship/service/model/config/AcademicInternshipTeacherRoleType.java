@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.plugins.academic.internship.service.model.config;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public enum AcademicInternshipTeacherRoleType {
     CHAIR,

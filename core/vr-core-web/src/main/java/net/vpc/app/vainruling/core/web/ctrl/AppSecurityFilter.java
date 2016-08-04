@@ -19,7 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @WebFilter(filterName = "AppSecurityFilter",
         urlPatterns = {"/*"})
@@ -83,10 +83,10 @@ public class AppSecurityFilter implements Filter {
             try {
                 chain.doFilter(request, response);
             } catch (Exception e) {
-                if(e instanceof ServletException) {
+                if (e instanceof ServletException) {
                     Throwable rootCause = ((ServletException) e).getRootCause();
                     if (rootCause instanceof ViewExpiredException) {
-                        HttpServletResponse webresponse=(HttpServletResponse) response;
+                        HttpServletResponse webresponse = (HttpServletResponse) response;
                         webresponse.sendRedirect("/vr/r/index.xhtml?faces-redirect=true");
                         return;
                     }

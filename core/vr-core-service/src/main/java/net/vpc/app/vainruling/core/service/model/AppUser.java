@@ -10,14 +10,13 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.PasswordStrategyType;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 import net.vpc.upa.types.DateTime;
 
 import java.sql.Timestamp;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "contact.fullName")
 @Path("Contact")
@@ -27,13 +26,14 @@ public class AppUser {
     @Sequence
     private int id;
 
-    @Field(modifiers = {UserFieldModifier.UNIQUE, UserFieldModifier.SUMMARY})
+    @Summary
+    @Unique
     private String login;
 
     @Password(strategyType = PasswordStrategyType.MD5)
     private String password;
 
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private AppContact contact;
     @Summary
     private AppDepartment department;
@@ -47,16 +47,16 @@ public class AppUser {
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
 
-    @Field(persistAccessLevel = AccessLevel.PRIVATE, updateAccessLevel = AccessLevel.PRIVATE, readAccessLevel = AccessLevel.PROTECTED, modifiers = UserFieldModifier.SUMMARY
-    )
+    @Summary
+    @Field(persistAccessLevel = AccessLevel.PRIVATE, updateAccessLevel = AccessLevel.PRIVATE, readAccessLevel = AccessLevel.PROTECTED)
     private DateTime lastConnexionDate;
 
-    @Field(defaultValue = "0", persistAccessLevel = AccessLevel.PRIVATE, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PROTECTED, modifiers = UserFieldModifier.SUMMARY
-    )
+    @Summary
+    @Field(persistAccessLevel = AccessLevel.PRIVATE, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PROTECTED)
     private long connexionCount;
 
-    @Field(defaultValue = "true", persistAccessLevel = AccessLevel.PRIVATE, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PROTECTED, modifiers = UserFieldModifier.SUMMARY
-    )
+    @Summary
+    @Field(persistAccessLevel = AccessLevel.PRIVATE, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PROTECTED)
     private boolean enabled;
 
     private boolean deleted;
@@ -65,8 +65,8 @@ public class AppUser {
 
     private Timestamp deletedOn;
 
-    @Field(defaultValue = "false", persistAccessLevel = AccessLevel.PROTECTED, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PROTECTED, modifiers = UserFieldModifier.SUMMARY
-    )
+    @Summary
+    @Field(persistAccessLevel = AccessLevel.PROTECTED, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PROTECTED)
     private boolean welcomeSent;
 
     /**

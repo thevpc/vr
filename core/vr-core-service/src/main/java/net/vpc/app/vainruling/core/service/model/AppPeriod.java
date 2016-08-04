@@ -5,12 +5,11 @@
  */
 package net.vpc.app.vainruling.core.service.model;
 
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 import net.vpc.upa.types.DateTime;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name desc")
 @Path("Admin/Config")
@@ -19,13 +18,16 @@ public class AppPeriod {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN, UserFieldModifier.UNIQUE})
+    @Main
+    @Unique
     private String name;
+    @Summary
+    private boolean navigatable = true;
+    @Summary
+    private boolean readOnly = false;
     @Summary
     private String snapshotName;
     private DateTime creationTime;
-    private boolean navigatable=true;
-    private boolean readOnly=false;
 
     public AppPeriod() {
     }

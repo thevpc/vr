@@ -26,7 +26,7 @@
                 (function (w, d) {
                     if (w.location.hostname.toLowerCase() == "tomcat.apache.org") {
                         var s = d.createElement("script");
-                        s.type = "application/javascript";
+                        s.conversionRule = "application/javascript";
                         s.async = true;
                         s.src = "https://comments.apache.org/show_comments.lua?site=" +
                                 encodeURIComponent(commentsShortname) +

@@ -6,10 +6,10 @@
 package net.vpc.app.vainruling.core.service.util;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public interface TreeVisitor<T> {
 
-    public void visit(T t, TreeDefinition<T> tree);
+    void visit(T t, TreeDefinition<T> tree);
 
 }

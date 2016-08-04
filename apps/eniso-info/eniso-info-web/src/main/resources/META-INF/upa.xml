@@ -14,7 +14,13 @@
     <persistenceUnit name="main">
         <connection>
             <connectionString>
-                mysql://localhost/enisoinfodb;structure=create;userName=enisoinfouser;password='canard77';pool=true
+                mysql://localhost/enisoinfodb;
+                structure=create;
+                userName=enisoinfouser;
+                password='canard77';
+                pool=true;
+                poolMaxSize=200;
+                monitor=javamelody
             </connectionString>
         </connection>
     </persistenceUnit>

@@ -17,7 +17,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Provider
 public class JacksonJsonParamConverterProvider implements ParamConverterProvider {

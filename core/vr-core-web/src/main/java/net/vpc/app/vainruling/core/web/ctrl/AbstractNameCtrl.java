@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public abstract class AbstractNameCtrl<T> extends BasePageCtrl {
 
@@ -109,7 +109,7 @@ public abstract class AbstractNameCtrl<T> extends BasePageCtrl {
 
     protected abstract List<T> delegated_findAll();
 
-    public static interface SelectionListener<T> {
+    public interface SelectionListener<T> {
 
         void onSelect(T c);
     }

@@ -7,13 +7,12 @@ package net.vpc.app.vainruling.plugins.academic.service.model.history;
 
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicLoadConversionRule;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.util.Objects;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Education/History")
@@ -23,7 +22,7 @@ public class AcademicHistTeacherDegree {
     @Sequence
 
     private int id;
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private String code;
     @Summary
     private String name;
@@ -197,10 +196,7 @@ public class AcademicHistTeacherDegree {
         if (Double.doubleToLongBits(this.valuePM) != Double.doubleToLongBits(other.valuePM)) {
             return false;
         }
-        if (!Objects.equals(this.academicYear, other.academicYear)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.academicYear, other.academicYear);
     }
 
     public AcademicLoadConversionRule getConversionRule() {

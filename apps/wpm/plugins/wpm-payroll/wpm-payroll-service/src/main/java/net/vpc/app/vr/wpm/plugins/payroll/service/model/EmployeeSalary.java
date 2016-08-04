@@ -1,6 +1,5 @@
 package net.vpc.app.vr.wpm.plugins.payroll.service.model;
 
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 /**
@@ -12,23 +11,23 @@ public class EmployeeSalary {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private Employee employee;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private EmployeeSalaryPeriod period;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double baseSalary;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double hAbs;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double hSup75;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double hSup100;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double grossWithdrawal;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double advancePayment;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private double deductionMisc;
 
     public int getId() {

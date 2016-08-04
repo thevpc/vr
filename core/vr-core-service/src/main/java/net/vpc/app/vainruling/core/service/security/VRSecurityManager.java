@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @SecurityContext
 public class VRSecurityManager implements PersistenceGroupSecurityManager {
@@ -79,10 +79,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
             return true;
         }
         if (isAdmin(u)) {
-            if (denyAdmin.contains(key)) {
-                return false;
-            }
-            return true;
+            return !denyAdmin.contains(key);
         }
         if (allowOthers.contains(key)) {
             return true;
@@ -133,11 +130,11 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
             } catch (Exception e) {
                 //
             }
-            AppUser user = (AppUser) pu.createQuery("Select u from AppUser u where u.login=:login")
+            AppUser user = pu.createQuery("Select u from AppUser u where u.login=:login")
                     .setParameter("login", login)
-                    .getEntity();
+                    .getFirstResultOrNull();
             if (user != null) {
-                trace.trace("login-privileged", "successfull", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO, sm == null ? null : sm.getClientIpAddress());
+                trace.trace("login-privileged", "successful", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO, sm == null ? null : sm.getClientIpAddress());
                 return new DefaultUserPrincipal(login, user);
             } else {
                 trace.trace("login-privileged", "failed", login, getClass().getSimpleName(), null, null, "anonymous", -1, Level.SEVERE, sm == null ? null : sm.getClientIpAddress());
@@ -155,10 +152,10 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
             credentials = "";
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        AppUser user = (AppUser) pu.createQuery("Select u from AppUser u where u.login=:login and u.password=:password")
+        AppUser user = pu.createQuery("Select u from AppUser u where u.login=:login and u.password=:password")
                 .setParameter("login", login)
                 .setParameter("password", credentials)
-                .getEntity();
+                .getFirstResultOrNull();
         TraceService trace = VrApp.getContext().getBean(TraceService.class);
         UserSession sm = null;
         try {
@@ -167,7 +164,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
             //
         }
         if (user != null) {
-            trace.trace("login", "successfull", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO, sm == null ? null : sm.getClientIpAddress());
+            trace.trace("login", "successful", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO, sm == null ? null : sm.getClientIpAddress());
             return new DefaultUserPrincipal(login, user);
         } else {
             trace.trace("login", "failed", login + "/" + credentials, getClass().getSimpleName(), null, null, "anonymous", -1, Level.SEVERE, sm == null ? null : sm.getClientIpAddress());

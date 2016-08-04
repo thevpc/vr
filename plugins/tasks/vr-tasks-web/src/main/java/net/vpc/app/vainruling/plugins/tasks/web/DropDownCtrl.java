@@ -13,7 +13,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl
 @ManagedBean

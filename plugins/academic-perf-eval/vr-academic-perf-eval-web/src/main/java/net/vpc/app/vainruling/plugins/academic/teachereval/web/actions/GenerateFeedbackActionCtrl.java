@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Component
 @ManagedBean
@@ -53,7 +53,7 @@ public class GenerateFeedbackActionCtrl {
         options.put("draggable", false);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/perfeval/generateFeedbackdialog", options, null);
+        RequestContext.getCurrentInstance().openDialog("/modules/academic/perfeval/generate-feedback-dialog", options, null);
 
     }
 

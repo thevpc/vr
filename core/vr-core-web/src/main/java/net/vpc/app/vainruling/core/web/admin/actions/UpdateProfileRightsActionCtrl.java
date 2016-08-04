@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Component
 @ManagedBean
@@ -65,7 +65,7 @@ public class UpdateProfileRightsActionCtrl {
         options.put("resizable", false);
         options.put("draggable", false);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/admin/updateProfileRightsDialog", options, null);
+        RequestContext.getCurrentInstance().openDialog("/modules/admin/update-profile-rights-dialog", options, null);
 
     }
 

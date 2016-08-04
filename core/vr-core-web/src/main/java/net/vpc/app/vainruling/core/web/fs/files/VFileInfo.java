@@ -11,7 +11,7 @@ import net.vpc.common.vfs.VFile;
 import java.util.Date;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class VFileInfo implements Comparable<VFileInfo> {
 
@@ -23,7 +23,7 @@ public class VFileInfo implements Comparable<VFileInfo> {
     private boolean selected;
     private long downloads;
 
-    public VFileInfo(String name, VFile file, String labelCss,String iconCss, long downloads, String desc) {
+    public VFileInfo(String name, VFile file, String labelCss, String iconCss, long downloads, String desc) {
         this.name = name;
         this.file = file;
         this.iconCss = iconCss;

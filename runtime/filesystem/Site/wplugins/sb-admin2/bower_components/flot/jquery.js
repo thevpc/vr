@@ -2306,7 +2306,7 @@
 
                 if (value === null) {
                     jQuery.removeAttr(elem, name);
-                    return;
+
 
                 } else if (hooks && "set" in hooks && notxml && (ret = hooks.set(elem, value, name)) !== undefined) {
                     return ret;

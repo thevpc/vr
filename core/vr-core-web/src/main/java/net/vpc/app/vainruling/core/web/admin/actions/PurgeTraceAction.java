@@ -16,7 +16,7 @@ import net.vpc.common.jsf.FacesUtils;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AppTrace.class,
         actionLabel = "Arch", actionStyle = "fa-calculator",

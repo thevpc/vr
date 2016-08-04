@@ -5,13 +5,12 @@
  */
 package net.vpc.app.vainruling.plugins.tasks.service.model;
 
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "date desc")
 @Path("Todo")

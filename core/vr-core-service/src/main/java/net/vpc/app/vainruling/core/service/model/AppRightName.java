@@ -6,20 +6,19 @@
 package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.util.Objects;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
 @Path("Admin/Security")
 public class AppRightName {
 
     @Id
-    @Field(modifiers = {UserFieldModifier.MAIN})
+    @Main
     private String name;
     @Summary
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
@@ -60,10 +59,7 @@ public class AppRightName {
             return false;
         }
         final AppRightName other = (AppRightName) obj;
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.name, other.name);
     }
 
     @Override

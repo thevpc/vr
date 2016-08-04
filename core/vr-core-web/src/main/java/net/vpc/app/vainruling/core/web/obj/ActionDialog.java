@@ -10,14 +10,14 @@ import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public interface ActionDialog {
 
     boolean isEnabled(Class entityType, EditCtrlMode mode, Object value);
 
-    public void openDialog(String actionId, List<String> itemIds);
+    void openDialog(String actionId, List<String> itemIds);
 
-    public void invoke(Class entityType, Object obj, Object[] args);
+    void invoke(Class entityType, Object obj, Object[] args);
 
 }

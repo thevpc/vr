@@ -345,7 +345,7 @@ class Morris.Grid extends Morris.EventEmitter
 # draw y axis labels, horizontal lines
 #
   drawGrid: ->
-    return if @options.grid is false and @options.axes not in [true, 'both', 'y']
+    if @options.grid is false and @options.axes not in [true, 'both', 'y']
     for lineY in @grid
       y = @transY(lineY)
       if @options.axes in [true, 'both', 'y']

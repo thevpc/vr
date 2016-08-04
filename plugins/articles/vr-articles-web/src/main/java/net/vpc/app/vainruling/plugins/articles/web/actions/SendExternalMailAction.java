@@ -15,7 +15,7 @@ import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = ArticlesItem.class,
         actionName = "sendExternalMail",

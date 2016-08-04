@@ -5,16 +5,12 @@
  */
 package net.vpc.app.vainruling.core.service.model;
 
-import net.vpc.app.vainruling.core.service.model.AppDepartment;
-import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
-import net.vpc.upa.types.DateTime;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
-@Entity()
+@Entity(listOrder = "period.name desc, department.name asc")
 @Path("Admin/Config")
 public class AppDepartmentPeriod {
 
@@ -22,12 +18,12 @@ public class AppDepartmentPeriod {
     @Sequence
     private int id;
 
-    @Summary
-    private AppDepartment department;
 
     @Summary
     private AppPeriod period;
 
+    @Summary
+    private AppDepartment department;
 
     public AppDepartmentPeriod() {
     }

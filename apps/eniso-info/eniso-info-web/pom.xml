@@ -26,6 +26,11 @@
             <artifactId>eniso-info-theme-infusion</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.apps.eniso-info.plugins.themes</groupId>
+            <artifactId>eniso-info-theme-th2016</artifactId>
+            <version>1.0</version>
+        </dependency>
 
         <dependency>
             <groupId>javax</groupId>
@@ -34,9 +39,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <version>1.4</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>2.0.1</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.core</groupId>
@@ -99,6 +104,37 @@
             <artifactId>glass-x</artifactId>
             <version>1.0.6</version>
         </dependency>
+
+        <!-- Java Melody -->
+
+
+        <dependency>
+            <groupId>net.bull.javamelody</groupId>
+            <artifactId>javamelody-core</artifactId>
+            <version>1.60.0</version>
+        </dependency>
+        <!-- itext, option to add PDF export -->
+        <dependency>
+            <groupId>com.lowagie</groupId>
+            <artifactId>itext</artifactId>
+            <version>2.1.7</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>bcmail-jdk14</artifactId>
+                    <groupId>bouncycastle</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>bcprov-jdk14</artifactId>
+                    <groupId>bouncycastle</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>bctsp-jdk14</artifactId>
+                    <groupId>bouncycastle</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
     </dependencies>
 
     <build>
@@ -107,6 +143,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -117,22 +154,7 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>process-sources</phase>
 
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-
-                        <configuration>
-                            <outputDirectory>${targetdirectory}</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -156,9 +178,22 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.6</version>
+                <version>2.10</version>
                 <executions>
                     <execution>
+                        <id>copy</id>
+                        <phase>process-sources</phase>
+
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+
+                        <configuration>
+                            <outputDirectory>${targetdirectory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>validate</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>copy</goal>

@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
@@ -93,7 +93,7 @@ public class AcademicAddressBookCtrl {
             query = "";
         }
         query = query.trim();
-        final String fquery=query;
+        final String fquery = query;
         String qt = getModel().getQueryType();
         getModel().setLastQuery(getModel().getQuery());
         getModel().setLastQueryType(getModel().getQueryType());
@@ -120,7 +120,7 @@ public class AcademicAddressBookCtrl {
         }, qt));
     }
 
-    public List<Contact> loadList(ObjectFilter<Object> query,String qt) {
+    public List<Contact> loadList(ObjectFilter<Object> query, String qt) {
         List<Contact> cc = new ArrayList<>();
         if (!StringUtils.isEmpty(qt)) {
             if (true) //q.length() > 0
@@ -375,16 +375,16 @@ public class AcademicAddressBookCtrl {
             return list;
         }
 
+        public void setList(List<Contact> list) {
+            this.list = list;
+        }
+
         public List<Contact> getPermanentList() {
             return permanentList;
         }
 
         public void setPermanentList(List<Contact> permanentList) {
             this.permanentList = permanentList;
-        }
-
-        public void setList(List<Contact> list) {
-            this.list = list;
         }
 
         public String getLastQueryType() {

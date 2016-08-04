@@ -9,7 +9,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Target(ElementType.TYPE)
 public @interface AppEntityExtendedPropertiesProviderMarker {

@@ -47,7 +47,7 @@ public class EntityCache {
                             .createQueryBuilder(entity.getName())
                             .orderBy(entity.getListOrder())
                             .setHint(QueryHints.NAVIGATION_DEPTH, this.navigationDepth)
-                            .getEntityList(),
+                            .getResultList(),
                     entity
             );
             list = new SoftReference<MapList>(

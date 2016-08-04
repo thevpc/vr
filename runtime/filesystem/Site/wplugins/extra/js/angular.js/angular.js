@@ -2166,7 +2166,7 @@
                         // Refer to jQuery's implementation of mouseenter & mouseleave
                         // Read about mouseenter and mouseleave:
                         // http://www.quirksmode.org/js/events_mouse.html#link8
-                        var eventmap = {mouseleave: "mouseout", mouseenter: "mouseover"}
+                        var eventmap = {mouseleave: "mouseout", mouseenter: "mouseover"};
                         bindFn(element, eventmap[type], function (event) {
                             var ret, target = this, related = event.relatedTarget;
                             // For mousenter/leave call the handler if related is outside the target.
@@ -3422,7 +3422,7 @@
                      */
                     animator.animate = function (event, element) {
                         animateActionFactory(event, noop, noop)(element);
-                    }
+                    };
                     return animator;
 
                     function animateActionFactory(type, beforeFn, afterFn) {
@@ -5665,7 +5665,7 @@
              */
             $interpolate.startSymbol = function () {
                 return startSymbol;
-            }
+            };
 
 
             /**
@@ -5682,7 +5682,7 @@
              */
             $interpolate.endSymbol = function () {
                 return endSymbol;
-            }
+            };
 
             return $interpolate;
         }];
@@ -5779,7 +5779,7 @@
          * @private
          */
         this.$$parse = function (url) {
-            var parsed = {}
+            var parsed = {};
             matchUrl(url, parsed);
             var pathUrl = beginsWith(appBaseNoFile, url);
             if (!isString(pathUrl)) {
@@ -11028,7 +11028,7 @@
                     if (comperator == true) {
                         comperator = function (obj, text) {
                             return angular.equals(obj, text);
-                        }
+                        };
                         break;
                     }
                 default:
@@ -11081,7 +11081,7 @@
                         if (key == '$') {
                             (function () {
                                 if (!expression[key]) return;
-                                var path = key
+                                var path = key;
                                 predicates.push(function (value) {
                                     return search(value, expression[path]);
                                 });
@@ -11472,7 +11472,7 @@
                 }
                 dateSetter.call(date, int(match[1]), int(match[2]) - 1, int(match[3]));
                 var h = int(match[4] || 0) - tzHour;
-                var m = int(match[5] || 0) - tzMin
+                var m = int(match[5] || 0) - tzMin;
                 var s = int(match[6] || 0);
                 var ms = Math.round(parseFloat('0.' + (match[7] || 0)) * 1000);
                 timeSetter.call(date, h, m, s, ms);
@@ -13768,7 +13768,7 @@
                 var validator = function (value) {
                     if (attr.required && (isEmpty(value) || value === false)) {
                         ctrl.$setValidity('required', false);
-                        return;
+
                     } else {
                         ctrl.$setValidity('required', true);
                         return value;
@@ -15574,7 +15574,7 @@
                             value = collection[key];
                             trackById = trackByIdFn(key, value, index);
                             if (lastBlockMap.hasOwnProperty(trackById)) {
-                                block = lastBlockMap[trackById]
+                                block = lastBlockMap[trackById];
                                 delete lastBlockMap[trackById];
                                 nextBlockMap[trackById] = block;
                                 nextBlockOrder[index] = block;
@@ -16582,7 +16582,7 @@
                     ngModelCtrl = ngModelCtrl_;
                     nullOption = nullOption_;
                     unknownOption = unknownOption_;
-                }
+                };
 
 
                 self.addOption = function (value) {
@@ -16611,12 +16611,12 @@
                     $element.prepend(unknownOption);
                     $element.val(unknownVal);
                     unknownOption.prop('selected', true); // needed for IE
-                }
+                };
 
 
                 self.hasOption = function (value) {
                     return optionsMap.hasOwnProperty(value);
-                }
+                };
 
                 $scope.$on('$destroy', function () {
                     // disable unknown option so that we don't do work when the whole select is being destroyed

@@ -25,11 +25,11 @@ import javax.faces.bean.ManagedBean;
 import java.util.*;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         title = "Sessions Actives",
-        url = "modules/admin/activesessions",
+        url = "modules/admin/active-sessions",
         menu = "/Admin/Security",
         securityKey = "Custom.Admin.ActiveSessions"
 )

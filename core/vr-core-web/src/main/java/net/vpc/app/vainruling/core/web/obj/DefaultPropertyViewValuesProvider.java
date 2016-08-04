@@ -5,8 +5,9 @@
  */
 package net.vpc.app.vainruling.core.web.obj;
 
-import net.vpc.app.vainruling.core.web.obj.defaultimpl.EntityTypePropertyViewValuesProvider;
 import net.vpc.app.vainruling.core.web.obj.defaultimpl.EnumTypePropertyViewValuesProvider;
+import net.vpc.app.vainruling.core.web.obj.defaultimpl.KeyTypePropertyViewValuesProvider;
+import net.vpc.app.vainruling.core.web.obj.defaultimpl.ManyToOneTypePropertyViewValuesProvider;
 import net.vpc.upa.Field;
 import net.vpc.upa.KeyType;
 import net.vpc.upa.NamedId;
@@ -17,21 +18,21 @@ import net.vpc.upa.types.ManyToOneType;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class DefaultPropertyViewValuesProvider implements PropertyViewValuesProvider {
 
-    EntityTypePropertyViewValuesProvider entityProvider = new EntityTypePropertyViewValuesProvider();
+    ManyToOneTypePropertyViewValuesProvider manyToOneTypeProvider = new ManyToOneTypePropertyViewValuesProvider();
+    KeyTypePropertyViewValuesProvider keyTypeProvider = new KeyTypePropertyViewValuesProvider();
     EnumTypePropertyViewValuesProvider enumProvider = new EnumTypePropertyViewValuesProvider();
 
     @Override
     public List<NamedId> resolveValues(PropertyView propertyView, Field field, DataType dt, ViewContext viewContext) {
         if (dt instanceof ManyToOneType) {
-
-            return entityProvider.resolveValues(propertyView, field, dt, viewContext);
+            return manyToOneTypeProvider.resolveValues(propertyView, field, dt, viewContext);
         }
         if (dt instanceof KeyType) {
-            return entityProvider.resolveValues(propertyView, field, dt, viewContext);
+            return keyTypeProvider.resolveValues(propertyView, field, dt, viewContext);
         }
         if (dt instanceof EnumType) {
             return enumProvider.resolveValues(propertyView, field, dt, viewContext);

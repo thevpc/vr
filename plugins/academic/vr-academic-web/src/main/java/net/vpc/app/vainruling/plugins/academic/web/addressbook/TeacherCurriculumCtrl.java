@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.plugins.academic.web.addressbook;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
@@ -20,14 +19,14 @@ import net.vpc.common.strings.StringUtils;
 import javax.faces.bean.ManagedBean;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
         title = "CV Teacher",
-        url = "public/academic/addressbook/teacherCvIndex.xhtml"
+        url = "public/academic/addressbook/teacher-cv-index.xhtml"
 )
 @ManagedBean
 public class TeacherCurriculumCtrl {
@@ -86,7 +85,7 @@ public class TeacherCurriculumCtrl {
                 getModel().setContentText(jsfCtrl.nvlstr(getModel().getTeacherCV().getTeachingText(), emptyText));
             }
         }
-        getModel().setContentText(VrHelper.extratPureHTML(getModel().getContentText()));
+        getModel().setContentText((getModel().getContentText()));
     }
 
     public Model getModel() {

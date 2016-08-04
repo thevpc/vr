@@ -12,7 +12,7 @@ import net.vpc.app.vainruling.plugins.academic.internship.service.model.current.
 import java.util.List;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class AcademicInternshipExt {
 

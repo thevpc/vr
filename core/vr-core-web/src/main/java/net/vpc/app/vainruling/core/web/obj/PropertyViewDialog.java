@@ -6,12 +6,12 @@
 package net.vpc.app.vainruling.core.web.obj;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public interface PropertyViewDialog {
 
-    public String getControlType();
+    String getControlType();
 
-    public void openDialog(PropertyView propertyView, String userInfo);
+    void openDialog(PropertyView propertyView, String userInfo);
 
 }

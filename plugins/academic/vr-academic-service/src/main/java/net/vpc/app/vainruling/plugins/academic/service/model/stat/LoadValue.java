@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.service.model.stat;
 import java.text.DecimalFormat;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class LoadValue {
 
@@ -48,7 +48,7 @@ public class LoadValue {
         if (r == d) {
             return String.valueOf((int) d);
         }
-        return String.valueOf(d);
+        return new DecimalFormat("0.000").format(d);
     }
 
     public String formatString() {

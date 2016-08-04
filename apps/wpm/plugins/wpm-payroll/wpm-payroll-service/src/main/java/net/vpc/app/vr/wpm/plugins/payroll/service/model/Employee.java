@@ -1,6 +1,5 @@
 package net.vpc.app.vr.wpm.plugins.payroll.service.model;
 
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 import net.vpc.upa.types.Date;
 
@@ -13,14 +12,14 @@ public class Employee {
     @Id
     @Sequence
     private int id;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String firstName;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private String lastName;
     private String nin;
     private boolean securityAffiliationEnabled;
     private String securityAffiliationNumber;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private EmployeeFunction employeeFunction;
     private Date birthDate;
     private Date recruitmentDate;
@@ -35,7 +34,7 @@ public class Employee {
     private EmployeeGrade grade;
     private double baseSalary;
     private EmployeeSalaryType salaryType;
-    @Field(modifiers = UserFieldModifier.SUMMARY)
+    @Summary
     private boolean enabled;
     private AppFinancialInstitution financialInstitution;
     private String financialAccount;

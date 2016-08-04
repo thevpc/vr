@@ -5,36 +5,35 @@
  */
 package net.vpc.app.vainruling.plugins.inbox.service;
 
-import net.vpc.common.gomail.GoMail;
+import net.vpc.common.gomail.GoMailAgent;
 import net.vpc.common.gomail.GoMailContext;
-import net.vpc.common.gomail.modules.DefaultGoMailAgent;
-import net.vpc.common.gomail.modules.GoMailAgent;
+import net.vpc.common.gomail.GoMailFactory;
+import net.vpc.common.gomail.GoMailMessage;
 
 import java.io.IOException;
 import java.util.Properties;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 public class VrExternalMailAgent implements GoMailAgent {
 
-    private DefaultGoMailAgent baseAgent = new DefaultGoMailAgent();
+    private GoMailAgent baseAgent;
 
-    public VrExternalMailAgent() {
+    public VrExternalMailAgent(GoMailFactory factory) throws IOException {
+        baseAgent = factory.createAgent();
+    }
+
+    public VrExternalMailAgent(GoMailAgent baseAgent) throws IOException {
+        if (baseAgent == null) {
+            throw new NullPointerException();
+        }
+        this.baseAgent = baseAgent;
     }
 
     @Override
-    public int sendExpandedMail(GoMail mail, Properties roProperties, GoMailContext expr) throws IOException {
-        return baseAgent.sendExpandedMail(mail, roProperties, expr);
-        //            try {
-        //                Thread.sleep(2000);
-        //            } catch (Exception e) {
-        //                e.printStackTrace();
-        //            }
-        //            if (Math.random() > 0.5) {
-        //                throw new UnsupportedOperationException("Not supported yet to " + mail.to() + " ;  " + mail.subject());
-        //            }
-        //            return 1;
+    public int sendMessage(GoMailMessage mail, Properties properties, GoMailContext expr) throws IOException {
+        return baseAgent.sendMessage(mail, properties, expr);
     }
 
 }

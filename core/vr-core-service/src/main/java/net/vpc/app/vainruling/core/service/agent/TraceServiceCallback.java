@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 /**
- * @author vpc
+ * @author taha.bensalah@gmail.com
  */
 @Callback(
         //config = @Config(persistenceUnit = "main")
@@ -72,7 +72,7 @@ public class TraceServiceCallback {
         }
         TraceService trace = getTraceService();
         Entity entity = event.getEntity();
-        if (trace == null || trace.isSilenced() || !trace.accept(entity)) {
+        if (trace == null || TraceService.isSilenced() || !trace.accept(entity)) {
             event.getContext().setObject("silenced", true);
             return;
         }
@@ -94,7 +94,7 @@ public class TraceServiceCallback {
         }
         Entity entity = event.getEntity();
         TraceService trace = getTraceService();
-        if (trace == null || trace.isSilenced() || !trace.accept(entity) || Boolean.TRUE.equals(event.getContext().getObject("silenced"))) {
+        if (trace == null || TraceService.isSilenced() || !trace.accept(entity) || Boolean.TRUE.equals(event.getContext().getObject("silenced"))) {
             return;
         }
         List old = event.getContext().getObject("updated_objects");
