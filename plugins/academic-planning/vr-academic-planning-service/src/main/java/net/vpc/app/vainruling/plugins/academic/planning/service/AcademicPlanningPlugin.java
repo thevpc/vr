@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.plugins.academic.planning.service;
 
 import net.vpc.app.vainruling.core.service.AppPlugin;
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.UpaAware;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
@@ -36,7 +35,6 @@ import java.util.*;
  * @author taha.bensalah@gmail.com
  */
 @AppPlugin(dependsOn = "academicPlugin", version = "1.4")
-@UpaAware
 public class AcademicPlanningPlugin {
 
     @Autowired

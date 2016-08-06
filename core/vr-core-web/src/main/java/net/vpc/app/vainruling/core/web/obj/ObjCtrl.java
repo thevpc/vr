@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.core.web.obj;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.UpaAware;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.*;
 import net.vpc.app.vainruling.core.service.util.I18n;
@@ -156,7 +155,6 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     @Override
-    @UpaAware
     public boolean isEnabledButton(String buttonId) {
         Boolean v = enabledButtons.get(buttonId);
         if (v == null) {
@@ -427,13 +425,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     @OnPageLoad
-    @UpaAware
     public void onPageLoad(String cmd) {
         reloadPage(cmd, false);
     }
 
     @Override
-    @UpaAware
     public void reloadPage(String cmd, boolean enableCustomization) {
         enabledButtons.clear();
         ObjSearch oldSearch = getModel().getSearch();
@@ -510,7 +506,6 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
-    @UpaAware
     public void loadList() {
         List<Record> found = objService.findRecordsByFilter(getEntityName(), getModel().getConfig().listFilter, getModel().getSearch());
         List<ObjRow> filteredObjects = new ArrayList<>();
@@ -771,7 +766,6 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
-    @UpaAware
     public void updateView() {
         enabledButtons.clear();
         try {

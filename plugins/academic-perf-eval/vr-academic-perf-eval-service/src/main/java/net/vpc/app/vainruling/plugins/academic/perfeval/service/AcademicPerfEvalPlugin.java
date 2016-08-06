@@ -25,7 +25,6 @@ import java.util.logging.Logger;
  * @author taha.bensalah@gmail.com
  */
 @AppPlugin(dependsOn = "academicPlugin", version = "1.0")
-@UpaAware
 public class AcademicPerfEvalPlugin {
     private static final Logger log = Logger.getLogger(AcademicPerfEvalPlugin.class.getName());
 

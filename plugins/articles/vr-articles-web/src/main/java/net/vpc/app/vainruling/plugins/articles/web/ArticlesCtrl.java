@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.plugins.articles.web;
 
-import net.vpc.app.vainruling.core.service.UpaAware;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
@@ -120,7 +119,6 @@ public class ArticlesCtrl {
         return findArticles("Main.Row7");
     }
 
-    @UpaAware
     public List<FullArticle> findArticles(String disposition) {
         AppUser u = VrApp.getBean(UserSession.class).getUser();
         return articles.findFullArticlesByUserAndCategory(u == null ? null : u.getLogin(), disposition);

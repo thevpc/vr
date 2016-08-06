@@ -43,7 +43,6 @@ import java.util.logging.Logger;
  * @author taha.bensalah@gmail.com
  */
 @AppPlugin(version = "1.6")
-@UpaAware
 public class MailboxPlugin {
 
     //    public void

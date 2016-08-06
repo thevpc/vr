@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.core.web.menu;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.UpaAware;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.*;
@@ -69,7 +68,6 @@ public class VrMenuManager {
         }
     }
 
-    @UpaAware
     public String buildMenu() {
 //        MenuTree v = new MenuTree();
 //        TreeTraversal.preOrderTreeTraversal(v, new TreeVisitor<VRMenuDef>() {
@@ -334,7 +332,6 @@ public class VrMenuManager {
     }
 
     @PostConstruct
-    @UpaAware
     public void initCustomMenus() {
         for (String beanName : VrApp.getContext().getBeanNamesForAnnotation(UCtrl.class)) {
             if ("vrMenuManager".equals(beanName)) {

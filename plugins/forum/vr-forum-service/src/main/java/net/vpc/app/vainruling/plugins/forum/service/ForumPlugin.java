@@ -7,13 +7,11 @@ package net.vpc.app.vainruling.plugins.forum.service;
 
 import net.vpc.app.vainruling.core.service.AppPlugin;
 import net.vpc.app.vainruling.core.service.Install;
-import net.vpc.app.vainruling.core.service.UpaAware;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @AppPlugin
-@UpaAware
 public class ForumPlugin {
 
     @Install

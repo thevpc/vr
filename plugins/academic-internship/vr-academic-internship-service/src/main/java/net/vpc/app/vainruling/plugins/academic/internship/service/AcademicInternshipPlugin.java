@@ -30,7 +30,6 @@ import java.util.logging.Logger;
  * @author taha.bensalah@gmail.com
  */
 @AppPlugin(dependsOn = "academicPlugin", version = "1.4")
-@UpaAware
 public class AcademicInternshipPlugin {
 
     public static void main(String[] args) {
