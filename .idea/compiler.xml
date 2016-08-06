@@ -72,11 +72,6 @@
         <module name="vr-tasks-service" />
         <module name="vr-tasks-web" />
         <module name="web-jsf" />
-        <module name="wpm-payroll-service" />
-        <module name="wpm-payroll-web" />
-        <module name="wpm-service" />
-        <module name="wpm-theme-infusion" />
-        <module name="wpm-web" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

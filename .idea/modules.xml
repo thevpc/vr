@@ -55,12 +55,6 @@
       <module fileurl="file://$PROJECT_DIR$/plugins/tasks/vr-tasks-service/vr-tasks-service.iml" filepath="$PROJECT_DIR$/plugins/tasks/vr-tasks-service/vr-tasks-service.iml" group="vain-ruling and modules" />
       <module fileurl="file://$PROJECT_DIR$/plugins/tasks/vr-tasks-web/vr-tasks-web.iml" filepath="$PROJECT_DIR$/plugins/tasks/vr-tasks-web/vr-tasks-web.iml" group="vain-ruling and modules" />
       <module fileurl="file://$PROJECT_DIR$/../../common/web-jsf/web-jsf.iml" filepath="$PROJECT_DIR$/../../common/web-jsf/web-jsf.iml" />
-      <module fileurl="file://$PROJECT_DIR$/apps/wpm/wpm.iml" filepath="$PROJECT_DIR$/apps/wpm/wpm.iml" group="wpm and modules" />
-      <module fileurl="file://$PROJECT_DIR$/apps/wpm/plugins/wpm-payroll/wpm-payroll-service/wpm-payroll-service.iml" filepath="$PROJECT_DIR$/apps/wpm/plugins/wpm-payroll/wpm-payroll-service/wpm-payroll-service.iml" group="wpm and modules" />
-      <module fileurl="file://$PROJECT_DIR$/apps/wpm/plugins/wpm-payroll/wpm-payroll-web/wpm-payroll-web.iml" filepath="$PROJECT_DIR$/apps/wpm/plugins/wpm-payroll/wpm-payroll-web/wpm-payroll-web.iml" group="wpm and modules" />
-      <module fileurl="file://$PROJECT_DIR$/apps/wpm/wpm-service/wpm-service.iml" filepath="$PROJECT_DIR$/apps/wpm/wpm-service/wpm-service.iml" group="wpm and modules" />
-      <module fileurl="file://$PROJECT_DIR$/apps/wpm/plugins/themes/wpm-theme-infusion/wpm-theme-infusion.iml" filepath="$PROJECT_DIR$/apps/wpm/plugins/themes/wpm-theme-infusion/wpm-theme-infusion.iml" group="wpm and modules" />
-      <module fileurl="file://$PROJECT_DIR$/apps/wpm/wpm-web/wpm-web.iml" filepath="$PROJECT_DIR$/apps/wpm/wpm-web/wpm-web.iml" group="wpm and modules" />
     </modules>
   </component>
 </project>
