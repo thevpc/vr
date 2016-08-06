@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+        >
+<h:head>
+    <title>#{teacherCurriculumCtrl.model.teacher.contact.fullName}</title>
+    <meta charset="utf-8"/>
+    <meta name="author" content="vpc"/>
+    <meta name="description" content="ENISo's people"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0"/>
+    <link rel="stylesheet" type="text/css" href="#{jsfCtrl.context}/fs/Site/wplugins/magnetic/css/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="#{jsfCtrl.context}/fs/Site/wplugins/magnetic/css/main.css"/>
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Tangerine"/>
+    <script type="text/javascript" src="#{jsfCtrl.context}/fs/Site/wplugins/magnetic/js/jquery.js"></script>
+    <script type="text/javascript" src="#{jsfCtrl.context}/fs/Site/wplugins/magnetic/js/main.js"></script>
+    <link rel="shortcut icon" href="#{jsfCtrl.themeContext}/images/app-icon.png" type="image/png"/>
+    <script src="#{jsfCtrl.context}/fs/Site/js/analytics.js"></script>
+</h:head>
+<h:body>
+
+    <header>
+        <div class="vr-top">
+            <a href="/"><img class="navbar-brand" style="margin-top: 5px;height: 40px;"
+                             src="#{jsfCtrl.themeContext}/images/app-icon.png" alt="VR ENISo" height="30"/></a>
+        </div>
+
+        <div class="logo">
+            <a href="#" class="vr-contact">#{teacherCurriculumCtrl.model.teacher.contact.firstName}</a>
+        </div>
+        <!-- end logo -->
+        <ul style="list-style-type: none;font-family: 'Anivers', serif;">
+            <li>#{teacherCurriculumCtrl.model.teacherCV.title1}</li>
+            <li>#{teacherCurriculumCtrl.model.teacherCV.title2}</li>
+            <li>#{teacherCurriculumCtrl.model.teacherCV.title3}</li>
+        </ul>
+        <div id="menu_icon">
+        </div>
+        <h:form>
+            <nav>
+                <ul>
+                    <li><a href="#" class="selected">Home</a></li>
+                    <li><h:commandLink
+                            action="#{vrMenuManager.gotoPage('teacherCurriculumContent', jsfCtrl.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'about\'}'))}">About me</h:commandLink>
+                    </li>
+                    <li><a href="teacher-cv-contact.xhtml">Contact me</a></li>
+                    <li><a href="#{jsfCtrl.facesContext}/META-INF/resources/contacts.xhtml">Teachers Directory</a></li>
+                    <li><a href="#{jsfCtrl.nvl(teacherCurriculumCtrl.model.teacherCV.wwwURL,'#')}">Personal Web Site</a>
+                    </li>
+                </ul>
+            </nav>
+            <!-- end navigation menu -->
+        </h:form>
+
+        <div class="footer clearfix">
+            <ul class="social clearfix">
+                <li><a href="#{jsfCtrl.nvl(teacherCurriculumCtrl.model.teacherCV.socialURL1,'#')}" class="fb"
+                       data-title="Facebook"></a></li>
+                <li><a href="#{jsfCtrl.nvl(teacherCurriculumCtrl.model.teacherCV.socialURL2,'#')}" class="google"
+                       data-title="Google +"></a></li>
+                <li><a href="#{jsfCtrl.nvl(teacherCurriculumCtrl.model.teacherCV.socialURL3,'#')}" class="linkedin"
+                       data-title="LinkedIn"></a></li>
+                <li><a href="#{jsfCtrl.nvl(teacherCurriculumCtrl.model.teacherCV.socialURL4,'#')}" class="twitter"
+                       data-title="Twitter"></a></li>
+                <li><a href="#{jsfCtrl.nvl(teacherCurriculumCtrl.model.teacherCV.rssURL,'#')}" class="rss"
+                       data-title="RSS"></a></li>
+            </ul>
+            <!-- end social -->
+
+            <div class="rights">
+                <!--<p>Copyright © 2014 vpc</p>-->
+                <!-- many thanks to
+                <p>Template by <a href="">Pixelhint.com</a></p>
+                -->
+            </div>
+            <!-- end rights -->
+        </div>
+        <!-- end footer -->
+    </header>
+    <!-- end header -->
+    <h:form>
+        <section class="main clearfix">
+            <div class="work">
+                <h:commandLink
+                        action="#{vrMenuManager.gotoPage('teacherCurriculumContent', jsfCtrl.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'about\'}'))}">
+                    <img src="#{teacherCurriculumCtrl.model.photoUrl}" class="media" alt=""/>
+
+                    <div class="caption">
+                        <div class="work_title">
+                            <h1>Currucilum vitae</h1>
+                        </div>
+                    </div>
+                </h:commandLink>
+            </div>
+
+            <div class="work">
+                <h:commandLink
+                        action="#{vrMenuManager.gotoPage('teacherCurriculumContent', jsfCtrl.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'teaching\'}'))}">
+                    <img src="#{jsfCtrl.context}/fs/Site/wplugins/magnetic/img/work2.jpg" class="media" alt=""/>
+
+                    <div class="caption">
+                        <div class="work_title">
+                            <h1>Teached courses</h1>
+                        </div>
+                    </div>
+                </h:commandLink>
+            </div>
+
+            <div class="work">
+                <h:commandLink
+                        action="#{vrMenuManager.gotoPage('teacherCurriculumContent', jsfCtrl.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'research\'}'))}">
+                    <img src="#{jsfCtrl.context}/fs/Site/wplugins/magnetic/img/work3.jpg" class="media" alt=""/>
+
+                    <div class="caption">
+                        <div class="work_title">
+                            <h1>Research activities</h1>
+                        </div>
+                    </div>
+                </h:commandLink>
+            </div>
+
+            <div class="work">
+                <h:commandLink
+                        action="#{vrMenuManager.gotoPage('teacherCurriculumContent', jsfCtrl.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'education\'}'))}">
+                    <img src="#{jsfCtrl.context}/fs/Site/wplugins/magnetic/img/work4.jpg" class="media" alt=""/>
+
+                    <div class="caption">
+                        <div class="work_title">
+                            <h1>Education</h1>
+                        </div>
+                    </div>
+                </h:commandLink>
+            </div>
+
+            <div class="work">
+                <h:commandLink
+                        action="#{vrMenuManager.gotoPage('teacherCurriculumContent', jsfCtrl.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'projects\'}'))}">
+                    <img src="#{jsfCtrl.context}/fs/Site/wplugins/magnetic/img/work5.jpg" class="media" alt=""/>
+
+                    <div class="caption">
+                        <div class="work_title">
+                            <h1>Projects</h1>
+                        </div>
+                    </div>
+                </h:commandLink>
+            </div>
+
+            <div class="work">
+                <h:commandLink
+                        action="#{vrMenuManager.gotoPage('teacherCurriculumContent', jsfCtrl.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'extra\'}'))}">
+                    <img src="#{jsfCtrl.nvl(teacherCurriculumCtrl.model.teacherCV.extraImage,jsfCtrl.str(jsfCtrl.context,'/fs/Site/wplugins/magnetic/img/work6.jpg'))}"
+                         class="media" alt=""/>
+
+                    <div class="caption">
+                        <div class="work_title">
+                            <h1>#{jsfCtrl.nvl(teacherCurriculumCtrl.model.teacherCV.extraTitle,'Extra activities')}</h1>
+                        </div>
+                    </div>
+                </h:commandLink>
+            </div>
+        </section>
+        <!-- end main -->
+    </h:form>
+</h:body>
+</html>

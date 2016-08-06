@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<upa version="1.0">
-    <scan types="net.vpc.app.**"/>
-    <connection>
-        <connectionString>derby:default://localhost/opp;structure=create;userName=opp;password=opp</connectionString>
-    </connection>
-</upa>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+
+<h:head>
+</h:head>
+
+<h:body>
+
+
+    <ui:composition template="#{jsfCtrl.themePath}/templates/private-template.xhtml">
+        <ui:define name="content">
+            <h:form id="itemForm" enctype="multipart/form-data">
+                <p:panel header="à propos" style="margin-bottom:20px">
+                    <h:panelGrid columns="3" cellspacing="10px" cellpadding="10px">
+                        <p:outputLabel value="Utilisateur"/>
+                        <p:outputLabel style="margin-left: 10px" value=" :         "/>
+                        <h:outputText style="margin-left: 20px"
+                                      value="#{userSession.user==null?'anonymous' : jsfCtrl.strcat(userSession.user.login,' / ',userSession.user.contact.fullName) }"/>
+                        <p:outputLabel value="Version"/>
+                        <p:outputLabel style="margin-left: 10px" value=" :          "/>
+                        <h:outputText style="margin-left: 20px" value="#{appInfoCtrl.model.version.version}"/>
+                        <p:outputLabel value="Date Publication"/>
+                        <p:outputLabel style="margin-left: 10px" value=" :          "/>
+                        <h:outputText style="margin-left: 20px" value="#{appInfoCtrl.model.version.buildDate}"/>
+                        <p:outputLabel value="Code Construction"/>
+                        <p:outputLabel style="margin-left: 10px" value=" :          "/>
+                        <h:outputText style="margin-left: 20px" value="#{appInfoCtrl.model.version.buildNumber}"/>
+                        <p:outputLabel value="Auteur"/>
+                        <p:outputLabel style="margin-left: 10px" value=" :          "/>
+                        <h:outputText style="margin-left: 20px" value="#{appInfoCtrl.model.version.author}"/>
+                        <p:outputLabel value="Nombre de Plugins"/>
+                        <p:outputLabel style="margin-left: 10px" value=" :          "/>
+                        <h:outputText style="margin-left: 20px" value="#{appInfoCtrl.model.pluginsCount}"/>
+                    </h:panelGrid>
+                </p:panel>
+
+            </h:form>
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>
