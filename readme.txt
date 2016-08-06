@@ -3,14 +3,14 @@ systemctl status mysql
 systemctl enable mysql
 systemctl start mysql
 
-mysqladmin -u root password "rombatakaya#!"
+mysqladmin -u root password "<YOUR PASSWORD>"
 or
-mysqladmin -u root -p'oldpassword' password newpass
+mysqladmin -u root -p'oldpassword' password "<YOUR PASSWORD>"
 
-mysql -u root -p"rombatakaya#!"
+mysql -u root -p"<YOUR PASSWORD>"
 
 CREATE DATABASE enisoinfodb DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
-CREATE USER 'enisoinfouser'@'localhost' IDENTIFIED BY 'canard77';
+CREATE USER 'enisoinfouser'@'localhost' IDENTIFIED BY "<YOUR PASSWORD>";
 GRANT ALL PRIVILEGES ON enisoinfodb . * TO 'enisoinfouser'@'localhost';
 FLUSH PRIVILEGES;
 
@@ -36,9 +36,3 @@ PREPARE stmt FROM @tables;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 SET FOREIGN_KEY_CHECKS = 1;
-
-
-
-
---update ACADEMIC_COURSE_LEVEL set ACADEMIC_CLASS_ID=(select max(STUDENT_CLASS_ID) from ACADEMIC_COURSE_PLAN where ACADEMIC_COURSE_PLAN.COURSE_LEVEL_ID=ACADEMIC_COURSE_LEVEL.ID)
-update ACADEMIC_COURSE_LEVEL set SEMESTER_ID=(select max(SEMESTER_ID) from ACADEMIC_COURSE_PLAN where ACADEMIC_COURSE_PLAN.COURSE_LEVEL_ID=ACADEMIC_COURSE_LEVEL.ID)
