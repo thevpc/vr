@@ -4,8 +4,18 @@
     <option name="SCOPE_TYPE" value="4" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7e095ecf-a175-47ed-ac06-24628205f270" name="Default" comment="v">
+    <list default="true" id="7e095ecf-a175-47ed-ac06-24628205f270" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_vpc_app_vain_ruling_core_vr_core_service_1_0.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_vpc_common_streams_1_0.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/artifacts/eniso_info_web_war_exploded.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/eniso_info_web_war_exploded.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/eniso-info/eniso-info-service/eniso-info-service.iml" afterPath="$PROJECT_DIR$/apps/eniso-info/eniso-info-service/eniso-info-service.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/eniso-info/eniso-info-web/eniso-info-web.iml" afterPath="$PROJECT_DIR$/apps/eniso-info/eniso-info-web/eniso-info-web.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/vr-core-service/pom.xml" afterPath="$PROJECT_DIR$/core/vr-core-service/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/articles/vr-articles-service/vr-articles-service.iml" afterPath="$PROJECT_DIR$/plugins/articles/vr-articles-service/vr-articles-service.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/articles/vr-articles-web/vr-articles-web.iml" afterPath="$PROJECT_DIR$/plugins/articles/vr-articles-web/vr-articles-web.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/mailbox/vr-mailbox-service/vr-mailbox-service.iml" afterPath="$PROJECT_DIR$/plugins/mailbox/vr-mailbox-service/vr-mailbox-service.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/mailbox/vr-mailbox-web/vr-mailbox-web.iml" afterPath="$PROJECT_DIR$/plugins/mailbox/vr-mailbox-web/vr-mailbox-web.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/InvalidFormulaException.java" afterPath="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/InvalidFormulaException.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/NoResultException.java" afterPath="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/NoResultException.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/NonUniqueResultException.java" afterPath="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/NonUniqueResultException.java" />
@@ -608,6 +618,87 @@
     <ignored path="apps/eniso-opportunities/plugins/main-ui-template-plugin/main-ui-template-plugin-web/target/main-ui-template-plugin-web-1.0.jar" />
     <ignored path="apps/eniso-opportunities/plugins/main-ui-template-plugin/main-ui-template-plugin-web/target/maven-archiver/pom.properties" />
     <ignored path="../../upa/upa-impl/src/main/csharp/bin/Debug/Net.Vpc.Upa.pdb" />
+    <ignored path="../../upa/upa-test/derby.log" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/db.lck" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/dbex.lck" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/service.properties" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/log/log.ctrl" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/log/log1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/log/logmirror.ctrl" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c10.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c101.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c111.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c121.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c130.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c141.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c150.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c161.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c171.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c180.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c191.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c1a1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c1b1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c1c0.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c1d1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c1e0.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c1f1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c20.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c200.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c211.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c221.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c230.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c241.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c251.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c260.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c271.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c281.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c290.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c2a1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c2b1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c2c1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c2d0.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c2e1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c2f0.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c300.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c31.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c311.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c321.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c331.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c340.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c351.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c361.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c371.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c380.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c391.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c3a1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c3b1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c3c0.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c3d1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c3e1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c3f1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c400.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c41.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c411.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c421.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c430.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c441.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c451.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c461.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c470.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c481.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c490.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c4a1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c51.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c60.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c71.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c81.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/c90.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/ca1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/cb1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/cc0.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/cd1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/ce1.dat" />
+    <ignored path="../../upa/upa-test/db-embedded/upatest/seg0/cf0.dat" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -673,16 +764,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="InvalidFormulaException.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/InvalidFormulaException.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="EntityAnyFilter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/filters/EntityAnyFilter.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -693,21 +774,71 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="true">
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../common/gomail/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="16" selection-start-line="8" selection-start-column="16" selection-end-line="8" selection-end-column="16" />
+            <state relative-caret-position="80">
+              <caret line="32" column="24" selection-start-line="32" selection-start-column="24" selection-end-line="32" selection-end-column="24" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="EntityNameFilter.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/filters/EntityNameFilter.java">
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/private/old/api/vr-api-service/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" column="49" selection-start-line="6" selection-start-column="49" selection-end-line="6" selection-end-column="49" />
+            <state relative-caret-position="88">
+              <caret line="63" column="24" selection-start-line="63" selection-start-column="24" selection-end-line="63" selection-end-column="24" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/core/vr-core-service/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="88">
+              <caret line="76" column="24" selection-start-line="76" selection-start-column="24" selection-end-line="76" selection-end-column="24" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../common/web-jsf/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="232">
+              <caret line="17" column="39" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="39" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/private/old/api/vr-api-web/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="52" column="24" selection-start-line="52" selection-start-column="24" selection-end-line="52" selection-end-column="24" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/vr-core-web/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="59" column="24" selection-start-line="59" selection-start-column="24" selection-end-line="59" selection-end-column="24" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../common/streams/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="4" column="36" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="36" />
               <folding />
             </state>
           </provider>
@@ -723,51 +854,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ManyToOneType.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/types/ManyToOneType.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="4" column="27" selection-start-line="4" selection-start-column="27" selection-end-line="4" selection-end-column="27" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../upa/upa-web/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../upa/upa-api/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="105">
               <caret line="7" column="21" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="21" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="NonUniqueResultException.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/NonUniqueResultException.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" column="40" selection-start-line="5" selection-start-column="40" selection-end-line="5" selection-end-column="40" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="NoResultException.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/NoResultException.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" column="37" selection-start-line="6" selection-start-column="37" selection-end-line="6" selection-end-column="37" />
               <folding />
             </state>
           </provider>
@@ -785,7 +876,7 @@
   </component>
   <component name="Git.Settings">
     <option name="ROOT_SYNC" value="SYNC" />
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../upa" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RECENT_COMMON_BRANCH" value="mytasks" />
   </component>
   <component name="GradleLocalSettings">
@@ -799,9 +890,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/plugins/tasks/vr-tasks-web/pom.xml" />
-        <option value="$PROJECT_DIR$/../../common/web-jsf/pom.xml" />
-        <option value="$PROJECT_DIR$/../../upa/upa-web/src/main/java/net/vpc/upa/web/UPAContextLoaderListener.java" />
         <option value="$PROJECT_DIR$/../../upa/upa-web/src/main/java/net/vpc/upa/web/UPAServletRequestFilter.java" />
         <option value="$PROJECT_DIR$/../../upa/upa-web/src/main/java/net/vpc/upa/web/UPAServletContextListener.java" />
         <option value="$PROJECT_DIR$/apps/eniso-info/eniso-info-web/src/main/webapp/WEB-INF/web.xml" />
@@ -837,12 +925,9 @@
         <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/TypeMarshallerUtils.java" />
         <option value="$PROJECT_DIR$/plugins/equipments/vr-equipments-service/src/main/java/net/vpc/app/vainruling/plugins/equipments/service/EquipmentPlugin.java" />
         <option value="$PROJECT_DIR$/../../upa/upa-impl/pom.xml" />
-        <option value="$PROJECT_DIR$/core/vr-core-service/pom.xml" />
-        <option value="$PROJECT_DIR$/../../common/gomail/pom.xml" />
         <option value="$PROJECT_DIR$/plugins/mailbox/vr-mailbox-service/pom.xml" />
         <option value="$PROJECT_DIR$/plugins/equipments/vr-equipments-service/pom.xml" />
         <option value="$PROJECT_DIR$/../../upa/upa-api/pom.xml" />
-        <option value="$PROJECT_DIR$/core/vr-core-web/pom.xml" />
         <option value="$PROJECT_DIR$/private/old/api/vr-api-web/pom.xml" />
         <option value="$PROJECT_DIR$/../../upa/upa-tutorial/pom.xml" />
         <option value="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/InvalidFormulaException.java" />
@@ -850,6 +935,12 @@
         <option value="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/NoResultException.java" />
         <option value="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/filters/EntityNameFilter.java" />
         <option value="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/filters/EntityAnyFilter.java" />
+        <option value="$PROJECT_DIR$/../../common/web-jsf/pom.xml" />
+        <option value="$PROJECT_DIR$/core/vr-core-web/pom.xml" />
+        <option value="$PROJECT_DIR$/../../common/streams/pom.xml" />
+        <option value="$PROJECT_DIR$/../../common/gomail/pom.xml" />
+        <option value="$PROJECT_DIR$/private/old/api/vr-api-service/pom.xml" />
+        <option value="$PROJECT_DIR$/core/vr-core-service/pom.xml" />
       </list>
     </option>
   </component>
@@ -886,6 +977,30 @@
         <PATH_ELEMENT>
           <option name="myItemId" value="" />
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="net.vpc.common.streams" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="net.vpc.common.streams" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Lifecycle" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$LifecycleNode" />
         </PATH_ELEMENT>
       </PATH>
     </treeState>
@@ -978,7 +1093,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="upa and modules" />
+              <option name="myItemId" value="vain-ruling and modules" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -2681,7 +2796,7 @@
       <workItem from="1470304298769" duration="3889000" />
       <workItem from="1470318753202" duration="52000" />
       <workItem from="1470504957319" duration="161000" />
-      <workItem from="1470505300288" duration="35087000" />
+      <workItem from="1470505300288" duration="37500000" />
     </task>
     <task id="LOCAL-00001" summary="issue fixing version">
       <created>1466383525891</created>
@@ -2842,7 +2957,21 @@
       <option name="project" value="LOCAL" />
       <updated>1470568037733</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="v">
+      <created>1470568102991</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1470568102991</updated>
+    </task>
+    <task id="LOCAL-00024" summary="fix compile problem">
+      <created>1470570446820</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1470570446820</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -2878,7 +3007,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1405175000" />
+    <option name="totallyTimeSpent" value="1407588000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -2894,9 +3023,9 @@
     <editor active="false" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19669421" sideWeight="0.35227272" order="12" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.58842975" sideWeight="0.325" order="12" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.65353036" sideWeight="0.49092284" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24090908" sideWeight="0.48372093" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29924244" sideWeight="0.48372093" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22768533" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -2912,15 +3041,15 @@
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3268921" sideWeight="0.49394855" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19669421" sideWeight="0.64772725" order="14" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.507438" sideWeight="0.8912387" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37024793" sideWeight="0.64772725" order="14" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1553719" sideWeight="0.8810606" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Spring" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3218391" sideWeight="0.49092284" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3268921" sideWeight="0.4969743" order="16" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25530303" sideWeight="0.4387352" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32930514" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3804841" sideWeight="0.24052718" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="JProfiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="17" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.6545454" sideWeight="0.68257576" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.58842975" sideWeight="0.675" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22727273" sideWeight="0.5612648" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -2961,7 +3090,8 @@
     <MESSAGE value="1.2.0.25" />
     <MESSAGE value="2016 v1.1" />
     <MESSAGE value="v" />
-    <option name="LAST_COMMIT_MESSAGE" value="v" />
+    <MESSAGE value="fix compile problem" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix compile problem" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -3111,30 +3241,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/ConstantDataMarshallerFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/SerializablePlatformObjectMarshaller.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="41" column="13" selection-start-line="41" selection-start-column="13" selection-end-line="41" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/YearMarshaller.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/NullMarshaller.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-8">
@@ -3371,14 +3477,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/vr-core-service/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="92" selection-start-line="2" selection-start-column="92" selection-end-line="2" selection-end-column="92" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$MAVEN_REPOSITORY$/junit/junit/4.8.2/junit-4.8.2.pom">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
@@ -3399,22 +3497,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="495">
           <caret line="36" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/vr-core-web/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="74">
-          <caret line="54" column="30" selection-start-line="54" selection-start-column="30" selection-end-line="54" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/private/old/api/vr-api-web/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="74">
-          <caret line="48" column="30" selection-start-line="48" selection-start-column="30" selection-end-line="48" selection-end-column="30" />
           <folding />
         </state>
       </provider>
@@ -3515,10 +3597,58 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/private/old/api/vr-api-web/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="52" column="24" selection-start-line="52" selection-start-column="24" selection-end-line="52" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../common/web-jsf/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="232">
+          <caret line="17" column="39" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/vr-core-web/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="59" column="24" selection-start-line="59" selection-start-column="24" selection-end-line="59" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../common/streams/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="36" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/../../common/gomail/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="16" selection-start-line="8" selection-start-column="16" selection-end-line="8" selection-end-column="16" />
+        <state relative-caret-position="80">
+          <caret line="32" column="24" selection-start-line="32" selection-start-column="24" selection-end-line="32" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/private/old/api/vr-api-service/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="88">
+          <caret line="63" column="24" selection-start-line="63" selection-start-column="24" selection-end-line="63" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/vr-core-service/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="88">
+          <caret line="76" column="24" selection-start-line="76" selection-start-column="24" selection-end-line="76" selection-end-column="24" />
           <folding />
         </state>
       </provider>
