@@ -10,7 +10,6 @@
           <element id="archive" name="eniso-info-service-1.0.jar">
             <element id="module-output" name="eniso-info-service" />
           </element>
-          <element id="library" level="project" name="Maven: org.apache.derby:derbyclient:10.11.1.1" />
           <element id="archive" name="vr-core-service-1.0.jar">
             <element id="module-output" name="vr-core-service" />
           </element>
@@ -23,10 +22,10 @@
           <element id="library" level="project" name="Maven: org.aspectj:aspectjweaver:1.8.9" />
           <element id="library" level="project" name="Maven: org.springframework:spring-jdbc:4.1.2.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-tx:4.1.2.RELEASE" />
-          <element id="archive" name="upa-api-1.2.0.24.jar">
+          <element id="archive" name="upa-api-1.2.0.25.jar">
             <element id="module-output" name="upa-api" />
           </element>
-          <element id="archive" name="upa-impl-1.2.0.24.0.jar">
+          <element id="archive" name="upa-impl-1.2.0.25.0.jar">
             <element id="module-output" name="upa-impl" />
           </element>
           <element id="library" level="project" name="Maven: cglib:cglib:3.2.4" />
@@ -90,7 +89,7 @@
           <element id="archive" name="vr-mailbox-service-1.0.jar">
             <element id="module-output" name="vr-mailbox-service" />
           </element>
-          <element id="archive" name="gomail-1.2.4.jar">
+          <element id="archive" name="gomail-1.2.5.jar">
             <element id="module-output" name="gomail" />
           </element>
           <element id="library" level="project" name="Maven: javax.mail:mail:1.5.0-b01" />
@@ -129,7 +128,6 @@
           <element id="archive" name="vr-dev-toolbox-service-1.0.jar">
             <element id="module-output" name="vr-dev-toolbox-service" />
           </element>
-          <element id="library" level="project" name="Maven: mysql:mysql-connector-java:5.1.35" />
           <element id="archive" name="eniso-info-theme-infusion-1.0.jar">
             <element id="module-output" name="eniso-info-theme-infusion" />
           </element>
@@ -164,7 +162,7 @@
           <element id="library" level="project" name="Maven: org.primefaces:primefaces:5.2" />
           <element id="library" level="project" name="Maven: org.primefaces.extensions:primefaces-extensions:3.2.0" />
           <element id="library" level="project" name="Maven: org.apache.commons:commons-lang3:3.1" />
-          <element id="archive" name="upa-web-1.0.0.0.6.jar">
+          <element id="archive" name="upa-web-1.1.0.0.0.jar">
             <element id="module-output" name="upa-web" />
           </element>
           <element id="archive" name="web-jsf-1.0.jar">
@@ -224,6 +222,9 @@
           <element id="library" level="project" name="Maven: net.bull.javamelody:javamelody-core:1.60.0" />
           <element id="library" level="project" name="Maven: org.jrobin:jrobin:1.5.9" />
           <element id="library" level="project" name="Maven: com.lowagie:itext:2.1.7" />
+          <element id="library" level="project" name="Maven: mysql:mysql-connector-java:5.1.35" />
+          <element id="library" level="project" name="Maven: org.apache.derby:derbyclient:10.11.1.1" />
+          <element id="library" level="project" name="Maven: org.apache.derby:derby:10.12.1.1" />
         </element>
       </element>
       <element id="directory" name="META-INF">

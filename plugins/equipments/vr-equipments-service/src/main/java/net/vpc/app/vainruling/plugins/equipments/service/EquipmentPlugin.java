@@ -18,7 +18,7 @@ import java.util.*;
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin(version = "1.2", dependsOn = "commonModel")
+@AppPlugin(version = "1.2")
 public class EquipmentPlugin {
 
     @Autowired
@@ -90,40 +90,40 @@ public class EquipmentPlugin {
             core.addProfileRight(technicianProfile.getId(), ee.getAbsoluteName() + ".DefaultEditor");
         }
 
-        AppContact techContact = new AppContact();
-        AppUser tech1 = new AppUser();
-        tech1.setEnabled(true);
-        techContact.setFirstName("riadh");
-        techContact.setLastName("tech");
-        techContact.setFullName("riadh");
-        tech1.setLogin("riadh.chikhaoui");
-        tech1.setPassword("riadh");
-        techContact.setCivility(core.findCivility("M."));
-        techContact.setEmail("riadh@vr.net");
-        techContact.setGender(core.findGender("H"));
-        tech1.setType(technicianType);
-        techContact = core.findOrCreateContact(techContact);
-        tech1.setContact(techContact);
-        tech1 = core.findOrCreate(tech1);
+//        AppContact techContact = new AppContact();
+//        AppUser tech1 = new AppUser();
+//        tech1.setEnabled(true);
+//        techContact.setFirstName("riadh");
+//        techContact.setLastName("tech");
+//        techContact.setFullName("riadh");
+//        tech1.setLogin("riadh.chikhaoui");
+//        tech1.setPassword("riadh");
+//        techContact.setCivility(core.findCivility("M."));
+//        techContact.setEmail("riadh@vr.net");
+//        techContact.setGender(core.findGender("H"));
+//        tech1.setType(technicianType);
+//        techContact = core.findOrCreateContact(techContact);
+//        tech1.setContact(techContact);
+//        tech1 = core.findOrCreate(tech1);
 
-        techContact = new AppContact();
-        AppUser tech2 = new AppUser();
-        tech2.setEnabled(true);
-        techContact.setFirstName("sameh");
-        techContact.setLastName("tech");
-        techContact.setFullName("techsameh");
-        tech2.setLogin("sameh.gassab");
-        tech2.setPassword("sameh");
-        techContact.setCivility(core.findCivility("Mme"));
-        techContact.setEmail("sameh@vr.net");
-        techContact.setGender(core.findGender("F"));
-        tech2.setType(technicianType);
-        techContact = core.findOrCreateContact(techContact);
-        tech2.setContact(techContact);
-        tech2 = core.findOrCreate(tech2);
-
-        core.userAddProfile(tech1.getId(), "Technician");
-        core.userAddProfile(tech2.getId(), "Technician");
+//        techContact = new AppContact();
+//        AppUser tech2 = new AppUser();
+//        tech2.setEnabled(true);
+//        techContact.setFirstName("sameh");
+//        techContact.setLastName("tech");
+//        techContact.setFullName("techsameh");
+//        tech2.setLogin("sameh.gassab");
+//        tech2.setPassword("sameh");
+//        techContact.setCivility(core.findCivility("Mme"));
+//        techContact.setEmail("sameh@vr.net");
+//        techContact.setGender(core.findGender("F"));
+//        tech2.setType(technicianType);
+//        techContact = core.findOrCreateContact(techContact);
+//        tech2.setContact(techContact);
+//        tech2 = core.findOrCreate(tech2);
+//
+//        core.userAddProfile(tech1.getId(), "Technician");
+//        core.userAddProfile(tech2.getId(), "Technician");
     }
 
     @InstallDemo

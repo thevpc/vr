@@ -86,8 +86,8 @@
       <module name="streams" target="1.7" />
       <module name="strings" target="1.7" />
       <module name="upa" target="1.5" />
-      <module name="upa-api" target="1.6" />
-      <module name="upa-impl" target="1.6" />
+      <module name="upa-api" target="1.7" />
+      <module name="upa-impl" target="1.7" />
       <module name="upa-portable" target="1.6" />
       <module name="upa-test" target="1.5" />
       <module name="upa-tutorial" target="1.5" />
@@ -96,7 +96,7 @@
       <module name="upa-tutorial-desktop" target="1.5" />
       <module name="upa-tutorial-webjsf" target="1.6" />
       <module name="upa-vfs" target="1.8" />
-      <module name="upa-web" target="1.5" />
+      <module name="upa-web" target="1.7" />
       <module name="utils" target="1.7" />
       <module name="vain-ruling" target="1.5" />
       <module name="vain-ruling-builder" target="1.5" />

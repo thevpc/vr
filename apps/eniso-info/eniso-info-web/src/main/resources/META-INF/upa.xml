@@ -5,7 +5,7 @@
         <!-- this is a fallback if no config is loadable -->
         <persistenceUnit name="main">
             <connection>
-                <connectionString>derby://localhost/enisoinfo;structure=create;userName=enisoinfo;password=enisoinfo</connectionString>
+                <connectionString>derby:embedded://localhost/enisoinfo;structure=create;userName=enisoinfo;password=enisoinfo</connectionString>
             </connection>
         </persistenceUnit>
     </include>
