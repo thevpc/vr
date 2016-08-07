@@ -1,0 +1,40 @@
+
+# My SQL Installation
+
+## Check Installation
+#check mysql installation
+systemctl status mysql
+systemctl enable mysql
+systemctl start mysql
+
+mysqladmin -u root password "<YOUR PASSWORD>"
+or (if younedd to change password)
+mysqladmin -u root -p'oldpassword' password "<YOUR PASSWORD>"
+
+mysql -u root -p"<YOUR PASSWORD>"
+
+## Create database & user
+
+CREATE DATABASE enisoinfodb DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+CREATE USER 'enisoinfouser'@'localhost' IDENTIFIED BY "<YOUR PASSWORD>";
+GRANT ALL PRIVILEGES ON enisoinfodb . * TO 'enisoinfouser'@'localhost';
+FLUSH PRIVILEGES;
+
+
+## Check Installation
+mysqldump -u MY_USERNAME -pMY_PASSWORD -databases MY_DATABASE_NAME | gzip > MY_DATABASE_NAME-`date +%Y%m%d`.sql.zip
+
+
+## drop all tables
+
+SET FOREIGN_KEY_CHECKS = 0;
+SET @tables = NULL;
+SELECT GROUP_CONCAT(table_schema, '.', table_name) INTO @tables
+  FROM information_schema.tables
+  WHERE table_schema = 'enisoinfodb'; -- specify DB name here.
+
+SET @tables = CONCAT('DROP TABLE ', @tables);
+PREPARE stmt FROM @tables;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+SET FOREIGN_KEY_CHECKS = 1;

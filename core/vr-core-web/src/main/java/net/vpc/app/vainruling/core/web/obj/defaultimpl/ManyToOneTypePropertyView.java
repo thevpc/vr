@@ -43,6 +43,9 @@ public class ManyToOneTypePropertyView extends FieldPropertyView {
     }
 
     public Object getObjectValue() {
+        if (value == null) {
+            return null;
+        }
         if (value instanceof NamedId) {
             Object id = ((NamedId) value).getId();
             return entity.getBuilder().idToObject(id);
