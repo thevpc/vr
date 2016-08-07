@@ -63,16 +63,22 @@
     </context-param>
 
 
+    <!--
+        UPA Support
+        Should be declared before Spring Context to
+        help initialize UPA web context before Services
+        are created in Spring
+    -->
     <listener>
-        <listener-class>
-            org.springframework.web.context.ContextLoaderListener
-        </listener-class>
+        <listener-class>net.vpc.upa.web.UPAServletContextListener</listener-class>
     </listener>
     <listener>
-        <listener-class>
-            org.springframework.web.context.request.RequestContextListener
-        </listener-class>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
+
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>/r/*</url-pattern>

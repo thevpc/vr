@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  */
 public class CourseOptionsRanking {
 
-    private static ParseFormatManager pfm = UPA.getBootstrapFactory().createObject(ParseFormatManager.class);
+    private static ParseFormatManager pfm = UPA.getBootstrap().getFactory().createObject(ParseFormatManager.class);
     private static int nbOptions = 3;
 
 //    private static String file_principal = "/home/vpc/Data/eniso/students/2015-2016/choix-options/IA/2IAPRINC.xlsx";

@@ -1,29 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <upa version="1.0">
     <scan types="net.vpc.app.**"/>
-
-    <persistenceUnit name="main">
-        <connection>
-            <connectionString>
-                mysql://localhost/enisoinfodb;structure=create;userName=enisoinfouser;password=canard77;pool=true
-            </connectionString>
-        </connection>
-    </persistenceUnit>
-
-    <!--<persistenceUnit name="main">-->
-    <!--<connection>-->
-    <!--<connectionString>mysql://localhost/VR;structure=create;userName=root;password='';pool=true</connectionString>-->
-    <!--</connection>-->
-    <!--</persistenceUnit>-->
-
-    <!--<persistenceUnit name="main">-->
-    <!--<connection>-->
-    <!--<connectionString>derby://localhost/vain;structure=create;userName=vr;password=vr</connectionString>-->
-    <!--</connection>-->
-    <!--</persistenceUnit>-->
-    <!--<persistenceUnit name="mysql">-->
-    <!--<connection>-->
-    <!--<connectionString>mysql://localhost/enisoinfodb;structure=create;userName=enisoinfouser;password=canard77;pool=true</connectionString>-->
-    <!--</connection>-->
-    <!--</persistenceUnit>-->
+    <include file="">
+        <persistenceUnit name="main">
+            <connection>
+                <connectionString>
+                    derby:embedded://localhost/enisoinfodb;structure=create;userName=enisoinfouser;password=myassword;pool=true
+                </connectionString>
+            </connection>
+        </persistenceUnit>
+    </include>
 </upa>

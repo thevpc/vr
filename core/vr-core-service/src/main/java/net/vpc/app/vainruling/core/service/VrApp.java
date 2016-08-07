@@ -70,4 +70,17 @@ public class VrApp implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext ac) throws BeansException {
         VrApp.context = ac;
     }
+
+
+    public static void runStandalone() {
+        VrApp.runStandalone(CorePlugin.USER_ADMIN, "admin", true);
+    }
+
+    public static void runStandaloneNoLog() {
+        VrApp.runStandalone(CorePlugin.USER_ADMIN, "admin", false);
+    }
+
+    public static void runStandalone(String login, String password) {
+        VrApp.runStandalone(login, password, true);
+    }
 }

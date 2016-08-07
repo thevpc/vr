@@ -76,9 +76,9 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="eniso-info" target="1.5" />
-      <module name="eniso-info-service" target="1.7" />
-      <module name="eniso-info-theme-infusion" target="1.7" />
-      <module name="eniso-info-theme-th2016" target="1.7" />
+      <module name="eniso-info-service" target="1.8" />
+      <module name="eniso-info-theme-infusion" target="1.8" />
+      <module name="eniso-info-theme-th2016" target="1.8" />
       <module name="eniso-info-web" target="1.7" />
       <module name="gomail" target="1.7" />
       <module name="j2cs" target="1.6" />
@@ -95,50 +95,50 @@
       <module name="upa-tutorial-dal" target="1.6" />
       <module name="upa-tutorial-desktop" target="1.5" />
       <module name="upa-tutorial-webjsf" target="1.6" />
-      <module name="upa-vfs" target="1.7" />
+      <module name="upa-vfs" target="1.8" />
       <module name="upa-web" target="1.5" />
       <module name="utils" target="1.7" />
       <module name="vain-ruling" target="1.5" />
       <module name="vain-ruling-builder" target="1.5" />
       <module name="vfs" target="1.7" />
-      <module name="vpc-devtools" target="1.7" />
+      <module name="vpc-devtools" target="1.8" />
       <module name="vr-academic-addressbook-service" target="1.7" />
       <module name="vr-academic-addressbook-web" target="1.7" />
-      <module name="vr-academic-eval-service" target="1.7" />
-      <module name="vr-academic-eval-web" target="1.7" />
-      <module name="vr-academic-internship-service" target="1.7" />
-      <module name="vr-academic-internship-web" target="1.7" />
-      <module name="vr-academic-perf-eval-service" target="1.7" />
-      <module name="vr-academic-perf-eval-web" target="1.7" />
-      <module name="vr-academic-planning-service" target="1.7" />
-      <module name="vr-academic-planning-web" target="1.7" />
-      <module name="vr-academic-report-service" target="1.7" />
-      <module name="vr-academic-report-web" target="1.7" />
-      <module name="vr-academic-service" target="1.7" />
-      <module name="vr-academic-web" target="1.7" />
+      <module name="vr-academic-eval-service" target="1.8" />
+      <module name="vr-academic-eval-web" target="1.8" />
+      <module name="vr-academic-internship-service" target="1.8" />
+      <module name="vr-academic-internship-web" target="1.8" />
+      <module name="vr-academic-perf-eval-service" target="1.8" />
+      <module name="vr-academic-perf-eval-web" target="1.8" />
+      <module name="vr-academic-planning-service" target="1.8" />
+      <module name="vr-academic-planning-web" target="1.8" />
+      <module name="vr-academic-report-service" target="1.8" />
+      <module name="vr-academic-report-web" target="1.8" />
+      <module name="vr-academic-service" target="1.8" />
+      <module name="vr-academic-web" target="1.8" />
       <module name="vr-app-service" target="1.7" />
-      <module name="vr-app-service-test" target="1.7" />
+      <module name="vr-app-service-test" target="1.8" />
       <module name="vr-app-web" target="1.7" />
-      <module name="vr-articles-service" target="1.7" />
-      <module name="vr-articles-web" target="1.7" />
-      <module name="vr-blog-service" target="1.7" />
+      <module name="vr-articles-service" target="1.8" />
+      <module name="vr-articles-web" target="1.8" />
+      <module name="vr-blog-service" target="1.8" />
       <module name="vr-common-model-service" target="1.7" />
       <module name="vr-common-model-web" target="1.7" />
-      <module name="vr-core-service" target="1.7" />
-      <module name="vr-core-web" target="1.7" />
-      <module name="vr-dev-toolbox-service" target="1.7" />
-      <module name="vr-dev-toolbox-web" target="1.7" />
-      <module name="vr-equipments-service" target="1.7" />
+      <module name="vr-core-service" target="1.8" />
+      <module name="vr-core-web" target="1.8" />
+      <module name="vr-dev-toolbox-service" target="1.8" />
+      <module name="vr-dev-toolbox-web" target="1.8" />
+      <module name="vr-equipments-service" target="1.8" />
       <module name="vr-filesystem-service" target="1.7" />
       <module name="vr-filesystem-web" target="1.7" />
-      <module name="vr-forum-service" target="1.7" />
-      <module name="vr-inventory-service" target="1.7" />
-      <module name="vr-mailbox-service" target="1.7" />
-      <module name="vr-mailbox-web" target="1.7" />
-      <module name="vr-tasks-service" target="1.7" />
-      <module name="vr-tasks-web" target="1.7" />
+      <module name="vr-forum-service" target="1.8" />
+      <module name="vr-inventory-service" target="1.8" />
+      <module name="vr-mailbox-service" target="1.8" />
+      <module name="vr-mailbox-web" target="1.8" />
+      <module name="vr-tasks-service" target="1.8" />
+      <module name="vr-tasks-web" target="1.8" />
       <module name="vr-ui-app-theme-infusion" target="1.7" />
-      <module name="web-jsf" target="1.7" />
+      <module name="web-jsf" target="1.8" />
       <module name="wpm" target="1.5" />
       <module name="wpm-payroll-service" target="1.7" />
       <module name="wpm-payroll-web" target="1.7" />

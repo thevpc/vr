@@ -53,7 +53,7 @@ public class PlanningService {
 
     public PlanningActivityTable load(File file) throws IOException {
 
-        ParseFormatManager ie = UPA.getBootstrapFactory().createObject(ParseFormatManager.class);
+        ParseFormatManager ie = UPA.getBootstrap().getFactory().createObject(ParseFormatManager.class);
         SheetParser sheetParser = ie.createSheetParser(file);
         sheetParser.setContainsHeader(false);
         sheetParser.setSkipEmptyRows(false);
@@ -145,7 +145,7 @@ public class PlanningService {
         if (t == null) {
             throw new IllegalArgumentException("Null Activity Table");
         } else {
-            ParseFormatManager ie = UPA.getBootstrapFactory().createObject(ParseFormatManager.class);
+            ParseFormatManager ie = UPA.getBootstrap().getFactory().createObject(ParseFormatManager.class);
             SheetFormatter sheetFormatter = ie.createSheetFormatter(file);
             sheetFormatter.setWriteHeader(false);
             DataWriter writer = sheetFormatter.createWriter();

@@ -8,8 +8,8 @@
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <dependencies>
         <dependency>
@@ -22,11 +22,11 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.35</version>
         </dependency>
-        <!--        <dependency>
-                    <groupId>net.vpc.app.vain-ruling.plugins</groupId>
-                    <artifactId>vr-ezp-service</artifactId>
-                    <version>1.0</version>
-                </dependency>-->
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.core</groupId>
+            <artifactId>vr-core-service</artifactId>
+            <version>1.0</version>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>net.vpc.app.vain-ruling.apps.eniso-info</groupId>-->
             <!--<artifactId>eniso-info-service</artifactId>-->

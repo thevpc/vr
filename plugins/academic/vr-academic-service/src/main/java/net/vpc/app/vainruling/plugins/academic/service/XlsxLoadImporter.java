@@ -39,7 +39,7 @@ public class XlsxLoadImporter {
     private static Logger log = Logger.getLogger(XlsxLoadImporter.class.getName());
     private static DoubleParserConfig LENIENT_1 = DoubleParserConfig.LENIENT.setNullValue(1).setInvalidValue(1);
 
-    private ParseFormatManager pfm = UPA.getBootstrapFactory().createObject(ParseFormatManager.class);
+    private ParseFormatManager pfm = UPA.getBootstrap().getFactory().createObject(ParseFormatManager.class);
 
     public XlsxLoadImporter() {
     }
