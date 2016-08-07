@@ -251,62 +251,6 @@
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../../upa/upa-test/src/test/java/net/vpc/upa/test/TestVisitingStrategy.java" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../../upa/upa-test/src/test/java/net/vpc/upa/test/TransformerUC.java" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../../upa/upa-web/src/main/java/net/vpc/upa/web/UPAServletContextListener.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-08:22:26.386.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-08:22:28.801.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-08:22:28.992.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-08:22:29.346.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-09:31:54.718.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-09:31:56.735.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-09:31:57.375.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-09:31:57.667.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-09:31:57.81.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-09:31:57.985.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-09:31:58.272.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-09:31:58.979.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-09:31:59.960.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-12:59:44.274.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-12:59:44.843.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-12:59:45.175.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-12:59:45.471.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-12:59:45.789.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-12:59:46.26.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-12:59:46.563.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-12:59:46.883.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-12:59:47.173.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:23:18.135.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:23:18.574.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:23:18.864.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:23:19.331.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:23:19.664.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:23:19.975.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:23:20.288.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:23:20.556.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:23:20.843.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:37:01.258.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:37:01.768.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:37:02.1.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:37:02.412.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:37:02.739.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:37:02.948.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:37:03.238.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:37:03.562.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-04-23:37:04.95.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-05-00:03:47.789.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-05-00:03:48.280.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-05-00:03:48.603.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-05-00:03:49.119.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-05-00:03:49.514.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-05-00:03:50.281.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-05-00:03:50.563.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-05-00:03:50.900.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime/filesystem/logs/vr-app-2016-06-05-00:03:51.615.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vr-app-service-test/src/main/integration/jedit/catalog" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vr-app-service-test/src/main/integration/jedit/xmail-mode.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vr-app-service-test/src/main/java/net/vpc/app/vainruling/service/test/Ex2.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vr-app-service-test/src/main/java/net/vpc/app/vainruling/service/test/GoMailServiceTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vr-app-service-test/src/main/java/net/vpc/app/vainruling/service/test/I18nChecker.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vr-app-service-test/src/main/java/net/vpc/app/vainruling/service/test/TeachersLoadTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vr-app-service-test/src/main/java/net/vpc/app/vainruling/service/test/VrAppTest.java" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../../upa/upa-api/src/main/csharp/Sources/Auto/Bulk/DataSerializer.cs" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../../upa/upa-api/src/main/csharp/Sources/Auto/Exceptions/InsertRecordNotAllowedException.cs" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../../upa/upa-api/src/main/csharp/Sources/Auto/Expressions/Function.cs" afterPath="" />
@@ -1110,74 +1054,7 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/upa-impl/src/main/csharp/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache" afterPath="$PROJECT_DIR$/../../upa/upa-impl/src/main/csharp/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/upa-impl/src/main/csharp/obj/Debug/ResolveAssemblyReference.cache" afterPath="$PROJECT_DIR$/../../upa/upa-impl/src/main/csharp/obj/Debug/ResolveAssemblyReference.cache" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/upa-impl/src/main/csharp/obj/Debug/build.force" afterPath="$PROJECT_DIR$/../../upa/upa-impl/src/main/csharp/obj/Debug/build.force" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/eniso-info/eniso-info-service/eniso-info-service.iml" afterPath="$PROJECT_DIR$/apps/eniso-info/eniso-info-service/eniso-info-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/eniso-info/eniso-info-service/pom.xml" afterPath="$PROJECT_DIR$/apps/eniso-info/eniso-info-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/eniso-info/eniso-info-web/src/main/resources/META-INF/upa.xml" afterPath="$PROJECT_DIR$/apps/eniso-info/eniso-info-web/src/main/resources/META-INF/upa.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/eniso-info/eniso-info-web/src/main/webapp/WEB-INF/web.xml" afterPath="$PROJECT_DIR$/apps/eniso-info/eniso-info-web/src/main/webapp/WEB-INF/web.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/eniso-info-theme-infusion.iml" afterPath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/eniso-info-theme-infusion.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/pom.xml" afterPath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/eniso-info-theme-th2016.iml" afterPath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/eniso-info-theme-th2016.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/pom.xml" afterPath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/vr-core-service/pom.xml" afterPath="$PROJECT_DIR$/core/vr-core-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/VrApp.java" afterPath="$PROJECT_DIR$/core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/VrApp.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/vr-core-service/vr-core-service.iml" afterPath="$PROJECT_DIR$/core/vr-core-service/vr-core-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/vr-core-web/pom.xml" afterPath="$PROJECT_DIR$/core/vr-core-web/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/vr-core-web/vr-core-web.iml" afterPath="$PROJECT_DIR$/core/vr-core-web/vr-core-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-eval/vr-academic-eval-service/pom.xml" afterPath="$PROJECT_DIR$/plugins/academic-eval/vr-academic-eval-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-eval/vr-academic-eval-service/vr-academic-eval-service.iml" afterPath="$PROJECT_DIR$/plugins/academic-eval/vr-academic-eval-service/vr-academic-eval-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-eval/vr-academic-eval-web/pom.xml" afterPath="$PROJECT_DIR$/plugins/academic-eval/vr-academic-eval-web/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-eval/vr-academic-eval-web/vr-academic-eval-web.iml" afterPath="$PROJECT_DIR$/plugins/academic-eval/vr-academic-eval-web/vr-academic-eval-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-service/pom.xml" afterPath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-service/src/main/java/net/vpc/app/vainruling/plugins/academic/internship/service/model/planning/PlanningService.java" afterPath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-service/src/main/java/net/vpc/app/vainruling/plugins/academic/internship/service/model/planning/PlanningService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-service/vr-academic-internship-service.iml" afterPath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-service/vr-academic-internship-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-web/pom.xml" afterPath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-web/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-web/vr-academic-internship-web.iml" afterPath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-web/vr-academic-internship-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-perf-eval/vr-academic-perf-eval-service/pom.xml" afterPath="$PROJECT_DIR$/plugins/academic-perf-eval/vr-academic-perf-eval-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-perf-eval/vr-academic-perf-eval-service/vr-academic-perf-eval-service.iml" afterPath="$PROJECT_DIR$/plugins/academic-perf-eval/vr-academic-perf-eval-service/vr-academic-perf-eval-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-perf-eval/vr-academic-perf-eval-web/pom.xml" afterPath="$PROJECT_DIR$/plugins/academic-perf-eval/vr-academic-perf-eval-web/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-perf-eval/vr-academic-perf-eval-web/vr-academic-perf-eval-web.iml" afterPath="$PROJECT_DIR$/plugins/academic-perf-eval/vr-academic-perf-eval-web/vr-academic-perf-eval-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-service/pom.xml" afterPath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-service/vr-academic-planning-service.iml" afterPath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-service/vr-academic-planning-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/pom.xml" afterPath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/vr-academic-planning-web.iml" afterPath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/vr-academic-planning-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-report/vr-academic-report-service/pom.xml" afterPath="$PROJECT_DIR$/plugins/academic-report/vr-academic-report-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-report/vr-academic-report-service/vr-academic-report-service.iml" afterPath="$PROJECT_DIR$/plugins/academic-report/vr-academic-report-service/vr-academic-report-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-report/vr-academic-report-web/pom.xml" afterPath="$PROJECT_DIR$/plugins/academic-report/vr-academic-report-web/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-report/vr-academic-report-web/vr-academic-report-web.iml" afterPath="$PROJECT_DIR$/plugins/academic-report/vr-academic-report-web/vr-academic-report-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic/vr-academic-service/pom.xml" afterPath="$PROJECT_DIR$/plugins/academic/vr-academic-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic/vr-academic-service/src/main/java/net/vpc/app/vainruling/plugins/academic/service/XlsxLoadImporter.java" afterPath="$PROJECT_DIR$/plugins/academic/vr-academic-service/src/main/java/net/vpc/app/vainruling/plugins/academic/service/XlsxLoadImporter.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic/vr-academic-service/src/main/java/net/vpc/app/vainruling/plugins/academic/service/tools/CourseOptionsRanking.java" afterPath="$PROJECT_DIR$/plugins/academic/vr-academic-service/src/main/java/net/vpc/app/vainruling/plugins/academic/service/tools/CourseOptionsRanking.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic/vr-academic-service/vr-academic-service.iml" afterPath="$PROJECT_DIR$/plugins/academic/vr-academic-service/vr-academic-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic/vr-academic-web/pom.xml" afterPath="$PROJECT_DIR$/plugins/academic/vr-academic-web/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic/vr-academic-web/vr-academic-web.iml" afterPath="$PROJECT_DIR$/plugins/academic/vr-academic-web/vr-academic-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/articles/vr-articles-service/pom.xml" afterPath="$PROJECT_DIR$/plugins/articles/vr-articles-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/articles/vr-articles-service/vr-articles-service.iml" afterPath="$PROJECT_DIR$/plugins/articles/vr-articles-service/vr-articles-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/articles/vr-articles-web/pom.xml" afterPath="$PROJECT_DIR$/plugins/articles/vr-articles-web/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/articles/vr-articles-web/vr-articles-web.iml" afterPath="$PROJECT_DIR$/plugins/articles/vr-articles-web/vr-articles-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/blog/vr-blog-service/pom.xml" afterPath="$PROJECT_DIR$/plugins/blog/vr-blog-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/blog/vr-blog-service/vr-blog-service.iml" afterPath="$PROJECT_DIR$/plugins/blog/vr-blog-service/vr-blog-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/dev-toolbox/vr-dev-toolbox-service/pom.xml" afterPath="$PROJECT_DIR$/plugins/dev-toolbox/vr-dev-toolbox-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/dev-toolbox/vr-dev-toolbox-service/vr-dev-toolbox-service.iml" afterPath="$PROJECT_DIR$/plugins/dev-toolbox/vr-dev-toolbox-service/vr-dev-toolbox-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/dev-toolbox/vr-dev-toolbox-web/pom.xml" afterPath="$PROJECT_DIR$/plugins/dev-toolbox/vr-dev-toolbox-web/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/dev-toolbox/vr-dev-toolbox-web/vr-dev-toolbox-web.iml" afterPath="$PROJECT_DIR$/plugins/dev-toolbox/vr-dev-toolbox-web/vr-dev-toolbox-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/equipments/vr-equipments-service/pom.xml" afterPath="$PROJECT_DIR$/plugins/equipments/vr-equipments-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/equipments/vr-equipments-service/vr-equipments-service.iml" afterPath="$PROJECT_DIR$/plugins/equipments/vr-equipments-service/vr-equipments-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/forum/vr-forum-service/pom.xml" afterPath="$PROJECT_DIR$/plugins/forum/vr-forum-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/forum/vr-forum-service/vr-forum-service.iml" afterPath="$PROJECT_DIR$/plugins/forum/vr-forum-service/vr-forum-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/inventory/vr-inventory-service/pom.xml" afterPath="$PROJECT_DIR$/plugins/inventory/vr-inventory-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/inventory/vr-inventory-service/vr-inventory-service.iml" afterPath="$PROJECT_DIR$/plugins/inventory/vr-inventory-service/vr-inventory-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/mailbox/vr-mailbox-service/pom.xml" afterPath="$PROJECT_DIR$/plugins/mailbox/vr-mailbox-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/mailbox/vr-mailbox-service/vr-mailbox-service.iml" afterPath="$PROJECT_DIR$/plugins/mailbox/vr-mailbox-service/vr-mailbox-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/mailbox/vr-mailbox-web/pom.xml" afterPath="$PROJECT_DIR$/plugins/mailbox/vr-mailbox-web/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/mailbox/vr-mailbox-web/vr-mailbox-web.iml" afterPath="$PROJECT_DIR$/plugins/mailbox/vr-mailbox-web/vr-mailbox-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/tasks/vr-tasks-service/pom.xml" afterPath="$PROJECT_DIR$/plugins/tasks/vr-tasks-service/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/tasks/vr-tasks-service/vr-tasks-service.iml" afterPath="$PROJECT_DIR$/plugins/tasks/vr-tasks-service/vr-tasks-service.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/tasks/vr-tasks-web/pom.xml" afterPath="$PROJECT_DIR$/plugins/tasks/vr-tasks-web/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/tasks/vr-tasks-web/vr-tasks-web.iml" afterPath="$PROJECT_DIR$/plugins/tasks/vr-tasks-web/vr-tasks-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vr-app-service-test/pom.xml" afterPath="$PROJECT_DIR$/vr-app-service-test/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vr-app-service-test/src/main/resources/META-INF/upa.xml" afterPath="$PROJECT_DIR$/vr-app-service-test/src/main/resources/META-INF/upa.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/.gitignore" afterPath="$PROJECT_DIR$/../../upa/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/pom.xml" afterPath="$PROJECT_DIR$/../../upa/pom.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/upa-api/mybackup_on_start" afterPath="$PROJECT_DIR$/../../upa/upa-api/mybackup_on_start" />
@@ -4260,16 +4137,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="vain-ruling" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="vain-ruling and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
       <pane id="Scope" />
@@ -5969,7 +5836,7 @@
       <workItem from="1470304298769" duration="3889000" />
       <workItem from="1470318753202" duration="52000" />
       <workItem from="1470504957319" duration="161000" />
-      <workItem from="1470505300288" duration="23979000" />
+      <workItem from="1470505300288" duration="24072000" />
     </task>
     <task id="LOCAL-00001" summary="issue fixing version">
       <created>1466383525891</created>
@@ -6074,7 +5941,14 @@
       <option name="project" value="LOCAL" />
       <updated>1470508844272</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="b">
+      <created>1470531024219</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1470531024219</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -6107,7 +5981,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1394067000" />
+    <option name="totallyTimeSpent" value="1394160000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -6135,7 +6009,7 @@
       <window_info id="JSF" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39561272" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24962178" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16033058" sideWeight="0.87537766" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4842975" sideWeight="0.87537766" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.08538588" sideWeight="0.48562783" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.6231405" sideWeight="0.7856061" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
