@@ -22,3 +22,15 @@ function makeStruct(names) {
 
 angular.module('app', ['dynform']);
 //angular.module('app', ['ngWig','dynform']);
+
+$(document).ready(
+    function()
+    {
+        $("div.ui-selectonemenu.full-width").each(
+            function()
+            {
+                $(this).css("width",$(this).parent().width());
+            }
+        );
+    }
+);

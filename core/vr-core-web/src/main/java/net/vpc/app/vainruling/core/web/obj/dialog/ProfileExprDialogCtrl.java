@@ -91,7 +91,7 @@ public class ProfileExprDialogCtrl {
         g1.setSelectItems(tgroups.toArray(new SelectItem[tgroups.size()]));
 
         SelectItemGroup g2 = new SelectItemGroup("Utilisateurs");
-        g2.setSelectItems(tusers.toArray(new SelectItem[tgroups.size()]));
+        g2.setSelectItems(tusers.toArray(new SelectItem[tusers.size()]));
 //        getModel().getItems().add(new SelectItem("", "profil"));
 
         getModel().getItems().add(g1);

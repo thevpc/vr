@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.web.admin;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.core.web.UCtrl;
@@ -68,8 +69,12 @@ public class AcademicAdminToolsCtrl {
                 event.getFile().write(f.getPath());
                 AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
                 CorePlugin core = VrApp.getBean(CorePlugin.class);
-                int periodId = core.findAppConfig().getMainPeriod().getId();
-                int count = a.importFile(periodId, VFS.createNativeFS().get(f.getPath()), null);
+                AppConfig appConfig = core.findAppConfig();
+                int count=0;
+                if(appConfig!=null && appConfig.getMainPeriod()!=null) {
+                    int periodId = appConfig.getMainPeriod().getId();
+                    count = a.importFile(periodId, VFS.createNativeFS().get(f.getPath()), null);
+                }
                 if (count > 0) {
                     FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully imported.");
                 } else {

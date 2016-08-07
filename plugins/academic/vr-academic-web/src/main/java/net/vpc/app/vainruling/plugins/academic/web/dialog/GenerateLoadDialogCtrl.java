@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.web.dialog;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
@@ -118,7 +119,11 @@ public class GenerateLoadDialogCtrl {
         String p = getModel().getPeriod();
         if (StringUtils.isEmpty(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
-            return core.findAppConfig().getMainPeriod().getId();
+            AppConfig a = core.findAppConfig();
+            if(a==null || a.getMainPeriod()==null){
+                return -1;
+            }
+            return a.getMainPeriod().getId();
         }
         return Integer.parseInt(p);
     }

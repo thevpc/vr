@@ -4,12 +4,36 @@
     <option name="SCOPE_TYPE" value="4" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7e095ecf-a175-47ed-ac06-24628205f270" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/install-notes.txt" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/myplanning.txt" afterPath="" />
+    <list default="true" id="7e095ecf-a175-47ed-ac06-24628205f270" name="Default" comment="fix compile problem">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/util/VrWebHelper.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/util/VRWebHelper.java" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/src/main/resources/META-INF/resources/modules/academic/planning/classplanning.xhtml" afterPath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/src/main/resources/META-INF/resources/modules/academic/planning/class-planning.xhtml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/src/main/resources/META-INF/resources/modules/academic/planning/myplanning.xhtml" afterPath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/src/main/resources/META-INF/resources/modules/academic/planning/my-planning.xhtml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/src/main/resources/META-INF/resources/modules/academic/planning/myplanninglist.xhtml" afterPath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/src/main/resources/META-INF/resources/modules/academic/planning/my-planning-list.xhtml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/src/main/resources/META-INF/resources/modules/academic/planning/teacherplanning.xhtml" afterPath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/src/main/resources/META-INF/resources/modules/academic/planning/teacher-planning.xhtml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/artifacts/eniso_info_web_war_exploded.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/eniso_info_web_war_exploded.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/obj/defaultimpl/ManyToOneTypePropertyView.java" afterPath="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/obj/defaultimpl/ManyToOneTypePropertyView.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/readme.txt" afterPath="$PROJECT_DIR$/readme.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/src/main/resources/META-INF/resources/themes/infusion/css/app.css" afterPath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/src/main/resources/META-INF/resources/themes/infusion/css/app.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/src/main/resources/META-INF/resources/themes/infusion/js/app/app.js" afterPath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/src/main/resources/META-INF/resources/themes/infusion/js/app/app.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/src/main/resources/META-INF/resources/themes/th2016/css/app.css" afterPath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/src/main/resources/META-INF/resources/themes/th2016/css/app.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/src/main/resources/META-INF/resources/themes/th2016/js/app/app.js" afterPath="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/src/main/resources/META-INF/resources/themes/th2016/js/app/app.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/util/VrHelper.java" afterPath="$PROJECT_DIR$/core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/util/VrHelper.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/vr-core-web/pom.xml" afterPath="$PROJECT_DIR$/core/vr-core-web/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/ctrl/ContactsCtrl.java" afterPath="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/ctrl/ContactsCtrl.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/ctrl/LoginCtrl.java" afterPath="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/ctrl/LoginCtrl.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/menu/VrMenuManager.java" afterPath="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/menu/VrMenuManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/obj/dialog/ProfileExprDialogCtrl.java" afterPath="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/obj/dialog/ProfileExprDialogCtrl.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/vr-core-web/src/main/resources/META-INF/resources/modules/obj/objects.xhtml" afterPath="$PROJECT_DIR$/core/vr-core-web/src/main/resources/META-INF/resources/modules/obj/objects.xhtml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-web/src/main/java/net/vpc/app/vainruling/plugins/academic/internship/web/InternshipsPlanningCtrl.java" afterPath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-web/src/main/java/net/vpc/app/vainruling/plugins/academic/internship/web/InternshipsPlanningCtrl.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-web/src/main/java/net/vpc/app/vainruling/plugins/academic/internship/web/MyInternshipBoardsCtrl.java" afterPath="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-web/src/main/java/net/vpc/app/vainruling/plugins/academic/internship/web/MyInternshipBoardsCtrl.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/src/main/java/net/vpc/app/vainruling/plugins/academic/planning/web/TeacherPlanningCtrl.java" afterPath="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/src/main/java/net/vpc/app/vainruling/plugins/academic/planning/web/TeacherPlanningCtrl.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic/vr-academic-service/src/main/java/net/vpc/app/vainruling/plugins/academic/service/AcademicPlugin.java" afterPath="$PROJECT_DIR$/plugins/academic/vr-academic-service/src/main/java/net/vpc/app/vainruling/plugins/academic/service/AcademicPlugin.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic/vr-academic-service/src/main/java/net/vpc/app/vainruling/plugins/academic/service/helper/TeacherGenerationHelper.java" afterPath="$PROJECT_DIR$/plugins/academic/vr-academic-service/src/main/java/net/vpc/app/vainruling/plugins/academic/service/helper/TeacherGenerationHelper.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/admin/AcademicAdminToolsCtrl.java" afterPath="$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/admin/AcademicAdminToolsCtrl.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/dialog/GenerateLoadDialogCtrl.java" afterPath="$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/dialog/GenerateLoadDialogCtrl.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/load/AbstractCourseLoadCtrl.java" afterPath="$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/load/AbstractCourseLoadCtrl.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/load/AllTeachersCourseLoadCtrl.java" afterPath="$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/load/AllTeachersCourseLoadCtrl.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/load/GlobalStatCtrl.java" afterPath="$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/load/GlobalStatCtrl.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/InvalidFormulaException.java" afterPath="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/InvalidFormulaException.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/NoResultException.java" afterPath="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/NoResultException.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/NonUniqueResultException.java" afterPath="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/NonUniqueResultException.java" />
@@ -55,6 +79,8 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/upa-impl/src/main/csharp/Sources/Auto/Uql/Compiledexpression/DefaultCompiledExpression.cs" afterPath="$PROJECT_DIR$/../../upa/upa-impl/src/main/csharp/Sources/Auto/Uql/Compiledexpression/DefaultCompiledExpression.cs" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/upa-impl/src/main/csharp/Sources/Auto/Uql/Compiledexpression/DefaultCompiledExpressionImpl.cs" afterPath="$PROJECT_DIR$/../../upa/upa-impl/src/main/csharp/Sources/Auto/Uql/Compiledexpression/DefaultCompiledExpressionImpl.cs" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/SerializableOrManyToOneType.java" afterPath="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/SerializableOrManyToOneType.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/DefaultPersistenceStore.java" afterPath="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/DefaultPersistenceStore.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/specific/derby/DerbyPersistenceStore.java" afterPath="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/specific/derby/DerbyPersistenceStore.java" />
     </list>
     <list id="f0267e91-e22d-4519-9cd8-50ee37201423" name="Failed commit: Default" comment="v 1.2.0." />
     <ignored path="vain-ruling.iws" />
@@ -757,23 +783,126 @@
     </favorites_list>
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="install-notes.txt" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/install-notes.txt">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="GlobalStatCtrl.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/load/GlobalStatCtrl.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+            <state relative-caret-position="1230">
+              <caret line="109" column="23" selection-start-line="109" selection-start-column="23" selection-end-line="109" selection-end-column="23" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="readme.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/readme.txt">
+      <file leaf-file-name="profile-expr-dialog.xhtml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/vr-core-web/src/main/resources/META-INF/resources/modules/obj/profile-expr-dialog.xhtml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="1" column="24" selection-start-line="1" selection-start-column="24" selection-end-line="1" selection-end-column="24" />
+            <state relative-caret-position="510">
+              <caret line="34" column="74" selection-start-line="34" selection-start-column="74" selection-end-line="34" selection-end-column="74" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ProfileExprDialogCtrl.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/obj/dialog/ProfileExprDialogCtrl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="780">
+              <caret line="75" column="75" selection-start-line="75" selection-start-column="75" selection-end-line="75" selection-end-column="75" />
+              <folding>
+                <element signature="e#7185#7186#0" expanded="true" />
+                <element signature="e#7221#7222#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="objects.xhtml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/core/vr-core-web/src/main/resources/META-INF/resources/modules/obj/objects.xhtml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="30">
+              <caret line="426" column="49" selection-start-line="426" selection-start-column="49" selection-end-line="426" selection-end-column="49" />
+              <folding>
+                <marker date="1470597127975" expanded="true" signature="42706:42721" ph="/*...*/" />
+                <marker date="1470597127975" expanded="true" signature="42781:43011" ph="{...}" />
+                <marker date="1470597127975" expanded="true" signature="42829:42908" ph="{...}" />
+                <marker date="1470597127975" expanded="true" signature="42914:42993" ph="{...}" />
+                <marker date="1470597127975" expanded="true" signature="43029:43038" ph="/*...*/" />
+                <marker date="1470597127975" expanded="true" signature="43316:43368" ph="{...}" />
+                <marker date="1470597127975" expanded="true" signature="43482:43535" ph="{...}" />
+                <marker date="1470597127975" expanded="true" signature="43596:43660" ph="{...}" />
+                <marker date="1470597127975" expanded="true" signature="43745:43809" ph="{...}" />
+                <marker date="1470597127975" expanded="true" signature="43855:43918" ph="{...}" />
+                <marker date="1470597127975" expanded="true" signature="43979:44067" ph="{...}" />
+                <marker date="1470597127975" expanded="true" signature="44096:44209" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/src/main/resources/META-INF/resources/themes/infusion/css/app.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/src/main/resources/META-INF/resources/themes/th2016/css/app.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="11985">
+              <caret line="799" column="11" selection-start-line="799" selection-start-column="1" selection-end-line="799" selection-end-column="11" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/src/main/resources/META-INF/resources/themes/th2016/js/app/app.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="465">
+              <caret line="35" column="2" selection-start-line="35" selection-start-column="2" selection-end-line="35" selection-end-column="2" />
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/src/main/resources/META-INF/resources/themes/infusion/js/app/app.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="465">
+              <caret line="35" column="2" selection-start-line="35" selection-start-column="2" selection-end-line="35" selection-end-column="2" />
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AppSecurityFilter.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/ctrl/AppSecurityFilter.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1020">
+              <caret line="83" column="0" selection-start-line="83" selection-start-column="0" selection-end-line="83" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GlobalStat.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/plugins/academic/vr-academic-service/src/main/java/net/vpc/app/vainruling/plugins/academic/service/model/stat/GlobalStat.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="495">
+              <caret line="45" column="22" selection-start-line="45" selection-start-column="22" selection-end-line="45" selection-end-column="22" />
+              <folding>
+                <element signature="e#1698#1699#0" expanded="true" />
+                <element signature="e#1728#1729#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -804,33 +933,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$USER_HOME$/.config/eniso.info/upa.xml" />
-        <option value="$PROJECT_DIR$/vr-app-service-test/src/main/resources/META-INF/upa.xml" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/config/DefaultUPAContextLoader.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/connection/DefaultConnectionProfileData.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/connection/ConnectionProfileParser.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-test/src/test/java/net/vpc/upa/test/connectionstring/ConnectionProfileParserTest.java" />
-        <option value="$PROJECT_DIR$/apps/eniso-info/eniso-info-web/src/main/resources/META-INF/upa.xml" />
-        <option value="$PROJECT_DIR$/apps/eniso-info/eniso-info-service/pom.xml" />
-        <option value="$PROJECT_DIR$/apps/eniso-info/eniso-info-web/pom.xml" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/FieldPersistenceInfo.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/DefaultPersistenceStore.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/StringAsBlobMarshaller.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/StringAsBlobUTFMarshaller.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/TypeMarshallerUtils.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/DefaultMarshallManager.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/TypeMarshaller.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/MarshallManager.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/FloatAsDoubleMarshaller.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/specific/derby/DerbyPersistenceStore.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/specific/derby/DerbyStringDataMarshallerFactory.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/specific/derby/StringToBlobDataMarshallerFactory.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/StringToBlobDataMarshallerFactory.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/sql/BetweenSQLProvider.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/ConstantDataMarshallerFactory.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/StringAsBlobUTFMarshaller.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/EnumMarshallerFactory.java" />
-        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/sql/KeyEnumerationExpressionSQLProvider.java" />
         <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/ObjectMarshaller.java" />
         <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/UtilDateMarshaller.java" />
         <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/TypeMarshallerUtils.java" />
@@ -846,7 +948,6 @@
         <option value="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/NoResultException.java" />
         <option value="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/filters/EntityNameFilter.java" />
         <option value="$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/filters/EntityAnyFilter.java" />
-        <option value="$PROJECT_DIR$/../../common/web-jsf/pom.xml" />
         <option value="$PROJECT_DIR$/core/vr-core-web/pom.xml" />
         <option value="$PROJECT_DIR$/../../common/streams/pom.xml" />
         <option value="$PROJECT_DIR$/../../common/gomail/pom.xml" />
@@ -855,6 +956,34 @@
         <option value="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/obj/defaultimpl/ManyToOneTypePropertyView.java" />
         <option value="$PROJECT_DIR$/readme.txt" />
         <option value="$PROJECT_DIR$/install-notes.txt" />
+        <option value="$PROJECT_DIR$/plugins/articles/vr-articles-web/src/main/java/net/vpc/app/vainruling/plugins/articles/web/ArticlesCtrl.java" />
+        <option value="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/util/JsfCtrl.java" />
+        <option value="$PROJECT_DIR$/core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/security/UserSession.java" />
+        <option value="$PROJECT_DIR$/../../common/web-jsf/src/main/java/net/vpc/common/jsf/FacesUtils.java" />
+        <option value="$PROJECT_DIR$/../../common/web-jsf/pom.xml" />
+        <option value="$PROJECT_DIR$/core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/util/VrHelper.java" />
+        <option value="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/util/VRWebHelper.java" />
+        <option value="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/ctrl/ContactsCtrl.java" />
+        <option value="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/menu/VrMenuManager.java" />
+        <option value="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-web/src/main/java/net/vpc/app/vainruling/plugins/academic/internship/web/MyInternshipBoardsCtrl.java" />
+        <option value="$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/src/main/java/net/vpc/app/vainruling/plugins/academic/planning/web/TeacherPlanningCtrl.java" />
+        <option value="$PROJECT_DIR$/plugins/academic/vr-academic-service/src/main/java/net/vpc/app/vainruling/plugins/academic/service/AcademicPlugin.java" />
+        <option value="$PROJECT_DIR$/plugins/academic/vr-academic-service/src/main/java/net/vpc/app/vainruling/plugins/academic/service/helper/TeacherGenerationHelper.java" />
+        <option value="$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/admin/AcademicAdminToolsCtrl.java" />
+        <option value="$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/dialog/GenerateLoadDialogCtrl.java" />
+        <option value="$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-web/src/main/java/net/vpc/app/vainruling/plugins/academic/internship/web/InternshipsPlanningCtrl.java" />
+        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/specific/mysql/MySQLPersistenceStore.java" />
+        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/specific/derby/DerbyPersistenceStore.java" />
+        <option value="$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/DefaultPersistenceStore.java" />
+        <option value="$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/load/AbstractCourseLoadCtrl.java" />
+        <option value="$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/load/AllTeachersCourseLoadCtrl.java" />
+        <option value="$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/load/GlobalStatCtrl.java" />
+        <option value="$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/obj/dialog/ProfileExprDialogCtrl.java" />
+        <option value="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/src/main/resources/META-INF/resources/themes/infusion/css/app.css" />
+        <option value="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/src/main/resources/META-INF/resources/themes/th2016/css/app.css" />
+        <option value="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/src/main/resources/META-INF/resources/themes/th2016/js/app/app.js" />
+        <option value="$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/src/main/resources/META-INF/resources/themes/infusion/js/app/app.js" />
+        <option value="$PROJECT_DIR$/core/vr-core-web/src/main/resources/META-INF/resources/modules/obj/objects.xhtml" />
       </list>
     </option>
   </component>
@@ -960,8 +1089,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -970,9 +1097,124 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="vain-ruling" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="upa and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="eniso-info and modules">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+        <subPane subId="Default">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="vain-ruling and modules">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="vain-ruling and modules">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="vain-ruling">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="vain-ruling and modules">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="vr-core-web">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="core/vr-core-web">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="src/main">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="vain-ruling and modules">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="vr-core-web">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="core/vr-core-web">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="src/main">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="java">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="net/vpc/app/vainruling/core/web/util">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scratches" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -980,7 +1222,7 @@
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../scholar/doovos" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.35989258" />
@@ -2523,7 +2765,8 @@
       <workItem from="1470304298769" duration="3889000" />
       <workItem from="1470318753202" duration="52000" />
       <workItem from="1470504957319" duration="161000" />
-      <workItem from="1470505300288" duration="40678000" />
+      <workItem from="1470505300288" duration="55859000" />
+      <workItem from="1470597339120" duration="505000" />
     </task>
     <task id="LOCAL-00001" summary="issue fixing version">
       <created>1466383525891</created>
@@ -2705,7 +2948,28 @@
       <option name="project" value="LOCAL" />
       <updated>1470570734198</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="fix compile problem">
+      <created>1470578495853</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1470578495853</updated>
+    </task>
+    <task id="LOCAL-00027" summary="fix compile problem">
+      <created>1470581301179</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1470581301179</updated>
+    </task>
+    <task id="LOCAL-00028" summary="fix compile problem">
+      <created>1470584798811</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1470584798811</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -2741,7 +3005,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1410766000" />
+    <option name="totallyTimeSpent" value="1426452000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -2756,47 +3020,65 @@
     <frame x="0" y="0" width="1366" height="732" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.01983471" sideWeight="0.12954545" order="12" side_tool="true" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3553719" sideWeight="0.24166666" order="12" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.65353036" sideWeight="0.49092284" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29924244" sideWeight="0.48372093" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22768533" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22768533" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.09469697" sideWeight="0.5" order="6" side_tool="false" content_ui="combo" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3308157" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3308157" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16993958" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="JSF" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39561272" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24962178" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.01983471" sideWeight="0.87045455" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.40495867" sideWeight="0.8454546" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.08538588" sideWeight="0.48562783" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3553719" sideWeight="0.7810606" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29090908" sideWeight="0.7583333" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3268921" sideWeight="0.49394855" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37024793" sideWeight="0.64772725" order="14" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1553719" sideWeight="0.8810606" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.46446282" sideWeight="0.78409094" order="14" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.8757576" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Spring" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3218391" sideWeight="0.49092284" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3268921" sideWeight="0.4969743" order="16" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30227274" sideWeight="0.4387352" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22424242" sideWeight="0.4387352" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32930514" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3804841" sideWeight="0.24052718" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="JProfiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="17" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.58677685" sideWeight="0.675" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22727273" sideWeight="0.5612648" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="DSM" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" x="0" y="21" width="1366" height="742" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20530303" sideWeight="0.5" order="6" side_tool="false" content_ui="combo" />
+      <window_info id="DSM" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" x="0" y="21" width="1366" height="742" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.39871383" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.07570208" sideWeight="0.51627904" order="11" side_tool="true" content_ui="tabs" />
-      <window_info id="Panda" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4054463" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.07570208" sideWeight="0.51627904" order="12" side_tool="true" content_ui="tabs" />
+      <window_info id="Panda" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4054463" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4074074" sideWeight="0.8593041" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Run with VisualVM" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.7545305" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.57685953" sideWeight="0.6598485" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Panda Executor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.51565075" sideWeight="0.5" order="18" side_tool="false" content_ui="tabs" />
       <window_info id="Debug with VisualVM" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
     </layout>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
@@ -2879,12 +3161,6 @@
           <option name="timeStamp" value="1406" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/util/JsfCtrl.java</url>
-          <line>59</line>
-          <properties />
-          <option name="timeStamp" value="1429" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/uql/ExpressionValidationManager.java</url>
           <line>921</line>
           <properties />
@@ -2962,11 +3238,17 @@
           <properties />
           <option name="timeStamp" value="1518" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/DefaultQueryExecutor.java</url>
+          <line>124</line>
+          <properties />
+          <option name="timeStamp" value="1530" />
+        </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="1519" />
+      <option name="time" value="1540" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -2975,415 +3257,413 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/TemporalDataMarshallerFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/StringMarshaller.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/MonthYearMarshaller.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/StringAsBlobUTFMarshaller.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/EnumMarshallerFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/sql/CompiledQLFunctionExpressionSQLProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/sql/EntityNameSQLProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/sql/BinaryOperatorExpressionSQLProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/sql/CurrentUserSQLProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="16" column="13" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/sql/InsertSQLProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/sql/LiteralSQLProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/sql/InCollectionSQLProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/sql/DeleteSQLProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/sql/CastANSISQLProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/sql/KeyEnumerationExpressionSQLProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="25" column="13" selection-start-line="25" selection-start-column="13" selection-end-line="25" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/ObjectMarshaller.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/TimeStampMarshaller.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/TimestampMarshaller.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="45" column="13" selection-start-line="45" selection-start-column="13" selection-end-line="45" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/marshallers/UtilDateMarshaller.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/shared/MarshallCancelledException.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="11" column="26" selection-start-line="11" selection-start-column="26" selection-end-line="11" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/DefaultPersistenceUnitTrigger.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#805#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/TypeMarshallerUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="675">
-          <caret line="45" column="0" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/BootstrapService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="143">
-          <caret line="138" column="36" selection-start-line="138" selection-start-column="36" selection-end-line="138" selection-end-column="36" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/equipments/vr-equipments-service/src/main/java/net/vpc/app/vainruling/plugins/equipments/service/EquipmentPlugin.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="173">
-          <caret line="24" column="20" selection-start-line="24" selection-start-column="20" selection-end-line="24" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/mailbox/vr-mailbox-service/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" column="20" selection-start-line="14" selection-start-column="20" selection-end-line="14" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$MAVEN_REPOSITORY$/junit/junit/4.8.2/junit-4.8.2.pom">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="20" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="38" column="54" selection-start-line="38" selection-start-column="54" selection-end-line="38" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/equipments/vr-equipments-service/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="495">
-          <caret line="36" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-tutorial/upa-tutorial-webjsf/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="59">
-          <caret line="49" column="35" selection-start-line="49" selection-start-column="35" selection-end-line="49" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-tutorial/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="30" selection-start-line="7" selection-start-column="30" selection-end-line="7" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/NonUniqueResultException.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="40" selection-start-line="5" selection-start-column="40" selection-end-line="5" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/NoResultException.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="37" selection-start-line="6" selection-start-column="37" selection-end-line="6" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/filters/EntityNameFilter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="49" selection-start-line="6" selection-start-column="49" selection-end-line="6" selection-end-column="49" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/exceptions/InvalidFormulaException.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/types/ManyToOneType.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="27" selection-start-line="4" selection-start-column="27" selection-end-line="4" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-web/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-api/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="21" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/types/DefaultDataType.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="29" selection-start-line="2" selection-start-column="29" selection-end-line="2" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../upa/upa-api/src/main/java/net/vpc/upa/filters/EntityAnyFilter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="14" selection-start-line="8" selection-start-column="14" selection-end-line="8" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/private/old/api/vr-api-web/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="52" column="24" selection-start-line="52" selection-start-column="24" selection-end-line="52" selection-end-column="24" />
-          <folding />
+        <state relative-caret-position="223">
+          <caret line="60" column="21" selection-start-line="60" selection-start-column="21" selection-end-line="60" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/security/UserSession.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="37" column="31" selection-start-line="37" selection-start-column="31" selection-end-line="37" selection-end-column="31" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../common/web-jsf/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="232">
-          <caret line="17" column="39" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="39" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/vr-core-web/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="59" column="24" selection-start-line="59" selection-start-column="24" selection-end-line="59" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../common/streams/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
+        <state relative-caret-position="37">
           <caret line="4" column="36" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="36" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../common/gomail/pom.xml">
+    <entry file="file://$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/src/main/resources/META-INF/resources/themes/infusion/contacts.xhtml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="80">
-          <caret line="32" column="24" selection-start-line="32" selection-start-column="24" selection-end-line="32" selection-end-column="24" />
-          <folding />
+        <state relative-caret-position="375">
+          <caret line="25" column="51" selection-start-line="25" selection-start-column="51" selection-end-line="25" selection-end-column="51" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/private/old/api/vr-api-service/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="63" column="24" selection-start-line="63" selection-start-column="24" selection-end-line="63" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/vr-core-service/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="103">
-          <caret line="77" column="21" selection-start-line="77" selection-start-column="21" selection-end-line="77" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/obj/defaultimpl/ManyToOneTypePropertyView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="103">
-          <caret line="40" column="9" selection-start-line="40" selection-start-column="9" selection-end-line="40" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/myplanning.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-216">
-          <caret line="13" column="20" selection-start-line="13" selection-start-column="20" selection-end-line="13" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/readme.txt">
+    <entry file="file://$PROJECT_DIR$/plugins/articles/vr-articles-web/src/main/java/net/vpc/app/vainruling/plugins/articles/web/ArticlesCtrl.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
-          <caret line="1" column="24" selection-start-line="1" selection-start-column="24" selection-end-line="1" selection-end-column="24" />
+          <caret line="28" column="25" selection-start-line="28" selection-start-column="25" selection-end-line="28" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/src/main/resources/META-INF/resources/themes/th2016/contacts.xhtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="9" selection-start-line="15" selection-start-column="9" selection-end-line="15" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/ctrl/PageServlet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="89">
+          <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../common/web-jsf/src/main/java/net/vpc/common/jsf/FacesUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="31">
+          <caret line="69" column="0" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-expression/4.1.2.RELEASE/spring-expression-4.1.2.RELEASE.jar!/org/springframework/expression/ExpressionParser.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="11" column="28" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../common/strings/src/main/java/net/vpc/common/strings/StringUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="98">
+          <caret line="175" column="25" selection-start-line="175" selection-start-column="25" selection-end-line="175" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/util/VrHelper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="307" column="0" selection-start-line="307" selection-start-column="0" selection-end-line="307" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/install-notes.txt">
+    <entry file="file://$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/util/JsfCtrl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+        <state relative-caret-position="113">
+          <caret line="354" column="18" selection-start-line="354" selection-start-column="18" selection-end-line="354" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/menu/VrMenuManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="163">
+          <caret line="167" column="27" selection-start-line="167" selection-start-column="27" selection-end-line="167" selection-end-column="27" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/ctrl/ContactsCtrl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="20" column="34" selection-start-line="20" selection-start-column="34" selection-end-line="20" selection-end-column="34" />
+          <folding>
+            <element signature="e#0#848#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/util/VrWebHelper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="161">
+          <caret line="66" column="18" selection-start-line="66" selection-start-column="18" selection-end-line="66" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-web/src/main/java/net/vpc/app/vainruling/plugins/academic/internship/web/InternshipBoardsStatsCtrl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="43" column="13" selection-start-line="43" selection-start-column="13" selection-end-line="43" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-web/src/main/java/net/vpc/app/vainruling/plugins/academic/internship/web/MyInternshipBoardsCtrl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="95">
+          <caret line="486" column="87" selection-start-line="486" selection-start-column="33" selection-end-line="486" selection-end-column="87" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/CorePlugin.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="103">
+          <caret line="1680" column="21" selection-start-line="1680" selection-start-column="21" selection-end-line="1680" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/src/main/java/net/vpc/app/vainruling/plugins/academic/planning/web/TeacherPlanningCtrl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="62" column="21" selection-start-line="62" selection-start-column="21" selection-end-line="62" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic/vr-academic-service/src/main/java/net/vpc/app/vainruling/plugins/academic/service/XlsxLoadImporter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="91">
+          <caret line="360" column="24" selection-start-line="360" selection-start-column="24" selection-end-line="360" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic/vr-academic-service/src/main/java/net/vpc/app/vainruling/plugins/academic/service/helper/TeacherGenerationHelper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="83">
+          <caret line="88" column="42" selection-start-line="88" selection-start-column="42" selection-end-line="88" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/admin/AcademicAdminToolsCtrl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="181">
+          <caret line="75" column="20" selection-start-line="75" selection-start-column="20" selection-end-line="75" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/dialog/GenerateLoadDialogCtrl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="98">
+          <caret line="122" column="38" selection-start-line="122" selection-start-column="38" selection-end-line="122" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic-internship/vr-academic-internship-web/src/main/java/net/vpc/app/vainruling/plugins/academic/internship/web/InternshipsPlanningCtrl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="124">
+          <caret line="629" column="9" selection-start-line="629" selection-start-column="9" selection-end-line="629" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/DefaultQueryExecutor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="124">
+          <caret line="124" column="0" selection-start-line="124" selection-start-column="0" selection-end-line="124" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/DefaultExecutionContext.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="94">
+          <caret line="140" column="0" selection-start-line="140" selection-start-column="0" selection-end-line="140" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/specific/derby/DerbyPersistenceStore.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="36" column="13" selection-start-line="36" selection-start-column="13" selection-end-line="36" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/specific/mysql/MySQLPersistenceStore.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="113">
+          <caret line="58" column="0" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/DefaultPersistenceStore.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-141">
+          <caret line="963" column="81" selection-start-line="963" selection-start-column="81" selection-end-line="963" selection-end-column="81" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/AbstractQuery.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="371">
+          <caret line="173" column="0" selection-start-line="173" selection-start-column="0" selection-end-line="173" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/DefaultPersistenceUnit.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="103">
+          <caret line="414" column="35" selection-start-line="414" selection-start-column="35" selection-end-line="414" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../upa/upa-impl/src/main/java/net/vpc/upa/impl/persistence/DefaultQuery.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="106">
+          <caret line="413" column="25" selection-start-line="413" selection-start-column="25" selection-end-line="413" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/src/main/resources/META-INF/resources/modules/academic/planning/teacher-planning.xhtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-270">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/src/main/java/net/vpc/app/vainruling/plugins/academic/planning/web/MyPlanningListCtrl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-950">
+          <caret line="34" column="41" selection-start-line="34" selection-start-column="41" selection-end-line="34" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic-planning/vr-academic-planning-web/src/main/resources/META-INF/resources/modules/academic/planning/class-planning.xhtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="9" selection-start-line="16" selection-start-column="9" selection-end-line="16" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/load/MyCourseLoadCtrl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="28" column="13" selection-start-line="28" selection-start-column="13" selection-end-line="28" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/load/AbstractCourseLoadCtrl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-52">
+          <caret line="415" column="21" selection-start-line="415" selection-start-column="21" selection-end-line="415" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/load/AllTeachersCourseLoadCtrl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="63">
+          <caret line="69" column="0" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic/vr-academic-service/src/main/java/net/vpc/app/vainruling/plugins/academic/service/AcademicPlugin.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="159">
+          <caret line="778" column="20" selection-start-line="778" selection-start-column="20" selection-end-line="778" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic/vr-academic-service/src/main/java/net/vpc/app/vainruling/plugins/academic/service/model/stat/GlobalStat.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="45" column="22" selection-start-line="45" selection-start-column="22" selection-end-line="45" selection-end-column="22" />
+          <folding>
+            <element signature="e#1698#1699#0" expanded="true" />
+            <element signature="e#1728#1729#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/academic/vr-academic-web/src/main/java/net/vpc/app/vainruling/plugins/academic/web/load/GlobalStatCtrl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1230">
+          <caret line="109" column="23" selection-start-line="109" selection-start-column="23" selection-end-line="109" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/vr-core-web/src/main/resources/META-INF/resources/modules/obj/profile-expr-dialog.xhtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="34" column="74" selection-start-line="34" selection-start-column="74" selection-end-line="34" selection-end-column="74" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/ctrl/AppSecurityFilter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1020">
+          <caret line="83" column="0" selection-start-line="83" selection-start-column="0" selection-end-line="83" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/primefaces/primefaces/5.2/primefaces-5.2-sources.jar!/org/primefaces/component/selectonemenu/SelectOneMenuRenderer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="63">
+          <caret line="141" column="0" selection-start-line="141" selection-start-column="0" selection-end-line="141" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/vr-core-web/src/main/java/net/vpc/app/vainruling/core/web/obj/dialog/ProfileExprDialogCtrl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="780">
+          <caret line="75" column="75" selection-start-line="75" selection-start-column="75" selection-end-line="75" selection-end-column="75" />
+          <folding>
+            <element signature="e#7185#7186#0" expanded="true" />
+            <element signature="e#7221#7222#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/src/main/resources/META-INF/resources/themes/infusion/css/app.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/src/main/resources/META-INF/resources/themes/th2016/js/app/app2.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/src/main/resources/META-INF/resources/themes/th2016/js/app/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="465">
+          <caret line="35" column="2" selection-start-line="35" selection-start-column="2" selection-end-line="35" selection-end-column="2" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-infusion/src/main/resources/META-INF/resources/themes/infusion/js/app/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="465">
+          <caret line="35" column="2" selection-start-line="35" selection-start-column="2" selection-end-line="35" selection-end-column="2" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/eniso-info/plugins/themes/eniso-info-theme-th2016/src/main/resources/META-INF/resources/themes/th2016/css/app.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="11985">
+          <caret line="799" column="11" selection-start-line="799" selection-start-column="1" selection-end-line="799" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/vr-core-web/src/main/resources/META-INF/resources/modules/obj/objects.xhtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="426" column="49" selection-start-line="426" selection-start-column="49" selection-end-line="426" selection-end-column="49" />
+          <folding>
+            <marker date="1470597127975" expanded="true" signature="42706:42721" ph="/*...*/" />
+            <marker date="1470597127975" expanded="true" signature="42781:43011" ph="{...}" />
+            <marker date="1470597127975" expanded="true" signature="42829:42908" ph="{...}" />
+            <marker date="1470597127975" expanded="true" signature="42914:42993" ph="{...}" />
+            <marker date="1470597127975" expanded="true" signature="43029:43038" ph="/*...*/" />
+            <marker date="1470597127975" expanded="true" signature="43316:43368" ph="{...}" />
+            <marker date="1470597127975" expanded="true" signature="43482:43535" ph="{...}" />
+            <marker date="1470597127975" expanded="true" signature="43596:43660" ph="{...}" />
+            <marker date="1470597127975" expanded="true" signature="43745:43809" ph="{...}" />
+            <marker date="1470597127975" expanded="true" signature="43855:43918" ph="{...}" />
+            <marker date="1470597127975" expanded="true" signature="43979:44067" ph="{...}" />
+            <marker date="1470597127975" expanded="true" signature="44096:44209" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>

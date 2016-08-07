@@ -18,7 +18,7 @@ import javax.faces.bean.SessionScoped;
  */
 @UCtrl(
         title = "Contacts",
-        url = "contacts"
+        url = "#{jsfCtrl.themePath}/contacts"
 )
 @ManagedBean
 @SessionScoped

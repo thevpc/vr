@@ -7,6 +7,8 @@ package net.vpc.app.vainruling.plugins.academic.planning.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppConfig;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
@@ -51,7 +53,14 @@ public class TeacherPlanningCtrl extends AbstractPlanningCtrl {
         String p = "";//getModel().getSelectedPeriod();
         if (StringUtils.isEmpty(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
-            return core.findAppConfig().getMainPeriod().getId();
+            AppConfig appConfig = core.findAppConfig();
+            if(appConfig!=null) {
+                AppPeriod mainPeriod = appConfig.getMainPeriod();
+                if(mainPeriod!=null) {
+                    return mainPeriod.getId();
+                }
+            }
+            return -1;
         }
         return Integer.parseInt(p);
     }

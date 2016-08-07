@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.web.load;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
@@ -67,7 +68,11 @@ public class AllTeachersCourseLoadCtrl {
         String p = getModel().getSelectedPeriod();
         if (StringUtils.isEmpty(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
-            return core.findAppConfig().getMainPeriod().getId();
+            AppConfig appConfig = core.findAppConfig();
+            if(appConfig!=null && appConfig.getMainPeriod()!=null) {
+                return appConfig.getMainPeriod().getId();
+            }
+            return -1;
         }
         return Integer.parseInt(p);
     }
@@ -115,9 +120,11 @@ public class AllTeachersCourseLoadCtrl {
             refreshableFilers.add(FacesUtils.createSelectItem("AcademicProgramType:" + pt.getId(), pt.getName(), "vr-checkbox"));
         }
         int periodId = getPeriodId();
-        for (String label : a.findCoursePlanLabels(periodId)) {
-            refreshableFilers.add(FacesUtils.createSelectItem("label:" + label, label, "vr-checkbox"));
-            refreshableFilers.add(FacesUtils.createSelectItem("label:!" + label, "!" + label, "vr-checkbox"));
+        if(periodId>=-1) {
+            for (String label : a.findCoursePlanLabels(periodId)) {
+                refreshableFilers.add(FacesUtils.createSelectItem("label:" + label, label, "vr-checkbox"));
+                refreshableFilers.add(FacesUtils.createSelectItem("label:!" + label, "!" + label, "vr-checkbox"));
+            }
         }
         getModel().setRefreshFilterItems(refreshableFilers);
         onRefresh();
@@ -135,10 +142,14 @@ public class AllTeachersCourseLoadCtrl {
         StatCache cache = new StatCache();
         int periodId = getPeriodId();
         CourseFilter filter = getCourseFilter();
-
-        getModel().setSemester1(a.evalTeacherSemesterStatList(periodId, "S1", null, filter, cache));
-        getModel().setSemester2(a.evalTeacherSemesterStatList(periodId, "S2", null, filter, cache));
-        getModel().setYear(a.evalTeacherStatList(periodId, null, null, filter, cache));
+        getModel().setSemester1(new ArrayList<>());
+        getModel().setSemester2(new ArrayList<>());
+        getModel().setYear(new ArrayList<>());
+        if(periodId>=-1) {
+            getModel().setSemester1(a.evalTeacherSemesterStatList(periodId, "S1", null, filter, cache));
+            getModel().setSemester2(a.evalTeacherSemesterStatList(periodId, "S2", null, filter, cache));
+            getModel().setYear(a.evalTeacherStatList(periodId, null, null, filter, cache));
+        }
         getModel().setTables(Arrays.asList(
                 new TeacherBaseStatTable("Charge Globale", (List) getModel().getYear()),
                 new TeacherBaseStatTable("Semestre 1", (List) getModel().getSemester1()),

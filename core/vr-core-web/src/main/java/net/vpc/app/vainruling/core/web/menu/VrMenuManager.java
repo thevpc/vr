@@ -12,7 +12,7 @@ import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.core.web.util.JsfCtrl;
-import net.vpc.app.vainruling.core.web.util.VRWebHelper;
+import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.*;
 import net.vpc.upa.Package;
@@ -165,7 +165,8 @@ public class VrMenuManager {
             UCtrlData d = new UCtrlData();
             d.setCss(c2Ann.css());
             d.setTitle(c2Ann.title());
-            d.setUrl(c2Ann.url());
+            String url = VrWebHelper.evalSpringExprMessage(c2Ann.url());
+            d.setUrl(url);
             d.setSecurityKey(c2Ann.securityKey());
             List<BreadcrumbItem> aa = new ArrayList<>();
             for (UPathItem breadcrumb : c2Ann.breadcrumb()) {
@@ -226,7 +227,7 @@ public class VrMenuManager {
 
     private String gotoPage(String command, String arguments, boolean addtoHistory) {
         Object o = getPageCtrl(command);
-        VRWebHelper.prepareUserSession();
+        VrWebHelper.prepareUserSession();
         String goodBeanName = resolveGoodBeanName(o);
         UCtrlData d = getUCtrlData(goodBeanName, arguments);
         setPageCtrl(o);

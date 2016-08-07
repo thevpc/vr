@@ -11,7 +11,7 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
-import net.vpc.app.vainruling.core.web.util.VRWebHelper;
+import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.common.jsf.FacesUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -66,7 +66,7 @@ public class LoginCtrl {
 
 
     public String dologin() {
-        VRWebHelper.prepareUserSession();
+        VrWebHelper.prepareUserSession();
         if (VrApp.getBean(AppGlobalCtrl.class).isShutdown() && !"admin".equals(getModel().getLogin())) {
             FacesUtils.addErrorMessage("Impossible de logger. Serveur indisponible momentannément. Redémarrage en cours.");
             return null;

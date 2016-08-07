@@ -2109,24 +2109,28 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             core.addProfileRight(director.getId(), ee.getAbsoluteName() + ".Load");
             core.addProfileRight(director.getId(), ee.getAbsoluteName() + ".DefaultEditor");
         }
-        AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
-
-        List<AcademicCoursePlan> academicCoursePlanList = pu.findAll(AcademicCoursePlan.class);
-        for (AcademicCoursePlan p : academicCoursePlanList) {
-            if (p.getPeriod() == null) {
-                p.setPeriod(mainPeriod);
-                pu.createUpdateQuery(p).update("period").execute();
+        AppConfig appConfig = core.findAppConfig();
+        if(appConfig!=null) {
+            AppPeriod mainPeriod = appConfig.getMainPeriod();
+            if (mainPeriod != null) {
+                List<AcademicCoursePlan> academicCoursePlanList = pu.findAll(AcademicCoursePlan.class);
+                for (AcademicCoursePlan p : academicCoursePlanList) {
+                    if (p.getPeriod() == null) {
+                        p.setPeriod(mainPeriod);
+                        pu.createUpdateQuery(p).update("period").execute();
+                    }
+                }
+                List<AcademicTeacherSemestrialLoad> academicTeacherSemestrialLoadList = pu.findAll(AcademicTeacherSemestrialLoad.class);
+                for (AcademicTeacherSemestrialLoad p : academicTeacherSemestrialLoadList) {
+                    if (p.getPeriod() == null) {
+                        p.setPeriod(mainPeriod);
+                        pu.createUpdateQuery(p).update("period").execute();
+                    }
+                }
+                for (AcademicTeacher academicTeacher : findTeachers()) {
+                    updateTeacherPeriod(mainPeriod.getId(), academicTeacher.getId(), -1);
+                }
             }
-        }
-        List<AcademicTeacherSemestrialLoad> academicTeacherSemestrialLoadList = pu.findAll(AcademicTeacherSemestrialLoad.class);
-        for (AcademicTeacherSemestrialLoad p : academicTeacherSemestrialLoadList) {
-            if (p.getPeriod() == null) {
-                p.setPeriod(mainPeriod);
-                pu.createUpdateQuery(p).update("period").execute();
-            }
-        }
-        for (AcademicTeacher academicTeacher : findTeachers()) {
-            updateTeacherPeriod(mainPeriod.getId(), academicTeacher.getId(), -1);
         }
     }
 
@@ -2306,14 +2310,17 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (o instanceof AppUser) {
             AcademicTeacher t = findTeacherByUser(((AppUser) o).getId());
             if (t != null) {
-                AcademicTeacherPeriod pp = findAcademicTeacherPeriod(core.findAppConfig().getMainPeriod().getId(), t);
-                HashMap<String, Object> m = new HashMap<>();
-                m.put("discipline", t.getDiscipline());
-                m.put("degree", pp.getDegree() == null ? null : pp.getDegree().getName());
-                m.put("degreeCode", pp.getDegree() == null ? null : pp.getDegree().getCode());
-                m.put("situation", pp.getSituation() == null ? null : pp.getSituation().getName());
-                m.put("enabled", pp.isEnabled());
-                return m;
+                AppConfig appConfig = core.findAppConfig();
+                if(appConfig!=null && appConfig.getMainPeriod()!=null) {
+                    AcademicTeacherPeriod pp = findAcademicTeacherPeriod(appConfig.getMainPeriod().getId(), t);
+                    HashMap<String, Object> m = new HashMap<>();
+                    m.put("discipline", t.getDiscipline());
+                    m.put("degree", pp.getDegree() == null ? null : pp.getDegree().getName());
+                    m.put("degreeCode", pp.getDegree() == null ? null : pp.getDegree().getCode());
+                    m.put("situation", pp.getSituation() == null ? null : pp.getSituation().getName());
+                    m.put("enabled", pp.isEnabled());
+                    return m;
+                }
             }
         }
         return null;

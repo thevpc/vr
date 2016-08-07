@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.web.load;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
@@ -52,7 +53,11 @@ public class GlobalStatCtrl {
         String p = getModel().getSelectedPeriod();
         if (StringUtils.isEmpty(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
-            return core.findAppConfig().getMainPeriod().getId();
+            AppConfig appConfig = core.findAppConfig();
+            if(appConfig!=null && appConfig.getMainPeriod()!=null) {
+                return appConfig.getMainPeriod().getId();
+            }
+            return -1;
         }
         return Integer.parseInt(p);
     }
@@ -78,9 +83,11 @@ public class GlobalStatCtrl {
             refreshableFilers.add(FacesUtils.createSelectItem("AcademicProgramType:" + pt.getId(), pt.getName(), "vr-checkbox"));
         }
         int periodId = getPeriodId();
-        for (String label : a.findCoursePlanLabels(periodId)) {
-            refreshableFilers.add(FacesUtils.createSelectItem("label:" + label, label, "vr-checkbox"));
-            refreshableFilers.add(FacesUtils.createSelectItem("label:!" + label, "!" + label, "vr-checkbox"));
+        if(periodId>=-1) {
+            for (String label : a.findCoursePlanLabels(periodId)) {
+                refreshableFilers.add(FacesUtils.createSelectItem("label:" + label, label, "vr-checkbox"));
+                refreshableFilers.add(FacesUtils.createSelectItem("label:!" + label, "!" + label, "vr-checkbox"));
+            }
         }
         getModel().setRefreshFilterItems(refreshableFilers);
         onRefresh();
@@ -97,7 +104,13 @@ public class GlobalStatCtrl {
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         CorePlugin c = VrApp.getBean(CorePlugin.class);
 
-        getModel().setStat(p.evalGlobalStat(c.findAppConfig().getMainPeriod().getId(), getCourseFilter(), null));
+        int periodId = getPeriodId();
+
+        GlobalStat stat = periodId<=0?null:p.evalGlobalStat(periodId, getCourseFilter(), null);
+        if(stat==null){
+            stat=new GlobalStat();
+        }
+        getModel().setStat(stat);
         getModel().setSemesters(p.findSemesters());
 
         PieChartModel pieModel1 = new PieChartModel();

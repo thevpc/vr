@@ -165,7 +165,7 @@
           <element id="archive" name="upa-web-1.1.0.0.0.jar">
             <element id="module-output" name="upa-web" />
           </element>
-          <element id="archive" name="web-jsf-1.1.jar">
+          <element id="archive" name="web-jsf-1.2.jar">
             <element id="module-output" name="web-jsf" />
           </element>
           <element id="library" level="project" name="Maven: org.glassfish.jersey.ext:jersey-spring3:2.14" />

@@ -621,10 +621,12 @@ public class InternshipsPlanningCtrl {
     public void reloadInternshipGroups() {
         List<SelectItem> internshipGroupsItems = new ArrayList<>();
         AcademicTeacher tt = academicPlugin.getCurrentTeacher();
-        List<AcademicInternshipGroup> internshipGroups = academicInternshipPlugin.findEnabledInternshipGroupsByDepartment(tt.getDepartment().getId());
-        for (AcademicInternshipGroup t : internshipGroups) {
-            String n = t.getName();
-            internshipGroupsItems.add(new SelectItem(String.valueOf(t.getId()), n));
+        if(tt!=null) {
+            List<AcademicInternshipGroup> internshipGroups = academicInternshipPlugin.findEnabledInternshipGroupsByDepartment(tt.getDepartment().getId());
+            for (AcademicInternshipGroup t : internshipGroups) {
+                String n = t.getName();
+                internshipGroupsItems.add(new SelectItem(String.valueOf(t.getId()), n));
+            }
         }
         getModel().setGroups(internshipGroupsItems);
     }

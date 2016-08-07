@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
+import net.vpc.common.strings.StringConverter;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.CustomDefaultObject;
 import net.vpc.upa.types.DateTime;
@@ -17,6 +18,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
+import org.springframework.context.expression.BeanFactoryResolver;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
@@ -299,4 +305,5 @@ public class VrHelper {
             return getFirstNonNull(en, fr, ar);
         }
     }
+
 }

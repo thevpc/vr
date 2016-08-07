@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.web.load;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
@@ -100,7 +101,11 @@ public abstract class AbstractCourseLoadCtrl {
         String p = getModel().getSelectedPeriod();
         if (StringUtils.isEmpty(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
-            return core.findAppConfig().getMainPeriod().getId();
+            AppConfig appConfig = core.findAppConfig();
+            if(appConfig!=null && appConfig.getMainPeriod()!=null) {
+                return appConfig.getMainPeriod().getId();
+            }
+            return -1;
         }
         return Integer.parseInt(p);
     }
@@ -108,20 +113,23 @@ public abstract class AbstractCourseLoadCtrl {
     public void onPeriodChanged() {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         AppDepartment userDepartment = getUserDepartment();
+        int periodId = getPeriodId();
+        List<SelectItem> refreshableFilers = new ArrayList<>();
+
         getModel().setEnableLoadEditing(
-                userDepartment == null ? false :
-                        ap.getAppDepartmentPeriodRecord(getPeriodId(), userDepartment.getId()).getBoolean("enableLoadEditing", false)
+                (userDepartment == null || periodId<0)? false :
+                        ap.getAppDepartmentPeriodRecord(periodId, userDepartment.getId()).getBoolean("enableLoadEditing", false)
         );
 
-        List<SelectItem> refreshableFilers = new ArrayList<>();
         refreshableFilers.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
         for (AcademicProgramType pt : ap.findProgramTypes()) {
             refreshableFilers.add(FacesUtils.createSelectItem("AcademicProgramType:" + pt.getId(), pt.getName(), "vr-checkbox"));
         }
-        int periodId = getPeriodId();
-        for (String label : ap.findCoursePlanLabels(periodId)) {
-            refreshableFilers.add(FacesUtils.createSelectItem("label:" + label, label, "vr-checkbox"));
-            refreshableFilers.add(FacesUtils.createSelectItem("label:!" + label, "!" + label, "vr-checkbox"));
+        if(periodId>=-1) {
+            for (String label : ap.findCoursePlanLabels(periodId)) {
+                refreshableFilers.add(FacesUtils.createSelectItem("label:" + label, label, "vr-checkbox"));
+                refreshableFilers.add(FacesUtils.createSelectItem("label:!" + label, "!" + label, "vr-checkbox"));
+            }
         }
         getModel().setRefreshFilterItems(refreshableFilers);
 

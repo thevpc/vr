@@ -7,6 +7,7 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
@@ -84,7 +85,8 @@ public class TeacherGenerationHelper {
         String outputNamePattern = options.getOutputNamePattern();
         AppPeriod period = options.getPeriod();
         if (period == null) {
-            period = core.findAppConfig().getMainPeriod();
+            AppConfig appConfig = core.findAppConfig();
+            period = appConfig==null?null:appConfig.getMainPeriod();
         }
         int periodId = period.getId();
         if (!outputNamePattern.contains("*")) {

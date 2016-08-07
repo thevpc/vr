@@ -484,7 +484,7 @@ public class MyInternshipBoardsCtrl {
             int filterTypeId = -1;
             if (getModel().getInternshipBoard() == null) {
                 AppConfig appConfig = VrApp.getBean(CorePlugin.class).findAppConfig();
-                filterPeriodId = appConfig == null ? -1 : appConfig.getMainPeriod().getId();
+                filterPeriodId = (appConfig == null || appConfig.getMainPeriod()==null) ? -1 : appConfig.getMainPeriod().getId();
                 String d = getModel().getFilterInternshipTypeId();
                 filterTypeId = StringUtils.isEmpty(d) ? -1 : Integer.valueOf(d);
             } else {
