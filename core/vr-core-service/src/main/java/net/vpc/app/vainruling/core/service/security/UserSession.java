@@ -35,7 +35,7 @@ public class UserSession implements Serializable {
     private String lastVisitedPage;
     //    private String componentsTheme="glass-x";
 //    private String componentsTheme = "eniso-green";
-    private String theme = "infusion";
+    private String theme = null;
     private Locale locale;
     private Set<String> rights = new HashSet<>();
     private List<AppProfile> profiles = new ArrayList<>();

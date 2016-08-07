@@ -12,6 +12,7 @@ import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
@@ -80,13 +81,22 @@ public class JsfCtrl {
     public VrTheme getTheme() {
         UserSession s = UserSession.getCurrentSession();
         if (s != null) {
+            CorePlugin c = VrApp.getBean(CorePlugin.class);
             VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
-            VrTheme theme = tfactory.getTheme(s.getTheme());
-            if (theme != null) {
-                return theme;
+            String themeId = s.getTheme();
+            if(StringUtils.isEmpty(themeId)){
+                themeId=(String) c.getAppPropertyValue("System.DefaultTheme", s.getUser()==null?null:s.getUser().getLogin());
+                if (StringUtils.isEmpty(themeId)) {
+                    themeId = getAppTheme().getId();
+                }
+                if (StringUtils.isEmpty(themeId)) {
+                    themeId = "default";
+                }
             }
-            if (s.getUser() != null) {
-                return getUserTheme(s.getUser().getLogin());
+            VrTheme theme = tfactory.getTheme(themeId);
+            if (theme != null) {
+                s.setTheme(themeId);
+                return theme;
             }
         }
         return getAppTheme();
@@ -314,11 +324,11 @@ public class JsfCtrl {
         return VrHelper.extratTextFormHTML(value);
     }
 
-    public String pureHtml(String value) {
+    public String html(String value) {
         return VrHelper.extractPureHTML(value);
     }
 
-    public String wikiToHtml(String value) {
+    public String wiki2Html(String value) {
         return VrWikiParser.convertToHtml(value, "Wiki");
     }
 
