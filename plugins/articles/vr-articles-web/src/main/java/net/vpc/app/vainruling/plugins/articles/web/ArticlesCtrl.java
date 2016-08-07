@@ -10,6 +10,7 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesFile;
+import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
 import net.vpc.app.vainruling.plugins.articles.service.model.FullArticle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -126,6 +127,22 @@ public class ArticlesCtrl {
 
     public List<ArticlesFile> findArticlesFiles(int articleId) {
         return articles.findArticlesFiles(articleId);
+    }
+
+    public FullArticle getFullArticle(String disposition,int pos){
+        List<FullArticle> a = getModel().getArticles().get(disposition);
+        if(a!=null&& a.size()>pos && pos>=0){
+            return a.get(pos);
+        }
+        return null;
+    }
+
+    public ArticlesItem getArticle(String disposition, int pos){
+        FullArticle a = getFullArticle(disposition, pos);
+        if(a!=null){
+            return a.getContent();
+        }
+        return null;
     }
 
     public static class Model {
