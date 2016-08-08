@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="upa-tutorial-webjsf:war">
-    <output-path>$PROJECT_DIR$/../../upa/upa-tutorial/upa-tutorial-webjsf/target</output-path>
-    <root id="archive" name="upa-tutorial-webjsf-1.2.0.war">
-      <element id="artifact" artifact-name="upa-tutorial-webjsf:war exploded" />
-    </root>
-  </artifact>
-</component>

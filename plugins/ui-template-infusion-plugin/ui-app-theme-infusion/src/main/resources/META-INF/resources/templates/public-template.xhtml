@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+    <h:head>
+
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>  
+        <title>ENISo info</title>
+        <!-- Bootstrap -->
+        <link href="${jsfCtrl.context}/fs/Site/wplugins/infusion/css/bootstrap.min.css" rel="stylesheet"/>
+        <link rel="stylesheet" href="${jsfCtrl.context}/fs/Site/wplugins/infusion/css/styles.css"/>
+        <link rel="stylesheet" href="${jsfCtrl.context}/fs/Site/wplugins/infusion/css/queries.css"/>
+        <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"/>
+        <link href="${jsfCtrl.context}/css/app.css" rel="stylesheet" type="text/css"/>
+        <!-- Fonts -->
+        <link href='http://fonts.googleapis.com/css?family=Sintony:400,700' rel='stylesheet' type='text/css'/>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700' rel='stylesheet' type='text/css'/>
+        <link rel="shortcut icon" href="${jsfCtrl.context}/images/app-icon.png" type="image/png" />
+        <link href='https://fonts.googleapis.com/css?family=Stalemate' rel='stylesheet' type='text/css'/>
+        <link href='https://fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css'/>
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+          <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+        <h:outputScript library="primefaces" name="jquery/jquery.js" target="head" />
+        <script src="${jsfCtrl.context}/fs/Site/js/analytics.js"></script>
+        <ui:insert name="links" >
+
+        </ui:insert>
+    </h:head>
+    <h:body>
+
+        <header class="clearfix">
+            <div class="col-md-3" style="border-left: 0px solid transparent;
+                 border-right: 20px solid transparent;
+                 border-bottom: 70px solid #63c6ae; width: 30%">
+            </div>
+            <div class="vr-logo col-md-3" style="position: absolute;z-index: 2;">
+                <h:form>
+                    <h:commandLink action="#{vrMenuManager.gotoPage('publicIndex', '')}">
+                        <img class="navbar-brand" style="margin-top: 0px;margin-left: 10px;height: 80px;" src="${jsfCtrl.context}/images/app-icon.png" alt="ENISo info" height="40"/>
+                    </h:commandLink>
+                    <h2 class="logo-text" style=""><span style="font-family: 'Audiowide', serif;font-weight:normal;">ENISo</span> <span style="font-family: 'Stalemate', serif;font-weight:800;font-size: 32px;">info</span></h2>
+                </h:form>
+            </div>
+            <h:form id="pageMenuForm">
+                <nav class="clearfix">
+                    <ul class="clearfix"> 
+                        <li><h:commandLink styleClass="#{(vrMenuManager.isCurrentPageId('welcome') or vrMenuManager.isCurrentPageId(''))?'active':''}" action="#{vrMenuManager.gotoPage('publicIndex', '')}" value="welcome"/></li>
+                        <li><h:commandLink styleClass="#{vrMenuManager.isCurrentPageId('activities')?'active':''}" action="#{vrMenuManager.gotoPage('publicActivities', '')}" value="activities"/></li>
+                        <li><h:commandLink styleClass="#{vrMenuManager.isCurrentPageId('news')?'active':''}" action="#{vrMenuManager.gotoPage('publicNews', '')}" value="news"/></li>
+                        <ui:fragment  rendered="#{!loginService.userSession.connected}">
+                            <li>
+                                <p:outputPanel>
+                                    <h:commandLink value="sign-in" action="#{loginCtrl.gotoLogin}"/>
+                                </p:outputPanel>
+                            </li>
+                        </ui:fragment>
+                        <ui:fragment  rendered="#{loginService.userSession.connected}">
+                            <li>
+                                <p:outputPanel>
+                                    <h:outputLink value="${jsfCtrl.context}/p/welcome">Back-end</h:outputLink>
+                                </p:outputPanel>
+                            </li>
+                            <li>
+                                <p:outputPanel>
+                                    <h:commandLink value="sign-out #{userSession.user.contact.firstName}" action="#{loginCtrl.dologout}"/>
+                                </p:outputPanel>
+                            </li>
+                        </ui:fragment>
+                        <li><h:outputLink styleClass="#{vrMenuManager.isCurrentPageId('contacts')?'active':''}" value="${jsfCtrl.context}/p/publicContacts">contact</h:outputLink></li>
+                    </ul>
+                </nav>
+                <div class="pullcontainer">
+                    <a href="#" id="pull"><i class="fa fa-bars fa-2x"></i></a>
+                </div>     
+            </h:form>
+
+        </header>
+        <ui:insert name="row1" >
+            <h:form id="row1Form">
+                <div class="banner">
+                    <ul>
+                        <ui:fragment rendered="#{articlesCtrl.mainRow1Articles.size() eq 0}">
+                            <li style="background-image: url('fs/Site/wplugins/infusion/img/01.jpg');">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-6 col-md-offset-3">
+                                            <div class="hero-title">
+                                                NEW SITE, NEW LOOK
+                                            </div>
+                                            <p class="hero-content">Welcome to new ENISo ii Department new Website</p>
+                                            <h:commandLink value="sign-in now!" action="#{loginCtrl.gotoLogin}" class="hero-btn"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ui:fragment>
+                        <ui:repeat value="#{articlesCtrl.mainRow1Articles}" var="a">
+                            <li style="background-image: url('#{jsfCtrl.url(a.content.imageURL)}'); background-size:100% 100%;">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-6 col-md-offset-3">
+                                            <ui:fragment 
+                                                rendered="#{!jsfCtrl.isEmpty(a.content.subject)}"
+                                                >
+                                                <div class="hero-title">
+                                                    <h:outputLabel value="#{a.content.subject}"/>
+                                                </div>
+                                            </ui:fragment>
+                                            <ui:fragment 
+                                                rendered="#{!jsfCtrl.isEmpty(jsfCtrl.html2txt(a.content.content))}"
+                                                >
+                                                <p class="hero-content">
+                                                    <h:outputLabel value="#{a.content.content}" escape="false"/>
+                                                </p>
+                                            </ui:fragment>
+                                            <p:outputPanel rendered="#{a.attachments.size() ne 0}">
+                                                <ui:repeat value="#{a.attachments}" var="att">
+                                                    <h:outputLink 
+                                                        value="#{jsfCtrl.url(att.path)}" 
+                                                        styleClass="#{(att.style eq null or att.style eq '')?'hero-btn':att.style}"
+                                                        style="#{jsfCtrl.isEmpty(jsfCtrl.html2txt(a.content.content))?'margin-top:450px;':''}"
+                                                        >
+                                                        <h:outputText value="#{att.name}" />
+                                                    </h:outputLink>
+                                                </ui:repeat>
+                                            </p:outputPanel>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ui:repeat>
+                    </ul>
+                </div>
+                <div class="container">
+                    <div class="arrow"></div>
+                </div>
+            </h:form>
+        </ui:insert>
+        <ui:insert name="row2" >
+            <h:form id="row2Form">
+                <div class="container carousel">
+                    <div class="row">
+
+                        <div class="col-md-3">
+                            <div class="ca-hover">
+                                <div class="carousel-img">
+                                    <img src="fs/Site/wplugins/infusion/img/c01.jpg" alt="Carousel Img"/>
+                                </div>
+                                <div class="carousel-avatar av1">
+                                </div>
+                                <div class="carousel-content">
+                                    <h3>3rd year Options</h3>
+                                    <p>How to choose your Option
+                                        <ul>
+                                            <li>Embedded Communication Systems</li>
+                                            <li>Distributed Systems</li>
+                                            <li>Advanced Robtics</li>
+                                        </ul>
+                                    </p>
+                                    <p>Each of the options helps sharpening knowledge about specific domains 
+                                        without loosing ENISo's Computer Engineering caracteristics.
+                                    </p>    
+                                </div>
+                                <div class="overlay"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="ca-hover">
+                                <div class="carousel-img">
+                                    <img src="fs/Site/wplugins/infusion/img/c02.jpg" alt="Carousel Img"/>
+                                </div>
+                                <div class="carousel-avatar av2">
+                                </div>
+                                <div class="carousel-content">
+                                    <h3>Research</h3>
+                                    <p>The School encompasses a wide range of high-quality research activities, 
+                                        covering all major disciplines in the field of télécommunications, 
+                                        computer science and robotics
+                                    </p>
+                                    <p>Feel free to contact ENISo reseachers to get more information about their activities
+                                    </p>
+                                </div>
+                                <div class="overlay"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="ca-hover">
+                                <div class="carousel-img">
+                                    <img src="fs/Site/wplugins/infusion/img/c03.jpg" alt="Carousel Img"/>
+                                </div>
+                                <div class="carousel-avatar av3">
+                                </div>
+                                <div class="carousel-content">
+                                    <h3>Partnership</h3>
+                                    <p>
+                                        The School has number of links and partnerships with organizations in industry, commerce, research, and the public sector.
+                                        These are vitally important in enhancing the delivery of both our research and teaching activities, and we work closely with external organisations in the following ways.
+                                    </p>
+                                </div>
+                                <div class="overlay"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="ca-hover">
+                                <div class="carousel-img">
+                                    <img src="fs/Site/wplugins/infusion/img/c04.jpg" alt="Carousel Img"/>
+                                </div>
+                                <div class="carousel-avatar av4">
+                                </div>
+                                <div class="carousel-content">
+                                    <h3>Stay in touch</h3>
+                                    <p>This new site has been built for you to help staying well informed. Don't hesitate to suggest other improvements or services.</p>
+                                    <p>VR is open sourced platform, so be welcome to join the group get involved in design, development and content management</p>
+                                </div>
+                                <div class="overlay"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <div class="controls">
+                            <ul>
+                                <li><span class="pagination active"></span></li>
+                                <li><span class="pagination"></span></li>
+                                <li><span class="pagination"></span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </ui:insert>
+        <ui:insert name="row3" >
+            <h:form id="row3Form">
+
+                <div class="text-inter">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3>Outreach</h3>
+                                <p>We've a wide range of activities for potential applicants to experience what it’s like to study at ENISo and to open their eyes to the multitude of careers paths on offer.</p>
+                                <div class="divider"></div>
+                                <!--
+                                <a href="#" class="button solid-color">BUTTON</a>
+                                <a href="#" class="button extra-color">BUTTON</a>
+                                -->
+                            </div>
+                            <div class="col-md-6">
+                                <h3>Get involved</h3>
+                                <p>Coming to ENISo isn’t all about classes and studying, we provide a large and varied programs of extracurricular activities for our students.</p>
+                            </div>
+
+                            <ui:repeat value="#{articlesCtrl.mainRow3Articles}" var="a">
+                                <div class="col-md-6">
+                                    <h3><h:outputLabel value="#{a.content.subject}"/></h3>
+                                    <p><h:outputLabel value="#{a.content.content}" escape="false"/></p>
+
+                                    <h:outputLink class="button #{a.content.linkClassStyle}}" 
+                                                  rendered="#{a.content.linkText ne null and a.content.linkText ne ''}" 
+                                                  value="#{jsfCtrl.url(a.content.linkURL)}">
+                                        <h:outputLabel value="#{a.content.linkText}"/>
+                                    </h:outputLink>
+                                    <p:outputPanel rendered="#{a.attachments.size() ne 0}">
+                                        <ui:repeat value="#{a.attachments}" var="att">
+                                            <h:outputLink 
+                                                value="#{jsfCtrl.url(att.path)}" 
+                                                styleClass="#{(att.style eq null or att.style eq '')?'hero-btn':att.style}">
+                                                <h:outputText value="#{att.name}" />
+                                            </h:outputLink>
+                                        </ui:repeat>
+                                    </p:outputPanel>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+
+        </ui:insert>
+
+        <ui:insert name="row4" >
+            <h:form id="row4Form">
+
+                <div class="h2-wrap">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h2 class="standard-block">LATEST ARTICLES</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container-fluid container-articles">
+                    <div class="row articles">
+                        <div class="col-md-2 article-img">
+                            <a href="#"><img src="fs/Site/wplugins/infusion/img/articles/01.jpg" alt=""/></a>
+                            <div class="article-overlay"></div>
+                        </div>
+                        <div class="col-md-2 article-img">
+                            <a href="#"><img src="fs/Site/wplugins/infusion/img/articles/02.jpg" alt=""/></a>
+                            <div class="article-overlay"></div>
+                        </div>
+                        <div class="col-md-2 article-img">
+                            <a href="#"><img src="fs/Site/wplugins/infusion/img/articles/03.jpg" alt=""/></a>
+                            <div class="article-overlay"></div>
+                        </div>
+                        <div class="col-md-2 article-img">
+                            <a href="#"><img src="fs/Site/wplugins/infusion/img/articles/04.jpg" alt=""/></a>
+                            <div class="article-overlay"></div>
+                        </div>
+                        <div class="col-md-2 article-img">
+                            <a href="#"><img src="fs/Site/wplugins/infusion/img/articles/05.jpg" alt=""/></a>
+                            <div class="article-overlay"></div>
+                        </div>
+                        <div class="col-md-2 article-img">
+                            <a href="#"><img src="fs/Site/wplugins/infusion/img/articles/06.jpg" alt=""/></a>
+                            <div class="article-overlay"></div>
+                        </div>
+                    </div>
+                    <div class="row articles">
+                        <div class="col-md-2 article-img">
+                            <a href="#"><img src="fs/Site/wplugins/infusion/img/articles/07.jpg" alt=""/></a>
+                            <div class="article-overlay"></div>
+                        </div>
+                        <div class="col-md-2 article-img">
+                            <a href="#"><img src="fs/Site/wplugins/infusion/img/articles/08.jpg" alt=""/></a>
+                            <div class="article-overlay"></div>
+                        </div>
+                        <div class="col-md-2 article-img">
+                            <a href="#"><img src="fs/Site/wplugins/infusion/img/articles/09.jpg" alt=""/></a>
+                            <div class="article-overlay"></div>
+                        </div>
+                        <div class="col-md-2 article-img">
+                            <a href="#"><img src="fs/Site/wplugins/infusion/img/articles/10.jpg" alt=""/></a>
+                            <div class="article-overlay"></div>
+                        </div>
+                        <div class="col-md-2 article-img">
+                            <a href="#"><img src="fs/Site/wplugins/infusion/img/articles/11.jpg" alt=""/></a>
+                            <div class="article-overlay"></div>
+                        </div>
+                        <div class="col-md-2 article-img">
+                            <a href="#"><img src="fs/Site/wplugins/infusion/img/articles/12.jpg" alt=""/></a>
+                            <div class="article-overlay"></div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </ui:insert>
+        <ui:insert name="row5" >
+            <h:form id="row5Form">
+
+                <div class="laptop-slider">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-10 col-md-offset-1 laptop-placeholder">
+                                <div class="slideshow">
+                                    <figure class="show"><img alt="" src="fs/Site/wplugins/infusion/img/slider/slide-01.png" /></figure>
+                                    <figure><img alt="" src="fs/Site/wplugins/infusion/img/slider/slide-02.png" /></figure>
+                                    <figure><img alt="" src="fs/Site/wplugins/infusion/img/slider/slide-01.png" /></figure>
+                                    <figure><img alt="" src="fs/Site/wplugins/infusion/img/slider/slide-02.png" /></figure>
+                                    <span class="prev"><i class="fa fa-angle-left fa-4x"></i></span>
+                                    <span class="next"><i class="fa fa-angle-right fa-4x"></i></span>
+                                </div>
+                            </div>
+                            <div> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+
+        </ui:insert>
+        <ui:insert name="row6" >
+            <h:form id="row6Form">
+
+                <div class="quote-container">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-10 col-md-offset-1">
+                                    <div class="quote-slideshow">
+                                        <ui:repeat value="#{articlesCtrl.mainRow6Articles}" var="a" varStatus="st">
+                                            <figure class="#{st.first ?'show':''}">
+                                                <h2><h:outputLabel value="#{a.content.subject}"/></h2>
+                                                <figcaption>
+                                                    <h:outputLabel value="#{a.content.content}" escape="false"/>
+                                                </figcaption>
+                                            </figure>
+                                        </ui:repeat>
+                                        <!--                                    <figure class="show">
+                                                                                <h2>IBM Worklight Training</h2>
+                                                                                <figcaption>
+                                                                                    All IA3 students are to attend a condensed IBM Worklight Training (IBM Mobile Framework) carried out by M. Naoufel Khayati  from 3rd to 8th of septembre at AMPHI. 
+                                                                                    Cours will prepare for Framework certification and will be records as regular course. Attendance is mandatory (at 8H30).
+                                                                                </figcaption>
+                                                                            </figure>-->
+                                    </div>
+                                </div>
+                                <ui:fragment rendered="#{articlesCtrl.mainRow6Articles.size() gt 0}">
+                                    <span class="quote-prev circle"><i class="fa fa-angle-left fa-2x"></i></span>
+                                    <span class="quote-next circle"><i class="fa fa-angle-right fa-2x"></i></span>
+                                </ui:fragment>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </ui:insert>
+        <ui:insert name="row7" >
+            <h:form id="row7Form">
+
+                <div class="shadow"></div>
+                <footer>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <h2>ENISo Info</h2>
+                                <p>This is ENISo Computer Engineering Departement's (ii) Web Site. Please don't forget to refer to ENISo's official website</p>
+                            </div>
+                            <div class="col-md-5">
+                                <p>ENISo (National Engineering School of Sousse) is a Tunisian public institution of higher
+
+                                    education and research in the field of engineering. ENISo delivers 3 Engineering and 9 
+
+                                    Master’s programs in the fields of Industrial Electronics (Industrial Electronics Department), 
+
+                                    Applied Informatics (Industrial Computing Department) and Mechatronics (Advanced 
+
+                                    Mechanics Department). Similarly to the French Grandes Ecoles, admission to ENISo is 
+
+                                    based on students' raking in a national competitive exam that students take after two years of 
+
+                                    intensive preparation in mathemathics and physics.</p>
+                            </div>
+                            <div class="col-md-3">
+                                <p>ENISo has two research laboratories in 
+
+                                    the fields of Mechanical Engineering and Electrical Engineering and is submitting for a third 
+
+                                    laboratory in Telecommunications And Embedded Systems. ENISo has been involved in 
+
+                                    several europeen programs on education and research such as PARENIS, Icré@, OSMOSE 
+
+                                    and TEMPUS. ENISo is also a member of the Mediterranean Engineering School’s Network 
+
+                                    (RMEI)</p>
+                            </div>
+                            <div class="col-md-2">
+                                <ul class="footer-links">
+                                    <li><a href="#">News</a></li>
+                                    <li><a href="#">Articles</a></li>
+                                    <li><a href="#">Links</a></li>
+                                    <li><a href="#">Work</a></li>
+                                    <li><a href="http://www.eniso.rnu.tn">ENISo official website</a></li>
+                                    <li><a href="http://www.tahabensalah.net">Taha BEN Salah's WebSite (author)</a></li>
+                                    <li><a href="http://www.eniso.info/vr/services/rss/main"><img src="${jsfCtrl.context}/fs/Site/images/icons/rss-feed.png"/></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>  
+                </footer>
+            </h:form>
+        </ui:insert>
+        <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>-->
+        <script src="${jsfCtrl.context}/fs/Site/wplugins/infusion/js/bootstrap.min.js"></script>
+        <script src="${jsfCtrl.context}/fs/Site/wplugins/infusion/js/scripts.js"></script>
+        <script src="${jsfCtrl.context}/fs/Site/wplugins/infusion/js/unslider.min.js"></script>
+    </h:body>
+
+</html>

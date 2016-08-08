@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="vr-app-web:war">
-    <output-path>$PROJECT_DIR$/vr-app-web/target</output-path>
-    <root id="archive" name="vr.war">
-      <element id="artifact" artifact-name="vr-app-web:war exploded" />
-    </root>
-  </artifact>
-</component>

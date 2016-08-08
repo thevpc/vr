@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="wpm-web:war">
-    <output-path>$PROJECT_DIR$/apps/wpm/wpm-web/target</output-path>
-    <root id="archive" name="wpm.war">
-      <element id="artifact" artifact-name="wpm-web:war exploded" />
-    </root>
-  </artifact>
-</component>

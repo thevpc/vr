@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<upa version="1.0">
+    <scan types="net.vpc.app.**"/>
+<!--    <persistenceUnit name="main">
+        <connection>
+            <connectionString>derby://localhost/vrsim3;structure=create;userName=vr;password=vr</connectionString>
+        </connection>
+    </persistenceUnit>-->
+    <!--<persistenceUnit name="main">-->
+        <!--<connection>-->
+            <!--<connectionString>derby://localhost/vain;structure=create;userName=vr;password=vr</connectionString>-->
+        <!--</connection>-->
+    <!--</persistenceUnit>-->
+    <persistenceUnit name="mysql">
+        <connection>
+            <connectionString>mysql://localhost/VR;structure=create;userName=root;password='';pool=true</connectionString>
+        </connection>
+    </persistenceUnit>
+    <!--<persistenceUnit name="mysql">-->
+        <!--<connection>-->
+            <!--<connectionString>mysql:datasource://datasource</connectionString>-->
+        <!--</connection>-->
+    <!--</persistenceUnit>-->
+    <!--    <scan types="net.vpc.app.**"/>
+    <connection>
+        <connectionString>mysql://localhost/VR;structure=create;userName=root;password=''</connectionString>
+    </connection>
+    <connection>
+        <connectionString>derby://localhost/vain;structure=create;userName=vr;password=vr</connectionString>
+    </connection>-->
+</upa>

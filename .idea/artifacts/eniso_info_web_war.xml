@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="eniso-info-web:war">
-    <output-path>$PROJECT_DIR$/apps/eniso-info/eniso-info-web/target</output-path>
-    <root id="archive" name="vr.war">
-      <element id="artifact" artifact-name="eniso-info-web:war exploded" />
-    </root>
-  </artifact>
-</component>
