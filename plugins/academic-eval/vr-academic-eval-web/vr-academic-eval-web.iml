@@ -104,10 +104,10 @@
     <orderEntry type="library" name="Maven: javax.ws.rs:javax.ws.rs-api:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:jstl:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jersey.containers:jersey-container-servlet:2.14" level="project" />
-    <orderEntry type="module" module-name="vr-academic-eval-service" />
+    <orderEntry type="module" module-name="vr-academic-web" />
     <orderEntry type="module" module-name="vr-academic-service" />
     <orderEntry type="library" name="Maven: rome:rome:1.0" level="project" />
     <orderEntry type="library" name="Maven: jdom:jdom:1.0" level="project" />
-    <orderEntry type="module" module-name="vr-academic-web" />
+    <orderEntry type="module" module-name="vr-academic-eval-service" />
   </component>
 </module>

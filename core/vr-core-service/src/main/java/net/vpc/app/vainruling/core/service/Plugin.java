@@ -70,7 +70,9 @@ public class Plugin implements Comparable<Plugin> {
     }
 
     public String getVersion() {
-        AppPlugin p = (AppPlugin) PlatformReflector.getTargetClass(beanInstance).getAnnotation(AppPlugin.class);
+        Class targetClass = PlatformReflector.getTargetClass(beanInstance);
+        AppPlugin p = (AppPlugin) targetClass.getAnnotation(AppPlugin.class);
+        String mavenVersion = targetClass.getPackage().getImplementationVersion();
         return p.version();
     }
 

@@ -142,9 +142,9 @@ public class AllTeachersCourseLoadCtrl {
         StatCache cache = new StatCache();
         int periodId = getPeriodId();
         CourseFilter filter = getCourseFilter();
-        getModel().setSemester1(new ArrayList<>());
-        getModel().setSemester2(new ArrayList<>());
-        getModel().setYear(new ArrayList<>());
+        getModel().setSemester1(new ArrayList<TeacherSemesterStat>());
+        getModel().setSemester2(new ArrayList<TeacherSemesterStat>());
+        getModel().setYear(new ArrayList<TeacherPeriodStat>());
         if(periodId>=-1) {
             getModel().setSemester1(a.evalTeacherSemesterStatList(periodId, "S1", null, filter, cache));
             getModel().setSemester2(a.evalTeacherSemesterStatList(periodId, "S2", null, filter, cache));
