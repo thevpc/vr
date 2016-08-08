@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.plugins.mailbox</groupId>
     <artifactId>vr-mailbox-web</artifactId>
-    <version>1.0</version>
+    <version>1.6</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/upa/wiki</url>
 
@@ -50,12 +50,12 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.core</groupId>
             <artifactId>vr-core-web</artifactId>
-            <version>${project.version}</version>
+            <version>1.10</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vr-mailbox-service</artifactId>
-            <version>${project.version}</version>
+            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>javax</groupId>

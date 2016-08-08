@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.plugins.academic-planning</groupId>
     <artifactId>vr-academic-planning-web</artifactId>
-    <version>1.0</version>
+    <version>1.4</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/upa/wiki</url>
 
@@ -50,17 +50,17 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.core</groupId>
             <artifactId>vr-core-web</artifactId>
-            <version>${project.version}</version>
+            <version>1.10</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vr-academic-planning-service</artifactId>
-            <version>${project.version}</version>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-web</artifactId>
-            <version>${project.version}</version>
+            <version>1.2</version>
         </dependency>
     </dependencies>
     <distributionManagement>

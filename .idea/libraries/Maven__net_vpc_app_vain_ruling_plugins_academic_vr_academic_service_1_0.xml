@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Maven: net.vpc.app.vain-ruling.plugins.academic:vr-academic-service:1.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/net/vpc/app/vain-ruling/plugins/academic/vr-academic-service/1.0/vr-academic-service-1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/plugins/academic/vr-academic-service/vr-academic-service-1.0-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/net/vpc/app/vain-ruling/plugins/academic/vr-academic-service/1.0/vr-academic-service-1.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/plugins/academic/vr-academic-service/vr-academic-service-1.0-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/net/vpc/app/vain-ruling/plugins/academic/vr-academic-service/1.0/vr-academic-service-1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

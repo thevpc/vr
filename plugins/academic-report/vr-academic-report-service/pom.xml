@@ -55,7 +55,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-service</artifactId>
-            <version>${project.version}</version>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 

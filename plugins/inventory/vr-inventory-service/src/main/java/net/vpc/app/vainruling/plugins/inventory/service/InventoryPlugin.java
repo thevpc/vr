@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author taha.bensalah@gmail.com
  */
 @AppPlugin(
-        version = "1.0", dependsOn = {"equipmentPlugin"}
+        dependsOn = {"equipmentPlugin"}
 )
 public class InventoryPlugin {
 

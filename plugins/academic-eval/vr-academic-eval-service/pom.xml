@@ -5,7 +5,7 @@
 
     <groupId>net.vpc.app.vain-ruling.plugins.academic-eval</groupId>
     <artifactId>vr-academic-eval-service</artifactId>
-    <version>1.0</version>
+    <version>1.4</version>
     <name>net.vpc.app.vain-ruling.plugins.academic-eval.vr-academic-eval-service</name>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/upa/wiki</url>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-service</artifactId>
-            <version>${project.version}</version>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 
@@ -101,6 +101,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -112,7 +113,9 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
                 <executions>
                     <execution>
                         <phase>process-sources</phase>

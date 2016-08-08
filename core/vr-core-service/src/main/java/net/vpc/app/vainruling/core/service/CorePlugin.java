@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin(version = "1.10")
+@AppPlugin()
 public class CorePlugin {
 
     public static final java.util.logging.Logger LOG_APPLICATION_STATS = java.util.logging.Logger.getLogger(CorePlugin.class.getName() + ".Stats");

@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin(version = "2.0")
+@AppPlugin()
 public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     public static final int DEFAULT_SEMESTER_MAX_WEEKS = 14;

@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin(version = "1.8", dependsOn = {"mailboxPlugin"})
+@AppPlugin(dependsOn = {"mailboxPlugin"})
 public class ArticlesPlugin {
 
     public static final String SEND_EXTERNAL_MAIL_QUEUE = "sendExternalMailQueue";

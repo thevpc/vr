@@ -34,7 +34,7 @@ import java.util.*;
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin(dependsOn = "academicPlugin", version = "1.4")
+@AppPlugin(dependsOn = "academicPlugin")
 public class AcademicPlanningPlugin {
 
     @Autowired

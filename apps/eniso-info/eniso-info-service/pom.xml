@@ -21,7 +21,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.equipments</groupId>
             <artifactId>vr-equipments-service</artifactId>
-            <version>1.0</version>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.inventory</groupId>
@@ -36,17 +36,17 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.articles</groupId>
             <artifactId>vr-articles-service</artifactId>
-            <version>1.0</version>
+            <version>1.8</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-service</artifactId>
-            <version>1.0</version>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.mailbox</groupId>
             <artifactId>vr-mailbox-service</artifactId>
-            <version>1.0</version>
+            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.blog</groupId>
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-internship</groupId>
             <artifactId>vr-academic-internship-service</artifactId>
-            <version>1.0</version>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-report</groupId>
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-eval</groupId>
             <artifactId>vr-academic-eval-service</artifactId>
-            <version>1.0</version>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-perf-eval</groupId>
@@ -81,7 +81,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-planning</groupId>
             <artifactId>vr-academic-planning-service</artifactId>
-            <version>1.0</version>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.dev-toolbox</groupId>

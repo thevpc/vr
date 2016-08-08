@@ -27,7 +27,7 @@ import java.util.logging.Level;
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin(version = "1.0")
+@AppPlugin
 public class TaskPlugin {
 
     @Autowired

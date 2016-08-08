@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.plugins.articles</groupId>
     <artifactId>vr-articles-service</artifactId>
-    <version>1.0</version>
+    <version>1.8</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/upa/wiki</url>
 
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.mailbox</groupId>
             <artifactId>vr-mailbox-service</artifactId>
-            <version>${project.version}</version>
+            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>rome</groupId>

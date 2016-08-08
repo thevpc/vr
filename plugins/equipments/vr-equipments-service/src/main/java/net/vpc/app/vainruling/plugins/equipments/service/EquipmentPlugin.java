@@ -18,7 +18,7 @@ import java.util.*;
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin(version = "1.2")
+@AppPlugin()
 public class EquipmentPlugin {
 
     @Autowired

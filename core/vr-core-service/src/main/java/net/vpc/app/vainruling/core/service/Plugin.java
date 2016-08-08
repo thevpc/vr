@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.service;
 
 import net.vpc.app.vainruling.core.service.util.PlatformReflector;
+import net.vpc.common.strings.StringUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -73,7 +74,10 @@ public class Plugin implements Comparable<Plugin> {
         Class targetClass = PlatformReflector.getTargetClass(beanInstance);
         AppPlugin p = (AppPlugin) targetClass.getAnnotation(AppPlugin.class);
         String mavenVersion = targetClass.getPackage().getImplementationVersion();
-        return p.version();
+        if(!StringUtils.isEmpty(mavenVersion)){
+            return mavenVersion;
+        }
+        return "1.0";
     }
 
     public PlatformReflector.InstanceInvoker[] findMethodsByAnnotation(Class anno) {

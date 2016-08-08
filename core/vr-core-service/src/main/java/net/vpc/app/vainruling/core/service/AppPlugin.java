@@ -23,8 +23,5 @@ import java.lang.annotation.Target;
 //@DependsOn("bootstrapService")
 @Scope(value = "singleton")
 public @interface AppPlugin {
-
-    String version() default "1.0";
-
     String[] dependsOn() default {};
 }

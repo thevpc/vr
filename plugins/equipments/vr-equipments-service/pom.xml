@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.plugins.equipments</groupId>
     <artifactId>vr-equipments-service</artifactId>
-    <version>1.0</version>
+    <version>1.2</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/upa/wiki</url>
 

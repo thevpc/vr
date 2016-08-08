@@ -10,7 +10,7 @@ import net.vpc.app.vainruling.core.service.AppPlugin;
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin(dependsOn = "academicPlugin", version = "1.4")
+@AppPlugin(dependsOn = "academicPlugin")
 public class AcademicReportPlugin {
 
 

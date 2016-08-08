@@ -6,12 +6,47 @@
     <groupId>net.vpc.app.vain-ruling.apps.eniso-info</groupId>
     <artifactId>eniso-info-web</artifactId>
     <name>net.vpc.app.vain-ruling.apps.eniso-info.eniso-info-web</name>
-    <version>1.0.0</version>
+    <version>1.0.61</version>
     <packaging>war</packaging>
+    <url>https://github.com/thevpc/upa/wiki</url>
+
+    <organization>
+        <name>vpc open source initiative</name>
+        <url>http://tahabensalah.net</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>vpc</id>
+            <name>Taha Ben Salah</name>
+            <email>taha.bensalah@gmail.com</email>
+            <url>http://tahabensalah.net</url>
+            <organization>vpc open source initiative</organization>
+            <organizationUrl>http://tahabensalah.net</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>Africa/Tunis</timezone>
+            <properties>
+                <picUrl>https://gravatar.com/avatar/977025550163b4a91397007f6ea9ee17</picUrl>
+            </properties>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License Version 3.0</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+        </license>
+    </licenses>
 
     <properties>
-        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <github.global.server>github</github.global.server>
+        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
     </properties>
 
     <dependencies>
@@ -46,7 +81,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.core</groupId>
             <artifactId>vr-core-web</artifactId>
-            <version>1.0</version>
+            <version>1.10</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.tasks</groupId>
@@ -56,17 +91,17 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.articles</groupId>
             <artifactId>vr-articles-web</artifactId>
-            <version>1.0</version>
+            <version>1.8</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-web</artifactId>
-            <version>1.0</version>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-internship</groupId>
             <artifactId>vr-academic-internship-web</artifactId>
-            <version>1.0</version>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-report</groupId>
@@ -76,12 +111,12 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-planning</groupId>
             <artifactId>vr-academic-planning-web</artifactId>
-            <version>1.0</version>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-eval</groupId>
             <artifactId>vr-academic-eval-web</artifactId>
-            <version>1.0</version>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-perf-eval</groupId>
@@ -91,7 +126,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.mailbox</groupId>
             <artifactId>vr-mailbox-web</artifactId>
-            <version>1.0</version>
+            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.dev-toolbox</groupId>
@@ -155,9 +190,48 @@
 
     </dependencies>
 
+    <distributionManagement>
+        <site>
+            <id>github</id>
+            <name>github</name>
+            <url>file://${project.build.directory}/vpc-public-maven</url>
+        </site>
+        <repository>
+            <id>internal.repo</id>
+            <name>Temporary Staging Repository</name>
+            <url>file://${project.build.directory}/vpc-public-maven</url>
+        </repository>
+    </distributionManagement>
+
     <build>
         <finalName>vr</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <showDeprecation>true</showDeprecation>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <compilerArguments>
+                        <endorseddirs>${endorsed.dir}</endorseddirs>
+                    </compilerArguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -172,19 +246,6 @@
                 </executions>
             </plugin>
 
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                    <compilerArguments>
-                        <endorseddirs>${endorsed.dir}</endorseddirs>
-                    </compilerArguments>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -193,6 +254,7 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>

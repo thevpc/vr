@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.plugins.academic-internship</groupId>
     <artifactId>vr-academic-internship-service</artifactId>
-    <version>1.0</version>
+    <version>1.4</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/upa/wiki</url>
 
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-service</artifactId>
-            <version>${project.version}</version>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 
