@@ -19,7 +19,6 @@ import net.vpc.common.vfs.VFS;
 import net.vpc.upa.UPA;
 import org.primefaces.event.FileUploadEvent;
 
-import javax.faces.bean.ManagedBean;
 import java.io.File;
 import java.util.Date;
 import java.util.logging.Level;
@@ -37,7 +36,6 @@ import java.util.logging.Logger;
         menu = "/Education/Config",
         securityKey = "Custom.Education.AdminTools"
 )
-@ManagedBean
 public class AcademicAdminToolsCtrl {
 
     private Model model = new Model();
@@ -62,7 +60,7 @@ public class AcademicAdminToolsCtrl {
         try {
             String p = VrApp.getBean(CorePlugin.class).getNativeFileSystemPath()
                     + CorePlugin.PATH_TEMP + "/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
-                    + "-" + VrApp.getBean(UserSession.class).getUser().getLogin();
+                    + "-" + UserSession.getCurrentUser().getLogin();
             new File(p).mkdirs();
             File f = new File(p, event.getFile().getFileName());
             try {

@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +25,6 @@ import java.util.Map;
  * @author taha.bensalah@gmail.com
  */
 @Component
-@ManagedBean
 @Scope(value = "session")
 public class DisciplineDialogCtrl {
 

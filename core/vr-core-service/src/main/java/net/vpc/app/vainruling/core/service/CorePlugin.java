@@ -19,6 +19,7 @@ import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.CustomTextFormatter;
 import net.vpc.common.util.MapList;
+import net.vpc.common.util.MultiMap;
 import net.vpc.common.vfs.*;
 import net.vpc.upa.*;
 import net.vpc.upa.expressions.Equals;
@@ -31,9 +32,12 @@ import org.springframework.context.ApplicationContext;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.Properties;
+import java.util.jar.Manifest;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,7 +67,7 @@ public class CorePlugin {
     @Autowired
     private CacheService cacheService;
     private boolean updatingPoll = false;
-    private Plugin[] plugins;
+    private List<Plugin> plugins;
     private AppVersion appVersion;
     private Set<String> managerProfiles = new HashSet<>(Arrays.asList("Director"));
 //    private final Map<String,Object> globalCache=new HashMap<>();
@@ -1530,7 +1534,7 @@ public class CorePlugin {
             AppUser u = (AppUser) up.getObject();
             return u.getLogin();
         }
-        UserSession us = VrApp.getBean(UserSession.class);
+        UserSession us = UserSession.getCurrentSession();
         if (us != null) {
             if (us.getUser() != null) {
                 return us.getUser().getLogin();
@@ -1540,7 +1544,7 @@ public class CorePlugin {
     }
 
     public boolean isUserSessionAdminOrUser(String login) {
-        UserSession us = VrApp.getBean(UserSession.class);
+        UserSession us = UserSession.getCurrentSession();
         UserPrincipal up = UPA.getPersistenceUnit().getUserPrincipal();
         if (up != null && up.getObject() instanceof AppUser) {
             AppUser u = (AppUser) up;
@@ -1576,7 +1580,7 @@ public class CorePlugin {
     public boolean isUserSessionAdmin() {
         UserSession us = null;
         try {
-            us = VrApp.getBean(UserSession.class);
+            us = UserSession.getCurrentSession();
         } catch (Exception e) {
             //session not yet created!
             return true;
@@ -1604,7 +1608,7 @@ public class CorePlugin {
     }
 
     public boolean isSessionAdmin() {
-        UserSession us = VrApp.getBean(UserSession.class);
+        UserSession us = UserSession.getCurrentSession();
         return us != null && us.isAdmin();
     }
 
@@ -1997,8 +2001,8 @@ public class CorePlugin {
                 trace.trace("login", "login not found. Failed as " + login + "/" + password, login + "/" + password, "corePlugin", null, null, (login == null || login.length() == 0) ? "anonymous" : login, -1, Level.SEVERE, s.getClientIpAddress());
             } else if (user2.isDeleted() || !user2.isEnabled()) {
                 trace.trace("login", "invalid state. Failed as " + login + "/" + password, login + "/" + password
-                                + ". deleted=" + user2.isDeleted()
-                                + ". enabled=" + user2.isEnabled(), "corePlugin", null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE, s.getClientIpAddress()
+                        + ". deleted=" + user2.isDeleted()
+                        + ". enabled=" + user2.isEnabled(), "corePlugin", null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE, s.getClientIpAddress()
                 );
             } else {
                 trace.trace(
@@ -2078,18 +2082,150 @@ public class CorePlugin {
 //                .getEntity();
 //    }
 
-    public Plugin[] getPlugins() {
-        if (plugins == null) {
-            String[] pp = VrApp.getContext().getBeanNamesForAnnotation(AppPlugin.class);
-            Plugin[] h = new Plugin[pp.length];
-            for (int i = 0; i < h.length; i++) {
-                Plugin h1 = new Plugin(pp[i], VrApp.getContext().getBean(pp[i]));
-                h[i] = h1;
+    private Map<String, PluginComponent> components;
+    private Map<String, PluginBundle> bundles;
+
+    public PluginInfo getPluginInfo(String bundleId) {
+        getPlugins();
+        return bundles.get(bundleId);
+    }
+
+    private void buildPluginInfos() {
+        if (this.components == null) {
+//            Map<String, List<PluginInfo>> bundleToComponents = new HashMap<>();
+            Map<String, PluginBundle> bundles = new HashMap<>();
+            Map<String, PluginComponent> components = new HashMap<>();
+//            Map<String, PluginInfo> componentToBundle = new HashMap<>();
+
+//            bundleToComponents = new HashMap<>();
+            try {
+                //first load all
+                for (URL url : Collections.list(Thread.currentThread().getContextClassLoader().getResources("/META-INF/vr-plugin.properties"))) {
+                    PluginComponent e = PluginComponent.parsePluginComponent(url);
+                    if (e != null) {
+                        if(e.getName()==null){
+                            String id = e.getId();
+                            if(id!=null){
+                                if(id.contains(":")){
+                                    e.setName(id.substring(id.indexOf(':')+1));
+                                }else{
+                                    e.setName(id);
+                                }
+                            }
+                        }
+                        components.put(e.getId(), e);
+                    }
+                }
+                for (PluginComponent e : components.values()) {
+                    String bundleId = e.getBundleId();
+                    PluginBundle bundle = bundles.get(bundleId);
+                    if(bundle==null){
+                        bundle=new PluginBundle();
+                        bundle.setId(bundleId);
+                        bundles.put(bundleId,bundle);
+                    }
+                    bundle.addComponent(e);
+                }
+
+                //reevaluate dependencies
+                //reevaluate versions
+
+                for (PluginBundle bundle : bundles.values()) {
+                    for (String depIdAndVer : bundle.getDependencies()) {
+                        String depId=depIdAndVer;
+                        if(depIdAndVer.contains(":")) {
+                            depId = depIdAndVer.substring(0, depIdAndVer.lastIndexOf(":"));
+                        }
+                        PluginComponent comp = components.get(depId);
+                        if(comp!=null){
+                            if(!bundle.getId().equals(comp.getBundleId())) {
+                                bundle.getBundleDependencies().add(comp.getBundleId());
+                            }
+                        }else{
+                            bundle.getExtraDependencies().add(depId);
+                        }
+                    }
+                }
+                this.bundles = bundles;
+                this.components = components;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-            Arrays.sort(h);
-            plugins = h;
         }
-        return plugins;
+    }
+
+    public PluginComponent getPluginComponent(Class type) {
+        buildPluginInfos();
+        String id=null;
+        try {
+            URL url=getPluginComponentURL(type,"/META-INF/vr-plugin.properties");
+            if(url!=null) {
+                id = PluginComponent.parsePluginInfoId(url);
+            }
+//            id = PluginInfo.parsePluginInfoId(type.getResource("/META-INF/vr-plugin.properties"));
+        } catch (IOException e) {
+            //
+        }
+        return components.get(id);
+    }
+    public URL getPluginComponentURL(Class type,String path) {
+        try {
+            return new URL("jar:" + type.getProtectionDomain().getCodeSource().getLocation().toString() + "!"+path);
+        } catch (MalformedURLException e) {
+            return null;
+        }
+    }
+
+    public PluginComponent getPluginComponent(Object obj) {
+        return getPluginComponent(PlatformReflector.getTargetClass(obj));
+    }
+
+    public PluginBundle getPluginBundle(Class type) {
+        PluginComponent comp = getPluginComponent(type);
+        if(comp==null){
+            return null;
+        }
+        return comp.getBundle();
+    }
+
+    public PluginBundle getPluginBundle(Object type) {
+        PluginComponent comp = getPluginComponent(type);
+        if(comp==null){
+            return null;
+        }
+        return comp.getBundle();
+    }
+
+    public List<Plugin> getPlugins() {
+        if (plugins == null) {
+            buildPluginInfos();
+            String[] appPluginBeans = VrApp.getContext().getBeanNamesForAnnotation(AppPlugin.class);
+            MultiMap<String, Object> instances = new MultiMap<>();
+            for (String beanName : appPluginBeans) {
+                Object bean = VrApp.getContext().getBean(beanName);
+                PluginBundle bundle = getPluginBundle(bean);
+                if (bundle != null) {
+                    instances.put(bundle.getId(), bean);
+                }else{
+                    bundle = getPluginBundle(bean);
+                }
+            }
+            List<Plugin> plugins=new ArrayList<>(bundles.size());
+            for (PluginBundle pluginInfo : bundles.values()) {
+                List<Object> objects = instances.get(pluginInfo.getId());
+                if(objects==null || objects.size()==0){
+                    if(objects==null) {
+                        objects = new ArrayList<>();
+                    }
+                    log.log(Level.INFO, "Plugin "+pluginInfo.getId()+" defines no configurator class");
+                }
+                Plugin p = new Plugin(objects, pluginInfo);
+                plugins.add(p);
+            }
+            Collections.sort(plugins);
+            this.plugins = plugins;
+        }
+        return this.plugins;
     }
 
     public AppVersion getAppVersion() {
@@ -2347,7 +2483,7 @@ public class CorePlugin {
     }
 
     public boolean isUserSessionHeadOfDepartment() {
-        UserSession sm = VrApp.getBean(UserSession.class);
+        UserSession sm = UserSession.getCurrentSession();
         AppUser user = (sm == null) ? null : sm.getUser();
         if (user == null || user.getDepartment() == null) {
             return false;

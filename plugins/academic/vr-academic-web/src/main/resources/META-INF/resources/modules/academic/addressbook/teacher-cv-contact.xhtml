@@ -8,15 +8,15 @@
     <meta name="author" content="vpc"/>
     <meta name="description" content="ENISo's people"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0"/>
-    <link rel="stylesheet" type="text/css" href="#{jsfCtrl.context}/fs/Site/wplugins/magnetic/css/reset.css"/>
-    <link rel="stylesheet" type="text/css" href="#{jsfCtrl.context}/fs/Site/wplugins/magnetic/css/main.css"/>
+    <link rel="stylesheet" type="text/css" href="#{vr.context}/fs/Site/wplugins/magnetic/css/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="#{vr.context}/fs/Site/wplugins/magnetic/css/main.css"/>
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Tangerine"/>
-    <script type="text/javascript" src="#{jsfCtrl.context}/fs/Site/wplugins/magnetic/js/jquery.js"></script>
+    <script type="text/javascript" src="#{vr.context}/fs/Site/wplugins/magnetic/js/jquery.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
-    <script type="text/javascript" src="#{jsfCtrl.context}/fs/Site/wplugins/magnetic/js/map.js"></script>
-    <script type="text/javascript" src="#{jsfCtrl.context}/fs/Site/wplugins/magnetic/js/main.js"></script>
-    <link rel="shortcut icon" href="#{jsfCtrl.themeContext}/images/app-icon.png" type="image/png"/>
-    <script src="#{jsfCtrl.context}/fs/Site/js/analytics.js"></script>
+    <script type="text/javascript" src="#{vr.context}/fs/Site/wplugins/magnetic/js/map.js"></script>
+    <script type="text/javascript" src="#{vr.context}/fs/Site/wplugins/magnetic/js/main.js"></script>
+    <link rel="shortcut icon" href="#{vr.themeContext}/images/app-icon.png" type="image/png"/>
+    <script src="#{vr.context}/fs/Site/js/analytics.js"></script>
 </h:head>
 <h:body>
     <h:form id="contactForm">
@@ -26,7 +26,7 @@
     <header>
         <div class="vr-top">
             <a href="/"><img class="navbar-brand" style="margin-top: 5px;height: 40px;"
-                             src="#{jsfCtrl.themeContext}/images/app-icon.png" alt="VR ENISo" height="30"/></a>
+                             src="#{vr.themeContext}/images/app-icon.png" alt="VR ENISo" height="30"/></a>
         </div>
 
         <div class="logo">
@@ -45,11 +45,11 @@
                 <ul>
                     <li><a href="teacher-cv-index.xhtml">Home</a></li>
                     <li><h:commandLink
-                            action="#{vrMenuManager.gotoPage('teacherCurriculumContent', jsfCtrl.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'about\'}'))}">About me</h:commandLink>
+                            action="#{vr.gotoPage('teacherCurriculumContent', vr.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'about\'}'))}">About me</h:commandLink>
                     </li>
                     <li><a href="#" class="selected">Contact me</a></li>
-                    <li><a href="#{jsfCtrl.facesContext}/META-INF/resources/contacts.xhtml">Teachers Directory</a></li>
-                    <li><a href="#{jsfCtrl.nvl(teacherCurriculumCtrl.model.teacherCV.wwwURL,'#')}"
+                    <li><a href="#{vr.facesContext}/META-INF/resources/contacts.xhtml">Teachers Directory</a></li>
+                    <li><a href="#{vr.nvl(teacherCurriculumCtrl.model.teacherCV.wwwURL,'#')}"
                            target="_blank">Personal Web Site</a></li>
                 </ul>
             </nav>
@@ -58,15 +58,15 @@
 
         <div class="footer clearfix">
             <ul class="social clearfix">
-                <li><a href="#{jsfCtrl.nvl(teacherCurriculumCtrl.model.teacherCV.socialURL1,'#')}" target="_blank"
+                <li><a href="#{vr.nvl(teacherCurriculumCtrl.model.teacherCV.socialURL1,'#')}" target="_blank"
                        class="fb" data-title="Facebook"></a></li>
-                <li><a href="#{jsfCtrl.nvl(teacherCurriculumCtrl.model.teacherCV.socialURL2,'#')}" target="_blank"
+                <li><a href="#{vr.nvl(teacherCurriculumCtrl.model.teacherCV.socialURL2,'#')}" target="_blank"
                        class="google" data-title="Google +"></a></li>
-                <li><a href="#{jsfCtrl.nvl(teacherCurriculumCtrl.model.teacherCV.socialURL3,'#')}" target="_blank"
+                <li><a href="#{vr.nvl(teacherCurriculumCtrl.model.teacherCV.socialURL3,'#')}" target="_blank"
                        class="linkedin" data-title="LinkedIn"></a></li>
-                <li><a href="#{jsfCtrl.nvl(teacherCurriculumCtrl.model.teacherCV.socialURL4,'#')}" target="_blank"
+                <li><a href="#{vr.nvl(teacherCurriculumCtrl.model.teacherCV.socialURL4,'#')}" target="_blank"
                        class="twitter" data-title="Twitter"></a></li>
-                <li><a href="#{jsfCtrl.nvl(teacherCurriculumCtrl.model.teacherCV.rssURL,'#')}" target="_blank"
+                <li><a href="#{vr.nvl(teacherCurriculumCtrl.model.teacherCV.rssURL,'#')}" target="_blank"
                        class="rss" data-title="RSS"></a></li>
             </ul>
             <!-- end social -->

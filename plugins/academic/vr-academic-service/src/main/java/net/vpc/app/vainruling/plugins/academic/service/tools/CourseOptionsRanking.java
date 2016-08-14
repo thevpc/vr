@@ -22,15 +22,15 @@ public class CourseOptionsRanking {
     private static ParseFormatManager pfm = UPA.getBootstrap().getFactory().createObject(ParseFormatManager.class);
     private static int nbOptions = 3;
 
-//    private static String file_principal = "/home/vpc/Data/eniso/students/2015-2016/choix-options/IA/2IAPRINC.xlsx";
-//    private static String file_rattrapage = "/home/vpc/Data/eniso/students/2015-2016/choix-options/IA/2IARATT.xlsx";
-//    private static String file_intermediaire = "/home/vpc/Data/eniso/students/2015-2016/choix-options/IA/2IA-FOR-OPTION.xlsx";
-//    private static String file_result = "/home/vpc/Data/eniso/students/2015-2016/choix-options/IA/2IA-OPTIONS-FINAL.xlsx";
+//    private static String file_principal = "${user.home}/Data/eniso/students/2015-2016/choix-options/IA/2IAPRINC.xlsx";
+//    private static String file_rattrapage = "${user.home}/Data/eniso/students/2015-2016/choix-options/IA/2IARATT.xlsx";
+//    private static String file_intermediaire = "${user.home}/Data/eniso/students/2015-2016/choix-options/IA/2IA-FOR-OPTION.xlsx";
+//    private static String file_result = "${user.home}/Data/eniso/students/2015-2016/choix-options/IA/2IA-OPTIONS-FINAL.xlsx";
 
-    private static String file_principal = "/home/vpc/Data/eniso/students/2015-2016/choix-options/EI/EI2Princip.xlsx";
-    private static String file_rattrapage = "/home/vpc/Data/eniso/students/2015-2016/choix-options/EI/2EIRatt.xlsx";
-    private static String file_intermediaire = "/home/vpc/Data/eniso/students/2015-2016/choix-options/EI/2EI-FOR-OPTION.xlsx";
-    private static String file_result = "/home/vpc/Data/eniso/students/2015-2016/choix-options/EI/2EI-OPTIONS-FINAL.xlsx";
+    private static String file_principal = "${user.home}/Data/eniso/students/2015-2016/choix-options/EI/EI2Princip.xlsx";
+    private static String file_rattrapage = "${user.home}/Data/eniso/students/2015-2016/choix-options/EI/2EIRatt.xlsx";
+    private static String file_intermediaire = "${user.home}/Data/eniso/students/2015-2016/choix-options/EI/2EI-FOR-OPTION.xlsx";
+    private static String file_result = "${user.home}/Data/eniso/students/2015-2016/choix-options/EI/2EI-OPTIONS-FINAL.xlsx";
 
     public static void main(String[] args) {
 //        generateOptionsFile();
@@ -38,11 +38,11 @@ public class CourseOptionsRanking {
     }
 
     public static List<StudentInfo> listPrincipal() {
-        return listStudents(new java.io.File(file_principal), false);
+        return listStudents(new java.io.File(file_principal.replace("${user.home}",System.getProperty("user.home"))), false);
     }
 
     public static List<StudentInfo> listRattr() {
-        return listStudents(new java.io.File(file_rattrapage), true);
+        return listStudents(new java.io.File(file_rattrapage.replace("${user.home}",System.getProperty("user.home"))), true);
     }
 
     public static List<StudentInfo> listStudents(File f, boolean rattr) {
@@ -141,7 +141,7 @@ public class CourseOptionsRanking {
                     all.get(i).rank = i + 1;
                 }
             }
-            SheetFormatter frm = pfm.createSheetFormatter(new java.io.File(file_intermediaire));
+            SheetFormatter frm = pfm.createSheetFormatter(new java.io.File(file_intermediaire.replace("${user.home}",System.getProperty("user.home"))));
             for (String c : new String[]{"NUM", "ID", "NOM", "PRENOM", "MOYG", "RANG", "RATTR", "MASTER", "CHOIX1", "CHOIX2", "CHOIX3", "AFFECTATION"}) {
                 SheetColumn cc = new SheetColumn();
                 cc.setName(c);
@@ -176,7 +176,7 @@ public class CourseOptionsRanking {
         try {
             final List<StudentInfo> liste = new ArrayList<StudentInfo>();
             try {
-                SheetParser sp = pfm.createSheetParser(new java.io.File(file_intermediaire));
+                SheetParser sp = pfm.createSheetParser(new java.io.File(file_intermediaire.replace("${user.home}",System.getProperty("user.home"))));
                 sp.setContainsHeader(true);
                 DataReader rows = sp.parse();
                 while (rows.hasNext()) {
@@ -357,7 +357,7 @@ public class CourseOptionsRanking {
                     return 0;
                 }
             });
-            SheetFormatter frm = pfm.createSheetFormatter(new java.io.File(file_result));
+            SheetFormatter frm = pfm.createSheetFormatter(new java.io.File(file_result.replace("${user.home}",System.getProperty("user.home"))));
             for (String c : new String[]{"NUM", "ID", "NOM", "PRENOM", "MOYG", "RANG", "RATTR", "MASTER", "CHOIX1", "CHOIX2", "CHOIX3", "AFFECTATION"}) {
                 SheetColumn cc = new SheetColumn();
                 cc.setName(c);

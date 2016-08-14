@@ -23,9 +23,10 @@ and open the template in the editor.
 </h:head>
 
 <h:body>
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
 
 
-    <ui:composition template="#{jsfCtrl.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="buttonsForm">
                 <p:confirmDialog message="Are you sure, you want to delete ?" header="Initiating deleting process"
@@ -177,7 +178,7 @@ and open the template in the editor.
                                 />
 
                         <p:commandButton title="Retour" icon="fa fa-backward"
-                                         action="#{vrMenuManager.goBack}"
+                                         action="#{vr.goBack}"
                                          ajax="false" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"/>
 
 
@@ -419,11 +420,11 @@ and open the template in the editor.
 
                                 <pe:dynaFormControl type="entity" for="tentity" styleClass="select">
                                     <p:panelGrid columns="2" style="border-style: hidden;width: 100%;"
-                                                 columnClasses="nopadding,nopadding">
+                                                 columnClasses="multi-component-main,multi-component-action">
                                         <p:selectOneMenu id="tentity" value="#{data.selectedItem}"
                                                          required="#{data.required}"
                                                          disabled="#{data.disabled}"
-                                                         style="full-width"
+                                                         styleClass="full-width"
                                                 >
                                             <f:selectItems value="#{data.items}"/>
                                         </p:selectOneMenu>
@@ -432,12 +433,12 @@ and open the template in the editor.
                                                 ajax="false" value=""
                                                 icon="fa fa-eye"
                                                 disabled="#{data.disabledNavigation}"
-                                                action="#{vrMenuManager.gotoPage('obj', data.buildActionCommand())}"/>
+                                                action="#{vr.gotoPage('obj', data.buildActionCommand())}"/>
                                     </p:panelGrid>
                                 </pe:dynaFormControl>
                                 <pe:dynaFormControl type="entity_onchange" for="tentity_onchange" styleClass="select">
                                     <p:panelGrid columns="2" style="border-style: hidden"
-                                                 columnClasses="nopadding,nopadding">
+                                                 columnClasses="multi-component-main,multi-component-action">
                                         <p:selectOneMenu id="tentity_onchange" value="#{data.selectedItem}"
                                                          required="#{data.required}"
                                                          disabled="#{data.disabled}"
@@ -450,7 +451,7 @@ and open the template in the editor.
                                                 ajax="false" value=""
                                                 icon="fa fa-eye"
                                                 disabled="#{data.disabledNavigation}"
-                                                action="#{vrMenuManager.gotoPage('obj', data.buildActionCommand())}"/>
+                                                action="#{vr.gotoPage('obj', data.buildActionCommand())}"/>
                                     </p:panelGrid>
                                 </pe:dynaFormControl>
 
@@ -487,7 +488,7 @@ and open the template in the editor.
                                                 <p:scrollPanel style="width:100%;height:200px" id="twikiareaRender"
                                                         >
                                                     <p:outputLabel
-                                                            value="#{jsfCtrl.wiki2Html(data.value)}"
+                                                            value="#{vr.wiki2Html(data.value)}"
                                                             escape="false"
                                                             >
                                                     </p:outputLabel>
@@ -518,7 +519,7 @@ and open the template in the editor.
 
                                 <pe:dynaFormControl type="entityDetail">
                                     <p:commandButton ajax="false" value="#{data.count}" disabled="#{data.disabled}"
-                                                     action="#{vrMenuManager.gotoPage('obj', data.buildActionCommand())}"/>
+                                                     action="#{vr.gotoPage('obj', data.buildActionCommand())}"/>
                                 </pe:dynaFormControl>
 
 
@@ -609,44 +610,6 @@ and open the template in the editor.
 
                 /* ]]> */
             </h:outputScript>
-
-            <h:outputStylesheet id="dynaFormCSS">
-
-                .pe-dynaform-cell input,
-                .pe-dynaform-cell textarea,
-                .pe-dynaform-cell[colspan="1"] input,
-                .pe-dynaform-cell[colspan="1"] textarea {
-                    width: 100%;
-                }
-
-                .pe-dynaform-cell.calendar input,
-                .pe-dynaform-cell[colspan="1"].calendar input {
-                    width: 120px;
-                }
-
-                .pe-dynaform-cell.select .ui-selectonemenu {
-                    width: 157px !important;
-                }
-
-                .pe-dynaform-cell.select .ui-selectonemenu .ui-selectonemenu-label {
-                    width: 230px !important;
-                }
-
-                .pe-dynaform-cell.separator {
-                    padding: 10px 0 10px 0;
-                }
-
-                .pe-dynaform-cell.separator .separatorText {
-                    width: 15%;
-                    padding-left: 0;
-                }
-
-                .nopadding {
-                    padding: 0 !important;
-                    border-style: none !important;
-                }
-            </h:outputStylesheet>
-
 
         </ui:define>
 

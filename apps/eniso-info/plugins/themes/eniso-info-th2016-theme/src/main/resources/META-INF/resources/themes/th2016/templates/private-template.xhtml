@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+
+<h:head>
+
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content=""/>
+    <meta name="author" content="Taha BEN SALAH"/>
+
+    <title>ENISo info</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet"
+          href="#{vr.themeContext}/wplugins/sb-admin2/bower_components/bootstrap/css/bootstrap.min.css"/>
+
+    <!-- MetisMenu CSS -->
+    <link rel="stylesheet"
+          href="#{vr.themeContext}/wplugins/sb-admin2/bower_components/metisMenu/css/metisMenu.min.css"/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="#{vr.themeContext}/wplugins/sb-admin2/css/sb-admin-2.css"/>
+
+    <!-- Custom Fonts -->
+    <!--<link rel="stylesheet" href="$_{vr.context}/wplugins/sb-admin2/bower_components/font-awesome/css/font-awesome.min.css" type="text/css"/>-->
+    <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Stalemate' type='text/css'/>
+    <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Audiowide' type='text/css'/>
+
+
+    <!--<link href="$ {vr.context}/fs/Site/wplugins/infusion/css/bootstrap.min.css" rel="stylesheet"/>-->
+    <link rel="stylesheet" href="#{vr.themeContext}/wplugins/infusion/css/styles.css"/>
+    <link rel="stylesheet" href="#{vr.themeContext}/wplugins/infusion/css/queries.css"/>
+    <link rel="stylesheet"
+          href="#{vr.themeContext}/wplugins/sb-admin2/bower_components/font-awesome/css/font-awesome.css"/>
+    <link rel="stylesheet" href="#{vr.themeContext}/css/app.css" type="text/css"/>
+    <!-- Fonts -->
+    <link rel="stylesheet" href='http://fonts.googleapis.com/css?family=Sintony:400,700' type='text/css'/>
+    <link rel="stylesheet" href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700' type='text/css'/>
+
+    <link rel="shortcut icon" href="#{vr.themeContext}/images/app-icon.png" type="image/png"/>
+
+    <script src="#{vr.context}/fs/Site/js/analytics.js"></script>
+
+    <ui:insert name="links">
+
+    </ui:insert>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</h:head>
+
+<h:body>
+
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <header class="clearfix header-eniso">
+            <div class="vr-logo col-md-3" style="">
+                <h:form>
+                    <h:commandLink action="#{vr.gotoPage('publicIndex', '')}">
+                        <img class="navbar-brand navbar-brand-eniso" src="#{vr.themeContext}/images/eniso-info.png"
+                             alt="ENISo info"/>
+                    </h:commandLink>
+                </h:form>
+            </div>
+            <h:form id="pageMenuForm">
+                <nav class="clearfix infusion" style="float: right;">
+                    <ul class="clearfix">
+                        <li>
+                            <ol class="breadcrumb vr-link"
+                                style="padding: 13px 15px;margin-bottom:0px;background: none;">
+                            <h:outputLabel style="#{
+                                               (appGlobalCtrl.headMessageStyle eq 'error')?'color:red;'
+                                                   :(appGlobalCtrl.headMessageStyle eq 'warning')?'color:orange;'
+                                                   :(appGlobalCtrl.headMessageStyle eq 'success')?'color:green;'
+                                                   :(appGlobalCtrl.headMessageStyle eq 'info')?'color:blue;'
+                                                   :appGlobalCtrl.headMessageStyle
+                                }"
+                                           rendered="#{appGlobalCtrl.headMessageText ne ''}"
+                                           value="#{appGlobalCtrl.headMessageText}"/>
+                            </ol>
+                        </li>
+                        <li>
+                            <ol class="breadcrumb vr-link"
+                                style="padding: 13px 15px;margin-bottom:0px;background: none;">
+                                <ui:repeat value="#{vrMenuManager.model.breadcrumb}" var="m">
+                                    <li class="#{m.active ? 'active':''} vr-link">
+                                        <i class="fa #{m.css}}"></i>
+                                        <p:commandLink rendered="#{m.ctrl ne ''}"
+                                                       action="#{vrMenuManager.invoke(m.ctrl)}" value="#{m.title}"/>
+                                        <h:outputLabel rendered="#{m.ctrl eq ''}" value="#{m.title}"/>
+                                    </li>
+                                </ui:repeat>
+                            </ol>
+                        </li>
+                        <li style="margin-top: 25px"><p:clock class="vr-clock" pattern="HH:mm:ss | dd MMM yyyy"/></li>
+                        <li class="dropdown">
+
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-envelope fa-fw" style="width: 50px;">
+                                    <ui:fragment rendered="#{mailboxPreviewCtrl.model.unreadCount gt 0}">
+                                        <div style="font-size: x-small;display: inline;color: darkorange;">
+                                            #{mailboxPreviewCtrl.model.unreadCount}
+                                        </div>
+                                    </ui:fragment>
+                                </i> <i class="fa fa-caret-down"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-messages dropdown-user" style="right: 0;left: auto;">
+                                <ui:repeat id="inboxList" value="#{mailboxPreviewCtrl.model.inbox}" var="i">
+                                    <ui:fragment>
+                                        <li>
+                                            <h:outputLink value="#{vr.context}/p/mailbox">
+                                                <div>
+                                                    <strong>#{i.from}</strong>
+                                                        <span class="pull-right text-muted">
+                                                            <em>#{i.date}</em>
+                                                        </span>
+                                                </div>
+                                                <div>
+                                                    #{i.text}
+                                                </div>
+                                            </h:outputLink>
+                                        </li>
+                                        <li class="divider"></li>
+                                    </ui:fragment>
+                                </ui:repeat>
+                                <ui:fragment id="inboxCount" rendered="#{mailboxPreviewCtrl.model.inbox.size() ne 0}">
+                                    <li>
+                                        <h:outputLink class="text-center" value="#{vr.context}/p/mailbox">
+                                            <strong>Lire #{mailboxPreviewCtrl.model.unreadCount} Message(s)</strong>
+                                        </h:outputLink>
+                                    </li>
+                                </ui:fragment>
+                                <ui:fragment id="inboxCount0" rendered="#{mailboxPreviewCtrl.model.inbox.size() eq 0}">
+                                    <li>
+                                        <h:outputLink styleClass="text-center" style="font-size: x-small"
+                                                      value="#{vr.context}/p/mailbox">
+                                            Aucun message non lu
+                                        </h:outputLink>
+                                    </li>
+                                </ui:fragment>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <ui:fragment id="activeSessionsFragment">
+                                <div style="padding-right: 5px;margin: 25px 3px 0px 3px;">
+                                        <span class="badge vr-cnx-nbr">
+                                            <h:outputLink
+                                                    style="text-decoration: none; color: white; padding : 0px;"
+                                                    rendered="#{vr.userSession.admin}"
+                                                    value="#{vr.context}/p/activeSessions"
+                                                    >
+                                                #{activeSessionsCtrl.model.sessions.size()}
+                                            </h:outputLink>
+                                            <h:outputText rendered="#{!vr.userSession.admin}"
+                                                          value="#{activeSessionsCtrl.model.sessions.size()}"/>
+                                        </span>
+                                    <!--<span class="vr-cnx-label">cnx</span>-->
+                                </div>
+                            </ui:fragment>
+                        </li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" style="padding-left: 0px;">
+                                <h:outputText style="font-size: x-small;"
+                                              value="#{vr.userSession.user.contact.firstName}"/>
+                                <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user" style="right: 0;left: auto;">
+                                <!--                                <li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                                                                </li>
+                                                                <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                                                                </li>
+                                                                <li class="divider"></li>
+                                -->
+                                <li class="divider"></li>
+                                <li>
+                                    <p:commandLink ajax="false" action="#{loginCtrl.dologout}" value="Se déconnecter">
+                                        <i class="fa fa-sign-out fa-fw"></i>
+                                    </p:commandLink>
+                                </li>
+                                <ui:fragment rendered="true">
+                                    <li>
+                                        <p:commandLink ajax="false" action="#{vr.gotoPage('passwd', null)}"
+                                                       value="Changer Mot de Passe">
+                                            <i class="fa fa-sign-out fa-fw"></i>
+                                        </p:commandLink>
+                                    </li>
+                                </ui:fragment>
+
+                                <ui:fragment rendered="#{vr.userSession.admin and !vr.userSession.impersonating}">
+                                    <li>
+                                        <p:commandLink ajax="false"
+                                                       action="#{vr.gotoPage('impersonate', null)}"
+                                                       value="Changer Utilisateur">
+                                            <i class="fa fa-sign-out fa-fw"></i>
+                                        </p:commandLink>
+                                    </li>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{!appGlobalCtrl.shutdown and vr.userSession.admin}">
+                                    <li>
+                                        <p:commandLink ajax="false" action="#{appGlobalCtrl.doNotifyShutdown}"
+                                                       value="Notifier arrêt serveur">
+                                            <i class="fa fa-sign-out fa-fw"></i>
+                                        </p:commandLink>
+                                    </li>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{appGlobalCtrl.shutdown and vr.userSession.admin}">
+                                    <li>
+                                        <p:commandLink ajax="false" action="#{appGlobalCtrl.doCancelShutdown}"
+                                                       value="Annuler arrêt">
+                                            <i class="fa fa-sign-out fa-fw"></i>
+                                        </p:commandLink>
+                                    </li>
+                                </ui:fragment>
+                                <li class="divider"></li>
+                                <li>
+                                    <p:commandLink ajax="false" action="#{loginCtrl.gotoAppInfo}" value="à propos...">
+                                        <i class="fa fa-sign-out fa-fw"></i>
+                                    </p:commandLink>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+                <!--                    <div class="pullcontainer infusion">
+                                        <a href="#" id="pull"><i class="fa fa-bars fa-2x"></i></a>
+                                    </div>     -->
+                <button type="button" class="navbar-toggle" style="border-color: #ddd;" data-toggle="collapse"
+                        data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar icon-bar-eniso"></span>
+                    <span class="icon-bar icon-bar-eniso"></span>
+                    <span class="icon-bar icon-bar-eniso"></span>
+                </button>
+            </h:form>
+            <h:form>
+                <p:poll interval="60" listener="#{loginCtrl.onPoll}" update=":pageMenuForm"/>
+            </h:form>
+        </header>
+        <h:form>
+
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li class="sidebar-search">
+                            <div class="input-group custom-search-form">
+                                <input type="text" class="form-control" placeholder="Search..." disabled="true"/>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" disabled="true">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </span>
+                            </div>
+                            <!-- /input-group -->
+                        </li>
+                        <h:inputHidden value="#{vrMenuManager.buildMenu()}"/>
+
+                        <ui:repeat value="#{vrMenuManager.model.root.subPackages}" var="p0">
+                            <li>
+                                <a href="#"><i class="fa #{p0.icon}"></i> #{p0.name}</a>
+                                <ul class="nav nav-second-level">
+                                    <ui:repeat value="#{p0.subPackages}" var="p1">
+                                        <li>
+                                            <a href="#"><i class="fa #{p1.icon}"></i> #{p1.name} <span
+                                                    class="fa arrow"></span></a>
+                                            <ul class="nav nav-third-level">
+                                                <ui:repeat value="#{p1.leafs}" var="p2">
+                                                    <li>
+                                                        <h:outputLink value="#{p2.prettyURL}">
+                                                            <h:outputText class="fa vr-menu-link"
+                                                                          value="      #{p2.name}"/>
+                                                        </h:outputLink>
+                                                    </li>
+                                                </ui:repeat>
+                                            </ul>
+                                        </li>
+                                    </ui:repeat>
+                                    <ui:repeat value="#{p0.leafs}" var="p1">
+                                        <li>
+
+                                            <h:outputLink value="#{p1.prettyURL}">
+                                                <h:outputText value="      #{p1.name}"/>
+                                            </h:outputLink>
+                                        </li>
+                                    </ui:repeat>
+                                </ul>
+                            </li>
+                        </ui:repeat>
+                        <ui:repeat value="#{vrMenuManager.model.root.leafs}" var="p1">
+                            <li>
+                                <h:outputLink value="#{p1.prettyURL}">
+                                    <h:outputText value="      #{p1.name}"/>
+                                </h:outputLink>
+                            </li>
+                        </ui:repeat>
+
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+
+
+            </div>
+
+        </h:form>
+
+        <!-- Page Content -->
+        <div id="page-wrapper">
+            <div class="container-fluid">
+                <h:form id="pageTitleForm">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <ui:insert name="header">
+                                <p:messages showSummary="true"/>
+
+                                <h1 class="page-header">#{vrMenuManager.model.titleCrumb.title}</h1>
+                            </ui:insert>
+                        </div>
+                        <!-- /.col-lg-12 -->
+                    </div>
+                </h:form>
+                <!-- /.row -->
+                <ui:insert name="content">
+
+                </ui:insert>
+
+            </div>
+
+            <!-- /.container-fluid -->
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <!--        <script src="$ {vr.context}/wplugins/sb-admin2/bower_components/jquery/dist/jquery.min.js"></script>-->
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="#{vr.themeContext}/wplugins/sb-admin2/bower_components/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="#{vr.themeContext}/wplugins/sb-admin2/bower_components/metisMenu/js/metisMenu.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="#{vr.themeContext}/wplugins/sb-admin2/js/sb-admin-2.js"></script>
+
+    <script src="#{vr.themeContext}/wplugins/infusion/js/scripts.js"></script>
+    <script src="#{vr.themeContext}/wplugins/infusion/js/unslider.min.js"></script>
+    <script src="#{vr.themeContext}/js/app/app.js"></script>
+</h:body>
+
+</html>

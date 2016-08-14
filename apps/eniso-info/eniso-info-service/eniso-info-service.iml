@@ -43,11 +43,11 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: stax:stax-api:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.jexcelapi:jxl:2.6.10" level="project" />
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.14" level="project" />
-    <orderEntry type="module" module-name="strings" />
-    <orderEntry type="module" module-name="utils" />
-    <orderEntry type="module" module-name="streams" />
+    <orderEntry type="library" name="Maven: net.vpc.common:strings:1.2.2" level="project" />
+    <orderEntry type="library" name="Maven: net.vpc.common:utils:1.2" level="project" />
+    <orderEntry type="library" name="Maven: net.vpc.common:streams:1.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.3.1" level="project" />
-    <orderEntry type="module" module-name="vfs" />
+    <orderEntry type="library" name="Maven: net.vpc.common:vfs:1.5" level="project" />
     <orderEntry type="library" name="Maven: com.fathzer:javaluator:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.8.3" level="project" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.9.3" level="project" />
@@ -71,10 +71,9 @@
     <orderEntry type="library" name="Maven: jdom:jdom:1.0" level="project" />
     <orderEntry type="module" module-name="vr-academic-service" />
     <orderEntry type="module" module-name="vr-mailbox-service" />
-    <orderEntry type="module" module-name="gomail" />
+    <orderEntry type="library" name="Maven: net.vpc.common:gomail:1.2.5" level="project" />
     <orderEntry type="library" name="Maven: javax.mail:mail:1.5.0-b01" level="project" />
     <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
-    <orderEntry type="module" module-name="vr-blog-service" />
     <orderEntry type="module" module-name="vr-forum-service" />
     <orderEntry type="module" module-name="vr-academic-internship-service" />
     <orderEntry type="library" name="Maven: net.sf.jgap:jgap:3.4.4" level="project" />
@@ -88,7 +87,6 @@
     <orderEntry type="library" name="Maven: tablelayout:TableLayout:20050920" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jcgrid:jcgrid:0.05" level="project" />
     <orderEntry type="module" module-name="vr-academic-report-service" />
-    <orderEntry type="module" module-name="vr-academic-eval-service" />
     <orderEntry type="module" module-name="vr-academic-perf-eval-service" />
     <orderEntry type="module" module-name="vr-academic-planning-service" />
     <orderEntry type="module" module-name="vr-dev-toolbox-service" />

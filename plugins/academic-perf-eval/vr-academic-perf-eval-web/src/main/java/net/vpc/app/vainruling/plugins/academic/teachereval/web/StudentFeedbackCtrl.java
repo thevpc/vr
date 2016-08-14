@@ -21,7 +21,6 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Logger;
@@ -29,7 +28,6 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@ManagedBean
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},

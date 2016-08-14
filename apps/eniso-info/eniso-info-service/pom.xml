@@ -48,11 +48,11 @@
             <artifactId>vr-mailbox-service</artifactId>
             <version>1.6</version>
         </dependency>
-        <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.blog</groupId>
-            <artifactId>vr-blog-service</artifactId>
-            <version>1.0</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>net.vpc.app.vain-ruling.plugins.blog</groupId>-->
+            <!--<artifactId>vr-blog-service</artifactId>-->
+            <!--<version>1.0</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.forum</groupId>
             <artifactId>vr-forum-service</artifactId>
@@ -67,11 +67,6 @@
             <groupId>net.vpc.app.vain-ruling.plugins.academic-report</groupId>
             <artifactId>vr-academic-report-service</artifactId>
             <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.academic-eval</groupId>
-            <artifactId>vr-academic-eval-service</artifactId>
-            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-perf-eval</groupId>

@@ -19,7 +19,7 @@ and open the template in the editor.
 <h:body>
 
 
-    <ui:composition template="#{jsfCtrl.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <!--                <h:form id="buttonsForm">
 
@@ -199,10 +199,10 @@ and open the template in the editor.
                                         <p:column><p:outputLabel value="Cahier des charges (pdf)"/></p:column>
                                         <p:column colspan="2">
                                             <p:outputLabel
-                                                    rendered="#{jsfCtrl.isEmpty(myInternshipsCtrl.model.internship.specFilePath)}"
+                                                    rendered="#{vr.isEmpty(myInternshipsCtrl.model.internship.specFilePath)}"
                                                     value="Non soumis"/>
                                             <p:commandLink
-                                                    rendered="#{!jsfCtrl.isEmpty(myInternshipsCtrl.model.internship.specFilePath)}"
+                                                    rendered="#{!vr.isEmpty(myInternshipsCtrl.model.internship.specFilePath)}"
                                                     value="télécharger"
                                                     ajax="false"
                                                     >
@@ -225,10 +225,10 @@ and open the template in the editor.
                                                 value="Rapport mi-parcours (zip=sourceslatex+pdf)"/></p:column>
                                         <p:column>
                                             <p:outputLabel
-                                                    rendered="#{jsfCtrl.isEmpty(myInternshipsCtrl.model.internship.midTermReportFilePath)}"
+                                                    rendered="#{vr.isEmpty(myInternshipsCtrl.model.internship.midTermReportFilePath)}"
                                                     value="Non soumis"/>
                                             <p:commandLink
-                                                    rendered="#{!jsfCtrl.isEmpty(myInternshipsCtrl.model.internship.midTermReportFilePath)}"
+                                                    rendered="#{!vr.isEmpty(myInternshipsCtrl.model.internship.midTermReportFilePath)}"
                                                     value="télécharger"
                                                     ajax="false"
                                                     >
@@ -538,10 +538,10 @@ and open the template in the editor.
                                         <p:column><p:outputLabel value="Rapport final"/></p:column>
                                         <p:column>
                                             <p:outputLabel
-                                                    rendered="#{jsfCtrl.isEmpty(myInternshipsCtrl.model.internship.reportFilePath)}"
+                                                    rendered="#{vr.isEmpty(myInternshipsCtrl.model.internship.reportFilePath)}"
                                                     value="Non soumis"/>
                                             <p:commandLink
-                                                    rendered="#{!jsfCtrl.isEmpty(myInternshipsCtrl.model.internship.reportFilePath)}"
+                                                    rendered="#{!vr.isEmpty(myInternshipsCtrl.model.internship.reportFilePath)}"
                                                     value="télécharger"
                                                     ajax="false"
                                                     >
@@ -557,7 +557,7 @@ and open the template in the editor.
                                         <p:column><p:outputLabel value="Date Soutenance"/></p:column>
                                         <p:column>
                                             <p:outputLabel
-                                                    value="#{myInternshipsCtrl.model.internship.examDate eq null ? 'N/A': jsfCtrl.date(myInternshipsCtrl.model.internship.examDate,'yyyy-MM-dd HH:mm')}"/>
+                                                    value="#{myInternshipsCtrl.model.internship.examDate eq null ? 'N/A': vr.date(myInternshipsCtrl.model.internship.examDate,'yyyy-MM-dd HH:mm')}"/>
                                         </p:column>
                                     </p:row>
                                     <p:row rendered="#{myInternshipsCtrl.model.teacher or (myInternshipsCtrl.model.student and myInternshipsCtrl.model.internship.internshipStatus.studentSeesEvaluators)}">
@@ -603,20 +603,20 @@ and open the template in the editor.
                                                                                                     value="#{myInternshipsCtrl.model.internship.studentObservations}"
                                                                                                     disabled="#{!myInternshipsCtrl.model.student}"/></p:column>
                                     </p:row>
-                                    <p:row rendered="#{myInternshipsCtrl.model.internship ne null and !jsfCtrl.isEmpty(myInternshipsCtrl.model.internship.validationObservations)}">
+                                    <p:row rendered="#{myInternshipsCtrl.model.internship ne null and !vr.isEmpty(myInternshipsCtrl.model.internship.validationObservations)}">
                                         <p:column colspan="4"><p:outputLabel
                                                 value="Remarques Administratives"/></p:column>
                                     </p:row>
-                                    <p:row rendered="#{myInternshipsCtrl.model.internship ne null and !jsfCtrl.isEmpty(myInternshipsCtrl.model.internship.validationObservations)}">
+                                    <p:row rendered="#{myInternshipsCtrl.model.internship ne null and !vr.isEmpty(myInternshipsCtrl.model.internship.validationObservations)}">
                                         <p:column colspan="4" style="width: 100%;"><p:inputTextarea rows="10"
                                                                                                     style="width: 100%"
                                                                                                     value="#{myInternshipsCtrl.model.internship.validationObservations}"
                                                                                                     disabled="#{myInternshipsCtrl.model.student}"/></p:column>
                                     </p:row>
-                                    <p:row rendered="#{myInternshipsCtrl.model.internship ne null and !jsfCtrl.isEmpty(myInternshipsCtrl.model.internship.validationObservations)}">
+                                    <p:row rendered="#{myInternshipsCtrl.model.internship ne null and !vr.isEmpty(myInternshipsCtrl.model.internship.validationObservations)}">
                                         <p:column colspan="4"><p:outputLabel value="Evaluation"/></p:column>
                                     </p:row>
-                                    <p:row rendered="#{myInternshipsCtrl.model.internship ne null and !jsfCtrl.isEmpty(myInternshipsCtrl.model.internship.evaluationObservations)}">
+                                    <p:row rendered="#{myInternshipsCtrl.model.internship ne null and !vr.isEmpty(myInternshipsCtrl.model.internship.evaluationObservations)}">
                                         <p:column colspan="4" style="width: 100%;"><p:inputTextarea rows="10"
                                                                                                     style="width: 100%"
                                                                                                     value="#{myInternshipsCtrl.model.internship.evaluationObservations}"

@@ -16,8 +16,6 @@ import net.vpc.common.jsf.FacesUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
@@ -28,8 +26,6 @@ import javax.faces.context.FacesContext;
         title = "Login",
         url = "login"
 )
-@ManagedBean
-@SessionScoped
 public class LoginCtrl {
 
     private Model model = new Model();
@@ -101,7 +97,7 @@ public class LoginCtrl {
     }
 
     public UserSession getSession() {
-        return VrApp.getBean(UserSession.class);
+        return UserSession.getCurrentSession();
     }
 
     public static class Model {

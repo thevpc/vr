@@ -9,7 +9,7 @@
     </context-param>
     <context-param>
         <param-name>primefaces.THEME</param-name>
-        <param-value>#{jsfCtrl.theme.components}</param-value>
+        <param-value>#{vr.theme.components}</param-value>
     </context-param>
 
     <context-param>

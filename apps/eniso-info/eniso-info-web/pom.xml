@@ -8,7 +8,7 @@
     <name>net.vpc.app.vain-ruling.apps.eniso-info.eniso-info-web</name>
     <version>1.0.61</version>
     <packaging>war</packaging>
-    <url>https://github.com/thevpc/upa/wiki</url>
+    <url>https://github.com/thevpc/vr/wiki</url>
 
     <organization>
         <name>vpc open source initiative</name>
@@ -58,12 +58,12 @@
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.apps.eniso-info.plugins.themes</groupId>
-            <artifactId>eniso-info-theme-infusion</artifactId>
+            <artifactId>eniso-info-infusion-theme</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.apps.eniso-info.plugins.themes</groupId>
-            <artifactId>eniso-info-theme-th2016</artifactId>
+            <artifactId>eniso-info-th2016-theme</artifactId>
             <version>1.0</version>
         </dependency>
 
@@ -111,11 +111,6 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-planning</groupId>
             <artifactId>vr-academic-planning-web</artifactId>
-            <version>1.4</version>
-        </dependency>
-        <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.academic-eval</groupId>
-            <artifactId>vr-academic-eval-web</artifactId>
             <version>1.4</version>
         </dependency>
         <dependency>

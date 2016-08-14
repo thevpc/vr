@@ -11,8 +11,6 @@ import net.vpc.app.vainruling.plugins.devtoolbox.service.DevSrv;
 import net.vpc.common.strings.StringUtils;
 import org.springframework.context.annotation.Scope;
 
-import javax.faces.bean.ManagedBean;
-
 /**
  * @author taha.bensalah@gmail.com
  */
@@ -21,7 +19,6 @@ import javax.faces.bean.ManagedBean;
         css = "fa-dashboard", url = "modules/devtoolbox/dev-upgrade",
         menu = "/Admin", securityKey = "Custom.DevTools"
 )
-@ManagedBean
 @Scope(value = "session")
 public class DevCtrl {
 

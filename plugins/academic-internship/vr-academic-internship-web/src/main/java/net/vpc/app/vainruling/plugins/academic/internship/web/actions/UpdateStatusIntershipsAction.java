@@ -24,7 +24,7 @@ public class UpdateStatusIntershipsAction implements ActionDialog {
 
     @Override
     public void openDialog(String actionId, List<String> itemIds) {
-        VrApp.getBean(UpdateStatusIntershipsActionCtrl.class).openDialog(itemIds);
+        VrApp.getBean(UpdateStatusInternshipsActionCtrl.class).openDialog(itemIds);
     }
 
     @Override

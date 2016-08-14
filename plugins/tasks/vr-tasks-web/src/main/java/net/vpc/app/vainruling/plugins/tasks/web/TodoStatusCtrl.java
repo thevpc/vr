@@ -12,9 +12,7 @@ import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 
-import javax.faces.bean.ManagedBean;
 import java.util.List;
 
 /**
@@ -28,8 +26,6 @@ import java.util.List;
         , title = "Etats Todo"
         , url = "modules/todo/config-todo-status"
 )
-@ManagedBean
-@Scope(value = "session")
 public class TodoStatusCtrl extends AbstractNameCtrl<TodoStatus> {
 
     @Autowired

@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import javax.faces.bean.ManagedBean;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,6 @@ import java.util.Map;
  * @author taha.bensalah@gmail.com
  */
 @Controller
-@ManagedBean
 @Scope(value = "session")
 public class ArticlesCtrl {
 
@@ -121,7 +119,7 @@ public class ArticlesCtrl {
     }
 
     public List<FullArticle> findArticles(String disposition) {
-        AppUser u = VrApp.getBean(UserSession.class).getUser();
+        AppUser u = UserSession.getCurrentUser();
         return articles.findFullArticlesByUserAndCategory(u == null ? null : u.getLogin(), disposition);
     }
 

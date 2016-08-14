@@ -11,8 +11,6 @@ import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 
-import javax.faces.bean.ManagedBean;
-
 /**
  * @author taha.bensalah@gmail.com
  */
@@ -25,7 +23,6 @@ import javax.faces.bean.ManagedBean;
         menu = "/Education/Load",
         securityKey = "Custom.Education.MyCourseLoad"
 )
-@ManagedBean
 public class MyCourseLoadCtrl extends AbstractCourseLoadCtrl {
 
     public MyCourseLoadCtrl() {

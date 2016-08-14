@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.core.web.util;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.common.strings.StringConverter;
 import net.vpc.common.strings.StringUtils;
 import org.springframework.context.expression.BeanFactoryResolver;
@@ -30,9 +31,9 @@ public class VrWebHelper {
         HttpServletRequest req = attr.getRequest();
         UserSession s = VrApp.getContext().getBean(UserSession.class);
         if (s != null && s.getUser() != null) {
-            s.setTheme(VrApp.getBean(JsfCtrl.class).getUserTheme(s.getUser().getLogin()).getId());
+            s.setTheme(VrApp.getBean(Vr.class).getUserTheme(s.getUser().getLogin()).getId());
         } else {
-            s.setTheme(VrApp.getBean(JsfCtrl.class).getAppTheme().getId());
+            s.setTheme(VrApp.getBean(Vr.class).getAppTheme().getId());
         }
         if (s.getSessionId() == null) {
             HttpSession session = req.getSession(true); // true == allow create
@@ -71,11 +72,11 @@ public class VrWebHelper {
                 @Override
                 public String convert(String str) {
                     //TODO
-                    if("jsfCtrl.themeContext".equals(str)){
-                        return VrApp.getBean(JsfCtrl.class).getThemeContext();
+                    if("vr.themeContext".equals(str)){
+                        return VrApp.getBean(Vr.class).getThemeContext();
                     }
-                    if("jsfCtrl.themePath".equals(str)){
-                        return VrApp.getBean(JsfCtrl.class).getThemePath();
+                    if("vr.themePath".equals(str)){
+                        return VrApp.getBean(Vr.class).getThemePath();
                     }
                     return (String)evalSpringExpr(str);
                 }

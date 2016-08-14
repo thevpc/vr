@@ -6,10 +6,11 @@
 package net.vpc.app.vainruling.core.service;
 
 import net.vpc.app.vainruling.core.service.util.PlatformReflector;
-import net.vpc.common.strings.StringUtils;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,37 +21,33 @@ public class Plugin implements Comparable<Plugin> {
 
     private static final Logger log = Logger.getLogger(Plugin.class.getName());
 
-    String beanName;
-    Object beanInstance;
+    PluginBundle info;
+    List<Object> beanInstances;
 
-    public Plugin(String beanName, Object beanInstance) {
-        this.beanName = beanName;
-        this.beanInstance = beanInstance;
+    public Plugin(List<Object> beanInstances, PluginBundle info) {
+        this.beanInstances = beanInstances;
+        this.info = info;
     }
 
     public static int compare(Plugin s1, Plugin s2) {
-        Object o1 = s1.getBeanInstance();
-        AppPlugin a1 = (AppPlugin) PlatformReflector.getTargetClass(o1).getAnnotation(AppPlugin.class);
-        Object o2 = s2.getBeanInstance();
-        AppPlugin a2 = (AppPlugin) PlatformReflector.getTargetClass(o2).getAnnotation(AppPlugin.class);
-        HashSet<String> hs1 = new HashSet<>(Arrays.asList(a1.dependsOn()));
-        HashSet<String> hs2 = new HashSet<>(Arrays.asList(a2.dependsOn()));
-        final String corePlugin = "corePlugin";
-        if (!s1.getBeanName().equals(corePlugin)) {
-            hs1.add(corePlugin);
-        }
-        if (!s2.getBeanName().equals(corePlugin)) {
-            hs2.add(corePlugin);
-        }
+        HashSet<String> hs1 = new HashSet<>(s1.getInfo().getBundleDependencies());
+        HashSet<String> hs2 = new HashSet<>(s2.getInfo().getBundleDependencies());
+//        final String corePlugin = "corePlugin";
+//        if (!s1.getId().equals(corePlugin)) {
+//            hs1.add(corePlugin);
+//        }
+//        if (!s2.getId().equals(corePlugin)) {
+//            hs2.add(corePlugin);
+//        }
         int r = 0;
-        boolean d = false;
-        if (hs1.contains(s2.getBeanName())) {
+//        boolean d = false;
+        if (hs1.contains(s2.getId())) {
             r = 1;
-        } else if (hs2.contains(s1.getBeanName())) {
+        } else if (hs2.contains(s1.getId())) {
             r = -1;
         } else {
-            d = true;
-            r = s1.getBeanName().compareTo(s2.getBeanName());
+//            d = true;
+            r = s1.getId().compareTo(s2.getId());
         }
 //        String op = "=";
 //        if (r < 0) {
@@ -58,38 +55,52 @@ public class Plugin implements Comparable<Plugin> {
 //        } else if (r > 0) {
 //            op = ">";
 //        }
-//        System.out.println(s1.getBeanName() + " " + op + " " + s2.getBeanName() + (d ? " (byname)" : ""));
+//        System.out.println(s1.getId() + " " + op + " " + s2.getId() + (d ? " (byname)" : ""));
         return r;
     }
 
-    public String getBeanName() {
-        return beanName;
+//    public Manifest getManifest() {
+//        Class targetClass = PlatformReflector.getTargetClass(beanInstances);
+//        URL resource = targetClass.getResource("/META-INF/MANIFEST.MF");
+//        Manifest manifest = null;
+//        try {
+//            manifest = new Manifest(resource.openStream());
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return manifest;
+//    }
+
+//    public String getName() {
+//        String beanName = getId();
+//        if(beanName.endsWith("Plugin")){
+//            beanName=beanName.substring(0,beanName.length()-"Plugin".length());
+//        }
+//        return beanName;
+//    }
+
+    public String getId() {
+        return getInfo().getId();
     }
 
-    public <T> T getBeanInstance() {
-        return (T) beanInstance;
+    public <T> T getBeanInstances() {
+        return (T) beanInstances;
     }
 
-    public String getVersion() {
-        Class targetClass = PlatformReflector.getTargetClass(beanInstance);
-        AppPlugin p = (AppPlugin) targetClass.getAnnotation(AppPlugin.class);
-        String mavenVersion = targetClass.getPackage().getImplementationVersion();
-        if(!StringUtils.isEmpty(mavenVersion)){
-            return mavenVersion;
-        }
-        return "1.0";
+    public PluginBundle getInfo() {
+        return info;
     }
 
-    public PlatformReflector.InstanceInvoker[] findMethodsByAnnotation(Class anno) {
-        return PlatformReflector.findInstanceByAnnotation(beanInstance, anno);
+    public PlatformReflector.InstanceInvoker[] findMethodsByAnnotation(Object obj,Class anno) {
+        return PlatformReflector.findInstanceByAnnotation(obj, anno);
     }
 
-    public PlatformReflector.InstanceInvoker[] findMethodsByAnnotation(Class anno, Class[] args) {
-        return PlatformReflector.findInstanceByAnnotation(beanInstance, anno, args);
+    public PlatformReflector.InstanceInvoker[] findMethodsByAnnotation(Object obj,Class anno, Class[] args) {
+        return PlatformReflector.findInstanceByAnnotation(obj, anno, args);
     }
 
-    public PlatformReflector.InstanceInvoker[] findMethodsByName(String name, Class[] args) {
-        return PlatformReflector.findInstanceByName(beanInstance, name, args);
+    public PlatformReflector.InstanceInvoker[] findMethodsByName(Object obj,String name, Class[] args) {
+        return PlatformReflector.findInstanceByName(obj, name, args);
     }
 
     @Override
@@ -98,26 +109,32 @@ public class Plugin implements Comparable<Plugin> {
     }
 
     public void start() {
-        log.log(Level.INFO, "Start Plugin {0}", beanName);
-        for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(Start.class)) {
-            p.invoke();
-            return;
+        for (Object obj : beanInstances) {
+            log.log(Level.INFO, "Start Plugin {0}", obj);
+            for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(obj,Start.class)) {
+                p.invoke();
+//            return;
+            }
         }
     }
 
     public void install() {
-        log.log(Level.INFO, "Install Plugin {0}", beanName);
-        for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(Install.class)) {
-            p.invoke();
-            return;
+        for (Object obj : beanInstances) {
+            log.log(Level.INFO, "Install Plugin {0}", obj);
+            for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(obj,Install.class)) {
+                p.invoke();
+//            return;
+            }
         }
     }
 
     public void installDemo() {
-        log.log(Level.INFO, "Install Plugin Demo {0}", beanName);
-        for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(InstallDemo.class)) {
-            p.invoke();
-            return;
+        for (Object obj : beanInstances) {
+            log.log(Level.INFO, "Install Plugin Demo {0}", obj);
+            for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(obj,InstallDemo.class)) {
+                p.invoke();
+//            return;
+            }
         }
     }
 
@@ -251,7 +268,7 @@ public class Plugin implements Comparable<Plugin> {
 
     @Override
     public String toString() {
-        return "Plugin{" + beanName + '}';
+        return "Plugin{" + getId() + '}';
     }
 
 }

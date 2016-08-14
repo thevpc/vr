@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+        >
+<h:head>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="#{vr.themeContext}/wplugins/sb-admin2/bower_components/bootstrap/css/bootstrap.min.css"
+          rel="stylesheet"/>
+
+    <!-- MetisMenu CSS -->
+    <link href="#{vr.themeContext}/wplugins/sb-admin2/bower_components/metisMenu/css/metisMenu.min.css"
+          rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    <link href="#{vr.themeContext}/wplugins/sb-admin2/css/sb-admin-2.css"
+          rel="stylesheet"/>
+
+    <!-- Custom Fonts -->
+    <link href="#{vr.themeContext}/wplugins/sb-admin2/bower_components/font-awesome/css/font-awesome.min.css"
+          rel="stylesheet" type="text/css"/>
+    <link rel="shortcut icon" href="#{vr.themeContext}/images/app-icon.png" type="image/png"/>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <link href="#{vr.themeContext}/css/app.css" rel="stylesheet" type="text/css"/>
+    <title>
+        <ui:insert name="dialog-title">
+            <h:outputText value="No title"/>
+        </ui:insert>
+    </title>
+
+</h:head>
+
+<h:body>
+    <div style="margin-left: 30px;margin-right: 30px;">
+        <ui:insert name="dialog-body">
+        </ui:insert>
+    </div>
+    <!-- jQuery -->
+    <script src="#{vr.themeContext}/wplugins/sb-admin2/bower_components/jquery/js/jquery.min.js"
+            type="javascript"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="#{vr.themeContext}/wplugins/sb-admin2/bower_components/bootstrap/js/bootstrap.min.js"
+            type="javascript"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="#{vr.themeContext}/wplugins/sb-admin2/bower_components/metisMenu/js/metisMenu.min.js"
+            type="javascript"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="#{vr.themeContext}/wplugins/sb-admin2/js/sb-admin-2.js"
+            type="javascript"></script>
+
+</h:body>
+
+</html>
+

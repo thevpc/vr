@@ -18,7 +18,7 @@ and open the template in the editor.
 <h:body>
 
 
-    <ui:composition template="#{jsfCtrl.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="buttonsForm">
                 <p:confirmDialog message="Etes vous sur de vouloir supprimer cet élément ?"
@@ -284,7 +284,7 @@ and open the template in the editor.
                                 </p:column>
                                 <p:column headerText=""
                                           style="border-left: 0px !important;border-right: 0px !important;width: 10%;">
-                                    <p:outputLabel value="#{jsfCtrl.strcut(i.value.category, 20)}"/>
+                                    <p:outputLabel value="#{vr.strcut(i.value.category, 20)}"/>
                                 </p:column>
                                 <p:column headerText=""
                                           style="border-left: 0px !important;border-right: 0px !important;width: 10%;">
@@ -297,14 +297,14 @@ and open the template in the editor.
                                         <p:outputLabel style="
                                                            #{i.value.read?'font-size: small;font-weight: normal;':'font-weight: bolder;color: #F44336;font-size: small;'}
                                                            "
-                                                       value="#{jsfCtrl.strexpand(jsfCtrl.strcut(i.value.subject, 50),'.',3)}"/>
+                                                       value="#{vr.strexpand(vr.strcut(i.value.subject, 50),'.',3)}"/>
                                         <p:spacer width="10" height="10"/>
                                         <p:outputLabel value="-"/>
                                         <p:spacer width="10" height="10"/>
                                         <p:outputLabel style="
                                                            #{i.value.read?'color: #9F9F9F;':'color: #797A7B;'}
                                                            "
-                                                       value="#{jsfCtrl.strcut(jsfCtrl.html2txt(i.value.content), 120)}"/>
+                                                       value="#{vr.strcut(vr.html2txt(i.value.content), 120)}"/>
                                         <f:setPropertyActionListener target="#{mailboxCtrl.model.current}"
                                                                      value="#{i.value}"/>
                                     </p:commandLink>
@@ -343,7 +343,7 @@ and open the template in the editor.
                         <p:outputLabel value="le"/>
                         <p:spacer width="5" height="10"/>
                         <p:outputLabel
-                                value="#{jsfCtrl.date(mailboxCtrl.model.current.sendTime, 'dd MMM yyyy à HH:mm')}"/>
+                                value="#{vr.date(mailboxCtrl.model.current.sendTime, 'dd MMM yyyy à HH:mm')}"/>
                         <p:spacer width="5" height="20"/>
                         <p:commandButton id="msgDetailsId" value="" style="width: 40px;height: 40px; float: right"
                                          type="button"
@@ -365,7 +365,7 @@ and open the template in the editor.
                             <p:outputLabel value="#{mailboxCtrl.model.current.ccProfiles}" style="margin-left: 10px;"/>
                             <p:outputLabel value="le"/>
                             <p:outputLabel
-                                    value="#{jsfCtrl.date(mailboxCtrl.model.current.sendTime, 'dd MMM yyyy à HH:mm')}"
+                                    value="#{vr.date(mailboxCtrl.model.current.sendTime, 'dd MMM yyyy à HH:mm')}"
                                     style="margin-left: 10px;"/>
                             <p:outputLabel value="important"/>
                             <p:selectBooleanCheckbox value="#{mailboxCtrl.model.current.important}" disabled="true"

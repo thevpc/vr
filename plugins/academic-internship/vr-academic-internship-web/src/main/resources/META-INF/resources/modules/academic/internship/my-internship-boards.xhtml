@@ -19,7 +19,7 @@ and open the template in the editor.
 <h:body>
 
 
-    <ui:composition template="#{jsfCtrl.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="listForm">
                 <p:messages id="currentMessages"/>
@@ -64,7 +64,7 @@ and open the template in the editor.
                                     <p:column headerText="Code"
                                               sortBy="#{i.internship.code}"
                                               style="border-left: 0px !important;border-right: 0px !important;width: 5%;">
-                                        <p:outputLabel value="#{jsfCtrl.strcut(i.internship.code, 20)}"/>
+                                        <p:outputLabel value="#{vr.strcut(i.internship.code, 20)}"/>
                                     </p:column>
                                     <p:column headerText="Intitulé"
                                               sortBy="#{i.internship.name}"
@@ -72,7 +72,7 @@ and open the template in the editor.
                                         <p:commandLink ajax="true"
                                                        actionListener="#{myInternshipBoardsCtrl.onSelectInternship(i.internship)}"
                                                        update=":listForm"
-                                                       value="#{jsfCtrl.strexpand(jsfCtrl.strcut(i.internship.name, 150),'.',3)}">
+                                                       value="#{vr.strexpand(vr.strcut(i.internship.name, 150),'.',3)}">
                                         </p:commandLink>
                                     </p:column>
                                     <p:column headerText="Elève Ing" style="width: 10%;"
@@ -84,7 +84,7 @@ and open the template in the editor.
                                               sortBy="#{i.internship.company.name}"
                                             >
                                         <p:outputLabel
-                                                value="#{jsfCtrl.strcatsep(' - ',i.internship.company.name ,i.internship.company.country.name,i.internship.companyOther)}">
+                                                value="#{vr.strcatsep(' - ',i.internship.company.name ,i.internship.company.country.name,i.internship.companyOther)}">
                                         </p:outputLabel>
                                     </p:column>
                                     <p:column headerText="Encadrant" style="width: 10%;"
@@ -208,7 +208,7 @@ and open the template in the editor.
                                     <p:column headerText="Date"
                                               sortBy="#{i.obsUpdateDate}"
                                               style="width: 10%;">
-                                        <p:outputLabel value="#{jsfCtrl.date(i.obsUpdateDate)}"/>
+                                        <p:outputLabel value="#{vr.date(i.obsUpdateDate)}"/>
                                     </p:column>
                                     <p:column headerText="PFE"
                                               sortBy="#{i.internship.code}"
@@ -221,7 +221,7 @@ and open the template in the editor.
                                         <p:commandLink ajax="true"
                                                        actionListener="#{myInternshipBoardsCtrl.onSelectInternship(i.internship)}"
                                                        update=":listForm"
-                                                       value="#{jsfCtrl.strexpand(jsfCtrl.strcut(i.internship.name, 150),'.',3)}">
+                                                       value="#{vr.strexpand(vr.strcut(i.internship.name, 150),'.',3)}">
                                         </p:commandLink>
                                     </p:column>
                                     <p:column headerText="Etud."
@@ -459,10 +459,10 @@ and open the template in the editor.
                                             <p:column><p:outputLabel value="Cahier des charges"/></p:column>
                                             <p:column>
                                                 <p:outputLabel
-                                                        rendered="#{jsfCtrl.isEmpty(myInternshipBoardsCtrl.model.internship.specFilePath)}"
+                                                        rendered="#{vr.isEmpty(myInternshipBoardsCtrl.model.internship.specFilePath)}"
                                                         value="Non soumis"/>
                                                 <p:commandLink
-                                                        rendered="#{!jsfCtrl.isEmpty(myInternshipBoardsCtrl.model.internship.specFilePath)}"
+                                                        rendered="#{!vr.isEmpty(myInternshipBoardsCtrl.model.internship.specFilePath)}"
                                                         value="télécharger"
                                                         ajax="false"
                                                         >
@@ -478,10 +478,10 @@ and open the template in the editor.
                                             <p:column><p:outputLabel value="Rapport mis parcours"/></p:column>
                                             <p:column>
                                                 <p:outputLabel
-                                                        rendered="#{jsfCtrl.isEmpty(myInternshipBoardsCtrl.model.internship.midTermReportFilePath)}"
+                                                        rendered="#{vr.isEmpty(myInternshipBoardsCtrl.model.internship.midTermReportFilePath)}"
                                                         value="Non soumis"/>
                                                 <p:commandLink
-                                                        rendered="#{!jsfCtrl.isEmpty(myInternshipBoardsCtrl.model.internship.midTermReportFilePath)}"
+                                                        rendered="#{!vr.isEmpty(myInternshipBoardsCtrl.model.internship.midTermReportFilePath)}"
                                                         value="télécharger"
                                                         ajax="false"
                                                         >
@@ -496,10 +496,10 @@ and open the template in the editor.
                                             <p:column><p:outputLabel value="Rapport final"/></p:column>
                                             <p:column>
                                                 <p:outputLabel
-                                                        rendered="#{jsfCtrl.isEmpty(myInternshipBoardsCtrl.model.internship.reportFilePath)}"
+                                                        rendered="#{vr.isEmpty(myInternshipBoardsCtrl.model.internship.reportFilePath)}"
                                                         value="Non soumis"/>
                                                 <p:commandLink
-                                                        rendered="#{!jsfCtrl.isEmpty(myInternshipBoardsCtrl.model.internship.reportFilePath)}"
+                                                        rendered="#{!vr.isEmpty(myInternshipBoardsCtrl.model.internship.reportFilePath)}"
                                                         value="télécharger"
                                                         ajax="false"
                                                         >
@@ -514,7 +514,7 @@ and open the template in the editor.
                                             <p:column><p:outputLabel value="Date Soutenance"/></p:column>
                                             <p:column>
                                                 <p:outputLabel
-                                                        value="#{myInternshipBoardsCtrl.model.internship.examDate eq null ? 'N/A': jsfCtrl.date(myInternshipBoardsCtrl.model.internship.examDate,'yyyy-MM-dd HH:mm')}"/>
+                                                        value="#{myInternshipBoardsCtrl.model.internship.examDate eq null ? 'N/A': vr.date(myInternshipBoardsCtrl.model.internship.examDate,'yyyy-MM-dd HH:mm')}"/>
                                             </p:column>
                                         </p:row>
                                         <p:row rendered="#{myInternshipBoardsCtrl.model.internship ne null}">
@@ -664,14 +664,14 @@ and open the template in the editor.
                                         <p:column headerText=""
                                                   style="border-left: 0px !important;border-right: 0px !important;width: 20%;">
                                             <p:outputLabel
-                                                    value="#{jsfCtrl.strcut(i.boardTeacher.teacher.contact.fullName, 50)}"/>
+                                                    value="#{vr.strcut(i.boardTeacher.teacher.contact.fullName, 50)}"/>
                                         </p:column>
                                         <p:column headerText=""
                                                   style="border-left: 0px !important;border-right: 0px !important;width: 70%;">
                                             <p:outputLabel value="#{i.privateObservations}"/>
                                         </p:column>
                                         <p:column headerText="" style="border-left: 0px !important;width: 10%;">
-                                            <p:outputLabel value="#{jsfCtrl.date(i.obsUpdateDate)}"/>
+                                            <p:outputLabel value="#{vr.date(i.obsUpdateDate)}"/>
                                         </p:column>
                                         <p:column rendered="#{myInternshipBoardsCtrl.model.boardManager}"
                                                   headerText="" style="border-left: 0px !important;width: 10%;">

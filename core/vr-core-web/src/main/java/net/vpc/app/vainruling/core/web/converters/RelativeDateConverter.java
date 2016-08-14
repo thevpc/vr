@@ -31,7 +31,7 @@ public class RelativeDateConverter implements Converter {
         Date dte = (java.util.Date) o;
         UserSession s = null;
         try {
-            s = VrApp.getBean(UserSession.class);
+            s = UserSession.getCurrentSession();
         } catch (Exception e) {
             //ignore error
         }

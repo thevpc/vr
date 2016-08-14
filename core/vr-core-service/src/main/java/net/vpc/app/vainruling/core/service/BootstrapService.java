@@ -95,15 +95,16 @@ public class BootstrapService {
         ArrayList<Plugin> toInstall = new ArrayList<>();
         ArrayList<Plugin> toStart = new ArrayList<>();
         for (Plugin pp : VrApp.getBean(CorePlugin.class).getPlugins()) {
-            String sver = pp.getVersion();
-            AppVersion v = pu.findById(AppVersion.class, pp.getBeanName());
+            String sver = pp.getInfo().getVersion();
+            String pluginId = pp.getId();
+            AppVersion v = pu.findById(AppVersion.class, pluginId);
             if (v == null) {
-                v = pu.findById(AppVersion.class, pp.getBeanName());
+                v = pu.findById(AppVersion.class, pluginId);
             }
             boolean ignore = false;
             if (v == null || !sver.equals(v.getServiceVersion()) || !v.isCoherent()) {
                 if (v != null && !v.isActive()) {
-                    log.log(Level.INFO, "Plugin {0} is deactivated (version {1})", new Object[]{pp.getBeanName(), pp.getVersion()});
+                    log.log(Level.INFO, "Plugin {0} is deactivated (version {1})", new Object[]{pluginId, pp.getInfo().getVersion()});
                     //ignore
                     ignore = true;
                 } else {
@@ -112,7 +113,7 @@ public class BootstrapService {
                         v.setActive(true);
                         final net.vpc.upa.types.Timestamp dte = new net.vpc.upa.types.Timestamp();
                         v.setInstallDate(dte);
-                        v.setServiceName(pp.getBeanName());
+                        v.setServiceName(pluginId);
                         v.setServiceVersion(sver);
                         v.setUpdateDate(dte);
                         v.setCoherent(true);
@@ -129,7 +130,7 @@ public class BootstrapService {
                     toInstall.add(pp);
                 }
             } else {
-                log.log(Level.INFO, "Plugin {0} is uptodate ({1})", new Object[]{pp.getBeanName(), pp.getVersion()});
+                log.log(Level.INFO, "Plugin {0} is uptodate ({1})", new Object[]{pluginId, pp.getInfo().getVersion()});
             }
             if (!ignore) {
                 toStart.add(pp);
@@ -138,13 +139,13 @@ public class BootstrapService {
         HashSet<String> nonCoherent = new HashSet<>();
         Collections.sort(toInstall);
         for (Plugin plugin : toInstall) {
-            if (!nonCoherent.contains(plugin.getBeanName())) {
+            if (!nonCoherent.contains(plugin.getId())) {
                 try {
                     plugin.install();
                 } catch (Exception e) {
-                    nonCoherent.add(plugin.getBeanName());
-                    log.log(Level.SEVERE, "Error Starting " + plugin.getBeanName(), e);
-                    AppVersion v = pu.findById(AppVersion.class, plugin.getBeanName());
+                    nonCoherent.add(plugin.getId());
+                    log.log(Level.SEVERE, "Error Starting " + plugin.getId(), e);
+                    AppVersion v = pu.findById(AppVersion.class, plugin.getId());
                     v.setCoherent(false);
                     pu.merge(v);
 
@@ -152,13 +153,13 @@ public class BootstrapService {
             }
         }
         for (Plugin plugin : toInstall) {
-            if (!nonCoherent.contains(plugin.getBeanName())) {
+            if (!nonCoherent.contains(plugin.getId())) {
                 try {
                     plugin.installDemo();
                 } catch (Exception e) {
-                    nonCoherent.add(plugin.getBeanName());
-                    log.log(Level.SEVERE, "Error Starting " + plugin.getBeanName(), e);
-                    AppVersion v = pu.findById(AppVersion.class, plugin.getBeanName());
+                    nonCoherent.add(plugin.getId());
+                    log.log(Level.SEVERE, "Error Starting " + plugin.getId(), e);
+                    AppVersion v = pu.findById(AppVersion.class, plugin.getId());
                     v.setCoherent(false);
                     pu.merge(v);
                 }
@@ -166,16 +167,19 @@ public class BootstrapService {
         }
 
         Collections.sort(toStart);
+        i18n.register("i18n.dictionary");
+        i18n.register("i18n.presentation");
+        i18n.register("i18n.service");
         for (Plugin plugin : toStart) {
-            i18n.register("i18n." + plugin.getBeanName() + ".dictionary");
-            i18n.register("i18n." + plugin.getBeanName() + ".presentation");
-            i18n.register("i18n." + plugin.getBeanName() + ".service");
+//            i18n.register("i18n." + plugin.getId() + ".dictionary");
+//            i18n.register("i18n." + plugin.getId() + ".presentation");
+//            i18n.register("i18n." + plugin.getId() + ".service");
             try {
                 plugin.start();
             } catch (Exception e) {
-                nonCoherent.add(plugin.getBeanName());
-                log.log(Level.SEVERE, "Error Starting " + plugin.getBeanName(), e);
-                AppVersion v = pu.findById(AppVersion.class, plugin.getBeanName());
+                nonCoherent.add(plugin.getId());
+                log.log(Level.SEVERE, "Error Starting " + plugin.getId(), e);
+                AppVersion v = pu.findById(AppVersion.class, plugin.getId());
                 v.setCoherent(false);
                 pu.merge(v);
 

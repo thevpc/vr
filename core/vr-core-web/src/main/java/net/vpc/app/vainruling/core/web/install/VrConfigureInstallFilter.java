@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.web.install;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.util.JsfCtrl;
+import net.vpc.app.vainruling.core.web.Vr;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -140,7 +140,7 @@ public class VrConfigureInstallFilter implements Filter {
                 HttpServletResponse httpResponse = (HttpServletResponse) response;
                 String r = "r";
                 try {
-                    r = VrApp.getBean(JsfCtrl.class).getFacesContextPrefix();
+                    r = VrApp.getBean(Vr.class).getFacesContextPrefix();
                 } catch (Exception e) {
                     //ignore
                 }

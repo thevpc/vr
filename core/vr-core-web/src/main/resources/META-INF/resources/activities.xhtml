@@ -8,7 +8,7 @@
 <h:head>
 </h:head>
 <h:body>
-    <ui:composition template="#{jsfCtrl.themePath}/templates/public-template.xhtml">
+    <ui:composition template="#{vr.themePath}/templates/public-template.xhtml">
         <ui:define name="row1">
 
         </ui:define>
@@ -40,7 +40,7 @@
 
                                         >
                                     <ui:repeat value="#{i.imageAttachments}" var="im">
-                                        <p:graphicImage value="#{jsfCtrl.urlr(im.path)}" alt="#{im.name}" width="400"
+                                        <p:graphicImage value="#{vr.urlr(im.path)}" alt="#{im.name}" width="400"
                                                         height="200"/>
                                     </ui:repeat>
                                 </p:imageSwitch>
@@ -48,20 +48,20 @@
                                 <p style="margin-bottom: 30px;margin-bottom: 20px;">
                                     <h:outputText escape="false" style="display: inline; margin-left: 10px;
                                                       margin-top: 10px;margin-bottom: 30px"
-                                                  value="#{jsfCtrl.html(i.content.content)}"/>
+                                                  value="#{vr.html(i.content.content)}"/>
                                 </p>
                                 <h:panelGrid columns="3" style="border: none;margin-top: 30px;"
                                              columnClasses="ui-grid-col-10">
                                     <ui:repeat value="#{i.attachments}" var="att">
-                                        <h:outputLink rendered="#{!jsfCtrl.isFSPath(att.path)}"
-                                                      value="#{jsfCtrl.url(att.path)}"
+                                        <h:outputLink rendered="#{!vr.isFSPath(att.path)}"
+                                                      value="#{vr.url(att.path)}"
                                                       styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
                                                       style="margin-left: 3px;margin-right: 3px;"
                                                 >
                                             <h:outputText value="#{att.name}"/>
                                         </h:outputLink>
 
-                                        <p:commandLink rendered="#{jsfCtrl.isFSPath(att.path)}"
+                                        <p:commandLink rendered="#{vr.isFSPath(att.path)}"
                                                        value="#{att.name}"
                                                        styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
                                                        style="margin-left: 3px;margin-right: 3px;"
@@ -75,7 +75,7 @@
 
                                 <p style="margin-top: 0px;">
                                     <h:outputText style="float: right; margin-right: 10px;"
-                                                  value="by #{i.content.sender.contact.fullName}, #{jsfCtrl.date(i.content.sendTime,jsfCtrl.getLocale('en'))}"/>
+                                                  value="by #{i.content.sender.contact.fullName}, #{vr.date(i.content.sendTime,vr.getLocale('en'))}"/>
                                 </p>
 
                             </div>

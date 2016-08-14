@@ -8,15 +8,15 @@ package net.vpc.app.vainruling.plugins.tasks.web;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoPriority;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatusType;
+import org.springframework.context.annotation.Scope;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @UCtrl
-@ManagedBean
+@Scope(value = "singleton")
 public class DropDownCtrl {
 
     public SelectItem[] getTodoPriorities() {

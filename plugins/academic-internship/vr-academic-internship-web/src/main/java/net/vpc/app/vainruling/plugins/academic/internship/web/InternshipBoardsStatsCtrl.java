@@ -23,7 +23,6 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 import org.primefaces.model.chart.DonutChartModel;
 import org.primefaces.model.chart.PieChartModel;
 
-import javax.faces.bean.ManagedBean;
 import java.util.*;
 
 /**
@@ -40,7 +39,6 @@ import java.util.*;
         securityKey = "Custom.Education.InternshipBoardsStat",
         url = "modules/academic/internship/internship-boards-stats"
 )
-@ManagedBean
 public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
 
     @OnPageLoad

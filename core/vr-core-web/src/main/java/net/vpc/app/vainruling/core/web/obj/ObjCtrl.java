@@ -34,12 +34,10 @@ import org.primefaces.extensions.model.dynaform.DynaFormLabel;
 import org.primefaces.extensions.model.dynaform.DynaFormModel;
 import org.primefaces.extensions.model.dynaform.DynaFormRow;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 
 import javax.el.ELContext;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
-import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import java.text.ParseException;
@@ -59,8 +57,6 @@ import java.util.logging.Logger;
         title = "Liste Entités",
         url = "modules/obj/objects"
 )
-@ManagedBean
-@Scope(value = "session")
 public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider {
 
     private static final Logger log = Logger.getLogger(ObjCtrl.class.getName());

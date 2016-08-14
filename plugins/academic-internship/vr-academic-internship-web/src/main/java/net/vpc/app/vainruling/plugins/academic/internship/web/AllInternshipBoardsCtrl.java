@@ -15,7 +15,6 @@ import net.vpc.app.vainruling.plugins.academic.internship.service.model.ext.Acad
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 
-import javax.faces.bean.ManagedBean;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +32,6 @@ import java.util.List;
         securityKey = "Custom.Education.AllInternships",
         url = "modules/academic/internship/all-internships"
 )
-@ManagedBean
 public class AllInternshipBoardsCtrl extends MyInternshipBoardsCtrl {
 
     @OnPageLoad

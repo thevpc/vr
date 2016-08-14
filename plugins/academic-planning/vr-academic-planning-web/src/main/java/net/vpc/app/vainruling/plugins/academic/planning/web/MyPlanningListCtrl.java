@@ -20,7 +20,6 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStud
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.common.strings.StringUtils;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import java.util.*;
 
@@ -36,7 +35,6 @@ import java.util.*;
         menu = "/Education/Planning",
         securityKey = "Custom.Education.MyPlanning"
 )
-@ManagedBean
 public class MyPlanningListCtrl extends AbstractPlanningCtrl {
 
     public MyPlanningListCtrl() {
@@ -56,7 +54,7 @@ public class MyPlanningListCtrl extends AbstractPlanningCtrl {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         AcademicPlanningPlugin pl = VrApp.getBean(AcademicPlanningPlugin.class);
         PlanningData plannings0 = null;
-        UserSession sm = VrApp.getBean(UserSession.class);
+        UserSession sm = UserSession.getCurrentSession();
         AppUser user = (sm == null) ? null : sm.getUser();
         if (user != null) {
             List<PlanningData> all = pl.loadUserPlannings(user.getId());

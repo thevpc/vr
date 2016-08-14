@@ -40,7 +40,7 @@ public class VrHelper {
 
         @Override
         public Object getObject() {
-            return VrApp.getBean(UserSession.class).getUser();
+            return UserSession.getCurrentUser();
         }
     };
     public static final CustomDefaultObject DEFAULT_OBJECT_CURRENT_DATETIME = new CustomDefaultObject() {
@@ -198,7 +198,7 @@ public class VrHelper {
 
     public static String fstr(String format, Object... a) {
         UserSession s = null;
-        s = VrApp.getBean(UserSession.class);
+        s = UserSession.getCurrentSession();
         Locale loc = s == null ? null : s.getLocale();
         if (loc == null) {
             loc = Locale.getDefault(Locale.Category.DISPLAY);

@@ -18,7 +18,6 @@ import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +31,6 @@ import java.util.List;
         title = "Apercu Messages",
         securityKey = "Custom.Inbox"
 )
-@ManagedBean
 public class MailboxPreviewCtrl implements PollAware {
 
     private Model model = new Model();
@@ -46,7 +44,7 @@ public class MailboxPreviewCtrl implements PollAware {
     @PostConstruct
     public void onRefresh() {
         MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
-        AppUser user = VrApp.getBean(UserSession.class).getUser();
+        AppUser user = UserSession.getCurrentUser();
         if (user != null) {
             int userId = user.getId();
             List<MailboxReceived> loadUnreadInbox = p.loadLocalMailbox(userId, 3, true, MailboxFolder.CURRENT);

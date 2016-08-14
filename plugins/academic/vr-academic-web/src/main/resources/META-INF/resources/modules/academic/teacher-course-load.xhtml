@@ -19,7 +19,7 @@ and open the template in the editor.
 <h:body>
 
 
-    <ui:composition template="#{jsfCtrl.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="links">
             <style type="text/css">
 
@@ -82,7 +82,7 @@ and open the template in the editor.
                     <div class="table-responsive">
                         <h1>
                             <p:commandLink
-                                    action="#{vrMenuManager.gotoPageObjItem('AcademicTeacher',jsfCtrl.str(teacherCourseLoadCtrl.model.currentTeacher.id))}"
+                                    action="#{vr.gotoPageObjItem('AcademicTeacher',vr.str(teacherCourseLoadCtrl.model.currentTeacher.id))}"
                                     style="font-weight: bold"
                                     value="#{teacherCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.teacher.situation.name}"/>
                         </h1>

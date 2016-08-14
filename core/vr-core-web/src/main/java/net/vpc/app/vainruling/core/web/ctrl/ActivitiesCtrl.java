@@ -10,9 +10,6 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-
 /**
  * @author taha.bensalah@gmail.com
  */
@@ -20,8 +17,6 @@ import javax.faces.bean.SessionScoped;
         title = "Activités",
         url = "activities"
 )
-@ManagedBean
-@SessionScoped
 public class ActivitiesCtrl {
 
     @OnPageLoad

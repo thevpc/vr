@@ -26,9 +26,7 @@ import net.vpc.upa.UPA;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
-import org.springframework.context.annotation.Scope;
 
-import javax.faces.bean.ManagedBean;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,8 +43,6 @@ import java.util.logging.Logger;
         title = "Documents", css = "fa-dashboard", url = "modules/files/documents"
 //        ,menu = "/FileSystem", securityKey = "Custom.FileSystem.Documents"
 )
-@ManagedBean
-@Scope(value = "session")
 public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
 
     private static final Logger log = Logger.getLogger(DocumentsCtrl.class.getName());
@@ -75,7 +71,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
             d.setUrl("modules/files/documents");
             d.setCss("fa-table");
 
-            String login = VrApp.getBean(UserSession.class).getUser().getLogin();
+            String login = UserSession.getCurrentUser().getLogin();
             if ("root".equals(c.getType())) {
                 d.setTitle("Tous les Documents");
                 d.setSecurityKey("Custom.FileSystem.RootFileSystem");
@@ -117,7 +113,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         }
         VirtualFileSystem rootfs = fsp.getFileSystem();
         VirtualFileSystem fs = null;
-        String login = VrApp.getBean(UserSession.class).getUser().getLogin();
+        String login = UserSession.getCurrentUser().getLogin();
         if ("root".equals(c.getType())) {
             fs = rootfs;
         } else if ("user".equals(c.getType())) {
@@ -296,7 +292,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         if ("SelectFile".equals(buttonId)) {
             return getModel().getArea().isEmpty();
         }
-        return VrApp.getBean(UserSession.class).isAdmin();
+        return UserSession.getCurrentSession().isAdmin();
     }
 
     public boolean isEnabledButton(String buttonId, VFileInfo forFile) {
@@ -304,7 +300,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
             return true;
         }
         return true;
-//        return VrApp.getBean(UserSession.class).isAdmin();
+//        return UserSession.getCurrentSession().isAdmin();
     }
 
     public void handleNewFile(FileUploadEvent event) {
@@ -326,7 +322,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
                     }
                 }
                 String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
-                        + "-" + VrApp.getBean(UserSession.class).getUser().getLogin();
+                        + "-" + UserSession.getCurrentUser().getLogin();
                 CorePlugin fsp = VrApp.getBean(CorePlugin.class);
                 String p = fsp.getNativeFileSystemPath() + tempPath;
                 new File(p).mkdirs();
@@ -359,7 +355,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         try {
             String p = VrApp.getBean(CorePlugin.class).getNativeFileSystemPath()
                     + CorePlugin.PATH_TEMP + "/Files/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
-                    + "-" + VrApp.getBean(UserSession.class).getUser().getLogin();
+                    + "-" + UserSession.getCurrentUser().getLogin();
             new File(p).mkdirs();
             File f = new File(p, event.getFile().getFileName());
             try {

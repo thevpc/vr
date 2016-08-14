@@ -15,7 +15,6 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 
-import javax.faces.bean.ManagedBean;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,7 +28,6 @@ import java.util.List;
         title = "CV Teacher",
         url = "public/academic/addressbook/teacher-cv-content.xhtml"
 )
-@ManagedBean
 public class TeacherCurriculumContentCtrl extends TeacherCurriculumCtrl {
 
     private static List<String> articles = Arrays.asList("about", "teaching", "research", "education", "projects", "extra");

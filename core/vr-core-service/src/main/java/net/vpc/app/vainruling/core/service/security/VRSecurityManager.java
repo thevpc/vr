@@ -104,7 +104,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
 
     @Override
     public UserPrincipal getUserPrincipal() throws UPAException {
-        UserSession sm = VrApp.getBean(UserSession.class);
+        UserSession sm = UserSession.getCurrentSession();
         AppUser user = (sm == null) ? null : sm.getUser();
         return new DefaultUserPrincipal(user == null ? "anonymous" : user.getLogin(), user);
     }
@@ -126,7 +126,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
             PersistenceUnit pu = UPA.getPersistenceUnit();
             UserSession sm = null;
             try {
-                sm = VrApp.getBean(UserSession.class);
+                sm = UserSession.getCurrentSession();
             } catch (Exception e) {
                 //
             }
@@ -159,7 +159,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
         TraceService trace = VrApp.getContext().getBean(TraceService.class);
         UserSession sm = null;
         try {
-            sm = VrApp.getBean(UserSession.class);
+            sm = UserSession.getCurrentSession();
         } catch (Exception e) {
             //
         }

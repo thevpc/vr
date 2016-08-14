@@ -9,15 +9,13 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VirtualFileSystem;
 import org.primefaces.context.RequestContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-import javax.faces.bean.ManagedBean;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,9 +27,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Component
-@ManagedBean
-@Scope(value = "session")
+@UCtrl
 public class DocumentsDialogCtrl {
 
     private static final Logger log = Logger.getLogger(DocumentsDialogCtrl.class.getName());
@@ -85,7 +81,7 @@ public class DocumentsDialogCtrl {
 
         VirtualFileSystem rootfs = fsp.getFileSystem();
         VirtualFileSystem fs = null;
-        String login = VrApp.getBean(UserSession.class).getUser().getLogin();
+        String login = UserSession.getCurrentUser().getLogin();
         if ("root".equals(c.getType())) {
             fs = rootfs;
         } else if ("user".equals(c.getType())) {

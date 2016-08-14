@@ -5,21 +5,17 @@
  */
 package net.vpc.app.vainruling.core.web.ctrl;
 
+import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.common.util.Chronometer;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Controller;
 
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ManagedBean;
 import java.util.Calendar;
 import java.util.Date;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@ManagedBean
-@ApplicationScoped
-@Controller
+@UCtrl
 @Scope("singleton")
 public class AppGlobalCtrl extends BasePageCtrl {
 

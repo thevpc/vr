@@ -21,7 +21,6 @@ import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import org.primefaces.model.chart.PieChartModel;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +39,6 @@ import java.util.List;
         menu = "/Education/Load",
         securityKey = "Custom.Education.GlobalStat"
 )
-@ManagedBean
 public class GlobalStatCtrl {
 
     private Model model = new Model();

@@ -14,7 +14,6 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningData;
 import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,6 @@ import java.util.List;
         menu = "/Education/Planning",
         securityKey = "Custom.Education.ClassPlanning"
 )
-@ManagedBean
 public class ClassPlanningCtrl extends AbstractPlanningCtrl {
 
     public ClassPlanningCtrl() {

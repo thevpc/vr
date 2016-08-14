@@ -6,9 +6,7 @@
 package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.web.UCtrl;
-
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import org.springframework.context.annotation.Scope;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -19,8 +17,7 @@ import javax.faces.bean.SessionScoped;
         menu = "/Admin",
         securityKey = "Custom.Admin.Impersonate"
 )
-@ManagedBean
-@SessionScoped
+@Scope(value = "singleton")
 public class ImpersonateCtrl {
 
     private Model model = new Model();

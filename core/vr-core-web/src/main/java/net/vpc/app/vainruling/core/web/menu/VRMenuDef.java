@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.web.menu;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.util.JsfCtrl;
+import net.vpc.app.vainruling.core.web.Vr;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -39,7 +39,7 @@ public class VRMenuDef {
     }
 
     public String getPrettyURL() {
-        JsfCtrl c = VrApp.getBean(JsfCtrl.class);
+        Vr c = VrApp.getBean(Vr.class);
         String context = c.getContext();
         if (!context.endsWith("/")) {
             context = context + "/";
@@ -81,7 +81,7 @@ public class VRMenuDef {
         return all;
     }
 
-    public List<VRMenuDef> getSubPackages() {
+    public List<VRMenuDef> getGroups() {
         List<VRMenuDef> all = new ArrayList<>();
         for (VRMenuDef c : children) {
             if (c.getType().equals("package")) {
@@ -91,7 +91,7 @@ public class VRMenuDef {
         return all;
     }
 
-    public List<VRMenuDef> getLeafs() {
+    public List<VRMenuDef> getLeaves() {
         List<VRMenuDef> all = new ArrayList<>();
         for (VRMenuDef c : children) {
             if (!c.getType().equals("package")) {

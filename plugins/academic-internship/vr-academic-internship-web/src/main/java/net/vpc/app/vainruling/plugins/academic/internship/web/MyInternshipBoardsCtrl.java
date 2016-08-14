@@ -45,7 +45,6 @@ import org.primefaces.model.chart.DonutChartModel;
 import org.primefaces.model.chart.PieChartModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import java.io.File;
 import java.io.IOException;
@@ -69,7 +68,6 @@ import java.util.logging.Logger;
         securityKey = "Custom.Education.MyInternshipBoards",
         url = "modules/academic/internship/my-internship-boards"
 )
-@ManagedBean
 public class MyInternshipBoardsCtrl {
 
 
@@ -484,7 +482,7 @@ public class MyInternshipBoardsCtrl {
             int filterTypeId = -1;
             if (getModel().getInternshipBoard() == null) {
                 AppConfig appConfig = VrApp.getBean(CorePlugin.class).findAppConfig();
-                filterPeriodId = (appConfig == null || appConfig.getMainPeriod()==null) ? -1 : appConfig.getMainPeriod().getId();
+                filterPeriodId = (appConfig == null || appConfig.getMainPeriod() == null) ? -1 : appConfig.getMainPeriod().getId();
                 String d = getModel().getFilterInternshipTypeId();
                 filterTypeId = StringUtils.isEmpty(d) ? -1 : Integer.valueOf(d);
             } else {
@@ -789,7 +787,7 @@ public class MyInternshipBoardsCtrl {
             public void run() {
                 try {
                     String report = getModel().getRequestUploadType();
-                    String login = VrApp.getBean(UserSession.class).getUser().getLogin();
+                    String login = UserSession.getCurrentUser().getLogin();
                     String tempPath = CorePlugin.PATH_TEMP + "/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
                             + "-" + login;
                     String p = core.getNativeFileSystemPath() + tempPath;

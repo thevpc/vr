@@ -24,7 +24,6 @@ import net.vpc.app.vainruling.plugins.academic.web.dialog.GenerateLoadDialogCtrl
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import java.util.*;
 
@@ -40,7 +39,6 @@ import java.util.*;
         menu = "/Education/Load",
         securityKey = "Custom.Education.AllTeachersCourseLoad"
 )
-@ManagedBean
 public class AllTeachersCourseLoadCtrl {
     private static Comparator<TeacherSemesterStat> teacherSemesterStatComparatorByTeacher = new Comparator<TeacherSemesterStat>() {
         @Override

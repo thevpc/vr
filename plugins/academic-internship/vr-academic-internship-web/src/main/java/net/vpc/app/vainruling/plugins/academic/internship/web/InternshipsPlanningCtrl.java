@@ -28,7 +28,6 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -51,7 +50,6 @@ import java.util.logging.Level;
         securityKey = "Custom.Education.InternshipsPlanning",
         url = "modules/academic/internship/internships-planning"
 )
-@ManagedBean
 public class InternshipsPlanningCtrl {
     private static final String CHAIR_LETTER = "P";
     private static final String EXAMINER_LETTER = "R";
@@ -621,7 +619,7 @@ public class InternshipsPlanningCtrl {
     public void reloadInternshipGroups() {
         List<SelectItem> internshipGroupsItems = new ArrayList<>();
         AcademicTeacher tt = academicPlugin.getCurrentTeacher();
-        if(tt!=null) {
+        if (tt != null) {
             List<AcademicInternshipGroup> internshipGroups = academicInternshipPlugin.findEnabledInternshipGroupsByDepartment(tt.getDepartment().getId());
             for (AcademicInternshipGroup t : internshipGroups) {
                 String n = t.getName();

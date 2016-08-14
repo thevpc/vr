@@ -9,9 +9,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
-
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import org.springframework.context.annotation.Scope;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -20,8 +18,7 @@ import javax.faces.bean.SessionScoped;
         title = "Front",
         url = "index"
 )
-@ManagedBean
-@SessionScoped
+@Scope(value = "singleton")
 public class PublicIndexCtrl {
 
     @OnPageLoad

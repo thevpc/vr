@@ -14,7 +14,6 @@ import net.vpc.upa.persistence.Parameter;
 import net.vpc.upa.persistence.QueryResult;
 import org.springframework.context.annotation.Scope;
 
-import javax.faces.bean.ManagedBean;
 import java.util.*;
 
 /**
@@ -23,7 +22,6 @@ import java.util.*;
 @UCtrl(
         title = "Developer Tools", css = "fa-dashboard", url = "modules/devtoolbox/dev-ql", menu = "/Admin", securityKey = "Custom.DevTools"
 )
-@ManagedBean
 @Scope(value = "session")
 public class DevToolsCtrl {
 

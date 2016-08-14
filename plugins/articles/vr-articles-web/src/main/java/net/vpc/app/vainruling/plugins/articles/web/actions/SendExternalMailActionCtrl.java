@@ -10,6 +10,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
@@ -24,10 +25,7 @@ import net.vpc.upa.NamedId;
 import net.vpc.upa.UPA;
 import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-import javax.faces.bean.ManagedBean;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,9 +33,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Component
-@ManagedBean
-@Scope("session")
+@UCtrl
 public class SendExternalMailActionCtrl {
 
     private static final Logger log = Logger.getLogger(SendExternalMailActionCtrl.class.getName());

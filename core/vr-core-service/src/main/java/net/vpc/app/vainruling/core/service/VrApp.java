@@ -49,7 +49,7 @@ public class VrApp implements ApplicationContextAware {
             }
         };
         if (!StringUtils.isEmpty(login)) {
-            VrApp.getBean(UserSession.class).setSessionId("custom");
+            UserSession.getCurrentSession().setSessionId("custom");
             VrApp.getBean(CorePlugin.class).login(login, password);
         }
         PersistenceUnit persistenceUnit = UPA.getPersistenceUnit();

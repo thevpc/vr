@@ -6,6 +6,7 @@
     <version>1.0.0</version>
     <packaging>pom</packaging>
     <modules>
+        <module>core/vr-plugin</module>
         <module>core/vr-core-service</module>
         <module>core/vr-core-web</module>
         <module>plugins/academic/vr-academic-service</module>
@@ -18,8 +19,6 @@
         <module>plugins/academic-planning/vr-academic-planning-web</module>
         <module>plugins/academic-perf-eval/vr-academic-perf-eval-service</module>
         <module>plugins/academic-perf-eval/vr-academic-perf-eval-web</module>
-        <module>plugins/academic-eval/vr-academic-eval-service</module>
-        <module>plugins/academic-eval/vr-academic-eval-web</module>
         <module>plugins/tasks/vr-tasks-service</module>
         <module>plugins/tasks/vr-tasks-web</module>
         <module>plugins/blog/vr-blog-service</module>

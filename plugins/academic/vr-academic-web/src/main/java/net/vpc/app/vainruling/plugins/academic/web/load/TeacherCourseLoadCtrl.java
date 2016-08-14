@@ -13,7 +13,6 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,6 @@ import java.util.List;
         menu = "/Education/Load",
         securityKey = "Custom.Education.TeacherCourseLoad"
 )
-@ManagedBean
 public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
 
     public TeacherCourseLoadCtrl() {

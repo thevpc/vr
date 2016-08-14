@@ -1011,7 +1011,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
 
     public AcademicTeacher findCurrentHeadOfDepartment() {
-        UserSession sm = VrApp.getBean(UserSession.class);
+        UserSession sm = UserSession.getCurrentSession();
         AppUser user = (sm == null) ? null : sm.getUser();
         if (user == null || user.getDepartment() == null) {
             return null;
@@ -1020,7 +1020,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public boolean isUserSessionManager() {
-        UserSession sm = VrApp.getBean(UserSession.class);
+        UserSession sm = UserSession.getCurrentSession();
         AppUser user = (sm == null) ? null : sm.getUser();
         if (user == null || user.getDepartment() == null) {
             return false;
@@ -1990,7 +1990,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public AcademicTeacher getCurrentTeacher() {
-        UserSession sm = VrApp.getBean(UserSession.class);
+        UserSession sm = UserSession.getCurrentSession();
         AppUser user = (sm == null) ? null : sm.getUser();
         if (user != null) {
             return findTeacherByUser(user.getId());
@@ -1999,7 +1999,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public AcademicStudent getCurrentStudent() {
-        UserSession sm = VrApp.getBean(UserSession.class);
+        UserSession sm = UserSession.getCurrentSession();
         AppUser user = (sm == null) ? null : sm.getUser();
         if (user != null) {
             return findStudentByUser(user.getId());

@@ -37,13 +37,13 @@ public class TreeTraversal {
 //            return;
 //        }
 //        System.out.println("postOrderTreeTraversal "+node+" :: "+parent+" :: "+index);
-//        List<T> nchildren = tree.getChildren(node);
+//        List<T> nchildren = tree.getComponents(node);
 //        if (nchildren.size() > 0) {
 //            postOrderTreeTraversal(nchildren.get(0), node, 0, tree,vis);
 //        }
 //        vis.visit(node,tree);
 //        if (parent != null) {
-//            List<T> pchildren = tree.getChildren(parent);
+//            List<T> pchildren = tree.getComponents(parent);
 //            if (pchildren.size() > index + 1) {
 //                postOrderTreeTraversal(pchildren.get(index + 1), parent, index + 1, tree,vis);
 //            }

@@ -19,7 +19,7 @@ and open the template in the editor.
 <h:body>
 
 
-    <ui:composition template="#{jsfCtrl.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="buttonsForm">
                 <p:confirmDialog message="Are you sure, you want to delete ?" header="Initiating deleting process"
@@ -199,7 +199,7 @@ and open the template in the editor.
                                     </p:column>
 
                                     <p:column headerText="Assign" style="width: 70px"
-                                              rendered="#{userSession.allowed('TASK_VIEW_ALL')}">
+                                              rendered="#{vr.userSession.allowed('TASK_VIEW_ALL')}">
                                         <h:outputText value="#{i.responsible.login}"/>
                                     </p:column>
 
@@ -261,7 +261,7 @@ and open the template in the editor.
                                     </p:column>
 
                                     <p:column headerText="Assign" style="width: 70px"
-                                              rendered="#{userSession.allowed('TASK_VIEW_ALL')}">
+                                              rendered="#{vr.userSession.allowed('TASK_VIEW_ALL')}">
                                         <h:outputText value="#{i.responsible.login}"/>
                                     </p:column>
 
@@ -318,7 +318,7 @@ and open the template in the editor.
                                     </p:column>
 
                                     <p:column headerText="Assign" style="width: 70px"
-                                              rendered="#{userSession.allowed('TASK_VIEW_ALL')}">
+                                              rendered="#{vr.userSession.allowed('TASK_VIEW_ALL')}">
                                         <h:outputText value="#{i.responsible.login}"/>
                                     </p:column>
 

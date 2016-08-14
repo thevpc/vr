@@ -23,7 +23,6 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.filters.ObjectFilter;
 
-import javax.faces.bean.ManagedBean;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +36,6 @@ import java.util.List;
         css = "fa-table",
         title = "Address Book"
 )
-@ManagedBean
 public class AcademicAddressBookCtrl {
 
     private Model model = new Model();

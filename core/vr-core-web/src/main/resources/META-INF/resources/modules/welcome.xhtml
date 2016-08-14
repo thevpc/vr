@@ -17,24 +17,24 @@ and open the template in the editor.
 <h:body>
 
 
-    <ui:composition template="#{jsfCtrl.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="itemForm" enctype="multipart/form-data">
                 <div class="row">
                     <p:outputPanel style="margin-bottom:20px;border-width: 0px;border-style: none;padding: 5px">
                         <p>Bonjour
-                            <strong>#{userSession.user==null?'anonymous' : userSession.user.contact.fullName}</strong>
+                            <strong>#{vr.userSession.user==null?'anonymous' : vr.userSession.user.contact.fullName}</strong>
                         </p>
 
-                        <p>Vous êtes connecté#{userSession.female?'e':''} en tant que
-                            <strong>#{userSession.user.login}</strong>
-                            <ui:fragment rendered="#{userSession.impersonating}">
-                                , (en réalité vous ête <strong>#{userSession.rootUser.contact.fullName}</strong> aka
-                                <strong>#{userSession.rootUser.login}</strong>)
+                        <p>Vous êtes connecté#{vr.userSession.female?'e':''} en tant que
+                            <strong>#{vr.userSession.user.login}</strong>
+                            <ui:fragment rendered="#{vr.userSession.impersonating}">
+                                , (en réalité vous ête <strong>#{vr.userSession.rootUser.contact.fullName}</strong> aka
+                                <strong>#{vr.userSession.rootUser.login}</strong>)
                             </ui:fragment>
-                            <ui:fragment rendered="#{userSession.profiles.size() gt 0}">
-                                , vous faites partie #{(userSession.profiles.size() gt 1)?(jsfCtrl.strcat('de ',userSession.profiles.size(),' groupes')):'du groupe'}
-                                <span style="color: grey">#{userSession.profilesString}</span>
+                            <ui:fragment rendered="#{vr.userSession.profiles.size() gt 0}">
+                                , vous faites partie #{(vr.userSession.profiles.size() gt 1)?(vr.strcat('de ',vr.userSession.profiles.size(),' groupes')):'du groupe'}
+                                <span style="color: grey">#{vr.userSession.profilesString}</span>
                             </ui:fragment>
                         </p>
                     </p:outputPanel>
@@ -67,7 +67,7 @@ and open the template in the editor.
                                         emptyMessage=""
                                     >
                                 <p:panel header="#{a.content.subject}"
-                                         footer="écrit par #{(a.content.sender eq null)?'//inconnu//':a.content.sender.contact.fullName} #{(a.content.sendTime eq null)?'' : (jsfCtrl.str(' - (le ',jsfCtrl.date(a.content.sendTime,'dd MMM yyyy') ,')'))}"
+                                         footer="écrit par #{(a.content.sender eq null)?'//inconnu//':a.content.sender.contact.fullName} #{(a.content.sendTime eq null)?'' : (vr.str(' - (le ',vr.date(a.content.sendTime,'dd MMM yyyy') ,')'))}"
                                          style="margin-bottom:10px"
                                          styleClass="noBorderGrid"
                                         >
@@ -75,15 +75,15 @@ and open the template in the editor.
                                         <h:outputText value="#{a.content.content}" escape="false"/>
                                         <p:outputPanel rendered="#{a.attachments.size() ne 0}">
                                             <ui:repeat value="#{a.attachments}" var="att">
-                                                <h:outputLink rendered="#{!jsfCtrl.isFSPath(att.path)}"
-                                                              value="#{jsfCtrl.url(att.path)}"
+                                                <h:outputLink rendered="#{!vr.isFSPath(att.path)}"
+                                                              value="#{vr.url(att.path)}"
                                                               styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
                                                               style="margin-left: 3px;margin-right: 3px;"
                                                         >
                                                     <h:outputText value="#{att.name}"/>
                                                 </h:outputLink>
 
-                                                <p:commandLink rendered="#{jsfCtrl.isFSPath(att.path)}"
+                                                <p:commandLink rendered="#{vr.isFSPath(att.path)}"
                                                                value="#{att.name}"
                                                                styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
                                                                style="margin-left: 3px;margin-right: 3px;"
@@ -109,7 +109,7 @@ and open the template in the editor.
                                         emptyMessage=""
                                     >
                                 <p:panel header="#{a.content.subject}"
-                                         footer="écrit par #{(a.content.sender eq null)?'//inconnu//':a.content.sender.contact.fullName} #{(a.content.sendTime eq null)?'' : (jsfCtrl.str(' - (le ',jsfCtrl.date(a.content.sendTime,'dd MMM yyyy') ,')'))}"
+                                         footer="écrit par #{(a.content.sender eq null)?'//inconnu//':a.content.sender.contact.fullName} #{(a.content.sendTime eq null)?'' : (vr.str(' - (le ',vr.date(a.content.sendTime,'dd MMM yyyy') ,')'))}"
                                          style="margin-bottom:10px"
                                          styleClass="noBorderGrid"
                                         >
@@ -117,15 +117,15 @@ and open the template in the editor.
                                         <h:outputText value="#{a.content.content}" escape="false"/>
                                         <p:outputPanel rendered="#{a.attachments.size() ne 0}">
                                             <ui:repeat value="#{a.attachments}" var="att">
-                                                <h:outputLink rendered="#{!jsfCtrl.isFSPath(att.path)}"
-                                                              value="#{jsfCtrl.url(att.path)}"
+                                                <h:outputLink rendered="#{!vr.isFSPath(att.path)}"
+                                                              value="#{vr.url(att.path)}"
                                                               styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
                                                               style="margin-left: 3px;margin-right: 3px;"
                                                         >
                                                     <h:outputText value="#{att.name}"/>
                                                 </h:outputLink>
 
-                                                <p:commandLink rendered="#{jsfCtrl.isFSPath(att.path)}"
+                                                <p:commandLink rendered="#{vr.isFSPath(att.path)}"
                                                                value="#{att.name}"
                                                                styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
                                                                style="margin-left: 3px;margin-right: 3px;"

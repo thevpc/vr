@@ -9,7 +9,7 @@
     <modules>
         <module>eniso-info-service</module>
         <module>eniso-info-web</module>
-        <module>plugins/themes/eniso-info-theme-infusion</module>
-        <module>plugins/themes/eniso-info-theme-th2016</module>
+        <module>plugins/themes/eniso-info-infusion-theme</module>
+        <module>plugins/themes/eniso-info-th2016-theme</module>
     </modules>
 </project>

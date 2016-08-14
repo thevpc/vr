@@ -19,9 +19,8 @@ import net.vpc.app.vainruling.core.web.util.ChartUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
 import org.primefaces.model.chart.DonutChartModel;
+import org.springframework.context.annotation.Scope;
 
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ManagedBean;
 import java.util.*;
 
 /**
@@ -33,8 +32,7 @@ import java.util.*;
         menu = "/Admin/Security",
         securityKey = "Custom.Admin.ActiveSessions"
 )
-@ManagedBean
-@ApplicationScoped
+@Scope(value = "singleton")
 public class ActiveSessionsCtrl implements PollAware {
 
     private final Model model = new Model();

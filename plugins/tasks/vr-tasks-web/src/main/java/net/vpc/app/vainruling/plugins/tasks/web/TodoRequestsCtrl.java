@@ -17,7 +17,6 @@ import net.vpc.app.vainruling.plugins.tasks.service.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,6 @@ import java.util.List;
         breadcrumb = {
                 @UPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = ""),}, css = "fa-table", title = "Listes", url = "modules/todo/todo-requests"
 )
-@ManagedBean
 @Scope(value = "session")
 public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {
 

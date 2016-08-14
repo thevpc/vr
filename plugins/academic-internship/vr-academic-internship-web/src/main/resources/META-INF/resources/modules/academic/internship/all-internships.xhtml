@@ -19,7 +19,7 @@ and open the template in the editor.
 <h:body>
 
 
-    <ui:composition template="#{jsfCtrl.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <!--                <h:form id="buttonsForm">
 
@@ -65,7 +65,7 @@ and open the template in the editor.
                             <p:column headerText="Code"
                                       sortBy="#{i.internship.code}"
                                       style="border-left: 0px !important;border-right: 0px !important;width: 5%;">
-                                <p:outputLabel value="#{jsfCtrl.strcut(i.internship.code, 20)}"/>
+                                <p:outputLabel value="#{vr.strcut(i.internship.code, 20)}"/>
                             </p:column>
                             <p:column headerText="Intitulé"
                                       sortBy="#{i.internship.name}"
@@ -73,7 +73,7 @@ and open the template in the editor.
                                 <p:commandLink ajax="true"
                                                actionListener="#{allInternshipBoardsCtrl.onSelectInternship(i.internship)}"
                                                update=":listForm"
-                                               value="#{jsfCtrl.strexpand(jsfCtrl.strcut(i.internship.name, 150),'.',3)}">
+                                               value="#{vr.strexpand(vr.strcut(i.internship.name, 150),'.',3)}">
                                 </p:commandLink>
                             </p:column>
                             <p:column headerText="Elève Ing" style="width: 10%;"
@@ -85,7 +85,7 @@ and open the template in the editor.
                                       sortBy="#{i.internship.company.name}"
                                     >
                                 <p:outputLabel
-                                        value="#{jsfCtrl.strcatsep(' - ',i.internship.company.name ,i.internship.company.country.name,i.internship.companyOther)}">
+                                        value="#{vr.strcatsep(' - ',i.internship.company.name ,i.internship.company.country.name,i.internship.companyOther)}">
                                 </p:outputLabel>
                             </p:column>
                             <p:column headerText="Encadrant" style="width: 20%;"
@@ -227,10 +227,10 @@ and open the template in the editor.
                                             <p:column><p:outputLabel value="Cahier des charges"/></p:column>
                                             <p:column>
                                                 <h:outputText
-                                                        rendered="#{jsfCtrl.isEmpty(allInternshipBoardsCtrl.model.internship.specFilePath)}"
+                                                        rendered="#{vr.isEmpty(allInternshipBoardsCtrl.model.internship.specFilePath)}"
                                                         value="Non soumis"/>
                                                 <p:commandLink
-                                                        rendered="#{!jsfCtrl.isEmpty(allInternshipBoardsCtrl.model.internship.specFilePath)}"
+                                                        rendered="#{!vr.isEmpty(allInternshipBoardsCtrl.model.internship.specFilePath)}"
                                                         value="télécharger"
                                                         ajax="false"
                                                         >
@@ -246,10 +246,10 @@ and open the template in the editor.
                                             <p:column><p:outputLabel value="Rapport mis parcours"/></p:column>
                                             <p:column>
                                                 <h:outputText
-                                                        rendered="#{jsfCtrl.isEmpty(allInternshipBoardsCtrl.model.internship.midTermReportFilePath)}"
+                                                        rendered="#{vr.isEmpty(allInternshipBoardsCtrl.model.internship.midTermReportFilePath)}"
                                                         value="Non soumis"/>
                                                 <p:commandLink
-                                                        rendered="#{!jsfCtrl.isEmpty(allInternshipBoardsCtrl.model.internship.midTermReportFilePath)}"
+                                                        rendered="#{!vr.isEmpty(allInternshipBoardsCtrl.model.internship.midTermReportFilePath)}"
                                                         value="télécharger"
                                                         ajax="false"
                                                         >
@@ -264,10 +264,10 @@ and open the template in the editor.
                                             <p:column><p:outputLabel value="Rapport final"/></p:column>
                                             <p:column>
                                                 <h:outputText
-                                                        rendered="#{jsfCtrl.isEmpty(allInternshipBoardsCtrl.model.internship.reportFilePath)}"
+                                                        rendered="#{vr.isEmpty(allInternshipBoardsCtrl.model.internship.reportFilePath)}"
                                                         value="Non soumis"/>
                                                 <p:commandLink
-                                                        rendered="#{!jsfCtrl.isEmpty(allInternshipBoardsCtrl.model.internship.reportFilePath)}"
+                                                        rendered="#{!vr.isEmpty(allInternshipBoardsCtrl.model.internship.reportFilePath)}"
                                                         value="télécharger"
                                                         ajax="false"
                                                         >
@@ -282,7 +282,7 @@ and open the template in the editor.
                                             <p:column><h:outputText value="Date Soutenance"/></p:column>
                                             <p:column>
                                                 <p:outputLabel
-                                                        value="#{allInternshipBoardsCtrl.model.internship.examDate eq null ? 'N/A': jsfCtrl.date(allInternshipBoardsCtrl.model.internship.examDate,'yyyy-MM-dd HH:mm')}"/>
+                                                        value="#{allInternshipBoardsCtrl.model.internship.examDate eq null ? 'N/A': vr.date(allInternshipBoardsCtrl.model.internship.examDate,'yyyy-MM-dd HH:mm')}"/>
                                             </p:column>
                                         </p:row>
                                         <p:row rendered="#{allInternshipBoardsCtrl.model.internship ne null}">

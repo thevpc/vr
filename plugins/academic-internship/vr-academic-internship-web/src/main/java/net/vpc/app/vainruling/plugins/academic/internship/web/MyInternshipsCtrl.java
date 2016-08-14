@@ -36,7 +36,6 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +61,6 @@ import java.util.logging.Logger;
         securityKey = "Custom.Education.MyInternships",
         url = "modules/academic/internship/my-internships"
 )
-@ManagedBean
 public class MyInternshipsCtrl {
 
     private Model model = new Model();
@@ -410,7 +408,7 @@ public class MyInternshipsCtrl {
                 try {
                     String report = getModel().getRequestUploadType();
                     CorePlugin fs = VrApp.getBean(CorePlugin.class);
-                    String login = VrApp.getBean(UserSession.class).getUser().getLogin();
+                    String login = UserSession.getCurrentUser().getLogin();
                     String tempPath = CorePlugin.PATH_TEMP + "/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
                             + "-" + login;
                     String p = fs.getNativeFileSystemPath() + tempPath;

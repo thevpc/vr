@@ -17,7 +17,7 @@ and open the template in the editor.
 
 <h:body>
 
-    <ui:composition template="#{jsfCtrl.themePath}/templates/dialog-template.xhtml">
+    <ui:composition template="#{vr.themePath}/templates/dialog-template.xhtml">
         <ui:define name="dialog-title">
             <h:outputText value="Changer Phases"/>
         </ui:define>
@@ -27,34 +27,34 @@ and open the template in the editor.
                     <p:panelGrid styleClass="noBorderGrid" style="border-style: none;border-width: 0px;width: 100%;">
                         <p:row>
                             <p:column colspan="2"><p:outputLabel
-                                    value="#{updateStatusIntershipsActionCtrl.model.message}"/></p:column>
+                                    value="#{updateStatusInternshipsActionCtrl.model.message}"/></p:column>
                         </p:row>
                         <p:row>
                             <p:column><p:outputLabel value="Groupe"/></p:column>
                             <p:column>
-                                <p:selectOneMenu value="#{updateStatusIntershipsActionCtrl.model.selectedGroup}">
+                                <p:selectOneMenu value="#{updateStatusInternshipsActionCtrl.model.selectedGroup}">
                                     <f:selectItem itemLabel="Selectionner Groupe..." itemValue=""/>
-                                    <f:selectItems value="#{updateStatusIntershipsActionCtrl.model.groups}"/>
+                                    <f:selectItems value="#{updateStatusInternshipsActionCtrl.model.groups}"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>
                         <p:row>
                             <p:column><p:outputLabel value="Comité"/></p:column>
                             <p:column>
-                                <p:selectOneMenu value="#{updateStatusIntershipsActionCtrl.model.selectedBoard}">
-                                    <p:ajax listener="#{updateStatusIntershipsActionCtrl.onUpdateBoard}"
+                                <p:selectOneMenu value="#{updateStatusInternshipsActionCtrl.model.selectedBoard}">
+                                    <p:ajax listener="#{updateStatusInternshipsActionCtrl.onUpdateBoard}"
                                             update=":listForm"/>
                                     <f:selectItem itemLabel="Selectionner Comité..." itemValue=""/>
-                                    <f:selectItems value="#{updateStatusIntershipsActionCtrl.model.boards}"/>
+                                    <f:selectItems value="#{updateStatusInternshipsActionCtrl.model.boards}"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>
                         <p:row>
                             <p:column><p:outputLabel value="Filtrer par Phase"/></p:column>
                             <p:column>
-                                <p:selectOneMenu value="#{updateStatusIntershipsActionCtrl.model.selectedStatusFrom}">
+                                <p:selectOneMenu value="#{updateStatusInternshipsActionCtrl.model.selectedStatusFrom}">
                                     <f:selectItem itemLabel="Selectionner Phase..." itemValue=""/>
-                                    <f:selectItems value="#{updateStatusIntershipsActionCtrl.model.statuses}"/>
+                                    <f:selectItems value="#{updateStatusInternshipsActionCtrl.model.statuses}"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>
@@ -62,16 +62,16 @@ and open the template in the editor.
                             <p:column><p:outputLabel value="Appliquer aux lignes selectionnées"/></p:column>
                             <p:column>
                                 <p:selectBooleanCheckbox
-                                        value="#{updateStatusIntershipsActionCtrl.model.userSelectedOnly}"/>
+                                        value="#{updateStatusInternshipsActionCtrl.model.userSelectedOnly}"/>
                             </p:column>
                         </p:row>
 
                         <p:row>
                             <p:column><p:outputLabel value="Changer en ..."/></p:column>
                             <p:column>
-                                <p:selectOneMenu value="#{updateStatusIntershipsActionCtrl.model.selectedStatusTo}">
+                                <p:selectOneMenu value="#{updateStatusInternshipsActionCtrl.model.selectedStatusTo}">
                                     <f:selectItem itemLabel="Selectionner Phase..." itemValue=""/>
-                                    <f:selectItems value="#{updateStatusIntershipsActionCtrl.model.statuses}"/>
+                                    <f:selectItems value="#{updateStatusInternshipsActionCtrl.model.statuses}"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>
@@ -79,11 +79,11 @@ and open the template in the editor.
                     </p:panelGrid>
 
                     <p:commandButton value="Appliquer changements"
-                                     actionListener="#{updateStatusIntershipsActionCtrl.apply}"
+                                     actionListener="#{updateStatusInternshipsActionCtrl.apply}"
                                      style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"
-                                     disabled="#{updateStatusIntershipsActionCtrl.model.disabled}"/>
+                                     disabled="#{updateStatusInternshipsActionCtrl.model.disabled}"/>
                     <p:commandButton value="Fermer"
-                                     actionListener="#{updateStatusIntershipsActionCtrl.fireEventExtraDialogClosed}"
+                                     actionListener="#{updateStatusInternshipsActionCtrl.fireEventExtraDialogClosed}"
                                      style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
                 </h:form>
             </div>

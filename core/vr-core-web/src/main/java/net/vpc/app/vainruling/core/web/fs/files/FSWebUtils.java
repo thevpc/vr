@@ -10,7 +10,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
-import net.vpc.app.vainruling.core.web.util.JsfCtrl;
+import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.common.vfs.VFS;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VirtualFileSystem;
@@ -44,7 +44,7 @@ public class FSWebUtils {
         if (virtualAbsolutePath == null) {
             return null;
         }
-        return VrApp.getBean(JsfCtrl.class).getContext() + "/fs/" + virtualAbsolutePath;
+        return VrApp.getBean(Vr.class).getContext() + "/fs/" + virtualAbsolutePath;
     }
 
     public static String getAppWebPath(String virtualAbsolutePath) {
@@ -76,7 +76,7 @@ public class FSWebUtils {
 
     public VFile handleFileUploadEvent(FileUploadEvent event) throws Exception {
         String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
-                + "-" + VrApp.getBean(UserSession.class).getUser().getLogin();
+                + "-" + UserSession.getCurrentUser().getLogin();
         CorePlugin fsp = VrApp.getBean(CorePlugin.class);
         String p = fsp.getNativeFileSystemPath() + tempPath;
         new File(p).mkdirs();

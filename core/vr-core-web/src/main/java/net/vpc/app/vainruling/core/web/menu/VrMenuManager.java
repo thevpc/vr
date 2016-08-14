@@ -11,7 +11,7 @@ import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
-import net.vpc.app.vainruling.core.web.util.JsfCtrl;
+import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.*;
@@ -20,10 +20,8 @@ import net.vpc.upa.exceptions.UPAException;
 import net.vpc.upa.filters.DefaultEntityFilter;
 import net.vpc.upa.filters.EntityFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
 import java.util.*;
 
 //import net.vpc.app.vainruling.tasks.TaskPlugin;
@@ -33,8 +31,6 @@ import java.util.*;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl
-@ManagedBean
-@Scope(value = "session")
 public class VrMenuManager {
 
     private Model model = new Model();
@@ -225,7 +221,7 @@ public class VrMenuManager {
         return gotoPage("obj", VrHelper.formatJSONObject(c));
     }
 
-    private String gotoPage(String command, String arguments, boolean addtoHistory) {
+    private String gotoPage(String command, String arguments, boolean addToHistory) {
         Object o = getPageCtrl(command);
         VrWebHelper.prepareUserSession();
         String goodBeanName = resolveGoodBeanName(o);
@@ -271,7 +267,7 @@ public class VrMenuManager {
         if (StringUtils.isEmpty(url)) {
             return null;
         }
-        if (addtoHistory) {
+        if (addToHistory) {
             pushHistory(command, arguments);
         }
         return path(url);
@@ -324,7 +320,7 @@ public class VrMenuManager {
 //        return "modules/todo/todo.xhtml";
 //    }
     public String path(String p) {
-        String r = VrApp.getBean(JsfCtrl.class).getFacesContextPrefix();
+        String r = VrApp.getBean(Vr.class).getFacesContextPrefix();
         return "/" + r + "/" + p + "?faces-redirect=true";
     }
 

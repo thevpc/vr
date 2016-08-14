@@ -21,7 +21,6 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicPre
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
 import net.vpc.common.jsf.FacesUtils;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,6 @@ import java.util.List;
         menu = "/Education/Config",
         securityKey = "Custom.Education.SubscribeStudent"
 )
-@ManagedBean
 public class SubscribeStudentCtrl {
 
     private Model model = new Model();

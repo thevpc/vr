@@ -24,4 +24,5 @@ import java.lang.annotation.Target;
 @Scope(value = "singleton")
 public @interface AppPlugin {
     String[] dependsOn() default {};
+    String description() default "";
 }

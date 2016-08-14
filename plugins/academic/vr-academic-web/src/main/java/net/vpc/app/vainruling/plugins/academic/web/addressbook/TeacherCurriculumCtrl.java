@@ -9,14 +9,12 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.util.JsfCtrl;
+import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherCV;
 import net.vpc.app.vainruling.plugins.academic.web.AcademicCtrlUtils;
 import net.vpc.common.strings.StringUtils;
-
-import javax.faces.bean.ManagedBean;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -28,7 +26,6 @@ import javax.faces.bean.ManagedBean;
         title = "CV Teacher",
         url = "public/academic/addressbook/teacher-cv-index.xhtml"
 )
-@ManagedBean
 public class TeacherCurriculumCtrl {
 
     private Model model = new Model();
@@ -62,27 +59,27 @@ public class TeacherCurriculumCtrl {
         }
         getModel().setContentText("");
         String emptyText = "More information will soon be available here";
-        JsfCtrl jsfCtrl = VrApp.getBean(JsfCtrl.class);
+        Vr vr = VrApp.getBean(Vr.class);
         getModel().setContentType(getModel().getConfig().contentType);
         if (getModel().getTeacherCV() != null && getModel().getContentType() != null) {
             if (getModel().getContentType().equals("about")) {
                 getModel().setContentTitle("About me");
-                getModel().setContentText(jsfCtrl.nvlstr(getModel().getTeacherCV().getAboutText(), emptyText));
+                getModel().setContentText(vr.nvlstr(getModel().getTeacherCV().getAboutText(), emptyText));
             } else if (getModel().getContentType().equals("extra")) {
-                getModel().setContentTitle(jsfCtrl.nvlstr(getModel().getTeacherCV().getExtraTitle(), "Extra Activities"));
-                getModel().setContentText(jsfCtrl.nvlstr(getModel().getTeacherCV().getExtraText(), emptyText));
+                getModel().setContentTitle(vr.nvlstr(getModel().getTeacherCV().getExtraTitle(), "Extra Activities"));
+                getModel().setContentText(vr.nvlstr(getModel().getTeacherCV().getExtraText(), emptyText));
             } else if (getModel().getContentType().equals("education")) {
                 getModel().setContentTitle("Education");
-                getModel().setContentText(jsfCtrl.nvlstr(getModel().getTeacherCV().getEducationText(), emptyText));
+                getModel().setContentText(vr.nvlstr(getModel().getTeacherCV().getEducationText(), emptyText));
             } else if (getModel().getContentType().equals("research")) {
                 getModel().setContentTitle("Research Activities");
-                getModel().setContentText(jsfCtrl.nvlstr(getModel().getTeacherCV().getResearchText(), emptyText));
+                getModel().setContentText(vr.nvlstr(getModel().getTeacherCV().getResearchText(), emptyText));
             } else if (getModel().getContentType().equals("projects")) {
                 getModel().setContentTitle("Projects and Experience");
-                getModel().setContentText(jsfCtrl.nvlstr(getModel().getTeacherCV().getProjectsText(), emptyText));
+                getModel().setContentText(vr.nvlstr(getModel().getTeacherCV().getProjectsText(), emptyText));
             } else if (getModel().getContentType().equals("teaching")) {
                 getModel().setContentTitle("Teaching Activities");
-                getModel().setContentText(jsfCtrl.nvlstr(getModel().getTeacherCV().getTeachingText(), emptyText));
+                getModel().setContentText(vr.nvlstr(getModel().getTeacherCV().getTeachingText(), emptyText));
             }
         }
         getModel().setContentText((getModel().getContentText()));

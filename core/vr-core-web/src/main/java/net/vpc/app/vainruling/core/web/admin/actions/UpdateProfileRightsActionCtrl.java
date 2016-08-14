@@ -8,23 +8,19 @@ package net.vpc.app.vainruling.core.web.admin.actions;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppRightName;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.common.strings.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.DualListModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-import javax.faces.bean.ManagedBean;
 import java.util.*;
 import java.util.logging.Logger;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@Component
-@ManagedBean
-@Scope("session")
+@UCtrl
 public class UpdateProfileRightsActionCtrl {
 
     private static final Logger log = Logger.getLogger(UpdateProfileRightsActionCtrl.class.getName());

@@ -32,7 +32,6 @@ import net.vpc.upa.UPA;
 import org.primefaces.event.SelectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.faces.bean.ManagedBean;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -44,7 +43,6 @@ import java.util.logging.Logger;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl
-@ManagedBean
 public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     private static final Logger log = Logger.getLogger(MailboxCtrl.class.getName());
@@ -150,7 +148,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     public void onRefresh() {
         MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
         List<Row> list = new ArrayList<>();
-        int userId = VrApp.getBean(UserSession.class).getUser().getId();
+        int userId = UserSession.getCurrentUser().getId();
         if (getModel().isSent()) {
             for (MailboxSent inbox : p.loadLocalOutbox(userId, -1, false, getModel().getFolder())) {
                 Row r = new Row();
@@ -243,7 +241,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         for (Row inbox : getModel().getInbox()) {
             if (inbox.isSelected()) {
                 inbox.getValue().setDeleted(true);
-                inbox.getValue().setDeletedBy(VrApp.getBean(UserSession.class).getUser().getLogin());
+                inbox.getValue().setDeletedBy(UserSession.getCurrentUser().getLogin());
                 UPA.getPersistenceUnit().merge(inbox.getValue().msg);
             }
         }
@@ -274,7 +272,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     public void onSend() {
         FacesUtils.clearMessages();
         MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
-        getModel().getNewItem().setSender(VrApp.getBean(UserSession.class).getUser());
+        getModel().getNewItem().setSender(UserSession.getCurrentUser());
         try {
             MailboxMessageFormat mailboxMessageFormat = (MailboxMessageFormat) getModel().getMailboxMessageFormat().getValue();
             p.sendLocalMail(getModel().getNewItem(), mailboxMessageFormat == null ? null : mailboxMessageFormat.getId(), true);

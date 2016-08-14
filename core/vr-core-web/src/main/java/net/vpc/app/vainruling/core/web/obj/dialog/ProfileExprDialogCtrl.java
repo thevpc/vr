@@ -9,14 +9,12 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.common.strings.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import java.util.ArrayList;
@@ -27,9 +25,7 @@ import java.util.Map;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Component
-@ManagedBean
-@Scope(value = "session")
+@UCtrl
 public class ProfileExprDialogCtrl {
 
     @Autowired

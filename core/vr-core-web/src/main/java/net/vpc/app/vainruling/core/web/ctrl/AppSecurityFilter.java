@@ -37,6 +37,7 @@ public class AppSecurityFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
+        String contextPath = ((HttpServletRequest) request).getContextPath();
         StringBuffer r = req.getRequestURL();
         boolean acceptRequest = true;
         if (r.toString().contains("/modules/")) {
@@ -87,7 +88,7 @@ public class AppSecurityFilter implements Filter {
                     Throwable rootCause = ((ServletException) e).getRootCause();
                     if (rootCause instanceof ViewExpiredException) {
                         HttpServletResponse webresponse = (HttpServletResponse) response;
-                        webresponse.sendRedirect("/vr/r/index.xhtml?faces-redirect=true");
+                        webresponse.sendRedirect(contextPath+"/r/index.xhtml?faces-redirect=true");
                         return;
                     }
                 }

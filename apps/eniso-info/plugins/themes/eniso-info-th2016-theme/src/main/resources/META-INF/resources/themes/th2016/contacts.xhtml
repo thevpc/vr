@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+        >
+<h:head>
+    <!--
+    .separator span {
+        styles
+    }
+    padding-top: 24px;
+    -->
+</h:head>
+<h:body>
+    <ui:composition template="${vr.themePath}/templates/public-template.xhtml">
+        <ui:define name="row1">
+
+        </ui:define>
+        <ui:define name="row2">
+
+        </ui:define>
+        <ui:define name="row3">
+            <h:inputHidden value="#{academicAddressBookCtrl.onPageLoad()}"/>
+            <div class="text-inter">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3>Computer Engineering Department</h3>
+
+                            <p>National School of Engineers of Sousse, Tunisia.</p>
+
+                            <p>Head of Department :
+                                <string>Taha BEN SALAH, PhD</string>
+                            </p>
+                            <p>Address : BP 264 Sousse Erriadh 4023</p>
+
+                            <p>Phones: <br/>+216 73 369 500 <br/>+216 73 369 501 <br/>+216 73 369 502</p>
+
+                            <p>Fax : +216 73 369 506</p>
+
+                            <div class="divider"></div>
+                            <!--<a href="#" class="button solid-color">see profile</a>-->
+                            <!--
+                            <a href="#" class="button extra-color">BUTTON</a>
+                            -->
+                        </div>
+                        <div class="col-md-6">
+                            <h3>Search for people</h3>
+                            <h:form id="contactForm">
+                                <div class="form-group">
+                                    <div class="radio">
+                                        <p:selectOneRadio style="font-family: 'Open Sans', sans-serif;
+                                                              font-weight: normal;padding-left: 50px;padding-left: 20px;"
+                                                          layout="grid"
+                                                          columns="1"
+                                                          value="#{academicAddressBookCtrl.model.queryType}"
+                                                >
+                                            <f:selectItem itemLabel="Teachers" itemValue="teachers"/>
+                                            <f:selectItem itemLabel="Students" itemValue="students"/>
+                                            <f:selectItem itemLabel="Graduated Students" itemValue="graduated"/>
+                                        </p:selectOneRadio>
+                                    </div>
+                                    <!--                                    <div class="radio">
+                                                                            <label>
+                                                                                <input type="radio" name="optionsRadios" id="optionsRadios1" value="teachers" checked=""/>Teachers Directory
+                                                                            </label>
+                                                                        </div>
+                                                                        <div class="radio">
+                                                                            <label>
+                                                                                <input type="radio" name="optionsRadios" id="optionsRadios2" value="students"/>Students Directory
+                                                                            </label>
+                                                                        </div>-->
+                                </div>
+                                <div class="input-group custom-search-form" style="margin-bottom: 20px">
+                                    <p:inputText styleClass="form-control" placeholder="Search..."
+                                                 value="#{academicAddressBookCtrl.model.query}"/>
+                                    <!--<input id="search01" type="text" class="form-control" placeholder="Search..."/>-->
+                                        <span class="input-group-btn">
+                                            <p:commandLink class="btn btn-default" value="..."
+                                                           style="padding-bottom: 4px;font-size: initial;"
+                                                           actionListener="#{academicAddressBookCtrl.onSearch}"
+                                                           update=":contactForm:contactsTable">
+
+                                            </p:commandLink>
+                                        </span>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="table-responsive" style="width: 100%">
+                                            <p:dataTable id="contactsTable"
+                                                         value="#{academicAddressBookCtrl.model.list}" var="i"
+                                                         paginatorAlwaysVisible="false"
+                                                         paginator="true"
+                                                         paginatorPosition="bottom"
+                                                         emptyMessage="No result"
+                                                         rows="5"
+                                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         rowsPerPageTemplate="5,20,50"
+                                                    >
+                                                <p:column headerText="Person">
+                                                    <p:commandLink
+                                                            rendered="#{i.urlCommand ne null and i.urlCommand ne ''}"
+                                                            action="#{vr.gotoPage(i.urlCommand, i.urlArgs)}">
+                                                        <h:graphicImage value="#{i.photo}"
+                                                                        style="width: 40px; margin-left: 0 !important; margin-left: 5px;margin-right: 5px;">
+                                                        </h:graphicImage>
+                                                        <p:outputLabel class="fa" value="#{i.name}"/>
+                                                    </p:commandLink>
+                                                    <p:outputLabel
+                                                            rendered="#{i.urlCommand eq null || i.urlCommand eq ''}"
+                                                            value="#{i.name}"/>
+                                                </p:column>
+                                                <p:column headerText="Contact Information">
+                                                    <div style="border: none">
+                                                        <p:dataList value="#{i.titles}" var="j"
+                                                                    style="font-size: x-small;margin: 0;border-style: none;border-width: 0px;list-style-type: none;">
+                                                            <p:outputLabel rendered="#{j ne null and j ne ''}"
+                                                                           value="#{j}" style="font-size: x-small"/>
+                                                        </p:dataList>
+                                                    </div>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="shadow"></div>
+        </ui:define>
+        <ui:define name="row4">
+            <h:form>
+            <p:dataGrid var="i" value="#{academicAddressBookCtrl.model.permanentList}" columns="3" layout="grid"
+                        rows="12" paginator="true"
+                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                        rowsPerPageTemplate="6,12,16">
+
+                <f:facet name="header">
+                    Department Permanent Teachers
+                </f:facet>
+
+                <p:panel header="#{i.name}" style="text-align:center">
+                    <p:panelGrid columns="2" style="width:100%;height: 100%;">
+                        <p:column>
+                            <h:commandLink
+                                    rendered="#{i.urlCommand ne null and i.urlCommand ne ''}"
+                                    action="#{vr.gotoPage(i.urlCommand, i.urlArgs)}"
+                                    >
+                                <h:graphicImage value="#{i.photo}"
+                                                style="width: 40px; margin-left: 0 !important; margin-left: 5px;margin-right: 5px;">
+                                </h:graphicImage>
+                            </h:commandLink>
+                        </p:column>
+                        <p:column colspan="2">
+                            <p:dataList value="#{i.titles}" var="j"
+                                        style="width:100%;height: 100px;font-size: x-small;margin: 0;border-style: none;border-width: 0px;list-style-type: none;">
+                                <p:outputLabel rendered="#{j ne null and j ne ''}"
+                                               value="#{j}" style="font-size: x-small"/>
+                            </p:dataList>
+                        </p:column>
+                    </p:panelGrid>
+                </p:panel>
+
+            </p:dataGrid>
+            </h:form>
+        </ui:define>
+        <ui:define name="row5">
+
+        </ui:define>
+        <!--            <ui:define name="row6">
+
+                    </ui:define>-->
+        <!--            <ui:define name="row7">
+
+                    </ui:define>-->
+    </ui:composition>
+</h:body>
+</html>

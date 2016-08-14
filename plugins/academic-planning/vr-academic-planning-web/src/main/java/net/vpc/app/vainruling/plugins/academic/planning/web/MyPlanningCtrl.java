@@ -47,7 +47,7 @@ package net.vpc.app.vainruling.plugins.academic.planning.web;
 //    public void onPageLoad() {
 //        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
 //        PlanningData plannings = null;
-//        UserSession sm = VrApp.getBean(UserSession.class);
+//        UserSession sm = UserSession.getCurrentSession();
 //        AppUser user = (sm == null) ? null : sm.getUser();
 //        if (user != null) {
 //            plannings = a.loadUserPlanning(user.getId());

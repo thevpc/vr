@@ -11,9 +11,7 @@ import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
-import org.springframework.context.annotation.Scope;
 
-import javax.faces.bean.ManagedBean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,8 +22,6 @@ import java.util.logging.Logger;
         title = "Changer Mot de passe", css = "fa-dashboard", url = "modules/admin/passwd",
         securityKey = "Custom.Admin.Passwd"
 )
-@ManagedBean
-@Scope(value = "session")
 public class PasswdCtrl {
 
     private static final Logger log = Logger.getLogger(PasswdCtrl.class.getName());

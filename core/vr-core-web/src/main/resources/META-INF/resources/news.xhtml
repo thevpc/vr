@@ -8,7 +8,7 @@
 <h:head>
 </h:head>
 <h:body>
-    <ui:composition template="#{jsfCtrl.themePath}/templates/public-template.xhtml">
+    <ui:composition template="#{vr.themePath}/templates/public-template.xhtml">
         <ui:define name="row1">
 
         </ui:define>
@@ -31,7 +31,7 @@
                                                margin-bottom: 10px;
                                                ">
                                             <ui:repeat value="#{articlesCtrl.model.current.imageAttachments}" var="im">
-                                                <p:graphicImage value="#{jsfCtrl.url(im.path)}" alt="#{im.name}"
+                                                <p:graphicImage value="#{vr.url(im.path)}" alt="#{im.name}"
                                                                 width="400"
                                                                 height="200"/>
                                             </ui:repeat>
@@ -39,19 +39,19 @@
 
                                         <p>
                                             <h:outputText
-                                                    value="#{jsfCtrl.html(articlesCtrl.model.current.content.content)}"
+                                                    value="#{vr.html(articlesCtrl.model.current.content.content)}"
                                                     escape="false"/>
                                         </p>
                                         <ui:repeat value="#{articlesCtrl.model.current.attachments}" var="att">
-                                            <h:outputLink rendered="#{!jsfCtrl.isFSPath(att.path)}"
-                                                          value="#{jsfCtrl.url(att.path)}"
+                                            <h:outputLink rendered="#{!vr.isFSPath(att.path)}"
+                                                          value="#{vr.url(att.path)}"
                                                           styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
                                                           style="margin-left: 3px;margin-right: 3px;"
                                                     >
                                                 <h:outputText value="#{att.name}"/>
                                             </h:outputLink>
 
-                                            <p:commandLink rendered="#{jsfCtrl.isFSPath(att.path)}"
+                                            <p:commandLink rendered="#{vr.isFSPath(att.path)}"
                                                            value="#{att.name}"
                                                            styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
                                                            style="margin-left: 3px;margin-right: 3px;"
@@ -62,7 +62,7 @@
                                         </ui:repeat>
                                         <p:separator style="border-color: #63C6AE;margin-bottom: 0px;"/>
                                         <h:outputText style="margin-top: 0px;float: right; margin-right: 10px;"
-                                                      value="by #{articlesCtrl.model.current.content.sender.contact.fullName}, #{jsfCtrl.date(articlesCtrl.model.current.content.sendTime,jsfCtrl.getLocale('en'))}"/>
+                                                      value="by #{articlesCtrl.model.current.content.sender.contact.fullName}, #{vr.date(articlesCtrl.model.current.content.sendTime,vr.getLocale('en'))}"/>
                                     </div>
                                 </h:panelGrid>
                             </div>
@@ -85,12 +85,12 @@
                                             paginatorPosition="bottom"
                                         >
                                     <h3 style="font-size: small;margin-top: 0px;margin-bottom: 0px;padding-top: 0px;">
-                                        <span style="padding: 0 5px;background: #1777B1;color: #FFFFFF;">#{jsfCtrl.date(i.content.sendTime,'dd/MM')}:</span> #{i.content.subject}
+                                        <span style="padding: 0 5px;background: #1777B1;color: #FFFFFF;">#{vr.date(i.content.sendTime,'dd/MM')}:</span> #{i.content.subject}
                                     </h3>
 
                                     <p style="font-size: x-small"><p:commandLink
                                             action="#{articlesCtrl.model.setCurrent(i)}"
-                                            update=":newsForm:curr">#{jsfCtrl.strcut(jsfCtrl.html2txt(i.content.content),100)}…</p:commandLink>
+                                            update=":newsForm:curr">#{vr.strcut(vr.html2txt(i.content.content),100)}…</p:commandLink>
                                     </p>
                                 </p:dataGrid>
                             </div>

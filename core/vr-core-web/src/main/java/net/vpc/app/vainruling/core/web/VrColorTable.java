@@ -2,14 +2,11 @@ package net.vpc.app.vainruling.core.web;
 
 import org.springframework.stereotype.Service;
 
-import javax.faces.bean.ManagedBean;
-
 
 /**
  * Created by vpc on 7/3/16.
  */
 @Service
-@ManagedBean
 public class VrColorTable {
     public final String[] bgcolors = new String[]{
             "#DDE6CB",
