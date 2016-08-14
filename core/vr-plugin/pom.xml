@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.vpc.app.vain-ruling</groupId>
+    <artifactId>vr-plugin</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+    <url>https://github.com/thevpc/vr/wiki</url>
+
+    <organization>
+        <name>vpc open source initiative</name>
+        <url>http://tahabensalah.net</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>vpc</id>
+            <name>Taha Ben Salah</name>
+            <email>taha.bensalah@gmail.com</email>
+            <url>http://tahabensalah.net</url>
+            <organization>vpc open source initiative</organization>
+            <organizationUrl>http://tahabensalah.net</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>Africa/Tunis</timezone>
+            <properties>
+                <picUrl>https://gravatar.com/avatar/977025550163b4a91397007f6ea9ee17</picUrl>
+            </properties>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License Version 3.0</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+        </license>
+    </licenses>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <github.global.server>github</github.global.server>
+    </properties>
+    <dependencies>
+    </dependencies>
+    <distributionManagement>
+        <site>
+            <id>github</id>
+            <name>github</name>
+            <url>file://${project.build.directory}/vpc-public-maven</url>
+        </site>
+        <repository>
+            <id>internal.repo</id>
+            <name>Temporary Staging Repository</name>
+            <url>file://${project.build.directory}/vpc-public-maven</url>
+        </repository>
+    </distributionManagement>
+    <build>
+        <plugins>
+            <!--<plugin>-->
+                <!--<groupId>org.codehaus.mojo</groupId>-->
+                <!--<artifactId>properties-maven-plugin</artifactId>-->
+                <!--<version>1.0.0</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<phase>generate-resources</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>write-project-properties</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<outputFile>-->
+                                <!--${project.build.outputDirectory}/app.properties-->
+                            <!--</outputFile>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <showDeprecation>true</showDeprecation>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>net.vpc.common.maven</groupId>
+                <artifactId>writer-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <configuration>
+                    <outputFile>${project.build.outputDirectory}/META-INF/vr-plugin.properties</outputFile>
+                    <text>
+                        artifactId=project.artifactId;
+                        bundleId=project.groupId+":"+project.artifactId;
+                        userBundleId=project.properties.get("vr-plugin.id");
+                        userBundleName=project.properties.get("vr-plugin.name");
+                        userBundleDescription=project.properties.get("vr-plugin.description");
+                        userComponentType=project.properties.get("vr-plugin.component-type");
+                        componentType="void";
+                        if(userComponentType!=null){
+                            componentType=userComponentType;
+                        }else{
+                            if("jar".equals(project.packaging)){
+                                if(artifactId.endsWith("-service")){
+                                    componentType="service";
+                                }else if(artifactId.endsWith("-web")){
+                                    componentType="web";
+                                }else if(artifactId.endsWith("-theme")){
+                                    componentType="theme";
+                                }else{
+                                    componentType="component";
+                                }
+                            }else{
+                                cancel();
+                            }
+                        }
+                        if(userBundleId!=null){
+                            bundleId=userBundleId;
+                        }else{
+                            if("jar".equals(project.packaging)){
+                                if(artifactId.endsWith("-service")){
+                                    bundleId=project.groupId+":"+artifactId.substring(0,artifactId.length()-"-service".length());
+                                }else if(artifactId.endsWith("-web")){
+                                    bundleId=project.groupId+":"+artifactId.substring(0,artifactId.length()-"-web".length());
+                                }else if(artifactId.endsWith("-theme")){
+                                    bundleId=project.groupId+":"+artifactId.substring(0,artifactId.length()-"-theme".length());
+                                }else{
+                                    bundleId=project.groupId+":"+artifactId;
+                                }
+                            }else{
+                                cancel();
+                            }
+                        }
+                        println("########################################");
+                        println("#");
+                        println("# VR Plugin File Descriptor");
+                        println("#");
+                        println("########################################");
+                        println("");
+                        printlnf("vr-plugin=%s",true);
+                        printlnf("vr-plugin.id=%s",bundleId);
+                        printlnf("vr-plugin.component-type=%s",componentType);
+                        printlnfc("vr-plugin.name=%s",userBundleName);
+                        printlnfc("vr-plugin.description=%s",userBundleDescription);
+                        printlnf("project.id=%s", (project.groupId+":"+project.artifactId));
+                        printlnf("project.version=%s", project.version);
+                        printlnf("project.name=%s",project.name);
+                        printlnfc("project.description=%s",project.description);
+                        if(project.organization!=null){
+                            printlnfc("project.organization.name=%s",project.organization.name);
+                            printlnfc("project.organization.url=%s",project.organization.url);
+                        }
+                        index=0;
+                        for(dev : project.developers){
+                            printlnfc("project.developers["+index+"].id=%s",dev.id);
+                            printlnfc("project.developers["+index+"].name=%s",dev.name);
+                            printlnfc("project.developers["+index+"].url=%s",dev.url);
+                            printlnfc("project.developers["+index+"].organization.name=%s",dev.organization);
+                            printlnfc("project.developers["+index+"].organization.url=%s",dev.organizationUrl);
+                            printlnfc("project.developers["+index+"].roles=%s",strlist(" ",dev.roles));
+                            index++;
+                        }
+                        index=0;
+                        for(dev : project.contributors){
+                            printlnfc("project.contributors["+index+"].name="+dev.name);
+                            printlnfc("project.contributors["+index+"].url="+dev.url);
+                            printlnfc("project.contributors["+index+"].organization.name="+dev.organization);
+                            printlnfc("project.contributors["+index+"].organization.url="+dev.organizationUrl);
+                            printlnfc("project.contributors["+index+"].roles=%s",strlist(" ",dev.roles));
+                            index++;
+                        }
+                        java.util.Map scopes=new java.util.HashMap();
+                        for(dep : project.dependencies){
+                            java.util.List deps=scopes.get(dep.scope);
+                            if(deps==null){
+                                deps=new java.util.ArrayList();
+                                scopes.put(dep.scope,deps);
+                            }
+                            deps.add(dep.groupId+":"+dep.artifactId+":"+dep.version);
+                        }
+                        for(scope : scopes.entrySet()){
+                            printlnfc("project.dependencies.%s=%s",scope.key,strlist(";",scope.value));
+                        }
+                    </text>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>write-bsh</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+
+                        <configuration>
+                            <outputDirectory>${targetdirectory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <altDeploymentRepository>
+                        internal.repo::default::file://${project.build.directory}/vpc-public-maven
+                    </altDeploymentRepository>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.11</version>
+                <!--<version>0.9</version>-->
+                <configuration>
+                    <message>Maven artifacts for ${project.version}</message>  <!-- git commit message -->
+                    <noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
+                    <outputDirectory>${project.build.directory}/vpc-public-maven
+                    </outputDirectory> <!-- matches distribution management repository url above -->
+                    <branch>refs/heads/master</branch>                       <!-- remote branch name -->
+                    <includes>
+                        <include>**/*</include>
+                    </includes>
+                    <merge>true</merge>
+                    <repositoryName>vpc-public-maven</repositoryName>      <!-- github repo name -->
+                    <repositoryOwner>thevpc</repositoryOwner>    <!-- github username  -->
+                </configuration>
+                <executions>
+                    <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <repositories>
+        <repository>
+            <id>vpc-public-maven</id>
+            <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>vpc-public-maven</id>
+            <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+</project>
