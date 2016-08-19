@@ -9,10 +9,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSeme
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -20,6 +17,7 @@ import java.util.Map;
 public class GlobalStat {
 
     private int teachersCount;
+    private int teachersLeaveCount;
     private int teachersPermanentCount;
     private int teachersTemporaryCount;
     private int teachersContractualCount;
@@ -46,8 +44,41 @@ public class GlobalStat {
         return details;
     }
 
+    public List<GlobalAssignmentStat> getSituationDetails(AcademicSemester semester, AcademicTeacherDegree degree) {
+        List<GlobalAssignmentStat> all=new ArrayList<>();
+        for (GlobalAssignmentStat detail : details) {
+            if(detail.getSituation()!=null && Objects.equals(detail.getDegree(),degree) && Objects.equals(detail.getSemester(),semester)){
+                all.add(detail);
+            }
+        }
+        return all;
+    }
+
     public GlobalAssignmentStat getTotalAssignment() {
         return getAssignment(null, null, null);
+    }
+
+    public LoadValue getAssignmentSumValue(AcademicSemester semester, List<AcademicTeacherSituation> situations, AcademicTeacherDegree degree) {
+        LoadValue v=new LoadValue();
+        for (AcademicTeacherSituation situation : situations) {
+            v.add(getAssignment(semester,situation,degree).getValue());
+        }
+        return v;
+    }
+    public LoadValue getAssignmentSumDue(AcademicSemester semester, List<AcademicTeacherSituation> situations, AcademicTeacherDegree degree) {
+        LoadValue v=new LoadValue();
+        for (AcademicTeacherSituation situation : situations) {
+            v.add(getAssignment(semester,situation,degree).getDue());
+        }
+        return v;
+    }
+
+    public int getAssignmentTeacherCount(AcademicSemester semester, List<AcademicTeacherSituation> situations, AcademicTeacherDegree degree) {
+        int count=0;
+        for (AcademicTeacherSituation situation : situations) {
+            count+=getAssignment(semester,situation,degree).getTeachersCount();
+        }
+        return count;
     }
 
     public GlobalAssignmentStat getAssignment(AcademicSemester semester, AcademicTeacherSituation situation, AcademicTeacherDegree degree) {
@@ -166,4 +197,11 @@ public class GlobalStat {
     }
 
 
+    public int getTeachersLeaveCount() {
+        return teachersLeaveCount;
+    }
+
+    public void setTeachersLeaveCount(int teachersLeaveCount) {
+        this.teachersLeaveCount = teachersLeaveCount;
+    }
 }

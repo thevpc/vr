@@ -51,7 +51,7 @@ public class BiPU {
                     @Override
                     public void run() {
                         //target.updateFormulas(AppUser.class,null,null);
-                        VrApp.getBean(TraceService.class).archiveLogs(1);
+                        TraceService.get().archiveLogs(1);
                         if (clear) {
                             target.clear(filter, null);
                         }

@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.core.web.converters;
 
-import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
 
@@ -31,7 +30,7 @@ public class RelativeDateConverter implements Converter {
         Date dte = (java.util.Date) o;
         UserSession s = null;
         try {
-            s = UserSession.getCurrentSession();
+            s = UserSession.get();
         } catch (Exception e) {
             //ignore error
         }

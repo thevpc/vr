@@ -24,6 +24,8 @@ public class AcademicTeacherSituation {
     private String name;
     private String name2;
     private String name3;
+    @Summary
+    private AcademicTeacherSituationType type;
 
     public AcademicTeacherSituation() {
     }
@@ -70,4 +72,11 @@ public class AcademicTeacherSituation {
         this.name3 = name3;
     }
 
+    public AcademicTeacherSituationType getType() {
+        return type;
+    }
+
+    public void setType(AcademicTeacherSituationType type) {
+        this.type = type;
+    }
 }

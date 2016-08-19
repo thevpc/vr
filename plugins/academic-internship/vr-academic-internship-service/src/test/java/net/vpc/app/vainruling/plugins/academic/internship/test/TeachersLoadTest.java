@@ -8,13 +8,12 @@ package net.vpc.app.vainruling.plugins.academic.internship.test;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.CourseFilter;
+import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.XlsxLoadImporter;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -78,7 +77,7 @@ public class TeachersLoadTest {
 //        s.resetTeachers();
             s.resetModuleTeaching();
             s.importTeachingLoad(-1);
-            s.generateTeachingLoad(-1, new CourseFilter(), null);
+            s.generateTeachingLoad(-1, null, null);
         } catch (IOException ex) {
             Logger.getLogger(TeachersLoadTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -98,7 +97,7 @@ public class TeachersLoadTest {
             core.setAppProperty("AcademicPlugin.import.outputFolder", null, outputFolder);
 
             AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
-            s.generateTeachingLoad(-1, new CourseFilter(), null);
+            s.generateTeachingLoad(-1, null, null);
 //            net.vpc.vfs.VirtualFileSystem fs = core.getFileSystem();
 //            fs = new NativeVFS();
 //            VFS.copy(fs.get(dataFolder), fs.get(outputFolder), new VFileFilter() {
@@ -130,7 +129,7 @@ public class TeachersLoadTest {
 //                    .setTemplateFolder(templatesFolder)
 //                    .setOutputFolder(outputFolder)
 //                    .setOutputNamePattern(namePattern)
-//                    .setCourseFilter(true)
+//                    .setCourseAssignmentFilter(true)
 //            );
 //            XMailService mails = new XMailService();
 //            XMail m=mails.read(XMailFormat.TEXT, new File(dir+"/notification-charge.xmail"));

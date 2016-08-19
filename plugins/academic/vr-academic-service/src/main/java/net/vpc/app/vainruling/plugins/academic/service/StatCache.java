@@ -247,13 +247,12 @@ public class StatCache {
             return academicCourseAssignmentListByTeacherId;
         }
 
-        public List<AcademicCourseAssignment> getAcademicCourseAssignmentsByTeacherAndSemester(Integer teacher, String semester, CourseFilter filter) {
+        public List<AcademicCourseAssignment> getAcademicCourseAssignmentsByTeacherAndSemester(Integer teacher, String semester, CourseAssignmentFilter filter) {
             List<AcademicCourseAssignment> m = new ArrayList<>();
-            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
             if (teacher == null) {
                 for (AcademicCourseAssignment value : getAcademicCourseAssignmentList()) {
                     if (semester == null || (value.getCoursePlan().getCourseLevel().getSemester() != null && value.getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
-                        if (a.acceptAssignment(value, filter)) {
+                        if (filter==null || filter.acceptAssignment(value)) {
                             m.add(value);
                         }
                     }
@@ -261,7 +260,7 @@ public class StatCache {
             } else {
                 List<AcademicCourseAssignment> list = getAcademicCourseAssignmentListByTeacherId().get(teacher);
                 AcademicTeacher tt = global.getAcademicTeacherMap().get(teacher);
-                AcademicTeacherPeriod tp = tt == null ? null : a.findAcademicTeacherPeriod(periodId, tt);
+                AcademicTeacherPeriod tp = tt == null ? null : VrApp.getBean(AcademicPlugin.class).findAcademicTeacherPeriod(periodId, tt);
                 if (list == null) {
                     if (tt != null) {
                         if (!tp.isEnabled()) {
@@ -278,7 +277,7 @@ public class StatCache {
                     }
                     for (AcademicCourseAssignment value : list) {
                         if (semester == null || (value.getCoursePlan().getCourseLevel().getSemester() != null && value.getCoursePlan().getCourseLevel().getSemester().getName().equals(semester))) {
-                            if (a.acceptAssignment(value, filter)) {
+                            if (filter==null||filter.acceptAssignment(value)) {
                                 m.add(value);
                             }
                         }

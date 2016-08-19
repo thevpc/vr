@@ -46,7 +46,7 @@ public class UserSession implements Serializable {
     private int departmentManager = -1;
     private boolean manager;
 
-    public static UserSession getCurrentSession() {
+    public static UserSession get() {
         try {
             return VrApp.getBean(UserSession.class);
         } catch (Exception e) {
@@ -55,7 +55,7 @@ public class UserSession implements Serializable {
     }
 
     public static AppUser getCurrentUser() {
-        UserSession s = getCurrentSession();
+        UserSession s = get();
         return s == null ? null : s.getUser();
     }
 

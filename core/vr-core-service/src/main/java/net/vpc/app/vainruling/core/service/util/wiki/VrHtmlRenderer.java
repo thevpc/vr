@@ -1,7 +1,5 @@
 package net.vpc.app.vainruling.core.service.util.wiki;
 
-import de.fau.cs.osr.utils.FmtNotYetImplementedError;
-import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.config.WikiConfig;
@@ -123,7 +121,7 @@ public class VrHtmlRenderer extends HtmlRenderer {
     @Override
     public void visit(WtSignature n)
     {
-        UserSession s = UserSession.getCurrentSession();
+        UserSession s = UserSession.get();
 
         String usr = (s == null || s.getUser() == null) ? "anonymous" : s.getUser().getLogin();
         switch (n.getTildeCount()){

@@ -140,7 +140,7 @@ public class VrConfigureInstallFilter implements Filter {
                 HttpServletResponse httpResponse = (HttpServletResponse) response;
                 String r = "r";
                 try {
-                    r = VrApp.getBean(Vr.class).getFacesContextPrefix();
+                    r = Vr.get().getFacesContextPrefix();
                 } catch (Exception e) {
                     //ignore
                 }

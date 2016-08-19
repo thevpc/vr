@@ -21,8 +21,10 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCla
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.service.model.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherPeriodStat;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherSemesterStat;
+import net.vpc.app.vainruling.plugins.academic.service.util.TeacherFilterByIdArray;
 import net.vpc.common.streams.PathInfo;
 import net.vpc.common.strings.MapStringConverter;
 import net.vpc.common.strings.StringUtils;
@@ -105,9 +107,10 @@ public class TeacherGenerationHelper {
         }
         boolean writeVars = requestedContents.contains(GeneratedContent.Vars);
         final VirtualFileSystem fs = core.getFileSystem();
+        TeacherFilterByIdArray teacherIdsFilter=new TeacherFilterByIdArray(teacherIds);
         if (requestedContents.contains(GeneratedContent.TeacherListAssignmentsSummary)) {
             if (stats == null) {
-                stats = academicPlugin.evalTeacherStatList(periodId, teacherIds, semester, options.getCourseFilter(), cache);
+                stats = academicPlugin.evalTeacherStatList(periodId, semester, teacherIdsFilter, options.getCourseAssignmentFilter(), options.isIncludeIntents(),options.getDeviationConfig(),cache);
             }
             String teacherListAssignmentsSummaryFile_template = templateFolder + "/teacher-list-assignments-summary-template.xls";
 
@@ -119,13 +122,13 @@ public class TeacherGenerationHelper {
         PathInfo uu = PathInfo.create(teacherAssignments_filename);
         if (requestedContents.contains(GeneratedContent.TeacherAssignments)) {
             if (stats == null) {
-                stats = academicPlugin.evalTeacherStatList(periodId, teacherIds, semester, options.getCourseFilter(), cache);
+                stats = academicPlugin.evalTeacherStatList(periodId, semester, teacherIdsFilter, options.getCourseAssignmentFilter(), options.isIncludeIntents(),options.getDeviationConfig(), cache);
             }
             generateTeacherAssignmentsFolder(periodId, stats.toArray(new TeacherPeriodStat[stats.size()]), cache, fs.get(teacherAssignments_template), fs.get(uu.getDirName() + File.separator + uu.getNamePart() + "-details/" + outputNamePattern + ".xls"), writeVars);
         }
         if (requestedContents.contains(GeneratedContent.GroupedTeacherAssignments)) {
             if (stats == null) {
-                stats = academicPlugin.evalTeacherStatList(periodId, teacherIds, semester, options.getCourseFilter(), cache);
+                stats = academicPlugin.evalTeacherStatList(periodId, semester, teacherIdsFilter, options.getCourseAssignmentFilter(), options.isIncludeIntents(),options.getDeviationConfig(), cache);
             }
             generateTeacherAssignmentsFile(periodId, stats.toArray(new TeacherPeriodStat[stats.size()]), cache, fs.get(teacherAssignments_template), fs.get(teacherAssignments_filename)
             );
@@ -213,8 +216,8 @@ public class TeacherGenerationHelper {
         }
     }
 
-    protected void generatePrintableTeacherLoadFile(int periodId, int teacherId, CourseFilter filter, VFile template, VFile output, boolean writeVars, StatCache cache) throws IOException {
-        Map<String, Object> p = preparePrintableTeacherLoadProperties(periodId, teacherId, filter, cache);
+    protected void generatePrintableTeacherLoadFile(int periodId, int teacherId, CourseAssignmentFilter filter, boolean includeIntents,DeviationConfig deviationConfig, VFile template, VFile output, boolean writeVars, StatCache cache) throws IOException {
+        Map<String, Object> p = preparePrintableTeacherLoadProperties(periodId, teacherId, filter, includeIntents,deviationConfig,cache);
         if (writeVars) {
             writeVars(p, output);
         }
@@ -276,9 +279,9 @@ public class TeacherGenerationHelper {
         log.log(Level.FINE, "generateCourseListLoadsFile in {0}", new Object[]{ch.stop()});
     }
 
-    public Map<String, Object> preparePrintableTeacherLoadProperties(int periodId, int teacher, CourseFilter filter, StatCache cache) throws IOException {
+    public Map<String, Object> preparePrintableTeacherLoadProperties(int periodId, int teacher, CourseAssignmentFilter filter, boolean includeIntents, DeviationConfig deviationConfig, StatCache cache) throws IOException {
         AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
-        return preparePrintableTeacherLoadProperties(periodId, academicPlugin.evalTeacherStat(periodId, teacher, null, null, null, filter, cache), cache);
+        return preparePrintableTeacherLoadProperties(periodId, academicPlugin.evalTeacherStat(periodId, teacher, null, null, null, filter,includeIntents,deviationConfig, cache), cache);
     }
 
     private Map<String, Object> preparePrintableTeacherLoadProperties(int periodId, TeacherPeriodStat stat, StatCache cache) throws IOException {
@@ -300,7 +303,7 @@ public class TeacherGenerationHelper {
             AcademicSemester sem = semester.getSemester();
             int moduleIndex = 1;
             String semesterPrefix = "sem(" + sem.getName() + ")";
-            for (AcademicCourseAssignment m : academicPlugin.findCourseAssignments(periodId, t.getId(), sem.getName(), stat.getCourseFilter(), cache)) {
+            for (AcademicCourseAssignment m : academicPlugin.findCourseAssignments(periodId, t.getId(), sem.getName(), stat.getCourseAssignmentFilter(),stat.isIncludeIntents(), cache)) {
                 if ((Math.abs(m.getValueC()) + Math.abs(m.getValuePM()) + Math.abs(m.getValueTD()) + Math.abs(m.getValueTP())) * Math.abs(m.getGroupCount() * m.getShareCount()) != 0) {
                     String modulePrefix = semesterPrefix + ".mod(" + moduleIndex + ")";
                     p.put(modulePrefix + ".name", m.getName());
@@ -588,7 +591,7 @@ public class TeacherGenerationHelper {
         p.put(prefix + "teacher.discipline", c.getTeacher() == null ? null : c.getTeacher().getDiscipline());
     }
 
-    public void generateTeachingLoad(int periodId, CourseFilter courseFilter, String version0) throws IOException {
+    public void generateTeachingLoad(int periodId, CourseAssignmentFilter courseAssignmentFilter, String version0) throws IOException {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
 //        try {
         AppPeriod mainPeriod = core.findPeriodOrMain(periodId);
@@ -639,7 +642,7 @@ public class TeacherGenerationHelper {
                         .setTemplateFolder(templatesFolder)
                         .setOutputFolder(outdir)
                         .setOutputNamePattern(namePattern)
-                        .setCourseFilter(courseFilter)
+                        .setCourseAssignmentFilter(courseAssignmentFilter)
                         .setPeriod(mainPeriod)
         );
 //            XMailService mails = new XMailService();

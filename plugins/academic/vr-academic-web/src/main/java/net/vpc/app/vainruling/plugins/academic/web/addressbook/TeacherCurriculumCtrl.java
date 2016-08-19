@@ -59,7 +59,7 @@ public class TeacherCurriculumCtrl {
         }
         getModel().setContentText("");
         String emptyText = "More information will soon be available here";
-        Vr vr = VrApp.getBean(Vr.class);
+        Vr vr = Vr.get();
         getModel().setContentType(getModel().getConfig().contentType);
         if (getModel().getTeacherCV() != null && getModel().getContentType() != null) {
             if (getModel().getContentType().equals("about")) {

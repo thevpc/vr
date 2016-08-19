@@ -44,7 +44,7 @@ public class FSWebUtils {
         if (virtualAbsolutePath == null) {
             return null;
         }
-        return VrApp.getBean(Vr.class).getContext() + "/fs/" + virtualAbsolutePath;
+        return Vr.get().getContext() + "/fs/" + virtualAbsolutePath;
     }
 
     public static String getAppWebPath(String virtualAbsolutePath) {

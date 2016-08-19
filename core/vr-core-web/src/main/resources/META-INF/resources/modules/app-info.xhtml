@@ -53,10 +53,10 @@ and open the template in the editor.
                     <p:column headerText="Version">
                         <p:outputLabel value="#{p.info.version}"/>
                     </p:column>
-                    <p:column headerText="Descr">
+                    <p:column headerText="Description">
                         <p:outputLabel value="#{p.info.description}"/>
                     </p:column>
-                    <p:column headerText="Descr">
+                    <p:column headerText="Auteur(s)">
                         <ui:repeat value="#{p.info.developers}" var="d">
                             <p:outputLabel value=" #{d.name} (#{d.organization eq null ? 'Independent': d.organization.name})"/>
                         </ui:repeat>

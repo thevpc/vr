@@ -13,7 +13,7 @@ public class Ex2 {
     public static void main(String[] args) {
         Chronometer ch = new Chronometer();
         VrApp.runStandalone("taha.bensalah", "myâssword");
-        TraceService trace = VrApp.getBean(TraceService.class);
+        TraceService trace = TraceService.get();
         AcademicPlugin aca = VrApp.getBean(AcademicPlugin.class);
         AcademicInternshipPlugin aci = VrApp.getBean(AcademicInternshipPlugin.class);
         aci.findActualInternshipsByStudent(0);

@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.stat;
 
-import net.vpc.app.vainruling.plugins.academic.service.CourseFilter;
+import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherSemestrialLoad;
@@ -18,7 +18,8 @@ public class TeacherPeriodStat extends TeacherBaseStat {
     private AcademicTeacher teacher;
     private AcademicTeacherPeriod teacherPeriod;
     private AcademicTeacherSemestrialLoad[] semestrialLoad;
-    private CourseFilter courseFilter;
+    private CourseAssignmentFilter courseAssignmentFilter;
+    private boolean includeIntents;
     private TeacherSemesterStat[] semesters;
 
     public AcademicTeacher getTeacher() {
@@ -45,12 +46,12 @@ public class TeacherPeriodStat extends TeacherBaseStat {
         this.semestrialLoad = semestrialLoad;
     }
 
-    public CourseFilter getCourseFilter() {
-        return courseFilter;
+    public CourseAssignmentFilter getCourseAssignmentFilter() {
+        return courseAssignmentFilter;
     }
 
-    public void setCourseFilter(CourseFilter courseFilter) {
-        this.courseFilter = courseFilter;
+    public void setCourseAssignmentFilter(CourseAssignmentFilter courseAssignmentFilter) {
+        this.courseAssignmentFilter = courseAssignmentFilter;
     }
 
     public AcademicTeacherPeriod getTeacherPeriod() {
@@ -59,6 +60,14 @@ public class TeacherPeriodStat extends TeacherBaseStat {
 
     public void setTeacherPeriod(AcademicTeacherPeriod teacherPeriod) {
         this.teacherPeriod = teacherPeriod;
+    }
+
+    public boolean isIncludeIntents() {
+        return includeIntents;
+    }
+
+    public void setIncludeIntents(boolean includeIntents) {
+        this.includeIntents = includeIntents;
     }
 
 }

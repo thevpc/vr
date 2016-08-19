@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.stat;
 
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 

@@ -10,6 +10,7 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.TeacherFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
 
@@ -36,22 +37,24 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
         model = new ModelExt();
     }
 
-    public void onTeacherChanged() {
-        onRefresh();
-    }
-
     @Override
-    public void onRefresh() {
-        super.onRefresh();
+    public void onChangeOther() {
+        super.onChangeOther();
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         getModel().setTeachers(new ArrayList<SelectItem>());
-        int periodId = getPeriodId();
+        int periodId = getLoadFilter().getPeriodId();
+        TeacherFilter teacherFilter = getLoadFilter().getTeacherFilter();
         for (AcademicTeacher t : p.findTeachers()) {
             AcademicTeacherPeriod tp = p.findAcademicTeacherPeriod(periodId, t);
-            if (tp.isEnabled()) {
+            if (tp.isEnabled() && teacherFilter.acceptTeacher(t)) {
                 getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), t.getContact().getFullName()));
             }
         }
+        onRefresh();
+    }
+
+    public void onChangeAcademicTeacher() {
+        onRefresh();
     }
 
     @OnPageLoad

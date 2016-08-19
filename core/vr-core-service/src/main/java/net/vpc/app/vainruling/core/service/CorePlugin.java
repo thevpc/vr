@@ -37,7 +37,6 @@ import java.net.URL;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.Properties;
-import java.util.jar.Manifest;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -1534,7 +1533,7 @@ public class CorePlugin {
             AppUser u = (AppUser) up.getObject();
             return u.getLogin();
         }
-        UserSession us = UserSession.getCurrentSession();
+        UserSession us = UserSession.get();
         if (us != null) {
             if (us.getUser() != null) {
                 return us.getUser().getLogin();
@@ -1544,7 +1543,7 @@ public class CorePlugin {
     }
 
     public boolean isUserSessionAdminOrUser(String login) {
-        UserSession us = UserSession.getCurrentSession();
+        UserSession us = UserSession.get();
         UserPrincipal up = UPA.getPersistenceUnit().getUserPrincipal();
         if (up != null && up.getObject() instanceof AppUser) {
             AppUser u = (AppUser) up;
@@ -1580,7 +1579,7 @@ public class CorePlugin {
     public boolean isUserSessionAdmin() {
         UserSession us = null;
         try {
-            us = UserSession.getCurrentSession();
+            us = UserSession.get();
         } catch (Exception e) {
             //session not yet created!
             return true;
@@ -1608,7 +1607,7 @@ public class CorePlugin {
     }
 
     public boolean isSessionAdmin() {
-        UserSession us = UserSession.getCurrentSession();
+        UserSession us = UserSession.get();
         return us != null && us.isAdmin();
     }
 
@@ -2042,8 +2041,9 @@ public class CorePlugin {
         if (userProfilesNames.contains(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT)) {
             if (user.getDepartment() != null) {
                 AppUser d = findHeadOfDepartment(user.getDepartment().getId());
-                if (d.getDepartment() != null) {
+                if (d!=null && d.getId() == user.getId()) {
                     s.setManager(true);
+                    s.setDepartmentManager(d.getDepartment().getId());
                 }
             }
         }
@@ -2482,15 +2482,15 @@ public class CorePlugin {
         });
     }
 
-    public boolean isUserSessionHeadOfDepartment() {
-        UserSession sm = UserSession.getCurrentSession();
-        AppUser user = (sm == null) ? null : sm.getUser();
-        if (user == null || user.getDepartment() == null) {
-            return false;
-        }
-        AppUser d = findHeadOfDepartment(user.getDepartment().getId());
-        return d != null && d.getId() == user.getId();
-    }
+//    public boolean isUserSessionHeadOfDepartment() {
+//        UserSession sm = UserSession.get();
+//        AppUser user = (sm == null) ? null : sm.getUser();
+//        if (user == null || user.getDepartment() == null) {
+//            return false;
+//        }
+//        AppUser d = findHeadOfDepartment(user.getDepartment().getId());
+//        return d != null && d.getId() == user.getId();
+//    }
 
     public AppUser findHeadOfDepartment(int depId) {
         for (AppUser u : findUsersByProfile(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT)) {

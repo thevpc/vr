@@ -10,25 +10,22 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
-import net.vpc.app.vainruling.core.web.PageInfo;
-import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.ActiveSessionsCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.AppGlobalCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.LoginCtrl;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
-import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.util.Chronometer;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import org.springframework.context.annotation.Scope;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -40,7 +37,13 @@ import java.util.*;
 @Scope(value = "singleton")
 public class Vr {
 
+    public static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.00");
+
     public Vr() {
+    }
+
+    public static Vr get() {
+        return VrApp.getBean(Vr.class);
     }
 
     public VrTheme getAppTheme() {
@@ -84,7 +87,7 @@ public class Vr {
     }
 
     public VrTheme getTheme() {
-        UserSession s = UserSession.getCurrentSession();
+        UserSession s = UserSession.get();
         if (s != null) {
             CorePlugin c = VrApp.getBean(CorePlugin.class);
             VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
@@ -133,6 +136,28 @@ public class Vr {
             return false;
         }
         return !(path.startsWith("http://") || path.startsWith("https://") || path.startsWith("ftp://"));
+    }
+
+    public double abs(double a) {
+        return Math.abs(a);
+    }
+
+    public double max(double a,double b) {
+        return Math.max(a,b);
+    }
+
+    public double min(double a,double b) {
+        return Math.min(a,b);
+    }
+
+    public double frame(double x,double a,double b) {
+        if(x<a){
+            x=a;
+        }
+        if(x>b){
+            x=b;
+        }
+        return x;
     }
 
     public String url(String path) {
@@ -255,7 +280,7 @@ public class Vr {
 
     public String fstr(String format, Object... a) {
         UserSession s = null;
-        s = UserSession.getCurrentSession();
+        s = UserSession.get();
         Locale loc = s == null ? null : s.getLocale();
         if (loc == null) {
             loc = Locale.getDefault(Locale.Category.DISPLAY);
@@ -267,7 +292,7 @@ public class Vr {
     public String date(Date dte) {
         UserSession s = null;
         try {
-            s = UserSession.getCurrentSession();
+            s = UserSession.get();
         } catch (Exception e) {
             //ignore error
         }
@@ -277,7 +302,7 @@ public class Vr {
     public String date(Date dte, Locale loc) {
         UserSession s = null;
         try {
-            s = UserSession.getCurrentSession();
+            s = UserSession.get();
         } catch (Exception e) {
             //ignore error
         }
@@ -337,6 +362,44 @@ public class Vr {
         return VrWikiParser.convertToHtml(value, "Wiki");
     }
 
+    public double percent(double val,double max) {
+        return max==0?0:((val/max)*100);
+    }
+
+    public double valOrPercent(boolean percent, double val,double max) {
+        if(percent) {
+            return max == 0 ? 0 : ((val / max) * 100);
+        }else{
+            return val;
+        }
+    }
+
+    public Double nonNullValOrPercent(boolean percent, double val,double max) {
+        if(percent) {
+            return (max == 0 || val==0) ? null : ((val / max) * 100);
+        }else{
+            return val==0?null:val;
+        }
+    }
+
+    public String valOrPercentString(boolean percent, double val,double max) {
+        if(percent) {
+            Double d = (max == 0 || val == 0) ? null : ((val / max) * 100);
+            if(d!=null){
+                return PERCENT_FORMAT.format(d)+"%";
+            }
+            return null;
+        }else{
+            if(val==0){
+                return null;
+            }
+            if(Math.round(val)==val){
+                return String.valueOf((long)val);
+            }
+            return new DecimalFormat("0.0##").format(val);
+        }
+    }
+
     public String getFacesContextPrefix() {
         return "r";
     }
@@ -368,7 +431,7 @@ public class Vr {
         if (loc == null) {
             UserSession s = null;
             try {
-                s = UserSession.getCurrentSession();
+                s = UserSession.get();
             } catch (Exception e) {
                 //ignore error
             }
@@ -398,7 +461,7 @@ public class Vr {
     }
 
     public UserSession getUserSession() {
-        return UserSession.getCurrentSession();
+        return UserSession.get();
     }
 
     public String buildMenu() {

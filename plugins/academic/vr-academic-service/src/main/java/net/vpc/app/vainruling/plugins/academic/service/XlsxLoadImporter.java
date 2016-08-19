@@ -76,6 +76,7 @@ public class XlsxLoadImporter {
     }
 
     public void importDepartments(VFile file) throws IOException {
+        final CorePlugin core = VrApp.getBean(CorePlugin.class);
         AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
         Chronometer ch = new Chronometer();
         File tmp = VFS.copyNativeTempFile(file);
@@ -87,19 +88,19 @@ public class XlsxLoadImporter {
             DataRow row = rows.readRow();
             Object[] values = row.getValues();
             String code = Convert.toString(values[0]);
-            AppDepartment curr = service.findDepartment(code);
+            AppDepartment curr = core.findDepartment(code);
             if (curr == null) {
                 AppDepartment d = new AppDepartment();
                 d.setCode(code);
                 d.setName(Convert.toString(values[1]));
-                AppDepartment parent = service.findDepartment(Convert.toString(values[2]));
+                AppDepartment parent = core.findDepartment(Convert.toString(values[2]));
                 d.setParent(parent);
                 d.setName2(Convert.toString(values[3]));
                 service.add(d);
                 count++;
             }
         }
-        TraceService trace = VrApp.getBean(TraceService.class);
+        TraceService trace = TraceService.get();
         trace.trace("importDepartments", "importDepartments from " + file + " in " + ch.stop() + " (" + count + " rows)", null, getClass().getSimpleName(), Level.INFO);
         log.log(Level.INFO, "importDepartments from {0} in {1}", new Object[]{file, ch.stop()});
     }
@@ -137,7 +138,7 @@ public class XlsxLoadImporter {
             }
             count++;
         }
-        TraceService trace = VrApp.getBean(TraceService.class);
+        TraceService trace = TraceService.get();
         trace.trace("importTeacherDegrees", "importDepartments from " + file + " in " + ch.stop() + " (" + count + " rows)", null, getClass().getSimpleName(), Level.INFO);
         log.log(Level.INFO, "importTeacherDegrees from {0} in {1}", new Object[]{file, ch.stop()});
     }
@@ -192,7 +193,7 @@ public class XlsxLoadImporter {
             }
             count++;
         }
-        TraceService trace = VrApp.getBean(TraceService.class);
+        TraceService trace = TraceService.get();
         trace.trace("importTeacherDegrees", "importDepartments from " + file + " in " + ch.stop() + " (" + count + " rows)", null, getClass().getSimpleName(), Level.INFO);
         log.log(Level.INFO, "importTeacherDegrees from {0} in {1}", new Object[]{file, ch.stop()});
     }
@@ -241,7 +242,7 @@ public class XlsxLoadImporter {
             importOptions = new ImportOptions();
         }
         int count = 0;
-        TraceService trace = VrApp.getBean(TraceService.class);
+        TraceService trace = TraceService.get();
         long start = System.currentTimeMillis();
         if (!file.exists()) {
             return count;
@@ -394,7 +395,7 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Department Not Found " + a.getDepartmentId());
             }
         } else {
-            dept = service.findDepartment(a.getDepartmentName());
+            dept = core.findDepartment(a.getDepartmentName());
             if (dept == null) {
                 throw new NoSuchElementException("Department Not Found " + a.getDepartmentName());
             }
@@ -565,7 +566,7 @@ public class XlsxLoadImporter {
                 count++;
             }
         }
-        TraceService trace = VrApp.getBean(TraceService.class);
+        TraceService trace = TraceService.get();
         trace.trace("importTeachers", "importTeachers from " + file + " in " + ch.stop() + " (" + count + " rows)", null, getClass().getSimpleName(), Level.INFO);
         log.log(Level.INFO, "importTeachers from {0} in {1} " + " (" + count + " rows)", new Object[]{file, ch.stop()});
     }
@@ -654,7 +655,7 @@ public class XlsxLoadImporter {
 //                throw new NoSuchElementException("Department Not Found " + a.getDepartmentId());
 //            }
         } else {
-            dept = service.findDepartment(a.getDepartmentName());
+            dept = core.findDepartment(a.getDepartmentName());
 //            if (dept == null) {
 //                throw new NoSuchElementException("Department Not Found " + a.getDepartmentName());
 //            }
@@ -846,7 +847,7 @@ public class XlsxLoadImporter {
                 count++;
             }
         }
-        TraceService trace = VrApp.getBean(TraceService.class);
+        TraceService trace = TraceService.get();
         trace.trace("importStudents", "importStudents from " + file + " in " + ch.stop() + " (" + count + " rows)", null, getClass().getSimpleName(), Level.INFO);
         log.log(Level.INFO, "importStudents from {0} in {1} " + " (" + count + " rows)", new Object[]{file, ch.stop()});
         return count;
@@ -926,7 +927,7 @@ public class XlsxLoadImporter {
                     {
                         String stringVal = Convert.toString(values[DEPARTMENT_COLUMN]);
                         String[] codeAndName = codeAndName(stringVal);
-                        department = service.findDepartment(codeAndName[0]);
+                        department = core.findDepartment(codeAndName[0]);
                         if (department == null) {
                             department = new AppDepartment();
                             department.setCode(codeAndName[0]);
@@ -1108,7 +1109,7 @@ public class XlsxLoadImporter {
                 System.out.println("Ignored Row " + Arrays.asList(values));
             }
         }
-        TraceService trace = VrApp.getBean(TraceService.class);
+        TraceService trace = TraceService.get();
         trace.trace("importCourseAssignments", "importTeachers from " + file + " in " + ch.stop() + " (" + count + " rows)", null, getClass().getSimpleName(), Level.INFO);
         log.log(Level.INFO, "importCourseAssignments from {0} in {1}", new Object[]{file, ch.stop()});
         service.updateAllCoursePlanValuesByLoadValues(periodId);

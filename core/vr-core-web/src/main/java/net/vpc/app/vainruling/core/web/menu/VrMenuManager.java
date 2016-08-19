@@ -6,7 +6,9 @@
 package net.vpc.app.vainruling.core.web.menu;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppTrace;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.core.web.*;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.logging.Level;
 
 //import net.vpc.app.vainruling.tasks.TaskPlugin;
 //import net.vpc.app.vainruling.tasks.model.TodoList;
@@ -264,6 +267,7 @@ public class VrMenuManager {
             }
         }
         s.setLastVisitedPage(lvp.toString());
+        TraceService.get().trace("visit.page","page visited "+lvp.toString(),command+" ; "+arguments,"system", Level.FINE);
         if (StringUtils.isEmpty(url)) {
             return null;
         }
@@ -320,7 +324,7 @@ public class VrMenuManager {
 //        return "modules/todo/todo.xhtml";
 //    }
     public String path(String p) {
-        String r = VrApp.getBean(Vr.class).getFacesContextPrefix();
+        String r = Vr.get().getFacesContextPrefix();
         return "/" + r + "/" + p + "?faces-redirect=true";
     }
 

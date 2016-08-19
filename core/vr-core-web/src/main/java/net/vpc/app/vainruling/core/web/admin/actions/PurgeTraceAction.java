@@ -36,7 +36,7 @@ public class PurgeTraceAction implements ActionDialog {
 
     @Override
     public void invoke(Class entityType, Object obj, Object[] args) {
-        VrApp.getContext().getBean(TraceService.class).archiveLogs(30);
+        TraceService.get().archiveLogs(30);
         FacesUtils.addInfoMessage("Archivage réussi");
     }
 }

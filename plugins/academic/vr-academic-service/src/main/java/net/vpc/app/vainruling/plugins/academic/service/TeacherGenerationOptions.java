@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.plugins.academic.service;
 
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
+import net.vpc.app.vainruling.plugins.academic.service.model.stat.DeviationConfig;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -15,10 +16,12 @@ public class TeacherGenerationOptions {
     private Integer[] teacherIds;
     private String semester;
     private GeneratedContent[] contents;
+    private DeviationConfig deviationConfig=new DeviationConfig();
     private String templateFolder;
     private String outputFolder;
     private String outputNamePattern;
-    private CourseFilter courseFilter;
+    private CourseAssignmentFilter courseAssignmentFilter;
+    private boolean includeIntents;
     private AppPeriod period;
 
     public Integer[] getTeacherIds() {
@@ -75,12 +78,21 @@ public class TeacherGenerationOptions {
         return this;
     }
 
-    public CourseFilter getCourseFilter() {
-        return courseFilter;
+    public CourseAssignmentFilter getCourseAssignmentFilter() {
+        return courseAssignmentFilter;
     }
 
-    public TeacherGenerationOptions setCourseFilter(CourseFilter inclueIntents) {
-        this.courseFilter = inclueIntents;
+    public TeacherGenerationOptions setCourseAssignmentFilter(CourseAssignmentFilter inclueIntents) {
+        this.courseAssignmentFilter = inclueIntents;
+        return this;
+    }
+
+    public boolean isIncludeIntents() {
+        return includeIntents;
+    }
+
+    public TeacherGenerationOptions setIncludeIntents(boolean includeIntents) {
+        this.includeIntents = includeIntents;
         return this;
     }
 
@@ -91,5 +103,13 @@ public class TeacherGenerationOptions {
     public TeacherGenerationOptions setPeriod(AppPeriod period) {
         this.period = period;
         return this;
+    }
+
+    public DeviationConfig getDeviationConfig() {
+        return deviationConfig;
+    }
+
+    public void setDeviationConfig(DeviationConfig deviationConfig) {
+        this.deviationConfig = deviationConfig;
     }
 }

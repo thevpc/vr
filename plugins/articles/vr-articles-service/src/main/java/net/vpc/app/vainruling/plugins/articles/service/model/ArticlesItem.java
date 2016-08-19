@@ -94,6 +94,14 @@ public class ArticlesItem {
     private AppUser sender;
 
     @Summary
+    @Field(persistAccessLevel = AccessLevel.PROTECTED,
+            updateAccessLevel = AccessLevel.PROTECTED
+    )
+    @Properties(
+            @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
+    private int visitCount;
+
+    @Summary
     @Field(readAccessLevel = AccessLevel.PROTECTED)
     private String filterExpression;
 
@@ -269,5 +277,13 @@ public class ArticlesItem {
 
     public void setNoSubject(boolean noSubject) {
         this.noSubject = noSubject;
+    }
+
+    public int getVisitCount() {
+        return visitCount;
+    }
+
+    public void setVisitCount(int visitCount) {
+        this.visitCount = visitCount;
     }
 }

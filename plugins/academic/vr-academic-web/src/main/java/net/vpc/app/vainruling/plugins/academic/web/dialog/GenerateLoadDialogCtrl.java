@@ -12,7 +12,6 @@ import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.CourseFilter;
 import net.vpc.app.vainruling.plugins.academic.web.admin.AcademicAdminToolsCtrl;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -95,13 +94,13 @@ public class GenerateLoadDialogCtrl {
         }
         getModel().setTitle(title);
 
-        getModel().getPeriods().clear();
+        getModel().getPeriodItems().clear();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         AppPeriod curr = core.findAppConfig().getMainPeriod();
         for (AppPeriod period : core.findNavigatablePeriods()) {
             SelectItem item = new SelectItem(String.valueOf(period.getId()), period.getName());
             if (!period.isReadOnly()) {
-                getModel().getPeriods().add(item);
+                getModel().getPeriodItems().add(item);
             }
         }
         getModel().setPeriod(String.valueOf(curr.getId()));
@@ -132,7 +131,7 @@ public class GenerateLoadDialogCtrl {
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
             int periodId = getPeriodId();
             setVersion(periodId, getModel().getVersion());
-            p.generateTeachingLoad(periodId, new CourseFilter(), getModel().getVersion());
+            p.generateTeachingLoad(periodId, null, getModel().getVersion());
             FacesUtils.addInfoMessage("Successful Operation");
         } catch (Exception ex) {
             Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);
@@ -169,7 +168,7 @@ public class GenerateLoadDialogCtrl {
         private String title = "";
         private Config config = new Config();
         private String version = "";
-        private List<SelectItem> periods = new ArrayList<>();
+        private List<SelectItem> periodItems = new ArrayList<>();
         private String period;
 
         public Config getConfig() {
@@ -196,12 +195,12 @@ public class GenerateLoadDialogCtrl {
             this.version = version;
         }
 
-        public List<SelectItem> getPeriods() {
-            return periods;
+        public List<SelectItem> getPeriodItems() {
+            return periodItems;
         }
 
-        public void setPeriods(List<SelectItem> periods) {
-            this.periods = periods;
+        public void setPeriodItems(List<SelectItem> periodItems) {
+            this.periodItems = periodItems;
         }
 
         public String getPeriod() {

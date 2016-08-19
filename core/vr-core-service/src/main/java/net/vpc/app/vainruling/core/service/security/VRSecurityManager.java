@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.core.service.security;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
-import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.upa.*;
 import net.vpc.upa.config.SecurityContext;
@@ -47,7 +46,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
         if (CorePlugin.USER_ADMIN.equals(login)) {
             return true;
         }
-        UserSession s = UserSession.getCurrentSession();
+        UserSession s = UserSession.get();
         if (s == null) {
             return false;
         }
@@ -87,7 +86,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
         if (denyOthers.contains(key)) {
             return false;
         }
-        UserSession s = UserSession.getCurrentSession();
+        UserSession s = UserSession.get();
         if (s == null) {
             return false;
         }
@@ -104,7 +103,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
 
     @Override
     public UserPrincipal getUserPrincipal() throws UPAException {
-        UserSession sm = UserSession.getCurrentSession();
+        UserSession sm = UserSession.get();
         AppUser user = (sm == null) ? null : sm.getUser();
         return new DefaultUserPrincipal(user == null ? "anonymous" : user.getLogin(), user);
     }
@@ -117,7 +116,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
         if (login.equals("")) {
             login = INTERNAL_LOGIN;
         }
-        TraceService trace = VrApp.getContext().getBean(TraceService.class);
+        TraceService trace = TraceService.get();
         if (login.equals(INTERNAL_LOGIN)) {
             AppUser user = new AppUser();
             user.setLogin(login);
@@ -126,7 +125,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
             PersistenceUnit pu = UPA.getPersistenceUnit();
             UserSession sm = null;
             try {
-                sm = UserSession.getCurrentSession();
+                sm = UserSession.get();
             } catch (Exception e) {
                 //
             }
@@ -156,10 +155,10 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
                 .setParameter("login", login)
                 .setParameter("password", credentials)
                 .getFirstResultOrNull();
-        TraceService trace = VrApp.getContext().getBean(TraceService.class);
+        TraceService trace = TraceService.get();
         UserSession sm = null;
         try {
-            sm = UserSession.getCurrentSession();
+            sm = UserSession.get();
         } catch (Exception e) {
             //
         }

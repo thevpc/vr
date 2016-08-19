@@ -19,6 +19,8 @@ and open the template in the editor.
 
 <h:body>
 
+    <!--@elvariable id="generateLoadDialogCtrl" type="net.vpc.app.vainruling.plugins.academic.web.dialog.GenerateLoadDialogCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
     <ui:composition template="#{vr.themePath}/templates/dialog-template.xhtml">
         <ui:define name="dialog-title">
             <h:outputText value="#{generateLoadDialogCtrl.model.title}"/>
@@ -31,7 +33,7 @@ and open the template in the editor.
                     <p:selectOneMenu value="#{generateLoadDialogCtrl.model.period}" required="false"
                                      style="margin-top: 10px;">
                         <p:ajax listener="#{generateLoadDialogCtrl.onChangePeriod}" update=":myform"/>
-                        <f:selectItems value="#{generateLoadDialogCtrl.model.periods}"/>
+                        <f:selectItems value="#{generateLoadDialogCtrl.model.periodItems}"/>
                     </p:selectOneMenu>
                     <p:outputLabel value="Version"
                                    style="margin-left: 10px; margin-right: 10px; vertical-align: super;"/>

@@ -292,7 +292,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         if ("SelectFile".equals(buttonId)) {
             return getModel().getArea().isEmpty();
         }
-        return UserSession.getCurrentSession().isAdmin();
+        return UserSession.get().isAdmin();
     }
 
     public boolean isEnabledButton(String buttonId, VFileInfo forFile) {
@@ -300,7 +300,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
             return true;
         }
         return true;
-//        return UserSession.getCurrentSession().isAdmin();
+//        return UserSession.get().isAdmin();
     }
 
     public void handleNewFile(FileUploadEvent event) {

@@ -416,6 +416,9 @@ public class TraceService {
             }
         }));
     }
+    public static TraceService get(){
+        return VrApp.getBean(TraceService.class);
+    }
 
 //    private String dump(String name, Map<String, Object> fields) {
 //        PersistenceUnit pu = UPA.getPersistenceUnit();

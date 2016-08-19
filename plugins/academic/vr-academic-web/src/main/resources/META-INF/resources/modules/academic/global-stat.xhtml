@@ -11,13 +11,15 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 
-        >
+>
 
 <h:head>
 </h:head>
 
 <h:body>
 
+    <!--@elvariable id="globalStatCtrl" type="net.vpc.app.vainruling.plugins.academic.web.load.GlobalStatCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
 
     <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
@@ -31,75 +33,238 @@ and open the template in the editor.
                                          actionListener="#{globalStatCtrl.onRefresh}" update=":listForm"/>
                     </p:outputLabel>
                 </div>
-
                 <div class="row">
-                    <p:outputLabel value="Période" style="margin-right: 10px;vertical-align: super;"/>
-                    <p:selectOneMenu value="#{globalStatCtrl.model.selectedPeriod}">
+                    <p:outputLabel value="Période" styleClass="vr-form-field"/>
+                    <p:selectOneMenu value="#{globalStatCtrl.loadFilter.model.selectedPeriod}">
                         <p:ajax listener="#{globalStatCtrl.onChangePeriod}" update=":buttonsForm :listForm"/>
                         <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
-                        <f:selectItems value="#{globalStatCtrl.model.periods}"/>
+                        <f:selectItems value="#{globalStatCtrl.loadFilter.model.periodItems}"/>
                     </p:selectOneMenu>
+                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                          value="#{globalStatCtrl.loadFilter.model.selectedDepartments}"
+                                          label="Departements"
+                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                        <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                        <f:selectItems value="#{globalStatCtrl.loadFilter.model.departmentItems}"/>
+                    </p:selectCheckboxMenu>
+
+                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                          value="#{globalStatCtrl.loadFilter.model.selectedDegrees}" label="Grades"
+                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                        <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                        <f:selectItems value="#{globalStatCtrl.loadFilter.model.degreeItems}"/>
+                    </p:selectCheckboxMenu>
+                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                          value="#{globalStatCtrl.loadFilter.model.selectedSituations}"
+                                          label="Situations"
+                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                        <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                        <f:selectItems value="#{globalStatCtrl.loadFilter.model.situationItems}"/>
+                    </p:selectCheckboxMenu>
+                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                          value="#{globalStatCtrl.loadFilter.model.selectedOfficialDisciplines}"
+                                          label="Disciplines"
+                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                        <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                        <f:selectItems value="#{globalStatCtrl.loadFilter.model.officialDisciplinesItems}"/>
+                    </p:selectCheckboxMenu>
                 </div>
-            </h:form>
-            <h:form id="listForm">
+                <div class="row">
+                    <p:selectCheckboxMenu styleClass="vr-form-field" value="#{globalStatCtrl.loadFilter.model.selectedProgramTypes}" label="Type Formation"
+                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                        <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                        <f:selectItems value="#{globalStatCtrl.loadFilter.model.programTypeItems}" />
+                    </p:selectCheckboxMenu>
+                    <p:selectCheckboxMenu styleClass="vr-form-field" value="#{globalStatCtrl.loadFilter.model.selectedLabels}" label="Label"
+                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                        <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                        <f:selectItems value="#{globalStatCtrl.loadFilter.model.labelItems}" />
+                    </p:selectCheckboxMenu>
+                    <p:selectCheckboxMenu
+                            styleClass="vr-form-field"
+                            value="#{globalStatCtrl.loadFilter.model.selectedDeviationGroups}" label="Groupe Balance"
+                            filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                        <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                        <f:selectItems value="#{globalStatCtrl.loadFilter.model.deviationGroupItems}"/>
+                    </p:selectCheckboxMenu>
+                </div>
                 <div class="row">
                     <div class="table-responsive">
-                        <p:selectManyCheckbox value="#{globalStatCtrl.model.refreshFilter}" layout="grid"
+                        <p:selectManyCheckbox value="#{globalStatCtrl.loadFilter.model.refreshFilter}" layout="grid"
                                               columns="5">
                             <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                            <f:selectItems value="#{globalStatCtrl.model.refreshFilterItems}"/>
+                            <f:selectItems value="#{globalStatCtrl.loadFilter.model.refreshFilterItems}"/>
                         </p:selectManyCheckbox>
                     </div>
                 </div>
+
+
+                <!--<div class="row">-->
+                <!--<p:outputLabel value="Période" style="margin-right: 10px;vertical-align: super;"/>-->
+                <!--<p:selectOneMenu value="#{globalStatCtrl.model.selectedPeriod}">-->
+                <!--<p:ajax listener="#{globalStatCtrl.onChangePeriod}" update=":buttonsForm :listForm"/>-->
+                <!--<f:selectItem itemLabel="Selectionner Période..." itemValue=""/>-->
+                <!--<f:selectItems value="#{globalStatCtrl.model.periodItems}"/>-->
+                <!--</p:selectOneMenu>-->
+                <!--</div>-->
+            </h:form>
+            <h:form id="listForm">
                 <p:tabView>
-                    <p:tab title="Valeurs Clé">
+                    <p:tab title="Enseignants">
                         <div class="row">
                             <div class="table-responsive">
+                                <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
+                                        value="Enseignants par Disciplines"/></h1></p:column>
+                                <p:dataTable id="tbl1" value="#{globalStatCtrl.model.globalStatByDisciplines}"
+                                             var="item"
+                                             paginatorAlwaysVisible="false"
+                                             paginator="true"
+                                             paginatorPosition="bottom"
+                                             rows="10"
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                             rowsPerPageTemplate="10,20,50,100,200,1000"
+                                             emptyMessage=""
+                                >
+                                    <f:facet name="{Exporters}">
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xls" target="tbl1"
+                                                            fileName="eniso-info-teaches-count-a"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="pdf" target="tbl1"
+                                                            fileName="eniso-info-teaches-count-a"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="csv" target="tbl1"
+                                                            fileName="eniso-info-teaches-count-a"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xml" target="tbl1"
+                                                            fileName="eniso-info-teaches-count-a"/>
+                                        </h:commandLink>
+                                    </f:facet>
+                                    <p:column headerText="Discipline">
+                                        <p:outputLabel value="#{item.discipline.name}"/>
+                                    </p:column>
+                                    <p:column headerText="Total Enseignants">
+                                        <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                    </p:column>
+                                    <p:column headerText="Congés">
+                                        <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersLeaveCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                    </p:column>
+                                    <p:column headerText="Permanents">
+                                        <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersPermanentCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                    </p:column>
+                                    <p:column headerText="Contractuel">
+                                        <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersContractualCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                    </p:column>
+                                    <p:column headerText="Vacataires">
+                                        <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersTemporaryCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="table-responsive">
+                                <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
+                                        value="Enseignants par Disciplines et Situation"/></h1></p:column>
+                                <p:dataTable id="tbl2" value="#{globalStatCtrl.model.globalStatByDisciplines}"
+                                             var="item"
+                                             paginatorAlwaysVisible="false"
+                                             paginator="true"
+                                             paginatorPosition="bottom"
+                                             rows="10"
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                             rowsPerPageTemplate="10,20,50,100,200,1000"
+                                             emptyMessage=""
+                                >
+                                    <f:facet name="{Exporters}">
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xls" target="tbl2"
+                                                            fileName="eniso-info-teaches-count-b"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="pdf" target="tbl2"
+                                                            fileName="eniso-info-teaches-count-b"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="csv" target="tbl2"
+                                                            fileName="eniso-info-teaches-count-b"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xml" target="tbl2"
+                                                            fileName="eniso-info-teaches-count-b"/>
+                                        </h:commandLink>
+                                    </f:facet>
+
+                                    <p:column headerText="Discipline">
+                                        <p:outputLabel value="#{item.discipline.name}"/>
+                                    </p:column>
+                                    <p:columns value="#{globalStatCtrl.model.globalStatSituations}" var="sit"
+                                               headerText="#{sit.name}">
+                                        <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.model,item.stat.getAssignment(null,sit,null).teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                    </p:columns>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="table-responsive">
+                                <p:row>
+                                    <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
+                                            value="Estimations"/></h1></p:column>
+                                </p:row>
                                 <p:panelGrid>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
-                                                value="Nombre Enseignants"/></h1></p:column>
-                                    </p:row>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="Total Enseignants"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.teachersCount}"></p:outputLabel></p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="Enseignants Permanents"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.teachersPermanentCount}"></p:outputLabel></p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="Enseignants Contactuels"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.teachersContractualCount}"></p:outputLabel></p:column>
-                                    </p:row>
-                                    <p:row>
-
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="Enseignants Vacataires"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.teachersTemporaryCount}"></p:outputLabel></p:column>
-
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="Autres Enseignants"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.teachersOtherCount}"></p:outputLabel></p:column>
-                                    </p:row>
                                     <p:row>
                                         <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
                                                                                                value="Assistants pour combler Charges Supplémentaires hors du"/></p:column>
                                         <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.neededAbsolute.teachersCount}"></p:outputLabel></p:column>
+                                                value="#{globalStatCtrl.model.stat.neededAbsolute.teachersCount}"/></p:column>
                                         <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
                                                                                                value="Assistants pour combler Charges Supplémentaires"/></p:column>
                                         <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.neededRelative.teachersCount}"></p:outputLabel></p:column>
+                                                value="#{globalStatCtrl.model.stat.neededRelative.teachersCount}"/></p:column>
                                         <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
                                                                                                value="Enseignants restant à recruter"/></p:column>
                                         <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.missing.teachersCount}"></p:outputLabel></p:column>
+                                                value="#{globalStatCtrl.model.stat.missing.teachersCount}"/></p:column>
                                     </p:row>
+                                </p:panelGrid>
+                            </div>
+                        </div>
+                    </p:tab>
+                    <p:tab title="Modules">
+                        <div class="row">
+
+                            <div class="table-responsive">
+                                <p:panelGrid>
                                     <p:row>
                                         <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
                                                 value="Modules"/></h1></p:column>
@@ -108,80 +273,18 @@ and open the template in the editor.
                                         <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
                                                                                                value="Nombre Modules"/></p:column>
                                         <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.coursePlanCount}"></p:outputLabel></p:column>
+                                                value="#{globalStatCtrl.model.stat.coursePlanCount}"/></p:column>
 
                                         <p:column styleClass="ui-widget-header"><p:outputLabel
                                                 value="Nombre Affectations"/></p:column>
                                         <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.courseAssignmentCount}"></p:outputLabel></p:column>
-                                    </p:row>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
-                                                value="Charge"/></h1></p:column>
-                                    </p:row>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges Totale par an"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.value.equiv}">
-                                            <f:convertNumber pattern="#0.000"/>
-                                        </p:outputLabel></p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges Totale par semaine"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.valueWeek.equiv}">
-                                            <f:convertNumber pattern="#0.000"/>
-                                        </p:outputLabel></p:column>
-                                    </p:row>
-
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges Supplémentaires hors du par an"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.neededAbsolute.value.equiv}">
-                                            <f:convertNumber pattern="#0.000"/>
-                                        </p:outputLabel></p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges Supplémentaires hors du par semaine"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.neededAbsolute.valueWeek.equiv}">
-                                            <f:convertNumber pattern="#0.000"/>
-                                        </p:outputLabel></p:column>
-                                    </p:row>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges Non Permanents par an"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.neededRelative.value.equiv}">
-                                            <f:convertNumber pattern="#0.000"/>
-                                        </p:outputLabel>
-                                        </p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges Non Permanents par semaine"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.neededRelative.valueWeek.equiv}">
-                                            <f:convertNumber pattern="#0.000"/>
-                                        </p:outputLabel>
-                                        </p:column>
-
-                                    </p:row>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges à completer par an"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.missing.value.formatString()}">
-                                        </p:outputLabel></p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges à completer par semaine"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.missing.valueWeek.formatString()}">
-                                        </p:outputLabel></p:column>
+                                                value="#{globalStatCtrl.model.stat.courseAssignmentCount}"/></p:column>
                                     </p:row>
                                 </p:panelGrid>
                             </div>
                         </div>
                     </p:tab>
-                    <p:tab title="Charge">
+                    <p:tab title="Détails Charge">
                         <div class="row">
                             <h1><p:outputLabel value="Charge Annuelle"/></h1>
 
@@ -190,19 +293,19 @@ and open the template in the editor.
                                     <p:row>
                                         <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
                                         <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="Du"></p:outputLabel></p:column>
+                                                value="Du"/></p:column>
                                         <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="Charge"></p:outputLabel></p:column>
+                                                value="Charge"/></p:column>
                                         <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="H. Supp."></p:outputLabel></p:column>
+                                                value="H. Supp."/></p:column>
                                         <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="Du/Sem"></p:outputLabel></p:column>
+                                                value="Du/Sem"/></p:column>
                                         <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="Charge/Sem"></p:outputLabel></p:column>
+                                                value="Charge/Sem"/></p:column>
                                         <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="H. Supp./Sem"></p:outputLabel></p:column>
+                                                value="H. Supp./Sem"/></p:column>
                                         <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="A faire"></p:outputLabel></p:column>
+                                                value="A faire"/></p:column>
                                     </p:row>
                                     <p:row>
                                         <p:column styleClass="ui-widget-header"><p:outputLabel value="C"/></p:column>
@@ -337,19 +440,19 @@ and open the template in the editor.
                                         <p:row>
                                             <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
                                             <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                    value="Du"></p:outputLabel></p:column>
+                                                    value="Du"/></p:column>
                                             <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                    value="Charge"></p:outputLabel></p:column>
+                                                    value="Charge"/></p:column>
                                             <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                    value="H. Supp."></p:outputLabel></p:column>
+                                                    value="H. Supp."/></p:column>
                                             <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                    value="Du/Sem"></p:outputLabel></p:column>
+                                                    value="Du/Sem"/></p:column>
                                             <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                    value="Charge/Sem"></p:outputLabel></p:column>
+                                                    value="Charge/Sem"/></p:column>
                                             <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                    value="H. Supp./Sem"></p:outputLabel></p:column>
+                                                    value="H. Supp./Sem"/></p:column>
                                             <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                    value="A faire"></p:outputLabel></p:column>
+                                                    value="A faire"/></p:column>
                                         </p:row>
                                         <p:row>
                                             <p:column styleClass="ui-widget-header"><p:outputLabel
@@ -481,6 +584,77 @@ and open the template in the editor.
                             </div>
 
                         </ui:repeat>
+
+
+                        <div class="row">
+
+                            <div class="table-responsive">
+                                <p:panelGrid>
+                                    <p:row>
+                                        <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
+                                                value="Cumul Charge"/></h1></p:column>
+                                    </p:row>
+                                    <p:row>
+                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                               value="Charges Totale par an"/></p:column>
+                                        <p:column><p:outputLabel
+                                                value="#{globalStatCtrl.model.stat.totalAssignment.value.equiv}">
+                                            <f:convertNumber pattern="#0.000"/>
+                                        </p:outputLabel></p:column>
+                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                               value="Charges Totale par semaine"/></p:column>
+                                        <p:column><p:outputLabel
+                                                value="#{globalStatCtrl.model.stat.totalAssignment.valueWeek.equiv}">
+                                            <f:convertNumber pattern="#0.000"/>
+                                        </p:outputLabel></p:column>
+                                    </p:row>
+
+                                    <p:row>
+                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                               value="Charges Supplémentaires hors du par an"/></p:column>
+                                        <p:column><p:outputLabel
+                                                value="#{globalStatCtrl.model.stat.neededAbsolute.value.equiv}">
+                                            <f:convertNumber pattern="#0.000"/>
+                                        </p:outputLabel></p:column>
+                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                               value="Charges Supplémentaires hors du par semaine"/></p:column>
+                                        <p:column><p:outputLabel
+                                                value="#{globalStatCtrl.model.stat.neededAbsolute.valueWeek.equiv}">
+                                            <f:convertNumber pattern="#0.000"/>
+                                        </p:outputLabel></p:column>
+                                    </p:row>
+                                    <p:row>
+                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                               value="Charges Non Permanents par an"/></p:column>
+                                        <p:column><p:outputLabel
+                                                value="#{globalStatCtrl.model.stat.neededRelative.value.equiv}">
+                                            <f:convertNumber pattern="#0.000"/>
+                                        </p:outputLabel>
+                                        </p:column>
+                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                               value="Charges Non Permanents par semaine"/></p:column>
+                                        <p:column><p:outputLabel
+                                                value="#{globalStatCtrl.model.stat.neededRelative.valueWeek.equiv}">
+                                            <f:convertNumber pattern="#0.000"/>
+                                        </p:outputLabel>
+                                        </p:column>
+
+                                    </p:row>
+                                    <p:row>
+                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                               value="Charges à completer par an"/></p:column>
+                                        <p:column><p:outputLabel
+                                                value="#{globalStatCtrl.model.stat.missing.value.formatString()}">
+                                        </p:outputLabel></p:column>
+                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                               value="Charges à completer par semaine"/></p:column>
+                                        <p:column><p:outputLabel
+                                                value="#{globalStatCtrl.model.stat.missing.valueWeek.formatString()}">
+                                        </p:outputLabel></p:column>
+                                    </p:row>
+                                </p:panelGrid>
+                            </div>
+                        </div>
                     </p:tab>
                     <p:tab title="Détails">
                         <div class="row">
@@ -523,9 +697,39 @@ and open the template in the editor.
                                              paginator="true"
                                              paginatorPosition="bottom"
                                              rows="20"
-                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                                              rowsPerPageTemplate="20,50,100,200,1000"
-                                        >
+                                >
+                                    <f:facet name="{Exporters}">
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xls" target="tabstat"
+                                                            fileName="eniso-info-load-matrix"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="pdf" target="tabstat"
+                                                            fileName="eniso-info-load-matrix"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="csv" target="tabstat"
+                                                            fileName="eniso-info-load-matrix"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xml" target="tabstat"
+                                                            fileName="eniso-info-load-matrix"/>
+                                        </h:commandLink>
+                                    </f:facet>
+
                                     <p:column styleClass="ui-widget-header" headerText="Sem/An" width="7%">
                                         <h:outputText style="#{i.semester==null?'color:red':''}"
                                                       value="#{i.semester==null?'Année':i.semester.name}"/>

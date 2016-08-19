@@ -7,179 +7,177 @@
 
 
 .vr-label-valid{
-    /*noinspection CssInvalidFunction*/
     background-color:var(--vr-color-valid);
 }
 
 .vr-label-invalid{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-invalid);
 }
 
 .vr-label-bg1{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg01);
 }
 .vr-label-bg2{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg02);
 }
 .vr-label-bg3{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg03);
 }
 .vr-label-bg4{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg04);
 }
 .vr-label-bg5{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg05);
 }
 .vr-label-bg6{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg06);
 }
 .vr-label-bg7{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg07);
 }
 .vr-label-bg8{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg08);
 }
 .vr-label-bg9{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg09);
 }
 .vr-label-bg10{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg10);
 }
 .vr-label-bg11{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg11);
 }
 .vr-label-bg12{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg12);
 }
 .vr-label-bg13{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg13);
 }
 .vr-label-bg14{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg14);
 }
 .vr-label-bg15{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg15);
 }
 .vr-label-bg16{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg16);
 }
 .vr-label-bg17{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg17);
 }
 .vr-label-bg18{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg18);
 }
 .vr-label-bg19{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg19);
 }
 .vr-label-bg20{
-    /*noinspection CssInvalidFunction*/
+
     background-color:var(--vr-color-bg20);
 }
 
 .vr-label-fg1{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg01);
+
+    background-color:var(--vr-color-fg01);
 }
 .vr-label-fg2{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg02);
+
+    background-color:var(--vr-color-fg02);
 }
 .vr-label-fg3{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg03);
+
+    background-color:var(--vr-color-fg03);
 }
 .vr-label-fg4{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg04);
+
+    background-color:var(--vr-color-fg04);
 }
 .vr-label-fg5{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg051);
+
+    background-color:var(--vr-color-fg05);
 }
 .vr-label-fg6{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg06);
+
+    background-color:var(--vr-color-fg06);
 
 }
 
 .vr-label-fg7{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg07);
+
+    background-color:var(--vr-color-fg07);
 }
 .vr-label-fg8{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg08);
+
+    background-color:var(--vr-color-fg08);
 
 }
 .vr-label-fg9{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg09);
+
+    background-color:var(--vr-color-fg09);
 }
 .vr-label-fg10{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg10);
+
+    background-color:var(--vr-color-fg10);
 }
 .vr-label-fg11{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg11);
+
+    background-color:var(--vr-color-fg11);
 }
 .vr-label-fg12{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg12);
+
+    background-color:var(--vr-color-fg12);
 }
 .vr-label-fg13{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg13);
+
+    background-color:var(--vr-color-fg13);
 }
 .vr-label-fg14{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg14);
+
+    background-color:var(--vr-color-fg14);
 }
 .vr-label-fg15{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg15);
+
+    background-color:var(--vr-color-fg15);
 }
 .vr-label-fg16{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg16);
+
+    background-color:var(--vr-color-fg16);
 }
 .vr-label-fg17{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg17);
+
+    background-color:var(--vr-color-fg17);
 }
 .vr-label-fg18{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg18);
+
+    background-color:var(--vr-color-fg18);
 }
 .vr-label-fg19{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg19);
+
+    background-color:var(--vr-color-fg19);
 
 }
 .vr-label-fg20{
-    /*noinspection CssInvalidFunction*/
-    background-color:var(--vr-color-bfg20);
+    background-color:var(--vr-color-fg20);
 }
 
 
@@ -298,25 +296,25 @@
     background: none;
     border-style: none;
     border-width: 0px;
-    /*noinspection CssInvalidFunction*/
+
     border-color: var(--vr-color-main16);
     font-family: dsdigi;
     /*font-size: x-small !important;*/
     font-size: medium;
-    /*noinspection CssInvalidFunction*/
+
     color: var(--vr-color-main16);
     font-weight: bold;
     text-shadow: none;
 }
 
 .vr-cnx-nbr {
-    /*noinspection CssInvalidFunction*/
+
     background-color: var(--vr-color-main14);
 }
 
 .vr-cnx-label {
     font-size: x-small;
-    /*noinspection CssInvalidFunction*/
+
     color: var(--vr-color-main14);
 }
 
@@ -329,7 +327,7 @@ table.NoPaddingTableClass td {
 }
 
 .vr-assigned-course {
-    /*noinspection CssInvalidFunction*/
+
     color: var(--vr-color-main18);
     font-weight: bold;
 }
@@ -491,15 +489,15 @@ table.NoPaddingTableClass td {
 }
 
 .ui-datatable tr.ui-datatable-even:hover, .ui-datatable tr.ui-datatable-odd:hover {
-    /*noinspection CssInvalidFunction*/
+
     background: var(--vr-color-main12);
 }
 
 .vr-row-not-relevant {
-    /*noinspection CssInvalidFunction*/
+
     background-color: var(--vr-color-main04) !important;
     background-image: none !important;
-    /*noinspection CssInvalidFunction*/
+
     color: var(--vr-color-main99) !important;
 }
 
@@ -515,7 +513,7 @@ table.NoPaddingTableClass td {
 button.ui-button > span.ui-icon {
     text-indent: 0px !important;
     background-image: none;
-    /*noinspection CssInvalidFunction*/
+
     color: var(--vr-color-main14);
 }
 
@@ -532,7 +530,7 @@ button.ui-button > span.ui-icon {
 }*/
 
 .vr-navbar {
-    /*noinspection CssInvalidFunction*/
+
     background-color: var(--vr-color-main12);
     /*background-size: 100px 100px;*/
 }
@@ -548,7 +546,7 @@ button.ui-button > span.ui-icon {
     radial-gradient(hsla(0, 100%, 15%, 0.7), hsla(0, 100%, 20%, 0)) 50px 50px,
     linear-gradient(45deg, hsla(0, 100%, 20%, 0) 49%, hsla(0, 100%, 0%, 1) 50%, hsla(0, 100%, 20%, 0) 70%) 0 0,
     linear-gradient(-45deg, hsla(0, 100%, 20%, 0) 49%, hsla(0, 100%, 0%, 1) 50%, hsla(0, 100%, 20%, 0) 70%) 0 0;
-    /*noinspection CssInvalidFunction*/
+
     background-color: var(--vr-color-main12);
     background-size: 100px 100px;
 }
@@ -572,7 +570,7 @@ button.ui-button > span.ui-icon {
 }
 
 .vr-att-button:hover {
-    /*noinspection CssInvalidFunction*/
+
     color: var(--vr-color-main12);
     text-decoration: none;
     border: solid 1px rgba(255, 255, 255, 0.6);
@@ -755,7 +753,7 @@ button.vr-tiny-button.ui-button-text-only .ui-button-text {
 }
 
 a {
-    /*noinspection CssInvalidFunction*/
+
     color: var(--vr-color-main16);
     text-decoration: initial;
 }
@@ -780,20 +778,20 @@ dialog
 **/
 
 .vr-link {
-    /*noinspection CssInvalidFunction*/
+
     color: var(--vr-color-main18);
 }
 
 a:hover,
 a:focus {
-    /*noinspection CssInvalidFunction*/
+
     color: var(--vr-color-main18);
     text-decoration: underline;
 }
 
 .h1, h1 {
     font-size: 22px;
-    /*noinspection CssInvalidFunction*/
+
     color: var(--vr-color-main20);
 }
 
@@ -847,4 +845,54 @@ a:focus {
     padding: 0 !important;
     border-style: none !important;
     width: 100% !important;
+}
+
+div.vr-progress-container {
+    border: 1px solid #ccc;
+    width: 100px;
+    margin: 2px 5px 2px 0;
+    padding: 1px;
+    float: left;
+    background: white;
+}
+
+div.vr-progress-container > div {
+    background-color: var(--vr-color-valid);
+    height: 12px
+}
+
+div.vr-progress-container > div.valid {
+    background-color: var(--vr-color-valid);
+    height: 12px
+}
+
+div.vr-progress-container > div.warn {
+    background-color: var(--vr-color-warn);
+    height: 12px
+}
+
+div.vr-progress-container > div.invalid {
+    background-color: var(--vr-color-invalid);
+    height: 12px
+}
+
+div.vr-progress-container > div.valid3 {
+    background-color: var(--vr-color-valid3);
+    height: 12px
+}
+
+div.vr-progress-container > div.warn3 {
+    background-color: var(--vr-color-warn3);
+    height: 12px
+}
+
+div.vr-progress-container > div.invalid3 {
+    background-color: var(--vr-color-invalid3);
+    height: 12px
+}
+
+.vr-form-field{
+    vertical-align: bottom;
+    margin-bottom: 10px;
+    margin-left: 10px;
 }

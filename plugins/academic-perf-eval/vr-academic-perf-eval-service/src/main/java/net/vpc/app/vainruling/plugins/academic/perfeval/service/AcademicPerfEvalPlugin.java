@@ -294,7 +294,7 @@ public class AcademicPerfEvalPlugin {
         if (academicFeedbackModel == null) {
             return;
         }
-        TraceService traceService = VrApp.getBean(TraceService.class);
+        TraceService traceService = TraceService.get();
         try {
             traceService.trace("generateStudentsFeedbackForm", "start generating",
                     "model='" + academicFeedbackModel.getName() + "' for '" + studentProfileFilter + "'",

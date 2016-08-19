@@ -31,9 +31,9 @@ public class VrWebHelper {
         HttpServletRequest req = attr.getRequest();
         UserSession s = VrApp.getContext().getBean(UserSession.class);
         if (s != null && s.getUser() != null) {
-            s.setTheme(VrApp.getBean(Vr.class).getUserTheme(s.getUser().getLogin()).getId());
+            s.setTheme(Vr.get().getUserTheme(s.getUser().getLogin()).getId());
         } else {
-            s.setTheme(VrApp.getBean(Vr.class).getAppTheme().getId());
+            s.setTheme(Vr.get().getAppTheme().getId());
         }
         if (s.getSessionId() == null) {
             HttpSession session = req.getSession(true); // true == allow create
@@ -73,10 +73,10 @@ public class VrWebHelper {
                 public String convert(String str) {
                     //TODO
                     if("vr.themeContext".equals(str)){
-                        return VrApp.getBean(Vr.class).getThemeContext();
+                        return Vr.get().getThemeContext();
                     }
                     if("vr.themePath".equals(str)){
-                        return VrApp.getBean(Vr.class).getThemePath();
+                        return Vr.get().getThemePath();
                     }
                     return (String)evalSpringExpr(str);
                 }

@@ -56,7 +56,7 @@ public class TraceServiceCallback {
     private TraceService getTraceService() {
         TraceService trace = null;
         try {
-            trace = VrApp.getBean(TraceService.class);
+            trace = TraceService.get();
         } catch (Exception e) {
             //
         }

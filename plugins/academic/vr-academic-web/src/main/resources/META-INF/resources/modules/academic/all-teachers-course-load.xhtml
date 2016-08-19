@@ -11,7 +11,7 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 
-        >
+>
 
 <h:head>
 </h:head>
@@ -19,6 +19,9 @@ and open the template in the editor.
 <h:body>
 
 
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <!--@elvariable id="allTeachersCourseLoadCtrl" type="net.vpc.app.vainruling.plugins.academic.web.load.AllTeachersCourseLoadCtrl"-->
+    <!--@elvariable id="vrColorTable" type="net.vpc.app.vainruling.core.web.VrColorTable"-->
     <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="buttonsForm">
@@ -49,30 +52,87 @@ and open the template in the editor.
 
                 <p:separator/>
 
-                <div class="row">
-                    <p:outputLabel value="Période" style="margin-right: 10px;vertical-align: super;"/>
-                    <p:selectOneMenu value="#{allTeachersCourseLoadCtrl.model.selectedPeriod}">
-                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onChangePeriod}" update=":buttonsForm :listForm"/>
-                        <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
-                        <f:selectItems value="#{allTeachersCourseLoadCtrl.model.periods}"/>
-                    </p:selectOneMenu>
-                </div>
+
             </h:form>
             <h:form id="listForm">
 
+                <div class="row">
+                    <p:outputLabel value="Période" styleClass="vr-form-field"/>
+                    <p:selectOneMenu value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedPeriod}"
+                                     style="vertical-align: bottom; margin-bottom: 10px;">
+                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onChangePeriod}" update=":buttonsForm :listForm"/>
+                        <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
+                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.periodItems}"/>
+                    </p:selectOneMenu>
+                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                          value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedDepartments}"
+                                          label="Departements"
+                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.departmentItems}"/>
+                    </p:selectCheckboxMenu>
+
+                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                          value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedDegrees}"
+                                          label="Grades"
+                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.degreeItems}"/>
+                    </p:selectCheckboxMenu>
+                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                          value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedSituations}"
+                                          label="Situations"
+                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.situationItems}"/>
+                    </p:selectCheckboxMenu>
+                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                          value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedOfficialDisciplines}"
+                                          label="Disciplines"
+                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.officialDisciplinesItems}"/>
+                    </p:selectCheckboxMenu>
+                </div>
+                <div class="row">
+                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                          value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedProgramTypes}"
+                                          label="Type Formation"
+                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.programTypeItems}"/>
+                    </p:selectCheckboxMenu>
+                    <p:selectCheckboxMenu
+                            styleClass="vr-form-field"
+                            value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedLabels}" label="Label"
+                            filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.labelItems}"/>
+                    </p:selectCheckboxMenu>
+                    <p:selectCheckboxMenu
+                            styleClass="vr-form-field"
+                            value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedDeviationGroups}" label="Groupe Balance"
+                            filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.deviationGroupItems}"/>
+                    </p:selectCheckboxMenu>
+                </div>
+                <div class="row">
+                    <div class="table-responsive">
+                        <p:selectManyCheckbox value="#{allTeachersCourseLoadCtrl.loadFilter.model.refreshFilter}"
+                                              layout="grid"
+                                              columns="5">
+                            <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                            <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.refreshFilterItems}"/>
+                        </p:selectManyCheckbox>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="table-responsive">
                         <p:selectManyCheckbox value="#{allTeachersCourseLoadCtrl.model.columnFilters}" layout="grid"
                                               columns="5" style="margin-left: 5px;margin-right: 7px;">
                             <p:ajax listener="#{allTeachersCourseLoadCtrl.onFiltersChanged}" update=":listForm"/>
-                            <f:selectItems value="#{allTeachersCourseLoadCtrl.model.columnFilterItems}"/>
-                        </p:selectManyCheckbox>
-                    </div>
-                    <div class="table-responsive">
-                        <p:selectManyCheckbox value="#{allTeachersCourseLoadCtrl.model.refreshFilter}" layout="grid"
-                                              columns="5">
-                            <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                            <f:selectItems value="#{allTeachersCourseLoadCtrl.model.refreshFilterItems}"/>
+                            <f:selectItems value="#{allTeachersCourseLoadCtrl.model.noRefreshFilterItems}"/>
                         </p:selectManyCheckbox>
                     </div>
                 </div>
@@ -80,41 +140,79 @@ and open the template in the editor.
                     <div class="row">
                         <div class="table-responsive">
                             <h1>#{tab.title}</h1>
-                            <p:dataTable var="i" value="#{tab.rows}"
+                            <p:dataTable id="tbl" var="i" value="#{tab.rows}"
                                          class="table table-bordered table-hover"
                                          paginatorAlwaysVisible="false"
                                          paginator="true"
                                          paginatorPosition="bottom"
-                                         rows="10"
-                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         rows="100"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                                          rowsPerPageTemplate="10,20,50,100,200,1000"
                                          emptyMessage="Aucune charge"
-                                    >
-                                <p:column headerText="Enseignant" width="10%">
+                                         sortMode=""
+                            >
+
+                                <f:facet name="{Exporters}">
+                                    <h:commandLink>
+                                        <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png" width="16"/>
+                                        <p:dataExporter type="xls" target="tbl" fileName="eniso-info-#{tab.title}"/>
+                                    </h:commandLink>
+
+                                    <h:commandLink>
+                                        <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png" width="16"/>
+                                        <p:dataExporter type="pdf" target="tbl" fileName="eniso-info-#{tab.title}"/>
+                                    </h:commandLink>
+
+                                    <h:commandLink>
+                                        <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png" width="16"/>
+                                        <p:dataExporter type="csv" target="tbl" fileName="eniso-info-#{tab.title}"/>
+                                    </h:commandLink>
+
+                                    <h:commandLink>
+                                        <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png" width="16"/>
+                                        <p:dataExporter type="xml" target="tbl" fileName="eniso-info-#{tab.title}"/>
+                                    </h:commandLink>
+                                </f:facet>
+
+                                <p:column headerText="Enseignant" width="10%" sortBy="#{i.teacher.contact.fullName}">
                                     <h:outputText value="#{i.teacher.contact.fullName}"/>
                                 </p:column>
 
                                 <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('degree')}"
-                                          headerText="grade" width="5%">
-                                    <h:outputText value="#{i.teacher.degree.name}"></h:outputText>
+                                          headerText="grade" width="5%" sortBy="#{i.teacher.degree.name}">
+                                    <h:outputText value="#{i.teacher.degree.name}"/>
                                 </p:column>
                                 <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('situation')}"
-                                          headerText="sit." width="5%">
-                                    <h:outputText value="#{i.teacher.situation.name}"></h:outputText>
+                                          headerText="sit." width="5%" sortBy="#{i.teacher.situation.name}">
+                                    <h:outputText value="#{i.teacher.situation.name}"/>
+                                </p:column>
+                                <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('discipline')}"
+                                          headerText="discp." width="5%"
+                                          sortBy="#{i.teacher.officialDiscipline.name}"
+                                >
+                                    <h:outputText value="#{i.teacher.officialDiscipline.name}"/>
                                 </p:column>
                                 <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('weeks')}"
-                                          headerText="# sem." width="5%">
+                                          headerText="# sem." width="5%"
+                                          sortBy="#{i.weeks}"
+                                >
                                     <h:outputText value="#{i.weeks}"><f:convertNumber pattern="#0.#"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('c')}"
-                                        headerText="du C" width="5%" style="background: #{vrColorTable.getBgColor('due')};">
+                                        headerText="du C" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('due')};"
+                                        sortBy="#{i.due.c}"
+                                >
                                     <h:outputText value="#{i.due.c != 0 ? i.due.c : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('td')}"
-                                        headerText="du TD" width="5%" style="background: #{vrColorTable.getBgColor('due')};">
+                                        headerText="du TD" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('due')};"
+                                        sortBy="#{i.due.td}"
+                                >
                                     <h:outputText value="#{i.due.td != 0 ? i.due.td : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
@@ -132,74 +230,110 @@ and open the template in the editor.
                                 <!--</p:column>-->
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
-                                        headerText="du Eq" width="5%" style="background: #{vrColorTable.getBgColor('due')};">
+                                        headerText="du Eq" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('due')};"
+                                        sortBy="#{i.due.equiv}"
+                                >
                                     <h:outputText value="#{i.due.equiv != 0 ? i.due.equiv : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
 
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('c')}"
-                                        headerText="C" width="5%" style="background: #{vrColorTable.getBgColor('value')};">
+                                        headerText="C" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('value')};"
+                                        sortBy="#{i.value.c}"
+                                >
                                     <h:outputText value="#{i.value.c != 0 ? i.value.c : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('td')}"
-                                        headerText="TD" width="5%" style="background: #{vrColorTable.getBgColor('value')};">
+                                        headerText="TD" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('value')};"
+                                        sortBy="#{i.value.td}"
+                                >
                                     <h:outputText value="#{i.value.td != 0 ? i.value.td : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
-                                        headerText="TP" width="5%" style="background: #{vrColorTable.getBgColor('value')};">
+                                        headerText="TP" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('value')};"
+                                        sortBy="#{i.value.tp}"
+                                >
                                     <h:outputText value="#{i.value.tp != 0 ? i.value.tp : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
-                                        headerText="PM" width="5%" style="background: #{vrColorTable.getBgColor('value')};">
+                                        headerText="PM" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('value')};"
+                                        sortBy="#{i.value.pm}"
+                                >
                                     <h:outputText value="#{i.value.pm != 0 ? i.value.pm : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('tppm')}"
-                                        headerText="TP+PM" width="5%" style="background: #{vrColorTable.getBgColor('value')};">
+                                        headerText="TP+PM" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('value')};"
+                                        sortBy="#{i.value.tppm}"
+                                >
                                     <h:outputText value="#{i.value.tppm != 0 ? i.value.tppm : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
-                                        headerText="Eq" width="5%" style="background: #{vrColorTable.getBgColor('value')};">
+                                        headerText="Eq" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('value')};"
+                                        sortBy="#{i.value.equiv}"
+                                >
                                     <h:outputText value="#{i.value.equiv != 0 ? i.value.equiv : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('c')}"
-                                        headerText="Supp C" width="5%" style="background: #{vrColorTable.getBgColor('extra')};">
+                                        headerText="Supp C" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('extra')};"
+                                        sortBy="#{i.extra.c}"
+                                >
                                     <h:outputText value="#{i.extra.c != 0 ? i.extra.c : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('td')}"
-                                        headerText="Supp TD" width="5%" style="background: #{vrColorTable.getBgColor('extra')};">
+                                        headerText="Supp TD" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('extra')};"
+                                        sortBy="#{i.extra.td}"
+                                >
                                     <h:outputText value="#{i.extra.td != 0 ? i.extra.td : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
-                                        headerText="Supp TP" width="5%" style="background: #{vrColorTable.getBgColor('extra')};">
+                                        headerText="Supp TP" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('extra')};"
+                                        sortBy="#{i.extra.tp}"
+                                >
                                     <h:outputText value="#{i.extra.tp != 0 ? i.extra.tp : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('tppm')}"
-                                        headerText="Supp PM" width="5%" style="background: #{vrColorTable.getBgColor('extra')};">
+                                        headerText="Supp PM" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('extra')};"
+                                        sortBy="#{i.extra.tppm}"
+                                >
                                     <h:outputText value="#{i.extra.tppm != 0 ? i.extra.tppm : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
-                                        headerText="Supp Eq" width="5%" style="background: #{vrColorTable.getBgColor('extra')};">
+                                        headerText="Supp Eq" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('extra')};"
+                                        sortBy="#{i.extra.equiv}"
+                                >
                                     <h:outputText value="#{i.extra.equiv != 0 ? i.extra.equiv : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
@@ -207,31 +341,46 @@ and open the template in the editor.
 
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}"
-                                        headerText="C" width="5%"  style="background: #{vrColorTable.getBgColor('dueWeek')};">
+                                        headerText="C" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('dueWeek')};"
+                                        sortBy="#{i.dueWeek.c}"
+                                >
                                     <h:outputText value="#{i.dueWeek.c != 0 ? i.dueWeek.c : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
-                                        headerText="du TD/sem" width="5%"  style="background: #{vrColorTable.getBgColor('dueWeek')};">
+                                        headerText="du TD/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('dueWeek')};"
+                                        sortBy="#{i.dueWeek.td}"
+                                >
                                     <h:outputText value="#{i.dueWeek.td != 0 ? i.dueWeek.td : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
-                                        headerText="du TP/sem" width="5%"  style="background: #{vrColorTable.getBgColor('dueWeek')};">
+                                        headerText="du TP/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('dueWeek')};"
+                                        sortBy="#{i.dueWeek.tp}"
+                                >
                                     <h:outputText value="#{i.dueWeek.tp != 0 ? i.dueWeek.tp : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
-                                        headerText="du PM/sem" width="5%"  style="background: #{vrColorTable.getBgColor('dueWeek')};">
+                                        headerText="du PM/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('dueWeek')};"
+                                        sortBy="#{i.dueWeek.pm}"
+                                >
                                     <h:outputText value="#{i.dueWeek.pm != 0 ? i.dueWeek.pm : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
-                                        headerText="du Eq/sem" width="5%"  style="background: #{vrColorTable.getBgColor('dueWeek')};">
+                                        headerText="du Eq/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('dueWeek')};"
+                                        sortBy="#{i.dueWeek.equiv}"
+                                >
                                     <h:outputText
                                             value="#{i.dueWeek.equiv != 0 ? i.dueWeek.equiv : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
@@ -240,38 +389,56 @@ and open the template in the editor.
 
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}"
-                                        headerText="C/sem" width="5%" style="background: #{vrColorTable.getBgColor('valueWeek')};">
+                                        headerText="C/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('valueWeek')};"
+                                        sortBy="#{i.valueWeek.c}"
+                                >
                                     <h:outputText value="#{i.valueWeek.c != 0 ? i.valueWeek.c : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
-                                        headerText="TD/sem" width="5%" style="background: #{vrColorTable.getBgColor('valueWeek')};">
+                                        headerText="TD/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('valueWeek')};"
+                                        sortBy="#{i.valueWeek.td}"
+                                >
                                     <h:outputText value="#{i.valueWeek.td != 0 ? i.valueWeek.td : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
-                                        headerText="TP/sem" width="5%" style="background: #{vrColorTable.getBgColor('valueWeek')};">
+                                        headerText="TP/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('valueWeek')};"
+                                        sortBy="#{i.valueWeek.tp}"
+                                >
                                     <h:outputText value="#{i.valueWeek.tp != 0 ? i.valueWeek.tp : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
-                                        headerText="PM/sem" width="5%" style="background: #{vrColorTable.getBgColor('valueWeek')};">
+                                        headerText="PM/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('valueWeek')};"
+                                        sortBy="#{i.valueWeek.pm}"
+                                >
                                     <h:outputText value="#{i.valueWeek.pm != 0 ? i.valueWeek.pm : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('tppm')}"
-                                        headerText="TP+PM/sem" width="5%" style="background: #{vrColorTable.getBgColor('valueWeek')};">
+                                        headerText="TP+PM/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('valueWeek')};"
+                                        sortBy="#{i.valueWeek.tppm}"
+                                >
                                     <h:outputText
                                             value="#{i.valueWeek.tppm != 0 ? i.valueWeek.tppm : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
-                                        headerText="Eq/sem" width="5%" style="background: #{vrColorTable.getBgColor('valueWeek')};">
+                                        headerText="Eq/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('valueWeek')};"
+                                        sortBy="#{i.valueWeek.equiv}"
+                                >
                                     <h:outputText
                                             value="#{i.valueWeek.equiv != 0 ? i.valueWeek.equiv : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
@@ -280,34 +447,106 @@ and open the template in the editor.
 
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}"
-                                        headerText="supp C/sem" width="5%" style="background: #{vrColorTable.getBgColor('extraWeek')};">
+                                        headerText="supp C/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('extraWeek')};"
+                                        sortBy="#{i.extraWeek.c}"
+                                >
                                     <h:outputText value="#{i.extraWeek.c != 0 ? i.extraWeek.c : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
-                                        headerText="supp TD/sem" width="5%" style="background: #{vrColorTable.getBgColor('extraWeek')};">
+                                        headerText="supp TD/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('extraWeek')};"
+                                        sortBy="#{i.extraWeek.td}"
+                                >
                                     <h:outputText value="#{i.extraWeek.td != 0 ? i.extraWeek.td : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
-                                        headerText="supp TP/sem" width="5%" style="background: #{vrColorTable.getBgColor('extraWeek')};">
+                                        headerText="supp TP/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('extraWeek')};"
+                                        sortBy="#{i.extraWeek.tp}"
+                                >
                                     <h:outputText value="#{i.extraWeek.tp != 0 ? i.extraWeek.tp : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
-                                        headerText="supp PM/sem" width="5%" style="background: #{vrColorTable.getBgColor('extraWeek')};">
+                                        headerText="supp PM/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('extraWeek')};"
+                                        sortBy="#{i.extraWeek.pm}"
+                                >
                                     <h:outputText value="#{i.extraWeek.pm != 0 ? i.extraWeek.pm : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
-                                        headerText="supp Eq/sem" width="5%" style="background: #{vrColorTable.getBgColor('extraWeek')};">
+                                        headerText="supp Eq/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('extraWeek')};"
+                                        sortBy="#{i.extraWeek.equiv}"
+                                >
                                     <h:outputText
                                             value="#{i.extraWeek.equiv != 0 ? i.extraWeek.equiv : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
+                                </p:column>
+
+                                <p:column
+                                        rendered="#{allTeachersCourseLoadCtrl.containsFilter('average')}"
+                                        headerText="moyenne" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('balance')};"
+                                        sortBy="#{i.population.average}"
+                                >
+                                    <h:outputText
+                                            value="#{i.population.average != 0 ? i.population.average : ''}"><f:convertNumber
+                                            pattern="#0.00"/></h:outputText>
+                                </p:column>
+
+                                <p:column
+                                        rendered="#{allTeachersCourseLoadCtrl.containsFilter('deviation')}"
+                                        headerText="balance" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('balance')};"
+                                        sortBy="#{i.deviation}"
+                                >
+                                    <h:outputText
+                                            value="#{i.deviation != 0 ? i.deviation : ''}"><f:convertNumber
+                                            pattern="#0.00%"/></h:outputText>
+                                </p:column>
+
+                                <p:column
+                                        rendered="#{allTeachersCourseLoadCtrl.containsFilter('deviation-graph')}"
+                                        headerText="balance" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('balance')};"
+                                        sortBy="#{i.deviation}"
+                                >
+                                    <div class="vr-progress-container" style="width: 100%;">
+                                        <div class="#{i.deviationLabel}"
+                                             style="width:#{vr.frame(vr.abs(i.deviation),0,1)*100}%">
+
+                                        </div>
+                                    </div>
+                                </p:column>
+
+                                <p:column
+                                        rendered="#{allTeachersCourseLoadCtrl.containsFilter('standard-deviation')}"
+                                        headerText="ecart type" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('balance')};"
+                                        sortBy="#{i.population.standardDeviation}"
+                                >
+                                    <h:outputText
+                                            value="#{i.population.standardDeviation != 0 ? i.population.standardDeviation : ''}"><f:convertNumber
+                                            pattern="#0.00"/></h:outputText>
+                                </p:column>
+
+                                <p:column
+                                        rendered="#{allTeachersCourseLoadCtrl.containsFilter('population')}"
+                                        headerText="population" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('balance')};"
+                                        sortBy="#{i.population.size}"
+                                >
+                                    <h:outputText
+                                            value="#{i.population.size != 0 ? i.population.size : ''}"/>
                                 </p:column>
 
                             </p:dataTable>

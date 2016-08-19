@@ -5,24 +5,21 @@
  */
 package net.vpc.app.vainruling.plugins.academic.web.load;
 
-import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppConfig;
-import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.VrColorTable;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.CourseFilter;
+import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.StatCache;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgramType;
+import net.vpc.app.vainruling.plugins.academic.service.TeacherFilter;
+import net.vpc.app.vainruling.plugins.academic.service.model.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherPeriodStat;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherSemesterStat;
 import net.vpc.app.vainruling.plugins.academic.web.dialog.CopyPeriodDialogCtrl;
 import net.vpc.app.vainruling.plugins.academic.web.dialog.GenerateLoadDialogCtrl;
 import net.vpc.common.jsf.FacesUtils;
-import net.vpc.common.strings.StringUtils;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
@@ -55,6 +52,7 @@ public class AllTeachersCourseLoadCtrl {
         }
     };
     protected Model model = new Model();
+    protected TeacherLoadFilterCtrl loadFilter = new TeacherLoadFilterCtrl();
 
     private void reset() {
         getModel().setSemester1(new ArrayList<TeacherSemesterStat>());
@@ -62,36 +60,17 @@ public class AllTeachersCourseLoadCtrl {
         getModel().setYear(new ArrayList<TeacherPeriodStat>());
     }
 
-    public int getPeriodId() {
-        String p = getModel().getSelectedPeriod();
-        if (StringUtils.isEmpty(p)) {
-            CorePlugin core = VrApp.getBean(CorePlugin.class);
-            AppConfig appConfig = core.findAppConfig();
-            if(appConfig!=null && appConfig.getMainPeriod()!=null) {
-                return appConfig.getMainPeriod().getId();
-            }
-            return -1;
-        }
-        return Integer.parseInt(p);
+    public TeacherLoadFilterCtrl getLoadFilter() {
+        return loadFilter;
     }
 
     @OnPageLoad
     public void onRefresh(String cmd) {
-        CorePlugin core = VrApp.getBean(CorePlugin.class);
-        List<AppPeriod> navigatablePeriods = core.findNavigatablePeriods();
-        AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
-        getModel().setSelectedPeriod(null);
-        getModel().getPeriods().clear();
-        for (AppPeriod p : navigatablePeriods) {
-            getModel().getPeriods().add(new SelectItem(String.valueOf(p.getId()), p.getName()));
-            if (mainPeriod != null && p.getId() == mainPeriod.getId()) {
-                getModel().setSelectedPeriod(String.valueOf(p.getId()));
-            }
-        }
         VrColorTable colorTable = VrApp.getBean(VrColorTable.class);
         List<SelectItem> columnFilers = new ArrayList<>();
         columnFilers.add(FacesUtils.createSelectItem("degree", "grade", "vr-checkbox"));
         columnFilers.add(FacesUtils.createSelectItem("situation", "situation", "vr-checkbox"));
+        columnFilers.add(FacesUtils.createSelectItem("discipline", "discipline", "vr-checkbox"));
         columnFilers.add(FacesUtils.createSelectItem("weeks", "semaines", "vr-checkbox"));
         columnFilers.add(FacesUtils.createSelectItem("eq", "equivalent", "vr-checkbox"));
         columnFilers.add(FacesUtils.createSelectItem("due", "du", "vr-label-bg" + colorTable.pos("due") + " vr-checkbox"));
@@ -105,48 +84,38 @@ public class AllTeachersCourseLoadCtrl {
         columnFilers.add(FacesUtils.createSelectItem("td", "td", "vr-checkbox"));
         columnFilers.add(FacesUtils.createSelectItem("pm", "pm", "vr-checkbox"));
         columnFilers.add(FacesUtils.createSelectItem("tppm", "tp+pm", "vr-checkbox"));
-        getModel().setColumnFilterItems(columnFilers);
+        columnFilers.add(FacesUtils.createSelectItem("deviation", "Balance", "vr-checkbox"));
+        columnFilers.add(FacesUtils.createSelectItem("deviation-graph", "Balance Grph", "vr-checkbox"));
+        columnFilers.add(FacesUtils.createSelectItem("average", "Charge Moyenne", "vr-checkbox"));
+        columnFilers.add(FacesUtils.createSelectItem("standard-deviation", "Ecart Type", "vr-checkbox"));
+        columnFilers.add(FacesUtils.createSelectItem("population", "Population", "vr-checkbox"));
 
+        getModel().setNoRefreshFilterItems(columnFilers);
+
+        getLoadFilter().onInit();
         onChangePeriod();
     }
 
     public void onChangePeriod() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        List<SelectItem> refreshableFilers = new ArrayList<>();
-        refreshableFilers.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
-        for (AcademicProgramType pt : a.findProgramTypes()) {
-            refreshableFilers.add(FacesUtils.createSelectItem("AcademicProgramType:" + pt.getId(), pt.getName(), "vr-checkbox"));
-        }
-        int periodId = getPeriodId();
-        if(periodId>=-1) {
-            for (String label : a.findCoursePlanLabels(periodId)) {
-                refreshableFilers.add(FacesUtils.createSelectItem("label:" + label, label, "vr-checkbox"));
-                refreshableFilers.add(FacesUtils.createSelectItem("label:!" + label, "!" + label, "vr-checkbox"));
-            }
-        }
-        getModel().setRefreshFilterItems(refreshableFilers);
+        getLoadFilter().onChangePeriod();
         onRefresh();
-    }
-
-    public CourseFilter getCourseFilter() {
-        HashSet<String> labels = new HashSet<>(Arrays.asList(getModel().getRefreshFilter()));
-        CourseFilter c = CourseFilter.build(labels);
-        getModel().setRefreshFilter(labels.toArray(new String[labels.size()]));
-        return c;
     }
 
     public void onRefresh() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         StatCache cache = new StatCache();
-        int periodId = getPeriodId();
-        CourseFilter filter = getCourseFilter();
+        int periodId = getLoadFilter().getPeriodId();
+        CourseAssignmentFilter filter = getLoadFilter().getCourseAssignmentFilter();
+        boolean includeIntents = getLoadFilter().isIncludeIntents();
         getModel().setSemester1(new ArrayList<TeacherSemesterStat>());
         getModel().setSemester2(new ArrayList<TeacherSemesterStat>());
         getModel().setYear(new ArrayList<TeacherPeriodStat>());
-        if(periodId>=-1) {
-            getModel().setSemester1(a.evalTeacherSemesterStatList(periodId, "S1", null, filter, cache));
-            getModel().setSemester2(a.evalTeacherSemesterStatList(periodId, "S2", null, filter, cache));
-            getModel().setYear(a.evalTeacherStatList(periodId, null, null, filter, cache));
+        TeacherFilter customTeacherFilter = getLoadFilter().getTeacherFilter();
+        DeviationConfig deviationConfig = getLoadFilter().getDeviationConfig();
+        if (periodId >= -1) {
+            getModel().setSemester1(a.evalTeacherSemesterStatList(periodId, "S1", customTeacherFilter, filter, includeIntents, deviationConfig, cache));
+            getModel().setSemester2(a.evalTeacherSemesterStatList(periodId, "S2", customTeacherFilter, filter, includeIntents, deviationConfig, cache));
+            getModel().setYear(a.evalTeacherStatList(periodId, null, customTeacherFilter, filter, includeIntents, deviationConfig, cache));
         }
         getModel().setTables(Arrays.asList(
                 new TeacherBaseStatTable("Charge Globale", (List) getModel().getYear()),
@@ -171,10 +140,6 @@ public class AllTeachersCourseLoadCtrl {
         return Arrays.asList(f).indexOf(s) >= 0;
     }
 
-    public boolean containsRefreshFilter(String s) {
-        String[] f = getModel().getRefreshFilter();
-        return Arrays.asList(f).indexOf(s) >= 0;
-    }
 
     public void onFiltersChanged() {
         //onRefresh();
@@ -204,11 +169,8 @@ public class AllTeachersCourseLoadCtrl {
         List<TeacherBaseStatTable> tables = new ArrayList<>();
         String[] defaultFilters = {"situation", "degree", "value", "extraWeek", "c", "td", "tppm"};
         String[] columnFilters = defaultFilters;
-        List<SelectItem> columnFilterItems;
-        String[] refreshFilter = {};
-        List<SelectItem> refreshFilterItems;
-        List<SelectItem> periods = new ArrayList<>();
-        String selectedPeriod = null;
+        List<SelectItem> noRefreshFilterItems;
+
 
         public String[] getColumnFilters() {
             return columnFilters;
@@ -226,28 +188,12 @@ public class AllTeachersCourseLoadCtrl {
             this.defaultFilters = defaultFilters;
         }
 
-        public String[] getRefreshFilter() {
-            return refreshFilter;
+        public List<SelectItem> getNoRefreshFilterItems() {
+            return noRefreshFilterItems;
         }
 
-        public void setRefreshFilter(String[] refreshFilter) {
-            this.refreshFilter = refreshFilter;
-        }
-
-        public List<SelectItem> getColumnFilterItems() {
-            return columnFilterItems;
-        }
-
-        public void setColumnFilterItems(List<SelectItem> columnFilterItems) {
-            this.columnFilterItems = columnFilterItems;
-        }
-
-        public List<SelectItem> getRefreshFilterItems() {
-            return refreshFilterItems;
-        }
-
-        public void setRefreshFilterItems(List<SelectItem> refreshFilterItems) {
-            this.refreshFilterItems = refreshFilterItems;
+        public void setNoRefreshFilterItems(List<SelectItem> noRefreshFilterItems) {
+            this.noRefreshFilterItems = noRefreshFilterItems;
         }
 
         public List<TeacherSemesterStat> getSemester1() {
@@ -277,22 +223,6 @@ public class AllTeachersCourseLoadCtrl {
             Collections.sort(this.year, teacherPeriodStatComparatorByTeacher);
         }
 
-        public List<SelectItem> getPeriods() {
-            return periods;
-        }
-
-        public void setPeriods(List<SelectItem> periods) {
-            this.periods = periods;
-        }
-
-        public String getSelectedPeriod() {
-            return selectedPeriod;
-        }
-
-        public void setSelectedPeriod(String selectedPeriod) {
-            this.selectedPeriod = selectedPeriod;
-        }
-
         public List<TeacherBaseStatTable> getTables() {
             return tables;
         }
@@ -300,6 +230,7 @@ public class AllTeachersCourseLoadCtrl {
         public void setTables(List<TeacherBaseStatTable> tables) {
             this.tables = tables;
         }
+
     }
 
 }

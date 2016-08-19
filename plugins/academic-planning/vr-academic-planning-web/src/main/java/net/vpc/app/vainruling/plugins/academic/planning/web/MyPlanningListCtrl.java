@@ -54,7 +54,7 @@ public class MyPlanningListCtrl extends AbstractPlanningCtrl {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         AcademicPlanningPlugin pl = VrApp.getBean(AcademicPlanningPlugin.class);
         PlanningData plannings0 = null;
-        UserSession sm = UserSession.getCurrentSession();
+        UserSession sm = UserSession.get();
         AppUser user = (sm == null) ? null : sm.getUser();
         if (user != null) {
             List<PlanningData> all = pl.loadUserPlannings(user.getId());

@@ -97,7 +97,7 @@ public class LoginCtrl {
     }
 
     public UserSession getSession() {
-        return UserSession.getCurrentSession();
+        return UserSession.get();
     }
 
     public static class Model {
