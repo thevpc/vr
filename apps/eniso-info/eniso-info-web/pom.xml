@@ -59,12 +59,12 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.apps.eniso-info.plugins.themes</groupId>
             <artifactId>eniso-info-infusion-theme</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.apps.eniso-info.plugins.themes</groupId>
             <artifactId>eniso-info-th2016-theme</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
 
         <dependency>
@@ -81,7 +81,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.core</groupId>
             <artifactId>vr-core-web</artifactId>
-            <version>1.10</version>
+            <version>1.11</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.tasks</groupId>
@@ -96,7 +96,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-web</artifactId>
-            <version>1.2</version>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-internship</groupId>
@@ -116,7 +116,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-perf-eval</groupId>
             <artifactId>vr-academic-perf-eval-web</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.mailbox</groupId>

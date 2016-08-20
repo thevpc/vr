@@ -1,7 +1,12 @@
 package net.vpc.app.vainruling.plugins.academic.service.util;
 
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgramType;
 
 import java.util.ArrayList;
@@ -15,6 +20,12 @@ import java.util.Set;
 public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
     private Set<Integer> acceptedProgramTypes = new HashSet<>();
     private Set<Integer> rejectedProgramTypes = new HashSet<>();
+    private Set<Integer> acceptedSemesters = new HashSet<>();
+    private Set<Integer> rejectedSemesters = new HashSet<>();
+    private Set<Integer> acceptedCourseTypes = new HashSet<>();
+    private Set<Integer> rejectedCourseTypes = new HashSet<>();
+    private Set<Integer> acceptedClasses = new HashSet<>();
+    private Set<Integer> rejectedClasses = new HashSet<>();
     private Set<String> acceptedLabels = new HashSet<>();
     private Set<String> rejectedLabels = new HashSet<>();
 
@@ -81,49 +92,70 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         return rejectedLabels;
     }
 
-    public DefaultCourseAssignmentFilter copy() {
-        return new DefaultCourseAssignmentFilter()
-                .setAcceptedLabels(new HashSet<String>(acceptedLabels))
-                .setRejectedLabels(new HashSet<String>(rejectedLabels))
-                .setAcceptedProgramTypes(new HashSet<Integer>(acceptedProgramTypes))
-                .setRejectedProgramTypes(new HashSet<Integer>(rejectedProgramTypes))
-                ;
+    public Set<Integer> getAcceptedSemesters() {
+        return acceptedSemesters;
     }
 
-    public boolean acceptAssignment(AcademicCourseAssignment a) {
-        if (this.getAcceptedLabels().size() > 0) {
-            Set<String> foundLabels = buildCoursePlanLabelsFromString(a.getCoursePlan().getLabels());
-            for (String lab : this.getAcceptedLabels()) {
-                if (!foundLabels.contains(lab)) {
-                    return false;
-                }
-            }
-            for (String lab : this.getRejectedLabels()) {
-                if (foundLabels.contains(lab)) {
-                    return false;
-                }
-            }
-        }
-        if (this.getAcceptedProgramTypes().size() > 0) {
-            AcademicProgramType t = a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getProgramType();
-            if (t == null) {
-                throw new RuntimeException("Null Program Type");
-            }
-            if (!this.getAcceptedProgramTypes().contains(t.getId())) {
-                return false;
-            }
-        }
-        if (this.getRejectedProgramTypes().size() > 0) {
-            AcademicProgramType t = a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getProgramType();
-            if (t == null) {
-                throw new RuntimeException("Null Program Type");
-            }
-            if (this.getRejectedProgramTypes().contains(t.getId())) {
-                return false;
-            }
-        }
-        return (true);
+    public DefaultCourseAssignmentFilter setAcceptedSemesters(Set<Integer> acceptedSemesters) {
+        this.acceptedSemesters = acceptedSemesters;
+        return this;
     }
+
+    public Set<Integer> getRejectedSemesters() {
+        return rejectedSemesters;
+    }
+
+    public DefaultCourseAssignmentFilter setRejectedSemesters(Set<Integer> rejectedSemesters) {
+        this.rejectedSemesters = rejectedSemesters;
+        return this;
+    }
+
+    public Set<Integer> getAcceptedCourseTypes() {
+        return acceptedCourseTypes;
+    }
+
+    public DefaultCourseAssignmentFilter setAcceptedCourseTypes(Set<Integer> acceptedCourseTypes) {
+        this.acceptedCourseTypes = acceptedCourseTypes;
+        return this;
+    }
+
+    public Set<Integer> getRejectedCourseTypes() {
+        return rejectedCourseTypes;
+    }
+
+    public DefaultCourseAssignmentFilter setRejectedCourseTypes(Set<Integer> rejectedCourseTypes) {
+        this.rejectedCourseTypes = rejectedCourseTypes;
+        return this;
+    }
+
+    public Set<Integer> getAcceptedClasses() {
+        return acceptedClasses;
+    }
+
+    public DefaultCourseAssignmentFilter setAcceptedClasses(Set<Integer> acceptedClasses) {
+        this.acceptedClasses = acceptedClasses;
+        return this;
+    }
+
+    public Set<Integer> getRejectedClasses() {
+        return rejectedClasses;
+    }
+
+    public DefaultCourseAssignmentFilter setRejectedClasses(Set<Integer> rejectedClasses) {
+        this.rejectedClasses = rejectedClasses;
+        return this;
+    }
+
+    //    public DefaultCourseAssignmentFilter copy() {
+//        return new DefaultCourseAssignmentFilter()
+//                .setAcceptedLabels(new HashSet<String>(acceptedLabels))
+//                .setRejectedLabels(new HashSet<String>(rejectedLabels))
+//                .setAcceptedProgramTypes(new HashSet<Integer>(acceptedProgramTypes))
+//                .setRejectedProgramTypes(new HashSet<Integer>(rejectedProgramTypes))
+//                ;
+//    }
+
+
 
     public Set<String> buildCoursePlanLabelsFromString(String string) {
         HashSet<String> labels = new HashSet<>();
@@ -144,6 +176,36 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
 
     public DefaultCourseAssignmentFilter removeAcceptedProgramType(Integer id) {
         acceptedProgramTypes.remove(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter addAcceptedSemester(Integer id) {
+        acceptedSemesters.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeAcceptedSemester(Integer id) {
+        acceptedSemesters.remove(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter addAcceptedCourseType(Integer id) {
+        acceptedCourseTypes.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeAcceptedCourseType(Integer id) {
+        acceptedCourseTypes.remove(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter addAcceptedClass(Integer id) {
+        acceptedClasses.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeAcceptedClass(Integer id) {
+        acceptedClasses.remove(id);
         return this;
     }
 
@@ -184,5 +246,164 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
     private DefaultCourseAssignmentFilter setRejectedLabels(Set<String> rejectedLabels) {
         this.rejectedLabels = rejectedLabels;
         return this;
+    }
+
+    public boolean acceptAssignment(AcademicCourseAssignment a) {
+        if (this.getAcceptedLabels().size() > 0) {
+            Set<String> foundLabels = buildCoursePlanLabelsFromString(a.getCoursePlan().getLabels());
+            for (String lab : this.getAcceptedLabels()) {
+                if (!foundLabels.contains(lab)) {
+                    return false;
+                }
+            }
+            for (String lab : this.getRejectedLabels()) {
+                if (foundLabels.contains(lab)) {
+                    return false;
+                }
+            }
+        }
+
+        if (this.getAcceptedProgramTypes().size() > 0) {
+            AcademicProgramType t = a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getProgramType();
+            if (t == null) {
+                throw new RuntimeException("Null Program Type");
+            }
+            if (!this.getAcceptedProgramTypes().contains(t.getId())) {
+                return false;
+            }
+        }
+        if (this.getRejectedProgramTypes().size() > 0) {
+            AcademicProgramType t = a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getProgramType();
+            if (t == null) {
+                throw new RuntimeException("Null Program Type");
+            }
+            if (this.getRejectedProgramTypes().contains(t.getId())) {
+                return false;
+            }
+        }
+
+        if (this.getAcceptedSemesters().size() > 0) {
+            AcademicSemester t = a.getCoursePlan().getCourseLevel().getSemester();
+            if (t == null) {
+                throw new RuntimeException("Null Semester");
+            }
+            if (!this.getAcceptedSemesters().contains(t.getId())) {
+                return false;
+            }
+        }
+        if (this.getRejectedSemesters().size() > 0) {
+            AcademicSemester t = a.getCoursePlan().getCourseLevel().getSemester();
+            if (t == null) {
+                throw new RuntimeException("Null Semester");
+            }
+            if (this.getRejectedSemesters().contains(t.getId())) {
+                return false;
+            }
+        }
+
+        if (this.getAcceptedCourseTypes().size() > 0) {
+            AcademicCourseType t = a.getCourseType();
+            if (t == null) {
+                throw new RuntimeException("Null CourseType");
+            }
+            if (!this.getAcceptedCourseTypes().contains(t.getId())) {
+                return false;
+            }
+        }
+        if (this.getRejectedCourseTypes().size() > 0) {
+            AcademicCourseType t = a.getCourseType();
+            if (t == null) {
+                throw new RuntimeException("Null CourseType");
+            }
+            if (this.getRejectedCourseTypes().contains(t.getId())) {
+                return false;
+            }
+        }
+        AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
+
+        Set<Integer> acceptedTree=new HashSet<>();
+        acceptedTree.addAll(this.getAcceptedClasses());
+        for (Integer cc : this.getAcceptedClasses()) {
+            for (Integer academicClass : academicPlugin.findAcademicDownHierarchyIdList(cc, null)) {
+                acceptedTree.add(academicClass);
+            }
+        }
+
+        Set<Integer> rejectedTree=new HashSet<>();
+        acceptedTree.addAll(this.getRejectedClasses());
+        for (Integer cc : this.getRejectedClasses()) {
+            for (Integer academicClass : academicPlugin.findAcademicDownHierarchyIdList(cc, null)) {
+                rejectedTree.add(academicClass);
+            }
+        }
+
+        if (this.getAcceptedClasses().size() > 0) {
+            AcademicClass t = a.getSubClass();
+            if(t==null){
+                t=a.getCoursePlan().getCourseLevel().getAcademicClass();
+            }
+            if (t == null) {
+                throw new RuntimeException("Null Class");
+            }
+            if(!acceptedTree.contains(t.getId())) {
+                return false;
+            }
+        }
+        if (this.getAcceptedClasses().size() > 0) {
+            AcademicClass t = a.getSubClass();
+            if(t==null){
+                t=a.getCoursePlan().getCourseLevel().getAcademicClass();
+            }
+            if (t == null) {
+                throw new RuntimeException("Null Class");
+            }
+
+            if(rejectedTree.contains(t.getId())) {
+                return false;
+            }
+        }
+
+//        boolean _assigned = a.isAssigned();
+//        HashSet<String> s = new HashSet<>(c.getIntentsSet());
+//        boolean _intended = s.size() > 0;
+//        boolean accepted = true;
+//        if (((assigned && _assigned) || (nonassigned && !_assigned))
+//                && ((intended && _intended) || (nonintended && !_intended))) {
+//            //ok
+//        } else {
+//            accepted = false;
+//        }
+//        if (accepted && semesterFilter.size() > 0) {
+//            if (!semesterFilter.contains(c.getAssignment().getCoursePlan().getCourseLevel().getSemester().getId())) {
+//                accepted = false;
+//            }
+//        }
+//        if (accepted && classFilter.size() > 0) {
+//            if (!classFilter.contains(c.getAssignment().getCoursePlan().getCourseLevel().getAcademicClass().getId())) {
+//                accepted = false;
+//            }
+//        }
+//        if (accepted && courseTypeFilter.size() > 0) {
+//            if (!courseTypeFilter.contains(c.getAssignment().getCourseType().getId())) {
+//                accepted = false;
+//            }
+//        }
+//        if (accepted && conflict) {
+//            //show only whith conflicts
+//            if (c.getIntentsSet().isEmpty()) {
+//                accepted = false;
+//            } else if (c.getAssignment().getTeacher() != null) {
+//                accepted = (c.getIntentsSet().size() == 1
+//                        && !c.getAssignment().getTeacher().getContact().getFullName().equals(c.getIntentsSet().toArray()[0]))
+//                        || c.getIntentsSet().size() > 1;
+//            } else {
+//                accepted = c.getIntentsSet().size() > 1;
+//            }
+//        }
+//        if (accepted) {
+//            others.add(c);
+//        }
+
+        return (true);
     }
 }

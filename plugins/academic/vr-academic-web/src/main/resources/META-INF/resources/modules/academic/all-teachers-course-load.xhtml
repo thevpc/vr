@@ -55,87 +55,142 @@ and open the template in the editor.
 
             </h:form>
             <h:form id="listForm">
-
-                <div class="row">
-                    <p:outputLabel value="Période" styleClass="vr-form-field"/>
-                    <p:selectOneMenu value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedPeriod}"
-                                     style="vertical-align: bottom; margin-bottom: 10px;">
-                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onChangePeriod}" update=":buttonsForm :listForm"/>
-                        <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
-                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.periodItems}"/>
-                    </p:selectOneMenu>
-                    <p:selectCheckboxMenu styleClass="vr-form-field"
-                                          value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedDepartments}"
-                                          label="Departements"
-                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.departmentItems}"/>
-                    </p:selectCheckboxMenu>
-
-                    <p:selectCheckboxMenu styleClass="vr-form-field"
-                                          value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedDegrees}"
-                                          label="Grades"
-                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.degreeItems}"/>
-                    </p:selectCheckboxMenu>
-                    <p:selectCheckboxMenu styleClass="vr-form-field"
-                                          value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedSituations}"
-                                          label="Situations"
-                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.situationItems}"/>
-                    </p:selectCheckboxMenu>
-                    <p:selectCheckboxMenu styleClass="vr-form-field"
-                                          value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedOfficialDisciplines}"
-                                          label="Disciplines"
-                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.officialDisciplinesItems}"/>
-                    </p:selectCheckboxMenu>
-                </div>
-                <div class="row">
-                    <p:selectCheckboxMenu styleClass="vr-form-field"
-                                          value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedProgramTypes}"
-                                          label="Type Formation"
-                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.programTypeItems}"/>
-                    </p:selectCheckboxMenu>
-                    <p:selectCheckboxMenu
-                            styleClass="vr-form-field"
-                            value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedLabels}" label="Label"
-                            filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.labelItems}"/>
-                    </p:selectCheckboxMenu>
-                    <p:selectCheckboxMenu
-                            styleClass="vr-form-field"
-                            value="#{allTeachersCourseLoadCtrl.loadFilter.model.selectedDeviationGroups}" label="Groupe Balance"
-                            filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                        <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.deviationGroupItems}"/>
-                    </p:selectCheckboxMenu>
-                </div>
-                <div class="row">
-                    <div class="table-responsive">
-                        <p:selectManyCheckbox value="#{allTeachersCourseLoadCtrl.loadFilter.model.refreshFilter}"
-                                              layout="grid"
-                                              columns="5">
+                <p:fieldset legend="Filtres" toggleable="true" toggleSpeed="500">
+                    <div >
+                        <p:outputLabel value="Période" styleClass="vr-form-field vr-form-fixed-width-medium"/>
+                        <p:selectOneMenu styleClass="vr-form-field" value="#{allTeachersCourseLoadCtrl.teacherFilter.model.selectedPeriod}"
+                        >
+                            <p:ajax listener="#{allTeachersCourseLoadCtrl.onChangePeriod}"
+                                    update=":buttonsForm :listForm"/>
+                            <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
+                            <f:selectItems value="#{allTeachersCourseLoadCtrl.teacherFilter.model.periodItems}"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <div >
+                        <p:outputLabel value="Enseignant" styleClass="vr-form-field vr-form-fixed-width-medium"/>
+                        <p:selectCheckboxMenu styleClass="vr-form-field"
+                                              value="#{allTeachersCourseLoadCtrl.teacherFilter.model.selectedDepartments}"
+                                              label="Departements"
+                                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
                             <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                            <f:selectItems value="#{allTeachersCourseLoadCtrl.loadFilter.model.refreshFilterItems}"/>
-                        </p:selectManyCheckbox>
+                            <f:selectItems value="#{allTeachersCourseLoadCtrl.teacherFilter.model.departmentItems}"/>
+                        </p:selectCheckboxMenu>
+
+                        <p:selectCheckboxMenu styleClass="vr-form-field"
+                                              value="#{allTeachersCourseLoadCtrl.teacherFilter.model.selectedDegrees}"
+                                              label="Grades"
+                                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                            <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                            <f:selectItems value="#{allTeachersCourseLoadCtrl.teacherFilter.model.degreeItems}"/>
+                        </p:selectCheckboxMenu>
+                        <p:selectCheckboxMenu styleClass="vr-form-field"
+                                              value="#{allTeachersCourseLoadCtrl.teacherFilter.model.selectedSituations}"
+                                              label="Situations"
+                                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                            <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                            <f:selectItems value="#{allTeachersCourseLoadCtrl.teacherFilter.model.situationItems}"/>
+                        </p:selectCheckboxMenu>
+                        <p:selectCheckboxMenu styleClass="vr-form-field"
+                                              value="#{allTeachersCourseLoadCtrl.teacherFilter.model.selectedOfficialDisciplines}"
+                                              label="Disciplines"
+                                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                            <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                            <f:selectItems
+                                    value="#{allTeachersCourseLoadCtrl.teacherFilter.model.officialDisciplinesItems}"/>
+                        </p:selectCheckboxMenu>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="table-responsive">
-                        <p:selectManyCheckbox value="#{allTeachersCourseLoadCtrl.model.columnFilters}" layout="grid"
-                                              columns="5" style="margin-left: 5px;margin-right: 7px;">
-                            <p:ajax listener="#{allTeachersCourseLoadCtrl.onFiltersChanged}" update=":listForm"/>
-                            <f:selectItems value="#{allTeachersCourseLoadCtrl.model.noRefreshFilterItems}"/>
-                        </p:selectManyCheckbox>
+                    <div class="">
+                        <p:outputLabel value="Modules" styleClass="vr-form-field vr-form-fixed-width-medium vr-form-indented-child"/>
+                        <div class="vr-form-sub-rows">
+                            <div class="vr-form-sub-row">
+                                <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                      value="#{allTeachersCourseLoadCtrl.courseFilter.model.selectedSemesters}"
+                                                      label="Semestres"
+                                                      filter="true" filterMatchMode="startsWith"
+                                                      panelStyle="width:250px">
+                                    <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}"
+                                            update=":listForm"/>
+                                    <f:selectItems
+                                            value="#{allTeachersCourseLoadCtrl.courseFilter.model.semesterItems}"/>
+                                </p:selectCheckboxMenu>
+                                <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                      value="#{allTeachersCourseLoadCtrl.courseFilter.model.selectedCourseTypes}"
+                                                      label="Types Modules"
+                                                      filter="true" filterMatchMode="startsWith"
+                                                      panelStyle="width:250px">
+                                    <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}"
+                                            update=":listForm"/>
+                                    <f:selectItems
+                                            value="#{allTeachersCourseLoadCtrl.courseFilter.model.courseTypeItems}"/>
+                                </p:selectCheckboxMenu>
+                                <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                      value="#{allTeachersCourseLoadCtrl.courseFilter.model.selectedClasses}"
+                                                      label="Classes"
+                                                      filter="true" filterMatchMode="startsWith"
+                                                      panelStyle="width:250px">
+                                    <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}"
+                                            update=":listForm"/>
+                                    <f:selectItems value="#{allTeachersCourseLoadCtrl.courseFilter.model.classItems}"/>
+                                </p:selectCheckboxMenu>
+                            </div>
+                            <div class="vr-form-sub-row">
+                                <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                      value="#{allTeachersCourseLoadCtrl.courseFilter.model.selectedProgramTypes}"
+                                                      label="Type Formation"
+                                                      filter="true" filterMatchMode="startsWith"
+                                                      panelStyle="width:250px">
+                                    <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}"
+                                            update=":listForm"/>
+                                    <f:selectItems
+                                            value="#{allTeachersCourseLoadCtrl.courseFilter.model.programTypeItems}"/>
+                                </p:selectCheckboxMenu>
+                                <p:selectCheckboxMenu styleClass="vr-form-field"
+                                        value="#{allTeachersCourseLoadCtrl.courseFilter.model.selectedLabels}"
+                                        label="Label"
+                                        filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                                    <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}"
+                                            update=":listForm"/>
+                                    <f:selectItems value="#{allTeachersCourseLoadCtrl.courseFilter.model.labelItems}"/>
+                                </p:selectCheckboxMenu>
+                                <p:selectCheckboxMenu styleClass="vr-form-field"
+                                        value="#{allTeachersCourseLoadCtrl.courseFilter.model.selectedDeviationGroups}"
+                                        label="Groupe Balance"
+                                        filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                                    <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}"
+                                            update=":listForm"/>
+                                    <f:selectItems
+                                            value="#{allTeachersCourseLoadCtrl.courseFilter.model.deviationGroupItems}"/>
+                                </p:selectCheckboxMenu>
+                            </div>
+                            <div class="vr-form-sub-row">
+                                <div class="table-responsive">
+                                    <p:selectManyCheckbox styleClass="vr-form-field"
+                                                          value="#{allTeachersCourseLoadCtrl.courseFilter.model.refreshFilter}"
+                                            layout="grid"
+                                            columns="5">
+                                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                update=":listForm"/>
+                                        <f:selectItems
+                                                value="#{allTeachersCourseLoadCtrl.courseFilter.model.refreshFilterItems}"/>
+                                    </p:selectManyCheckbox>
+                                </div>
+                            </div>
+                            <div class="vr-form-sub-row">
+                                <div class="table-responsive">
+                                    <p:selectManyCheckbox styleClass="vr-form-field" value="#{allTeachersCourseLoadCtrl.model.columnFilters}"
+                                                          layout="grid"
+                                                          columns="5">
+                                        <p:ajax listener="#{allTeachersCourseLoadCtrl.onFiltersChanged}"
+                                                update=":listForm"/>
+                                        <f:selectItems value="#{allTeachersCourseLoadCtrl.model.noRefreshFilterItems}"/>
+                                    </p:selectManyCheckbox>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                </p:fieldset>
+
                 <ui:repeat value="#{allTeachersCourseLoadCtrl.model.tables}" var="tab">
                     <div class="row">
                         <div class="table-responsive">

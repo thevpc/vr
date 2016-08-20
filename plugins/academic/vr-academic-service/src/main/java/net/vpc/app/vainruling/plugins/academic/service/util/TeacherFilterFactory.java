@@ -13,7 +13,7 @@ public final class TeacherFilterFactory {
         return new DefaultTeacherFilter();
     }
 
-    public DefaultTeacherFilter teacherIds(Integer[] teacherIds) {
+    public static DefaultTeacherFilter teacherIds(Integer[] teacherIds) {
         DefaultTeacherFilter custom = custom();
         for (Integer teacherId : teacherIds) {
             custom.addAcceptedTeacher(teacherId);
@@ -21,7 +21,7 @@ public final class TeacherFilterFactory {
         return custom;
     }
 
-    public DefaultTeacherFilter teacherIds(int[] teacherIds) {
+    public static DefaultTeacherFilter teacherIds(int[] teacherIds) {
         DefaultTeacherFilter custom = custom();
         for (Integer teacherId : teacherIds) {
             custom.addAcceptedTeacher(teacherId);

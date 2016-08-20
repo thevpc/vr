@@ -20,6 +20,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.GlobalAssignmentStat;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.GlobalStat;
+import net.vpc.app.vainruling.plugins.academic.service.util.DefaultTeacherFilter;
 import net.vpc.app.vainruling.plugins.academic.service.util.TeacherFilterFactory;
 import net.vpc.common.jsf.FacesUtils;
 import org.primefaces.model.chart.PieChartModel;
@@ -41,21 +42,26 @@ import java.util.*;
 public class GlobalStatCtrl {
 
     private Model model = new Model();
-    protected TeacherLoadFilterCtrl loadFilter = new TeacherLoadFilterCtrl();
+    protected TeacherLoadFilterComponent teacherFilter = new TeacherLoadFilterComponent();
+    protected CourseLoadFilterComponent courseFilter = new CourseLoadFilterComponent();
 
     public Model getModel() {
         return model;
     }
 
-    public TeacherLoadFilterCtrl getLoadFilter() {
-        return loadFilter;
+    public TeacherLoadFilterComponent getTeacherFilter() {
+        return teacherFilter;
     }
 
+    public CourseLoadFilterComponent getCourseFilter() {
+        return courseFilter;
+    }
 
     public void onChangePeriod() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        getLoadFilter().onChangePeriod();
-        getLoadFilter().getModel().getRefreshFilterItems().add(FacesUtils.createSelectItem("x:percent", "Pourcentages", "vr-checkbox"));
+        getTeacherFilter().onChangePeriod();
+        getCourseFilter().onChangePeriod();
+        getCourseFilter().getModel().getRefreshFilterItems().add(FacesUtils.createSelectItem("x:percent", "Pourcentages", "vr-checkbox"));
         onRefresh();
     }
 
@@ -63,13 +69,13 @@ public class GlobalStatCtrl {
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         CorePlugin c = VrApp.getBean(CorePlugin.class);
 
-        int periodId = getLoadFilter().getPeriodId();
+        int periodId = getTeacherFilter().getPeriodId();
 
         StatCache cache = new StatCache();
-        TeacherFilter teacherFilter = getLoadFilter().getTeacherFilter();
-        boolean includeIntents = getLoadFilter().isIncludeIntents();
-        DeviationConfig deviationConfig = getLoadFilter().getDeviationConfig();
-        CourseAssignmentFilter courseAssignmentFilter = getLoadFilter().getCourseAssignmentFilter();
+        TeacherFilter teacherFilter = getTeacherFilter().getTeacherFilter();
+        boolean includeIntents = getCourseFilter().isIncludeIntents();
+        DeviationConfig deviationConfig = getCourseFilter().getDeviationConfig();
+        CourseAssignmentFilter courseAssignmentFilter = getCourseFilter().getCourseAssignmentFilter();
         GlobalStat allTeachers = p.evalGlobalStat(periodId <= 0 ? -100 : periodId,
                 courseAssignmentFilter,
                 includeIntents,
@@ -118,7 +124,8 @@ public class GlobalStatCtrl {
 
     @OnPageLoad
     public void onRefresh(String cmd) {
-        getLoadFilter().onInit();
+        getTeacherFilter().onInit();
+        getCourseFilter().onInit();
         onChangePeriod();
     }
 
@@ -139,12 +146,41 @@ public class GlobalStatCtrl {
     }
 
     public boolean isPercent() {
-        for (String s : getLoadFilter().getModel().getRefreshFilter()) {
+        for (String s : getCourseFilter().getModel().getRefreshFilter()) {
             if ("x:percent".equals(s)) {
                 return true;
             }
         }
         return false;
+    }
+
+    public List<GlobalStatByDiscipline> getGlobalStatByDisciplines() {
+        List<GlobalStatByDiscipline> all=new ArrayList<>();
+        DefaultTeacherFilter d = getTeacherFilter().getTeacherFilter();
+        for (GlobalStatByDiscipline globalStatByDiscipline : getModel().getGlobalStatByDisciplines()) {
+            if(globalStatByDiscipline.getDiscipline()==null || d.acceptOfficialDiscipline(globalStatByDiscipline.getDiscipline())){
+                all.add(globalStatByDiscipline);
+            }
+        }
+        return all;
+    }
+
+    public List<AcademicTeacherSituation> getGlobalStatSituations() {
+        List<AcademicTeacherSituation> list = new ArrayList<>();
+        Set<Integer> set = new HashSet<>();
+        DefaultTeacherFilter teacherFilter = getTeacherFilter().getTeacherFilter();
+        for (GlobalStatByDiscipline globalStatByDiscipline : getGlobalStatByDisciplines()) {
+            for (GlobalAssignmentStat s : globalStatByDiscipline.getStat().getSituationDetails(null, null)) {
+                AcademicTeacherSituation sit = s.getSituation();
+                if (sit != null && !set.contains(sit.getId())) {
+                    if(sit==null || teacherFilter.acceptTeacherSituation(sit)) {
+                        list.add(sit);
+                    }
+                    set.add(sit.getId());
+                }
+            }
+        }
+        return list;
     }
 
     public class Model {
@@ -210,20 +246,7 @@ public class GlobalStatCtrl {
             return all;
         }
 
-        public List<AcademicTeacherSituation> getGlobalStatSituations() {
-            List<AcademicTeacherSituation> list = new ArrayList<>();
-            Set<Integer> set = new HashSet<>();
-            for (GlobalStatByDiscipline globalStatByDiscipline : globalStatByDisciplines) {
-                for (GlobalAssignmentStat s : globalStatByDiscipline.getStat().getSituationDetails(null, null)) {
-                    AcademicTeacherSituation sit = s.getSituation();
-                    if (sit != null && !set.contains(sit.getId())) {
-                        list.add(sit);
-                        set.add(sit.getId());
-                    }
-                }
-            }
-            return list;
-        }
+
 
         public void setGlobalStatByDisciplines(List<GlobalStatByDiscipline> globalStatByDisciplines) {
             this.globalStatByDisciplines = globalStatByDisciplines;

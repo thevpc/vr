@@ -39,47 +39,94 @@ and open the template in the editor.
                                     </div>-->
 
 
-                <div class="row">
-                    <p:outputLabel value="Période" styleClass="vr-form-field"/>
-                    <p:selectOneMenu value="#{myCourseLoadCtrl.loadFilter.model.selectedPeriod}">
-                        <p:ajax listener="#{myCourseLoadCtrl.onChangePeriod}" update=":buttonsForm :listForm"/>
-                        <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
-                        <f:selectItems value="#{myCourseLoadCtrl.loadFilter.model.periodItems}"/>
-                    </p:selectOneMenu>
-                    <p:selectCheckboxMenu styleClass="vr-form-field"
-                                          value="#{myCourseLoadCtrl.loadFilter.model.selectedProgramTypes}"
-                                          label="Type Formation"
-                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                        <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                        <f:selectItems value="#{myCourseLoadCtrl.loadFilter.model.programTypeItems}"/>
-                    </p:selectCheckboxMenu>
-                    <p:selectCheckboxMenu styleClass="vr-form-field"
-                                          value="#{myCourseLoadCtrl.loadFilter.model.selectedLabels}" label="Label"
-                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                        <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                        <f:selectItems value="#{myCourseLoadCtrl.loadFilter.model.labelItems}"/>
-                    </p:selectCheckboxMenu>
-                    <p:selectCheckboxMenu
-                            styleClass="vr-form-field"
-                            value="#{myCourseLoadCtrl.loadFilter.model.selectedDeviationGroups}" label="Groupe Balance"
-                            filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                        <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                        <f:selectItems value="#{myCourseLoadCtrl.loadFilter.model.deviationGroupItems}"/>
-                    </p:selectCheckboxMenu>
-                </div>
-                <div class="row">
-                    <div class="table-responsive">
-                        <p:selectManyCheckbox value="#{myCourseLoadCtrl.loadFilter.model.refreshFilter}"
-                                              layout="grid"
-                                              columns="5">
-                            <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                            <f:selectItems value="#{myCourseLoadCtrl.loadFilter.model.refreshFilterItems}"/>
-                        </p:selectManyCheckbox>
+                <p:fieldset legend="Filtres" toggleable="true" toggleSpeed="500">
+                    <div >
+                        <p:outputLabel value="Période" styleClass="vr-form-field vr-form-fixed-width-medium"/>
+                        <p:selectOneMenu value="#{myCourseLoadCtrl.teacherFilter.model.selectedPeriod}">
+                            <p:ajax listener="#{myCourseLoadCtrl.onChangePeriod}" update=":buttonsForm :listForm"/>
+                            <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
+                            <f:selectItems value="#{myCourseLoadCtrl.teacherFilter.model.periodItems}"/>
+                        </p:selectOneMenu>
                     </div>
-                </div>
-
+                    <div >
+                        <p:outputLabel value="Modules" styleClass="vr-form-field vr-form-fixed-width-medium vr-form-indented-child"/>
+                        <div class="vr-form-sub-rows">
+                            <div class="vr-form-sub-row">
+                                <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                      value="#{myCourseLoadCtrl.courseFilter.model.selectedSemesters}"
+                                                      label="Semestres"
+                                                      filter="true" filterMatchMode="startsWith"
+                                                      panelStyle="width:250px">
+                                    <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                    <f:selectItems value="#{myCourseLoadCtrl.courseFilter.model.semesterItems}"/>
+                                </p:selectCheckboxMenu>
+                                <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                      value="#{myCourseLoadCtrl.courseFilter.model.selectedCourseTypes}"
+                                                      label="Types Modules"
+                                                      filter="true" filterMatchMode="startsWith"
+                                                      panelStyle="width:250px">
+                                    <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                    <f:selectItems value="#{myCourseLoadCtrl.courseFilter.model.courseTypeItems}"/>
+                                </p:selectCheckboxMenu>
+                                <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                      value="#{myCourseLoadCtrl.courseFilter.model.selectedClasses}"
+                                                      label="Classes"
+                                                      filter="true" filterMatchMode="startsWith"
+                                                      panelStyle="width:250px">
+                                    <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                    <f:selectItems value="#{myCourseLoadCtrl.courseFilter.model.classItems}"/>
+                                </p:selectCheckboxMenu>
+                            </div>
+                            <div class="vr-form-sub-row">
+                                <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                      value="#{myCourseLoadCtrl.courseFilter.model.selectedProgramTypes}"
+                                                      label="Type Formation"
+                                                      filter="true" filterMatchMode="startsWith"
+                                                      panelStyle="width:250px">
+                                    <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                    <f:selectItems value="#{myCourseLoadCtrl.courseFilter.model.programTypeItems}"/>
+                                </p:selectCheckboxMenu>
+                                <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                      value="#{myCourseLoadCtrl.courseFilter.model.selectedLabels}"
+                                                      label="Label"
+                                                      filter="true" filterMatchMode="startsWith"
+                                                      panelStyle="width:250px">
+                                    <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                    <f:selectItems value="#{myCourseLoadCtrl.courseFilter.model.labelItems}"/>
+                                </p:selectCheckboxMenu>
+                                <p:selectCheckboxMenu
+                                        styleClass="vr-form-field" value="#{myCourseLoadCtrl.courseFilter.model.selectedDeviationGroups}"
+                                        label="Groupe Balance"
+                                        filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                                    <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                    <f:selectItems value="#{myCourseLoadCtrl.courseFilter.model.deviationGroupItems}"/>
+                                </p:selectCheckboxMenu>
+                            </div>
+                            <div class="vr-form-sub-row">
+                                <div class="table-responsive">
+                                    <p:selectManyCheckbox styleClass="vr-form-field" value="#{myCourseLoadCtrl.courseFilter.model.refreshFilter}"
+                                                          layout="grid"
+                                                          columns="5">
+                                        <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                update=":listForm"/>
+                                        <f:selectItems
+                                                value="#{myCourseLoadCtrl.teacherFilter.model.refreshFilterItems}"/>
+                                    </p:selectManyCheckbox>
+                                </div>
+                            </div>
+                            <div class="vr-form-sub-row">
+                                <p:selectManyCheckbox styleClass="vr-form-field" id="basic" value="#{myCourseLoadCtrl.model.othersFilters}" layout="grid"
+                                                      columns="3">
+                                    <p:ajax listener="#{myCourseLoadCtrl.onOthersFiltersChanged}" update=":listForm"/>
+                                    <f:selectItems value="#{myCourseLoadCtrl.model.filterSelectItems}"/>
+                                </p:selectManyCheckbox>
+                            </div>
+                        </div>
+                    </div>
+                </p:fieldset>
             </h:form>
             <h:form id="listForm">
+
                 <div class="row">
                     <div class="table-responsive">
                         <h1><p:outputLabel style="font-weight: bold"
@@ -97,6 +144,10 @@ and open the template in the editor.
                                         value="Total Charge / Sem"/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel
                                         value="Bilan H.Supp."/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="Balance"/></p:column>
+                                <p:column styleClass="ui-widget-header" style="width: 100px"><p:outputLabel
+                                        value=""/></p:column>
                             </p:row>
                             <p:row>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel
@@ -119,6 +170,20 @@ and open the template in the editor.
                                 <p:column><p:outputLabel
                                         value="#{myCourseLoadCtrl.model.stat.extraWeek.equiv}"><f:convertNumber
                                         pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column>
+                                    <p:outputLabel
+                                        value="#{myCourseLoadCtrl.model.stat.deviation}"><f:convertNumber
+                                        pattern="#0.00%"/></p:outputLabel>
+                                    <h:outputText value=" / #{myCourseLoadCtrl.model.stat.population.size}"/>
+                                </p:column>
+                                <p:column>
+                                    <div class="vr-progress-container" style="width: 100%;">
+                                        <div class="#{myCourseLoadCtrl.model.stat.deviationLabel}"
+                                             style="width:#{vr.frame(vr.abs(myCourseLoadCtrl.model.stat.deviation),0,1)*100}%">
+
+                                        </div>
+                                    </div>
+                                </p:column>
                             </p:row>
                             <p:row>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="Charge S1"/></p:column>
@@ -141,7 +206,22 @@ and open the template in the editor.
                                         pattern="#0.00"/></p:outputLabel></p:column>
                                 <p:column><p:outputLabel
                                         value="#{myCourseLoadCtrl.model.stat.semesters[0].extraWeek.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                        pattern="#0.00"/></p:outputLabel>
+                                </p:column>
+                                <p:column>
+                                    <p:outputLabel
+                                            value="#{myCourseLoadCtrl.model.stat.semesters[0].deviation}"><f:convertNumber
+                                            pattern="#0.00%"/></p:outputLabel>
+                                    <h:outputText value=" / #{myCourseLoadCtrl.model.stat.semesters[0].population.size}"/>
+                                </p:column>
+                                <p:column>
+                                    <div class="vr-progress-container" style="width: 100%;">
+                                        <div class="#{myCourseLoadCtrl.model.stat.semesters[0].deviationLabel}"
+                                             style="width:#{vr.frame(vr.abs(myCourseLoadCtrl.model.stat.semesters[0].deviation),0,1)*100}%">
+
+                                        </div>
+                                    </div>
+                                </p:column>
                             </p:row>
                             <p:row>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="Charge S2"/></p:column>
@@ -165,14 +245,22 @@ and open the template in the editor.
                                 <p:column><p:outputLabel
                                         value="#{myCourseLoadCtrl.model.stat.semesters[1].extraWeek.equiv}"><f:convertNumber
                                         pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column>
+                                    <p:outputLabel
+                                            value="#{myCourseLoadCtrl.model.stat.semesters[1].deviation}"><f:convertNumber
+                                            pattern="#0.00%"/></p:outputLabel>
+                                    <h:outputText value=" / #{myCourseLoadCtrl.model.stat.semesters[1].population.size}"/>
+                                </p:column>
+                                <p:column>
+                                    <div class="vr-progress-container" style="width: 100%;">
+                                        <div class="#{myCourseLoadCtrl.model.stat.semesters[1].deviationLabel}"
+                                             style="width:#{vr.frame(vr.abs(myCourseLoadCtrl.model.stat.semesters[1].deviation),0,1)*100}%">
+
+                                        </div>
+                                    </div>
+                                </p:column>
                             </p:row>
                         </p:panelGrid>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="table-responsive">
-                        <p:outputLabel value="Balance : "/>
-                        <p:outputLabel value="#{myCourseLoadCtrl.model.stat.deviation} / #{myCourseLoadCtrl.model.stat.population.average} (#{myCourseLoadCtrl.model.stat.population})"/>
                     </div>
                 </div>
 
@@ -288,11 +376,6 @@ and open the template in the editor.
                 <div class="row">
                     <div class="table-responsive">
                         <h1>Autres modules</h1>
-                        <p:selectManyCheckbox id="basic" value="#{myCourseLoadCtrl.model.othersFilters}" layout="grid"
-                                              columns="3">
-                            <p:ajax listener="#{myCourseLoadCtrl.onOthersFiltersChanged}" update=":listForm"/>
-                            <f:selectItems value="#{teacherCourseLoadCtrl.model.filterSelectItems}"/>
-                        </p:selectManyCheckbox>
                         <p:dataTable var="i" value="#{myCourseLoadCtrl.model.others}"
                                      class="table table-bordered table-hover"
                                      paginatorAlwaysVisible="false"
@@ -318,7 +401,7 @@ and open the template in the editor.
                                 <h:outputText
                                         value="#{i.assignment.coursePlan.courseLevel.academicClass.program.name}-#{i.assignment.coursePlan.courseLevel.academicClass.name}"/>
                             </p:column>
-                            <p:column headerText="Module">
+                            <p:column headerText="Module" filterBy="#{i.assignment.coursePlan.name}">
                                 <h:outputText styleClass="#{i.assigned?'vr-assigned-course':''}"
                                               value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}"/>
                             </p:column>

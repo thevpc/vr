@@ -150,6 +150,38 @@ public class Vr {
         return Math.min(a,b);
     }
 
+    public int randomize(int a) {
+        return (int)(Math.random()*a);
+    }
+
+    public double randomize(double a) {
+        return (Math.random()*a);
+    }
+
+    public String randomize(String ... values) {
+        return values[randomize(values.length)];
+    }
+
+    public int rand(int a) {
+        return (int)(Math.random()*a);
+    }
+
+    public double rand(double a) {
+        return (Math.random()*a);
+    }
+
+    public String rand(String ... values) {
+        return values[randomize(values.length)];
+    }
+
+    public int hash(Object value,int max) {
+        return Math.abs(value==null?0:value.hashCode())%max;
+    }
+
+    public String hash(Object value,String ...values) {
+        return values[hash(value,values.length)];
+    }
+
     public double frame(double x,double a,double b) {
         if(x<a){
             x=a;

@@ -16,7 +16,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.core</groupId>
             <artifactId>vr-core-service</artifactId>
-            <version>1.10</version>
+            <version>1.11</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.equipments</groupId>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-service</artifactId>
-            <version>1.2</version>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.mailbox</groupId>
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-perf-eval</groupId>
             <artifactId>vr-academic-perf-eval-service</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-planning</groupId>
@@ -88,6 +88,28 @@
                     <artifactId>vr-ezp-service</artifactId>
                     <version>1.0</version>
                 </dependency>-->
+
+
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.35</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>10.11.1.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.12.1.1</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
     <build>
         <pluginManagement>

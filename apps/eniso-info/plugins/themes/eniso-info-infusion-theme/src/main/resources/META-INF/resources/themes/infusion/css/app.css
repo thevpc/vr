@@ -1,185 +1,178 @@
 @import 'colors.css';
+
 @font-face {
     font-family: dsdigi;
     src: url('../fonts/DSDIGI.woff');
     font-weight: normal;
 }
 
-
-.vr-label-valid{
-    background-color:var(--vr-color-valid);
+.vr-label-valid {
+    background-color: var(--vr-color-valid);
 }
 
-.vr-label-invalid{
-
-    background-color:var(--vr-color-invalid);
+.vr-label-invalid {
+    background-color: var(--vr-color-invalid);
 }
 
-.vr-label-bg1{
-
-    background-color:var(--vr-color-bg01);
-}
-.vr-label-bg2{
-
-    background-color:var(--vr-color-bg02);
-}
-.vr-label-bg3{
-
-    background-color:var(--vr-color-bg03);
-}
-.vr-label-bg4{
-
-    background-color:var(--vr-color-bg04);
-}
-.vr-label-bg5{
-
-    background-color:var(--vr-color-bg05);
-}
-.vr-label-bg6{
-
-    background-color:var(--vr-color-bg06);
-}
-.vr-label-bg7{
-
-    background-color:var(--vr-color-bg07);
-}
-.vr-label-bg8{
-
-    background-color:var(--vr-color-bg08);
-}
-.vr-label-bg9{
-
-    background-color:var(--vr-color-bg09);
-}
-.vr-label-bg10{
-
-    background-color:var(--vr-color-bg10);
-}
-.vr-label-bg11{
-
-    background-color:var(--vr-color-bg11);
-}
-.vr-label-bg12{
-
-    background-color:var(--vr-color-bg12);
-}
-.vr-label-bg13{
-
-    background-color:var(--vr-color-bg13);
-}
-.vr-label-bg14{
-
-    background-color:var(--vr-color-bg14);
-}
-.vr-label-bg15{
-
-    background-color:var(--vr-color-bg15);
-}
-.vr-label-bg16{
-
-    background-color:var(--vr-color-bg16);
-}
-.vr-label-bg17{
-
-    background-color:var(--vr-color-bg17);
-}
-.vr-label-bg18{
-
-    background-color:var(--vr-color-bg18);
-}
-.vr-label-bg19{
-
-    background-color:var(--vr-color-bg19);
-}
-.vr-label-bg20{
-
-    background-color:var(--vr-color-bg20);
+.vr-label-bg1 {
+    background-color: var(--vr-color-bg01);
 }
 
-.vr-label-fg1{
-
-    background-color:var(--vr-color-fg01);
-}
-.vr-label-fg2{
-
-    background-color:var(--vr-color-fg02);
-}
-.vr-label-fg3{
-
-    background-color:var(--vr-color-fg03);
-}
-.vr-label-fg4{
-
-    background-color:var(--vr-color-fg04);
-}
-.vr-label-fg5{
-
-    background-color:var(--vr-color-fg05);
-}
-.vr-label-fg6{
-
-    background-color:var(--vr-color-fg06);
-
+.vr-label-bg2 {
+    background-color: var(--vr-color-bg02);
 }
 
-.vr-label-fg7{
-
-    background-color:var(--vr-color-fg07);
-}
-.vr-label-fg8{
-
-    background-color:var(--vr-color-fg08);
-
-}
-.vr-label-fg9{
-
-    background-color:var(--vr-color-fg09);
-}
-.vr-label-fg10{
-
-    background-color:var(--vr-color-fg10);
-}
-.vr-label-fg11{
-
-    background-color:var(--vr-color-fg11);
-}
-.vr-label-fg12{
-
-    background-color:var(--vr-color-fg12);
-}
-.vr-label-fg13{
-
-    background-color:var(--vr-color-fg13);
-}
-.vr-label-fg14{
-
-    background-color:var(--vr-color-fg14);
-}
-.vr-label-fg15{
-
-    background-color:var(--vr-color-fg15);
-}
-.vr-label-fg16{
-
-    background-color:var(--vr-color-fg16);
-}
-.vr-label-fg17{
-
-    background-color:var(--vr-color-fg17);
-}
-.vr-label-fg18{
-
-    background-color:var(--vr-color-fg18);
-}
-.vr-label-fg19{
-
-    background-color:var(--vr-color-fg19);
-
-}
-.vr-label-fg20{
-    background-color:var(--vr-color-fg20);
+.vr-label-bg3 {
+    background-color: var(--vr-color-bg03);
 }
 
+.vr-label-bg4 {
+    background-color: var(--vr-color-bg04);
+}
+
+.vr-label-bg5 {
+    background-color: var(--vr-color-bg05);
+}
+
+.vr-label-bg6 {
+    background-color: var(--vr-color-bg06);
+}
+
+.vr-label-bg7 {
+    background-color: var(--vr-color-bg07);
+}
+
+.vr-label-bg8 {
+    background-color: var(--vr-color-bg08);
+}
+
+.vr-label-bg9 {
+    background-color: var(--vr-color-bg09);
+}
+
+.vr-label-bg10 {
+    background-color: var(--vr-color-bg10);
+}
+
+.vr-label-bg11 {
+    background-color: var(--vr-color-bg11);
+}
+
+.vr-label-bg12 {
+    background-color: var(--vr-color-bg12);
+}
+
+.vr-label-bg13 {
+    background-color: var(--vr-color-bg13);
+}
+
+.vr-label-bg14 {
+    background-color: var(--vr-color-bg14);
+}
+
+.vr-label-bg15 {
+    background-color: var(--vr-color-bg15);
+}
+
+.vr-label-bg16 {
+    background-color: var(--vr-color-bg16);
+}
+
+.vr-label-bg17 {
+    background-color: var(--vr-color-bg17);
+}
+
+.vr-label-bg18 {
+    background-color: var(--vr-color-bg18);
+}
+
+.vr-label-bg19 {
+    background-color: var(--vr-color-bg19);
+}
+
+.vr-label-bg20 {
+    background-color: var(--vr-color-bg20);
+}
+
+.vr-label-fg1 {
+    background-color: var(--vr-color-fg01);
+}
+
+.vr-label-fg2 {
+    background-color: var(--vr-color-fg02);
+}
+
+.vr-label-fg3 {
+    background-color: var(--vr-color-fg03);
+}
+
+.vr-label-fg4 {
+    background-color: var(--vr-color-fg04);
+}
+
+.vr-label-fg5 {
+    background-color: var(--vr-color-fg05);
+}
+
+.vr-label-fg6 {
+    background-color: var(--vr-color-fg06);
+}
+
+.vr-label-fg7 {
+    background-color: var(--vr-color-fg07);
+}
+
+.vr-label-fg8 {
+    background-color: var(--vr-color-fg08);
+}
+
+.vr-label-fg9 {
+    background-color: var(--vr-color-fg09);
+}
+
+.vr-label-fg10 {
+    background-color: var(--vr-color-fg10);
+}
+
+.vr-label-fg11 {
+    background-color: var(--vr-color-fg11);
+}
+
+.vr-label-fg12 {
+    background-color: var(--vr-color-fg12);
+}
+
+.vr-label-fg13 {
+    background-color: var(--vr-color-fg13);
+}
+
+.vr-label-fg14 {
+    background-color: var(--vr-color-fg14);
+}
+
+.vr-label-fg15 {
+    background-color: var(--vr-color-fg15);
+}
+
+.vr-label-fg16 {
+    background-color: var(--vr-color-fg16);
+}
+
+.vr-label-fg17 {
+    background-color: var(--vr-color-fg17);
+}
+
+.vr-label-fg18 {
+    background-color: var(--vr-color-fg18);
+}
+
+.vr-label-fg19 {
+    background-color: var(--vr-color-fg19);
+}
+
+.vr-label-fg20 {
+    background-color: var(--vr-color-fg20);
+}
 
 .ui-ribbon .ui-colorpicker .ui-button {
     height: 24px;
@@ -353,6 +346,7 @@ table.NoPaddingTableClass td {
     padding-left: 22px;
     background-repeat: no-repeat;
 }
+
 .vr-icon-prefix-parent {
     background-image: url('../images/icons/parent16.png');
     position: relative;
@@ -747,7 +741,7 @@ button.vr-tiny-button.ui-button-text-only .ui-button-text {
     padding: 0px 0px 0px 0px;
 }
 
-.vr-checkbox{
+.vr-checkbox {
     padding-left: 5px;
     padding-right: 10px;
 }
@@ -757,7 +751,6 @@ a {
     color: var(--vr-color-main16);
     text-decoration: initial;
 }
-
 
 /**
 dialog
@@ -790,7 +783,7 @@ a:focus {
 }
 
 .h1, h1 {
-    font-size: 22px;
+    font-size: 18px;
 
     color: var(--vr-color-main20);
 }
@@ -833,7 +826,7 @@ a:focus {
     border-style: none !important;
 }
 
-.multi-component-main{
+.multi-component-main {
     padding: 0 !important;
     border-style: none !important;
     width: 100% !important;
@@ -841,7 +834,8 @@ a:focus {
     /*width: -webkit-calc(100% - 100px);*/
     /*width: calc(100% - 100px);*/
 }
-.multi-component-action{
+
+.multi-component-action {
     padding: 0 !important;
     border-style: none !important;
     width: 100% !important;
@@ -891,8 +885,40 @@ div.vr-progress-container > div.invalid3 {
     height: 12px
 }
 
-.vr-form-field{
+.vr-form-field {
     vertical-align: bottom;
     margin-bottom: 10px;
     margin-left: 10px;
+}
+
+legend.ui-fieldset-legend {
+    font-size: 13px;
+}
+
+label {
+    font-weight: 100;
+}
+
+span.ui-column-title {
+    font-weight: 700;
+}
+
+.vr-label {
+    font-weight: 700;
+}
+
+.vr-form-fixed-width-medium {
+    width: 100px;
+}
+
+.vr-form-indented-child {
+    margin-bottom: 0px;
+}
+
+.vr-form-sub-rows {
+    margin-left: 100px;
+}
+
+.vr-form-sub-row {
+
 }

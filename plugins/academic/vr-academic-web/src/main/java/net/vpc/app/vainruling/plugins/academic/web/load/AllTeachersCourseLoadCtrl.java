@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.web.load;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
@@ -14,6 +15,7 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.StatCache;
 import net.vpc.app.vainruling.plugins.academic.service.TeacherFilter;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherPeriodStat;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherSemesterStat;
@@ -52,7 +54,8 @@ public class AllTeachersCourseLoadCtrl {
         }
     };
     protected Model model = new Model();
-    protected TeacherLoadFilterCtrl loadFilter = new TeacherLoadFilterCtrl();
+    protected TeacherLoadFilterComponent teacherFilter = new TeacherLoadFilterComponent();
+    protected CourseLoadFilterComponent courseFilter = new CourseLoadFilterComponent();
 
     private void reset() {
         getModel().setSemester1(new ArrayList<TeacherSemesterStat>());
@@ -60,8 +63,12 @@ public class AllTeachersCourseLoadCtrl {
         getModel().setYear(new ArrayList<TeacherPeriodStat>());
     }
 
-    public TeacherLoadFilterCtrl getLoadFilter() {
-        return loadFilter;
+    public TeacherLoadFilterComponent getTeacherFilter() {
+        return teacherFilter;
+    }
+
+    public CourseLoadFilterComponent getCourseFilter() {
+        return courseFilter;
     }
 
     @OnPageLoad
@@ -92,29 +99,33 @@ public class AllTeachersCourseLoadCtrl {
 
         getModel().setNoRefreshFilterItems(columnFilers);
 
-        getLoadFilter().onInit();
+        getTeacherFilter().onInit();
+        getCourseFilter().onInit();
         onChangePeriod();
     }
 
     public void onChangePeriod() {
-        getLoadFilter().onChangePeriod();
+        getTeacherFilter().onChangePeriod();
+        getCourseFilter().onChangePeriod();
         onRefresh();
     }
 
     public void onRefresh() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         StatCache cache = new StatCache();
-        int periodId = getLoadFilter().getPeriodId();
-        CourseAssignmentFilter filter = getLoadFilter().getCourseAssignmentFilter();
-        boolean includeIntents = getLoadFilter().isIncludeIntents();
+        int periodId = getTeacherFilter().getPeriodId();
+        CourseAssignmentFilter filter = getCourseFilter().getCourseAssignmentFilter();
+        boolean includeIntents = getCourseFilter().isIncludeIntents();
         getModel().setSemester1(new ArrayList<TeacherSemesterStat>());
         getModel().setSemester2(new ArrayList<TeacherSemesterStat>());
         getModel().setYear(new ArrayList<TeacherPeriodStat>());
-        TeacherFilter customTeacherFilter = getLoadFilter().getTeacherFilter();
-        DeviationConfig deviationConfig = getLoadFilter().getDeviationConfig();
+        TeacherFilter customTeacherFilter = getTeacherFilter().getTeacherFilter();
+        DeviationConfig deviationConfig = getCourseFilter().getDeviationConfig();
         if (periodId >= -1) {
-            getModel().setSemester1(a.evalTeacherSemesterStatList(periodId, "S1", customTeacherFilter, filter, includeIntents, deviationConfig, cache));
-            getModel().setSemester2(a.evalTeacherSemesterStatList(periodId, "S2", customTeacherFilter, filter, includeIntents, deviationConfig, cache));
+            //ordered semesters
+            List<AcademicSemester> semesters = a.findSemesters();
+            getModel().setSemester1(a.evalTeacherSemesterStatList(periodId, semesters.get(0).getId(), customTeacherFilter, filter, includeIntents, deviationConfig, cache));
+            getModel().setSemester2(a.evalTeacherSemesterStatList(periodId, semesters.get(1).getId(), customTeacherFilter, filter, includeIntents, deviationConfig, cache));
             getModel().setYear(a.evalTeacherStatList(periodId, null, customTeacherFilter, filter, includeIntents, deviationConfig, cache));
         }
         getModel().setTables(Arrays.asList(

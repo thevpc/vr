@@ -42,11 +42,11 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
         super.onChangeOther();
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         getModel().setTeachers(new ArrayList<SelectItem>());
-        int periodId = getLoadFilter().getPeriodId();
-        TeacherFilter teacherFilter = getLoadFilter().getTeacherFilter();
+        int periodId = getTeacherFilter().getPeriodId();
+        TeacherFilter teacherFilter = getTeacherFilter().getTeacherFilter();
         for (AcademicTeacher t : p.findTeachers()) {
             AcademicTeacherPeriod tp = p.findAcademicTeacherPeriod(periodId, t);
-            if (tp.isEnabled() && teacherFilter.acceptTeacher(t)) {
+            if (tp.isEnabled() && teacherFilter.acceptTeacher(tp)) {
                 getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), t.getContact().getFullName()));
             }
         }
@@ -75,8 +75,6 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
             }
         }
         return null;
-//        AcademicPlugin a = VRApp.getBean(AcademicPlugin.class);
-//        return a.getCurrentTeacher();
     }
 
     public ModelExt getModel() {

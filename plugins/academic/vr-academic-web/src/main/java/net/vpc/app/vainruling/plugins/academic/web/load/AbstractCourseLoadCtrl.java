@@ -34,13 +34,18 @@ import java.util.*;
 public abstract class AbstractCourseLoadCtrl {
 
     protected Model model = new Model();
-    protected TeacherLoadFilterCtrl loadFilter = new TeacherLoadFilterCtrl();
+    protected TeacherLoadFilterComponent teacherFilter = new TeacherLoadFilterComponent();
+    protected CourseLoadFilterComponent courseFilter = new CourseLoadFilterComponent();
 
     public AbstractCourseLoadCtrl() {
     }
 
-    public TeacherLoadFilterCtrl getLoadFilter() {
-        return loadFilter;
+    public TeacherLoadFilterComponent getTeacherFilter() {
+        return teacherFilter;
+    }
+
+    public CourseLoadFilterComponent getCourseFilter() {
+        return courseFilter;
     }
 
     private void reset() {
@@ -65,7 +70,8 @@ public abstract class AbstractCourseLoadCtrl {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         List<AppPeriod> navigatablePeriods = core.findNavigatablePeriods();
         AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
-        getLoadFilter().onInit();
+        getTeacherFilter().onInit();
+        getCourseFilter().onInit();
         onChangePeriod();
     }
 
@@ -98,15 +104,16 @@ public abstract class AbstractCourseLoadCtrl {
     public void onChangePeriod() {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         AppDepartment userDepartment = getUserDepartment();
-        int periodId = getLoadFilter().getPeriodId();
+        int periodId = getTeacherFilter().getPeriodId();
 
         getModel().setEnableLoadEditing(
                 (userDepartment == null || periodId<0)? false :
                         ap.getAppDepartmentPeriodRecord(periodId, userDepartment.getId()).getBoolean("enableLoadEditing", false)
         );
 
-        getLoadFilter().onChangePeriod();
-        onRefresh();
+        getTeacherFilter().onChangePeriod();
+        getCourseFilter().onChangePeriod();
+        onChangeOther();
     }
 
 
@@ -117,7 +124,7 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public void onRefresh() {
-        int periodId = getLoadFilter().getPeriodId();
+        int periodId = getTeacherFilter().getPeriodId();
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         List<SelectItem> allValidFilters = new ArrayList<>();
         allValidFilters.add(FacesUtils.createSelectItem("assigned", "Modules Affectés", "vr-checkbox"));
@@ -125,15 +132,6 @@ public abstract class AbstractCourseLoadCtrl {
         allValidFilters.add(FacesUtils.createSelectItem("intended", "Modules Demandés", "vr-checkbox"));
         allValidFilters.add(FacesUtils.createSelectItem("non-intended", "Modules Non Demandés", "vr-checkbox"));
         allValidFilters.add(FacesUtils.createSelectItem("conflict", "Modules En Conflits", "vr-checkbox"));
-        for (AcademicSemester s : a.findSemesters()) {
-            allValidFilters.add(FacesUtils.createSelectItem("semester:" + s.getId(), s.getName(), "vr-checkbox"));
-        }
-        for (AcademicCourseType s : a.findCourseTypes()) {
-            allValidFilters.add(FacesUtils.createSelectItem("courseType:" + s.getId(), s.getName(), "vr-checkbox"));
-        }
-        for (AcademicClass s : a.findAcademicClasses()) {
-            allValidFilters.add(FacesUtils.createSelectItem("class:" + s.getId(), s.getName(), "vr-checkbox"));
-        }
         getModel().setFilterSelectItems(allValidFilters.toArray(new SelectItem[allValidFilters.size()]));
 
         AcademicTeacher t = getCurrentTeacher();
@@ -154,15 +152,12 @@ public abstract class AbstractCourseLoadCtrl {
         }
 
         StatCache cache = new StatCache();
-        final Set<Integer> semesterFilter = getFilters("semester");
-        final Set<Integer> classFilter = getFilters("class");
-        final Set<Integer> courseTypeFilter = getFilters("courseType");
 
         reset();
 
         Map<Integer, AcademicCourseAssignmentInfo> all = new HashMap<>();
-        CourseAssignmentFilter courseAssignmentFilter = getLoadFilter().getCourseAssignmentFilter();
-        DeviationConfig deviationConfig = getLoadFilter().getDeviationConfig();
+        CourseAssignmentFilter courseAssignmentFilter = getCourseFilter().getCourseAssignmentFilter();
+        DeviationConfig deviationConfig = getCourseFilter().getDeviationConfig();
         for (AcademicCourseAssignmentInfo b : a.findCourseAssignmentsAndIntents(periodId, null, null, courseAssignmentFilter, cache)) {
             all.put(b.getAssignment().getId(), b);
         }
@@ -196,23 +191,8 @@ public abstract class AbstractCourseLoadCtrl {
                 } else {
                     accepted = false;
                 }
-                if (accepted && semesterFilter.size() > 0) {
-                    if (!semesterFilter.contains(c.getAssignment().getCoursePlan().getCourseLevel().getSemester().getId())) {
-                        accepted = false;
-                    }
-                }
-                if (accepted && classFilter.size() > 0) {
-                    if (!classFilter.contains(c.getAssignment().getCoursePlan().getCourseLevel().getAcademicClass().getId())) {
-                        accepted = false;
-                    }
-                }
-                if (accepted && courseTypeFilter.size() > 0) {
-                    if (!courseTypeFilter.contains(c.getAssignment().getCourseType().getId())) {
-                        accepted = false;
-                    }
-                }
                 if (accepted && conflict) {
-                    //show only whith conflicts
+                    //show only with conflicts
                     if (c.getIntentsSet().isEmpty()) {
                         accepted = false;
                     } else if (c.getAssignment().getTeacher() != null) {
@@ -337,7 +317,7 @@ public abstract class AbstractCourseLoadCtrl {
             return true;
         }
 
-        AppPeriod period = VrApp.getBean(CorePlugin.class).findPeriod(getLoadFilter().getPeriodId());
+        AppPeriod period = VrApp.getBean(CorePlugin.class).findPeriod(getTeacherFilter().getPeriodId());
         if (period == null || period.isReadOnly()) {
             return false;
         }
@@ -384,7 +364,7 @@ public abstract class AbstractCourseLoadCtrl {
         if (user == null) {
             return false;
         }
-        AppPeriod period = VrApp.getBean(CorePlugin.class).findPeriod(getLoadFilter().getPeriodId());
+        AppPeriod period = VrApp.getBean(CorePlugin.class).findPeriod(getTeacherFilter().getPeriodId());
 
         if (userSession.isSuperAdmin()) {
             return true;

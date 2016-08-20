@@ -263,10 +263,10 @@ public class XlsxLoadImporter {
             return count;
         }
 
-        if (file.getName().equals("departments.xlsx")) {
+        if (file.getName().equals("departments.xlsx") || file.getName().endsWith(".departments.xlsx")) {
             importDepartments(file);
         }
-        if (file.getName().equals("load-conversion-table.xlsx")) {
+        if (file.getName().equals("load-conversion-table.xlsx") || file.getName().endsWith(".load-conversion-table.xlsx")) {
             if (file.length() > 0) {
                 count++;
                 importLoadConversionTable(file);
@@ -276,7 +276,7 @@ public class XlsxLoadImporter {
                 XlsxLoadImporter.this.importLoadConversionTable();
             }
         }
-        if (file.getName().equals("load-degrees.xlsx")) {
+        if (file.getName().equals("load-degrees.xlsx") || file.getName().endsWith(".load-degrees.xlsx")) {
             if (file.length() > 0) {
                 count++;
                 importTeacherDegrees(file);
@@ -294,7 +294,7 @@ public class XlsxLoadImporter {
             count++;
             importStudents(periodId, file);
         }
-        if (file.getName().equals("course-assignments.xlsx")) {
+        if (file.getName().equals("course-assignments.xlsx") || file.getName().endsWith(".course-assignments.xlsx")) {
             count++;
             importCourseAssignments(periodId, file, importOptions);
         }
@@ -869,29 +869,32 @@ public class XlsxLoadImporter {
         SheetParser sp = pfm.createSheetParser(tmp);
         sp.setContainsHeader(true);
         int DEPARTMENT_COLUMN = 0;
-        int PROGRAM_COLUMN = 1;
-        int STUDENT_CLASS_COLUMN = 2;
-        int SEMESTER_COLUMN = 3;
-        int COURSE_GROUP_COLUMN = 4;
-        int COURSE_NAME_COLUMN = 5;
-        int COURSE_TYPE_COLUMN = 6;
-        int LOAD_C_COLUMN = 7;
-        int LOAD_TD_COLUMN = 8;
-        int LOAD_TP_COLUMN = 9;
-        int LOAD_PM_COLUMN = 10;
-        int NBR_GROUPS_COLUMN = 11;
-        int NBR_SHARES_COLUMN = 12;
-        int TEACHER_NAME_COUMN = 13;
-        int TEACHER_INTENTS_COUMN = 14;
-        int DISCIPLINE_COLUMN = 15;
-        int IGNORE_COLUMN = 16;
+        int OWNER_DEPARTMENT_COLUMN = 1;
+        int PROGRAM_COLUMN = 2;
+        int STUDENT_CLASS_COLUMN = 3;
+        int STUDENT_SUBLASS_COLUMN = 4;
+        int SEMESTER_COLUMN = 5;
+        int COURSE_GROUP_COLUMN = 6;
+        int COURSE_NAME_COLUMN = 7;
+        int COURSE_TYPE_COLUMN = 8;
+        int LOAD_C_COLUMN = 9;
+        int LOAD_TD_COLUMN = 10;
+        int LOAD_TP_COLUMN = 11;
+        int LOAD_PM_COLUMN = 12;
+        int NBR_GROUPS_COLUMN = 13;
+        int NBR_SHARES_COLUMN = 14;
+        int TEACHER_NAME_COUMN = 15;
+        int TEACHER_INTENTS_COUMN = 16;
+        int DISCIPLINE_COLUMN = 17;
+        int IGNORE_COLUMN = 18;
 
         sp.setSheetIndex(0);
         sp.setSkipRows(1);
         DataReader rows = sp.parse();
         int all = 0;
         long count = 0;
-        while (rows.hasNext()) {
+        long maxCount = -1;
+        while (rows.hasNext() && (maxCount<0 || count<maxCount)) {
             DataRow row = rows.readRow();
             Object[] values = row.getValues();
             all++;
@@ -911,54 +914,92 @@ public class XlsxLoadImporter {
                     || "oui".equalsIgnoreCase(ignoreString))) {
                 ignoreRow = true;
             }
+            if (courseName == null || courseName.trim().length() == 0) {
+                ignoreRow = true;
+            }
 
             if (!ignoreRow) {
                 AcademicCourseType courseType = null;
                 AppDepartment department = null;
+                AppDepartment ownerDepartment = null;
                 AcademicProgram program = null;
                 AcademicCourseLevel courseLevel = null;
                 AcademicCourseGroup courseGroup = null;
                 String discipline = null;
                 AcademicClass studentClass = null;
+                AcademicClass studentSubClass = null;
                 AcademicSemester semester = null;
                 AcademicTeacher teacher = null;
                 List<AcademicTeacher> teacherIntents = new ArrayList<>();
-                if (courseName != null && courseName.trim().length() > 0) {
                     {
                         String stringVal = Convert.toString(values[DEPARTMENT_COLUMN]);
-                        String[] codeAndName = codeAndName(stringVal);
-                        department = core.findDepartment(codeAndName[0]);
-                        if (department == null) {
-                            department = new AppDepartment();
-                            department.setCode(codeAndName[0]);
-                            department.setName(codeAndName[1]);
-                            department.setName2(codeAndName[1]);
-                            service.add(department);
+                        if(!StringUtils.isEmpty(stringVal)) {
+                            department = core.findDepartment(stringVal);
+                            if (department == null) {
+                                throw new IllegalArgumentException("Invalid Department " + stringVal);
+                            }
+                        }
+                    }
+                    {
+                        String stringVal = Convert.toString(values[OWNER_DEPARTMENT_COLUMN]);
+                        if(!StringUtils.isEmpty(stringVal)) {
+                            ownerDepartment = core.findDepartment(stringVal);
                         }
                     }
                     {
                         String stringVal = Convert.toString(values[PROGRAM_COLUMN]);
-                        program = service.findProgram(department.getId(), stringVal);
-                        if (program == null) {
-                            program = new AcademicProgram();
-                            program.setName(stringVal);
-                            program.setName2(stringVal);
-                            program.setDepartment(department);
-                            service.add(program);
+                        if(!StringUtils.isEmpty(stringVal)) {
+                            if(department!=null){
+                                program = service.findProgram(department.getId(), stringVal);
+                            }else{
+                                List<AcademicProgram> allByName = service.findPrograms(stringVal);
+                                if(allByName.size()>1){
+                                    throw new IllegalArgumentException("Too many Programs with name " + stringVal+" . Please mention department");
+                                }else if(allByName.size()>0){
+                                    program=allByName.get(0);
+                                }
+                            }
+                            if (program == null) {
+                                throw new IllegalArgumentException("Invalid Program " + stringVal);
+                            }
                         }
                     }
                     {
                         String stringVal = Convert.toString(values[STUDENT_CLASS_COLUMN]);
-                        String goodName = stringVal;
-                        if (PlatformTypes.isInteger(stringVal)) {
-                            goodName = program.getName() + stringVal;
+                        if(StringUtils.isEmpty(stringVal)){
+                            throw new IllegalArgumentException("Missing Class Name");
                         }
-                        studentClass = service.findAcademicClass(program.getId(), goodName);
+                        if(program==null){
+                            List<AcademicClass> allByName = service.findAcademicClasses(stringVal);
+                            if(allByName.size()>1){
+                                throw new IllegalArgumentException("Too many Classes with name " + stringVal+" . Please mention program");
+                            }else if(allByName.size()>0){
+                                studentClass=allByName.get(0);
+                            }
+                        }else{
+                            studentClass = service.findAcademicClass(program.getId(), stringVal);
+                        }
                         if (studentClass == null) {
-                            studentClass = new AcademicClass();
-                            studentClass.setName(goodName);
-                            studentClass.setProgram(program);
-                            service.add(studentClass);
+                            throw new IllegalArgumentException("Invalid Class " + stringVal);
+                        }
+                        if(program==null){
+                            program=studentClass.getProgram();
+                        }else if(program.getId()!=studentClass.getProgram().getId()){
+                            throw new IllegalArgumentException("Invalid Class " + stringVal+" for Program "+program.getName());
+                        }
+                        if(department==null){
+                            department=studentClass.getProgram().getDepartment();
+                        }else if(department.getId()!=studentClass.getProgram().getDepartment().getId()){
+                            throw new IllegalArgumentException("Invalid Class " + stringVal+" for Department "+program.getName());
+                        }
+                    }
+                    {
+                        String stringVal = Convert.toString(values[STUDENT_SUBLASS_COLUMN]);
+                        if(!StringUtils.isEmpty(stringVal)){
+                            studentSubClass = service.findAcademicClass(program.getId(), stringVal);
+                            if (studentSubClass == null) {
+                                throw new IllegalArgumentException("Invalid Class " + stringVal);
+                            }
                         }
                     }
                     {
@@ -966,14 +1007,9 @@ public class XlsxLoadImporter {
                         if (stringVal == null) {
                             throw new IllegalArgumentException("Missing semester for " + courseName);
                         }
-                        String[] codeAndName = codeAndName(stringVal);
-                        semester = service.findSemester(codeAndName[0]);
+                        semester = service.findSemester(stringVal);
                         if (semester == null) {
-                            semester = new AcademicSemester();
-                            semester.setCode(codeAndName[0]);
-                            semester.setName(codeAndName[1]);
-                            semester.setName2(codeAndName[1]);
-                            service.add(semester);
+                            throw new IllegalArgumentException("Invalid semester " + stringVal);
                         }
                     }
                     {
@@ -1012,16 +1048,7 @@ public class XlsxLoadImporter {
                         }
                         courseType = service.findCourseType(stringVal);
                         if (courseType == null) {
-                            courseType = new AcademicCourseType();
-                            courseType.setName(stringVal);
-                            //should load it from some where!
-                            if ("tp".equalsIgnoreCase(stringVal)) {
-                                courseType.setWeeks(10);
-                            } else {
-                                AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
-                                courseType.setWeeks(ap.getSemesterMaxWeeks());
-                            }
-                            service.add(courseType);
+                            throw new IllegalArgumentException("Invalid course type " + stringVal);
                         }
                     }
                     double valueC = Convert.toDouble(values[LOAD_C_COLUMN], DoubleParserConfig.LENIENT);
@@ -1072,7 +1099,7 @@ public class XlsxLoadImporter {
                                 break;
                             }
                         }
-                        AcademicCoursePlan coursePlan = service.findCoursePlan(periodId, studentClass.getId(), semester.getId(), coursePlanName);
+                        AcademicCoursePlan coursePlan = service.findCoursePlan(periodId, courseLevel.getId(), coursePlanName);
                         if (coursePlan == null) {
                             coursePlan = new AcademicCoursePlan();
                             coursePlan.setName(coursePlanName);
@@ -1080,31 +1107,38 @@ public class XlsxLoadImporter {
                             coursePlan.setCourseGroup(courseGroup);
                             coursePlan.setDiscipline(discipline);
                             coursePlan.setPeriod(period);
-                            coursePlan.setValueC(0);
-                            coursePlan.setValueTD(0);
-                            coursePlan.setValueTP(0);
-                            coursePlan.setValuePM(0);
+                            coursePlan.setValueC(valueC);
+                            coursePlan.setValueTD(valueTD);
+                            coursePlan.setValueTP(valueTP);
+                            coursePlan.setValuePM(valuePM);
                             service.add(coursePlan);
                         }
-                        AcademicCourseAssignment d = new AcademicCourseAssignment();
-                        d.setName(courseName);
-                        d.setCoursePlan(coursePlan);
-                        d.setValueC(valueC);
-                        d.setValueTD(valueTD);
-                        d.setValueTP(valueTP);
-                        d.setValuePM(valuePM);
-                        d.setCourseType(courseType);
-                        d.setGroupCount(nbrGroups);
-                        d.setShareCount(nbrShares);
-                        d.setValueEffWeek(effWeek);
-                        d.setTeacher(teacher);
-                        service.add(d);
-                        count++;
-                        for (AcademicTeacher ti : teacherIntents) {
-                            service.addIntent(ti.getId(), d.getId());
+
+                        AcademicCourseAssignment d = service.findCourseAssignment(coursePlan.getId(), studentClass==null?null:studentClass.getId(), null);
+                        if(d==null) {
+                            d = new AcademicCourseAssignment();
+                            d.setName(courseName);
+                            d.setCoursePlan(coursePlan);
+                            d.setOwnerDepartment(ownerDepartment!=null?ownerDepartment:department);
+                            d.setSubClass(studentSubClass);
+                            d.setValueC(valueC);
+                            d.setValueTD(valueTD);
+                            d.setValueTP(valueTP);
+                            d.setValuePM(valuePM);
+                            d.setCourseType(courseType);
+                            d.setGroupCount(nbrGroups);
+                            d.setShareCount(nbrShares);
+                            d.setValueEffWeek(effWeek);
+                            d.setTeacher(teacher);
+                            service.add(d);
+                            count++;
+                        }else{
+                            for (AcademicTeacher ti : teacherIntents) {
+                                service.addIntent(ti.getId(), d.getId());
+                            }
                         }
                     }
-                }
+
             } else {
                 System.out.println("Ignored Row " + Arrays.asList(values));
             }

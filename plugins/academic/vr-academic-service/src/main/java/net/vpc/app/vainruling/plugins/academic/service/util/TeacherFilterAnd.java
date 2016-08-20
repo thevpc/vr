@@ -2,6 +2,7 @@ package net.vpc.app.vainruling.plugins.academic.service.util;
 
 import net.vpc.app.vainruling.plugins.academic.service.TeacherFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class TeacherFilterAnd implements TeacherFilter {
     }
 
     @Override
-    public boolean acceptTeacher(AcademicTeacher t) {
+    public boolean acceptTeacher(AcademicTeacherPeriod t) {
         if(all.size()==0){
             return true;
         }
@@ -37,6 +38,6 @@ public class TeacherFilterAnd implements TeacherFilter {
                 return false;
             }
         }
-        return false;
+        return true;
     }
 }

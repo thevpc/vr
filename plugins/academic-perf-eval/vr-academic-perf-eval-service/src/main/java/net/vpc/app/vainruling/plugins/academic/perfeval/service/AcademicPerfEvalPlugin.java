@@ -170,17 +170,18 @@ public class AcademicPerfEvalPlugin {
             if (cc == null) {
                 return Collections.emptyList();
             }
-            List<AcademicClass> classes = aca.findAcademicDownHierarchyList(new AcademicClass[]{cc}, null);
+            Set<Integer> classes = aca.findAcademicDownHierarchyIdList(cc.getId(), null);
             if (classes.isEmpty()) {
                 return Collections.emptyList();
             }
             StringBuilder csb = new StringBuilder();
-            for (int i = 0; i < classes.size(); i++) {
-                AcademicClass aClass = classes.get(i);
+            int i=0;
+            for (Integer aClass : classes) {
                 if (i > 0) {
                     csb.append(",");
                 }
-                csb.append(aClass.getId());
+                csb.append(aClass);
+                i++;
             }
             q.byExpression("(f.course.subClassId in (" + csb + ") or f.course.coursePlan.courseLevel.academicClassId in (" + csb + ") )");
         }

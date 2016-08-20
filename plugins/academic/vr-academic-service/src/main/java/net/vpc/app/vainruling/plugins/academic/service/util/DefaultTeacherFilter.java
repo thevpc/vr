@@ -1,7 +1,12 @@
 package net.vpc.app.vainruling.plugins.academic.service.util;
 
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.plugins.academic.service.TeacherFilter;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,6 +15,7 @@ import java.util.Set;
  * Created by vpc on 8/18/16.
  */
 public class DefaultTeacherFilter implements TeacherFilter {
+    private Boolean enabled;
     private final Set<Integer> acceptedTeachers = new HashSet<>();
     private final Set<Integer> acceptedOfficialDisciplines = new HashSet<>();
     private final Set<Integer> acceptedDegrees = new HashSet<>();
@@ -24,36 +30,81 @@ public class DefaultTeacherFilter implements TeacherFilter {
     public DefaultTeacherFilter() {
     }
 
+    public boolean acceptOfficialDiscipline(AcademicOfficialDiscipline officialDiscipline) {
+        if (!acceptedOfficialDisciplines.isEmpty() && !acceptedOfficialDisciplines.contains(officialDiscipline == null ? null : officialDiscipline.getId())) {
+            return false;
+        }
+        if (!rejectedOfficialDisciplines.isEmpty() && rejectedOfficialDisciplines.contains(officialDiscipline == null ? null : officialDiscipline.getId())) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean acceptTeacherDegree(AcademicTeacherDegree degree) {
+        if (!acceptedDegrees.isEmpty() && !acceptedDegrees.contains(degree == null ? null : degree.getId())) {
+            return false;
+        }
+        if (!rejectedDegrees.isEmpty() && rejectedDegrees.contains(degree == null ? null : degree.getId())) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean acceptTeacherSituation(AcademicTeacherSituation situation) {
+        if (!acceptedSituations.isEmpty() && !acceptedSituations.contains(situation == null ? null : situation.getId())) {
+            return false;
+        }
+        if (!rejectedSituations.isEmpty() && rejectedSituations.contains(situation == null ? null : situation.getId())) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean acceptDepartment(AppDepartment department) {
+        if (!acceptedDepartment.isEmpty() && !acceptedDepartment.contains(department == null ? null : department.getId())) {
+            return false;
+        }
+        if (!rejectedDepartments.isEmpty() && rejectedDepartments.contains(department == null ? null : department.getId())) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
-    public boolean acceptTeacher(AcademicTeacher t) {
-        if(!acceptedTeachers.isEmpty() && !acceptedTeachers.contains(t.getId())){
+    public boolean acceptTeacher(AcademicTeacherPeriod t) {
+        if (enabled != null) {
+            if (enabled.booleanValue() != t.isEnabled()) {
+                return false;
+            }
+        }
+        if (!acceptedTeachers.isEmpty() && !acceptedTeachers.contains(t.getId())) {
             return false;
         }
-        if(!rejectedTeachers.isEmpty() && rejectedTeachers.contains(t.getId())){
+        if (!rejectedTeachers.isEmpty() && rejectedTeachers.contains(t.getId())) {
             return false;
         }
-        if(!acceptedOfficialDisciplines.isEmpty() && !acceptedOfficialDisciplines.contains(t.getOfficialDiscipline()==null ?null:t.getOfficialDiscipline().getId())){
+        if (!acceptOfficialDiscipline(t.getTeacher().getOfficialDiscipline())) {
             return false;
         }
-        if(!rejectedOfficialDisciplines.isEmpty() && rejectedOfficialDisciplines.contains(t.getOfficialDiscipline()==null ?null:t.getOfficialDiscipline().getId())){
+        AcademicTeacherDegree degree = t.getDegree();
+        if (degree == null) {
+            degree = t.getTeacher().getDegree();
+        }
+        if (!acceptTeacherDegree(degree)) {
             return false;
         }
-        if(!acceptedDegrees.isEmpty() && !acceptedDegrees.contains(t.getDegree()==null ?null:t.getDegree().getId())){
+        AppDepartment department = t.getDepartment();
+        if (department == null) {
+            department = t.getTeacher().getDepartment();
+        }
+        if (!acceptDepartment(department)) {
             return false;
         }
-        if(!rejectedDegrees.isEmpty() && rejectedDegrees.contains(t.getDegree()==null ?null:t.getDegree().getId())){
-            return false;
+        AcademicTeacherSituation situation = t.getSituation();
+        if (situation == null) {
+            situation = t.getTeacher().getSituation();
         }
-        if(!acceptedDepartment.isEmpty() && !acceptedDepartment.contains(t.getDepartment()==null ?null:t.getDepartment().getId())){
-            return false;
-        }
-        if(!rejectedDepartments.isEmpty() && rejectedDepartments.contains(t.getDepartment()==null ?null:t.getDepartment().getId())){
-            return false;
-        }
-        if(!acceptedSituations.isEmpty() && !acceptedSituations.contains(t.getSituation()==null ?null:t.getSituation().getId())){
-            return false;
-        }
-        if(!rejectedSituations.isEmpty() && rejectedSituations.contains(t.getSituation()==null ?null:t.getSituation().getId())){
+        if (!acceptTeacherSituation(situation)) {
             return false;
         }
         return true;
@@ -159,4 +210,12 @@ public class DefaultTeacherFilter implements TeacherFilter {
         return this;
     }
 
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public DefaultTeacherFilter setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+        return this;
+    }
 }

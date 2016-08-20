@@ -22,17 +22,17 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.core</groupId>
             <artifactId>vr-core-web</artifactId>
-            <version>1.10</version>
+            <version>1.11</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vr-academic-report-service</artifactId>
-            <version>${project.version}</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-web</artifactId>
-            <version>1.2</version>
+            <version>1.2.1</version>
         </dependency>
     </dependencies>
 </project>
