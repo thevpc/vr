@@ -1,6 +1,7 @@
 package net.vpc.app.vainruling.core.service.util;
 
 import net.vpc.common.util.Converter;
+import net.vpc.common.util.DefaultMapList;
 import net.vpc.common.util.MapList;
 import net.vpc.upa.Entity;
 
@@ -9,7 +10,7 @@ import java.util.List;
 /**
  * Created by vpc on 6/1/16.
  */
-public class EntityMapList<K, V> extends MapList<K, V> {
+public class EntityMapList<K, V> extends DefaultMapList<K, V> {
     private Entity entity;
 
     public EntityMapList(Entity e) {

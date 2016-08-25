@@ -1035,6 +1035,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                             for (NamedId namedId : namedIds) {
                                 f.getValues().add(FacesUtils.createSelectItem(String.valueOf(namedId.getId()), namedId.getName(), ""));
                             }
+                            newAutoFilters.add(f);
                         }else if(curr instanceof StringType){
                             List<String> values=UPA.getPersistenceUnit().createQuery("Select distinct "+autoFilterData.getExpr()+" from "+getEntityName())
                                     .getResultList();

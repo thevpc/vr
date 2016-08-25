@@ -51,7 +51,7 @@
         <!--<dependency>-->
             <!--<groupId>net.vpc.app.vain-ruling.plugins.blog</groupId>-->
             <!--<artifactId>vr-blog-service</artifactId>-->
-            <!--<version>1.0</version>-->
+            <!--<version>1.0-SNAPSHOT</version>-->
         <!--</dependency>-->
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.forum</groupId>

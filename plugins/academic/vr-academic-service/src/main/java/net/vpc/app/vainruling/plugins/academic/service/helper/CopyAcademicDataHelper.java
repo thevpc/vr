@@ -7,6 +7,7 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.common.util.Converter;
+import net.vpc.common.util.DefaultMapList;
 import net.vpc.common.util.MapList;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
@@ -33,24 +34,24 @@ public class CopyAcademicDataHelper {
                 return value.getTeacher().getId() + "-" + value.getSemester();
             }
         };
-        MapList<String, AcademicTeacherSemestrialLoad> fromList = new MapList<String, AcademicTeacherSemestrialLoad>(
+        MapList<String, AcademicTeacherSemestrialLoad> fromList = new DefaultMapList<String, AcademicTeacherSemestrialLoad>(
                 p.findTeacherSemestrialLoadsByPeriod(fromPeriodId),
                 converter
         );
 
-        MapList<String, AcademicTeacherSemestrialLoad> toList = new MapList<String, AcademicTeacherSemestrialLoad>(
+        MapList<String, AcademicTeacherSemestrialLoad> toList = new DefaultMapList<String, AcademicTeacherSemestrialLoad>(
                 p.findTeacherSemestrialLoadsByPeriod(toPeriod.getId()),
                 converter
         );
         for (AcademicTeacherSemestrialLoad v : fromList) {
-            if (!toList.containsValueLike(v)) {
+            if (!toList.containsMappedValue(v)) {
                 AcademicTeacherSemestrialLoad v2 = pu.copyObject(v);
                 v2.setId(0);
                 v2.setPeriod(toPeriod);
                 pu.persist(v2);
                 oldIdToNewObject.put(v.getId(), v2);
             } else {
-                oldIdToNewObject.put(v.getId(), toList.getByObject(v));
+                oldIdToNewObject.put(v.getId(), toList.getByValue(v));
             }
         }
         return oldIdToNewObject;
@@ -65,17 +66,17 @@ public class CopyAcademicDataHelper {
                 return value.getFullName();
             }
         };
-        MapList<String, AcademicCoursePlan> fromList = new MapList<>(
+        MapList<String, AcademicCoursePlan> fromList = new DefaultMapList<>(
                 p.findCoursePlans(fromPeriodId),
                 converter
         );
 
-        MapList<String, AcademicCoursePlan> toList = new MapList<>(
+        MapList<String, AcademicCoursePlan> toList = new DefaultMapList<>(
                 p.findCoursePlans(toPeriod.getId()),
                 converter
         );
         for (AcademicCoursePlan v : fromList) {
-            if (!toList.containsValueLike(v)) {
+            if (!toList.containsMappedValue(v)) {
                 AcademicCoursePlan v2 = pu.copyObject(v);
                 v2.setId(0);
                 v2.setPeriod(toPeriod);
@@ -83,7 +84,7 @@ public class CopyAcademicDataHelper {
                 pu.persist(v2);
                 oldIdToNewObject.put(v.getId(), v2);
             } else {
-                oldIdToNewObject.put(v.getId(), toList.getByObject(v));
+                oldIdToNewObject.put(v.getId(), toList.getByValue(v));
             }
         }
         return oldIdToNewObject;
@@ -98,24 +99,24 @@ public class CopyAcademicDataHelper {
                 return value.getAcademicClass().getName() + "-" + value.getName();
             }
         };
-        MapList<String, AcademicCourseGroup> fromList = new MapList<>(
+        MapList<String, AcademicCourseGroup> fromList = new DefaultMapList<>(
                 p.findCourseGroups(fromPeriodId),
                 converter
         );
 
-        MapList<String, AcademicCourseGroup> toList = new MapList<>(
+        MapList<String, AcademicCourseGroup> toList = new DefaultMapList<>(
                 p.findCourseGroups(toPeriod.getId()),
                 converter
         );
         for (AcademicCourseGroup v : fromList) {
-            if (!toList.containsValueLike(v)) {
+            if (!toList.containsMappedValue(v)) {
                 AcademicCourseGroup v2 = pu.copyObject(v);
                 v2.setId(0);
                 v2.setPeriod(toPeriod);
                 pu.persist(v2);
                 oldIdToNewObject.put(v.getId(), v2);
             } else {
-                oldIdToNewObject.put(v.getId(), toList.getByObject(v));
+                oldIdToNewObject.put(v.getId(), toList.getByValue(v));
             }
         }
         return oldIdToNewObject;
@@ -131,12 +132,12 @@ public class CopyAcademicDataHelper {
             }
         };
         List<AcademicCourseAssignment> courseAssignments = p.findCourseAssignments(fromPeriodId);
-        MapList<String, AcademicCourseAssignment> fromList = new MapList<>(
+        MapList<String, AcademicCourseAssignment> fromList = new DefaultMapList<>(
                 courseAssignments,
                 converter
         );
 
-        MapList<String, AcademicCourseAssignment> toList = new MapList<>(
+        MapList<String, AcademicCourseAssignment> toList = new DefaultMapList<>(
                 p.findCourseAssignments(toPeriod.getId()),
                 converter
         );
@@ -160,7 +161,7 @@ public class CopyAcademicDataHelper {
             throw new IllegalArgumentException("Some Course Assignments have similar names. Check log for details");
         }
         for (AcademicCourseAssignment v : fromList) {
-            if (!toList.containsValueLike(v)) {
+            if (!toList.containsMappedValue(v)) {
                 AcademicCourseAssignment v2 = pu.copyObject(v);
                 v2.setId(0);
                 if (v2.getCoursePlan() != null) {
@@ -169,7 +170,7 @@ public class CopyAcademicDataHelper {
                 pu.persist(v2);
                 oldIdToNewObject.put(v.getId(), v2);
             } else {
-                oldIdToNewObject.put(v.getId(), toList.getByObject(v));
+                oldIdToNewObject.put(v.getId(), toList.getByValue(v));
             }
         }
         return oldIdToNewObject;
@@ -184,17 +185,17 @@ public class CopyAcademicDataHelper {
                 return value.getTeacher().getId() + ":" + value.getAssignment().getFullName();
             }
         };
-        MapList<String, AcademicCourseIntent> fromList = new MapList<>(
+        MapList<String, AcademicCourseIntent> fromList = new DefaultMapList<>(
                 p.findCourseIntents(fromPeriodId),
                 converter
         );
 
-        MapList<String, AcademicCourseIntent> toList = new MapList<>(
+        MapList<String, AcademicCourseIntent> toList = new DefaultMapList<>(
                 p.findCourseIntents(toPeriod.getId()),
                 converter
         );
         for (AcademicCourseIntent v : fromList) {
-            if (!toList.containsValueLike(v)) {
+            if (!toList.containsMappedValue(v)) {
                 AcademicCourseIntent v2 = pu.copyObject(v);
                 v2.setId(0);
                 if (v2.getAssignment() != null) {
@@ -203,7 +204,7 @@ public class CopyAcademicDataHelper {
                 pu.persist(v2);
                 oldIdToNewObject.put(v.getId(), v2);
             } else {
-                oldIdToNewObject.put(v.getId(), toList.getByObject(v));
+                oldIdToNewObject.put(v.getId(), toList.getByValue(v));
             }
         }
         return oldIdToNewObject;

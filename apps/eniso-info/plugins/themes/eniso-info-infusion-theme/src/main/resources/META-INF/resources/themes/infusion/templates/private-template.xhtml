@@ -228,10 +228,10 @@ and open the template in the editor.
                                         </p:commandLink>
                                     </li>
                                 </ui:fragment>
-                                <ui:fragment rendered="#{vr.shutdown and vr.userSession.admin}">
+                                <ui:fragment rendered="#{vr.userSession.admin}">
                                     <li>
                                         <p:commandLink ajax="false" action="#{corePlugin.invalidateCache}"
-                                                       value="Annuler arrêt">
+                                                       value="Invalider cache">
                                             <i class="fa fa-sign-out fa-fw"></i>
                                         </p:commandLink>
                                     </li>

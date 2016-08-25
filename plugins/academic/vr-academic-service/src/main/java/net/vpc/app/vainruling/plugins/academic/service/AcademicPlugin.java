@@ -26,9 +26,7 @@ import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignm
 import net.vpc.common.strings.MapStringConverter;
 import net.vpc.common.strings.StringComparator;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.util.Chronometer;
-import net.vpc.common.util.Converter;
-import net.vpc.common.util.MapList;
+import net.vpc.common.util.*;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.*;
 import net.vpc.upa.types.DateTime;
@@ -140,7 +138,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //                deviationConfig,
 //                cache);
         MapList<Integer, TeacherPeriodStat> all = evalTeacherStatList(periodId, null, filter, includeIntents, deviationConfig, cache);
-        TeacherPeriodStat teacherPeriodStat = all.get(teacherId);
+        TeacherPeriodStat teacherPeriodStat = all.getByKey(teacherId);
         if (teacherPeriodStat == null) {
             return teacherPeriodStat;
         }
@@ -863,10 +861,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
         TeacherIdByTeacherPeriodComparator teacherIdByTeacherPeriodComparator = new TeacherIdByTeacherPeriodComparator(periodId);
 
-        List<AcademicTeacher> teachersList = findTeachers(periodId, teacherFilter);
+        List<AcademicTeacher> teachersList = new ArrayList<>(findTeachers(periodId, teacherFilter));
         Collections.sort(teachersList, teacherIdByTeacherPeriodComparator);
 
-        MapList<Integer, TeacherPeriodStat> stats = new MapList<Integer, TeacherPeriodStat>(teacherPeriodStatMapListConverter);
+        MapList<Integer, TeacherPeriodStat> stats = new DefaultMapList<Integer, TeacherPeriodStat>(teacherPeriodStatMapListConverter);
         for (AcademicTeacher teacher : teachersList) {
             TeacherPeriodStat st = evalTeacherStat0(periodId, teacher.getId(), teacher, null, null, filter, includeIntents, deviationConfig, cache);
             if (st != null) {
@@ -1693,11 +1691,11 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                                 .setHint(QueryHints.NAVIGATION_DEPTH, 5)
                                 .getResultList();
 
-                        return new MapList<Integer, AcademicCourseAssignment>(
+                        return Utils.unmodifiableMapList(new DefaultMapList<Integer, AcademicCourseAssignment>(
 
                                 assignments,
                                 AcademicCourseAssignmentIdConverter
-                        );
+                        ));
                     }
                 });
     }
