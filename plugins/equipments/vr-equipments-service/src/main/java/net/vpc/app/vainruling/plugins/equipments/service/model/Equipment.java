@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.plugins.equipments.service.model;
 
 import net.vpc.app.vainruling.core.service.model.AppArea;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.config.*;
@@ -17,7 +18,15 @@ import java.sql.Timestamp;
  */
 @Entity(listOrder = "name")
 @Path("Equipment")
-@Property(name = UIConstants.ENTITY_ID_HIERARCHY, value = "brandLine")
+@Properties(
+        {
+                @Property(name = UIConstants.ENTITY_ID_HIERARCHY, value = "brandLine"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),
+                @Property(name = "ui.auto-filter.acquisition", value = "{expr='acquisition',order=2}"),
+                @Property(name = "ui.auto-filter.brandLine", value = "{expr='brandLine',order=2}"),
+                @Property(name = "ui.auto-filter.location", value = "{expr='location',order=2}"),
+                @Property(name = "ui.auto-filter.type", value = "{expr='type',order=2}"),
+        })
 public class Equipment {
 
     @Id
@@ -39,6 +48,7 @@ public class Equipment {
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Category"))
     private EquipmentType type;
+    private AppDepartment department;
 
     @Summary
     @ToString
@@ -218,6 +228,14 @@ public class Equipment {
 //    public void setBrand(EquipmentBrand brand) {
 //        this.brand = brand;
 //    }
+
+    public AppDepartment getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(AppDepartment department) {
+        this.department = department;
+    }
 
     @Override
     public String toString() {

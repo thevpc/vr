@@ -19,9 +19,13 @@ import java.sql.Timestamp;
 @Entity(listOrder = "deleted, archived, position desc, sendTime desc")
 @Path("Social")
 @Properties(
-        //i is a ObjRow!
-        @Property(name = UIConstants.Grid.ROW_STYLE,
-                value = "(i.object.deleted or i.object.archived or i.object.disposition eq null) ?'vr-row-not-relevant':''")
+        {
+                //i is a ObjRow!
+                @Property(name = UIConstants.Grid.ROW_STYLE,
+                        value = "(i.object.deleted or i.object.archived or i.object.disposition eq null) ?'vr-row-not-relevant':''"),
+                @Property(name = "ui.auto-filter.disposition", value = "{expr='disposition',order=1}"),
+                @Property(name = "ui.auto-filter.sender", value = "{expr='sender',order=2}")
+        }
 )
 public class ArticlesItem {
 

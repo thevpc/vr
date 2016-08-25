@@ -16,6 +16,8 @@ import net.vpc.upa.Field;
 import net.vpc.upa.Relationship;
 import net.vpc.upa.RelationshipRole;
 
+import java.util.HashMap;
+
 /**
  * @author taha.bensalah@gmail.com
  */
@@ -70,16 +72,11 @@ public class EntityDetailPropertyView extends PropertyView {
         ObjCtrl ctrl = VrApp.getBean(ObjCtrl.class);
         String idExpr = "o.`" + f.getName() + "`.`" + relation.getTargetEntity().getPrimaryFields().get(0).getName() + "`";
         Object idVal = getRelationship().getTargetEntity().getBuilder().recordToId(ctrl.getModel().getCurrentRecord());
-        if (idVal == null) {
-            idVal = "null";
-        } else if (idVal instanceof Number) {
-            idVal = idVal.toString();
-        } else {
-            idVal = "'" + idVal.toString().replace("'", "''") + "'";
-        }
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("idval",idVal);
 
         ObjManagerService objService = VrApp.getBean(ObjManagerService.class);
-        count = objService.findCountByFilter(relation.getSourceEntity().getName(), idExpr + "=" + idVal, null);
+        count = objService.findCountByFilter(relation.getSourceEntity().getName(), idExpr + "=:idval", null, parameters);
     }
 
     public long getCount() {

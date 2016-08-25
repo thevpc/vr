@@ -14,6 +14,16 @@ import java.sql.Timestamp;
  */
 @Entity(listOrder = "date desc")
 @Path("Todo")
+@Properties(
+        {
+                @Property(name = "ui.auto-filter.todo", value = "{expr='todo',order=1}"),
+                @Property(name = "ui.auto-filter.responsible", value = "{expr='todo.responsible',order=2}"),
+                @Property(name = "ui.auto-filter.initiator", value = "{expr='todo.initiator',order=3}"),
+                @Property(name = "ui.auto-filter.list", value = "{expr='todo.list',order=4}"),
+                @Property(name = "ui.auto-filter.status", value = "{expr='status',order=5}"),
+                @Property(name = "ui.auto-filter.priority", value = "{expr='todo.priority',order=6}")
+        }
+)
 public class TodoProgress {
 
     @Id

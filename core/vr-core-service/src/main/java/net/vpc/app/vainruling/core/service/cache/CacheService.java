@@ -18,6 +18,11 @@ public class CacheService {
     private WeakHashMap<String, EntityCache> entityCache = new WeakHashMap<>();
     private Map<String, Object> properties = new HashMap<>();
 
+    public void invalidate() {
+        properties.clear();
+        entityCache.clear();
+    }
+
     public void invalidate(Entity entity, Object value) {
         properties.clear();
         EntityCache c = entityCache.get(entity.getName());

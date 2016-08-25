@@ -40,6 +40,7 @@ import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -62,6 +63,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     private static final Logger log = Logger.getLogger(ObjCtrl.class.getName());
     private final List<ColumnView> columns = new ArrayList<>();
     private final List<PropertyView> properties = new ArrayList<>();
+    private final List<AutoFilter> autoFilters = new ArrayList<>();
     private final Map<String, Boolean> enabledButtons = new HashMap<>();
     @Autowired
     private ObjManagerService objService;
@@ -376,8 +378,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 Object c = getModel().getCurrentRecord();
                 objService.remove(getEntityName(), objService.resolveId(getEntityName(), c));
                 count++;
-                reloadPage(true);
+                loadList();
                 updateMode(EditCtrlMode.LIST);
+                getModel().setCurrent(null);
+//                reloadPage(true);
+//                updateMode(EditCtrlMode.LIST);
             }
             if (count == 0) {
                 FacesUtils.addInfoMessage(null, "Aucun Enregistrement supprimé");
@@ -422,6 +427,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     @OnPageLoad
     public void onPageLoad(String cmd) {
+        getAutoFilters().clear();
+        getModel().setSearch(null);
         reloadPage(cmd, false);
     }
 
@@ -479,6 +486,12 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 EntityBuilder b = entity.getBuilder();
                 Object eid = resolveEntityId(cfg.id);
                 Record curr = objService.findRecord(getEntityName(), eid);
+                if(curr==null){
+                    //should not happen though!
+                    updateMode(EditCtrlMode.LIST);
+                    getModel().setCurrent(null);
+                    return;
+                }
                 ObjRow r = new ObjRow(curr, b.recordToObject(curr));
                 r.setRead(sm.isAllowedLoad(entity, eid, curr));
                 r.setWrite(sm.isAllowedUpdate(entity, eid, curr));
@@ -503,7 +516,25 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public void loadList() {
-        List<Record> found = objService.findRecordsByFilter(getEntityName(), getModel().getConfig().listFilter, getModel().getSearch());
+        String _listFilter=getModel().getConfig().listFilter;
+        if(!StringUtils.isEmpty(_listFilter)){
+            _listFilter="("+_listFilter+")";
+        }else{
+            _listFilter="";
+        }
+        HashMap<String, Object> parameters = new HashMap<>();
+        int autoFilterIndex=1;
+        for (AutoFilter o : getAutoFilters()){
+            String filterExpression = o.createFilterExpression(parameters,"af"+autoFilterIndex);
+            if(!StringUtils.isEmpty(filterExpression)){
+                if(!StringUtils.isEmpty(_listFilter)) {
+                    _listFilter+=" and ";
+                }
+                _listFilter+="("+filterExpression+")";
+            }
+            autoFilterIndex++;
+        }
+        List<Record> found = objService.findRecordsByFilter(getEntityName(), _listFilter, getModel().getSearch(), parameters);
         List<ObjRow> filteredObjects = new ArrayList<>();
         Entity entity = getEntity();
         UPASecurityManager sm = entity.getPersistenceUnit().getSecurityManager();
@@ -777,8 +808,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             } catch (Exception ex) {
                 //ignore
             }
+            Entity entity = getEntity();
             try {
-                VrApp.getBean(VrMenuManager.class).getModel().getTitleCrumb().setTitle(getPageTitleString(getEntity(), getModel().getMode()));
+                VrApp.getBean(VrMenuManager.class).getModel().getTitleCrumb().setTitle(getPageTitleString(entity, getModel().getMode()));
                 if (currentInstance != null) {
                     UIComponent table = currentInstance.getViewRoot().findComponent(":listForm:listTable");
                     if (table != null) {
@@ -935,11 +967,108 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 }
 
             }
+
+            List<AutoFilterData> autoFilterDatas=new ArrayList<>();
+            List<AutoFilter> newAutoFilters=new ArrayList<>();
+            //autoFilters.clear();
+            for (Map.Entry<String, Object> entry : entity.getProperties().toMap().entrySet()) {
+                if(entry.getKey().startsWith("ui.auto-filter.")){
+                    String name=entry.getKey().substring("ui.auto-filter.".length());
+                    AutoFilterData d = VrHelper.parseJSONObject((String) entry.getValue(), AutoFilterData.class);
+                    d.setName(name);
+                    d.setBaseEntityName(entity.getName());
+                    autoFilterDatas.add(d);
+                }
+            }
+            Collections.sort(autoFilterDatas);
+            for (AutoFilterData autoFilterData : autoFilterDatas) {
+                String type = autoFilterData.getFilterType();
+                if(StringUtils.isEmpty(type)||type.equals("single-selection")){
+                    String expr=autoFilterData.getExpr();
+                    if(!expr.matches("[a-zA-Z0-9.]+")){
+                        throw new IllegalArgumentException("Invalid Auto Filter Expr "+expr);
+                    }
+                    I18n i18n = VrApp.getBean(I18n.class);
+                    DataType curr= entity.getDataType();
+                    String evalLabel=i18n.get(entity);
+                    for (String s : expr.split("\\.")) {
+                        if(curr instanceof KeyType) {
+                            Field field = ((KeyType) curr).getEntity().getField(s);
+                            evalLabel = i18n.get(field);
+                            if (field.getDataType() instanceof ManyToOneType) {
+                                curr = (KeyType) ((ManyToOneType) field.getDataType()).getTargetEntity().getDataType();
+                            } else if (field.getDataType() instanceof EnumType) {
+                                curr = field.getDataType();
+                            } else  {
+                                curr = field.getDataType();
+                            }
+                        }else {
+                            throw new IllegalArgumentException("Unsupported Filter Type "+expr);
+                        }
+                    }
+                    if(StringUtils.isEmpty(autoFilterData.getLabel())){
+                        String label = i18n.getOrNull("UI.Entity." + entity.getName() + ".ui.auto-filter.class");
+                        autoFilterData.setLabel(evalLabel);
+//                        if(StringUtils.isEmpty(label)){
+//                            if(curr instanceof KeyType){
+//                                autoFilterData.setLabel(i18n.get(((KeyType) curr).getEntity()));
+//                            }else {
+//                                autoFilterData.setLabel(autoFilterData.getName());
+//                            }
+//                        }
+                    }
+                    PropertyViewManager manager = VrApp.getBean(PropertyViewManager.class);
+                    AutoFilter autoFilter0=null;
+                    for (AutoFilter autoFilter : autoFilters) {
+                        if(autoFilter.getData().equals(autoFilterData)){
+                            autoFilter0=autoFilter;
+                            break;
+                        }
+                    }
+                    if(autoFilter0!=null){
+                        newAutoFilters.add(autoFilter0);
+                    }else{
+                        SingleSelectionAutoFilter f=new SingleSelectionAutoFilter(curr,autoFilterData);
+                        f.getValues().add(FacesUtils.createSelectItem(String.valueOf(""), "-------", ""));
+                        if((curr instanceof KeyType) || (curr instanceof EnumType)) {
+                            List<NamedId> namedIds = manager.getPropertyViewValuesProvider(null, curr).resolveValues(null, null, curr, viewContext);
+                            for (NamedId namedId : namedIds) {
+                                f.getValues().add(FacesUtils.createSelectItem(String.valueOf(namedId.getId()), namedId.getName(), ""));
+                            }
+                        }else if(curr instanceof StringType){
+                            List<String> values=UPA.getPersistenceUnit().createQuery("Select distinct "+autoFilterData.getExpr()+" from "+getEntityName())
+                                    .getResultList();
+                            Collections.sort(values);
+                            for (String value : values) {
+                                if(value!=null) {
+                                    f.getValues().add(FacesUtils.createSelectItem(value, value, ""));
+                                }
+                            }
+                            newAutoFilters.add(f);
+                        }else{
+                            throw new IllegalArgumentException("Unsupported");
+                        }
+                    }
+                }else{
+                    throw new IllegalArgumentException("Unsupported Auto Filter Type "+type);
+                }
+            }
+            autoFilters.clear();
+            autoFilters.addAll(newAutoFilters);
+
             currentModelToView();
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
         }
+    }
+
+    public void onAutoFilterChange() {
+        onRefresh();
+    }
+
+    public List<AutoFilter> getAutoFilters() {
+        return autoFilters;
     }
 
     public boolean isEnabledSelectNext() {

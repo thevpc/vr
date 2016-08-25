@@ -24,7 +24,15 @@ import java.sql.Timestamp;
  */
 @Entity(listOrder = "name")
 @Path("Education/Internship")
-public class AcademicInternship {
+@Properties(
+        {
+                @Property(name = "ui.auto-filter.period", value = "{expr='board.period',order=1}"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='board.department',order=2}"),
+                @Property(name = "ui.auto-filter.program", value = "{expr='board.program',order=3}"),
+                @Property(name = "ui.auto-filter.academicClass", value = "{expr='board.academicClass',order=4}"),
+                @Property(name = "ui.auto-filter.internshipType", value = "{expr='board.internshipType',order=5}"),
+        }
+)public class AcademicInternship {
 
     @Id
     @Sequence

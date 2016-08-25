@@ -124,7 +124,16 @@ and open the template in the editor.
                                     </p:selectCheckboxMenu>
                                 </div>
                                 <div class="vr-form-sub-row">
-                                    <p:outputLabel value="" styleClass="vr-form-field vr-form-fixed-width-medium"/>
+                                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                          value="#{teacherCourseLoadCtrl.courseFilter.model.selectedDepartments}"
+                                                          label="Departement"
+                                                          filter="true" filterMatchMode="startsWith"
+                                                          panelStyle="width:250px">
+                                        <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                update=":listForm"/>
+                                        <f:selectItems
+                                                value="#{teacherCourseLoadCtrl.courseFilter.model.departmentItems}"/>
+                                    </p:selectCheckboxMenu>
                                     <p:selectCheckboxMenu styleClass="vr-form-field"
                                                           value="#{teacherCourseLoadCtrl.courseFilter.model.selectedProgramTypes}"
                                                           label="Type Formation"
@@ -132,8 +141,7 @@ and open the template in the editor.
                                                           panelStyle="width:250px">
                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
                                                 update=":listForm"/>
-                                        <f:selectItems
-                                                value="#{teacherCourseLoadCtrl.courseFilter.model.programTypeItems}"/>
+                                        <f:selectItems value="#{teacherCourseLoadCtrl.courseFilter.model.programTypeItems}"/>
                                     </p:selectCheckboxMenu>
                                     <p:selectCheckboxMenu styleClass="vr-form-field"
                                                           value="#{teacherCourseLoadCtrl.courseFilter.model.selectedLabels}"
@@ -550,9 +558,9 @@ and open the template in the editor.
                                      paginatorAlwaysVisible="false"
                                      paginator="true"
                                      paginatorPosition="bottom"
-                                     rows="200"
+                                     rows="1000"
                                      paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                     rowsPerPageTemplate="20,50,100,200,1000"
+                                     rowsPerPageTemplate="1000,2000,5000,1000"
                                      widgetVar="othersTable"
                                      emptyMessage="Aucune charge"
                         >

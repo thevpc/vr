@@ -10,6 +10,8 @@ and open the template in the editor.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
         >
+<!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+<!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
 
 <h:head>
 
@@ -65,7 +67,6 @@ and open the template in the editor.
 </h:head>
 
 <h:body>
-    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
 
     <div id="wrapper">
 
@@ -115,8 +116,7 @@ and open the template in the editor.
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                                 <i class="fa fa-envelope fa-fw" style="width: 50px;">
                                     <ui:fragment rendered="#{mailboxPreviewCtrl.model.unreadCount gt 0}">
-                                        <div style="font-size: x-small;display: inline;color: darkorange;">
-                                            #{mailboxPreviewCtrl.model.unreadCount}
+                                        <div style="font-size: x-small;display: inline;color: darkorange;">#{mailboxPreviewCtrl.model.unreadCount}
                                         </div>
                                     </ui:fragment>
                                 </i> <i class="fa fa-caret-down"></i>
@@ -223,6 +223,14 @@ and open the template in the editor.
                                 <ui:fragment rendered="#{vr.shutdown and vr.userSession.admin}">
                                     <li>
                                         <p:commandLink ajax="false" action="#{vr.cancelShutdown}"
+                                                       value="Annuler arrêt">
+                                            <i class="fa fa-sign-out fa-fw"></i>
+                                        </p:commandLink>
+                                    </li>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{vr.shutdown and vr.userSession.admin}">
+                                    <li>
+                                        <p:commandLink ajax="false" action="#{corePlugin.invalidateCache}"
                                                        value="Annuler arrêt">
                                             <i class="fa fa-sign-out fa-fw"></i>
                                         </p:commandLink>

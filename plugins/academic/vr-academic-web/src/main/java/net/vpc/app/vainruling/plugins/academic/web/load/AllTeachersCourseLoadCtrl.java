@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.plugins.academic.web.load;
 
-import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
@@ -126,7 +125,7 @@ public class AllTeachersCourseLoadCtrl {
             List<AcademicSemester> semesters = a.findSemesters();
             getModel().setSemester1(a.evalTeacherSemesterStatList(periodId, semesters.get(0).getId(), customTeacherFilter, filter, includeIntents, deviationConfig, cache));
             getModel().setSemester2(a.evalTeacherSemesterStatList(periodId, semesters.get(1).getId(), customTeacherFilter, filter, includeIntents, deviationConfig, cache));
-            getModel().setYear(a.evalTeacherStatList(periodId, null, customTeacherFilter, filter, includeIntents, deviationConfig, cache));
+            getModel().setYear(a.evalTeacherStatList(periodId, customTeacherFilter, filter, includeIntents, deviationConfig, cache));
         }
         getModel().setTables(Arrays.asList(
                 new TeacherBaseStatTable("Charge Globale", (List) getModel().getYear()),

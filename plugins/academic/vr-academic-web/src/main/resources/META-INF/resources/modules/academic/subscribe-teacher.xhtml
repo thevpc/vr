@@ -11,7 +11,7 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 
-        >
+>
 
 <h:head>
 </h:head>
@@ -19,6 +19,8 @@ and open the template in the editor.
 <h:body>
 
 
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <!--@elvariable id="subscribeTeacherCtrl" type="net.vpc.app.vainruling.plugins.academic.web.SubscribeTeacherCtrl"-->
     <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="listForm">
@@ -26,7 +28,7 @@ and open the template in the editor.
 
                 <div class="row">
                     <div class="table-responsive">
-                        <p:panelGrid columns="2" styleClass="noBorderGrid" style="margin-top: 20px">
+                        <p:panelGrid columns="2" styleClass="vr-no-border-grid" style="margin-top: 20px">
 
                             <p:outputLabel value="CIN"/>
                             <p:inputText value="#{subscribeTeacherCtrl.model.teacher.nin}"/>
@@ -46,13 +48,13 @@ and open the template in the editor.
                             <p:outputLabel value="Civlité"/>
                             <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.civilityName}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeTeacherCtrl.model.civilities}"/>
+                                <f:selectItems value="#{subscribeTeacherCtrl.model.civilityItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Genre"/>
                             <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.genderName}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeTeacherCtrl.model.genders}"/>
+                                <f:selectItems value="#{subscribeTeacherCtrl.model.genderItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="GSM (98 222 333)"/>
@@ -68,13 +70,13 @@ and open the template in the editor.
                             <p:outputLabel value="Grade"/>
                             <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.degreeName}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeTeacherCtrl.model.degrees}"/>
+                                <f:selectItems value="#{subscribeTeacherCtrl.model.degreeItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Situation"/>
                             <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.situationName}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeTeacherCtrl.model.situations}"/>
+                                <f:selectItems value="#{subscribeTeacherCtrl.model.situationItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Charge S1 / S2"/>
@@ -93,7 +95,7 @@ and open the template in the editor.
                             <p:outputLabel value="Département"/>
                             <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.departmentName}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeTeacherCtrl.model.departments}"/>
+                                <f:selectItems value="#{subscribeTeacherCtrl.model.departmentItems}"/>
                             </p:selectOneMenu>
 
                         </p:panelGrid>

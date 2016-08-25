@@ -267,7 +267,11 @@ public class VrMenuManager {
             }
         }
         s.setLastVisitedPage(lvp.toString());
-        TraceService.get().trace("visit.page","page visited "+lvp.toString(),command+" ; "+arguments,"system", Level.FINE);
+        String data = command ;
+        if(!StringUtils.isEmpty(arguments)){
+            data+= " ; " + arguments;
+        }
+        TraceService.get().trace("visit.page","page visited "+lvp.toString(), data,"system", Level.FINE);
         if (StringUtils.isEmpty(url)) {
             return null;
         }

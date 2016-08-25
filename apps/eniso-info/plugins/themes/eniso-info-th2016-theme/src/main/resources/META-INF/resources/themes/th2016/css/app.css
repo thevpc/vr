@@ -605,8 +605,8 @@ button.vr-toolbox-button > span.ui-button-text {
     margin-right: 5px;
 }
 
-.noBorderGrid.ui-panelgrid > * > tr,
-.noBorderGrid.ui-panelgrid .ui-panelgrid-cell {
+.vr-no-border-grid.ui-panelgrid > * > tr,
+.vr-no-border-grid.ui-panelgrid .ui-panelgrid-cell {
     border: none;
     border-width: 0px;
     border-style: none;
@@ -699,25 +699,25 @@ table.jqplot-table-legend.vr-no-legend {
     background-color: #f5f5f5 !important;
 }
 
-.ui-datagrid-content.ui-widget-content.noBorderGrid {
+.ui-datagrid-content.ui-widget-content.vr-no-border-grid {
     border: none;
     border-width: 0px;
     border-style: none;
 }
 
-.ui-panel.ui-widget.ui-widget-content.noBorderGrid {
+.ui-panel.ui-widget.ui-widget-content.vr-no-border-grid {
     border: none;
     border-width: 0px;
     border-style: none;
 }
 
-div.ui-datagrid.ui-widget.noBorderGrid > div {
+div.ui-datagrid.ui-widget.vr-no-border-grid > div {
     border: none;
     border-width: 0px;
     border-style: none;
 }
 
-div.ui-panel.noBorderGrid > div.ui-panel-footer.ui-widget-content {
+div.ui-panel.vr-no-border-grid > div.ui-panel-footer.ui-widget-content {
     text-align: right;
     color: lightslategray;
     padding-top: 0;
@@ -909,6 +909,10 @@ span.ui-column-title {
 
 .vr-form-fixed-width-medium {
     width: 100px;
+}
+
+.vr-form-fixed-width-short {
+    width: 60px;
 }
 
 .vr-form-indented-child {

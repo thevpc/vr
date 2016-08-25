@@ -63,13 +63,13 @@ and open the template in the editor.
                                         rowsPerPageTemplate="10,20,50,1000"
                                         paginatorAlwaysVisible="false"
                                         paginatorPosition="bottom"
-                                        styleClass="noBorderGrid"
+                                        styleClass="vr-no-border-grid"
                                         emptyMessage=""
                                     >
                                 <p:panel header="#{a.content.subject}"
                                          footer="écrit par #{(a.content.sender eq null)?'//inconnu//':a.content.sender.contact.fullName} #{(a.content.sendTime eq null)?'' : (vr.str(' - (le ',vr.date(a.content.sendTime,'dd MMM yyyy') ,')'))}"
                                          style="margin-bottom:10px"
-                                         styleClass="noBorderGrid"
+                                         styleClass="vr-no-border-grid"
                                         >
                                     <h:panelGrid columns="1" cellpadding="10">
                                         <h:outputText value="#{a.content.content}" escape="false"/>
@@ -105,13 +105,13 @@ and open the template in the editor.
                                         rowsPerPageTemplate="10,20,50,1000"
                                         paginatorAlwaysVisible="false"
                                         paginatorPosition="bottom"
-                                        styleClass="noBorderGrid"
+                                        styleClass="vr-no-border-grid"
                                         emptyMessage=""
                                     >
                                 <p:panel header="#{a.content.subject}"
                                          footer="écrit par #{(a.content.sender eq null)?'//inconnu//':a.content.sender.contact.fullName} #{(a.content.sendTime eq null)?'' : (vr.str(' - (le ',vr.date(a.content.sendTime,'dd MMM yyyy') ,')'))}"
                                          style="margin-bottom:10px"
-                                         styleClass="noBorderGrid"
+                                         styleClass="vr-no-border-grid"
                                         >
                                     <h:panelGrid columns="1" cellpadding="10">
                                         <h:outputText value="#{a.content.content}" escape="false"/>

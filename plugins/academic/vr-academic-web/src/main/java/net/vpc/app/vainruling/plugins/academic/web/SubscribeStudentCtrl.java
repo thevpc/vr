@@ -82,56 +82,56 @@ public class SubscribeStudentCtrl {
         for (AppPeriod x : core.findValidPeriods()) {
             list.add(new SelectItem(x.getName(), x.getName()));
         }
-        getModel().setPeriods(list);
+        getModel().setPeriodItems(list);
 
         list = new ArrayList<>();
         for (AppCivility x : core.findCivilities()) {
             list.add(new SelectItem(x.getName(), x.getName()));
         }
-        getModel().setCivilities(list);
+        getModel().setCivilityItems(list);
 
         list = new ArrayList<>();
         for (AppGender x : core.findGenders()) {
             list.add(new SelectItem(x.getCode(), x.getName()));
         }
-        getModel().setGenders(list);
+        getModel().setGenderItems(list);
 
         list = new ArrayList<>();
         for (AcademicBac x : p.findAcademicBacs()) {
             list.add(new SelectItem(x.getName(), x.getName()));
         }
-        getModel().setBacs(list);
+        getModel().setBacItems(list);
 
         list = new ArrayList<>();
         for (AcademicPreClass x : p.findAcademicPreClasses()) {
             list.add(new SelectItem(x.getName(), x.getName()));
         }
-        getModel().setPreps(list);
+        getModel().setPrepItems(list);
 
         list = new ArrayList<>();
         for (AppDepartment x : core.findDepartments()) {
             list.add(new SelectItem(x.getCode(), x.getName()));
         }
-        getModel().setDepartments(list);
+        getModel().setDepartmentItems(list);
 
         list = new ArrayList<>();
         for (AcademicClass x : p.findAcademicClasses()) {
             list.add(new SelectItem(x.getName(), x.getName()));
         }
-        getModel().setClasses(list);
+        getModel().setClassItems(list);
 
     }
 
     public class Model {
 
         AcademicStudentImport student = new AcademicStudentImport();
-        List<SelectItem> genders = new ArrayList<>();
-        List<SelectItem> civilities = new ArrayList<>();
-        List<SelectItem> periods = new ArrayList<>();
-        List<SelectItem> departments = new ArrayList<>();
-        List<SelectItem> bacs = new ArrayList<>();
-        List<SelectItem> preps = new ArrayList<>();
-        List<SelectItem> classes = new ArrayList<>();
+        List<SelectItem> genderItems = new ArrayList<>();
+        List<SelectItem> civilityItems = new ArrayList<>();
+        List<SelectItem> periodItems = new ArrayList<>();
+        List<SelectItem> departmentItems = new ArrayList<>();
+        List<SelectItem> bacItems = new ArrayList<>();
+        List<SelectItem> prepItems = new ArrayList<>();
+        List<SelectItem> classItems = new ArrayList<>();
 
         public AcademicStudentImport getStudent() {
             return student;
@@ -141,60 +141,60 @@ public class SubscribeStudentCtrl {
             this.student = student;
         }
 
-        public List<SelectItem> getGenders() {
-            return genders;
+        public List<SelectItem> getGenderItems() {
+            return genderItems;
         }
 
-        public void setGenders(List<SelectItem> genders) {
-            this.genders = genders;
+        public void setGenderItems(List<SelectItem> genderItems) {
+            this.genderItems = genderItems;
         }
 
-        public List<SelectItem> getCivilities() {
-            return civilities;
+        public List<SelectItem> getCivilityItems() {
+            return civilityItems;
         }
 
-        public void setCivilities(List<SelectItem> civilities) {
-            this.civilities = civilities;
+        public void setCivilityItems(List<SelectItem> civilityItems) {
+            this.civilityItems = civilityItems;
         }
 
-        public List<SelectItem> getPeriods() {
-            return periods;
+        public List<SelectItem> getPeriodItems() {
+            return periodItems;
         }
 
-        public void setPeriods(List<SelectItem> periods) {
-            this.periods = periods;
+        public void setPeriodItems(List<SelectItem> periodItems) {
+            this.periodItems = periodItems;
         }
 
-        public List<SelectItem> getDepartments() {
-            return departments;
+        public List<SelectItem> getDepartmentItems() {
+            return departmentItems;
         }
 
-        public void setDepartments(List<SelectItem> departments) {
-            this.departments = departments;
+        public void setDepartmentItems(List<SelectItem> departmentItems) {
+            this.departmentItems = departmentItems;
         }
 
-        public List<SelectItem> getBacs() {
-            return bacs;
+        public List<SelectItem> getBacItems() {
+            return bacItems;
         }
 
-        public void setBacs(List<SelectItem> bacs) {
-            this.bacs = bacs;
+        public void setBacItems(List<SelectItem> bacItems) {
+            this.bacItems = bacItems;
         }
 
-        public List<SelectItem> getPreps() {
-            return preps;
+        public List<SelectItem> getPrepItems() {
+            return prepItems;
         }
 
-        public void setPreps(List<SelectItem> preps) {
-            this.preps = preps;
+        public void setPrepItems(List<SelectItem> prepItems) {
+            this.prepItems = prepItems;
         }
 
-        public List<SelectItem> getClasses() {
-            return classes;
+        public List<SelectItem> getClassItems() {
+            return classItems;
         }
 
-        public void setClasses(List<SelectItem> classes) {
-            this.classes = classes;
+        public void setClassItems(List<SelectItem> classItems) {
+            this.classItems = classItems;
         }
 
     }

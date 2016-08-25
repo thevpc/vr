@@ -11,7 +11,7 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:f="http://java.sun.com/jsf/core"
-        >
+>
 
 <h:head>
     <script>
@@ -169,14 +169,14 @@ and open the template in the editor.
                                          rendered="#{objCtrl.enabledSelectPrevious}"
                                          ajax="true" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
                                          update="buttons :listForm :itemForm :pageTitleForm"
-                                />
+                        />
 
                         <p:commandButton title="Suivant" icon="fa fa-angle-right"
                                          action="#{objCtrl.onSelectNext}"
                                          rendered="#{objCtrl.enabledSelectNext}"
                                          ajax="true" styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
                                          update="buttons :listForm :itemForm :pageTitleForm"
-                                />
+                        />
 
                         <p:commandButton title="Retour" icon="fa fa-backward"
                                          action="#{vr.goBack}"
@@ -201,7 +201,7 @@ and open the template in the editor.
                                 styleClass="ui-ribbon-bigbutton  vr-icon-aws vr-toolbox-button"
                                 ajax="true"
                                 onclick="document.getElementById('listForm:processOpenActionDialog0').click();"
-                                >
+                        >
                         </p:commandButton>
 
                         <p:commandButton value="#{objCtrl.model.actions.get(1).value}"
@@ -210,7 +210,7 @@ and open the template in the editor.
                                          styleClass="ui-ribbon-bigbutton  vr-icon-aws vr-toolbox-button"
                                          ajax="true"
                                          actionListener="#{objCtrl.openActionDialog(objCtrl.model.actions.get(1).key)}"
-                                >
+                        >
                             <p:ajax event="dialogReturn" listener="#{objCtrl.onActionDialogClosed}"
                                     update="buttons :listForm :itemForm :itemForm :pageTitleForm"/>
                         </p:commandButton>
@@ -221,7 +221,7 @@ and open the template in the editor.
                                          styleClass="ui-ribbon-bigbutton  vr-icon-aws vr-toolbox-button"
                                          ajax="true"
                                          actionListener="#{objCtrl.openActionDialog(objCtrl.model.actions.get(2).key)}"
-                                >
+                        >
                             <p:ajax event="dialogReturn" listener="#{objCtrl.onActionDialogClosed}"
                                     update="buttons :listForm :itemForm :itemForm :pageTitleForm"/>
                         </p:commandButton>
@@ -236,11 +236,31 @@ and open the template in the editor.
                         </ui:repeat>-->
                     </p:outputPanel>
                 </div>
-
-
+                <div class="row">
+                    <p:spacer width="10" height="10"/>
+                </div>
+                <p:panelGrid rendered="#{objCtrl.isListMode() and (objCtrl.autoFilters.size() gt 0)}" styleClass="vr-no-border-grid">
+                    <ui:repeat value="#{vr.groupListBy(3,objCtrl.autoFilters)}" var="autoFilterList">
+                        <p:row>
+                            <ui:repeat value="#{autoFilterList}" var="autoFilter">
+                                <p:column>
+                                    <p:outputLabel value="#{autoFilter.data.label}" styleClass="vr-form-field vr-form-fixed-width-short"/>
+                                    <!--valueChangeListener="#_{objCtrl.onAutoFilterChange}"-->
+                                    <!--onchange="document.getElementById('listForm:processOnAutoFilterLink').click();"-->
+                                    <p:selectOneMenu value="#{autoFilter.selectedString}" styleClass="vr-form-field"
+                                    >
+                                        <p:ajax listener="#{objCtrl.onAutoFilterChange}" update=":listForm"/>
+                                        <f:selectItems value="#{autoFilter.values}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                            </ui:repeat>
+                        </p:row>
+                    </ui:repeat>
+                </p:panelGrid>
                 <!-- /.row -->
             </h:form>
             <h:form id="listForm">
+
                 <div class="row">
                     <p:spacer width="10" height="10"/>
                 </div>
@@ -260,7 +280,7 @@ and open the template in the editor.
                                          paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                                          rowsPerPageTemplate="20,50,100,200,1000"
                                          rowStyleClass="#{objCtrl.rowStyle}"
-                                    >
+                            >
 
                                 <!--                                    <f:facet name="header">
                                                                         List
@@ -270,22 +290,26 @@ and open the template in the editor.
                                 <f:facet name="{Exporters}">
                                     <h:commandLink>
                                         <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png" width="16"/>
-                                        <p:dataExporter type="xls" target="listTable" fileName="eniso-info-#{objCtrl.model.entityName}" />
+                                        <p:dataExporter type="xls" target="listTable"
+                                                        fileName="eniso-info-#{objCtrl.model.entityName}"/>
                                     </h:commandLink>
 
                                     <h:commandLink>
                                         <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png" width="16"/>
-                                        <p:dataExporter type="pdf" target="listTable" fileName="eniso-info-#{objCtrl.model.entityName}"/>
+                                        <p:dataExporter type="pdf" target="listTable"
+                                                        fileName="eniso-info-#{objCtrl.model.entityName}"/>
                                     </h:commandLink>
 
                                     <h:commandLink>
                                         <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png" width="16"/>
-                                        <p:dataExporter type="csv" target="listTable" fileName="eniso-info-#{objCtrl.model.entityName}" />
+                                        <p:dataExporter type="csv" target="listTable"
+                                                        fileName="eniso-info-#{objCtrl.model.entityName}"/>
                                     </h:commandLink>
 
                                     <h:commandLink>
                                         <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png" width="16"/>
-                                        <p:dataExporter type="xml" target="listTable" fileName="eniso-info-#{objCtrl.model.entityName}" />
+                                        <p:dataExporter type="xml" target="listTable"
+                                                        fileName="eniso-info-#{objCtrl.model.entityName}"/>
                                     </h:commandLink>
                                 </f:facet>
 
@@ -311,7 +335,7 @@ and open the template in the editor.
                                            var="column" columnIndexVar="colIndex"
                                            sortBy="#{objCtrl.getSortLayoutPropertyValue(i.record,column.property)}"
                                            style="#{objCtrl.getPropertyColumnStyle(column.property,i)}"
-                                        >
+                                >
                                     <f:facet name="header">
                                         <h:outputText value="#{column.header}"/>
                                     </f:facet>
@@ -349,6 +373,8 @@ and open the template in the editor.
 
                 <p:commandLink id="processOnSimpleSearchLink" action="#{objCtrl.onSimpleSearch()}">
                     <p:ajax event="dialogReturn" listener="#{objCtrl.onSearchDialogClosed}" update=":listForm"/>
+                </p:commandLink>
+                <p:commandLink id="processOnAutoFilterLink" action="#{objCtrl.onAutoFilterChange()}">
                 </p:commandLink>
                 <p:commandLink id="processOnSimpleFieldSelectionLink" action="#{objCtrl.onSimpleFieldSelection()}">
                     <p:ajax event="dialogReturn" listener="#{objCtrl.onSearchDialogClosed}" update=":listForm"/>
@@ -398,7 +424,7 @@ and open the template in the editor.
                                                 disabled="#{data.disabled}"
                                                 pattern="dd/MM/yyyy HH:mm:ss"
                                                 mask="true"
-                                            />
+                                    />
                                 </pe:dynaFormControl>
 
                                 <pe:dynaFormControl type="date" for="tdate" styleClass="calendar">
@@ -408,7 +434,7 @@ and open the template in the editor.
                                                 disabled="#{data.disabled}"
                                                 pattern="dd/MM/yyyy"
                                                 mask="true"
-                                            />
+                                    />
                                 </pe:dynaFormControl>
 
                                 <pe:dynaFormControl type="time" for="ttime" styleClass="calendar">
@@ -419,14 +445,14 @@ and open the template in the editor.
                                                 pattern="HH:mm"
                                                 timeOnly="true"
                                                 mask="true"
-                                            />
+                                    />
                                 </pe:dynaFormControl>
 
                                 <pe:dynaFormControl type="select" for="tselect" styleClass="select">
                                     <p:selectOneMenu id="tselect" value="#{data.selectedItem}"
                                                      required="#{data.required}"
                                                      disabled="#{data.disabled}"
-                                            >
+                                    >
                                         <f:selectItems value="#{data.items}"/>
                                     </p:selectOneMenu>
                                 </pe:dynaFormControl>
@@ -448,7 +474,7 @@ and open the template in the editor.
                                                          required="#{data.required}"
                                                          disabled="#{data.disabled}"
                                                          styleClass="full-width"
-                                                >
+                                        >
                                             <f:selectItems value="#{data.items}"/>
                                         </p:selectOneMenu>
                                         <p:commandButton
@@ -509,11 +535,11 @@ and open the template in the editor.
                                         <p:row rendered="#{!('Edit'.equals(data.componentState))}">
                                             <p:column>
                                                 <p:scrollPanel style="width:100%;height:200px" id="twikiareaRender"
-                                                        >
+                                                >
                                                     <p:outputLabel
                                                             value="#{vr.wiki2Html(data.value)}"
                                                             escape="false"
-                                                            >
+                                                    >
                                                     </p:outputLabel>
 
                                                 </p:scrollPanel>
@@ -557,7 +583,7 @@ and open the template in the editor.
                                                 ajax="true" value=""
                                                 icon="fa fa-users"
                                                 actionListener="#{objCtrl.openPropertyViewDialog(data.componentId)}"
-                                                >
+                                        >
                                             <p:ajax event="dialogReturn"
                                                     listener="#{objCtrl.onPropertyViewDialogClosed}"
                                                     update="tprofileexpr"/>
@@ -577,7 +603,7 @@ and open the template in the editor.
                                                 ajax="true" value=""
                                                 icon="fa fa-tags"
                                                 actionListener="#{objCtrl.openPropertyViewDialog(data.componentId)}"
-                                                >
+                                        >
                                             <p:ajax event="dialogReturn"
                                                     listener="#{objCtrl.onPropertyViewDialogClosed}"
                                                     update="tdiscipline"/>
@@ -597,7 +623,7 @@ and open the template in the editor.
                                                 ajax="true" value=""
                                                 icon="fa fa-folder-open-o"
                                                 actionListener="#{objCtrl.openPropertyViewDialog(data.componentId)}"
-                                                >
+                                        >
                                             <p:ajax event="dialogReturn"
                                                     listener="#{objCtrl.onPropertyViewDialogClosed}" update="tfile"/>
 

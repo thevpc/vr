@@ -106,7 +106,16 @@ and open the template in the editor.
                                 </p:selectCheckboxMenu>
                             </div>
                             <div class="vr-form-sub-row">
-                                <p:outputLabel value="" styleClass="vr-form-field vr-form-fixed-width-medium"/>
+                                <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                      value="#{globalStatCtrl.courseFilter.model.selectedDepartments}"
+                                                      label="Departement"
+                                                      filter="true" filterMatchMode="startsWith"
+                                                      panelStyle="width:250px">
+                                    <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}"
+                                            update=":listForm"/>
+                                    <f:selectItems
+                                            value="#{globalStatCtrl.courseFilter.model.departmentItems}"/>
+                                </p:selectCheckboxMenu>
                                 <p:selectCheckboxMenu styleClass="vr-form-field"
                                                       value="#{globalStatCtrl.courseFilter.model.selectedProgramTypes}"
                                                       label="Type Formation"
@@ -267,7 +276,7 @@ and open the template in the editor.
                                     <p:column headerText="Discipline">
                                         <p:outputLabel value="#{item.discipline.name}"/>
                                     </p:column>
-                                    <p:columns value="#{globalStatCtrl.model.globalStatSituations}" var="sit"
+                                    <p:columns value="#{globalStatCtrl.globalStatSituations}" var="sit"
                                                headerText="#{sit.name}">
                                         <p:outputLabel
                                                 value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.getAssignment(null,sit,null).teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>

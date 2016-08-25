@@ -1,6 +1,7 @@
 package net.vpc.app.vainruling.plugins.academic.service.model.stat;
 
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 
@@ -13,6 +14,7 @@ import java.util.List;
  */
 public class TeacherValuePopulation {
     private List<Double> values=new ArrayList<>();
+    private List<AcademicTeacher> teachers=new ArrayList<>();
     private AcademicTeacherSituation situation;
     private AcademicTeacherDegree degree;
     private AcademicOfficialDiscipline discipline;
@@ -27,8 +29,13 @@ public class TeacherValuePopulation {
         this.degree = degree;
         this.discipline = discipline;
     }
-    public void addValue(double d){
+    public void addValue(AcademicTeacher teacher,double d){
         values.add(d);
+        teachers.add(teacher);
+    }
+
+    public List<AcademicTeacher> getTeachers() {
+        return teachers;
     }
 
     public void build(){
@@ -54,6 +61,17 @@ public class TeacherValuePopulation {
 
     public int getSize() {
         return values.size();
+    }
+
+    public String getTeachersString() {
+        StringBuilder sb=new StringBuilder();
+        for (AcademicTeacher teacher : teachers) {
+            if(sb.length()>0){
+                sb.append(", ");
+            }
+            sb.append(teacher.getContact().getFullName());
+        }
+        return sb.toString();
     }
 
     public List<Double> getValues() {

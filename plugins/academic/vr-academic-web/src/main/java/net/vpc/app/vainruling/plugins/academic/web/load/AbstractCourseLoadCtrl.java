@@ -24,6 +24,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherPeriodStat;
 import net.vpc.common.jsf.FacesUtils;
+import net.vpc.common.util.Chronometer;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
@@ -124,6 +125,7 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public void onRefresh() {
+        Chronometer chronometer=new Chronometer();
         int periodId = getTeacherFilter().getPeriodId();
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         List<SelectItem> allValidFilters = new ArrayList<>();
@@ -164,8 +166,9 @@ public abstract class AbstractCourseLoadCtrl {
         getModel().setAll(all);
         HashSet<Integer> visited = new HashSet<Integer>();
         if (t != null) {
-            getModel().setMineS1(a.findCourseAssignmentsAndIntents(periodId, t.getId(), "S1", courseAssignmentFilter, cache));
-            getModel().setMineS2(a.findCourseAssignmentsAndIntents(periodId, t.getId(), "S2", courseAssignmentFilter, cache));
+            List<AcademicSemester> semesters = a.findSemesters();
+            getModel().setMineS1(a.findCourseAssignmentsAndIntents(periodId, t.getId(), semesters.get(0).getId(), courseAssignmentFilter, cache));
+            getModel().setMineS2(a.findCourseAssignmentsAndIntents(periodId, t.getId(), semesters.get(1).getId(), courseAssignmentFilter, cache));
             List<AcademicCourseAssignment> mine = new ArrayList<>();
             for (AcademicCourseAssignmentInfo m : getModel().getMineS1()) {
                 mine.add(m.getAssignment());
@@ -175,7 +178,7 @@ public abstract class AbstractCourseLoadCtrl {
                 mine.add(m.getAssignment());
                 visited.add(m.getAssignment().getId());
             }
-            getModel().setStat(a.evalTeacherStat(periodId, t.getId(), null, null, mine, courseAssignmentFilter,false, deviationConfig,cache));
+            getModel().setStat(a.evalTeacherStat(periodId, t.getId(), courseAssignmentFilter,true, deviationConfig,cache));
         }
 
         List<AcademicCourseAssignmentInfo> others = new ArrayList<>();
@@ -209,7 +212,8 @@ public abstract class AbstractCourseLoadCtrl {
             }
         }
         getModel().setOthers(others);
-
+        chronometer.stop();
+        System.out.println(chronometer);
     }
 
     public void assignmentsToIntentsAll() {

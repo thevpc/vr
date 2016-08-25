@@ -15,6 +15,13 @@ import java.sql.Timestamp;
  */
 @Entity(listOrder = "time desc")
 @Path("Admin/Security")
+@Properties(
+        {
+                @Property(name = "ui.auto-filter.action", value = "{expr='action',order=1}"),
+                @Property(name = "ui.auto-filter.module", value = "{expr='module',order=2}"),
+                @Property(name = "ui.auto-filter.user", value = "{expr='user',order=2}")
+        }
+)
 public class AppTrace {
 
     @Id

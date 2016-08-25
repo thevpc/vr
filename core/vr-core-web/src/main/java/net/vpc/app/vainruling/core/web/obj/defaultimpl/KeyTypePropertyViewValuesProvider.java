@@ -14,6 +14,7 @@ import net.vpc.app.vainruling.core.web.obj.ViewContext;
 import net.vpc.upa.*;
 import net.vpc.upa.types.DataType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +26,15 @@ public class KeyTypePropertyViewValuesProvider implements PropertyViewValuesProv
 
     @Override
     public List<NamedId> resolveValues(PropertyView propertyView, Field field, DataType datatype, ViewContext viewContext) {
-        ManyToOneTypePropertyView ev = (ManyToOneTypePropertyView) propertyView;
-        List<PropertyView> updatablePropertyViews = propertyView.getUpdatablePropertyViews();
-        List<PropertyView> dependentPropertyViews = propertyView.getDependentPropertyViews();
-//        PersistenceUnit pu = field.getEntity().getPersistenceUnit();
+        List<PropertyView> updatablePropertyViews = new ArrayList<>();
+        List<PropertyView> dependentPropertyViews = new ArrayList<>();
+        String componentId = "unknown";
 
+        if(propertyView!=null) {
+            updatablePropertyViews = propertyView.getUpdatablePropertyViews();
+            dependentPropertyViews = propertyView.getDependentPropertyViews();
+            componentId = propertyView.getComponentId();
+        }
         final ObjManagerService objService = VrApp.getBean(ObjManagerService.class);
         final ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
         Map<String, Object> currentValues = objCtrl.currentViewToMap();
@@ -41,12 +46,12 @@ public class KeyTypePropertyViewValuesProvider implements PropertyViewValuesProv
                 ManyToOneTypePropertyView etpv = (ManyToOneTypePropertyView) dependentPropertyView;
                 Entity me = etpv.getTargetEntity();
                 Object mid = (v instanceof NamedId) ? ((NamedId) v).getId() : me.getBuilder().objectToId(v);
-                String expr = etpv.getComponentId().substring(propertyView.getComponentId().length() + 1);
+                String expr = etpv.getComponentId().substring(componentId.length() + 1);
                 constraints.put(expr + "." + me.getPrimaryFields().get(0).getName(), mid);
             }
         }
-        final Entity me = ev.getTargetEntity();
         final KeyType mtype = (KeyType) datatype;
+        final Entity me = mtype.getEntity();
         return viewContext.getCacheItem("EntityPropertyViewValuesProvider." + me.getName() + ":" + constraints, new Action<List<NamedId>>() {
             @Override
             public List<NamedId> run() {

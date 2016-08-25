@@ -21,6 +21,8 @@ public class TeacherPeriodStat extends TeacherBaseStat {
     private CourseAssignmentFilter courseAssignmentFilter;
     private boolean includeIntents;
     private TeacherSemesterStat[] semesters;
+    private int confirmedTeacherAssignmentCount = 0;
+    private LoadValue confirmedTeacherAssignment = new LoadValue();
 
     public AcademicTeacher getTeacher() {
         return teacher;
@@ -70,4 +72,19 @@ public class TeacherPeriodStat extends TeacherBaseStat {
         this.includeIntents = includeIntents;
     }
 
+    public int getConfirmedTeacherAssignmentCount() {
+        return confirmedTeacherAssignmentCount;
+    }
+
+    public void setConfirmedTeacherAssignmentCount(int confirmedTeacherAssignmentCount) {
+        this.confirmedTeacherAssignmentCount = confirmedTeacherAssignmentCount;
+    }
+
+    public LoadValue getConfirmedTeacherAssignment() {
+        return confirmedTeacherAssignment;
+    }
+
+    public void setConfirmedTeacherAssignment(LoadValue confirmedTeacherAssignment) {
+        this.confirmedTeacherAssignment = confirmedTeacherAssignment;
+    }
 }

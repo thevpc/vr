@@ -79,6 +79,16 @@ and open the template in the editor.
                             </div>
                             <div class="vr-form-sub-row">
                                 <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                      value="#{myCourseLoadCtrl.courseFilter.model.selectedDepartments}"
+                                                      label="Departement"
+                                                      filter="true" filterMatchMode="startsWith"
+                                                      panelStyle="width:250px">
+                                    <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                            update=":listForm"/>
+                                    <f:selectItems
+                                            value="#{myCourseLoadCtrl.courseFilter.model.departmentItems}"/>
+                                </p:selectCheckboxMenu>
+                                <p:selectCheckboxMenu styleClass="vr-form-field"
                                                       value="#{myCourseLoadCtrl.courseFilter.model.selectedProgramTypes}"
                                                       label="Type Formation"
                                                       filter="true" filterMatchMode="startsWith"
@@ -381,9 +391,9 @@ and open the template in the editor.
                                      paginatorAlwaysVisible="false"
                                      paginator="true"
                                      paginatorPosition="bottom"
-                                     rows="200"
+                                     rows="1000"
                                      paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                     rowsPerPageTemplate="20,50,100,200,1000"
+                                     rowsPerPageTemplate="1000,2000,5000,1000"
                                      emptyMessage="Aucune charge"
                         >
                             <p:column styleClass="ui-widget-header" headerText="" width="5%">

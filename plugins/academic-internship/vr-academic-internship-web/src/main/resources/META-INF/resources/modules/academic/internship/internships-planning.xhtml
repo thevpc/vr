@@ -143,7 +143,7 @@ and open the template in the editor.
                                 </p:selectOneMenu>
 
                                 <p:scrollPanel style="margin-top: 10px;">
-                                    <p:dataTable id="juryTable" styleClass="noBorderGrid"
+                                    <p:dataTable id="juryTable" styleClass="vr-no-border-grid"
                                                  style="border-style: none;border-width: 0px;width:#{internshipsPlanningCtrl.model.bestWidth}px;"
                                                  value="#{internshipsPlanningCtrl.model.visibleRows}"
                                                  var="row"
@@ -223,7 +223,7 @@ and open the template in the editor.
                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
                                         ajax="true" actionListener="#{internshipsPlanningCtrl.onSaveOptions}"
                                         update=":listForm" alt="" disabled="#{!internshipsPlanningCtrl.model.manager}"/>
-                                <p:panelGrid id="options" styleClass="noBorderGrid"
+                                <p:panelGrid id="options" styleClass="vr-no-border-grid"
                                              style="border-style: none;border-width: 0px;">
                                     <p:row>
                                         <p:column><p:outputLabel value="Nombre de jours"/></p:column>

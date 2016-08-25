@@ -20,6 +20,11 @@ import java.sql.Timestamp;
  */
 @Entity(listOrder = "contact.fullName")
 @Path("Contact")
+@Properties(
+        {
+                @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),
+                @Property(name = "ui.auto-filter.type", value = "{expr='type',order=2}"),
+        })
 public class AppUser {
 
     @Id

@@ -14,6 +14,7 @@ import net.vpc.upa.*;
 import net.vpc.upa.expressions.*;
 import net.vpc.upa.types.DataType;
 import net.vpc.upa.types.ManyToOneType;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -304,7 +305,7 @@ public class ObjManagerService {
         return entityList;
     }
 
-    public long findCountByFilter(String entityName, String criteria, ObjSearch objSearch) {
+    public long findCountByFilter(String entityName, String criteria, ObjSearch objSearch,Map<String,Object> parameters) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         String qq = "Select count(1) from " + entityName + " o ";
         Expression filterExpression = null;
@@ -312,7 +313,7 @@ public class ObjManagerService {
             filterExpression = new UserExpression(criteria);
         }
         if (objSearch != null) {
-            String c = objSearch.createPreProcessingExpression(entityName);
+            String c = objSearch.createPreProcessingExpression(entityName,parameters,"os");
             if (c != null) {
                 if (filterExpression == null) {
                     filterExpression = new UserExpression(c);
@@ -324,11 +325,17 @@ public class ObjManagerService {
         if (filterExpression != null) {
             qq += " where " + filterExpression;
         }
-        Number nn = (Number) pu.createQuery(qq).getSingleValue();
+        Query query = pu.createQuery(qq);
+        if(parameters!=null){
+            for (Map.Entry<String, Object> pp : parameters.entrySet()) {
+                query.setParameter(pp.getKey(),pp.getValue());
+            }
+        }
+        Number nn = (Number) query.getSingleValue();
         return nn.longValue();
     }
 
-    public List<Object> findByFilter(String entityName, String criteria, ObjSearch objSearch) {
+    public List<Object> findByFilter(String entityName, String criteria, ObjSearch objSearch,Map<String,Object> parameters) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         QueryBuilder q = pu
@@ -340,7 +347,7 @@ public class ObjManagerService {
             filterExpression = new UserExpression(criteria);
         }
         if (objSearch != null) {
-            String c = objSearch.createPreProcessingExpression(entityName);
+            String c = objSearch.createPreProcessingExpression(entityName,parameters,"os");
             if (c != null) {
                 if (filterExpression == null) {
                     filterExpression = new UserExpression(c);
@@ -351,7 +358,11 @@ public class ObjManagerService {
         }
         if (filterExpression != null) {
             q.byExpression(filterExpression);
-
+        }
+        if(parameters!=null){
+            for (Map.Entry<String, Object> pp : parameters.entrySet()) {
+                q.setParameter(pp.getKey(),pp.getValue());
+            }
         }
         List<Object> list = q.getResultList();
         if (objSearch != null) {
@@ -360,7 +371,7 @@ public class ObjManagerService {
         return list;
     }
 
-    public List<Record> findRecordsByFilter(String entityName, String criteria, ObjSearch objSearch) {
+    public List<Record> findRecordsByFilter(String entityName, String criteria, ObjSearch objSearch,Map<String,Object> parameters) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         QueryBuilder q = pu
@@ -368,11 +379,11 @@ public class ObjManagerService {
                 .setEntityAlias("o")
                 .orderBy(entity.getListOrder());
         Expression filterExpression = null;
-        if (criteria != null) {
+        if (!StringUtils.isEmpty(criteria)) {
             filterExpression = new UserExpression(criteria);
         }
         if (objSearch != null) {
-            String c = objSearch.createPreProcessingExpression(entityName);
+            String c = objSearch.createPreProcessingExpression(entityName,parameters,"os");
             if (c != null) {
                 if (filterExpression == null) {
                     filterExpression = new UserExpression(c);
@@ -384,6 +395,11 @@ public class ObjManagerService {
         if (filterExpression != null) {
             q.byExpression(filterExpression);
 
+        }
+        if(parameters!=null){
+            for (Map.Entry<String, Object> pp : parameters.entrySet()) {
+                q.setParameter(pp.getKey(),pp.getValue());
+            }
         }
         List<Record> list = q.getRecordList();
         if (objSearch != null) {

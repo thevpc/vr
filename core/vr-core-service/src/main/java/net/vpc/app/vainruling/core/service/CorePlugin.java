@@ -2515,4 +2515,8 @@ public class CorePlugin {
         List<AppGender> genders;
         List<AppDepartment> departments;
     }
+
+    public void invalidateCache(){
+        cacheService.invalidate();
+    }
 }

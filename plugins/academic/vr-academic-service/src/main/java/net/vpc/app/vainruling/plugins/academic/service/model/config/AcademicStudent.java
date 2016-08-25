@@ -24,6 +24,13 @@ import java.util.Objects;
  */
 @Entity(listOrder = "contact.fullName")
 @Path("Contact")
+@Properties(
+        {
+                @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),
+                @Property(name = "ui.auto-filter.lastClass1", value = "{expr='lastClass1',order=2}"),
+                @Property(name = "ui.auto-filter.stage", value = "{expr='stage',order=3}"),
+        }
+)
 public class AcademicStudent {
 
     @Id

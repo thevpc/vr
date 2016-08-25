@@ -17,6 +17,13 @@ import java.sql.Timestamp;
  */
 @Entity(listOrder = "fullName")
 @Path("Contact")
+@Properties(
+        {
+                @Property(name = "ui.auto-filter.company", value = "{expr='company',order=1}"),
+                @Property(name = "ui.auto-filter.positionTitle1", value = "{expr='positionTitle1',order=2}"),
+                @Property(name = "ui.auto-filter.company", value = "{expr='company',order=3}")
+        }
+)
 public class AppContact {
 
     @Id
@@ -73,7 +80,7 @@ public class AppContact {
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
 
-    @Summary
+//    @Summary
     private boolean enabled;
     @Summary
     private boolean deleted;

@@ -24,6 +24,8 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTea
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherPeriodStat;
 import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherSemesterStat;
+import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilterAnd;
+import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.util.TeacherFilterFactory;
 import net.vpc.common.streams.PathInfo;
 import net.vpc.common.strings.MapStringConverter;
@@ -111,7 +113,8 @@ public class TeacherGenerationHelper {
         TeacherFilter teacherIdsFilter = TeacherFilterFactory.teacherIds(teacherIds);
         if (requestedContents.contains(GeneratedContent.TeacherListAssignmentsSummary)) {
             if (stats == null) {
-                stats = academicPlugin.evalTeacherStatList(periodId, semesterId, teacherIdsFilter, options.getCourseAssignmentFilter(), options.isIncludeIntents(), options.getDeviationConfig(), cache);
+                CourseAssignmentFilterAnd courseFilter = new CourseAssignmentFilterAnd().and(options.getCourseAssignmentFilter()).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId));
+                stats = academicPlugin.evalTeacherStatList(periodId, teacherIdsFilter, courseFilter, options.isIncludeIntents(), options.getDeviationConfig(), cache);
             }
             String teacherListAssignmentsSummaryFile_template = templateFolder + "/teacher-list-assignments-summary-template.xls";
 
@@ -123,13 +126,13 @@ public class TeacherGenerationHelper {
         PathInfo uu = PathInfo.create(teacherAssignments_filename);
         if (requestedContents.contains(GeneratedContent.TeacherAssignments)) {
             if (stats == null) {
-                stats = academicPlugin.evalTeacherStatList(periodId, semesterId, teacherIdsFilter, options.getCourseAssignmentFilter(), options.isIncludeIntents(), options.getDeviationConfig(), cache);
+                stats = academicPlugin.evalTeacherStatList(periodId, teacherIdsFilter, new CourseAssignmentFilterAnd().and(options.getCourseAssignmentFilter()).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId)), options.isIncludeIntents(), options.getDeviationConfig(), cache);
             }
             generateTeacherAssignmentsFolder(periodId, stats.toArray(new TeacherPeriodStat[stats.size()]), cache, fs.get(teacherAssignments_template), fs.get(uu.getDirName() + File.separator + uu.getNamePart() + "-details/" + outputNamePattern + ".xls"), writeVars);
         }
         if (requestedContents.contains(GeneratedContent.GroupedTeacherAssignments)) {
             if (stats == null) {
-                stats = academicPlugin.evalTeacherStatList(periodId, semesterId, teacherIdsFilter, options.getCourseAssignmentFilter(), options.isIncludeIntents(), options.getDeviationConfig(), cache);
+                stats = academicPlugin.evalTeacherStatList(periodId, teacherIdsFilter, new CourseAssignmentFilterAnd().and(options.getCourseAssignmentFilter()).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId)), options.isIncludeIntents(), options.getDeviationConfig(), cache);
             }
             generateTeacherAssignmentsFile(periodId, stats.toArray(new TeacherPeriodStat[stats.size()]), cache, fs.get(teacherAssignments_template), fs.get(teacherAssignments_filename)
             );
@@ -304,7 +307,7 @@ public class TeacherGenerationHelper {
             AcademicSemester sem = semester.getSemester();
             int moduleIndex = 1;
             String semesterPrefix = "sem(" + sem.getName() + ")";
-            for (AcademicCourseAssignment m : academicPlugin.findCourseAssignments(periodId, t.getId(), sem.getName(), stat.getCourseAssignmentFilter(), stat.isIncludeIntents(), cache)) {
+            for (AcademicCourseAssignment m : academicPlugin.findCourseAssignments(periodId, t.getId(), sem.getId(), stat.getCourseAssignmentFilter(), stat.isIncludeIntents(), cache)) {
                 if ((Math.abs(m.getValueC()) + Math.abs(m.getValuePM()) + Math.abs(m.getValueTD()) + Math.abs(m.getValueTP())) * Math.abs(m.getGroupCount() * m.getShareCount()) != 0) {
                     String modulePrefix = semesterPrefix + ".mod(" + moduleIndex + ")";
                     p.put(modulePrefix + ".name", m.getName());

@@ -7,6 +7,9 @@ package net.vpc.app.vainruling.plugins.academic.service.model.stat;
 
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
+
+import java.util.List;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -18,6 +21,7 @@ public abstract class TeacherBaseStat {
     private LoadValue extra = new LoadValue();
     private LoadValue due = new LoadValue();
     private LoadValue dueWeek = new LoadValue();
+    private List<AcademicCourseAssignment> assignments;
     private double weeks;
     private double maxWeeks;
     private DeviationConfig config=new DeviationConfig();
@@ -150,5 +154,13 @@ public abstract class TeacherBaseStat {
 
     public void setConfig(DeviationConfig config) {
         this.config = config;
+    }
+
+    public List<AcademicCourseAssignment> getAssignments() {
+        return assignments;
+    }
+
+    public void setAssignments(List<AcademicCourseAssignment> assignments) {
+        this.assignments = assignments;
     }
 }

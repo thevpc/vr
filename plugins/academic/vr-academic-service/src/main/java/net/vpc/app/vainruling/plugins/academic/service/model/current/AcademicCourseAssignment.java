@@ -18,6 +18,17 @@ import java.sql.Timestamp;
  */
 @Entity(listOrder = "name")
 @Path("Education/Load")
+@Properties(
+        {
+                @Property(name = "ui.auto-filter.period", value = "{expr='coursePlan.period',order=1}"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='coursePlan.courseLevel.academicClass.program.department',order=2}"),
+                @Property(name = "ui.auto-filter.ownerDepartment", value = "{expr='ownerDepartment',order=3}"),
+                @Property(name = "ui.auto-filter.program", value = "{expr='coursePlan.courseLevel.academicClass.program',order=4}"),
+                @Property(name = "ui.auto-filter.programType", value = "{expr='coursePlan.courseLevel.academicClass.program.programType',order=5}"),
+                @Property(name = "ui.auto-filter.class", value = "{expr='coursePlan.courseLevel.academicClass',order=6}"),
+                @Property(name = "ui.auto-filter.teacher", value = "{expr='teacher',order=7}")
+        }
+)
 public class AcademicCourseAssignment {
 
     @Id
@@ -142,6 +153,8 @@ public class AcademicCourseAssignment {
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
+
+    private boolean confirmedTeacher;
 
     public int getId() {
         return id;
@@ -306,5 +319,13 @@ public class AcademicCourseAssignment {
 
     public void setUpdateDate(Timestamp updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public boolean isConfirmedTeacher() {
+        return confirmedTeacher;
+    }
+
+    public void setConfirmedTeacher(boolean confirmedTeacher) {
+        this.confirmedTeacher = confirmedTeacher;
     }
 }

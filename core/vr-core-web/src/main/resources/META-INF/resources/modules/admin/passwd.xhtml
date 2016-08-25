@@ -27,7 +27,7 @@ and open the template in the editor.
                             value="Vous êtes #{userSession.user.contact eq null ? '':userSession.user.contact.fullName} (#{userSession.user.login})"/>
                 </div>
                 <div class="row">
-                    <p:panelGrid columns="2" styleClass="noBorderGrid">
+                    <p:panelGrid columns="2" styleClass="vr-no-border-grid">
                         <h:outputText value="Ancien Mot de passe: "/>
                         <p:password value="#{passwdCtrl.model.oldPassword}"/>
                         <h:outputText value="Mot de passe: "/>

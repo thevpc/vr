@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.service.obj;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -21,7 +22,7 @@ public abstract class ObjSearch {
         return name;
     }
 
-    public String createPreProcessingExpression(String entityName) {
+    public String createPreProcessingExpression(String entityName,Map<String,Object> parameters,String paramPrefix) {
         return null;
     }
 

@@ -18,6 +18,11 @@ import java.sql.Timestamp;
  */
 @Entity(listOrder = "name")
 @Path("Education/Config")
+@Properties(
+        {
+                @Property(name = "ui.auto-filter.conversionTable", value = "{expr='conversionTable',order=1}")
+        }
+)
 public class AcademicLoadConversionRow {
 
     @Id

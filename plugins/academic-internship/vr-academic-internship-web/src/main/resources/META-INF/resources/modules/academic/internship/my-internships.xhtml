@@ -55,7 +55,7 @@ and open the template in the editor.
                     <div class="table-responsive">
                         <p:tabView rendered="#{myInternshipsCtrl.model.internship ne null}">
                             <p:tab title="Général">
-                                <p:panelGrid id="reports" styleClass="noBorderGrid"
+                                <p:panelGrid id="reports" styleClass="vr-no-border-grid"
                                              style="border-style: none;border-width: 0px;width: 100%;">
                                     <p:row>
                                         <p:column><p:outputLabel value="Stage"/></p:column>
@@ -218,7 +218,7 @@ and open the template in the editor.
                             </p:tab>
                             <p:tab title="Mi-parcours"
                                    rendered="#{(myInternshipsCtrl.model.internship.internshipStatus.enabledReport2)}">
-                                <p:panelGrid id="midterm" styleClass="noBorderGrid"
+                                <p:panelGrid id="midterm" styleClass="vr-no-border-grid"
                                              style="border-style: none;border-width: 0px;width: 100%;">
                                     <p:row>
                                         <p:column><p:outputLabel
@@ -532,7 +532,7 @@ and open the template in the editor.
                             </p:tab>
                             <p:tab title="Soutenance"
                                    rendered="#{(myInternshipsCtrl.model.internship.internshipStatus.enabledReport3)}">
-                                <p:panelGrid id="defense" styleClass="noBorderGrid"
+                                <p:panelGrid id="defense" styleClass="vr-no-border-grid"
                                              style="border-style: none;border-width: 0px;width: 100%;">
                                     <p:row>
                                         <p:column><p:outputLabel value="Rapport final"/></p:column>
@@ -590,7 +590,7 @@ and open the template in the editor.
                                 </p:panelGrid>
                             </p:tab>
                             <p:tab title="Observations" rendered="#{myInternshipsCtrl.model.internship ne null}">
-                                <p:panelGrid styleClass="noBorderGrid"
+                                <p:panelGrid styleClass="vr-no-border-grid"
                                              rendered="#{myInternshipsCtrl.model.internship ne null}"
                                              style="border-style: none;border-width: 0px;width: 100%;">
                                     <p:row>

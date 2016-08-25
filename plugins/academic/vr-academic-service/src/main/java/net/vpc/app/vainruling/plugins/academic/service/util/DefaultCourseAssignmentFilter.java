@@ -1,6 +1,7 @@
 package net.vpc.app.vainruling.plugins.academic.service.util;
 
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
@@ -9,15 +10,15 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCou
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgramType;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
  * Created by vpc on 6/30/16.
  */
 public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
+    private Set<Integer> acceptedDepartments = new HashSet<>();
+    private Set<Integer> rejectedDepartments = new HashSet<>();
     private Set<Integer> acceptedProgramTypes = new HashSet<>();
     private Set<Integer> rejectedProgramTypes = new HashSet<>();
     private Set<Integer> acceptedSemesters = new HashSet<>();
@@ -73,6 +74,22 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
     private DefaultCourseAssignmentFilter setAcceptedProgramTypes(Set<Integer> acceptedProgramTypes) {
         this.acceptedProgramTypes = acceptedProgramTypes;
         return this;
+    }
+
+    public Set<Integer> getAcceptedDepartments() {
+        return acceptedDepartments;
+    }
+
+    public void setAcceptedDepartments(Set<Integer> acceptedDepartments) {
+        this.acceptedDepartments = acceptedDepartments;
+    }
+
+    public Set<Integer> getRejectedDepartments() {
+        return rejectedDepartments;
+    }
+
+    public void setRejectedDepartments(Set<Integer> rejectedDepartments) {
+        this.rejectedDepartments = rejectedDepartments;
     }
 
     public Set<String> getAcceptedLabels() {
@@ -179,6 +196,26 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         return this;
     }
 
+    public DefaultCourseAssignmentFilter addAcceptedDepartment(Integer id) {
+        acceptedDepartments.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeAcceptedDepartment(Integer id) {
+        acceptedDepartments.remove(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter addRejectedDepartment(Integer id) {
+        rejectedDepartments.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeRejectedDepartment(Integer id) {
+        rejectedDepartments.remove(id);
+        return this;
+    }
+
     public DefaultCourseAssignmentFilter addAcceptedSemester(Integer id) {
         acceptedSemesters.add(id);
         return this;
@@ -248,21 +285,49 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         return this;
     }
 
+    public boolean acceptDepartment(AppDepartment a) {
+        if (this.getAcceptedDepartments().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (!this.getAcceptedDepartments().contains(a.getId())) {
+                return false;
+            }
+        }
+        if (this.getRejectedDepartments().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (this.getRejectedDepartments().contains(a.getId())) {
+                return false;
+            }
+        }
+        return true;
+    }
     public boolean acceptAssignment(AcademicCourseAssignment a) {
-        if (this.getAcceptedLabels().size() > 0) {
+        if (this.getAcceptedLabels().size() > 0 || this.getRejectedLabels().size() > 0) {
             Set<String> foundLabels = buildCoursePlanLabelsFromString(a.getCoursePlan().getLabels());
-            for (String lab : this.getAcceptedLabels()) {
-                if (!foundLabels.contains(lab)) {
-                    return false;
+            if (this.getAcceptedLabels().size() > 0) {
+                for (String lab : this.getAcceptedLabels()) {
+                    if (!foundLabels.contains(lab)) {
+                        return false;
+                    }
                 }
             }
-            for (String lab : this.getRejectedLabels()) {
-                if (foundLabels.contains(lab)) {
-                    return false;
+            if (this.getRejectedLabels().size() > 0) {
+                for (String lab : this.getRejectedLabels()) {
+                    if (foundLabels.contains(lab)) {
+                        return false;
+                    }
                 }
             }
         }
 
+        if(!acceptDepartment(a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment())){
+            return false;
+        }
         if (this.getAcceptedProgramTypes().size() > 0) {
             AcademicProgramType t = a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getProgramType();
             if (t == null) {

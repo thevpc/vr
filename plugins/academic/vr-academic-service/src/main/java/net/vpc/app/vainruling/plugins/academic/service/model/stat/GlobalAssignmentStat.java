@@ -20,6 +20,8 @@ public class GlobalAssignmentStat {
     private AcademicTeacherSituation situation;
     private AcademicTeacherDegree degree;
     private AcademicSemester semester;
+    private int confirmedTeacherAssignmentCount = 0;
+    private LoadValue confirmedTeacherAssignment = new LoadValue();
     private LoadValue value = new LoadValue();
     private LoadValue due = new LoadValue();
     private LoadValue extra = new LoadValue();
@@ -39,7 +41,7 @@ public class GlobalAssignmentStat {
     private double weeks;
     private double maxWeeks;
     private int teachersCount;
-    private HashMap<Integer, AcademicTeacher> teachers = new HashMap<Integer, AcademicTeacher>();
+    private HashMap<Integer, TeacherStat> teachers = new HashMap<Integer, TeacherStat>();
 
     public GlobalAssignmentStat() {
     }
@@ -136,11 +138,11 @@ public class GlobalAssignmentStat {
         this.teachersCount = teachersCount;
     }
 
-    public HashMap<Integer, AcademicTeacher> getTeachers() {
+    public HashMap<Integer, TeacherStat> getTeachers() {
         return teachers;
     }
 
-    public void setTeachers(HashMap<Integer, AcademicTeacher> teachers) {
+    public void setTeachers(HashMap<Integer, TeacherStat> teachers) {
         this.teachers = teachers;
     }
 

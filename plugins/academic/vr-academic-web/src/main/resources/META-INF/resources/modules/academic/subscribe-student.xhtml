@@ -19,6 +19,8 @@ and open the template in the editor.
 <h:body>
 
 
+    <!--@elvariable id="subscribeStudentCtrl" type="net.vpc.app.vainruling.plugins.academic.web.SubscribeStudentCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
     <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="listForm">
@@ -26,7 +28,7 @@ and open the template in the editor.
 
                 <div class="row">
                     <div class="table-responsive">
-                        <p:panelGrid columns="2" styleClass="noBorderGrid" style="margin-top: 20px">
+                        <p:panelGrid columns="2" styleClass="vr-no-border-grid" style="margin-top: 20px">
 
                             <p:outputLabel value="CIN"/>
                             <p:inputText value="#{subscribeStudentCtrl.model.student.nin}"/>
@@ -56,19 +58,19 @@ and open the template in the editor.
                             <p:outputLabel value="Civlité"/>
                             <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.civilityName}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeStudentCtrl.model.civilities}"/>
+                                <f:selectItems value="#{subscribeStudentCtrl.model.civilityItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Genre"/>
                             <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.genderName}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeStudentCtrl.model.genders}"/>
+                                <f:selectItems value="#{subscribeStudentCtrl.model.genderItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Classe"/>
                             <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.className}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeStudentCtrl.model.classes}"/>
+                                <f:selectItems value="#{subscribeStudentCtrl.model.classItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="1ere inscription"/>
@@ -80,7 +82,7 @@ and open the template in the editor.
                             <p:outputLabel value="Prépa/License"/>
                             <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.preClassPrepName}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeStudentCtrl.model.preps}"/>
+                                <f:selectItems value="#{subscribeStudentCtrl.model.prepItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Rang Prepa/License"/>
@@ -92,7 +94,7 @@ and open the template in the editor.
                             <p:outputLabel value="Bac"/>
                             <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.preClassBacName}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeStudentCtrl.model.bacs}"/>
+                                <f:selectItems value="#{subscribeStudentCtrl.model.bacItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Moyenne Bac"/>

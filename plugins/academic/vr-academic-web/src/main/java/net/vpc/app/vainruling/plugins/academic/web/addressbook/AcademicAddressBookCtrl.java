@@ -5,9 +5,11 @@
  */
 package net.vpc.app.vainruling.plugins.academic.web.addressbook;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppGender;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
@@ -124,8 +126,11 @@ public class AcademicAddressBookCtrl {
             if (true) //q.length() > 0
             {
                 if (qt.equals("teachers")) {
+                    CorePlugin core = VrApp.getBean(CorePlugin.class);
+                    AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
                     AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
-                    for (AcademicTeacher t : ap.findEnabledTeachers()) {
+
+                    for (AcademicTeacher t : ap.findEnabledTeachers(mainPeriod.getId())) {
                         if (query.accept(t)) {
                             Contact ct = new Contact();
                             ct.setName(t.getContact().getFullName());

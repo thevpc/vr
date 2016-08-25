@@ -73,22 +73,22 @@ public class CourseLoadFilterComponent {
 
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
 
-        UserSession currentSession = UserSession.get();
+//        UserSession currentSession = UserSession.get();
         for (AppDepartment item : core.findDepartments()) {
 //            if(currentSession!=null &&)
                 //TODO: should add filter to let see ust one's department?
                 getModel().getDepartmentItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
         }
 
-        getModel().getSituationItems().clear();
-        for (AcademicTeacherSituation item : academicPlugin.findTeacherSituations()) {
-            getModel().getSituationItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
-        }
-
-        getModel().getDegreeItems().clear();
-        for (AcademicTeacherDegree item : academicPlugin.findTeacherDegrees()) {
-            getModel().getDegreeItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
-        }
+//        getModel().getSituationItems().clear();
+//        for (AcademicTeacherSituation item : academicPlugin.findTeacherSituations()) {
+//            getModel().getSituationItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
+//        }
+//
+//        getModel().getDegreeItems().clear();
+//        for (AcademicTeacherDegree item : academicPlugin.findTeacherDegrees()) {
+//            getModel().getDegreeItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
+//        }
         getModel().getProgramTypeItems().clear();
         for (AcademicProgramType pt : a.findProgramTypes()) {
             getModel().getProgramTypeItems().add(FacesUtils.createSelectItem(String.valueOf(pt.getId()), pt.getName(), "vr-checkbox"));
@@ -168,9 +168,9 @@ public class CourseLoadFilterComponent {
 //        for (String s : getModel().getSelectedDegrees()) {
 //            c.addAcceptedDegree(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
 //        }
-//        for (String s : getModel().getSelectedDepartments()) {
-//            c.addAcceptedDepartment(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
-//        }
+        for (String s : getModel().getSelectedDepartments()) {
+            c.addAcceptedDepartment(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
+        }
 //        for (String s : getModel().getSelectedOfficialDisciplines()) {
 //            c.addAcceptedOfficialDisciplines(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
 //        }
@@ -197,11 +197,11 @@ public class CourseLoadFilterComponent {
         private List<SelectItem> officialDisciplinesItems=new ArrayList<>();
         private List<String> selectedOfficialDisciplines=new ArrayList<>();
 
-        private List<SelectItem> degreeItems=new ArrayList<>();
-        private List<String> selectedDegrees=new ArrayList<>();
-
-        private List<SelectItem> situationItems=new ArrayList<>();
-        private List<String> selectedSituations=new ArrayList<>();
+//        private List<SelectItem> degreeItems=new ArrayList<>();
+//        private List<String> selectedDegrees=new ArrayList<>();
+//
+//        private List<SelectItem> situationItems=new ArrayList<>();
+//        private List<String> selectedSituations=new ArrayList<>();
 
         private List<SelectItem> departmentItems=new ArrayList<>();
         private List<String> selectedDepartments=new ArrayList<>();
@@ -251,21 +251,21 @@ public class CourseLoadFilterComponent {
             this.officialDisciplinesItems = officialDisciplinesItems;
         }
 
-        public List<SelectItem> getDegreeItems() {
-            return degreeItems;
-        }
-
-        public void setDegreeItems(List<SelectItem> degreeItems) {
-            this.degreeItems = degreeItems;
-        }
-
-        public List<SelectItem> getSituationItems() {
-            return situationItems;
-        }
-
-        public void setSituationItems(List<SelectItem> situationItems) {
-            this.situationItems = situationItems;
-        }
+//        public List<SelectItem> getDegreeItems() {
+//            return degreeItems;
+//        }
+//
+//        public void setDegreeItems(List<SelectItem> degreeItems) {
+//            this.degreeItems = degreeItems;
+//        }
+//
+//        public List<SelectItem> getSituationItems() {
+//            return situationItems;
+//        }
+//
+//        public void setSituationItems(List<SelectItem> situationItems) {
+//            this.situationItems = situationItems;
+//        }
 
         public List<SelectItem> getDepartmentItems() {
             return departmentItems;
@@ -283,21 +283,21 @@ public class CourseLoadFilterComponent {
             this.selectedOfficialDisciplines = selectedOfficialDisciplines;
         }
 
-        public List<String> getSelectedDegrees() {
-            return selectedDegrees;
-        }
-
-        public void setSelectedDegrees(List<String> selectedDegrees) {
-            this.selectedDegrees = selectedDegrees;
-        }
-
-        public List<String> getSelectedSituations() {
-            return selectedSituations;
-        }
-
-        public void setSelectedSituations(List<String> selectedSituations) {
-            this.selectedSituations = selectedSituations;
-        }
+//        public List<String> getSelectedDegrees() {
+//            return selectedDegrees;
+//        }
+//
+//        public void setSelectedDegrees(List<String> selectedDegrees) {
+//            this.selectedDegrees = selectedDegrees;
+//        }
+//
+//        public List<String> getSelectedSituations() {
+//            return selectedSituations;
+//        }
+//
+//        public void setSelectedSituations(List<String> selectedSituations) {
+//            this.selectedSituations = selectedSituations;
+//        }
 
         public List<String> getSelectedDepartments() {
             return selectedDepartments;

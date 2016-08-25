@@ -23,7 +23,12 @@ import java.sql.Timestamp;
 @Entity(listOrder = "contact.fullName")
 @Path("Contact")
 @Properties(
-        @Property(name = "cache.navigationDepth", type = "int", value = "5")
+        {
+                @Property(name = "cache.navigationDepth", type = "int", value = "5"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),
+                @Property(name = "ui.auto-filter.officialDiscipline", value = "{expr='officialDiscipline',order=2}"),
+                @Property(name = "ui.auto-filter.situation", value = "{expr='situation',order=3}"),
+        }
 )
 public class AcademicTeacher {
 

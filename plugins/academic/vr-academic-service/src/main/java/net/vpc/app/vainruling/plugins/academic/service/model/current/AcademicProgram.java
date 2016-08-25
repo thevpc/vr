@@ -20,6 +20,12 @@ import java.sql.Timestamp;
  */
 @Entity(listOrder = "name")
 @Path("Education/StudyPlan")
+@Properties(
+        {
+                @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),
+                @Property(name = "ui.auto-filter.programType", value = "{expr='programType',order=2}")
+        }
+)
 public class AcademicProgram {
 
     @Id
