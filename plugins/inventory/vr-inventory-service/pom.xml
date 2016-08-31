@@ -16,7 +16,7 @@
 
     <properties>
         <vr-plugin.component-type>service</vr-plugin.component-type>
-        <vr-plugin.name>Inventory</vr-plugin.name>
+        <vr-plugin.name>Equipments Inventory</vr-plugin.name>
         <vr-plugin.description>Equipments Inventory Plugin</vr-plugin.description>
     </properties>
 

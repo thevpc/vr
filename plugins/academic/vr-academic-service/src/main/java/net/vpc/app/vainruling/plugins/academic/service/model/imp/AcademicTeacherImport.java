@@ -16,9 +16,11 @@ public class AcademicTeacherImport {
     private String lastName2;
     private String discipline;
     private String nin;
-    private String degreeName;
     private String phone;
+    private String degreeName;
     private Integer degreeId;
+    private String officialDisciplineName;
+    private Integer officialDisciplineId;
     private String situationName;
     private Integer situationId;
     private String situationName2;
@@ -209,4 +211,19 @@ public class AcademicTeacherImport {
         this.phone = phone;
     }
 
+    public String getOfficialDisciplineName() {
+        return officialDisciplineName;
+    }
+
+    public void setOfficialDisciplineName(String officialDisciplineName) {
+        this.officialDisciplineName = officialDisciplineName;
+    }
+
+    public Integer getOfficialDisciplineId() {
+        return officialDisciplineId;
+    }
+
+    public void setOfficialDisciplineId(Integer officialDisciplineId) {
+        this.officialDisciplineId = officialDisciplineId;
+    }
 }

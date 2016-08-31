@@ -16,8 +16,8 @@
 
     <properties>
         <vr-plugin.component-type>service</vr-plugin.component-type>
-        <vr-plugin.name>Inventory Placeholder Plugin</vr-plugin.name>
-        <vr-plugin.description>Inventory Management</vr-plugin.description>
+        <vr-plugin.name>Forum Placeholder Plugin</vr-plugin.name>
+        <vr-plugin.description>Simple Forum</vr-plugin.description>
     </properties>
 
     <dependencies>

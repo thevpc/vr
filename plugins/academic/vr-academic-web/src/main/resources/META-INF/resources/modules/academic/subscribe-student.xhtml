@@ -56,31 +56,31 @@ and open the template in the editor.
 
 
                             <p:outputLabel value="Civlité"/>
-                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.civilityName}">
+                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.civilityId}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
                                 <f:selectItems value="#{subscribeStudentCtrl.model.civilityItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Genre"/>
-                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.genderName}">
+                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.genderId}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
                                 <f:selectItems value="#{subscribeStudentCtrl.model.genderItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Classe"/>
-                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.className}">
+                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.classId}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
                                 <f:selectItems value="#{subscribeStudentCtrl.model.classItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="1ere inscription"/>
-                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.startPeriodName}">
+                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.startPeriodId}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
                                 <f:selectItems value="#{subscribeStudentCtrl.model.periodItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Prépa/License"/>
-                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.preClassPrepName}">
+                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.preClassPrepId}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
                                 <f:selectItems value="#{subscribeStudentCtrl.model.prepItems}"/>
                             </p:selectOneMenu>

@@ -1,6 +1,6 @@
 package net.vpc.app.vainruling.plugins.academic.web.load;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherBaseStat;
+import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherBaseStat;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package net.vpc.app.vainruling.plugins.academic.service.model.stat;
+package net.vpc.app.vainruling.plugins.academic.service.stat;
 
 /**
  * Created by vpc on 8/19/16.

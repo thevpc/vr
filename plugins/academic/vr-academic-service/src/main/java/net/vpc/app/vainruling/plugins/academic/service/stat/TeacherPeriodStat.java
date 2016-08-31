@@ -3,7 +3,7 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.academic.service.model.stat;
+package net.vpc.app.vainruling.plugins.academic.service.stat;
 
 import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
@@ -17,10 +17,10 @@ public class TeacherPeriodStat extends TeacherBaseStat {
 
     private AcademicTeacher teacher;
     private AcademicTeacherPeriod teacherPeriod;
-    private AcademicTeacherSemestrialLoad[] semestrialLoad;
+    private AcademicTeacherSemestrialLoad[] semestrialLoad=new AcademicTeacherSemestrialLoad[0];
     private CourseAssignmentFilter courseAssignmentFilter;
     private boolean includeIntents;
-    private TeacherSemesterStat[] semesters;
+    private TeacherSemesterStat[] semesters=new TeacherSemesterStat[0];
     private int confirmedTeacherAssignmentCount = 0;
     private LoadValue confirmedTeacherAssignment = new LoadValue();
 

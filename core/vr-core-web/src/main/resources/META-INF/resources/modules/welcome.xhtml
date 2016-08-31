@@ -17,6 +17,8 @@ and open the template in the editor.
 <h:body>
 
 
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <!--@elvariable id="articlesCtrl" type="net.vpc.app.vainruling.plugins.articles.web.ArticlesCtrl"-->
     <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="itemForm" enctype="multipart/form-data">
@@ -89,7 +91,7 @@ and open the template in the editor.
                                                                style="margin-left: 3px;margin-right: 3px;"
                                                                ajax="false"
                                                         >
-                                                    <p:fileDownload value="#{documentsCtrl.downloadPath(att.path)}"/>
+                                                    <p:fileDownload value="#{vr.downloadPath(att.path)}"/>
                                                 </p:commandLink>
                                             </ui:repeat>
                                         </p:outputPanel>
@@ -131,7 +133,7 @@ and open the template in the editor.
                                                                style="margin-left: 3px;margin-right: 3px;"
                                                                ajax="false"
                                                         >
-                                                    <p:fileDownload value="#{documentsCtrl.downloadPath(att.path)}"/>
+                                                    <p:fileDownload value="#{vr.downloadPath(att.path)}"/>
                                                 </p:commandLink>
                                             </ui:repeat>
                                         </p:outputPanel>

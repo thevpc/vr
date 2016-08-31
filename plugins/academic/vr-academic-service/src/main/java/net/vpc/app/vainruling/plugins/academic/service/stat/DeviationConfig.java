@@ -1,4 +1,4 @@
-package net.vpc.app.vainruling.plugins.academic.service.model.stat;
+package net.vpc.app.vainruling.plugins.academic.service.stat;
 
 import java.util.HashSet;
 import java.util.Set;

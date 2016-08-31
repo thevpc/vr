@@ -3,12 +3,12 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.academic.service.model.stat;
+package net.vpc.app.vainruling.plugins.academic.service.stat;
 
-import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,7 +21,7 @@ public abstract class TeacherBaseStat {
     private LoadValue extra = new LoadValue();
     private LoadValue due = new LoadValue();
     private LoadValue dueWeek = new LoadValue();
-    private List<AcademicCourseAssignment> assignments;
+    private List<AcademicCourseAssignmentInfo> assignments=new ArrayList<>();
     private double weeks;
     private double maxWeeks;
     private DeviationConfig config=new DeviationConfig();
@@ -156,11 +156,11 @@ public abstract class TeacherBaseStat {
         this.config = config;
     }
 
-    public List<AcademicCourseAssignment> getAssignments() {
+    public List<AcademicCourseAssignmentInfo> getAssignments() {
         return assignments;
     }
 
-    public void setAssignments(List<AcademicCourseAssignment> assignments) {
+    public void setAssignments(List<AcademicCourseAssignmentInfo> assignments) {
         this.assignments = assignments;
     }
 }

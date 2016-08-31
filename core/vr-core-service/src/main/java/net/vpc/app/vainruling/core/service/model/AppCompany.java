@@ -16,6 +16,13 @@ import java.sql.Timestamp;
  */
 @Entity(listOrder = "name")
 @Path("Contact")
+@Properties(
+        {
+                @Property(name = "ui.auto-filter.country", value = "{expr='country',order=1}"),
+                @Property(name = "ui.auto-filter.governorate", value = "{expr='governorate',order=2}"),
+                @Property(name = "ui.auto-filter.settlement", value = "{expr='settlement',order=3}"),
+                @Property(name = "ui.auto-filter.industry", value = "{expr='industry',order=4}"),
+        })
 public class AppCompany {
 
     @Id

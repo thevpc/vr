@@ -1039,7 +1039,18 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                         }else if(curr instanceof StringType){
                             List<String> values=UPA.getPersistenceUnit().createQuery("Select distinct "+autoFilterData.getExpr()+" from "+getEntityName())
                                     .getResultList();
-                            Collections.sort(values);
+                            Collections.sort(values, new Comparator<String>() {
+                                @Override
+                                public int compare(String o1, String o2) {
+                                    if(o1==null){
+                                        o1="";
+                                    }
+                                    if(o2==null){
+                                        o2="";
+                                    }
+                                    return o1.compareTo(o2);
+                                }
+                            });
                             for (String value : values) {
                                 if(value!=null) {
                                     f.getValues().add(FacesUtils.createSelectItem(value, value, ""));

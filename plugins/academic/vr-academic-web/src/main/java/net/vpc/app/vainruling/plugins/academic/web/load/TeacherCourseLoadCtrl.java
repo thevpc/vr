@@ -13,6 +13,7 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.TeacherFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
+import net.vpc.common.jsf.FacesUtils;
 
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
@@ -55,6 +56,13 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
 
     public void onChangeAcademicTeacher() {
         onRefresh();
+    }
+
+    public void onRefresh() {
+        super.onRefresh();
+        //
+        getModel().getFilterSelectItems().add(FacesUtils.createSelectItem("no-current-intents", "Mes Modules Affectés", "vr-checkbox"));
+
     }
 
     @OnPageLoad

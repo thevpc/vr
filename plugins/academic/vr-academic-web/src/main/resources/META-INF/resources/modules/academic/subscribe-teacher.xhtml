@@ -46,13 +46,13 @@ and open the template in the editor.
                             <p:inputText value="#{subscribeTeacherCtrl.model.teacher.firstName2}"/>
 
                             <p:outputLabel value="Civlité"/>
-                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.civilityName}">
+                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.civilityId}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
                                 <f:selectItems value="#{subscribeTeacherCtrl.model.civilityItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Genre"/>
-                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.genderName}">
+                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.genderId}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
                                 <f:selectItems value="#{subscribeTeacherCtrl.model.genderItems}"/>
                             </p:selectOneMenu>
@@ -64,17 +64,23 @@ and open the template in the editor.
                             <p:outputLabel value="Email"/>
                             <p:inputText value="#{subscribeTeacherCtrl.model.teacher.email}"/>
 
-                            <p:outputLabel value="Discipline (info,meca,electronique,fpga)"/>
+                            <p:outputLabel value="Discipline Officielle"/>
+                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.officialDisciplineId}">
+                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                <f:selectItems value="#{subscribeTeacherCtrl.model.officialDisciplineItems}"/>
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Autres disciplines (info,meca,electronique,fpga)"/>
                             <p:inputText value="#{subscribeTeacherCtrl.model.teacher.discipline}"/>
 
                             <p:outputLabel value="Grade"/>
-                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.degreeName}">
+                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.degreeId}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
                                 <f:selectItems value="#{subscribeTeacherCtrl.model.degreeItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Situation"/>
-                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.situationName}">
+                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.situationId}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
                                 <f:selectItems value="#{subscribeTeacherCtrl.model.situationItems}"/>
                             </p:selectOneMenu>
@@ -87,13 +93,13 @@ and open the template in the editor.
 
 
                             <p:outputLabel value="1er contrat"/>
-                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.startPeriodName}">
+                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.startPeriodId}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
                                 <f:selectItems value="#{subscribeTeacherCtrl.model.periodItems}"/>
                             </p:selectOneMenu>
 
                             <p:outputLabel value="Département"/>
-                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.departmentName}">
+                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.departmentId}">
                                 <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
                                 <f:selectItems value="#{subscribeTeacherCtrl.model.departmentItems}"/>
                             </p:selectOneMenu>

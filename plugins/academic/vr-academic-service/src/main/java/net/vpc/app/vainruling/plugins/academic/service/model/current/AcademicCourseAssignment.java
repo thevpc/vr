@@ -23,10 +23,11 @@ import java.sql.Timestamp;
                 @Property(name = "ui.auto-filter.period", value = "{expr='coursePlan.period',order=1}"),
                 @Property(name = "ui.auto-filter.department", value = "{expr='coursePlan.courseLevel.academicClass.program.department',order=2}"),
                 @Property(name = "ui.auto-filter.ownerDepartment", value = "{expr='ownerDepartment',order=3}"),
-                @Property(name = "ui.auto-filter.program", value = "{expr='coursePlan.courseLevel.academicClass.program',order=4}"),
-                @Property(name = "ui.auto-filter.programType", value = "{expr='coursePlan.courseLevel.academicClass.program.programType',order=5}"),
-                @Property(name = "ui.auto-filter.class", value = "{expr='coursePlan.courseLevel.academicClass',order=6}"),
-                @Property(name = "ui.auto-filter.teacher", value = "{expr='teacher',order=7}")
+                @Property(name = "ui.auto-filter.programType", value = "{expr='coursePlan.courseLevel.academicClass.program.programType',order=4}"),
+                @Property(name = "ui.auto-filter.program", value = "{expr='coursePlan.courseLevel.academicClass.program',order=5}"),
+                @Property(name = "ui.auto-filter.courseType", value = "{expr='courseType',order=6}"),
+                @Property(name = "ui.auto-filter.class", value = "{expr='coursePlan.courseLevel.academicClass',order=7}"),
+                @Property(name = "ui.auto-filter.teacher", value = "{expr='teacher',order=8}")
         }
 )
 public class AcademicCourseAssignment {

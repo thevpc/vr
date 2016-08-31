@@ -11,7 +11,7 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 
-        >
+>
 
 <h:head>
 </h:head>
@@ -19,6 +19,8 @@ and open the template in the editor.
 <h:body>
 
 
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <!--@elvariable id="internshipsPlanningCtrl" type="net.vpc.app.vainruling.plugins.academic.internship.web.InternshipsPlanningCtrl"-->
     <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <!--                <h:form id="buttonsForm">
@@ -117,14 +119,26 @@ and open the template in the editor.
                                                 actionListener="#{internshipsPlanningCtrl.onSetAllRowsNonHighlighted}"
                                                 update=":listForm"/>
                                 </p:splitButton>
-
-                                <p:commandButton icon="fa fa-download"
-                                                 styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
-                                                 ajax="false"
-                                                 disabled="#{!internshipsPlanningCtrl.model.manager}"
-                                        >
-                                    <p:fileDownload value="#{internshipsPlanningCtrl.downloadFetXml()}"/>
-                                </p:commandButton>
+                                <p:splitButton title="Download" icon="a fa-download">
+                                    <p:menuitem value="Download XML FET format"
+                                                ajax="false"
+                                                disabled="#{!internshipsPlanningCtrl.model.manager}"
+                                    >
+                                        <p:fileDownload value="#{internshipsPlanningCtrl.downloadFetXml()}"/>
+                                    </p:menuitem>
+                                    <p:menuitem value="Download CSV format"
+                                                ajax="false"
+                                                disabled="#{!internshipsPlanningCtrl.model.manager}"
+                                    >
+                                        <p:fileDownload value="#{internshipsPlanningCtrl.downloadCsv()}"/>
+                                    </p:menuitem>
+                                    <p:menuitem value="Download XLS format"
+                                                ajax="false"
+                                                disabled="#{!internshipsPlanningCtrl.model.manager}"
+                                    >
+                                        <p:fileDownload value="#{internshipsPlanningCtrl.downloadXls()}"/>
+                                    </p:menuitem>
+                                </p:splitButton>
 
                                 <p:selectOneMenu style="margin-left: 20px;height: 40px;"
                                                  value="#{internshipsPlanningCtrl.model.selectedGroup}">
@@ -147,7 +161,7 @@ and open the template in the editor.
                                                  style="border-style: none;border-width: 0px;width:#{internshipsPlanningCtrl.model.bestWidth}px;"
                                                  value="#{internshipsPlanningCtrl.model.visibleRows}"
                                                  var="row"
-                                            >
+                                    >
                                         <p:columns value="#{internshipsPlanningCtrl.model.visibleColumns}" var="col"
                                                    style="#{row.cells.get(col.index).style};width:#{col.width}px">
                                             <p:commandButton
@@ -155,13 +169,13 @@ and open the template in the editor.
                                                     action="#{internshipsPlanningCtrl.onChangeRowVisibility(row)}"
                                                     styleClass="vr-tiny-button"
                                                     value="C" update=":listForm"
-                                                    />
+                                            />
                                             <p:commandButton
                                                     rendered="#{(col.index eq 0)}"
                                                     action="#{internshipsPlanningCtrl.onChangeRowHighlight(row)}"
                                                     styleClass="vr-tiny-button"
                                                     value="S" update=":listForm"
-                                                    />
+                                            />
                                             <p:selectBooleanCheckbox
                                                     rendered="#{col.index eq 4 and row.enableChairFixing}"
                                                     value="#{row.activity.fixedChair}"/>
@@ -180,14 +194,14 @@ and open the template in the editor.
                                                         styleClass="vr-tiny-button"
                                                         value="P" update=":listForm"
                                                         disabled="#{!internshipsPlanningCtrl.model.manager}"
-                                                        />
+                                                />
                                                 <p:commandButton
                                                         action="#{internshipsPlanningCtrl.onChangeCellExaminer(row.cells.get(col.index))}"
                                                         style="#{row.cells.get(col.index).supervisor?row.cells.get(col.index).style:''}"
                                                         styleClass="vr-tiny-button"
                                                         value="R" update=":listForm"
                                                         disabled="#{!internshipsPlanningCtrl.model.manager}"
-                                                        />
+                                                />
                                             </h:panelGroup>
 
                                             <f:facet name="header">
@@ -204,13 +218,13 @@ and open the template in the editor.
                                                             action="#{internshipsPlanningCtrl.onChangeColumnVisibility(col)}"
                                                             styleClass="vr-tiny-button"
                                                             value="C" update=":listForm"
-                                                            />
+                                                    />
                                                     <p:commandButton
                                                             rendered="#{(col.index ge internshipsPlanningCtrl.model.firstJuryColumn)}"
                                                             action="#{internshipsPlanningCtrl.onChangeColumnHighlight(col)}"
                                                             styleClass="vr-tiny-button"
                                                             value="S" update=":listForm"
-                                                            />
+                                                    />
                                                 </div>
                                             </f:facet>
                                         </p:columns>

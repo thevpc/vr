@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.plugins.academic.service;
 
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.DeviationConfig;
+import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
 
 /**
  * @author taha.bensalah@gmail.com

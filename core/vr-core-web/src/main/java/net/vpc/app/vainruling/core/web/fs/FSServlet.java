@@ -86,6 +86,9 @@ public class FSServlet extends HttpServlet {
         }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         final VirtualFileSystem fs = core.getFileSystem();
+        if(fs==null){
+            return null;
+        }
         String filename = null;
         try {
             filename = URLDecoder.decode(pathInfo, "UTF-8");
@@ -93,7 +96,7 @@ public class FSServlet extends HttpServlet {
             return null;
         }
         VFile file = fs.get(filename);
-        if (file.exists() && file.isFile()) {
+        if (file!=null && file.exists() && file.isFile()) {
             return file;
         }
         return null;

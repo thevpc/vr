@@ -17,9 +17,10 @@ import java.sql.Timestamp;
 @Path("Admin/Security")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.action", value = "{expr='action',order=1}"),
-                @Property(name = "ui.auto-filter.module", value = "{expr='module',order=2}"),
-                @Property(name = "ui.auto-filter.user", value = "{expr='user',order=2}")
+                @Property(name = "ui.auto-filter.module", value = "{expr='module',order=1}"),
+                @Property(name = "ui.auto-filter.action", value = "{expr='action',order=2}"),
+                @Property(name = "ui.auto-filter.user", value = "{expr='user',order=3}"),
+                @Property(name = "ui.auto-filter.level", value = "{expr='level',order=4}")
         }
 )
 public class AppTrace {
@@ -36,15 +37,16 @@ public class AppTrace {
 
     @Summary
     @Properties(
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:9%")
+    )
+    private String module;
+
+    @Summary
+    @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:8%")
     )
     private String action;
 
-    @Summary
-    @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:9%")
-    )
-    private String module;
 
     private String objectName;
 

@@ -94,6 +94,8 @@ public class AppSecurityFilter implements Filter {
                 }
 
                 log.log(Level.SEVERE, "Unhandled Error", e);
+                HttpServletResponse webresponse = (HttpServletResponse) response;
+                webresponse.sendRedirect(contextPath+"/r/index.xhtml?faces-redirect=true");
 //                HttpServletResponse res = (HttpServletResponse) response;
 //                res.sendError(500);
             }

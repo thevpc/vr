@@ -10,6 +10,7 @@ and open the template in the editor.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
 
 >
 
@@ -23,11 +24,6 @@ and open the template in the editor.
     <!--@elvariable id="teacherCourseLoadCtrl" type="net.vpc.app.vainruling.plugins.academic.web.load.TeacherCourseLoadCtrl"-->
 
     <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
-        <ui:define name="links">
-            <style type="text/css">
-
-            </style>
-        </ui:define>
         <ui:define name="content">
             <h:form id="buttonsForm">
                 <p:confirmDialog message="Are you sure, you want to delete ?" header="Initiating deleting process"
@@ -38,9 +34,56 @@ and open the template in the editor.
                 </p:confirmDialog>
 
                 <!-- /.row -->
+                <div class="row">
+                    <p:outputLabel id="buttons">
+                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh"
+                                         styleClass="vr-form-field vr-form-fixed-width-medium ui-ribbon-bigbutton vr-icon-aws" ajax="true"
+                                         actionListener="#{teacherCourseLoadCtrl.onRefresh}" update=":listForm"/>
+
+                        <p:menuButton value="Actions..." style="margin-left: 10px;"
+                                      rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
+                                      styleClass="vr-form-field vr-form-fixed-width-medium">
+                            <p:menuitem value="Affectations => Voeux (tous)"
+                                        disabled="#{!vr.userSession.departmentManager and !vr.userSession.admin}"
+                                        actionListener="#{teacherCourseLoadCtrl.assignmentsToIntentsAll()}"
+                                        update=":listForm"/>
+                            <p:menuitem value="Voeux => Affectations (tous)"
+                                        disabled="#{!vr.userSession.departmentManager and !vr.userSession.admin}"
+                                        actionListener="#{teacherCourseLoadCtrl.intentsToAssignmentsAll()}"
+                                        update=":listForm"/>
+                            <p:separator/>
+                            <p:menuitem
+                                    value="Affectations => Voeux (#{teacherCourseLoadCtrl.model.currentTeacher})"
+                                    disabled="#{!vr.userSession.departmentManager and !vr.userSession.admin}"
+                                    actionListener="#{teacherCourseLoadCtrl.assignmentsToIntentsMine()}"
+                                    rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
+                                    update=":listForm"/>
+                            <p:separator/>
+                            <p:menuitem
+                                    disabled="#{!vr.userSession.departmentManager and !vr.userSession.admin}"
+                                    value="Affecter tout (#{teacherCourseLoadCtrl.model.currentTeacher})"
+                                    actionListener="#{teacherCourseLoadCtrl.intentsToAssignmentsMine()}"
+                                    rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
+                                    update=":listForm"/>
+                            <p:separator/>
+                            <p:menuitem
+                                    value="Supprimer Voeux (#{teacherCourseLoadCtrl.model.currentTeacher})"
+                                    actionListener="#{teacherCourseLoadCtrl.removeAllIntentsMine()}"
+                                    rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
+                                    update=":listForm"/>
+                            <p:separator/>
+                            <p:menuitem
+                                    value="Supprimer Affectations (#{teacherCourseLoadCtrl.model.currentTeacher})"
+                                    actionListener="#{teacherCourseLoadCtrl.removeAllAssignmentsMine()}"
+                                    rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
+                                    update=":listForm"/>
+                            <p:separator/>
+                        </p:menuButton>
+                    </p:outputLabel>
+                </div>
                 <p:fieldset legend="Filtres" toggleable="true" toggleSpeed="500">
-                    <div >
-                        <div >
+                    <div>
+                        <div>
                             <p:outputLabel value="Période" styleClass="vr-form-field vr-form-fixed-width-medium"/>
                             <p:selectOneMenu styleClass="vr-form-field"
                                              value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedPeriod}">
@@ -50,114 +93,144 @@ and open the template in the editor.
                                 <f:selectItems value="#{teacherCourseLoadCtrl.teacherFilter.model.periodItems}"/>
                             </p:selectOneMenu>
                         </div>
-                        <div >
+                        <div>
                             <p:outputLabel value="Enseignant" styleClass="vr-form-field vr-form-fixed-width-medium"/>
-                            <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                  value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedDepartments}"
-                                                  label="Departements"
-                                                  filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                                <p:ajax listener="#{teacherCourseLoadCtrl.onChangeOther}" update=":listForm"/>
+                            <p:selectCheckboxMenu
+                                    styleClass="vr-form-field #{teacherCourseLoadCtrl.teacherFilter.model.selectedDepartments.isEmpty() ?'':'vr-selected-many-selected'}"
+                                    value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedDepartments}"
+                                    label="Departements"
+                                    filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                                <p:ajax listener="#{teacherCourseLoadCtrl.onChangeOther}"
+                                        update=":listForm :buttonsForm"/>
                                 <f:selectItems value="#{teacherCourseLoadCtrl.teacherFilter.model.departmentItems}"/>
                             </p:selectCheckboxMenu>
 
-                            <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                  value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedDegrees}"
-                                                  label="Grades"
-                                                  filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                                <p:ajax listener="#{teacherCourseLoadCtrl.onChangeOther}" update=":listForm"/>
+                            <p:selectCheckboxMenu
+                                    styleClass="vr-form-field #{teacherCourseLoadCtrl.teacherFilter.model.selectedDegrees.isEmpty() ?'':'vr-selected-many-selected'}"
+                                    value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedDegrees}"
+                                    label="Grades"
+                                    filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                                <p:ajax listener="#{teacherCourseLoadCtrl.onChangeOther}"
+                                        update=":listForm :buttonsForm"/>
                                 <f:selectItems value="#{teacherCourseLoadCtrl.teacherFilter.model.degreeItems}"/>
                             </p:selectCheckboxMenu>
-                            <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                  value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedSituations}"
-                                                  label="Situations"
-                                                  filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                                <p:ajax listener="#{teacherCourseLoadCtrl.onChangeOther}" update=":listForm"/>
+                            <p:selectCheckboxMenu
+                                    styleClass="vr-form-field #{teacherCourseLoadCtrl.teacherFilter.model.selectedSituations.isEmpty() ?'':'vr-selected-many-selected'}"
+                                    value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedSituations}"
+                                    label="Situations"
+                                    filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                                <p:ajax listener="#{teacherCourseLoadCtrl.onChangeOther}"
+                                        update=":listForm :buttonsForm"/>
                                 <f:selectItems value="#{teacherCourseLoadCtrl.teacherFilter.model.situationItems}"/>
                             </p:selectCheckboxMenu>
-                            <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                  value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedOfficialDisciplines}"
-                                                  label="Disciplines"
-                                                  filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                                <p:ajax listener="#{teacherCourseLoadCtrl.onChangeOther}" update=":listForm"/>
+                            <p:selectCheckboxMenu
+                                    styleClass="vr-form-field #{teacherCourseLoadCtrl.teacherFilter.model.selectedOfficialDisciplines.isEmpty() ?'':'vr-selected-many-selected'}"
+                                    value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedOfficialDisciplines}"
+                                    label="Disciplines"
+                                    filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                                <p:ajax listener="#{teacherCourseLoadCtrl.onChangeOther}"
+                                        update=":listForm :buttonsForm"/>
                                 <f:selectItems
                                         value="#{teacherCourseLoadCtrl.teacherFilter.model.officialDisciplinesItems}"/>
                             </p:selectCheckboxMenu>
-                            <p:selectOneMenu  styleClass="vr-form-field" value="#{teacherCourseLoadCtrl.model.teacherId}">
+                            <p:selectOneMenu id="teachersList" styleClass="vr-form-field"
+                                             value="#{teacherCourseLoadCtrl.model.teacherId}">
                                 <p:ajax listener="#{teacherCourseLoadCtrl.onChangeAcademicTeacher}"
                                         update=":buttonsForm :listForm"/>
                                 <f:selectItem itemLabel="Selectionner Enseignant..." itemValue=""/>
                                 <f:selectItems value="#{teacherCourseLoadCtrl.model.teachers}"/>
                             </p:selectOneMenu>
                         </div>
-                        <div class="row">
-                            <p:outputLabel value="Modules" styleClass="vr-form-field vr-form-fixed-width-medium vr-form-indented-child"/>
+                        <div>
+                            <p:outputLabel value="Modules"
+                                           styleClass="vr-form-field vr-form-fixed-width-medium vr-form-indented-child"/>
                             <div class="vr-form-sub-rows">
                                 <div class="vr-form-sub-row">
-                                    <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                          value="#{teacherCourseLoadCtrl.courseFilter.model.selectedSemesters}"
-                                                          label="Semestres"
-                                                          filter="true" filterMatchMode="startsWith"
-                                                          panelStyle="width:250px">
+                                    <p:selectCheckboxMenu
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedSemesters.isEmpty() ?'':'vr-selected-many-selected'}"
+                                            value="#{teacherCourseLoadCtrl.courseFilter.model.selectedSemesters}"
+                                            label="Semestres"
+                                            filter="true" filterMatchMode="startsWith"
+                                            panelStyle="width:250px">
                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                update=":listForm"/>
+                                                update=":listForm :buttonsForm"/>
                                         <f:selectItems
                                                 value="#{teacherCourseLoadCtrl.courseFilter.model.semesterItems}"/>
                                     </p:selectCheckboxMenu>
-                                    <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                          value="#{teacherCourseLoadCtrl.courseFilter.model.selectedCourseTypes}"
-                                                          label="Types Modules"
-                                                          filter="true" filterMatchMode="startsWith"
-                                                          panelStyle="width:250px">
+                                    <p:selectCheckboxMenu
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedProgramTypes.isEmpty() ?'':'vr-selected-many-selected'}"
+                                            value="#{teacherCourseLoadCtrl.courseFilter.model.selectedProgramTypes}"
+                                            label="Type Formation"
+                                            filter="true" filterMatchMode="startsWith"
+                                            panelStyle="width:250px">
                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                update=":listForm"/>
+                                                update=":listForm :buttonsForm"/>
+                                        <f:selectItems
+                                                value="#{teacherCourseLoadCtrl.courseFilter.model.programTypeItems}"/>
+                                    </p:selectCheckboxMenu>
+                                    <p:selectCheckboxMenu
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedCourseTypes.isEmpty() ?'':'vr-selected-many-selected'}"
+                                            value="#{teacherCourseLoadCtrl.courseFilter.model.selectedCourseTypes}"
+                                            label="Types Modules"
+                                            filter="true" filterMatchMode="startsWith"
+                                            panelStyle="width:250px">
+                                        <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                update=":listForm :buttonsForm"/>
                                         <f:selectItems
                                                 value="#{teacherCourseLoadCtrl.courseFilter.model.courseTypeItems}"/>
                                     </p:selectCheckboxMenu>
-                                    <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                          value="#{teacherCourseLoadCtrl.courseFilter.model.selectedClasses}"
-                                                          label="Classes"
-                                                          filter="true" filterMatchMode="startsWith"
-                                                          panelStyle="width:250px">
+                                    <p:selectCheckboxMenu
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedClasses.isEmpty() ?'':'vr-selected-many-selected'}"
+                                            value="#{teacherCourseLoadCtrl.courseFilter.model.selectedClasses}"
+                                            label="Classes"
+                                            filter="true" filterMatchMode="startsWith"
+                                            panelStyle="width:250px">
                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                update=":listForm"/>
+                                                update=":listForm :buttonsForm"/>
                                         <f:selectItems value="#{teacherCourseLoadCtrl.courseFilter.model.classItems}"/>
                                     </p:selectCheckboxMenu>
                                 </div>
                                 <div class="vr-form-sub-row">
-                                    <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                          value="#{teacherCourseLoadCtrl.courseFilter.model.selectedDepartments}"
-                                                          label="Departement"
-                                                          filter="true" filterMatchMode="startsWith"
-                                                          panelStyle="width:250px">
+                                    <p:selectCheckboxMenu
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedDepartments.isEmpty() ?'':'vr-selected-many-selected'}"
+                                            value="#{teacherCourseLoadCtrl.courseFilter.model.selectedDepartments}"
+                                            label="Departement"
+                                            filter="true" filterMatchMode="startsWith"
+                                            panelStyle="width:250px">
                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                update=":listForm"/>
+                                                update=":listForm :buttonsForm"/>
                                         <f:selectItems
                                                 value="#{teacherCourseLoadCtrl.courseFilter.model.departmentItems}"/>
                                     </p:selectCheckboxMenu>
-                                    <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                          value="#{teacherCourseLoadCtrl.courseFilter.model.selectedProgramTypes}"
-                                                          label="Type Formation"
-                                                          filter="true" filterMatchMode="startsWith"
-                                                          panelStyle="width:250px">
+                                    <p:selectCheckboxMenu
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedOwnerDepartments.isEmpty() ?'':'vr-selected-many-selected'}"
+                                            value="#{teacherCourseLoadCtrl.courseFilter.model.selectedOwnerDepartments}"
+                                            label="Géré par..."
+                                            filter="true" filterMatchMode="startsWith"
+                                            panelStyle="width:250px">
                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                update=":listForm"/>
-                                        <f:selectItems value="#{teacherCourseLoadCtrl.courseFilter.model.programTypeItems}"/>
+                                                update=":listForm :buttonsForm"/>
+                                        <f:selectItems
+                                                value="#{teacherCourseLoadCtrl.courseFilter.model.departmentItems}"/>
                                     </p:selectCheckboxMenu>
-                                    <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                          value="#{teacherCourseLoadCtrl.courseFilter.model.selectedLabels}"
-                                                          label="Label"
-                                                          filter="true" filterMatchMode="startsWith"
-                                                          panelStyle="width:250px">
+                                    <p:selectCheckboxMenu
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedLabels.isEmpty() ?'':'vr-selected-many-selected'}"
+                                            value="#{teacherCourseLoadCtrl.courseFilter.model.selectedLabels}"
+                                            label="Label"
+                                            filter="true" filterMatchMode="startsWith"
+                                            panelStyle="width:250px">
                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                update=":listForm"/>
+                                                update=":listForm :buttonsForm"/>
                                         <f:selectItems value="#{teacherCourseLoadCtrl.courseFilter.model.labelItems}"/>
                                     </p:selectCheckboxMenu>
-                                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                    <p:selectCheckboxMenu
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedDeviationGroups.isEmpty() ?'':'vr-selected-many-selected'}"
                                             value="#{teacherCourseLoadCtrl.courseFilter.model.selectedDeviationGroups}"
                                             label="Groupe Balance"
-                                            filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                                            filter="true" filterMatchMode="startsWith"
+                                            panelStyle="width:250px">
                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                update=":listForm"/>
+                                                update=":listForm :buttonsForm"/>
                                         <f:selectItems
                                                 value="#{teacherCourseLoadCtrl.courseFilter.model.deviationGroupItems}"/>
                                     </p:selectCheckboxMenu>
@@ -166,8 +239,8 @@ and open the template in the editor.
                                     <div class="table-responsive">
                                         <p:selectManyCheckbox styleClass="vr-form-field"
                                                               value="#{teacherCourseLoadCtrl.courseFilter.model.refreshFilter}"
-                                                layout="grid"
-                                                columns="5">
+                                                              layout="grid"
+                                                              columns="5">
                                             <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
                                                     update=":listForm"/>
                                             <f:selectItems
@@ -176,33 +249,23 @@ and open the template in the editor.
                                     </div>
                                 </div>
                                 <div class="vr-form-sub-row">
-                                    <p:selectManyCheckbox styleClass="vr-form-field" value="#{teacherCourseLoadCtrl.model.othersFilters}"
+                                    <p:selectManyCheckbox styleClass="vr-form-field"
+                                                          value="#{teacherCourseLoadCtrl.model.othersFilters}"
                                                           layout="grid" columns="3"
-                                                          style="font-size: x-small;margin-left: 20px;"
+
                                     >
-                                        <p:ajax listener="#{teacherCourseLoadCtrl.onOthersFiltersChanged}" update=":listForm"/>
+                                        <p:ajax listener="#{teacherCourseLoadCtrl.onOthersFiltersChanged}"
+                                                update=":listForm"/>
                                         <f:selectItems value="#{teacherCourseLoadCtrl.model.filterSelectItems}"/>
                                     </p:selectManyCheckbox>
                                 </div>
-
                             </div>
                         </div>
                     </div>
                 </p:fieldset>
-                <div class="row">
+                <div class="row" style="margin-top: 20px">
                     <div class="table-responsive">
-                        <p:menuButton value="Actions..." styleClass="vr-form-field vr-form-fixed-width-medium">
-                            <p:menuitem value="Affectations => Voeux (tous)"
-                                        disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
-                                        actionListener="#{teacherCourseLoadCtrl.assignmentsToIntentsAll()}"
-                                        update=":listForm"/>
-                            <p:menuitem
-                                    value="Affectations => Voeux (#{teacherCourseLoadCtrl.model.currentTeacher})"
-                                    actionListener="#{teacherCourseLoadCtrl.assignmentsToIntentsMine()}"
-                                    rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
-                                    update=":listForm"/>
-                            <p:separator/>
-                        </p:menuButton>
+
                         <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
                     </div>
                 </div>
@@ -215,7 +278,7 @@ and open the template in the editor.
                             <p:commandLink
                                     action="#{vr.gotoPageObjItem('AcademicTeacher',vr.str(teacherCourseLoadCtrl.model.currentTeacher.id))}"
                                     style="font-weight: bold"
-                                    value="#{teacherCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.teacher.situation.name}"/>
+                                    value="#{teacherCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.val.teacher.situation.name}"/>
                         </h1>
                         <p:panelGrid>
                             <p:row>
@@ -240,318 +303,230 @@ and open the template in the editor.
                                 <p:column styleClass="ui-widget-header" style="widows: 100px;"><p:outputLabel
                                         value=""/></p:column>
                             </p:row>
+
                             <p:row>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel
                                         value="Charge Annuelle"/></p:column>
                                 <p:column><p:outputLabel value=""/></p:column>
                                 <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.value.c}"><f:convertNumber
+                                        value="#{teacherCourseLoadCtrl.model.stat.val.value.c}"><f:convertNumber
                                         pattern="#0.00"/></p:outputLabel></p:column>
                                 <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.value.td}"><f:convertNumber
+                                        value="#{teacherCourseLoadCtrl.model.stat.val.value.td}"><f:convertNumber
                                         pattern="#0.00"/></p:outputLabel></p:column>
                                 <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.value.tp}"><f:convertNumber
+                                        value="#{teacherCourseLoadCtrl.model.stat.val.value.tp}"><f:convertNumber
                                         pattern="#0.00"/></p:outputLabel></p:column>
                                 <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.value.pm}"><f:convertNumber
+                                        value="#{teacherCourseLoadCtrl.model.stat.val.value.pm}"><f:convertNumber
                                         pattern="#0.00"/></p:outputLabel></p:column>
                                 <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.value.tppm}"><f:convertNumber
+                                        value="#{teacherCourseLoadCtrl.model.stat.val.value.tppm}"><f:convertNumber
                                         pattern="#0.00"/></p:outputLabel></p:column>
                                 <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.due.equiv}"><f:convertNumber
+                                        value="#{teacherCourseLoadCtrl.model.stat.val.due.equiv}"><f:convertNumber
                                         pattern="#0.00"/></p:outputLabel></p:column>
                                 <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.value.equiv}"><f:convertNumber
+                                        value="#{teacherCourseLoadCtrl.model.stat.val.value.equiv}"><f:convertNumber
                                         pattern="#0.00"/></p:outputLabel></p:column>
                                 <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.extra.equiv}"><f:convertNumber
+                                        value="#{teacherCourseLoadCtrl.model.stat.val.extra.equiv}"><f:convertNumber
                                         pattern="#0.00"/></p:outputLabel></p:column>
                                 <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.dueWeek.equiv}"><f:convertNumber
+                                        value="#{teacherCourseLoadCtrl.model.stat.val.dueWeek.equiv}"><f:convertNumber
                                         pattern="#0.00"/></p:outputLabel></p:column>
                                 <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.valueWeek.equiv}"><f:convertNumber
+                                        value="#{teacherCourseLoadCtrl.model.stat.val.valueWeek.equiv}"><f:convertNumber
                                         pattern="#0.00"/></p:outputLabel></p:column>
                                 <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.extraWeek.equiv}"><f:convertNumber
+                                        value="#{teacherCourseLoadCtrl.model.stat.val.extraWeek.equiv}"><f:convertNumber
                                         pattern="#0.00"/></p:outputLabel></p:column>
                                 <p:column>
                                     <p:outputLabel
-                                            value="#{teacherCourseLoadCtrl.model.stat.deviation}"><f:convertNumber
+                                            value="#{teacherCourseLoadCtrl.model.stat.val.deviation}"><f:convertNumber
                                             pattern="#0.00%"/></p:outputLabel>
-                                    <h:outputText value=" / #{teacherCourseLoadCtrl.model.stat.population.size}"/>
+                                    <h:outputText value=" / #{teacherCourseLoadCtrl.model.stat.val.population.size}"/>
                                 </p:column>
                                 <p:column>
                                     <div class="vr-progress-container" style="width: 100%;">
-                                        <div class="#{teacherCourseLoadCtrl.model.stat.deviationLabel}"
-                                             style="width:#{vr.frame(vr.abs(teacherCourseLoadCtrl.model.stat.deviation),0,1)*100}%">
+                                        <div class="#{teacherCourseLoadCtrl.model.stat.val.deviationLabel}"
+                                             style="width:#{vr.frame(vr.abs(teacherCourseLoadCtrl.model.stat.val.deviation),0,1)*100}%">
 
                                         </div>
                                     </div>
                                 </p:column>
                             </p:row>
-                            <p:row>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Charge S1"/></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semestrialLoad[0].weeksLoad}"><f:convertNumber
-                                        pattern="#0.#"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.c}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.td}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.tp}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.pm}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.tppm}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].due.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].value.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].extra.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].dueWeek.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].valueWeek.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[0].extraWeek.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column>
-                                    <p:outputLabel
-                                            value="#{teacherCourseLoadCtrl.model.stat.semesters[0].deviation}"><f:convertNumber
-                                            pattern="#0.00%"/></p:outputLabel>
-                                    <h:outputText value=" / #{teacherCourseLoadCtrl.model.stat.semesters[0].population.size}"/>
-                                </p:column>
-                                <p:column>
-                                    <div class="vr-progress-container" style="width: 100%;">
-                                        <div class="#{teacherCourseLoadCtrl.model.stat.semesters[0].deviationLabel}"
-                                             style="width:#{vr.frame(vr.abs(teacherCourseLoadCtrl.model.stat.semesters[0].deviation),0,1)*100}%">
+                            <c:forEach items="#{teacherCourseLoadCtrl.model.stat.semesters}" var="sem">
+                                <p:row>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel
+                                            value="Charge #{sem.val.semester.name}"/></p:column>
+                                    <p:column><p:outputLabel
+                                            value="#{sem.val.weeks}"><f:convertNumber
+                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                    <p:column><p:outputLabel
+                                            value="#{sem.val.value.c}"><f:convertNumber
+                                            pattern="#0.00"/></p:outputLabel></p:column>
+                                    <p:column><p:outputLabel
+                                            value="#{sem.val.value.td}"><f:convertNumber
+                                            pattern="#0.00"/></p:outputLabel></p:column>
+                                    <p:column><p:outputLabel
+                                            value="#{sem.val.value.tp}"><f:convertNumber
+                                            pattern="#0.00"/></p:outputLabel></p:column>
+                                    <p:column><p:outputLabel
+                                            value="#{sem.val.value.pm}"><f:convertNumber
+                                            pattern="#0.00"/></p:outputLabel></p:column>
+                                    <p:column><p:outputLabel
+                                            value="#{sem.val.value.tppm}"><f:convertNumber
+                                            pattern="#0.00"/></p:outputLabel></p:column>
+                                    <p:column><p:outputLabel
+                                            value="#{sem.val.due.equiv}"><f:convertNumber
+                                            pattern="#0.00"/></p:outputLabel></p:column>
+                                    <p:column><p:outputLabel
+                                            value="#{sem.val.value.equiv}"><f:convertNumber
+                                            pattern="#0.00"/></p:outputLabel></p:column>
+                                    <p:column><p:outputLabel
+                                            value="#{sem.val.extra.equiv}"><f:convertNumber
+                                            pattern="#0.00"/></p:outputLabel></p:column>
+                                    <p:column><p:outputLabel
+                                            value="#{sem.val.dueWeek.equiv}"><f:convertNumber
+                                            pattern="#0.00"/></p:outputLabel></p:column>
+                                    <p:column><p:outputLabel
+                                            value="#{sem.val.valueWeek.equiv}"><f:convertNumber
+                                            pattern="#0.00"/></p:outputLabel></p:column>
+                                    <p:column><p:outputLabel
+                                            value="#{sem.val.extraWeek.equiv}"><f:convertNumber
+                                            pattern="#0.00"/></p:outputLabel></p:column>
+                                    <p:column>
+                                        <p:outputLabel
+                                                value="#{sem.val.deviation}"><f:convertNumber
+                                                pattern="#0.00%"/></p:outputLabel>
+                                        <h:outputText
+                                                value=" / #{sem.val.population.size}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <div class="vr-progress-container" style="width: 100%;">
+                                            <div class="#{sem.val.deviationLabel}"
+                                                 style="width:#{vr.frame(vr.abs(sem.val.deviation),0,1)*100}%">
 
+                                            </div>
                                         </div>
-                                    </div>
-                                </p:column>
-                            </p:row>
-                            <p:row>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Charge S2"/></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semestrialLoad[1].weeksLoad}"><f:convertNumber
-                                        pattern="#0.#"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.c}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.td}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.tp}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.pm}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.tppm}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].due.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].value.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].extra.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].dueWeek.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].valueWeek.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.semesters[1].extraWeek.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column>
-                                    <p:outputLabel
-                                            value="#{teacherCourseLoadCtrl.model.stat.semesters[1].deviation}"><f:convertNumber
-                                            pattern="#0.00%"/></p:outputLabel>
-                                    <h:outputText value=" / #{teacherCourseLoadCtrl.model.stat.semesters[1].population.size}"/>
-                                </p:column>
-                                <p:column>
-                                    <div class="vr-progress-container" style="width: 100%;">
-                                        <div class="#{teacherCourseLoadCtrl.model.stat.semesters[1].deviationLabel}"
-                                             style="width:#{vr.frame(vr.abs(teacherCourseLoadCtrl.model.stat.semesters[1].deviation),0,1)*100}%">
-
-                                        </div>
-                                    </div>
-                                </p:column>                            </p:row>
+                                    </p:column>
+                                </p:row>
+                            </c:forEach>
                         </p:panelGrid>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="table-responsive">
-                        <h1>Semestre 1</h1>
-                        <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.mineS1}"
-                                     class="table table-bordered table-hover"
-                                     paginatorAlwaysVisible="false"
-                                     paginator="true"
-                                     paginatorPosition="bottom"
-                                     rows="20"
-                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                     rowsPerPageTemplate="10,20,50"
-                                     emptyMessage="Aucune charge"
-                        >
-                            <p:column style="padding: 0;" styleClass="ui-widget-header" headerText="" width="5%">
-                                <p:menuButton value="...">
-                                    <p:menuitem value="Ajouter Voeux"
-                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
-                                                actionListener="#{teacherCourseLoadCtrl.addToMine(i.assignment.id)}"
-                                                update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
-                                    <p:menuitem value="Supp. Voeux"
-                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
-                                                actionListener="#{teacherCourseLoadCtrl.removeFromMine(i.assignment.id)}"
-                                                update=":listForm" icon="ui-icon-close"/>
-                                    <p:separator/>
-                                    <p:menuitem value="Affecter"
-                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
-                                                actionListener="#{teacherCourseLoadCtrl.doAssign(i.assignment.id)}"
-                                                update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
-                                    <p:menuitem value="Supp. Affectation"
-                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
-                                                actionListener="#{teacherCourseLoadCtrl.doUnAssign(i.assignment.id)}"
-                                                update=":listForm" icon="ui-icon-close"/>
-                                </p:menuButton>
-                            </p:column>
-                            <p:column headerText="" width="10%">
-                                <h:outputText value="#{i.assignment.coursePlan.courseLevel.semester.name}"/>
-                            </p:column>
-                            <p:column headerText="" width="10%">
-                                <h:outputText value="#{i.assignment.coursePlan.courseLevel.academicClass.name}"/>
-                            </p:column>
-                            <p:column headerText="Module">
-                                <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}"
-                                               styleClass="#{i.assigned?'vr-assigned-course':''}"
-                                               value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}"/>
-                            </p:column>
-                            <p:column headerText="C" width="5%">
-                                <h:outputText value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}"/>
-                            </p:column>
-                            <p:column headerText="TD" width="5%">
-                                <h:outputText value="#{i.assignment.valueTD != 0 ? i.assignment.valueTD : ''}"/>
-                            </p:column>
-                            <p:column headerText="TP" width="5%">
-                                <h:outputText value="#{i.assignment.valueTP != 0 ? i.assignment.valueTP : ''}"/>
-                            </p:column>
-                            <p:column headerText="PM" width="5%">
-                                <h:outputText value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM : ''}"/>
-                            </p:column>
-                            <p:column headerText="Grp" width="5%">
-                                <h:outputText value="#{i.assignment.groupCount}"><f:convertNumber
-                                        pattern="#0.#"/></h:outputText>
-                            </p:column>
+                <ui:repeat value="#{teacherCourseLoadCtrl.model.stat.semesters}" var="sem">
+                    <div class="row">
+                        <div class="table-responsive">
+                            <h1>Semestre #{sem.val.semester.name}</h1>
+                            <p:dataTable var="i" value="#{sem.assignments}"
+                                         class="table table-bordered table-hover"
+                                         paginatorAlwaysVisible="false"
+                                         paginator="true"
+                                         paginatorPosition="bottom"
+                                         rows="20"
+                                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         rowsPerPageTemplate="10,20,50"
+                                         emptyMessage="Aucune charge"
+                            >
+                                <p:column style="padding: 0;" styleClass="ui-widget-header" headerText="" width="5%">
+                                    <f:facet name="header">
+                                        <p:menuButton value="..."
+                                                      rendered="#{teacherCourseLoadCtrl.model.enableLoadEditing and teacherCourseLoadCtrl.model.multipleSelection}"
+                                        >
+                                            <p:menuitem value="Aj. Voeux"
+                                                        actionListener="#{teacherCourseLoadCtrl.addToMineSelected()}"
+                                                        update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                            <p:menuitem value="Supp. Voeux"
+                                                        actionListener="#{teacherCourseLoadCtrl.removeFromMineSelected()}"
+                                                        update=":listForm" icon="ui-icon-close"/>
+                                            <p:separator/>
+                                            <p:menuitem value="Affecter"
+                                                        actionListener="#{teacherCourseLoadCtrl.doAssignSelected()}"
+                                                        update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                            <p:menuitem value="Supp. Affectation"
+                                                        actionListener="#{teacherCourseLoadCtrl.doUnAssignSelected()}"
+                                                        update=":listForm" icon="ui-icon-close"/>
+                                        </p:menuButton>
+                                    </f:facet>
+                                    <p:selectBooleanCheckbox
+                                            style="margin-left: 10px;"
+                                            rendered="#{teacherCourseLoadCtrl.model.enableLoadEditing and teacherCourseLoadCtrl.model.multipleSelection}"
+                                            actionListener="#{teacherCourseLoadCtrl.removeFromMine(i.value.assignment.id)}"
+                                            value="#{i.selected}"
+                                            update=":listForm" title="Clickez ici pour supprimer le voeux"/>
+                                    <p:menuButton value="..."
+                                                  rendered="#{teacherCourseLoadCtrl.model.enableLoadEditing and !teacherCourseLoadCtrl.model.multipleSelection}"
+                                    >
+                                        <p:menuitem value="Aj. Voeux"
+                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.value.assignment.id)}"
+                                                    actionListener="#{teacherCourseLoadCtrl.addToMine(i.value.assignment.id)}"
+                                                    update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                        <p:menuitem value="Supp. Voeux"
+                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.value.assignment.id)}"
+                                                    actionListener="#{teacherCourseLoadCtrl.removeFromMine(i.value.assignment.id)}"
+                                                    update=":listForm" icon="ui-icon-close"/>
+                                        <p:separator/>
+                                        <p:menuitem value="Affecter"
+                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.value.assignment.id)}"
+                                                    actionListener="#{teacherCourseLoadCtrl.doAssign(i.value.assignment.id)}"
+                                                    update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                        <p:menuitem value="Supp. Affectation"
+                                                    disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.value.assignment.id)}"
+                                                    actionListener="#{teacherCourseLoadCtrl.doUnAssign(i.value.assignment.id)}"
+                                                    update=":listForm" icon="ui-icon-close"/>
+                                    </p:menuButton>
 
-                            <p:column headerText="Voeux" width="20%">
-                                <h:outputText value="#{i.intents}"
-                                              styleClass="#{i.assigned?'vr-label-valid':'vr-label-invalid'}"/>
-                            </p:column>
+                                </p:column>
+                                <p:column headerText="" width="10%">
+                                    <h:outputText
+                                            value="#{i.academicClass.name}"/>
+                                </p:column>
+                                <p:column headerText="Module">
+                                    <p:commandLink
+                                            action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.value.assignment)}"
+                                            value="#{i.value.assignment.coursePlan.name} - #{i.value.assignment.courseType.name}"
+                                            styleClass="#{i.value.assigned?'vr-assigned-course':''}"/>
+                                </p:column>
+                                <p:column headerText="C" width="5%">
+                                    <h:outputText
+                                            value="#{i.value.assignment.valueC != 0 ? i.value.assignment.valueC : ''}"/>
+                                </p:column>
+                                <p:column headerText="TD" width="5%">
+                                    <h:outputText
+                                            value="#{i.value.assignment.valueTD != 0 ? i.value.assignment.valueTD : ''}"/>
+                                </p:column>
+                                <p:column headerText="TP" width="5%">
+                                    <h:outputText
+                                            value="#{i.value.assignment.valueTP != 0 ? i.value.assignment.valueTP : ''}"/>
+                                </p:column>
+                                <p:column headerText="PM" width="5%">
+                                    <h:outputText
+                                            value="#{i.value.assignment.valuePM != 0 ? i.value.assignment.valuePM  : ''}"/>
+                                </p:column>
+                                <p:column headerText="Grp" width="5%">
+                                    <h:outputText value="#{i.value.assignment.groupCount}"><f:convertNumber
+                                            pattern="#0.#"/></h:outputText>
+                                </p:column>
 
-                        </p:dataTable>
+                                <p:column headerText="Voeux des autres" width="20%">
+                                    <h:outputText value="#{i.intents}"
+                                                  styleClass="#{i.value.assigned?'vr-label-valid':'vr-label-invalid'}"
+                                    />
+                                </p:column>
+
+                            </p:dataTable>
+                        </div>
                     </div>
-
-                </div>
-
-                <div class="row">
-                    <div class="table-responsive">
-                        <h1>Semestre 2</h1>
-                        <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.mineS2}"
-                                     class="table table-bordered table-hover"
-                                     paginatorAlwaysVisible="false"
-                                     paginator="true"
-                                     paginatorPosition="bottom"
-                                     rows="20"
-                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                     rowsPerPageTemplate="10,20,50"
-                                     emptyMessage="Aucune charge"
-                        >
-                            <p:column style="padding: 0;" styleClass="ui-widget-header" headerText="" width="5%">
-                                <p:menuButton value="...">
-                                    <p:menuitem value="Aj. Voeux"
-                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
-                                                actionListener="#{teacherCourseLoadCtrl.addToMine(i.assignment.id)}"
-                                                update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
-                                    <p:menuitem value="Supp. Voeux"
-                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
-                                                actionListener="#{teacherCourseLoadCtrl.removeFromMine(i.assignment.id)}"
-                                                update=":listForm" icon="ui-icon-close"/>
-                                    <p:separator/>
-                                    <p:menuitem value="Affecter"
-                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
-                                                actionListener="#{teacherCourseLoadCtrl.doAssign(i.assignment.id)}"
-                                                update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
-                                    <p:menuitem value="Supp. Affectation"
-                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
-                                                actionListener="#{teacherCourseLoadCtrl.doUnAssign(i.assignment.id)}"
-                                                update=":listForm" icon="ui-icon-close"/>
-                                </p:menuButton>
-
-                            </p:column>
-                            <p:column headerText="" width="10%">
-                                <h:outputText
-                                        value="#{i.assignment.coursePlan.courseLevel.academicClass.program.name}-#{i.assignment.coursePlan.courseLevel.academicClass.name}"/>
-                            </p:column>
-                            <p:column headerText="Module">
-                                <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}"
-                                               value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}"
-                                               styleClass="#{i.assigned?'vr-assigned-course':''}"/>
-                            </p:column>
-                            <p:column headerText="C" width="5%">
-                                <h:outputText value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}"/>
-                            </p:column>
-                            <p:column headerText="TD" width="5%">
-                                <h:outputText value="#{i.assignment.valueTD != 0 ? i.assignment.valueTD : ''}"/>
-                            </p:column>
-                            <p:column headerText="TP" width="5%">
-                                <h:outputText value="#{i.assignment.valueTP != 0 ? i.assignment.valueTP : ''}"/>
-                            </p:column>
-                            <p:column headerText="PM" width="5%">
-                                <h:outputText value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM  : ''}"/>
-                            </p:column>
-                            <p:column headerText="Grp" width="5%">
-                                <h:outputText value="#{i.assignment.groupCount}"><f:convertNumber
-                                        pattern="#0.#"/></h:outputText>
-                            </p:column>
-
-                            <p:column headerText="Voeux" width="20%">
-                                <h:outputText value="#{i.intents}"
-                                              styleClass="#{i.assigned?'vr-label-valid':'vr-label-invalid'}"/>
-                            </p:column>
-
-                        </p:dataTable>
-                    </div>
-                </div>
-
+                </ui:repeat>
 
                 <p:separator/>
 
                 <div class="row">
                     <div class="table-responsive">
                         <h1>Autres modules</h1>
-
-                        <!--<p:commandButton value="Filter" style="margin-top: 20px;margin-bottom: 20px;margin-left: 100px;"-->
-                                         <!--action="# {teacherCourseLoadCtrl.onOthersFiltersChanged}" update=":listForm"/>-->
 
                         <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.others}"
                                      class="table table-bordered table-hover"
@@ -565,64 +540,102 @@ and open the template in the editor.
                                      emptyMessage="Aucune charge"
                         >
                             <p:column style="padding: 0;" styleClass="ui-widget-header" headerText="" width="5%">
-                                <p:menuButton value="...">
+                                <f:facet name="header">
+                                    <p:menuButton value="..."
+                                                  rendered="#{teacherCourseLoadCtrl.model.enableLoadEditing and teacherCourseLoadCtrl.model.multipleSelection}"
+                                    >
+                                        <p:menuitem
+                                                rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
+                                                value="Aj. Voeux à #{teacherCourseLoadCtrl.model.currentTeacher.contact.firstName}"
+                                                actionListener="#{teacherCourseLoadCtrl.addToMineSelected()}"
+                                                update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                        <p:menuitem value="Supp. tous les Voeux"
+                                                    actionListener="#{teacherCourseLoadCtrl.removeAllIntentsSelected()}"
+                                                    update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                        <p:separator/>
+                                        <p:menuitem
+                                                rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
+                                                value="Affecter à #{teacherCourseLoadCtrl.model.currentTeacher.contact.firstName}"
+                                                actionListener="#{teacherCourseLoadCtrl.doAssignSelected()}"
+                                                update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                        <p:menuitem value="Confirmer Aff."
+                                                    actionListener="#{teacherCourseLoadCtrl.doAssignByIntentSelected()}"
+                                                    update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                        <p:menuitem value="Supp. Affectation"
+                                                    actionListener="#{teacherCourseLoadCtrl.doUnAssignSelected()}"
+                                                    update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                    </p:menuButton>
+                                </f:facet>
+                                <p:selectBooleanCheckbox
+                                        style="margin-left: 10px;"
+                                        rendered="#{teacherCourseLoadCtrl.model.enableLoadEditing and teacherCourseLoadCtrl.model.multipleSelection}"
+                                        value="#{i.selected}"/>
+                                <p:menuButton value="..."
+                                              rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null and teacherCourseLoadCtrl.model.enableLoadEditing and ! teacherCourseLoadCtrl.model.multipleSelection}"
+                                >
                                     <p:menuitem
+                                            rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
                                             value="Aj. Voeux à #{teacherCourseLoadCtrl.model.currentTeacher.contact.firstName}"
-                                            disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id) or (teacherCourseLoadCtrl.model.currentTeacher eq null)}"
-                                            actionListener="#{teacherCourseLoadCtrl.addToMine(i.assignment.id)}"
+                                            disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.value.assignment.id) or (teacherCourseLoadCtrl.model.currentTeacher eq null)}"
+                                            actionListener="#{teacherCourseLoadCtrl.addToMine(i.value.assignment.id)}"
                                             update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     <p:menuitem value="Supp. tous les Voeux"
-                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
-                                                actionListener="#{teacherCourseLoadCtrl.removeAllIntents(i.assignment.id)}"
+                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.value.assignment.id)}"
+                                                actionListener="#{teacherCourseLoadCtrl.removeAllIntents(i.value.assignment.id)}"
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     <p:separator/>
                                     <p:menuitem
+                                            rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
                                             value="Affecter à #{teacherCourseLoadCtrl.model.currentTeacher.contact.firstName}"
-                                            disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id) or (teacherCourseLoadCtrl.model.currentTeacher eq null)}"
-                                            actionListener="#{teacherCourseLoadCtrl.doAssign(i.assignment.id)}"
+                                            disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.value.assignment.id) or (teacherCourseLoadCtrl.model.currentTeacher eq null)}"
+                                            actionListener="#{teacherCourseLoadCtrl.doAssign(i.value.assignment.id)}"
                                             update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     <p:menuitem value="Confirmer Aff."
-                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
-                                                actionListener="#{teacherCourseLoadCtrl.doAssignByIntent(i.assignment.id)}"
+                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.value.assignment.id)}"
+                                                actionListener="#{teacherCourseLoadCtrl.doAssignByIntent(i.value.assignment.id)}"
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     <p:menuitem value="Supp. Affectation"
-                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
-                                                actionListener="#{teacherCourseLoadCtrl.doUnAssign(i.assignment.id)}"
+                                                disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.value.assignment.id)}"
+                                                actionListener="#{teacherCourseLoadCtrl.doUnAssign(i.value.assignment.id)}"
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                 </p:menuButton>
                             </p:column>
                             <p:column headerText="" width="10%">
-                                <h:outputText value="#{i.assignment.coursePlan.courseLevel.semester.name}"/>
+                                <h:outputText value="#{i.value.assignment.coursePlan.courseLevel.semester.name}"/>
                             </p:column>
                             <p:column headerText="" width="10%">
-                                <h:outputText
-                                        value="#{i.assignment.coursePlan.courseLevel.academicClass.program.name}-#{i.assignment.coursePlan.courseLevel.academicClass.name}"/>
+                                <h:outputText value="#{i.academicClass.name}"/>
                             </p:column>
-                            <p:column headerText="Module" filterBy="#{i.assignment.coursePlan.name}">
-                                <p:commandLink action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.assignment)}"
-                                               styleClass="#{i.assigned?'vr-assigned-course':''}"
-                                               value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}"/>
+                            <p:column headerText="Module" filterBy="#{i.value.assignment.coursePlan.name}">
+                                <p:commandLink
+                                        action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.value.assignment)}"
+                                        styleClass="#{i.value.assigned?'vr-assigned-course':''}"
+                                        value="#{i.value.assignment.coursePlan.name} - #{i.value.assignment.courseType.name}"/>
                             </p:column>
                             <p:column headerText="C" width="5%">
-                                <h:outputText value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}"/>
+                                <h:outputText
+                                        value="#{i.value.assignment.valueC != 0 ? i.value.assignment.valueC : ''}"/>
                             </p:column>
                             <p:column headerText="TD" width="5%">
-                                <h:outputText value="#{i.assignment.valueTD !=0 ? i.assignment.valueTD : ''}"/>
+                                <h:outputText
+                                        value="#{i.value.assignment.valueTD !=0 ? i.value.assignment.valueTD : ''}"/>
                             </p:column>
                             <p:column headerText="TP" width="5%">
-                                <h:outputText value="#{i.assignment.valueTP !=0 ? i.assignment.valueTP : ''}"/>
+                                <h:outputText
+                                        value="#{i.value.assignment.valueTP !=0 ? i.value.assignment.valueTP : ''}"/>
                             </p:column>
                             <p:column headerText="PM" width="5%">
-                                <h:outputText value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM : ''}"/>
+                                <h:outputText
+                                        value="#{i.value.assignment.valuePM != 0 ? i.value.assignment.valuePM : ''}"/>
                             </p:column>
                             <p:column headerText="Grp" width="5%">
-                                <h:outputText value="#{i.assignment.groupCount}"><f:convertNumber
+                                <h:outputText value="#{i.value.assignment.groupCount}"><f:convertNumber
                                         pattern="#0.#"/></h:outputText>
                             </p:column>
 
                             <p:column headerText="Voeux" width="20%">
                                 <h:outputText value="#{i.intents}"
-                                              styleClass="#{i.assigned?'vr-label-valid':'vr-label-invalid'}"/>
+                                              styleClass="#{i.value.assigned?'vr-label-valid':'vr-label-invalid'}"/>
                             </p:column>
 
                             <f:facet name="footer">

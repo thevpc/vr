@@ -15,8 +15,10 @@ public final class TeacherFilterFactory {
 
     public static DefaultTeacherFilter teacherIds(Integer[] teacherIds) {
         DefaultTeacherFilter custom = custom();
-        for (Integer teacherId : teacherIds) {
-            custom.addAcceptedTeacher(teacherId);
+        if(teacherIds!=null) {
+            for (Integer teacherId : teacherIds) {
+                custom.addAcceptedTeacher(teacherId);
+            }
         }
         return custom;
     }

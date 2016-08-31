@@ -11,6 +11,10 @@ import net.vpc.app.vainruling.core.service.cache.EntityCache;
 import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.obj.AppEntityExtendedPropertiesProvider;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.stats.KPI;
+import net.vpc.app.vainruling.core.service.stats.KPIGroupBy;
+import net.vpc.app.vainruling.core.service.stats.KPIProcessProcessor;
+import net.vpc.app.vainruling.core.service.stats.KPIResult;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.plugins.academic.service.helper.AcademicConversionTableHelper;
 import net.vpc.app.vainruling.plugins.academic.service.helper.CopyAcademicDataHelper;
@@ -20,7 +24,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.history.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.*;
+import net.vpc.app.vainruling.plugins.academic.service.stat.*;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilterAnd;
 import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
 import net.vpc.common.strings.MapStringConverter;
@@ -68,6 +72,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     };
 
     public AcademicPlugin() {
+    }
+
+    public static AcademicPlugin get() {
+        return VrApp.getBean(AcademicPlugin.class);
     }
 
     //    protected void generatePrintableTeacherListLoadFile(int yearId, Integer[] teacherIds, String semester, String template, String output) throws IOException {
@@ -123,10 +131,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public TeacherPeriodStat evalTeacherStat(
             int periodId,
             int teacherId,
-            CourseAssignmentFilter filter,
+            CourseAssignmentFilter courseAssignmentFilter,
             boolean includeIntents,
-            DeviationConfig deviationConfig,
-            StatCache cache
+            DeviationConfig deviationConfig
     ) {
 //        TeacherPeriodStat teacherPeriodStat = evalTeacherStat0(periodId,
 //                teacherId,
@@ -137,9 +144,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //                includeIntents,
 //                deviationConfig,
 //                cache);
-        MapList<Integer, TeacherPeriodStat> all = evalTeacherStatList(periodId, null, filter, includeIntents, deviationConfig, cache);
+        MapList<Integer, TeacherPeriodStat> all = evalTeacherStatList(periodId, null, courseAssignmentFilter, includeIntents, deviationConfig);
         TeacherPeriodStat teacherPeriodStat = all.getByKey(teacherId);
-        if (teacherPeriodStat == null) {
+        if (teacherPeriodStat != null) {
             return teacherPeriodStat;
         }
         //ghost Teacher (with no load)
@@ -167,7 +174,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 teacher.getDegree(),
                 teacher.getOfficialDiscipline()
         ));
-        ghost.setCourseAssignmentFilter(filter);
+        ghost.setCourseAssignmentFilter(courseAssignmentFilter);
         ghost.setIncludeIntents(includeIntents);
         ghost.setAssignments(new ArrayList<>());
         return ghost;
@@ -187,11 +194,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             int teacherId,
             AcademicTeacher teacher,
             List<AcademicTeacherSemestrialLoad> findTeacherSemestrialLoads,
-            List<AcademicCourseAssignment> assignments,
+            List<AcademicCourseAssignmentInfo> assignments,
             CourseAssignmentFilter filter,
             boolean includeIntents,
-            DeviationConfig deviationConfig,
-            StatCache cache
+            DeviationConfig deviationConfig
     ) {
         Chronometer ch = new Chronometer();
         if (teacher == null) {
@@ -202,7 +208,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
 //        int teacherId = tal.getTeacher().getId();
         if (assignments == null) {
-            assignments = findCourseAssignments(periodId, teacherId, null, filter, includeIntents, cache);
+            assignments = findCourseAssignmentsAndIntents(periodId, teacherId, null, includeIntents, filter);
             if (assignments == null) {
                 log.severe("No assignments found for teacherId=" + teacherId + " (" + teacher + ")");
                 assignments = new ArrayList<>();
@@ -264,15 +270,15 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
             sum_semester_weeks += sem.getWeeks();
             sum_max_semester_weeks += sem.getMaxWeeks();
-            List<AcademicCourseAssignment> semesterAssignments = new ArrayList<>();
-            for (AcademicCourseAssignment academicCourseAssignment : assignments) {
-                ModuleStat ms = evalModuleStat(periodId, academicCourseAssignment.getId(), teacherId, cache);
+            List<AcademicCourseAssignmentInfo> semesterAssignments = new ArrayList<>();
+            for (AcademicCourseAssignmentInfo academicCourseAssignment : assignments) {
+                ModuleStat ms = evalModuleStat(periodId, academicCourseAssignment.getAssignment().getId(), teacherId);
                 ModuleSemesterStat mss = ms.getSemester(ss.getName());
                 sem_value.add(mss.getValue());
-                if (academicCourseAssignment.getCoursePlan().getCourseLevel().getSemester().getId() == ss.getId()) {
+                if (academicCourseAssignment.getAssignment().getCoursePlan().getCourseLevel().getSemester().getId() == ss.getId()) {
                     semesterAssignments.add(academicCourseAssignment);
-                    if (academicCourseAssignment.isConfirmedTeacher()) {
-                        LoadValue v = getAssignmentLoadValue(academicCourseAssignment, degree, conversionTable);
+                    if (academicCourseAssignment.getAssignment().isConfirmedTeacher()) {
+                        LoadValue v = getAssignmentLoadValue(academicCourseAssignment.getAssignment(), degree, conversionTable);
                         sem.getConfirmedTeacherAssignment().add(v);
                         sem.setConfirmedTeacherAssignmentCount(sem.getConfirmedTeacherAssignmentCount() + 1);
                         teacher_stat.getConfirmedTeacherAssignment().add(v);
@@ -385,7 +391,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return loadValue;
     }
 
-    public ModuleStat evalModuleStat(int periodId, int courseAssignmentId, Integer forTeacherId, StatCache cache) {
+    public ModuleStat evalModuleStat(int periodId, int courseAssignmentId, Integer forTeacherId) {
 //        if (cache == null) {
 //            cache = new StatCache();
 //        }
@@ -522,14 +528,14 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //            }
 //        return m;
 //    }
-    public void addTeacherAcademicCourseAssignment(int teacherId, int assignementId) {
+    public void addCourseAssignment(int teacherId, int assignementId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment a = pu.findById(AcademicCourseAssignment.class, assignementId);
         a.setTeacher(findTeacher(teacherId));
         pu.merge(a);
     }
 
-    public void removeTeacherAcademicCourseAssignment(int assignementId) {
+    public void removeCourseAssignment(int assignementId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment a = pu.findById(AcademicCourseAssignment.class, assignementId);
         a.setTeacher(null);
@@ -590,7 +596,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         });
     }
 
-    public List<AcademicCourseIntent> findCourseIntentsByAssignment(int periodId, int assignment, Integer semester, CourseAssignmentFilter filter, StatCache cache) {
+    public List<AcademicCourseIntent> findCourseIntentsByAssignment(int periodId, int assignment, Integer semester, CourseAssignmentFilter filter) {
         return getAcademicCourseIntentByAssignmentAndSemester(periodId, assignment, semester);
 //        List<AcademicCourseIntent> intents = null;
 //        intents = UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseIntent a where a.assignmentId=:assignment")
@@ -610,8 +616,17 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //        return m;
     }
 
+    public List<AcademicCourseIntent> findCourseIntentsByAssignment(int assignment) {
+        List<AcademicCourseIntent> intents = null;
+        intents = UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseIntent a where a.assignmentId=:assignment")
+                .setHint(QueryHints.NAVIGATION_DEPTH, 5)
+                .setParameter("assignment", assignment)
+                .getResultList();
+        return intents;
+    }
 
-    public List<AcademicCourseIntent> findCourseIntentsByTeacher(int periodId, Integer teacher, Integer semester, CourseAssignmentFilter filter, StatCache cache) {
+
+    public List<AcademicCourseIntent> findCourseIntentsByTeacher(int periodId, Integer teacher, Integer semester, CourseAssignmentFilter filter) {
         List<AcademicCourseIntent> intents = null;
         //if (cache != null) {
         intents = getAcademicCourseIntentByTeacherAndSemester(periodId, teacher, semester);
@@ -652,24 +667,113 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
 
-    public List<AcademicCourseAssignment> findCourseAssignments(int periodId, Integer teacher, Integer semester, CourseAssignmentFilter filter, boolean includeIntents, StatCache cache) {
+    public List<AcademicCourseAssignment> findCourseAssignments(int periodId, Integer teacher, Integer semester, CourseAssignmentFilter filter, boolean includeIntents) {
         List<AcademicCourseAssignment> base = null;
         if (includeIntents) {
             List<AcademicCourseAssignment> all = new ArrayList<>();
-            for (AcademicCourseAssignmentInfo i : findCourseAssignmentsAndIntents(periodId, teacher, semester, filter, cache)) {
+            for (AcademicCourseAssignmentInfo i : findCourseAssignmentsAndIntents(periodId, teacher, semester, true, filter)) {
                 all.add(i.getAssignment());
             }
             base = all;
         } else {
-            base = getAcademicCourseAssignmentsByTeacherAndSemester(periodId, teacher, semester, filter);
+            List<AcademicCourseAssignment> m = new ArrayList<>();
+            if (teacher == null) {
+                for (AcademicCourseAssignment value : findAcademicCourseAssignments(periodId)) {
+                    AcademicSemester semester1 = value.getCoursePlan().getCourseLevel().getSemester();
+                    if (semester == null
+                            || (semester1 != null && semester1.getId() == (semester)
+                    )) {
+                        if (filter == null || filter.acceptAssignment(value)) {
+                            m.add(value);
+                        }
+                    }
+                }
+            } else {
+                List<AcademicCourseAssignment> list = findAcademicCourseAssignmentListByTeacherId(periodId).get(teacher);
+                AcademicTeacher tt = findTeacher(teacher);
+                AcademicTeacherPeriod tp = tt == null ? null : findAcademicTeacherPeriod(periodId, tt);
+                if (list == null) {
+                    if (tt != null) {
+                        if (!tp.isEnabled()) {
+                            //this is okkay!
+                        } else {
+                            System.out.println("No assignments for teacherId=" + teacher + " : " + tt);
+                        }
+                    } else {
+                        System.out.println("No assignments for teacherId=" + teacher + " : " + tt);
+                    }
+                } else {
+                    if (tt != null && !tp.isEnabled()) {
+                        System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled!");
+                    }
+                    for (AcademicCourseAssignment value : list) {
+                        AcademicSemester semester1 = value.getCoursePlan().getCourseLevel().getSemester();
+                        if (semester == null || (semester1 != null && semester1.getId() == (semester))) {
+                            if (filter == null || filter.acceptAssignment(value)) {
+                                m.add(value);
+                            }
+                        }
+                    }
+                }
+            }
+            return m;
         }
         return base;
     }
 
-    public List<AcademicCourseAssignmentInfo> findCourseAssignmentsAndIntents(int periodId, Integer teacher, Integer semester, CourseAssignmentFilter filter, StatCache cache) {
+    public List<AcademicCourseAssignmentInfo> findCourseAssignmentsAndIntents(int periodId, Integer teacher, Integer semester, boolean includeIntents, CourseAssignmentFilter filter) {
+        if (!includeIntents) {
+            List<AcademicCourseAssignmentInfo> m = new ArrayList<>();
+            if (teacher == null) {
+                for (AcademicCourseAssignment value : findAcademicCourseAssignments(periodId)) {
+                    AcademicSemester semester1 = value.getCoursePlan().getCourseLevel().getSemester();
+                    if (semester == null
+                            || (semester1 != null && semester1.getId() == (semester)
+                    )) {
+                        if (filter == null || filter.acceptAssignment(value)) {
+                            AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
+                            b.setAssigned(value.getTeacher() != null);
+                            b.setAssignment(value);
+                            m.add(b);
+                        }
+                    }
+                }
+            } else {
+                List<AcademicCourseAssignment> list = findAcademicCourseAssignmentListByTeacherId(periodId).get(teacher);
+                AcademicTeacher tt = findTeacher(teacher);
+                AcademicTeacherPeriod tp = tt == null ? null : findAcademicTeacherPeriod(periodId, tt);
+                if (list == null) {
+                    if (tt != null) {
+                        if (!tp.isEnabled()) {
+                            //this is okkay!
+                        } else {
+                            System.out.println("No assignments for teacherId=" + teacher + " : " + tt);
+                        }
+                    } else {
+                        System.out.println("No assignments for teacherId=" + teacher + " : " + tt);
+                    }
+                } else {
+                    if (tt != null && !tp.isEnabled()) {
+                        System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled!");
+                    }
+                    for (AcademicCourseAssignment value : list) {
+                        AcademicSemester semester1 = value.getCoursePlan().getCourseLevel().getSemester();
+                        if (semester == null || (semester1 != null && semester1.getId() == (semester))) {
+                            if (filter == null || filter.acceptAssignment(value)) {
+                                AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
+                                b.setAssigned(value.getTeacher() != null);
+                                b.setAssignment(value);
+                                m.add(b);
+                            }
+                        }
+                    }
+                }
+            }
+            return m;
+        }
         List<AcademicCourseAssignmentInfo> all = new ArrayList<>();
         HashSet<Integer> visited = new HashSet<>();
-        for (AcademicCourseAssignment a : getAcademicCourseAssignmentsByTeacherAndSemester(periodId, teacher, semester, filter)) {
+        for (AcademicCourseAssignment a : findCourseAssignments(periodId, teacher, semester, filter, false)) {
             if (!visited.contains(a.getId())) {
                 visited.add(a.getId());
                 AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
@@ -679,7 +783,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             }
         }
         Map<Integer, List<AcademicCourseIntent>> intentsByAssignment = new HashMap<>();
-        for (AcademicCourseIntent a : findCourseIntentsByTeacher(periodId, teacher, semester, filter, cache)) {
+        for (AcademicCourseIntent a : findCourseIntentsByTeacher(periodId, teacher, semester, filter)) {
             int assId = a.getAssignment().getId();
             List<AcademicCourseIntent> other = intentsByAssignment.get(assId);
             if (other == null) {
@@ -728,7 +832,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             }
             a.setIntentsSet(allIntents);
             a.setIntents(sb.toString());
-            a.setIntentsUserIdsSet(allIntentIds);
+            a.setIntentsTeacherIdsSet(allIntentIds);
         }
         Collections.sort(all, new Comparator<AcademicCourseAssignmentInfo>() {
 
@@ -837,11 +941,11 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
     }
 
-    public List<TeacherSemesterStat> evalTeacherSemesterStatList(int periodId, Integer semesterId, TeacherFilter teacherFilter, CourseAssignmentFilter filter, boolean includeIntents, DeviationConfig deviationConfig, final StatCache cache) {
+    public List<TeacherSemesterStat> evalTeacherSemesterStatList(int periodId, Integer semesterId, TeacherFilter teacherFilter, CourseAssignmentFilter filter, boolean includeIntents, DeviationConfig deviationConfig) {
         List<TeacherSemesterStat> all = new ArrayList<>();
         for (TeacherPeriodStat s : evalTeacherStatList(periodId, teacherFilter
                 , new CourseAssignmentFilterAnd().and(filter).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId))
-                , includeIntents, deviationConfig, cache)) {
+                , includeIntents, deviationConfig)) {
             if (semesterId == null) {
                 all.addAll(Arrays.asList(s.getSemesters()));
             } else {
@@ -856,7 +960,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return all;
     }
 
-    public MapList<Integer, TeacherPeriodStat> evalTeacherStatList(final int periodId, TeacherFilter teacherFilter, CourseAssignmentFilter filter, boolean includeIntents, DeviationConfig deviationConfig, final StatCache cache) {
+    public MapList<Integer, TeacherPeriodStat> evalTeacherStatList(final int periodId, TeacherFilter teacherFilter, CourseAssignmentFilter courseAssignmentFilter, boolean includeIntents, DeviationConfig deviationConfig) {
         Chronometer ch = new Chronometer();
 
         TeacherIdByTeacherPeriodComparator teacherIdByTeacherPeriodComparator = new TeacherIdByTeacherPeriodComparator(periodId);
@@ -866,7 +970,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
         MapList<Integer, TeacherPeriodStat> stats = new DefaultMapList<Integer, TeacherPeriodStat>(teacherPeriodStatMapListConverter);
         for (AcademicTeacher teacher : teachersList) {
-            TeacherPeriodStat st = evalTeacherStat0(periodId, teacher.getId(), teacher, null, null, filter, includeIntents, deviationConfig, cache);
+            TeacherPeriodStat st = evalTeacherStat0(periodId, teacher.getId(), teacher, null, null, courseAssignmentFilter, includeIntents, deviationConfig);
             if (st != null) {
                 if (st.getValue().getEquiv() > 0) {
                     stats.add(st);
@@ -936,12 +1040,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return stats;//.toArray(new TeacherStat[stats.size()]);
     }
 
-    public GlobalStat evalGlobalStat(int periodId, TeacherFilter teacherFilter, CourseAssignmentFilter filter, boolean includeIntents, DeviationConfig deviationConfig, StatCache cache) {
+    public GlobalStat evalGlobalStat(int periodId, TeacherFilter teacherFilter, CourseAssignmentFilter filter, boolean includeIntents, DeviationConfig deviationConfig) {
         GlobalStat s = new GlobalStat();
-        if (cache == null) {
-            cache = new StatCache();
-        }
-        List<TeacherPeriodStat> ts = evalTeacherStatList(periodId, teacherFilter, filter, includeIntents, deviationConfig, cache);
+
+        List<TeacherPeriodStat> ts = evalTeacherStatList(periodId, teacherFilter, filter, includeIntents, deviationConfig);
         for (TeacherPeriodStat t : ts) {
             AcademicTeacherPeriod trs = findAcademicTeacherPeriod(periodId, t.getTeacher());
             AcademicTeacherSituation situation = trs.getSituation();
@@ -1262,9 +1364,20 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public List<AcademicTeacher> findEnabledTeachers(int periodId) {
-        return UPA.getPersistenceUnit().createQuery("Select u.teacher from AcademicTeacherPeriod u where u.teacher.deleted=false and u.enabled=true order by u.teacher.contact.fullName and u.periodId=:periodId")
+        List<AcademicTeacher> periodId1 = UPA.getPersistenceUnit().createQuery("Select distinct u.teacher from AcademicTeacherPeriod u where u.teacher.deleted=false and u.enabled=true order by u.teacher.contact.fullName and u.periodId=:periodId")
                 .setParameter("periodId", periodId)
                 .getResultList();
+        //there is a bug in distinct implementation in UPA, should fix it.
+        //but waiting for that this is a workaround
+        List<AcademicTeacher> vals = new ArrayList<>();
+        HashSet<Integer> visited = new HashSet<>();
+        for (AcademicTeacher academicTeacher : periodId1) {
+            if (!visited.contains(academicTeacher.getId())) {
+                visited.add(academicTeacher.getId());
+                vals.add(academicTeacher);
+            }
+        }
+        return vals;
     }
 
     public List<AcademicStudent> findStudents() {
@@ -1587,6 +1700,14 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 .getResultList();
     }
 
+    public AcademicOfficialDiscipline findOfficialDiscipline(int id) {
+        return UPA.getPersistenceUnit().findById(AcademicOfficialDiscipline.class, id);
+    }
+
+    public AcademicOfficialDiscipline findOfficialDiscipline(String name) {
+        return UPA.getPersistenceUnit().findByMainField(AcademicOfficialDiscipline.class, name);
+    }
+
     public List<AcademicOfficialDiscipline> findOfficialDisciplines() {
         return UPA.getPersistenceUnit().
                 createQuery("Select a from AcademicOfficialDiscipline a")
@@ -1749,7 +1870,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public List<AcademicTeacherSemestrialLoad> findTeacherSemestrialLoadsByTeacher(int periodId, int teacherId) {
-        return cacheService.get(AcademicTeacherSemestrialLoad.class)
+        Map<Integer, List<AcademicTeacherSemestrialLoad>> map = cacheService.get(AcademicTeacherSemestrialLoad.class)
                 .getProperty("findTeacherSemestrialLoadsByTeacher:" + periodId, new Action<Map<Integer, List<AcademicTeacherSemestrialLoad>>>() {
                     @Override
                     public Map<Integer, List<AcademicTeacherSemestrialLoad>> run() {
@@ -1764,7 +1885,12 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                         }
                         return map;
                     }
-                }).get(teacherId);
+                });
+        List<AcademicTeacherSemestrialLoad> list = map.get(teacherId);
+        if (list == null) {
+            return Collections.EMPTY_LIST;
+        }
+        return list;
 //
 //
 //        return UPA.getPersistenceUnit().createQuery("Select a from AcademicTeacherSemestrialLoad a where a.teacherId=:t and a.periodId=:periodId")
@@ -2047,6 +2173,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
         AcademicTeacherPeriod a = new AcademicTeacherPeriod();
         a.setId(-1);
+        a.setTeacher(t);
         a.setSituation(t.getSituation());
         a.setDegree(t.getDegree());
         a.setDepartment(t.getDepartment());
@@ -2898,7 +3025,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 }
             }
         }
-        StatCache statCache = new StatCache();
         for (AcademicTeacher s : findTeachers()) {
             AppUser u = s.getUser();
             AppContact c = s.getContact();
@@ -2947,7 +3073,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 //find classes teached by  teacher
                 List<AcademicClass> myClasses = new ArrayList<>();
                 Set<String> myPrograms = new HashSet<>();
-                for (AcademicCourseAssignment a : findCourseAssignments(periodId, s.getId(), null, null, false, statCache)) {
+                for (AcademicCourseAssignment a : findCourseAssignments(periodId, s.getId(), null, null, false)) {
                     myPrograms.add(a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getName());
                     myClasses.add(a.getSubClass());
                     myClasses.add(a.getCoursePlan().getCourseLevel().getAcademicClass());
@@ -3108,7 +3234,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         } else {
             item = items.get(0);
         }
-        if (copyFromPeriod <= 0) {
+        if (copyFromPeriod <= 0 || copyFromPeriod == periodId) {
             item.setDegree(teacher.getDegree());
             item.setSituation(teacher.getSituation());
             item.setEnabled(teacher.isEnabled());
@@ -3255,50 +3381,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         );
     }
 
-    public List<AcademicCourseAssignment> getAcademicCourseAssignmentsByTeacherAndSemester(int periodId, Integer teacher, Integer semester, CourseAssignmentFilter filter) {
-        List<AcademicCourseAssignment> m = new ArrayList<>();
-        if (teacher == null) {
-            for (AcademicCourseAssignment value : findAcademicCourseAssignments(periodId)) {
-                AcademicSemester semester1 = value.getCoursePlan().getCourseLevel().getSemester();
-                if (semester == null
-                        || (semester1 != null && semester1.getId() == (semester)
-                )) {
-                    if (filter == null || filter.acceptAssignment(value)) {
-                        m.add(value);
-                    }
-                }
-            }
-        } else {
-            List<AcademicCourseAssignment> list = findAcademicCourseAssignmentListByTeacherId(periodId).get(teacher);
-            AcademicTeacher tt = findTeacher(teacher);
-            AcademicTeacherPeriod tp = tt == null ? null : findAcademicTeacherPeriod(periodId, tt);
-            if (list == null) {
-                if (tt != null) {
-                    if (!tp.isEnabled()) {
-                        //this is okkay!
-                    } else {
-                        System.out.println("No assignments for teacherId=" + teacher + " : " + tt);
-                    }
-                } else {
-                    System.out.println("No assignments for teacherId=" + teacher + " : " + tt);
-                }
-            } else {
-                if (tt != null && !tp.isEnabled()) {
-                    System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled!");
-                }
-                for (AcademicCourseAssignment value : list) {
-                    AcademicSemester semester1 = value.getCoursePlan().getCourseLevel().getSemester();
-                    if (semester == null || (semester1 != null && semester1.getId() == (semester))) {
-                        if (filter == null || filter.acceptAssignment(value)) {
-                            m.add(value);
-                        }
-                    }
-                }
-            }
-        }
-        return m;
-    }
-
 
     public Map<Integer, List<AcademicCourseIntent>> getAcademicCourseIntentByAssignmentId(int periodId) {
 
@@ -3422,5 +3504,17 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             throw new IllegalArgumentException("Missing Conversion Table for Period " + periodId + " : " + VrApp.getBean(CorePlugin.class).findPeriod(periodId));
         }
         return findConversionTableById(id);
+    }
+
+    public List<KPI> resolveAssignmentKPIs() {
+        return new ArrayList<KPI>(VrApp.getContext().getBeansOfType(KPI.class).values());
+    }
+
+    public KPIResult evalAssignmentKPIs(List<AcademicCourseAssignmentInfo> assignments, KPIGroupBy<AcademicCourseAssignmentInfo>[] groupBy, KPI<AcademicCourseAssignmentInfo>... kpis) {
+        return KPIProcessProcessor.INSTANCE.run(assignments, groupBy, kpis);
+    }
+
+    public KPIResult evalAssignmentKPIs(List<AcademicCourseAssignmentInfo> assignments, KPIGroupBy<AcademicCourseAssignmentInfo> groupBy, KPI<AcademicCourseAssignmentInfo>... kpis) {
+        return KPIProcessProcessor.INSTANCE.run(assignments, new KPIGroupBy[]{groupBy}, kpis);
     }
 }

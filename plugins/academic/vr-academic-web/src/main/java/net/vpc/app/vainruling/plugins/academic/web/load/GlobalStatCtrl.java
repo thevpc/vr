@@ -17,9 +17,9 @@ import net.vpc.app.vainruling.plugins.academic.service.TeacherFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.DeviationConfig;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.GlobalAssignmentStat;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.GlobalStat;
+import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
+import net.vpc.app.vainruling.plugins.academic.service.stat.GlobalAssignmentStat;
+import net.vpc.app.vainruling.plugins.academic.service.stat.GlobalStat;
 import net.vpc.app.vainruling.plugins.academic.service.util.DefaultTeacherFilter;
 import net.vpc.app.vainruling.plugins.academic.service.util.TeacherFilterFactory;
 import net.vpc.common.jsf.FacesUtils;
@@ -79,7 +79,7 @@ public class GlobalStatCtrl {
         GlobalStat allTeachers = p.evalGlobalStat(periodId <= 0 ? -100 : periodId,
                 teacherFilter, courseAssignmentFilter,
                 includeIntents,
-                deviationConfig,cache);
+                deviationConfig);
         getModel().setStat(allTeachers);
         List<GlobalStatByDiscipline> globalStatByDisciplines = new ArrayList<>();
         globalStatByDisciplines.add(new GlobalStatByDiscipline(null, allTeachers));
@@ -91,7 +91,7 @@ public class GlobalStatCtrl {
                                     teacherFilter
                             ), courseAssignmentFilter,
                             includeIntents,
-                            deviationConfig, cache)
+                            deviationConfig)
             ));
         }
         getModel().setGlobalStatByDisciplines(globalStatByDisciplines);

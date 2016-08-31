@@ -24,6 +24,7 @@ import net.vpc.common.util.Chronometer;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.upa.UPA;
+import net.vpc.upa.bulk.*;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +95,88 @@ public class InternshipsPlanningCtrl {
         updateTable();
     }
 
+    private StreamedContent createStreamedContent(ByteArrayOutputStream byteArrayOutputStream,String contentType,String extension){
+        InputStream stream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+        AcademicInternshipGroup g = UPA.getPersistenceUnit().findById(AcademicInternshipGroup.class, Integer.parseInt(getModel().getSelectedGroup()));
+        String groupName = g.getName();
+        groupName = groupName.replace(" ", "-");
+        String selectedSessionType = getModel().getSelectedSessionType();
+        if (!StringUtils.isEmpty(selectedSessionType)) {
+            selectedSessionType = "-" + selectedSessionType.replace(" ", "-");
+        }
+        return new DefaultStreamedContent(stream, contentType, "planning-" + groupName + selectedSessionType + "."+extension);
+    }
+
+    public StreamedContent downloadCsv() {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try {
+            TextCSVFormatter formatter = UPA.getPersistenceUnit().getImportExportManager().createTextCSVFormatter(byteArrayOutputStream);
+            formatter.getColumns().add((TextCSVColumn) new TextCSVColumn().updateName("Code"));
+            formatter.getColumns().add((TextCSVColumn) new TextCSVColumn().updateName("Intitule"));
+            formatter.getColumns().add((TextCSVColumn) new TextCSVColumn().updateName("Etudiant"));
+            formatter.getColumns().add((TextCSVColumn) new TextCSVColumn().updateName("Encadrant"));
+            formatter.getColumns().add((TextCSVColumn) new TextCSVColumn().updateName("President"));
+            formatter.getColumns().add((TextCSVColumn) new TextCSVColumn().updateName("Rapporteur"));
+            formatter.setWriteHeader(true);
+            DataWriter writer = formatter.createWriter();
+
+            PlanningActivityTable table = getModel().getTable();
+            List<Row> rows = getModel().getVisibleRows();
+            for (Row row : rows) {
+                if (row.isVisible()) {
+                    writer.writeRow(new Object[]{
+                            row.activity.getInternship().getCode(),
+                            row.activity.getInternship().getName(),
+                            row.activity.getInternship().getStudent(),
+                            StringUtils.listToString(row.activity.getInternship().getSupervisors(), "/"),
+                            row.activity.getChair(),
+                            row.activity.getExaminer()
+                    });
+                }
+            }
+            writer.close();
+            return createStreamedContent(byteArrayOutputStream,"text/csv","csv");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public StreamedContent downloadXls() {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try {
+            SheetFormatter formatter = UPA.getPersistenceUnit().getImportExportManager().createSheetFormatter(byteArrayOutputStream);
+            formatter.getColumns().add((SheetColumn) new SheetColumn().updateName("Code"));
+            formatter.getColumns().add((SheetColumn) new SheetColumn().updateName("Intitule"));
+            formatter.getColumns().add((SheetColumn) new SheetColumn().updateName("Etudiant"));
+            formatter.getColumns().add((SheetColumn) new SheetColumn().updateName("Encadrant"));
+            formatter.getColumns().add((SheetColumn) new SheetColumn().updateName("President"));
+            formatter.getColumns().add((SheetColumn) new SheetColumn().updateName("Rapporteur"));
+            formatter.setWriteHeader(true);
+            DataWriter writer = formatter.createWriter();
+
+            PlanningActivityTable table = getModel().getTable();
+            List<Row> rows = getModel().getVisibleRows();
+            for (Row row : rows) {
+                if (row.isVisible()) {
+                    writer.writeRow(new Object[]{
+                            row.activity.getInternship().getCode(),
+                            row.activity.getInternship().getName(),
+                            row.activity.getInternship().getStudent(),
+                            StringUtils.listToString(row.activity.getInternship().getSupervisors(), "/"),
+                            row.activity.getChair(),
+                            row.activity.getExaminer()
+                    });
+                }
+            }
+            writer.close();
+            return createStreamedContent(byteArrayOutputStream,"text/csv","csv");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public StreamedContent downloadFetXml() {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
@@ -101,23 +184,14 @@ public class InternshipsPlanningCtrl {
             PlanningActivityTable table2 = table.copy();
             ArrayList<PlanningActivity> activities = new ArrayList<>();
             List<Row> rows = getModel().getVisibleRows();
-            for (int i = 0; i < rows.size(); i++) {
-                Row row = rows.get(i);
+            for (Row row : rows) {
                 if (row.isVisible()) {
                     activities.add(row.activity.copy());
                 }
             }
             table2.setActivities(activities);
             VrApp.getBean(PlanningService.class).storeFetXml(table2, byteArrayOutputStream);
-            InputStream stream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-            AcademicInternshipGroup g = UPA.getPersistenceUnit().findById(AcademicInternshipGroup.class, Integer.parseInt(getModel().getSelectedGroup()));
-            String groupName = g.getName();
-            groupName = groupName.replace(" ", "-");
-            String selectedSessionType = getModel().getSelectedSessionType();
-            if (!StringUtils.isEmpty(selectedSessionType)) {
-                selectedSessionType = "-" + selectedSessionType.replace(" ", "-");
-            }
-            return new DefaultStreamedContent(stream, "text/xml", "planning-" + groupName + selectedSessionType + ".fet");
+            return createStreamedContent(byteArrayOutputStream, "text/xml","fet");
         } catch (Exception e) {
             e.printStackTrace();
         }

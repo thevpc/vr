@@ -271,7 +271,7 @@ public class VrMenuManager {
         if(!StringUtils.isEmpty(arguments)){
             data+= " ; " + arguments;
         }
-        TraceService.get().trace("visit.page","page visited "+lvp.toString(), data,"system", Level.FINE);
+        TraceService.get().trace("visit.page","page visited "+lvp.toString(), data,"/System/Access", Level.FINE);
         if (StringUtils.isEmpty(url)) {
             return null;
         }

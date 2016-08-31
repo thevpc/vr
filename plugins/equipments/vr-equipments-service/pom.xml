@@ -16,8 +16,8 @@
 
     <properties>
         <vr-plugin.component-type>service</vr-plugin.component-type>
-        <vr-plugin.name>Equipments Inventory</vr-plugin.name>
-        <vr-plugin.description>Inventory Management</vr-plugin.description>
+        <vr-plugin.name>Equipments</vr-plugin.name>
+        <vr-plugin.description>Equipments Management</vr-plugin.description>
     </properties>
 
     <dependencies>

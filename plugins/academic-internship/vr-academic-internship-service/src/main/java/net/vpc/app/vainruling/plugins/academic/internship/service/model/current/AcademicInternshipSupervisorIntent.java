@@ -14,6 +14,11 @@ import net.vpc.upa.config.*;
  */
 @Entity
 @Path("Education/Internship")
+@Properties(
+        {
+                @Property(name = "ui.auto-filter.department", value = "{expr='teacher.department',order=1}"),
+                @Property(name = "ui.auto-filter.teacher", value = "{expr='teacher',order=2}"),
+        })
 public class AcademicInternshipSupervisorIntent {
 
     @Id

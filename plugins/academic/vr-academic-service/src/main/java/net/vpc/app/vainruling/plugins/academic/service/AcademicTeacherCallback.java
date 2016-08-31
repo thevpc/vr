@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherSemestrialLoad;
@@ -40,6 +41,7 @@ public class AcademicTeacherCallback {
             load.setSemester(i);
             load.setWeeksLoad(ap.getSemesterMaxWeeks());
             load.setTeacher((AcademicTeacher) event.getPersistedObject());
+            load.setPeriod(CorePlugin.get().findAppConfig().getMainPeriod());
             pu.persist(load);
         }
     }

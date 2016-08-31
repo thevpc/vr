@@ -19,6 +19,8 @@ import java.util.Set;
 public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
     private Set<Integer> acceptedDepartments = new HashSet<>();
     private Set<Integer> rejectedDepartments = new HashSet<>();
+    private Set<Integer> acceptedOwnerDepartments = new HashSet<>();
+    private Set<Integer> rejectedOwnerDepartments = new HashSet<>();
     private Set<Integer> acceptedProgramTypes = new HashSet<>();
     private Set<Integer> rejectedProgramTypes = new HashSet<>();
     private Set<Integer> acceptedSemesters = new HashSet<>();
@@ -90,6 +92,22 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
 
     public void setRejectedDepartments(Set<Integer> rejectedDepartments) {
         this.rejectedDepartments = rejectedDepartments;
+    }
+
+    public Set<Integer> getAcceptedOwnerDepartments() {
+        return acceptedOwnerDepartments;
+    }
+
+    public void setAcceptedOwnerDepartments(Set<Integer> acceptedOwnerDepartments) {
+        this.acceptedOwnerDepartments = acceptedOwnerDepartments;
+    }
+
+    public Set<Integer> getRejectedOwnerDepartments() {
+        return rejectedOwnerDepartments;
+    }
+
+    public void setRejectedOwnerDepartments(Set<Integer> rejectedOwnerDepartments) {
+        this.rejectedOwnerDepartments = rejectedOwnerDepartments;
     }
 
     public Set<String> getAcceptedLabels() {
@@ -173,7 +191,6 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
 //    }
 
 
-
     public Set<String> buildCoursePlanLabelsFromString(String string) {
         HashSet<String> labels = new HashSet<>();
         if (string != null) {
@@ -213,6 +230,26 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
 
     public DefaultCourseAssignmentFilter removeRejectedDepartment(Integer id) {
         rejectedDepartments.remove(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter addAcceptedOwnerDepartment(Integer id) {
+        acceptedOwnerDepartments.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeAcceptedOwnerDepartment(Integer id) {
+        acceptedOwnerDepartments.remove(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter addRejectedOwnerDepartment(Integer id) {
+        rejectedOwnerDepartments.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeRejectedOwnerDepartment(Integer id) {
+        rejectedOwnerDepartments.remove(id);
         return this;
     }
 
@@ -306,6 +343,29 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         }
         return true;
     }
+
+    public boolean acceptOwnerDepartment(AppDepartment a) {
+        if (this.getAcceptedOwnerDepartments().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (!this.getAcceptedOwnerDepartments().contains(a.getId())) {
+                return false;
+            }
+        }
+        if (this.getRejectedOwnerDepartments().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (this.getRejectedOwnerDepartments().contains(a.getId())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean acceptAssignment(AcademicCourseAssignment a) {
         if (this.getAcceptedLabels().size() > 0 || this.getRejectedLabels().size() > 0) {
             Set<String> foundLabels = buildCoursePlanLabelsFromString(a.getCoursePlan().getLabels());
@@ -325,7 +385,10 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
             }
         }
 
-        if(!acceptDepartment(a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment())){
+        if (!acceptDepartment(a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment())) {
+            return false;
+        }
+        if (!acceptOwnerDepartment(a.getOwnerDepartment())) {
             return false;
         }
         if (this.getAcceptedProgramTypes().size() > 0) {
@@ -386,7 +449,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         }
         AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
 
-        Set<Integer> acceptedTree=new HashSet<>();
+        Set<Integer> acceptedTree = new HashSet<>();
         acceptedTree.addAll(this.getAcceptedClasses());
         for (Integer cc : this.getAcceptedClasses()) {
             for (Integer academicClass : academicPlugin.findAcademicDownHierarchyIdList(cc, null)) {
@@ -394,7 +457,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
             }
         }
 
-        Set<Integer> rejectedTree=new HashSet<>();
+        Set<Integer> rejectedTree = new HashSet<>();
         acceptedTree.addAll(this.getRejectedClasses());
         for (Integer cc : this.getRejectedClasses()) {
             for (Integer academicClass : academicPlugin.findAcademicDownHierarchyIdList(cc, null)) {
@@ -404,26 +467,26 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
 
         if (this.getAcceptedClasses().size() > 0) {
             AcademicClass t = a.getSubClass();
-            if(t==null){
-                t=a.getCoursePlan().getCourseLevel().getAcademicClass();
+            if (t == null) {
+                t = a.getCoursePlan().getCourseLevel().getAcademicClass();
             }
             if (t == null) {
                 throw new RuntimeException("Null Class");
             }
-            if(!acceptedTree.contains(t.getId())) {
+            if (!acceptedTree.contains(t.getId())) {
                 return false;
             }
         }
         if (this.getAcceptedClasses().size() > 0) {
             AcademicClass t = a.getSubClass();
-            if(t==null){
-                t=a.getCoursePlan().getCourseLevel().getAcademicClass();
+            if (t == null) {
+                t = a.getCoursePlan().getCourseLevel().getAcademicClass();
             }
             if (t == null) {
                 throw new RuntimeException("Null Class");
             }
 
-            if(rejectedTree.contains(t.getId())) {
+            if (rejectedTree.contains(t.getId())) {
                 return false;
             }
         }

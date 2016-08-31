@@ -7,12 +7,14 @@ package net.vpc.app.vainruling.core.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppProperty;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
 import net.vpc.app.vainruling.core.web.ctrl.ActiveSessionsCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.AppGlobalCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.LoginCtrl;
+import net.vpc.app.vainruling.core.web.fs.files.DocumentsCtrl;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
@@ -21,6 +23,7 @@ import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
+import org.primefaces.model.StreamedContent;
 import org.springframework.context.annotation.Scope;
 
 import javax.faces.context.FacesContext;
@@ -541,7 +544,35 @@ public class Vr {
         return VrApp.getBean(ActiveSessionsCtrl.class).getModel().getSessions();
     }
 
+    public int getPollInterval() {
+        CorePlugin core = CorePlugin.get();
+        AppProperty property = core.getAppProperty("System.PollInterval", null);
+        if(property!=null) {
+            Object appPropertyValue = core.getAppPropertyValue(property);
+            if (appPropertyValue != null) {
+                if(appPropertyValue instanceof Number) {
+                    return ((Number) appPropertyValue).intValue();
+                }else if(appPropertyValue instanceof String){
+                    try {
+                        return Integer.parseInt(String.valueOf(appPropertyValue));
+                    }catch(Exception ex){
+                        //ignore
+                    }
+                }
+            }
+        }
+        return 120;
+    }
+
     public void onPoll() {
         VrApp.getBean(CorePlugin.class).onPoll();
+    }
+
+    public void error() throws Exception {
+        throw new Exception("This is exception");
+    }
+
+    public StreamedContent downloadPath(String path) {
+        return VrApp.getBean(DocumentsCtrl.class).downloadPath(path);
     }
 }

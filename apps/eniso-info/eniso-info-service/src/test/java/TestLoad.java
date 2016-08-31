@@ -1,14 +1,8 @@
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.StatCache;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.DeviationConfig;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherPeriodStat;
+import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
 import net.vpc.common.util.Chronometer;
-import net.vpc.common.vfs.VFS;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by vpc on 8/23/16.
@@ -23,7 +17,7 @@ public class TestLoad {
         for (int i = 0; i < 20000; i++) {
             c.start();
             //List<TeacherPeriodStat> a = aca.evalTeacherStatList(11, null, null, true, new DeviationConfig(), new StatCache(), true);
-            aca.evalTeacherStat(11, 19, null, true, new DeviationConfig(), new StatCache());
+            aca.evalTeacherStat(11, 19, null, true, new DeviationConfig());
             System.out.println("time = " + c.stop());
             System.out.print("");
         }

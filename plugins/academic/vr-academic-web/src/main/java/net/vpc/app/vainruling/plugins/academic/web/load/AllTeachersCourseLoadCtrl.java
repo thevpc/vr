@@ -12,15 +12,15 @@ import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.VrColorTable;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
-import net.vpc.app.vainruling.plugins.academic.service.StatCache;
 import net.vpc.app.vainruling.plugins.academic.service.TeacherFilter;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.DeviationConfig;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherPeriodStat;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherSemesterStat;
+import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
+import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherBaseStat;
+import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherPeriodStat;
+import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherSemesterStat;
 import net.vpc.app.vainruling.plugins.academic.web.dialog.CopyPeriodDialogCtrl;
 import net.vpc.app.vainruling.plugins.academic.web.dialog.GenerateLoadDialogCtrl;
 import net.vpc.common.jsf.FacesUtils;
+import net.vpc.common.util.MapList;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
@@ -57,9 +57,7 @@ public class AllTeachersCourseLoadCtrl {
     protected CourseLoadFilterComponent courseFilter = new CourseLoadFilterComponent();
 
     private void reset() {
-        getModel().setSemester1(new ArrayList<TeacherSemesterStat>());
-        getModel().setSemester2(new ArrayList<TeacherSemesterStat>());
-        getModel().setYear(new ArrayList<TeacherPeriodStat>());
+        getModel().setTables(new ArrayList<TeacherBaseStatTable>());
     }
 
     public TeacherLoadFilterComponent getTeacherFilter() {
@@ -111,27 +109,56 @@ public class AllTeachersCourseLoadCtrl {
 
     public void onRefresh() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        StatCache cache = new StatCache();
         int periodId = getTeacherFilter().getPeriodId();
         CourseAssignmentFilter filter = getCourseFilter().getCourseAssignmentFilter();
         boolean includeIntents = getCourseFilter().isIncludeIntents();
-        getModel().setSemester1(new ArrayList<TeacherSemesterStat>());
-        getModel().setSemester2(new ArrayList<TeacherSemesterStat>());
-        getModel().setYear(new ArrayList<TeacherPeriodStat>());
+        reset();
         TeacherFilter customTeacherFilter = getTeacherFilter().getTeacherFilter();
         DeviationConfig deviationConfig = getCourseFilter().getDeviationConfig();
         if (periodId >= -1) {
             //ordered semesters
-            List<AcademicSemester> semesters = a.findSemesters();
-            getModel().setSemester1(a.evalTeacherSemesterStatList(periodId, semesters.get(0).getId(), customTeacherFilter, filter, includeIntents, deviationConfig, cache));
-            getModel().setSemester2(a.evalTeacherSemesterStatList(periodId, semesters.get(1).getId(), customTeacherFilter, filter, includeIntents, deviationConfig, cache));
-            getModel().setYear(a.evalTeacherStatList(periodId, customTeacherFilter, filter, includeIntents, deviationConfig, cache));
+            List<Integer> semesterIds=new ArrayList<>();
+            List<String> semesterNames=new ArrayList<>();
+            List<TeacherBaseStatTable> all=new ArrayList<>();
+            Map<Integer,List<TeacherBaseStat>> semesters=new HashMap<>();
+            MapList<Integer, TeacherPeriodStat> year = a.evalTeacherStatList(periodId, customTeacherFilter, filter, includeIntents, deviationConfig);
+            for (TeacherPeriodStat teacherPeriodStat : year) {
+                if(semesterIds.isEmpty()){
+                    for (TeacherSemesterStat teacherSemesterStat : teacherPeriodStat.getSemesters()) {
+                        semesterIds.add(teacherSemesterStat.getSemester().getId());
+                        semesterNames.add(teacherSemesterStat.getSemester().getName());
+                    }
+                }
+                for (TeacherSemesterStat teacherSemesterStat : teacherPeriodStat.getSemesters()) {
+                    List<TeacherBaseStat> list = semesters.get(teacherSemesterStat.getSemester().getId());
+                    if(list==null){
+                        list=new ArrayList<TeacherBaseStat>();
+                        semesters.put(teacherSemesterStat.getSemester().getId(),list);
+                    }
+                    list.add(teacherSemesterStat);
+                }
+            }
+            all.add(new TeacherBaseStatTable("Charge Globale",(List)year));
+            for (int i = 0; i < semesterIds.size(); i++) {
+                Integer semesterId = semesterIds.get(i);
+                String semesterName = semesterNames.get(i);
+                all.add(new TeacherBaseStatTable(semesterName, semesters.get(semesterId)));
+            }
+            getModel().setTables(all);
+
+//            List<AcademicSemester> semesters = a.findSemesters();
+//            getModel().setSemester1(a.evalTeacherSemesterStatList(periodId, semesters.get(0).getId(), customTeacherFilter, filter, includeIntents, deviationConfig, cache));
+//            getModel().setSemester2(a.evalTeacherSemesterStatList(periodId, semesters.get(1).getId(), customTeacherFilter, filter, includeIntents, deviationConfig, cache));
+
+//            getModel().setYear(year);
+        }else{
+            getModel().setTables(new ArrayList<>());
         }
-        getModel().setTables(Arrays.asList(
-                new TeacherBaseStatTable("Charge Globale", (List) getModel().getYear()),
-                new TeacherBaseStatTable("Semestre 1", (List) getModel().getSemester1()),
-                new TeacherBaseStatTable("Semestre 2", (List) getModel().getSemester2())
-        ));
+//        getModel().setTables(Arrays.asList(
+//                new TeacherBaseStatTable("Charge Globale", (List) getModel().getYear()),
+//                new TeacherBaseStatTable("Semestre 1", (List) getModel().getSemester1()),
+//                new TeacherBaseStatTable("Semestre 2", (List) getModel().getSemester2())
+//        ));
     }
 
     public Model getModel() {
@@ -173,9 +200,9 @@ public class AllTeachersCourseLoadCtrl {
 
     public static class Model {
 
-        List<TeacherSemesterStat> semester1 = new ArrayList<>();
-        List<TeacherSemesterStat> semester2 = new ArrayList<>();
-        List<TeacherPeriodStat> year = new ArrayList<>();
+//        List<TeacherSemesterStat> semester1 = new ArrayList<>();
+//        List<TeacherSemesterStat> semester2 = new ArrayList<>();
+//        List<TeacherPeriodStat> year = new ArrayList<>();
         List<TeacherBaseStatTable> tables = new ArrayList<>();
         String[] defaultFilters = {"situation", "degree", "value", "extraWeek", "c", "td", "tppm"};
         String[] columnFilters = defaultFilters;
@@ -206,32 +233,32 @@ public class AllTeachersCourseLoadCtrl {
             this.noRefreshFilterItems = noRefreshFilterItems;
         }
 
-        public List<TeacherSemesterStat> getSemester1() {
-            return semester1;
-        }
+//        public List<TeacherSemesterStat> getSemester1() {
+//            return semester1;
+//        }
+//
+//        public void setSemester1(List<TeacherSemesterStat> semester1) {
+//            this.semester1 = semester1;
+//            Collections.sort(this.semester1, teacherSemesterStatComparatorByTeacher);
+//        }
+//
+//        public List<TeacherSemesterStat> getSemester2() {
+//            return semester2;
+//        }
+//
+//        public void setSemester2(List<TeacherSemesterStat> semester2) {
+//            this.semester2 = semester2;
+//            Collections.sort(this.semester2, teacherSemesterStatComparatorByTeacher);
+//        }
 
-        public void setSemester1(List<TeacherSemesterStat> semester1) {
-            this.semester1 = semester1;
-            Collections.sort(this.semester1, teacherSemesterStatComparatorByTeacher);
-        }
-
-        public List<TeacherSemesterStat> getSemester2() {
-            return semester2;
-        }
-
-        public void setSemester2(List<TeacherSemesterStat> semester2) {
-            this.semester2 = semester2;
-            Collections.sort(this.semester2, teacherSemesterStatComparatorByTeacher);
-        }
-
-        public List<TeacherPeriodStat> getYear() {
-            return year;
-        }
-
-        public void setYear(List<TeacherPeriodStat> year) {
-            this.year = year;
-            Collections.sort(this.year, teacherPeriodStatComparatorByTeacher);
-        }
+//        public List<TeacherPeriodStat> getYear() {
+//            return year;
+//        }
+//
+//        public void setYear(List<TeacherPeriodStat> year) {
+//            this.year = year;
+//            Collections.sort(this.year, teacherPeriodStatComparatorByTeacher);
+//        }
 
         public List<TeacherBaseStatTable> getTables() {
             return tables;

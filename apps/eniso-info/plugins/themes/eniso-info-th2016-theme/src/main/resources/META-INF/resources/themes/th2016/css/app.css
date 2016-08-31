@@ -789,7 +789,7 @@ a:focus {
 }
 
 .full-width {
-    width: 100%;
+    width: 100% !important;
 }
 
 .pe-dynaform-cell input,

@@ -258,7 +258,7 @@ and open the template in the editor.
                 </button>
             </h:form>
             <h:form>
-                <p:poll interval="60" listener="#{vr.onPoll}" update=":pageMenuForm"/>
+                <p:poll interval="#{vr.pollInterval}" listener="#{vr.onPoll}" update=":pageMenuForm"/>
             </h:form>
         </header>
         <h:form>

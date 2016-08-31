@@ -20,8 +20,11 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCla
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicPreClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
 import net.vpc.common.jsf.FacesUtils;
+import net.vpc.upa.UPA;
+import net.vpc.upa.VoidAction;
 
 import javax.faces.model.SelectItem;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +51,16 @@ public class SubscribeStudentCtrl {
     public void onImport() {
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         try {
-            p.importStudent(-1, getModel().getStudent());
+            UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
+                @Override
+                public void run() {
+                    try {
+                        p.importStudent(-1, getModel().getStudent());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
             FacesUtils.addInfoMessage(null, "Inscription reussie");
             getModel().setStudent(new AcademicStudentImport());
         } catch (Exception e) {
@@ -80,43 +92,43 @@ public class SubscribeStudentCtrl {
 
         list = new ArrayList<>();
         for (AppPeriod x : core.findValidPeriods()) {
-            list.add(new SelectItem(x.getName(), x.getName()));
+            list.add(new SelectItem(x.getId(), x.getName()));
         }
         getModel().setPeriodItems(list);
 
         list = new ArrayList<>();
         for (AppCivility x : core.findCivilities()) {
-            list.add(new SelectItem(x.getName(), x.getName()));
+            list.add(new SelectItem(x.getId(), x.getName()));
         }
         getModel().setCivilityItems(list);
 
         list = new ArrayList<>();
         for (AppGender x : core.findGenders()) {
-            list.add(new SelectItem(x.getCode(), x.getName()));
+            list.add(new SelectItem(x.getId(), x.getName()));
         }
         getModel().setGenderItems(list);
 
         list = new ArrayList<>();
         for (AcademicBac x : p.findAcademicBacs()) {
-            list.add(new SelectItem(x.getName(), x.getName()));
+            list.add(new SelectItem(x.getId(), x.getName()));
         }
         getModel().setBacItems(list);
 
         list = new ArrayList<>();
         for (AcademicPreClass x : p.findAcademicPreClasses()) {
-            list.add(new SelectItem(x.getName(), x.getName()));
+            list.add(new SelectItem(x.getId(), x.getName()));
         }
         getModel().setPrepItems(list);
 
         list = new ArrayList<>();
         for (AppDepartment x : core.findDepartments()) {
-            list.add(new SelectItem(x.getCode(), x.getName()));
+            list.add(new SelectItem(x.getId(), x.getName()));
         }
         getModel().setDepartmentItems(list);
 
         list = new ArrayList<>();
         for (AcademicClass x : p.findAcademicClasses()) {
-            list.add(new SelectItem(x.getName(), x.getName()));
+            list.add(new SelectItem(x.getId(), x.getName()));
         }
         getModel().setClassItems(list);
 

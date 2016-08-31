@@ -789,7 +789,7 @@ a:focus {
 }
 
 .full-width {
-    width: 100%;
+    width: 100% !important;
 }
 
 .pe-dynaform-cell input,
@@ -905,6 +905,10 @@ span.ui-column-title {
 
 .vr-label {
     font-weight: 700;
+}
+
+.vr-selected-many-selected {
+    color: #009688 !important;
 }
 
 .vr-form-fixed-width-medium {

@@ -21,6 +21,7 @@ public class AcademicTeacherSemestrialLoad {
     @Sequence
     private int id;
 
+    @Summary
     private AppPeriod period;
 
     @Summary

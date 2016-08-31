@@ -15,12 +15,16 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
 import net.vpc.common.jsf.FacesUtils;
+import net.vpc.upa.UPA;
+import net.vpc.upa.VoidAction;
 
 import javax.faces.model.SelectItem;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,11 +51,20 @@ public class SubscribeTeacherCtrl {
     public void onImport() {
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         try {
-            p.importTeacher(-1, getModel().getTeacher());
+            UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
+                @Override
+                public void run() {
+                    try {
+                        p.importTeacher(-1, getModel().getTeacher());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
             FacesUtils.addInfoMessage(null, "Inscription reussie");
             onRefresh();
         } catch (Exception e) {
-            FacesUtils.addErrorMessage(null, "Inscription echouee");
+            FacesUtils.addErrorMessage(null, "Inscription echouee : "+e.getMessage());
             e.printStackTrace();
         }
     }
@@ -69,37 +82,43 @@ public class SubscribeTeacherCtrl {
 
         list = new ArrayList<>();
         for (AppPeriod x : core.findValidPeriods()) {
-            list.add(new SelectItem(x.getName(), x.getName()));
+            list.add(new SelectItem(x.getId(), x.getName()));
         }
         getModel().setPeriodItems(list);
 
         list = new ArrayList<>();
         for (AppCivility x : core.findCivilities()) {
-            list.add(new SelectItem(x.getName(), x.getName()));
+            list.add(new SelectItem(x.getId(), x.getName()));
         }
         getModel().setCivilityItems(list);
 
         list = new ArrayList<>();
         for (AppGender x : core.findGenders()) {
-            list.add(new SelectItem(x.getCode(), x.getName()));
+            list.add(new SelectItem(x.getId(), x.getName()));
         }
         getModel().setGenderItems(list);
 
         list = new ArrayList<>();
         for (AcademicTeacherSituation x : p.findTeacherSituations()) {
-            list.add(new SelectItem(x.getName(), x.getName()));
+            list.add(new SelectItem(x.getId(), x.getName()));
         }
         getModel().setSituationItems(list);
 
         list = new ArrayList<>();
+        for (AcademicOfficialDiscipline x : p.findOfficialDisciplines()) {
+            list.add(new SelectItem(x.getId(), x.getName()));
+        }
+        getModel().setOfficialDisciplineItems(list);
+
+        list = new ArrayList<>();
         for (AcademicTeacherDegree x : p.findTeacherDegrees()) {
-            list.add(new SelectItem(x.getCode(), x.getName()));
+            list.add(new SelectItem(x.getId(), x.getName()));
         }
         getModel().setDegreeItems(list);
 
         list = new ArrayList<>();
         for (AppDepartment x : core.findDepartments()) {
-            list.add(new SelectItem(x.getCode(), x.getName()));
+            list.add(new SelectItem(x.getId(), x.getName()));
         }
         getModel().setDepartmentItems(list);
 
@@ -125,6 +144,7 @@ public class SubscribeTeacherCtrl {
         List<SelectItem> periodItems = new ArrayList<>();
         List<SelectItem> degreeItems = new ArrayList<>();
         List<SelectItem> situationItems = new ArrayList<>();
+        List<SelectItem> officialDisciplineItems = new ArrayList<>();
         List<SelectItem> departmentItems = new ArrayList<>();
 
         public AcademicTeacherImport getTeacher() {
@@ -183,6 +203,13 @@ public class SubscribeTeacherCtrl {
             this.departmentItems = departmentItems;
         }
 
+        public List<SelectItem> getOfficialDisciplineItems() {
+            return officialDisciplineItems;
+        }
+
+        public void setOfficialDisciplineItems(List<SelectItem> officialDisciplineItems) {
+            this.officialDisciplineItems = officialDisciplineItems;
+        }
     }
 
 }

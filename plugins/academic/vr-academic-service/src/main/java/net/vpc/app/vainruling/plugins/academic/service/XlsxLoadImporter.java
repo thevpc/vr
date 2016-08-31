@@ -282,7 +282,7 @@ public class XlsxLoadImporter {
                 importTeacherDegrees(file);
             } else {
                 count++;
-                trace.trace("importTeachingLoad", "Import Default Teacher Degrees", null, getClass().getSimpleName(), Level.INFO);
+                trace.trace("importTeachingLoad", "Import Default Teacher Degrees", null, "/Education/Config", Level.INFO);
                 XlsxLoadImporter.this.importTeacherDegrees();
             }
         }
@@ -300,10 +300,10 @@ public class XlsxLoadImporter {
         }
         long end = System.currentTimeMillis();
         if (count > 0) {
-            trace.trace("importTeachingLoad", "data file " + file.getPath() + " imported in " + Chronometer.formatPeriod(end - start), null, getClass().getSimpleName(), Level.INFO);
+            trace.trace("importTeachingLoad", "data file " + file.getPath() + " imported in " + Chronometer.formatPeriod(end - start), null, "/Education/Config", Level.INFO);
             System.out.println("data file " + file.getPath() + " imported in " + Chronometer.formatPeriod(end - start));
         } else {
-            trace.trace("importTeachingLoad", "ignored data file " + file.getPath(), null, getClass().getSimpleName(), Level.INFO);
+            trace.trace("importTeachingLoad", "ignored data file " + file.getPath(), null, "/Education/Config", Level.INFO);
             System.out.println("ignored data file " + file.getPath());
         }
         return count;
@@ -427,6 +427,19 @@ public class XlsxLoadImporter {
             }
         }
 
+        AcademicOfficialDiscipline officialDiscipline = null;
+        if (a.getOfficialDisciplineId() != null) {
+            officialDiscipline = service.findOfficialDiscipline(a.getOfficialDisciplineId());
+            if (officialDiscipline == null) {
+                throw new NoSuchElementException("OfficialDiscipline Not Found " + a.getOfficialDisciplineId());
+            }
+        } else {
+            officialDiscipline = service.findOfficialDiscipline(a.getOfficialDisciplineName());
+            if (officialDiscipline == null) {
+                throw new NoSuchElementException("OfficialDiscipline Not Found " + a.getDegreeName());
+            }
+        }
+
         AppGender gender = null;
         if (a.getGenderId() != null) {
             gender = ctx.gendersById.get(a.getGenderId());
@@ -489,7 +502,10 @@ public class XlsxLoadImporter {
 
         List<AcademicTeacherSemestrialLoad> semestrialLoads = new ArrayList<>();
         academicTeacher.setDegree(degree);
+        academicTeacher.setOfficialDiscipline(officialDiscipline);
         academicTeacher.setSituation(situation);
+        academicTeacher.setStartPeriod(period);
+        academicTeacher.setLastPeriod(period);
         if (contact.getGender() == null) {
             contact.setGender(gender);
         }
@@ -542,6 +558,11 @@ public class XlsxLoadImporter {
             if (!found) {
                 service.add(sload);
             }
+        }
+        AcademicTeacherPeriod academicTeacherPeriod = service.findAcademicTeacherPeriod(mainPeriodId, academicTeacher);
+        if(academicTeacherPeriod.getId()<0){
+            //this is temp period
+            service.updateTeacherPeriod(mainPeriodId,academicTeacher.getId(),-1);
         }
     }
 

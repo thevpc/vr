@@ -17,7 +17,7 @@ public class AcademicCourseAssignmentInfo {
     private boolean assigned;
     private String intents;
     private Set<String> intentsSet = Collections.EMPTY_SET;
-    private Set<Integer> intentsUserIdsSet = Collections.EMPTY_SET;
+    private Set<Integer> intentsTeacherIdsSet = Collections.EMPTY_SET;
 
     public AcademicCourseAssignment getAssignment() {
         return assignment;
@@ -51,12 +51,12 @@ public class AcademicCourseAssignmentInfo {
         this.intentsSet = intentsSet;
     }
 
-    public Set<Integer> getIntentsUserIdsSet() {
-        return intentsUserIdsSet;
+    public Set<Integer> getIntentsTeacherIdsSet() {
+        return intentsTeacherIdsSet;
     }
 
-    public void setIntentsUserIdsSet(Set<Integer> intentsUserIdsSet) {
-        this.intentsUserIdsSet = intentsUserIdsSet;
+    public void setIntentsTeacherIdsSet(Set<Integer> intentsTeacherIdsSet) {
+        this.intentsTeacherIdsSet = intentsTeacherIdsSet;
     }
 
 }

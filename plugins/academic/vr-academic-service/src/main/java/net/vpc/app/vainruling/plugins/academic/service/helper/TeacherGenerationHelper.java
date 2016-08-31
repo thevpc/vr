@@ -21,9 +21,9 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCla
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.DeviationConfig;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherPeriodStat;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.TeacherSemesterStat;
+import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
+import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherPeriodStat;
+import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherSemesterStat;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilterAnd;
 import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.util.TeacherFilterFactory;
@@ -67,14 +67,7 @@ public class TeacherGenerationHelper {
         return FF.format(d);
     }
 
-    public void generate(TeacherGenerationOptions filter) throws IOException {
-        generate(filter, null);
-    }
-
-    public void generate(TeacherGenerationOptions options, StatCache cache) throws IOException {
-        if (cache == null) {
-            cache = new StatCache();
-        }
+    public void generate(TeacherGenerationOptions options) throws IOException {
         Chronometer ch = new Chronometer();
         if (options == null) {
             options = new TeacherGenerationOptions();
@@ -113,28 +106,29 @@ public class TeacherGenerationHelper {
         TeacherFilter teacherIdsFilter = TeacherFilterFactory.teacherIds(teacherIds);
         if (requestedContents.contains(GeneratedContent.TeacherListAssignmentsSummary)) {
             if (stats == null) {
-                CourseAssignmentFilterAnd courseFilter = new CourseAssignmentFilterAnd().and(options.getCourseAssignmentFilter()).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId));
-                stats = academicPlugin.evalTeacherStatList(periodId, teacherIdsFilter, courseFilter, options.isIncludeIntents(), options.getDeviationConfig(), cache);
+                CourseAssignmentFilterAnd courseFilter = new CourseAssignmentFilterAnd().and(options.getCourseAssignmentFilter())
+                        .and(semesterId==null?null:new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId));
+                stats = academicPlugin.evalTeacherStatList(periodId, teacherIdsFilter, courseFilter, options.isIncludeIntents(), options.getDeviationConfig());
             }
             String teacherListAssignmentsSummaryFile_template = templateFolder + "/teacher-list-assignments-summary-template.xls";
 
             generateTeacherListAssignmentsSummaryFile(periodId, stats.toArray(new TeacherPeriodStat[stats.size()]),
-                    cache, fs.get(teacherListAssignmentsSummaryFile_template), fs.get(outputFolder + File.separator + outputNamePattern.replace("*", "teacher-list-assignments-summary") + ".xls"), writeVars);
+                    fs.get(teacherListAssignmentsSummaryFile_template), fs.get(outputFolder + File.separator + outputNamePattern.replace("*", "teacher-list-assignments-summary") + ".xls"), writeVars);
         }
         String teacherAssignments_template = templateFolder + "/teacher-assignments-template.xls";
         String teacherAssignments_filename = outputFolder + File.separator + outputNamePattern.replace("*", "teacher-assignments") + ".xls";
         PathInfo uu = PathInfo.create(teacherAssignments_filename);
         if (requestedContents.contains(GeneratedContent.TeacherAssignments)) {
             if (stats == null) {
-                stats = academicPlugin.evalTeacherStatList(periodId, teacherIdsFilter, new CourseAssignmentFilterAnd().and(options.getCourseAssignmentFilter()).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId)), options.isIncludeIntents(), options.getDeviationConfig(), cache);
+                stats = academicPlugin.evalTeacherStatList(periodId, teacherIdsFilter, new CourseAssignmentFilterAnd().and(options.getCourseAssignmentFilter()).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId)), options.isIncludeIntents(), options.getDeviationConfig());
             }
-            generateTeacherAssignmentsFolder(periodId, stats.toArray(new TeacherPeriodStat[stats.size()]), cache, fs.get(teacherAssignments_template), fs.get(uu.getDirName() + File.separator + uu.getNamePart() + "-details/" + outputNamePattern + ".xls"), writeVars);
+            generateTeacherAssignmentsFolder(periodId, stats.toArray(new TeacherPeriodStat[stats.size()]), fs.get(teacherAssignments_template), fs.get(uu.getDirName() + File.separator + uu.getNamePart() + "-details/" + outputNamePattern + ".xls"), writeVars);
         }
         if (requestedContents.contains(GeneratedContent.GroupedTeacherAssignments)) {
             if (stats == null) {
-                stats = academicPlugin.evalTeacherStatList(periodId, teacherIdsFilter, new CourseAssignmentFilterAnd().and(options.getCourseAssignmentFilter()).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId)), options.isIncludeIntents(), options.getDeviationConfig(), cache);
+                stats = academicPlugin.evalTeacherStatList(periodId, teacherIdsFilter, new CourseAssignmentFilterAnd().and(options.getCourseAssignmentFilter()).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId)), options.isIncludeIntents(), options.getDeviationConfig());
             }
-            generateTeacherAssignmentsFile(periodId, stats.toArray(new TeacherPeriodStat[stats.size()]), cache, fs.get(teacherAssignments_template), fs.get(teacherAssignments_filename)
+            generateTeacherAssignmentsFile(periodId, stats.toArray(new TeacherPeriodStat[stats.size()]), fs.get(teacherAssignments_template), fs.get(teacherAssignments_filename)
             );
         }
         if (requestedContents.contains(GeneratedContent.CourseListLoads)) {
@@ -161,7 +155,7 @@ public class TeacherGenerationHelper {
         System.out.println("data generated in " + ch.stop());
     }
 
-    private void generateTeacherAssignmentsFile(int periodId, TeacherPeriodStat[] stats, StatCache cache, VFile template, VFile output) throws IOException {
+    private void generateTeacherAssignmentsFile(int periodId, TeacherPeriodStat[] stats, VFile template, VFile output) throws IOException {
         if (stats.length == 0) {
             throw new IllegalArgumentException("No valid Teacher found");
         }
@@ -195,7 +189,7 @@ public class TeacherGenerationHelper {
                     copy.copySheet(0, AppContact.getName(st.getTeacher().getContact()), count);
                     WritableSheet sheet2 = copy.getSheet(count);
 //                    sheet2.setName(st.getTeacher().getName());
-                    ExcelTemplate.generateExcelSheet(sheet2, preparePrintableTeacherLoadProperties(periodId, st, cache));
+                    ExcelTemplate.generateExcelSheet(sheet2, preparePrintableTeacherLoadProperties(periodId, st));
                     count++;
                 }
                 while (count0 > 0) {
@@ -220,8 +214,8 @@ public class TeacherGenerationHelper {
         }
     }
 
-    protected void generatePrintableTeacherLoadFile(int periodId, int teacherId, CourseAssignmentFilter filter, boolean includeIntents, DeviationConfig deviationConfig, VFile template, VFile output, boolean writeVars, StatCache cache) throws IOException {
-        Map<String, Object> p = preparePrintableTeacherLoadProperties(periodId, teacherId, filter, includeIntents, deviationConfig, cache);
+    protected void generatePrintableTeacherLoadFile(int periodId, int teacherId, CourseAssignmentFilter filter, boolean includeIntents, DeviationConfig deviationConfig, VFile template, VFile output, boolean writeVars) throws IOException {
+        Map<String, Object> p = preparePrintableTeacherLoadProperties(periodId, teacherId, filter, includeIntents, deviationConfig);
         if (writeVars) {
             writeVars(p, output);
         }
@@ -246,12 +240,12 @@ public class TeacherGenerationHelper {
         }
     }
 
-    public void generateTeacherListAssignmentsSummaryFile(int periodId, TeacherPeriodStat[] stats, StatCache cache, VFile template, VFile output, boolean writeVarFiles) throws IOException {
+    public void generateTeacherListAssignmentsSummaryFile(int periodId, TeacherPeriodStat[] stats, VFile template, VFile output, boolean writeVarFiles) throws IOException {
         Chronometer ch = new Chronometer();
         Map<String, Object> p = new HashMap<String, Object>();
         for (int i = 0; i < stats.length; i++) {
             TeacherPeriodStat stat = stats[i];
-            Map<String, Object> p0 = preparePrintableTeacherLoadProperties(periodId, stat, cache);
+            Map<String, Object> p0 = preparePrintableTeacherLoadProperties(periodId, stat);
             copyPrefixed(p0, p, "row(" + (i + 1) + ")");
         }
         if (writeVarFiles) {
@@ -283,12 +277,12 @@ public class TeacherGenerationHelper {
         log.log(Level.FINE, "generateCourseListLoadsFile in {0}", new Object[]{ch.stop()});
     }
 
-    public Map<String, Object> preparePrintableTeacherLoadProperties(int periodId, int teacher, CourseAssignmentFilter filter, boolean includeIntents, DeviationConfig deviationConfig, StatCache cache) throws IOException {
+    public Map<String, Object> preparePrintableTeacherLoadProperties(int periodId, int teacher, CourseAssignmentFilter filter, boolean includeIntents, DeviationConfig deviationConfig) throws IOException {
         AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
-        return preparePrintableTeacherLoadProperties(periodId, academicPlugin.evalTeacherStat0(periodId, teacher, null, null, null, filter, includeIntents, deviationConfig, cache), cache);
+        return preparePrintableTeacherLoadProperties(periodId, academicPlugin.evalTeacherStat0(periodId, teacher, null, null, null, filter, includeIntents, deviationConfig));
     }
 
-    private Map<String, Object> preparePrintableTeacherLoadProperties(int periodId, TeacherPeriodStat stat, StatCache cache) throws IOException {
+    private Map<String, Object> preparePrintableTeacherLoadProperties(int periodId, TeacherPeriodStat stat) throws IOException {
         AcademicTeacher t = stat.getTeacher();
         if (t == null) {
             throw new IllegalArgumentException("Teacher not found ");
@@ -307,7 +301,7 @@ public class TeacherGenerationHelper {
             AcademicSemester sem = semester.getSemester();
             int moduleIndex = 1;
             String semesterPrefix = "sem(" + sem.getName() + ")";
-            for (AcademicCourseAssignment m : academicPlugin.findCourseAssignments(periodId, t.getId(), sem.getId(), stat.getCourseAssignmentFilter(), stat.isIncludeIntents(), cache)) {
+            for (AcademicCourseAssignment m : academicPlugin.findCourseAssignments(periodId, t.getId(), sem.getId(), stat.getCourseAssignmentFilter(), stat.isIncludeIntents())) {
                 if ((Math.abs(m.getValueC()) + Math.abs(m.getValuePM()) + Math.abs(m.getValueTD()) + Math.abs(m.getValueTP())) * Math.abs(m.getGroupCount() * m.getShareCount()) != 0) {
                     String modulePrefix = semesterPrefix + ".mod(" + moduleIndex + ")";
                     p.put(modulePrefix + ".name", m.getName());
@@ -366,7 +360,7 @@ public class TeacherGenerationHelper {
 //        TeacherStat[] stats = evalTeachersStat(yearId, teacherIds, semester);
 //        generateTeacherAssignmentsFolder(stats, template, output);
 //    }
-    private void generateTeacherAssignmentsFolder(int periodId, TeacherPeriodStat[] stats, StatCache cache, VFile template, VFile output, boolean writeVars) throws IOException {
+    private void generateTeacherAssignmentsFolder(int periodId, TeacherPeriodStat[] stats, VFile template, VFile output, boolean writeVars) throws IOException {
 //        if (!output.endsWith(File.separator) && !output.endsWith("/")) {
 //            output = output + File.separator;
 //        }
@@ -382,7 +376,7 @@ public class TeacherGenerationHelper {
             String pp = soutput.replace("*", AppContact.getName(st.getTeacher().getContact()));
             VFile f2 = core.getFileSystem().get(pp);
             f2.getParentFile().mkdirs();
-            Map<String, Object> p = preparePrintableTeacherLoadProperties(periodId, st, cache);
+            Map<String, Object> p = preparePrintableTeacherLoadProperties(periodId, st);
             if (writeVars) {
                 writeVars(p, f2);
             }

@@ -5,21 +5,16 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
-import net.vpc.app.vainruling.plugins.academic.service.TeacherFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgramType;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.DeviationConfig;
-import net.vpc.app.vainruling.plugins.academic.service.model.stat.DeviationGroup;
+import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
+import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationGroup;
 import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
-import net.vpc.app.vainruling.plugins.academic.service.util.DefaultTeacherFilter;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 
@@ -30,7 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class CourseLoadFilterComponent {
-    private Model model=new Model();
+    private Model model = new Model();
 
     public Model getModel() {
         return model;
@@ -41,7 +36,7 @@ public class CourseLoadFilterComponent {
         if (StringUtils.isEmpty(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
             AppConfig appConfig = core.findAppConfig();
-            if(appConfig!=null && appConfig.getMainPeriod()!=null) {
+            if (appConfig != null && appConfig.getMainPeriod() != null) {
                 return appConfig.getMainPeriod().getId();
             }
             return -1;
@@ -76,8 +71,8 @@ public class CourseLoadFilterComponent {
 //        UserSession currentSession = UserSession.get();
         for (AppDepartment item : core.findDepartments()) {
 //            if(currentSession!=null &&)
-                //TODO: should add filter to let see ust one's department?
-                getModel().getDepartmentItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
+            //TODO: should add filter to let see ust one's department?
+            getModel().getDepartmentItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
         }
 
 //        getModel().getSituationItems().clear();
@@ -114,7 +109,7 @@ public class CourseLoadFilterComponent {
             getModel().getClassItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
         }
 
-        getModel().setRefreshFilter(new String[]{"intents","deviation-extra","deviation-week"});
+        getModel().setRefreshFilter(new String[]{"intents", "deviation-extra", "deviation-week"});
     }
 
     public void onChangePeriod() {
@@ -129,7 +124,7 @@ public class CourseLoadFilterComponent {
         getModel().getLabelItems().clear();
 
         int periodId = getPeriodId();
-        if(periodId>=-1) {
+        if (periodId >= -1) {
             for (String label : a.findCoursePlanLabels(periodId)) {
                 getModel().getLabelItems().add(FacesUtils.createSelectItem(label, label, "vr-checkbox"));
                 getModel().getLabelItems().add(FacesUtils.createSelectItem("!" + label, "Sans " + label, "vr-checkbox"));
@@ -137,7 +132,7 @@ public class CourseLoadFilterComponent {
         }
     }
 
-    public DeviationConfig getDeviationConfig(){
+    public DeviationConfig getDeviationConfig() {
         DeviationConfig deviationConfig = new DeviationConfig();
         for (String item : getModel().getSelectedDeviationGroups()) {
             deviationConfig.getGroups().add(DeviationGroup.valueOf(item.toUpperCase()));
@@ -150,26 +145,29 @@ public class CourseLoadFilterComponent {
     public CourseAssignmentFilter getCourseAssignmentFilter() {
         DefaultCourseAssignmentFilter c = new DefaultCourseAssignmentFilter();
         for (String s : getModel().getSelectedProgramTypes()) {
-            c.addAcceptedProgramType(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
+            c.addAcceptedProgramType(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedLabels()) {
             c.addLabelExpression(s);
         }
         for (String s : getModel().getSelectedSemesters()) {
-            c.addAcceptedSemester(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
+            c.addAcceptedSemester(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedCourseTypes()) {
-            c.addAcceptedCourseType(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
+            c.addAcceptedCourseType(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedClasses()) {
-            c.addAcceptedClass(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
+            c.addAcceptedClass(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
         }
 
 //        for (String s : getModel().getSelectedDegrees()) {
 //            c.addAcceptedDegree(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
 //        }
         for (String s : getModel().getSelectedDepartments()) {
-            c.addAcceptedDepartment(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
+            c.addAcceptedDepartment(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+        }
+        for (String s : getModel().getSelectedOwnerDepartments()) {
+            c.addAcceptedOwnerDepartment(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
         }
 //        for (String s : getModel().getSelectedOfficialDisciplines()) {
 //            c.addAcceptedOfficialDisciplines(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
@@ -190,12 +188,12 @@ public class CourseLoadFilterComponent {
         return Arrays.asList(f).indexOf(s) >= 0;
     }
 
-    public static class Model{
+    public static class Model {
         private List<SelectItem> refreshFilterItems;
         private String[] refreshFilter = {};
 
-        private List<SelectItem> officialDisciplinesItems=new ArrayList<>();
-        private List<String> selectedOfficialDisciplines=new ArrayList<>();
+        private List<SelectItem> officialDisciplinesItems = new ArrayList<>();
+        private List<String> selectedOfficialDisciplines = new ArrayList<>();
 
 //        private List<SelectItem> degreeItems=new ArrayList<>();
 //        private List<String> selectedDegrees=new ArrayList<>();
@@ -203,14 +201,15 @@ public class CourseLoadFilterComponent {
 //        private List<SelectItem> situationItems=new ArrayList<>();
 //        private List<String> selectedSituations=new ArrayList<>();
 
-        private List<SelectItem> departmentItems=new ArrayList<>();
-        private List<String> selectedDepartments=new ArrayList<>();
+        private List<SelectItem> departmentItems = new ArrayList<>();
+        private List<String> selectedDepartments = new ArrayList<>();
+        private List<String> selectedOwnerDepartments = new ArrayList<>();
 
-        private List<SelectItem> programTypeItems=new ArrayList<>();
-        private List<String> selectedProgramTypes=new ArrayList<>();
+        private List<SelectItem> programTypeItems = new ArrayList<>();
+        private List<String> selectedProgramTypes = new ArrayList<>();
 
-        private List<SelectItem> labelItems=new ArrayList<>();
-        private List<String> selectedLabels=new ArrayList<>();
+        private List<SelectItem> labelItems = new ArrayList<>();
+        private List<String> selectedLabels = new ArrayList<>();
 
         private List<SelectItem> periodItems = new ArrayList<>();
         private String selectedPeriod = null;
@@ -306,6 +305,15 @@ public class CourseLoadFilterComponent {
         public void setSelectedDepartments(List<String> selectedDepartments) {
             this.selectedDepartments = selectedDepartments;
         }
+
+        public List<String> getSelectedOwnerDepartments() {
+            return selectedOwnerDepartments;
+        }
+
+        public void setSelectedOwnerDepartments(List<String> selectedOwnerDepartments) {
+            this.selectedOwnerDepartments = selectedOwnerDepartments;
+        }
+
         public String[] getRefreshFilter() {
             return refreshFilter;
         }

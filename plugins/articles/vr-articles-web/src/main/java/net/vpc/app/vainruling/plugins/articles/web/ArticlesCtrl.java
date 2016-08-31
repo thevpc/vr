@@ -12,6 +12,8 @@ import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesFile;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
 import net.vpc.app.vainruling.plugins.articles.service.model.FullArticle;
+import net.vpc.upa.*;
+import net.vpc.upa.expressions.UserExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -64,9 +66,24 @@ public class ArticlesCtrl {
         return model;
     }
 
-    public void refesh() {
+    public void refresh() {
     }
 
+    public void updateVisit(int articleId) {
+        UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                PersistenceUnit pu = UPA.getPersistenceUnit();
+                Entity entity = pu.getEntity(ArticlesItem.class);
+                Record record = entity.createRecord();
+                record.setObject("visitCount",new UserExpression("visitCount+1"));
+                entity.createUpdateQuery()
+                        .setValues(record)
+                        .byId(articleId)
+                        .execute();
+            }
+        });
+    }
     public void loadArticles(String name) {
         List<FullArticle> a = findArticles(name);
         getModel().getArticles().put(name, a);
