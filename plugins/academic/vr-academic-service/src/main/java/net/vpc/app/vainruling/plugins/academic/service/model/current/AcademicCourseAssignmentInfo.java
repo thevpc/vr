@@ -15,9 +15,11 @@ public class AcademicCourseAssignmentInfo {
 
     private AcademicCourseAssignment assignment;
     private boolean assigned;
-    private String intents;
-    private Set<String> intentsSet = Collections.EMPTY_SET;
-    private Set<Integer> intentsTeacherIdsSet = Collections.EMPTY_SET;
+//    private String intents;
+    private AssignmentChuck assignmentChunck = new AssignmentChuck();
+    private AssignmentChuck courseChunck = new AssignmentChuck();
+//    private Set<String> intentsSet = Collections.EMPTY_SET;
+//    private Set<Integer> intentsTeacherIdsSet = Collections.EMPTY_SET;
 
     public AcademicCourseAssignment getAssignment() {
         return assignment;
@@ -27,13 +29,13 @@ public class AcademicCourseAssignmentInfo {
         this.assignment = assignment;
     }
 
-    public String getIntents() {
-        return intents;
-    }
-
-    public void setIntents(String intents) {
-        this.intents = intents;
-    }
+//    public String getIntents() {
+//        return intents;
+//    }
+//
+//    public void setIntents(String intents) {
+//        this.intents = intents;
+//    }
 
     public boolean isAssigned() {
         return assigned;
@@ -43,20 +45,11 @@ public class AcademicCourseAssignmentInfo {
         this.assigned = assigned;
     }
 
-    public Set<String> getIntentsSet() {
-        return intentsSet;
+    public AssignmentChuck getAssignmentChunck() {
+        return assignmentChunck;
     }
 
-    public void setIntentsSet(Set<String> intentsSet) {
-        this.intentsSet = intentsSet;
+    public AssignmentChuck getCourseChunck() {
+        return courseChunck;
     }
-
-    public Set<Integer> getIntentsTeacherIdsSet() {
-        return intentsTeacherIdsSet;
-    }
-
-    public void setIntentsTeacherIdsSet(Set<Integer> intentsTeacherIdsSet) {
-        this.intentsTeacherIdsSet = intentsTeacherIdsSet;
-    }
-
 }

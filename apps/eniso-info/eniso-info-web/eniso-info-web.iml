@@ -105,7 +105,7 @@
     <orderEntry type="module" module-name="vr-academic-planning-service" />
     <orderEntry type="module" module-name="vr-dev-toolbox-service" />
     <orderEntry type="module" module-name="eniso-info-infusion-theme" />
-    <orderEntry type="module" module-name="eniso-info-th2016-theme" />
+    <orderEntry type="module" module-name="eniso-info-crew-theme" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax:javaee-web-api:7.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-dbcp2:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-pool2:2.2" level="project" />

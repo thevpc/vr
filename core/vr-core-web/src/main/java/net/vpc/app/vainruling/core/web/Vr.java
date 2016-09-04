@@ -95,8 +95,8 @@ public class Vr {
             CorePlugin c = VrApp.getBean(CorePlugin.class);
             VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
             String themeId = s.getTheme();
-            if(StringUtils.isEmpty(themeId)){
-                themeId=(String) c.getAppPropertyValue("System.DefaultTheme", s.getUser()==null?null:s.getUser().getLogin());
+            if (StringUtils.isEmpty(themeId)) {
+                themeId = (String) c.getAppPropertyValue("System.DefaultTheme", s.getUser() == null ? null : s.getUser().getLogin());
                 if (StringUtils.isEmpty(themeId)) {
                     themeId = getAppTheme().getId();
                 }
@@ -111,6 +111,17 @@ public class Vr {
             }
         }
         return getAppTheme();
+    }
+
+    public <T> List<List<T>> splitListBy(int groupSize, List<T> anyList) {
+        List<List<T>> grouped = new ArrayList<>();
+        for (int i = 0; i < groupSize; i++) {
+            grouped.add(new ArrayList<T>());
+        }
+        for (int i = 0; i < anyList.size(); i++) {
+            grouped.get(i % groupSize).add(anyList.get(i));
+        }
+        return grouped;
     }
 
     public <T> List<List<T>> groupListBy(int groupSize, List<T> anyList) {
@@ -131,6 +142,18 @@ public class Vr {
         return grouped;
     }
 
+    public int randomize(int a) {
+        return (int) (Math.random() * a);
+    }
+
+    public double randomize(double a) {
+        return (Math.random() * a);
+    }
+
+    public String randomize(String... items) {
+        return items[randomize(items.length)];
+    }
+
     public boolean isFSPath(String path) {
         if (path == null) {
             path = "";
@@ -145,52 +168,41 @@ public class Vr {
         return Math.abs(a);
     }
 
-    public double max(double a,double b) {
-        return Math.max(a,b);
+    public double max(double a, double b) {
+        return Math.max(a, b);
     }
 
-    public double min(double a,double b) {
-        return Math.min(a,b);
+    public double min(double a, double b) {
+        return Math.min(a, b);
     }
 
-    public int randomize(int a) {
-        return (int)(Math.random()*a);
-    }
-
-    public double randomize(double a) {
-        return (Math.random()*a);
-    }
-
-    public String randomize(String ... values) {
-        return values[randomize(values.length)];
-    }
 
     public int rand(int a) {
-        return (int)(Math.random()*a);
+        return (int) (Math.random() * a);
     }
 
     public double rand(double a) {
-        return (Math.random()*a);
+        return (Math.random() * a);
     }
 
-    public String rand(String ... values) {
+    public String rand(String... values) {
         return values[randomize(values.length)];
     }
 
-    public int hash(Object value,int max) {
-        return Math.abs(value==null?0:value.hashCode())%max;
+    public int hashToMax(Object value, int max) {
+        return Math.abs(value == null ? 0 : value.hashCode()) % max;
     }
 
-    public String hash(Object value,String ...values) {
-        return values[hash(value,values.length)];
+    public String hashToArr(Object value, String... values) {
+        return values[hashToMax(value, values.length)];
     }
 
-    public double frame(double x,double a,double b) {
-        if(x<a){
-            x=a;
+    public double frame(double x, double a, double b) {
+        if (x < a) {
+            x = a;
         }
-        if(x>b){
-            x=b;
+        if (x > b) {
+            x = b;
         }
         return x;
     }
@@ -397,39 +409,39 @@ public class Vr {
         return VrWikiParser.convertToHtml(value, "Wiki");
     }
 
-    public double percent(double val,double max) {
-        return max==0?0:((val/max)*100);
+    public double percent(double val, double max) {
+        return max == 0 ? 0 : ((val / max) * 100);
     }
 
-    public double valOrPercent(boolean percent, double val,double max) {
-        if(percent) {
+    public double valOrPercent(boolean percent, double val, double max) {
+        if (percent) {
             return max == 0 ? 0 : ((val / max) * 100);
-        }else{
+        } else {
             return val;
         }
     }
 
-    public Double nonNullValOrPercent(boolean percent, double val,double max) {
-        if(percent) {
-            return (max == 0 || val==0) ? null : ((val / max) * 100);
-        }else{
-            return val==0?null:val;
+    public Double nonNullValOrPercent(boolean percent, double val, double max) {
+        if (percent) {
+            return (max == 0 || val == 0) ? null : ((val / max) * 100);
+        } else {
+            return val == 0 ? null : val;
         }
     }
 
-    public String valOrPercentString(boolean percent, double val,double max) {
-        if(percent) {
+    public String valOrPercentString(boolean percent, double val, double max) {
+        if (percent) {
             Double d = (max == 0 || val == 0) ? null : ((val / max) * 100);
-            if(d!=null){
-                return PERCENT_FORMAT.format(d)+"%";
+            if (d != null) {
+                return PERCENT_FORMAT.format(d) + "%";
             }
             return null;
-        }else{
-            if(val==0){
+        } else {
+            if (val == 0) {
                 return null;
             }
-            if(Math.round(val)==val){
-                return String.valueOf((long)val);
+            if (Math.round(val) == val) {
+                return String.valueOf((long) val);
             }
             return new DecimalFormat("0.0##").format(val);
         }
@@ -492,7 +504,7 @@ public class Vr {
     }
 
     public String gotoPageObjItem(String entity, String id) {
-        return VrApp.getBean(VrMenuManager.class).gotoPageObjItem(entity,id);
+        return VrApp.getBean(VrMenuManager.class).gotoPageObjItem(entity, id);
     }
 
     public UserSession getUserSession() {
@@ -547,15 +559,15 @@ public class Vr {
     public int getPollInterval() {
         CorePlugin core = CorePlugin.get();
         AppProperty property = core.getAppProperty("System.PollInterval", null);
-        if(property!=null) {
+        if (property != null) {
             Object appPropertyValue = core.getAppPropertyValue(property);
             if (appPropertyValue != null) {
-                if(appPropertyValue instanceof Number) {
+                if (appPropertyValue instanceof Number) {
                     return ((Number) appPropertyValue).intValue();
-                }else if(appPropertyValue instanceof String){
+                } else if (appPropertyValue instanceof String) {
                     try {
                         return Integer.parseInt(String.valueOf(appPropertyValue));
-                    }catch(Exception ex){
+                    } catch (Exception ex) {
                         //ignore
                     }
                 }

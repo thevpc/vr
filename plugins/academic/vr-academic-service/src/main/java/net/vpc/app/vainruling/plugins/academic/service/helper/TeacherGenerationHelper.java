@@ -17,10 +17,7 @@ import net.vpc.app.vainruling.plugins.academic.service.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherPeriodStat;
 import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherSemesterStat;
@@ -37,6 +34,11 @@ import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.common.vfs.impl.NativeVFS;
 import net.vpc.common.vfs.impl.VZipOptions;
 import net.vpc.common.vfs.impl.VZipUtils;
+import net.vpc.upa.UPA;
+import net.vpc.upa.bulk.DataColumn;
+import net.vpc.upa.bulk.DataRowConverter;
+import net.vpc.upa.bulk.DataWriter;
+import net.vpc.upa.bulk.TextCSVFormatter;
 import org.springframework.util.PropertyPlaceholderHelper;
 
 import java.io.File;
@@ -77,7 +79,7 @@ public class TeacherGenerationHelper {
 
         Integer[] teacherIds = options.getTeacherIds();
         String semester = options.getSemester();
-        Integer semesterId=StringUtils.isEmpty(semester)?null:academicPlugin.findSemester(semester).getId();
+        Integer semesterId = StringUtils.isEmpty(semester) ? null : academicPlugin.findSemester(semester).getId();
         String templateFolder = options.getTemplateFolder();
         String outputFolder = options.getOutputFolder();
         String outputNamePattern = options.getOutputNamePattern();
@@ -107,13 +109,16 @@ public class TeacherGenerationHelper {
         if (requestedContents.contains(GeneratedContent.TeacherListAssignmentsSummary)) {
             if (stats == null) {
                 CourseAssignmentFilterAnd courseFilter = new CourseAssignmentFilterAnd().and(options.getCourseAssignmentFilter())
-                        .and(semesterId==null?null:new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId));
+                        .and(semesterId == null ? null : new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId));
                 stats = academicPlugin.evalTeacherStatList(periodId, teacherIdsFilter, courseFilter, options.isIncludeIntents(), options.getDeviationConfig());
             }
+            TeacherPeriodStat[] statsArray = stats.toArray(new TeacherPeriodStat[stats.size()]);
             String teacherListAssignmentsSummaryFile_template = templateFolder + "/teacher-list-assignments-summary-template.xls";
 
-            generateTeacherListAssignmentsSummaryFile(periodId, stats.toArray(new TeacherPeriodStat[stats.size()]),
+            generateTeacherListAssignmentsSummaryFile(periodId, statsArray,
                     fs.get(teacherListAssignmentsSummaryFile_template), fs.get(outputFolder + File.separator + outputNamePattern.replace("*", "teacher-list-assignments-summary") + ".xls"), writeVars);
+
+            generateTeacherAssignmentsCsvFile(periodId,statsArray,fs.get(outputFolder + File.separator +"vars"+ File.separator +"teacher-list-assignments.csv"));
         }
         String teacherAssignments_template = templateFolder + "/teacher-assignments-template.xls";
         String teacherAssignments_filename = outputFolder + File.separator + outputNamePattern.replace("*", "teacher-assignments") + ".xls";
@@ -122,14 +127,15 @@ public class TeacherGenerationHelper {
             if (stats == null) {
                 stats = academicPlugin.evalTeacherStatList(periodId, teacherIdsFilter, new CourseAssignmentFilterAnd().and(options.getCourseAssignmentFilter()).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId)), options.isIncludeIntents(), options.getDeviationConfig());
             }
-            generateTeacherAssignmentsFolder(periodId, stats.toArray(new TeacherPeriodStat[stats.size()]), fs.get(teacherAssignments_template), fs.get(uu.getDirName() + File.separator + uu.getNamePart() + "-details/" + outputNamePattern + ".xls"), writeVars);
+            TeacherPeriodStat[] statsArray = stats.toArray(new TeacherPeriodStat[stats.size()]);
+            generateTeacherAssignmentsFolder(periodId, statsArray, fs.get(teacherAssignments_template), fs.get(uu.getDirName() + File.separator + uu.getNamePart() + "-details/" + outputNamePattern + ".xls"), writeVars);
         }
         if (requestedContents.contains(GeneratedContent.GroupedTeacherAssignments)) {
             if (stats == null) {
                 stats = academicPlugin.evalTeacherStatList(periodId, teacherIdsFilter, new CourseAssignmentFilterAnd().and(options.getCourseAssignmentFilter()).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId)), options.isIncludeIntents(), options.getDeviationConfig());
             }
-            generateTeacherAssignmentsFile(periodId, stats.toArray(new TeacherPeriodStat[stats.size()]), fs.get(teacherAssignments_template), fs.get(teacherAssignments_filename)
-            );
+            TeacherPeriodStat[] statsArray = stats.toArray(new TeacherPeriodStat[stats.size()]);
+            generateTeacherAssignmentsFile(periodId, statsArray, fs.get(teacherAssignments_template), fs.get(teacherAssignments_filename));
         }
         if (requestedContents.contains(GeneratedContent.CourseListLoads)) {
             String courseListLoads_template = templateFolder + "/course-list-loads-template.xls";
@@ -138,8 +144,9 @@ public class TeacherGenerationHelper {
 
             courseListLoads_template = templateFolder + "/course-assignments-template.xls";
             t = fs.get(courseListLoads_template);
-            generateCourseListAssignmentsFile(periodId, t, fs.get(outputFolder + File.separator + outputNamePattern.replace("*", "course-assignments") + ".xls"));
+            generateCourseListAssignmentsFile(periodId, t, fs.get(outputFolder + File.separator + outputNamePattern.replace("*", "course-assignments") + ".xls"), options.getVersion());
         }
+        generateGlobalVars(periodId,fs.get(outputFolder + File.separator +"vars"+ File.separator +"vars.config"),options.getVersion());
         if (requestedContents.contains(GeneratedContent.Bundle)) {
             Chronometer c2 = new Chronometer();
             String zipFile = outputFolder + File.separator + outputNamePattern.replace("*", "bundle") + ".zip";
@@ -214,6 +221,81 @@ public class TeacherGenerationHelper {
         }
     }
 
+    private void generateTeacherAssignmentsCsvFile(int periodId, TeacherPeriodStat[] stats, VFile output) throws IOException {
+        if (stats.length == 0) {
+            throw new IllegalArgumentException("No valid Teacher found");
+        }
+        try {
+            Arrays.sort(stats, new Comparator<TeacherPeriodStat>() {
+                @Override
+                public int compare(TeacherPeriodStat o1, TeacherPeriodStat o2) {
+                    int x = o1.getTeacher().getContact().getFullName().compareTo(
+                            o2.getTeacher().getContact().getFullName()
+                    );
+                    if (x != 0) {
+                        return x;
+                    }
+                    return Integer.compare(o1.getTeacher().getId(), o2.getTeacher().getId());
+                }
+            });
+            final VFile p = output.getParentFile();
+            if (p != null) {
+                p.mkdirs();
+            }
+            File ff = null;
+            try {
+                ff = File.createTempFile("tmp", "tmp." + output.getFileName().getShortExtension());
+                TextCSVFormatter csv = UPA.getPersistenceUnit().getImportExportManager().createTextCSVFormatter(ff);
+                csv.setWriteHeader(true);
+                csv.setWriteHeader(true);
+                csv.setDataRowConverter(new DataRowConverter() {
+                    @Override
+                    public DataColumn[] getColumns() {
+                        return new DataColumn[]{
+                            new DataColumn(0,"Id"),
+                            new DataColumn(0,"Assignment"),
+                            new DataColumn(0,"Teacher"),
+                            new DataColumn(0,"Groups"),
+                            new DataColumn(0,"Shares"),
+                        };
+                    }
+
+                    @Override
+                    public Object[] objectToRow(Object o) {
+                        AcademicCourseAssignmentInfo a = (AcademicCourseAssignmentInfo) o;
+                        return new Object[]{
+                                a.getAssignment().getId(),
+                                a.getAssignment().getFullName(),
+                                a.getAssignment().getTeacher() == null ? null : a.getAssignment().getTeacher().getContact().getFullName(),
+                                a.getAssignment().getGroupCount(),
+                                a.getAssignment().getShareCount()
+                        };
+                    }
+                });
+                DataWriter writer = csv.createWriter();
+                for (TeacherPeriodStat st : stats) {
+                    for (AcademicCourseAssignmentInfo assignment : st.getAssignments()) {
+                        writer.writeObject(assignment);
+                    }
+                }
+                writer.close();
+                csv.close();
+                VFS.createNativeFS().copyTo(ff.getPath(), output);
+            } finally {
+                if (ff != null) {
+                    ff.delete();
+                }
+//                if (out != null) {
+//                    out.close();
+//                }
+            }
+        } catch (IOException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new IOException(ex);
+        }
+    }
+
     protected void generatePrintableTeacherLoadFile(int periodId, int teacherId, CourseAssignmentFilter filter, boolean includeIntents, DeviationConfig deviationConfig, VFile template, VFile output, boolean writeVars) throws IOException {
         Map<String, Object> p = preparePrintableTeacherLoadProperties(periodId, teacherId, filter, includeIntents, deviationConfig);
         if (writeVars) {
@@ -224,12 +306,19 @@ public class TeacherGenerationHelper {
 
     private void writeVars(Map<String, Object> p, VFile baseOutput) throws IOException {
         PathInfo uu = PathInfo.create(baseOutput.getPath());
-        baseOutput.getFileSystem().get(uu.getDirName() + "/vars/").mkdirs();
         String varsFile = uu.getDirName() + "/vars/" + uu.getNamePart() + ".config";
+        writeVars0(p,baseOutput.getFileSystem().get(varsFile));
+    }
+
+    private void writeVars0(Map<String, Object> p, VFile varsFile) throws IOException {
         TreeSet<String> keys = new TreeSet<>(p.keySet());
         PrintStream out = null;
         try {
-            out = new PrintStream(baseOutput.getFileSystem().getOutputStream(varsFile));
+            VFile parentFile = varsFile.getParentFile();
+            if(parentFile!=null){
+                parentFile.mkdirs();
+            }
+            out = new PrintStream(varsFile.getOutputStream());
             for (String key : keys) {
                 out.println(key + "=" + p.get(key));
             }
@@ -466,7 +555,7 @@ public class TeacherGenerationHelper {
         return p2;
     }
 
-    public void generateCourseListAssignmentsFile(int periodId, VFile template, VFile output) throws IOException {
+    public void generateCourseListAssignmentsFile(int periodId, VFile template, VFile output, String version) throws IOException {
         Chronometer ch = new Chronometer();
         Map<String, Object> p = new HashMap<String, Object>();
         NamedDoubles inc = new NamedDoubles();
@@ -484,12 +573,23 @@ public class TeacherGenerationHelper {
             fillCourseAssignementPlanProps(c, p, prefix);
         }
         String year = core.findPeriodOrMain(periodId).getName();
-        String version = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01");
+//        String version = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01");
         p.put("version", version);
-        p.put("year", year);
+        p.put("period", year);
         writeVars(p, output);
         ExcelTemplate.generateExcel(template, output, p);
         log.log(Level.FINE, "generateCourseListLoadsFile in {0}", new Object[]{ch.stop()});
+    }
+
+    public void generateGlobalVars(int periodId, VFile output, String version) throws IOException {
+        Chronometer ch = new Chronometer();
+        Map<String, Object> p = new HashMap<String, Object>();
+        CorePlugin core = CorePlugin.get();
+        String year = core.findPeriodOrMain(periodId).getName();
+        p.put("version", version);
+        p.put("period", year);
+        writeVars0(p, output);
+        log.log(Level.FINE, "generateGlobalVars in {0}", new Object[]{ch.stop()});
     }
 
     private void fillCourseAssignementPlanProps(AcademicCourseAssignment c, Map<String, Object> p, String prefix) {
@@ -637,6 +737,7 @@ public class TeacherGenerationHelper {
                                 GeneratedContent.TeacherListAssignmentsSummary,
                                 GeneratedContent.Bundle
                         )
+                        .setVersion(version)
                         .setTemplateFolder(templatesFolder)
                         .setOutputFolder(outdir)
                         .setOutputNamePattern(namePattern)

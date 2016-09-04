@@ -58,11 +58,15 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
         onRefresh();
     }
 
+    public void onInit() {
+        super.onInit();
+        getCourseFilter().getModel().setRefreshFilter(new String[]{"deviation-extra", "deviation-week"});
+        getModel().setOthersFilters(new String[]{"collaborators", "rooms"});
+    }
     public void onRefresh() {
         super.onRefresh();
         //
         getModel().getFilterSelectItems().add(FacesUtils.createSelectItem("no-current-intents", "Mes Modules Affectés", "vr-checkbox"));
-
     }
 
     @OnPageLoad

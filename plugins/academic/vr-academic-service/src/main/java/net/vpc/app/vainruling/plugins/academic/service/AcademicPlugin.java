@@ -801,38 +801,84 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
         for (AcademicCourseAssignmentInfo a : all) {
             List<AcademicCourseIntent> intentObjects = intentsByAssignment.get(a.getAssignment().getId());
-            TreeSet<String> allIntents = new TreeSet<>();
-            TreeSet<Integer> allIntentIds = new TreeSet<>();
+//            TreeSet<String> allIntents = new TreeSet<>();
+//            TreeSet<Integer> allIntentIds = new TreeSet<>();
             if (intentObjects != null) {
                 for (AcademicCourseIntent b1 : intentObjects) {
-                    if (teacher == null || (teacher.intValue() != b1.getTeacher().getId())) {
-                        String n = getValidName(b1.getTeacher());
-                        allIntents.add(n);
+//                    if (teacher == null || (teacher.intValue() != b1.getTeacher().getId())) {
+                    String n = getValidName(b1.getTeacher());
+                    Map<Integer, TeacherAssignmentChunck> chuncks = a.getAssignmentChunck().getChuncks();
+                    TeacherAssignmentChunck c = chuncks.get(b1.getTeacher().getId());
+                    if (c == null) {
+                        c = new TeacherAssignmentChunck(b1.getTeacher().getId(), n);
+                        c.setIntended(true);
+                        chuncks.put(b1.getTeacher().getId(), c);
+                    } else {
+                        c.setIntended(true);
                     }
-                    allIntentIds.add(b1.getTeacher().getId());
+//                    }
                 }
             }
-            StringBuilder sb = new StringBuilder();
             if (a.getAssignment().getTeacher() != null) {
-                AcademicTeacher t = a.getAssignment().getTeacher();
-                String name = getValidName(t);
-                sb.append(name + " (*)");
-            }
-            for (String i : allIntents) {
-                if (a.getAssignment().getTeacher() != null
-                        && a.getAssignment().getTeacher().getContact() != null
-                        && i.equals(a.getAssignment().getTeacher().getContact().getFullName())) {
-                    //ignore
+                AcademicTeacher teacher1 = a.getAssignment().getTeacher();
+                String n = getValidName(teacher1);
+                Map<Integer, TeacherAssignmentChunck> chuncks = a.getAssignmentChunck().getChuncks();
+                TeacherAssignmentChunck c = chuncks.get(teacher1.getId());
+                if (c == null) {
+                    c = new TeacherAssignmentChunck(teacher1.getId(), n);
+                    c.setAssigned(true);
+                    chuncks.put(teacher1.getId(), c);
                 } else {
-                    if (sb.length() > 0) {
-                        sb.append(", ");
-                    }
-                    sb.append(i);
+                    c.setAssigned(true);
                 }
             }
-            a.setIntentsSet(allIntents);
-            a.setIntents(sb.toString());
-            a.setIntentsTeacherIdsSet(allIntentIds);
+
+            List<AcademicCourseAssignment> other = findCourseAssignmentsByPlan(a.getAssignment().getCoursePlan().getId());
+            for (AcademicCourseAssignment academicCourseAssignment : other) {
+                AcademicTeacher teacher1 = academicCourseAssignment.getTeacher();
+                if (teacher1 != null) {
+                    String n = getValidName(teacher1);
+                    if (academicCourseAssignment.getId() != a.getAssignment().getId()) {
+                        Map<Integer, TeacherAssignmentChunck> achuncks = a.getAssignmentChunck().getChuncks();
+                        if (!achuncks.containsKey(teacher1.getId())) {
+                            Map<Integer, TeacherAssignmentChunck> chuncks = a.getCourseChunck().getChuncks();
+                            TeacherAssignmentChunck c = chuncks.get(teacher1.getId());
+                            if (c == null) {
+                                c = new TeacherAssignmentChunck(teacher1.getId(), n);
+                                c.setAssigned(true);
+                                chuncks.put(teacher1.getId(), c);
+                            } else {
+                                c.setAssigned(true);
+                            }
+                        }
+                    }
+                }
+            }
+            List<AcademicCourseIntent> otherIntents = findCourseIntentsByCoursePlan(a.getAssignment().getCoursePlan().getId());
+            for (AcademicCourseIntent academicCourseAssignment : otherIntents) {
+                AcademicTeacher teacher1 = academicCourseAssignment.getTeacher();
+                if (teacher1 != null) {
+                    String n = getValidName(teacher1);
+                    if (academicCourseAssignment.getId() != a.getAssignment().getId()) {
+                        Map<Integer, TeacherAssignmentChunck> achuncks = a.getAssignmentChunck().getChuncks();
+                        if (!achuncks.containsKey(teacher1.getId())) {
+                            Map<Integer, TeacherAssignmentChunck> chuncks = a.getCourseChunck().getChuncks();
+                            TeacherAssignmentChunck c = chuncks.get(teacher1.getId());
+                            if (c == null) {
+                                c = new TeacherAssignmentChunck(teacher1.getId(), n);
+                                c.setIntended(true);
+                                chuncks.put(teacher1.getId(), c);
+                            } else {
+                                c.setIntended(true);
+                            }
+                        }
+                    }
+                }
+            }
+
+//            a.setIntentsSet(allIntents);
+//            a.setIntents(sb.toString());
+//            a.setIntentsTeacherIdsSet(allIntentIds);
         }
         Collections.sort(all, new Comparator<AcademicCourseAssignmentInfo>() {
 
@@ -1841,6 +1887,19 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 });
     }
 
+    public List<AcademicCourseIntent> findCourseIntentsByCoursePlan(int coursePlanId) {
+        return cacheService.get(AcademicCourseIntent.class)
+                .getProperty("findCourseIntentsByCoursePlan:" + coursePlanId, new Action<List<AcademicCourseIntent>>() {
+                    @Override
+                    public List<AcademicCourseIntent> run() {
+                        return UPA.getPersistenceUnit().createQuery("Select u from AcademicCourseIntent u where u.assignment.coursePlanId=:coursePlanId")
+                                .setHint(QueryHints.NAVIGATION_DEPTH, 4)
+                                .setParameter("coursePlanId", coursePlanId)
+                                .getResultList();
+                    }
+                });
+    }
+
     public List<AcademicCoursePlan> findCoursePlans(int periodId) {
         return cacheService.get(AcademicCoursePlan.class)
                 .getProperty("findCoursePlans:" + periodId, new Action<List<AcademicCoursePlan>>() {
@@ -1855,9 +1914,15 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public List<AcademicCourseAssignment> findCourseAssignmentsByPlan(int planId) {
-        return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.coursePlanId=:v")
-                .setParameter("v", planId)
-                .getResultList();
+        return cacheService.get(AcademicCourseAssignment.class)
+                .getProperty("findCourseAssignmentsByPlan:" + planId, new Action<List<AcademicCourseAssignment>>() {
+                    @Override
+                    public List<AcademicCourseAssignment> run() {
+                        return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.coursePlanId=:v")
+                                .setParameter("v", planId)
+                                .getResultList();
+                    }
+                });
     }
 
     public List<AcademicCourseAssignment> findCourseAssignmentsByClass(int periodId, int classId) {
@@ -2916,8 +2981,227 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return result;
     }
 
-    public void validateAcademicData(int periodId) {
+    public void validateAcademicData_Teacher(int teacherId,int periodId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
+        AcademicTeacher s=findTeacher(teacherId);
+        Map<Integer, AcademicClass> academicClasses = findAcademicClassesMap();
+        AppUser u = s.getUser();
+        AppContact c = s.getContact();
+        AppDepartment d = s.getDepartment();
+
+        if (c == null && u != null) {
+            c = u.getContact();
+        }
+        if (d == null && u != null) {
+            d = u.getDepartment();
+        }
+        if (s.getDepartment() == null && d != null) {
+            s.setDepartment(d);
+            UPA.getPersistenceUnit().merge(s);
+        }
+        if (s.getContact() == null && c != null) {
+            s.setContact(c);
+            UPA.getPersistenceUnit().merge(s);
+        }
+        if (u != null) {
+
+            if (u.getDepartment() == null && d != null) {
+                u.setDepartment(d);
+                UPA.getPersistenceUnit().merge(u);
+            }
+            if (u.getContact() == null && c != null) {
+                u.setContact(c);
+                UPA.getPersistenceUnit().merge(u);
+            }
+        }
+        if (c != null) {
+            HashSet<Integer> goodProfiles = new HashSet<>();
+            String depCode = null;
+            {
+                if (d != null) {
+                    String n = core.validateProfileName(d.getCode());
+                    depCode = d.getCode();
+                    AppProfile p = core.findOrCreateCustomProfile(n, "Department");
+                    goodProfiles.add(p.getId());
+                }
+            }
+            {
+                AppProfile p = core.findOrCreateCustomProfile("Teacher", "UserType");
+                goodProfiles.add(p.getId());
+            }
+            //find classes teached by  teacher
+            List<AcademicClass> myClasses = new ArrayList<>();
+            Set<String> myPrograms = new HashSet<>();
+            for (AcademicCourseAssignment a : findCourseAssignments(periodId, s.getId(), null, null, false)) {
+                myPrograms.add(a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getName());
+                myClasses.add(a.getSubClass());
+                myClasses.add(a.getCoursePlan().getCourseLevel().getAcademicClass());
+            }
+
+            for (AcademicClass ac : findAcademicUpHierarchyList(myClasses.toArray(new AcademicClass[myClasses.size()]), academicClasses)) {
+                if (ac != null) {
+                    String n = core.validateProfileName(ac.getName());
+                    //ignore inherited profiles in suffix
+//                        classNames.add(n);
+                    AppProfile p = core.findOrCreateCustomProfile(n, "AcademicClass");
+                    goodProfiles.add(p.getId());
+
+                    AcademicProgram pr = ac.getProgram();
+                    if (pr != null) {
+                        myPrograms.add(pr.getName());
+                    }
+                }
+            }
+            for (String myProgram : myPrograms) {
+                String n = core.validateProfileName(myProgram);
+                AppProfile p = core.findOrCreateCustomProfile(n, "AcademicProgram");
+                goodProfiles.add(p.getId());
+            }
+
+//                                    n = a.getCoursePlan().getStudentClass().getName();
+//                    p = core.findOrCreateCustomProfile(n, "AcademicClass");
+//                    goodProfiles.add(p.getId());
+            boolean perm = false;
+            List<AppProfile> oldProfiles = u == null ? new ArrayList<AppProfile>() : core.findProfilesByUser(u.getId());
+            for (AppProfile op : oldProfiles) {
+                if ("Permanent".equals(op.getName())) {
+                    perm = true;
+                    break;
+                }
+            }
+
+            AcademicTeacherPeriod academicTeacherPeriod = findAcademicTeacherPeriod(periodId, s);
+            String degreeCode = academicTeacherPeriod.getDegree() == null ? null : academicTeacherPeriod.getDegree().getCode();
+            StringBuilder goodSuffix = new StringBuilder();
+            goodSuffix.append("Ens.");
+            if (perm) {
+                goodSuffix.append(" ").append("Perm");
+            }
+            if (degreeCode != null) {
+                goodSuffix.append(" ").append(degreeCode);
+            }
+            if (depCode != null) {
+                goodSuffix.append(" ").append(depCode);
+            }
+            c.setPositionSuffix(goodSuffix.toString());
+            pu.merge(c);
+
+            if (u != null) {
+                for (AppProfile p : oldProfiles) {
+                    if (goodProfiles.contains(p.getId())) {
+                        goodProfiles.remove(p.getId());
+                        //ok
+                    } else if (p.isCustom() && ("Department".equals(p.getName()) || "AcademicClass".equals(p.getName()) || "AcademicProgram".equals(p.getName()))) {
+                        core.userRemoveProfile(u.getId(), p.getId());
+                    }
+                }
+                for (Integer toAdd : goodProfiles) {
+                    core.userAddProfile(u.getId(), toAdd);
+                }
+            }
+        }
+    }
+
+    public void validateAcademicData_Student(int studentId,int periodId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AcademicStudent s=findStudent(studentId);
+        Map<Integer, AcademicClass> academicClasses = findAcademicClassesMap();
+        AppUser u = s.getUser();
+        AppContact c = s.getContact();
+        AppDepartment d = s.getDepartment();
+
+        if (c == null && u != null) {
+            c = u.getContact();
+        }
+        if (d == null && u != null) {
+            d = u.getDepartment();
+        }
+        if (s.getDepartment() == null && d != null) {
+            s.setDepartment(d);
+            UPA.getPersistenceUnit().merge(s);
+        }
+        if (s.getContact() == null && c != null) {
+            s.setContact(c);
+            UPA.getPersistenceUnit().merge(s);
+        }
+        if (u != null) {
+
+            if (u.getDepartment() == null && d != null) {
+                u.setDepartment(d);
+                UPA.getPersistenceUnit().merge(u);
+            }
+            if (u.getContact() == null && c != null) {
+                u.setContact(c);
+                UPA.getPersistenceUnit().merge(u);
+            }
+        }
+        if (c != null) {
+            HashSet<Integer> goodProfiles = new HashSet<>();
+
+            {
+                if (d != null) {
+                    String n = core.validateProfileName(d.getCode());
+                    AppProfile p = core.findOrCreateCustomProfile(n, "Department");
+                    goodProfiles.add(p.getId());
+                }
+            }
+            {
+                AppProfile p = core.findOrCreateCustomProfile("Student", "UserType");
+                goodProfiles.add(p.getId());
+            }
+
+            TreeSet<String> classNames = new TreeSet<>();
+            AcademicClass[] clsArr = new AcademicClass[]{s.getLastClass1(), s.getLastClass2(), s.getLastClass3()};
+            for (AcademicClass ac : clsArr) {
+                if (ac != null) {
+                    String n = core.validateProfileName(ac.getName());
+                    classNames.add(n);
+                }
+            }
+            for (AcademicClass ac : findAcademicUpHierarchyList(clsArr, academicClasses)) {
+                if (ac != null) {
+                    String n = core.validateProfileName(ac.getName());
+                    //ignore inherited profiles in suffix
+//                        classNames.add(n);
+                    AppProfile p = core.findOrCreateCustomProfile(n, "AcademicClass");
+                    goodProfiles.add(p.getId());
+
+                    AcademicProgram pr = ac.getProgram();
+                    if (pr != null) {
+                        n = core.validateProfileName(ac.getName());
+                        p = core.findOrCreateCustomProfile(n, "AcademicProgram");
+                        goodProfiles.add(p.getId());
+                    }
+                }
+            }
+            StringBuilder goodSuffix = new StringBuilder();
+            for (String cn : classNames) {
+                if (goodSuffix.length() > 0) {
+                    goodSuffix.append("/");
+                }
+                goodSuffix.append(cn);
+            }
+            c.setPositionSuffix(goodSuffix.toString());
+            pu.merge(c);
+
+            if (u != null) {
+                List<AppProfile> oldProfiles = core.findProfilesByUser(u.getId());
+                for (AppProfile p : oldProfiles) {
+                    if (goodProfiles.contains(p.getId())) {
+                        goodProfiles.remove(p.getId());
+                        //ok
+                    } else if (p.isCustom() && ("Department".equals(p.getName()) || "AcademicClass".equals(p.getName()) || "AcademicProgram".equals(p.getName()))) {
+                        core.userRemoveProfile(u.getId(), p.getId());
+                    }
+                }
+                for (Integer toAdd : goodProfiles) {
+                    core.userAddProfile(u.getId(), toAdd);
+                }
+            }
+        }
+    }
+
+    public void validateAcademicData(int periodId) {
         Map<Integer, AcademicClass> academicClasses = findAcademicClassesMap();
 
         //should remove me!
@@ -2931,216 +3215,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //            }
 //        }
         for (AcademicStudent s : findStudents()) {
-            AppUser u = s.getUser();
-            AppContact c = s.getContact();
-            AppDepartment d = s.getDepartment();
-
-            if (c == null && u != null) {
-                c = u.getContact();
-            }
-            if (d == null && u != null) {
-                d = u.getDepartment();
-            }
-            if (s.getDepartment() == null && d != null) {
-                s.setDepartment(d);
-                UPA.getPersistenceUnit().merge(s);
-            }
-            if (s.getContact() == null && c != null) {
-                s.setContact(c);
-                UPA.getPersistenceUnit().merge(s);
-            }
-            if (u != null) {
-
-                if (u.getDepartment() == null && d != null) {
-                    u.setDepartment(d);
-                    UPA.getPersistenceUnit().merge(u);
-                }
-                if (u.getContact() == null && c != null) {
-                    u.setContact(c);
-                    UPA.getPersistenceUnit().merge(u);
-                }
-            }
-            if (c != null) {
-                HashSet<Integer> goodProfiles = new HashSet<>();
-
-                {
-                    if (d != null) {
-                        String n = core.validateProfileName(d.getCode());
-                        AppProfile p = core.findOrCreateCustomProfile(n, "Department");
-                        goodProfiles.add(p.getId());
-                    }
-                }
-                {
-                    AppProfile p = core.findOrCreateCustomProfile("Student", "UserType");
-                    goodProfiles.add(p.getId());
-                }
-
-                TreeSet<String> classNames = new TreeSet<>();
-                AcademicClass[] clsArr = new AcademicClass[]{s.getLastClass1(), s.getLastClass2(), s.getLastClass3()};
-                for (AcademicClass ac : clsArr) {
-                    if (ac != null) {
-                        String n = core.validateProfileName(ac.getName());
-                        classNames.add(n);
-                    }
-                }
-                for (AcademicClass ac : findAcademicUpHierarchyList(clsArr, academicClasses)) {
-                    if (ac != null) {
-                        String n = core.validateProfileName(ac.getName());
-                        //ignore inherited profiles in suffix
-//                        classNames.add(n);
-                        AppProfile p = core.findOrCreateCustomProfile(n, "AcademicClass");
-                        goodProfiles.add(p.getId());
-
-                        AcademicProgram pr = ac.getProgram();
-                        if (pr != null) {
-                            n = core.validateProfileName(ac.getName());
-                            p = core.findOrCreateCustomProfile(n, "AcademicProgram");
-                            goodProfiles.add(p.getId());
-                        }
-                    }
-                }
-                StringBuilder goodSuffix = new StringBuilder();
-                for (String cn : classNames) {
-                    if (goodSuffix.length() > 0) {
-                        goodSuffix.append("/");
-                    }
-                    goodSuffix.append(cn);
-                }
-                c.setPositionSuffix(goodSuffix.toString());
-                pu.merge(c);
-
-                if (u != null) {
-                    List<AppProfile> oldProfiles = core.findProfilesByUser(u.getId());
-                    for (AppProfile p : oldProfiles) {
-                        if (goodProfiles.contains(p.getId())) {
-                            goodProfiles.remove(p.getId());
-                            //ok
-                        } else if (p.isCustom() && ("Department".equals(p.getName()) || "AcademicClass".equals(p.getName()) || "AcademicProgram".equals(p.getName()))) {
-                            core.userRemoveProfile(u.getId(), p.getId());
-                        }
-                    }
-                    for (Integer toAdd : goodProfiles) {
-                        core.userAddProfile(u.getId(), toAdd);
-                    }
-                }
-            }
+            validateAcademicData_Student(s.getId(),periodId);
         }
         for (AcademicTeacher s : findTeachers()) {
-            AppUser u = s.getUser();
-            AppContact c = s.getContact();
-            AppDepartment d = s.getDepartment();
-
-            if (c == null && u != null) {
-                c = u.getContact();
-            }
-            if (d == null && u != null) {
-                d = u.getDepartment();
-            }
-            if (s.getDepartment() == null && d != null) {
-                s.setDepartment(d);
-                UPA.getPersistenceUnit().merge(s);
-            }
-            if (s.getContact() == null && c != null) {
-                s.setContact(c);
-                UPA.getPersistenceUnit().merge(s);
-            }
-            if (u != null) {
-
-                if (u.getDepartment() == null && d != null) {
-                    u.setDepartment(d);
-                    UPA.getPersistenceUnit().merge(u);
-                }
-                if (u.getContact() == null && c != null) {
-                    u.setContact(c);
-                    UPA.getPersistenceUnit().merge(u);
-                }
-            }
-            if (c != null) {
-                HashSet<Integer> goodProfiles = new HashSet<>();
-                String depCode = null;
-                {
-                    if (d != null) {
-                        String n = core.validateProfileName(d.getCode());
-                        depCode = d.getCode();
-                        AppProfile p = core.findOrCreateCustomProfile(n, "Department");
-                        goodProfiles.add(p.getId());
-                    }
-                }
-                {
-                    AppProfile p = core.findOrCreateCustomProfile("Teacher", "UserType");
-                    goodProfiles.add(p.getId());
-                }
-                //find classes teached by  teacher
-                List<AcademicClass> myClasses = new ArrayList<>();
-                Set<String> myPrograms = new HashSet<>();
-                for (AcademicCourseAssignment a : findCourseAssignments(periodId, s.getId(), null, null, false)) {
-                    myPrograms.add(a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getName());
-                    myClasses.add(a.getSubClass());
-                    myClasses.add(a.getCoursePlan().getCourseLevel().getAcademicClass());
-                }
-
-                for (AcademicClass ac : findAcademicUpHierarchyList(myClasses.toArray(new AcademicClass[myClasses.size()]), academicClasses)) {
-                    if (ac != null) {
-                        String n = core.validateProfileName(ac.getName());
-                        //ignore inherited profiles in suffix
-//                        classNames.add(n);
-                        AppProfile p = core.findOrCreateCustomProfile(n, "AcademicClass");
-                        goodProfiles.add(p.getId());
-
-                        AcademicProgram pr = ac.getProgram();
-                        if (pr != null) {
-                            myPrograms.add(pr.getName());
-                        }
-                    }
-                }
-                for (String myProgram : myPrograms) {
-                    String n = core.validateProfileName(myProgram);
-                    AppProfile p = core.findOrCreateCustomProfile(n, "AcademicProgram");
-                    goodProfiles.add(p.getId());
-                }
-
-//                                    n = a.getCoursePlan().getStudentClass().getName();
-//                    p = core.findOrCreateCustomProfile(n, "AcademicClass");
-//                    goodProfiles.add(p.getId());
-                boolean perm = false;
-                List<AppProfile> oldProfiles = u == null ? new ArrayList<AppProfile>() : core.findProfilesByUser(u.getId());
-                for (AppProfile op : oldProfiles) {
-                    if ("Permanent".equals(op.getName())) {
-                        perm = true;
-                        break;
-                    }
-                }
-
-                AcademicTeacherPeriod academicTeacherPeriod = findAcademicTeacherPeriod(periodId, s);
-                String degreeCode = academicTeacherPeriod.getDegree() == null ? null : academicTeacherPeriod.getDegree().getCode();
-                StringBuilder goodSuffix = new StringBuilder();
-                goodSuffix.append("Ens.");
-                if (perm) {
-                    goodSuffix.append(" ").append("Perm");
-                }
-                if (degreeCode != null) {
-                    goodSuffix.append(" ").append(degreeCode);
-                }
-                if (depCode != null) {
-                    goodSuffix.append(" ").append(depCode);
-                }
-                c.setPositionSuffix(goodSuffix.toString());
-                pu.merge(c);
-
-                if (u != null) {
-                    for (AppProfile p : oldProfiles) {
-                        if (goodProfiles.contains(p.getId())) {
-                            goodProfiles.remove(p.getId());
-                            //ok
-                        } else if (p.isCustom() && ("Department".equals(p.getName()) || "AcademicClass".equals(p.getName()) || "AcademicProgram".equals(p.getName()))) {
-                            core.userRemoveProfile(u.getId(), p.getId());
-                        }
-                    }
-                    for (Integer toAdd : goodProfiles) {
-                        core.userAddProfile(u.getId(), toAdd);
-                    }
-                }
-            }
+            validateAcademicData_Teacher(s.getId(),periodId);
         }
         generateTeacherAssignementDocumentsFolder(periodId);
     }

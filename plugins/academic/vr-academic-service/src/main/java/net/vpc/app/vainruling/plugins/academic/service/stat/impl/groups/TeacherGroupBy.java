@@ -6,6 +6,7 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfo;
 import net.vpc.app.vainruling.core.service.stats.StringArrayKPIGroup;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.TeacherAssignmentChunck;
 
 import java.util.*;
 
@@ -26,14 +27,12 @@ public class TeacherGroupBy implements KPIGroupBy<AcademicCourseAssignmentInfo> 
             teachers.put(t.getId(), t);
         }
         if(intents) {
-            Set<Integer> set = assignment.getIntentsTeacherIdsSet();
-            if (set != null) {
-                for (Integer integer : set) {
-                    if (integer != null && !teachers.containsKey(integer)) {
-                        t = AcademicPlugin.get().findTeacher(integer);
-                        if (t != null) {
-                            teachers.put(t.getId(), t);
-                        }
+            Collection<TeacherAssignmentChunck> set = assignment.getAssignmentChunck().getChuncks().values();
+            for (TeacherAssignmentChunck tchunk : set) {
+                if (tchunk != null && !teachers.containsKey(tchunk.getTeacherId())) {
+                    t = AcademicPlugin.get().findTeacher(tchunk.getTeacherId());
+                    if (t != null) {
+                        teachers.put(t.getId(), t);
                     }
                 }
             }
