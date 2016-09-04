@@ -23,6 +23,7 @@ public class TeacherGenerationOptions {
     private CourseAssignmentFilter courseAssignmentFilter;
     private boolean includeIntents;
     private AppPeriod period;
+    private String version="v01";
 
     public Integer[] getTeacherIds() {
         return teacherIds;
@@ -111,5 +112,14 @@ public class TeacherGenerationOptions {
 
     public void setDeviationConfig(DeviationConfig deviationConfig) {
         this.deviationConfig = deviationConfig;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public TeacherGenerationOptions setVersion(String version) {
+        this.version = version;
+        return this;
     }
 }

@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.apps.eniso-info.plugins.themes</groupId>
-    <artifactId>eniso-info-th2016-theme</artifactId>
-    <name>net.vpc.app.vain-ruling.apps.eniso-info.plugins.themes.eniso-info-th2016-theme</name>
+    <artifactId>eniso-info-crew-theme</artifactId>
+    <name>net.vpc.app.vain-ruling.apps.eniso-info.plugins.themes.eniso-info-crew-theme</name>
     <version>1.1</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
@@ -24,7 +24,7 @@
         <developer>
             <id>ohamouda</id>
             <name>Oussama Hamouda</name>
-            <email>taha.bensalah@gmail.com</email>
+            <email>oussamahamouda93@gmail.com</email>
             <url>http://www.eniso.info</url>
             <organization>ENISo</organization>
             <organizationUrl>http://www.eniso.info</organizationUrl>

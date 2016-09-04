@@ -71,9 +71,13 @@ public abstract class AbstractCourseLoadCtrl {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
 //        List<AppPeriod> navigatablePeriods = core.findNavigatablePeriods();
 //        AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
+        onInit();
+        onChangePeriod();
+    }
+
+    public void onInit(){
         getTeacherFilter().onInit();
         getCourseFilter().onInit();
-        onChangePeriod();
     }
 
     public boolean isFiltered(String value) {
@@ -133,6 +137,8 @@ public abstract class AbstractCourseLoadCtrl {
         allValidFilters.add(FacesUtils.createSelectItem("non-intended", "Modules Non Demandés", "vr-checkbox"));
         allValidFilters.add(FacesUtils.createSelectItem("conflict", "Modules En Conflits", "vr-checkbox"));
         allValidFilters.add(FacesUtils.createSelectItem("multiple-selection", "Selection Multiple", "vr-checkbox"));
+        allValidFilters.add(FacesUtils.createSelectItem("collaborators", "Collaborateurs", "vr-checkbox"));
+        allValidFilters.add(FacesUtils.createSelectItem("rooms", "Salles", "vr-checkbox"));
         getModel().setFilterSelectItems(allValidFilters);
 
         AcademicTeacher t = getCurrentTeacher();
@@ -179,8 +185,9 @@ public abstract class AbstractCourseLoadCtrl {
         for (AcademicCourseAssignmentInfo c : allCourseAssignmentsAndIntents) {
             if (!visited.contains(c.getAssignment().getId())) {
                 boolean _assigned = c.isAssigned();
-                HashSet<String> s = new HashSet<>(c.getIntentsSet());
-                boolean _intended = s.size() > 0;
+                Map<Integer, TeacherAssignmentChunck> chuncks = c.getAssignmentChunck().getChuncks();
+                int chunk_size = chuncks.size();
+                boolean _intended = chunk_size > 0;
                 boolean accepted = true;
                 if (((assigned && _assigned) || (nonassigned && !_assigned))
                         && ((intended && _intended) || (nonintended && !_intended))) {
@@ -190,14 +197,17 @@ public abstract class AbstractCourseLoadCtrl {
                 }
                 if (accepted && conflict) {
                     //show only with conflicts
-                    if (c.getIntentsSet().isEmpty()) {
+                    if (chuncks.isEmpty()) {
                         accepted = false;
                     } else if (c.getAssignment().getTeacher() != null) {
-                        accepted = (c.getIntentsSet().size() == 1
-                                && !c.getAssignment().getTeacher().getContact().getFullName().equals(c.getIntentsSet().toArray()[0]))
-                                || c.getIntentsSet().size() > 1;
+                        if(chunk_size > 1){
+                            accepted=true;
+                        }else if(chunk_size == 1){
+                            TeacherAssignmentChunck first=(TeacherAssignmentChunck) chuncks.values().toArray()[0];
+                            accepted=c.getAssignment().getTeacher().getId()!=first.getTeacherId();
+                        }
                     } else {
-                        accepted = c.getIntentsSet().size() > 1;
+                        accepted = chunk_size > 1;
                     }
                 }
                 if (accepted) {
@@ -239,7 +249,7 @@ public abstract class AbstractCourseLoadCtrl {
                 AcademicCourseAssignmentInfo assignement = aa.getValue();
                 AcademicTeacher t = assignement.getAssignment().getTeacher();
                 if (t == null) {
-                    for (Integer uid : assignement.getIntentsTeacherIdsSet()) {
+                    for (Integer uid : assignement.getAssignmentChunck().getChuncks().keySet()) {
                         a.addCourseAssignment(uid, assignement.getAssignment().getId());
                         break;
                     }
@@ -528,8 +538,8 @@ public abstract class AbstractCourseLoadCtrl {
 
                 SelectableAssignment rr = getModel().getAll().get(assignementId);
                 if (rr != null) {
-                    final Set<Integer> s0 = rr.getValue().getIntentsTeacherIdsSet();
-                    if (s0 != null && s0.size() > 0) {
+                    final Set<Integer> s0 = rr.getValue().getAssignmentChunck().getChuncks().keySet();
+                    if (s0.size() > 0) {
                         List<Integer> selId = new ArrayList<>(s0);
                         AcademicTeacher oldTeacher = rr.getValue().getAssignment().getTeacher();
                         int newTeacherId = -1;
@@ -557,8 +567,8 @@ public abstract class AbstractCourseLoadCtrl {
         if (assignementId != null) {
             SelectableAssignment rr = getModel().getAll().get(assignementId);
             if (rr != null) {
-                final Set<Integer> s0 = rr.getValue().getIntentsTeacherIdsSet();
-                if (s0 != null && s0.size() > 0) {
+                final Set<Integer> s0 = rr.getValue().getAssignmentChunck().getChuncks().keySet();
+                if (s0.size() > 0) {
                     List<Integer> s = new ArrayList<>(s0);
                     AcademicTeacher oldTeacher = rr.getValue().getAssignment().getTeacher();
                     int newTeacherId = -1;
@@ -581,52 +591,77 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public static String evalIntentsString(AcademicCourseAssignmentInfo a, int visitorTeacherId) {
-        AcademicPlugin academicPlugin = AcademicPlugin.get();
-        AcademicTeacher visitorTeacher = visitorTeacherId >= 0 ? academicPlugin.findTeacher(visitorTeacherId) : null;
-        StringBuilder sb = new StringBuilder();
-        AcademicTeacher assignmentTeacher = a.getAssignment().getTeacher();
-        if (assignmentTeacher != null) {
-            AcademicTeacher t = assignmentTeacher;
-            if (visitorTeacherId != t.getId()) {
-                String name = academicPlugin.getValidName(t);
-                sb.append(name).append(" (*)");
-            }
-        }
-        for (String i : a.getIntentsSet()) {
-            if ((
-                    assignmentTeacher != null
-                            && assignmentTeacher.getContact() != null
-                            && i.equals(assignmentTeacher.getContact().getFullName())
-            )
-                    ||
-                    (
-                            visitorTeacher != null
-                                    && visitorTeacher.getContact() != null
-                                    && i.equals(visitorTeacher.getContact().getFullName())
-                    )) {
-                //ignore
-            } else {
-                if (sb.length() > 0) {
-                    sb.append(", ");
-                }
-                sb.append(i);
-            }
-        }
-
-        return sb.toString();
+        return a.getAssignmentChunck().toStringByTeacher(visitorTeacherId);
+//        AcademicPlugin academicPlugin = AcademicPlugin.get();
+//        AcademicTeacher visitorTeacher = visitorTeacherId >= 0 ? academicPlugin.findTeacher(visitorTeacherId) : null;
+//        StringBuilder sb = new StringBuilder();
+//        AcademicTeacher assignmentTeacher = a.getAssignment().getTeacher();
+//        if (assignmentTeacher != null) {
+//            AcademicTeacher t = assignmentTeacher;
+//            if (visitorTeacherId != t.getId()) {
+//                String name = academicPlugin.getValidName(t);
+//                sb.append(name).append(" (*)");
+//            }
+//        }
+//        for (String i : a.getIntentsSet()) {
+//            if ((
+//                    assignmentTeacher != null
+//                            && assignmentTeacher.getContact() != null
+//                            && i.equals(assignmentTeacher.getContact().getFullName())
+//            )
+//                    ||
+//                    (
+//                            visitorTeacher != null
+//                                    && visitorTeacher.getContact() != null
+//                                    && i.equals(visitorTeacher.getContact().getFullName())
+//                    )) {
+//                //ignore
+//            } else {
+//                if (sb.length() > 0) {
+//                    sb.append(", ");
+//                }
+//                sb.append(i);
+//            }
+//        }
+//
+//        return sb.toString();
     }
 
     public static class SelectableAssignment extends SelectableObject<AcademicCourseAssignmentInfo> {
         private String intents;
+        private String rooms;
+        private String courseIntents;
         private AcademicClass academicClass;
+        private boolean currentAssigned;
+        private boolean otherAssigned;
+        private boolean noneAssigned;
 
         public SelectableAssignment(AcademicCourseAssignmentInfo value, int visitor) {
             super(value, false);
-            this.intents = evalIntentsString(value, visitor);
+            this.intents = value.getAssignmentChunck().toStringByTeacher(visitor);
+            this.courseIntents = value.getCourseChunck().toStringByTeacher(visitor);
             academicClass=value.getAssignment().getSubClass();
             if(academicClass==null){
                 academicClass=value.getAssignment().getCoursePlan().getCourseLevel().getAcademicClass();
             }
+            if(value.getAssignment().getCourseType().getName().equalsIgnoreCase("C")) {
+                rooms = value.getAssignment().getCoursePlan().getRoomConstraintsC();
+            }else if(value.getAssignment().getCourseType().getName().equalsIgnoreCase("TP")){
+                rooms=value.getAssignment().getCoursePlan().getRoomConstraintsTP();
+            }
+            if(value.isAssigned() && value.getAssignment().getTeacher()!=null){
+                if(value.getAssignment().getTeacher().getId()==visitor){
+                   currentAssigned=true;
+                }else{
+                    otherAssigned=true;
+                }
+            }else{
+                noneAssigned=true;
+            }
+        }
+
+        public String getRooms() {
+            return rooms;
         }
 
         public AcademicClass getAcademicClass() {
@@ -637,11 +672,32 @@ public abstract class AbstractCourseLoadCtrl {
             return intents;
         }
 
+        public String getCourseIntents() {
+            return courseIntents;
+        }
+
+        public SelectableAssignment setCourseIntents(String courseIntents) {
+            this.courseIntents = courseIntents;
+            return this;
+        }
+
         public void setSelected(boolean selected) {
             if (getValue().getAssignment().getId() == 1446) {
                 System.out.println("Why?");
             }
             super.setSelected(selected);
+        }
+
+        public boolean isCurrentAssigned() {
+            return currentAssigned;
+        }
+
+        public boolean isOtherAssigned() {
+            return otherAssigned;
+        }
+
+        public boolean isNoneAssigned() {
+            return noneAssigned;
         }
     }
 

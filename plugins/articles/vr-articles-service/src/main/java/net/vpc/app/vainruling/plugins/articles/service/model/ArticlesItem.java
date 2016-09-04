@@ -290,4 +290,64 @@ public class ArticlesItem {
     public void setVisitCount(int visitCount) {
         this.visitCount = visitCount;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ArticlesItem that = (ArticlesItem) o;
+
+        if (id != that.id) return false;
+        if (includeSender != that.includeSender) return false;
+        if (noSubject != that.noSubject) return false;
+        if (position != that.position) return false;
+        if (important != that.important) return false;
+        if (visitCount != that.visitCount) return false;
+        if (archived != that.archived) return false;
+        if (deleted != that.deleted) return false;
+        if (recipientProfiles != null ? !recipientProfiles.equals(that.recipientProfiles) : that.recipientProfiles != null)
+            return false;
+        if (disposition != null ? !disposition.equals(that.disposition) : that.disposition != null) return false;
+        if (subject != null ? !subject.equals(that.subject) : that.subject != null) return false;
+        if (content != null ? !content.equals(that.content) : that.content != null) return false;
+        if (linkURL != null ? !linkURL.equals(that.linkURL) : that.linkURL != null) return false;
+        if (linkText != null ? !linkText.equals(that.linkText) : that.linkText != null) return false;
+        if (linkClassStyle != null ? !linkClassStyle.equals(that.linkClassStyle) : that.linkClassStyle != null)
+            return false;
+        if (imageURL != null ? !imageURL.equals(that.imageURL) : that.imageURL != null) return false;
+        if (sender != null ? !sender.equals(that.sender) : that.sender != null) return false;
+        if (filterExpression != null ? !filterExpression.equals(that.filterExpression) : that.filterExpression != null)
+            return false;
+        if (sendTime != null ? !sendTime.equals(that.sendTime) : that.sendTime != null) return false;
+        if (deletedBy != null ? !deletedBy.equals(that.deletedBy) : that.deletedBy != null) return false;
+        return deletedOn != null ? deletedOn.equals(that.deletedOn) : that.deletedOn == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (recipientProfiles != null ? recipientProfiles.hashCode() : 0);
+        result = 31 * result + (disposition != null ? disposition.hashCode() : 0);
+        result = 31 * result + (includeSender ? 1 : 0);
+        result = 31 * result + (noSubject ? 1 : 0);
+        result = 31 * result + (subject != null ? subject.hashCode() : 0);
+        result = 31 * result + (content != null ? content.hashCode() : 0);
+        result = 31 * result + (linkURL != null ? linkURL.hashCode() : 0);
+        result = 31 * result + (linkText != null ? linkText.hashCode() : 0);
+        result = 31 * result + (linkClassStyle != null ? linkClassStyle.hashCode() : 0);
+        result = 31 * result + (imageURL != null ? imageURL.hashCode() : 0);
+        result = 31 * result + position;
+        result = 31 * result + (important ? 1 : 0);
+        result = 31 * result + (sender != null ? sender.hashCode() : 0);
+        result = 31 * result + visitCount;
+        result = 31 * result + (filterExpression != null ? filterExpression.hashCode() : 0);
+        result = 31 * result + (sendTime != null ? sendTime.hashCode() : 0);
+        result = 31 * result + (archived ? 1 : 0);
+        result = 31 * result + (deleted ? 1 : 0);
+        result = 31 * result + (deletedBy != null ? deletedBy.hashCode() : 0);
+        result = 31 * result + (deletedOn != null ? deletedOn.hashCode() : 0);
+        return result;
+    }
 }

@@ -86,4 +86,30 @@ public class ArticlesFile {
         this.style = style;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ArticlesFile that = (ArticlesFile) o;
+
+        if (id != that.id) return false;
+        if (position != that.position) return false;
+        if (article != null ? !article.equals(that.article) : that.article != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (path != null ? !path.equals(that.path) : that.path != null) return false;
+        return style != null ? style.equals(that.style) : that.style == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (article != null ? article.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (path != null ? path.hashCode() : 0);
+        result = 31 * result + (style != null ? style.hashCode() : 0);
+        result = 31 * result + position;
+        return result;
+    }
 }

@@ -56,7 +56,7 @@ public class ActionDialogManager {
                     ActionDialog a = (ActionDialog) o;
                     ActionDialogAdapter aa = new ActionDialogAdapter(a);
                     if (byActionName.containsKey(aa.getId())) {
-                        throw new IllegalArgumentException("Ambigous name " + aa.getId());
+                        throw new IllegalArgumentException("Ambiguous name " + aa.getId());
                     }
                     byActionName.put(aa.getId(), aa);
                 } else {

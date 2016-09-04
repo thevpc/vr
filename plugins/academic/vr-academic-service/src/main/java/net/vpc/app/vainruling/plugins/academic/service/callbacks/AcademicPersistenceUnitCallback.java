@@ -3,12 +3,13 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.academic.service;
+package net.vpc.app.vainruling.plugins.academic.service.callbacks;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartmentPeriod;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;

@@ -10,6 +10,9 @@ and open the template in the editor.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
         >
+<!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+<!--@elvariable id="loginCtrl" type="net.vpc.app.vainruling.core.web.ctrl.LoginCtrl"-->
+<!--@elvariable id="vrMenuManager" type="net.vpc.app.vainruling.core.web.menu.VrMenuManager"-->
 
 <h:head>
 
@@ -57,7 +60,8 @@ and open the template in the editor.
         <h:form id="pageMenuForm">
             <nav class="clearfix infusion">
                 <ul class="clearfix">
-                    <li><h:outputLink style="padding: 25px 43px 23px 5px;"
+                    <li>
+                    <h:outputLink style="padding: 25px 43px 23px 5px;"
                                       styleClass="#{vrMenuManager.isCurrentPageId('welcome')?'active':''}"
                                       value="#{vr.context}/p/publicIndex">welcome</h:outputLink></li>
                     <li><h:outputLink style="padding: 25px 43px 23px 5px;"

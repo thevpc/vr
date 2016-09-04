@@ -10,6 +10,10 @@
     background-color: var(--vr-color-valid);
 }
 
+.vr-label-warn {
+    background-color: var(--vr-color-warn);
+}
+
 .vr-label-invalid {
     background-color: var(--vr-color-invalid);
 }

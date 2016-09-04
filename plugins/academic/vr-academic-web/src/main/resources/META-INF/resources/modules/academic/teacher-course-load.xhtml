@@ -480,7 +480,7 @@ and open the template in the editor.
                                     </p:menuButton>
 
                                 </p:column>
-                                <p:column headerText="" width="10%">
+                                <p:column headerText="" width="8%">
                                     <h:outputText
                                             value="#{i.academicClass.name}"/>
                                 </p:column>
@@ -506,13 +506,24 @@ and open the template in the editor.
                                     <h:outputText
                                             value="#{i.value.assignment.valuePM != 0 ? i.value.assignment.valuePM  : ''}"/>
                                 </p:column>
-                                <p:column headerText="Grp" width="5%">
+                                <p:column headerText="Grp" width="3%">
                                     <h:outputText value="#{i.value.assignment.groupCount}"><f:convertNumber
                                             pattern="#0.#"/></h:outputText>
                                 </p:column>
 
                                 <p:column headerText="Voeux des autres" width="20%">
                                     <h:outputText value="#{i.intents}"
+                                                  styleClass="#{i.value.assigned?'vr-label-valid':'vr-label-invalid'}"
+                                    />
+                                </p:column>
+                                <p:column headerText="Collaborateurs" width="10%">
+                                    <h:outputText value="#{i.courseIntents}" rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('collaborators')}"
+                                                  styleClass="#{i.value.assigned?'vr-label-valid':'vr-label-invalid'}"
+                                    />
+                                </p:column>
+
+                                <p:column headerText="Salles" width="5%">
+                                    <h:outputText value="#{i.rooms}" rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('rooms')}"
                                                   styleClass="#{i.value.assigned?'vr-label-valid':'vr-label-invalid'}"
                                     />
                                 </p:column>
@@ -600,10 +611,10 @@ and open the template in the editor.
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                 </p:menuButton>
                             </p:column>
-                            <p:column headerText="" width="10%">
+                            <p:column headerText="" width="5%">
                                 <h:outputText value="#{i.value.assignment.coursePlan.courseLevel.semester.name}"/>
                             </p:column>
-                            <p:column headerText="" width="10%">
+                            <p:column headerText="" width="8%">
                                 <h:outputText value="#{i.academicClass.name}"/>
                             </p:column>
                             <p:column headerText="Module" filterBy="#{i.value.assignment.coursePlan.name}">
@@ -628,14 +639,21 @@ and open the template in the editor.
                                 <h:outputText
                                         value="#{i.value.assignment.valuePM != 0 ? i.value.assignment.valuePM : ''}"/>
                             </p:column>
-                            <p:column headerText="Grp" width="5%">
+                            <p:column headerText="Grp" width="3%">
                                 <h:outputText value="#{i.value.assignment.groupCount}"><f:convertNumber
                                         pattern="#0.#"/></h:outputText>
                             </p:column>
 
                             <p:column headerText="Voeux" width="20%">
-                                <h:outputText value="#{i.intents}"
-                                              styleClass="#{i.value.assigned?'vr-label-valid':'vr-label-invalid'}"/>
+                                <h:outputText value="#{i.intents}" styleClass="#{i.currentAssigned?'vr-label-valid':i.otherAssigned?'vr-label-warn':'vr-label-invalid'}"/>
+                            </p:column>
+
+                            <p:column headerText="Collaborateurs" width="10%" rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('collaborators')}">
+                                <h:outputText value="#{i.courseIntents}"/>
+                            </p:column>
+
+                            <p:column headerText="Salles" width="5%" rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('rooms')}">
+                                <h:outputText value="#{i.rooms}"/>
                             </p:column>
 
                             <f:facet name="footer">

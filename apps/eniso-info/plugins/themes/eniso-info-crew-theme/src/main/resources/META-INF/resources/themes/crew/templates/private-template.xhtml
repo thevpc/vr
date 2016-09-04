@@ -10,6 +10,8 @@ and open the template in the editor.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
         >
+<!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+<!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
 
 <h:head>
 
@@ -66,7 +68,6 @@ and open the template in the editor.
 
 <h:body>
 
-    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
     <div id="wrapper">
 
         <!-- Navigation -->
@@ -83,27 +84,27 @@ and open the template in the editor.
                 <nav class="clearfix infusion" style="float: right;">
                     <ul class="clearfix">
                         <li>
-                            <ol class="breadcrumb vr-link"
-                                style="padding: 13px 15px;margin-bottom:0px;background: none;">
+                            <ol class="breadcrumb"
+                                style="padding: 13px 15px;margin-bottom:0px;background: none;color: #1a6b57">
                             <h:outputLabel style="#{
-                                               (appGlobalCtrl.headMessageStyle eq 'error')?'color:red;'
-                                                   :(appGlobalCtrl.headMessageStyle eq 'warning')?'color:orange;'
-                                                   :(appGlobalCtrl.headMessageStyle eq 'success')?'color:green;'
-                                                   :(appGlobalCtrl.headMessageStyle eq 'info')?'color:blue;'
-                                                   :appGlobalCtrl.headMessageStyle
+                                               (vr.headMessageStyle eq 'error')?'color:red;'
+                                                   :(vr.headMessageStyle eq 'warning')?'color:orange;'
+                                                   :(vr.headMessageStyle eq 'success')?'color:green;'
+                                                   :(vr.headMessageStyle eq 'info')?'color:blue;'
+                                                   :vr.headMessageStyle
                                 }"
-                                           rendered="#{appGlobalCtrl.headMessageText ne ''}"
-                                           value="#{appGlobalCtrl.headMessageText}"/>
+                                           rendered="#{vr.headMessageText ne ''}"
+                                           value="#{vr.headMessageText}"/>
                             </ol>
                         </li>
                         <li>
-                            <ol class="breadcrumb vr-link"
-                                style="padding: 13px 15px;margin-bottom:0px;background: none;">
-                                <ui:repeat value="#{vrMenuManager.model.breadcrumb}" var="m">
-                                    <li class="#{m.active ? 'active':''} vr-link">
+                            <ol class="breadcrumb"
+                                style="padding: 13px 15px;margin-bottom:0px;background: none;color: #1a6b57">
+                                <ui:repeat value="#{vr.breadcrumb}" var="m">
+                                    <li class="#{m.active ? 'active':''}" style="color: #1a6b57">
                                         <i class="fa #{m.css}}"></i>
                                         <p:commandLink rendered="#{m.ctrl ne ''}"
-                                                       action="#{vrMenuManager.invoke(m.ctrl)}" value="#{m.title}"/>
+                                                       action="#{vr.gotoPage(m.ctrl,'')}" value="#{m.title}"/>
                                         <h:outputLabel rendered="#{m.ctrl eq ''}" value="#{m.title}"/>
                                     </li>
                                 </ui:repeat>
@@ -115,8 +116,7 @@ and open the template in the editor.
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                                 <i class="fa fa-envelope fa-fw" style="width: 50px;">
                                     <ui:fragment rendered="#{mailboxPreviewCtrl.model.unreadCount gt 0}">
-                                        <div style="font-size: x-small;display: inline;color: darkorange;">
-                                            #{mailboxPreviewCtrl.model.unreadCount}
+                                        <div style="font-size: x-small;display: inline;color: darkorange;">#{mailboxPreviewCtrl.model.unreadCount}
                                         </div>
                                     </ui:fragment>
                                 </i> <i class="fa fa-caret-down"></i>
@@ -166,10 +166,10 @@ and open the template in the editor.
                                                     rendered="#{vr.userSession.admin}"
                                                     value="#{vr.context}/p/activeSessions"
                                                     >
-                                                #{activeSessionsCtrl.model.sessions.size()}
+                                                #{vr.activeSessions.size()}
                                             </h:outputLink>
                                             <h:outputText rendered="#{!vr.userSession.admin}"
-                                                          value="#{activeSessionsCtrl.model.sessions.size()}"/>
+                                                          value="#{vr.activeSessions.size()}"/>
                                         </span>
                                     <!--<span class="vr-cnx-label">cnx</span>-->
                                 </div>
@@ -190,7 +190,7 @@ and open the template in the editor.
                                 -->
                                 <li class="divider"></li>
                                 <li>
-                                    <p:commandLink ajax="false" action="#{loginCtrl.dologout}" value="Se déconnecter">
+                                    <p:commandLink ajax="false" action="#{vr.logout}" value="Se déconnecter">
                                         <i class="fa fa-sign-out fa-fw"></i>
                                     </p:commandLink>
                                 </li>
@@ -212,18 +212,26 @@ and open the template in the editor.
                                         </p:commandLink>
                                     </li>
                                 </ui:fragment>
-                                <ui:fragment rendered="#{!appGlobalCtrl.shutdown and vr.userSession.admin}">
+                                <ui:fragment rendered="#{!vr.shutdown and vr.userSession.admin}">
                                     <li>
-                                        <p:commandLink ajax="false" action="#{appGlobalCtrl.doNotifyShutdown}"
+                                        <p:commandLink ajax="false" action="#{vr.notifyShutdown}"
                                                        value="Notifier arrêt serveur">
                                             <i class="fa fa-sign-out fa-fw"></i>
                                         </p:commandLink>
                                     </li>
                                 </ui:fragment>
-                                <ui:fragment rendered="#{appGlobalCtrl.shutdown and vr.userSession.admin}">
+                                <ui:fragment rendered="#{vr.shutdown and vr.userSession.admin}">
                                     <li>
-                                        <p:commandLink ajax="false" action="#{appGlobalCtrl.doCancelShutdown}"
+                                        <p:commandLink ajax="false" action="#{vr.cancelShutdown}"
                                                        value="Annuler arrêt">
+                                            <i class="fa fa-sign-out fa-fw"></i>
+                                        </p:commandLink>
+                                    </li>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{vr.userSession.admin}">
+                                    <li>
+                                        <p:commandLink ajax="false" action="#{corePlugin.invalidateCache}"
+                                                       value="Invalider cache">
                                             <i class="fa fa-sign-out fa-fw"></i>
                                         </p:commandLink>
                                     </li>
@@ -250,7 +258,7 @@ and open the template in the editor.
                 </button>
             </h:form>
             <h:form>
-                <p:poll interval="60" listener="#{loginCtrl.onPoll}" update=":pageMenuForm"/>
+                <p:poll interval="#{vr.pollInterval}" listener="#{vr.onPoll}" update=":pageMenuForm"/>
             </h:form>
         </header>
         <h:form>
@@ -269,18 +277,18 @@ and open the template in the editor.
                             </div>
                             <!-- /input-group -->
                         </li>
-                        <h:inputHidden value="#{vrMenuManager.buildMenu()}"/>
+                        <h:inputHidden value="#{vr.buildMenu()}"/>
 
-                        <ui:repeat value="#{vrMenuManager.model.root.subPackages}" var="p0">
+                        <ui:repeat value="#{vr.menu.groups}" var="p0">
                             <li>
                                 <a href="#"><i class="fa #{p0.icon}"></i> #{p0.name}</a>
                                 <ul class="nav nav-second-level">
-                                    <ui:repeat value="#{p0.subPackages}" var="p1">
+                                    <ui:repeat value="#{p0.groups}" var="p1">
                                         <li>
                                             <a href="#"><i class="fa #{p1.icon}"></i> #{p1.name} <span
                                                     class="fa arrow"></span></a>
                                             <ul class="nav nav-third-level">
-                                                <ui:repeat value="#{p1.leafs}" var="p2">
+                                                <ui:repeat value="#{p1.leaves}" var="p2">
                                                     <li>
                                                         <h:outputLink value="#{p2.prettyURL}">
                                                             <h:outputText class="fa vr-menu-link"
@@ -291,7 +299,7 @@ and open the template in the editor.
                                             </ul>
                                         </li>
                                     </ui:repeat>
-                                    <ui:repeat value="#{p0.leafs}" var="p1">
+                                    <ui:repeat value="#{p0.leaves}" var="p1">
                                         <li>
 
                                             <h:outputLink value="#{p1.prettyURL}">
@@ -302,7 +310,7 @@ and open the template in the editor.
                                 </ul>
                             </li>
                         </ui:repeat>
-                        <ui:repeat value="#{vrMenuManager.model.root.leafs}" var="p1">
+                        <ui:repeat value="#{vr.menu.leaves}" var="p1">
                             <li>
                                 <h:outputLink value="#{p1.prettyURL}">
                                     <h:outputText value="      #{p1.name}"/>
@@ -328,7 +336,7 @@ and open the template in the editor.
                             <ui:insert name="header">
                                 <p:messages showSummary="true"/>
 
-                                <h1 class="page-header">#{vrMenuManager.model.titleCrumb.title}</h1>
+                                <h1 class="page-header">#{vr.titleCrumb.title}</h1>
                             </ui:insert>
                         </div>
                         <!-- /.col-lg-12 -->
