@@ -6,6 +6,8 @@
 package net.vpc.app.vainruling.plugins.articles.web;
 
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.content.ContentText;
+import net.vpc.app.vainruling.core.service.content.ContentTextService;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +30,7 @@ import java.util.Map;
  */
 @Controller
 @Scope(value = "session")
-public class ArticlesCtrl {
+public class ArticlesCtrl implements ContentTextService{
 
     @Autowired
     private ArticlesPlugin articles;
@@ -155,9 +158,18 @@ public class ArticlesCtrl {
     public ArticlesItem getArticle(String disposition, int pos){
         FullArticle a = getFullArticle(disposition, pos);
         if(a!=null){
-            return a.getContent();
+            return a.getArticlesItem();
         }
         return null;
+    }
+
+    @Override
+    public List<ContentText> getArticlesList(String id) {
+        List list = getModel().getArticles().get(id);
+        if(list==null){
+            list= Collections.EMPTY_LIST;
+        }
+        return list;
     }
 
     public static class Model {
@@ -176,6 +188,10 @@ public class ArticlesCtrl {
         public Map<String, List<FullArticle>> getArticles() {
             return articles;
         }
+
+
+
+
 
         public void setArticles(Map<String, List<FullArticle>> articles) {
             this.articles = articles;

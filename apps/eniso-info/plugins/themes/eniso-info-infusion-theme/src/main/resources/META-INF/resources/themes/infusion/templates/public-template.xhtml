@@ -110,7 +110,7 @@ and open the template in the editor.
         <h:form id="row1Form">
             <div class="banner">
                 <ul>
-                    <ui:fragment rendered="#{articlesCtrl.model.articles['Main.Row1'].size() eq 0}">
+                    <ui:fragment rendered="#{articlesCtrl.getArticlesList('Main.Row1').size() eq 0}">
                         <li style="background-image: url('#{vr.context}/fs/Site/wplugins/infusion/img/01.jpg');">
                             <div class="container">
                                 <div class="row">
@@ -126,23 +126,23 @@ and open the template in the editor.
                             </div>
                         </li>
                     </ui:fragment>
-                    <ui:repeat value="#{articlesCtrl.model.articles['Main.Row1']}" var="a">
-                        <li style="background-image: url('#{vr.url(a.content.imageURL)}'); background-size:100% 100%;">
+                    <ui:repeat value="#{articlesCtrl.getArticlesList('Main.Row1')}" var="a">
+                        <li style="background-image: url('#{vr.url(a.imageURL)}'); background-size:100% 100%;">
                             <div class="container">
                                 <div class="row">
                                     <div class="col-md-6 col-md-offset-3">
                                         <ui:fragment
-                                                rendered="#{!a.content.noSubject and !vr.isEmpty(a.content.subject)}"
+                                                rendered="#{!a.noSubject and !vr.isEmpty(a.subject)}"
                                                 >
                                             <div class="hero-title">
-                                                <h:outputLabel value="#{a.content.subject}"/>
+                                                <h:outputLabel value="#{a.subject}"/>
                                             </div>
                                         </ui:fragment>
                                         <ui:fragment
-                                                rendered="#{!vr.isEmpty(vr.html2txt(a.content.content))}"
+                                                rendered="#{!vr.isEmpty(vr.html2txt(a.content))}"
                                                 >
                                             <p class="hero-content">
-                                                <h:outputLabel value="#{a.content.content}" escape="false"/>
+                                                <h:outputLabel value="#{a.content}" escape="false"/>
                                             </p>
                                         </ui:fragment>
                                         <p:outputPanel rendered="#{a.attachments.size() ne 0}">
@@ -150,7 +150,7 @@ and open the template in the editor.
                                                 <h:outputLink
                                                         value="#{vr.url(att.path)}"
                                                         styleClass="#{(att.style eq null or att.style eq '')?'hero-btn':att.style}"
-                                                        style="#{vr.isEmpty(vr.html2txt(a.content.content))?'margin-top:550px;':''}"
+                                                        style="#{vr.isEmpty(vr.html2txt(a.content))?'margin-top:550px;':''}"
                                                         >
                                                     <h:outputText value="#{att.name}"/>
                                                 </h:outputLink>
@@ -293,16 +293,16 @@ and open the template in the editor.
                             <p>Coming to ENISo isn’t all about classes and studying, we provide a large and varied programs of extracurricular activities for our students.</p>
                         </div>
 
-                        <ui:repeat value="#{articlesCtrl.model.articles['Main.Row3']}" var="a">
+                        <ui:repeat value="#{articlesCtrl.getArticlesList('Main.Row3')}" var="a">
                             <div class="col-md-6">
-                                <h3><h:outputLabel value="#{a.content.subject}"/></h3>
+                                <h3><h:outputLabel value="#{a.subject}"/></h3>
 
-                                <p><h:outputLabel value="#{a.content.content}" escape="false"/></p>
+                                <p><h:outputLabel value="#{a.content}" escape="false"/></p>
 
-                                <h:outputLink class="button #{a.content.linkClassStyle}}"
-                                              rendered="#{a.content.linkText ne null and a.content.linkText ne ''}"
-                                              value="#{vr.url(a.content.linkURL)}">
-                                    <h:outputLabel value="#{a.content.linkText}"/>
+                                <h:outputLink class="button #{a.linkClassStyle}}"
+                                              rendered="#{a.linkText ne null and a.linkText ne ''}"
+                                              value="#{vr.url(a.linkURL)}">
+                                    <h:outputLabel value="#{a.linkText}"/>
                                 </h:outputLink>
                                 <p:outputPanel rendered="#{a.attachments.size() ne 0}">
                                     <ui:repeat value="#{a.attachments}" var="att">
@@ -438,12 +438,12 @@ and open the template in the editor.
                         <div class="col-md-12">
                             <div class="col-md-10 col-md-offset-1">
                                 <div class="quote-slideshow">
-                                    <ui:repeat value="#{articlesCtrl.model.articles['Main.Row6']}" var="a"
+                                    <ui:repeat value="#{articlesCtrl.getArticlesList('Main.Row6')}" var="a"
                                                varStatus="st">
                                         <figure class="#{st.first ?'show':''}">
-                                            <h2><h:outputLabel value="#{a.content.subject}"/></h2>
+                                            <h2><h:outputLabel value="#{a.subject}"/></h2>
                                             <figcaption>
-                                                <h:outputLabel value="#{a.content.content}" escape="false"/>
+                                                <h:outputLabel value="#{a.content}" escape="false"/>
                                             </figcaption>
                                         </figure>
                                     </ui:repeat>
@@ -456,7 +456,7 @@ and open the template in the editor.
                                                                         </figure>-->
                                 </div>
                             </div>
-                            <ui:fragment rendered="#{articlesCtrl.model.articles['Main.Row6'].size() gt 0}">
+                            <ui:fragment rendered="#{articlesCtrl.getArticlesList('Main.Row6').size() gt 0}">
                                 <span class="quote-prev circle"><i class="fa fa-angle-left fa-2x"></i></span>
                                 <span class="quote-next circle"><i class="fa fa-angle-right fa-2x"></i></span>
                             </ui:fragment>

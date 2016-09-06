@@ -1,7 +1,7 @@
 short-name = ENISo info
 long-name = ENISo info
-version = 1.0.73
+version = 1.0.74
 build-date = 2016-08-31
-build-number = 73
+build-number = 74
 author = Taha BEN SALAH (c)
-default-theme = crew
+default-theme = infusion

@@ -7,6 +7,8 @@ package net.vpc.app.vainruling.core.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.content.ContentText;
+import net.vpc.app.vainruling.core.service.content.ContentTextService;
 import net.vpc.app.vainruling.core.service.model.AppProperty;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrHelper;
@@ -24,6 +26,7 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import org.primefaces.model.StreamedContent;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 
 import javax.faces.context.FacesContext;
@@ -66,6 +69,11 @@ public class Vr {
         }
         VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
         VrTheme theme = tfactory.getTheme(oldValue);
+        if (theme != null) {
+            return theme;
+        }
+        //force to default
+        theme = tfactory.getTheme("default");
         if (theme != null) {
             return theme;
         }
@@ -113,6 +121,20 @@ public class Vr {
         return getAppTheme();
     }
 
+    public <T> List<T> listHead(List<T> anyList,int maxSize) {
+        if(anyList.size()>maxSize){
+            return anyList.subList(0,maxSize);
+        }
+        return anyList;
+    }
+
+    public <T> List<T> listTail(List<T> anyList,int maxSize) {
+        if(anyList.size()>maxSize){
+            return anyList.subList(anyList.size()-maxSize,maxSize);
+        }
+        return anyList;
+    }
+
     public <T> List<List<T>> splitListBy(int groupSize, List<T> anyList) {
         List<List<T>> grouped = new ArrayList<>();
         for (int i = 0; i < groupSize; i++) {
@@ -143,6 +165,10 @@ public class Vr {
     }
 
     public int randomize(int a) {
+        return (int) (Math.random() * a);
+    }
+
+    public int randomize(long a) {
         return (int) (Math.random() * a);
     }
 
@@ -587,4 +613,30 @@ public class Vr {
     public StreamedContent downloadPath(String path) {
         return VrApp.getBean(DocumentsCtrl.class).downloadPath(path);
     }
+
+    public ContentTextService getContentTextService() {
+        ApplicationContext c = VrApp.getContext();
+        for (String n : c.getBeanNamesForType(ContentTextService.class)) {
+            ContentTextService s=(ContentTextService)c.getBean(n);
+            return s;
+        }
+        throw new IllegalArgumentException();
+    }
+
+    public void loadArticles(String name) {
+        getContentTextService().loadArticles(name);
+    }
+
+    public List<ContentText> getArticlesList(String name) {
+        return getContentTextService().getArticlesList(name);
+    }
+
+    public List<ContentText> getArticlesListHead(String id,int max) {
+        List<ContentText> list = getArticlesList(id);
+        if(list.size()>max){
+            return list.subList(0,max);
+        }
+        return list;
+    }
+
 }

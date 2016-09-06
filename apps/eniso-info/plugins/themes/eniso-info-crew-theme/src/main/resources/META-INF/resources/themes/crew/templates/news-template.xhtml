@@ -111,9 +111,9 @@ and open the template in the editor.
         <div class="container">
             <div class="row">
                 #{articlesCtrl.loadArticles('Main.Row6')}
-                <!--value="# {vr.groupListBy(articlesCtrl.model.articles['Main.Row4'].size()/3,articlesCtrl.model.articles['Main.Row4'])}"-->
+                <!--value="# {vr.groupListBy(articlesCtrl.getArticlesList('Main.Row4').size()/3,articlesCtrl.getArticlesList('Main.Row4'))}"-->
                 <ui:repeat
-                        value="#{vr.splitListBy(1,articlesCtrl.model.articles['Main.Row6'])}"
+                        value="#{vr.splitListBy(1,articlesCtrl.getArticlesList('Main.Row6'))}"
                         var="list">
                     <div class="col-md-4">
                         <ui:repeat value="#{list}" var="listItem">
@@ -122,8 +122,8 @@ and open the template in the editor.
                                 <div class="icon colored-#{vr.randomize(6)+1}"><span><i
                                         class="#{vr.randomize('icon-mustache','icon-heart','icon-screen-desktop','icon-rocket','icon-eye','icon-user')}"></i></span>
                                 </div>
-                                <h3>#{listItem.content.subject}</h3>
-                                <p>#{vr.strcut(vr.html2txt(listItem.content.content),20000)}</p>
+                                <h3>#{listItem.subject}</h3>
+                                <p>#{vr.strcut(vr.html2txt(listItem.content),20000)}</p>
                             </div>
                         </ui:repeat>
                     </div>
@@ -138,42 +138,42 @@ and open the template in the editor.
                 <div class="col-md-2">
                     #{articlesCtrl.loadArticles('Main.Row15')}
                     <ui:repeat
-                            value="#{vr.splitListBy(1,articlesCtrl.model.articles['Main.Row15'])}"
+                            value="#{vr.splitListBy(1,articlesCtrl.getArticlesList('Main.Row15'))}"
                             var="list">
                         <ui:repeat value="#{list}" var="listItem">
-                            <h2>#{listItem.content.subject}</h2>
-                            <p>#{vr.strcut(vr.html2txt(listItem.content.content),20000)}</p>
+                            <h2>#{listItem.subject}</h2>
+                            <p>#{vr.strcut(vr.html2txt(listItem.content),20000)}</p>
                         </ui:repeat>
                     </ui:repeat>
                 </div>
                 <div class="col-md-5">
                     #{articlesCtrl.loadArticles('Main.Row16')}
                     <ui:repeat
-                            value="#{vr.splitListBy(1,articlesCtrl.model.articles['Main.Row16'])}"
+                            value="#{vr.splitListBy(1,articlesCtrl.getArticlesList('Main.Row16'))}"
                             var="list">
                         <ui:repeat value="#{list}" var="listItem">
-                            <p>#{vr.strcut(vr.html2txt(listItem.content.content),20000)}</p>
+                            <p>#{vr.strcut(vr.html2txt(listItem.content),20000)}</p>
                         </ui:repeat>
                     </ui:repeat>
                 </div>
                 <div class="col-md-3">
                     #{articlesCtrl.loadArticles('Main.Row17')}
                     <ui:repeat
-                            value="#{vr.splitListBy(1,articlesCtrl.model.articles['Main.Row17'])}"
+                            value="#{vr.splitListBy(1,articlesCtrl.getArticlesList('Main.Row17'))}"
                             var="list">
                         <ui:repeat value="#{list}" var="listItem">
-                            <p>#{vr.strcut(vr.html2txt(listItem.content.content),20000)}</p>
+                            <p>#{vr.strcut(vr.html2txt(listItem.content),20000)}</p>
                         </ui:repeat>
                     </ui:repeat>
                 </div>
                 <div class="col-md-2">
                     #{articlesCtrl.loadArticles('Main.Row18')}
                     <ui:repeat
-                            value="#{vr.splitListBy(1,articlesCtrl.model.articles['Main.Row18'])}"
+                            value="#{vr.splitListBy(1,articlesCtrl.getArticlesList('Main.Row18'))}"
                             var="list">
                         <ui:repeat value="#{list}" var="listItem">
                             <ul class="footer-link">
-                                #{vr.strcut(vr.html2txt(listItem.content.content),200)}
+                                #{vr.strcut(vr.html2txt(listItem.content),200)}
                             </ul>
                         </ui:repeat>
                     </ui:repeat>

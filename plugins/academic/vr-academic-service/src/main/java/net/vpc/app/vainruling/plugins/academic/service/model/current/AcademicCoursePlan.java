@@ -153,6 +153,11 @@ public class AcademicCoursePlan {
     //@Summary
     private String labels;
 
+
+    private String roomConstraintsC;
+    @Summary
+    private String roomConstraintsTP;
+
     @Properties(
             {
                     @Property(name = UIConstants.Form.SEPARATOR, value = "Contenu"),
@@ -164,7 +169,6 @@ public class AcademicCoursePlan {
     @Field(max = "512")
     private String prerequisites;
 
-    private String roomConstraintsC;
     @Properties(
             {
                     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA)
@@ -173,15 +177,12 @@ public class AcademicCoursePlan {
     @Field(max = "max")
     private String cDetails;
 
+
     @Properties(
             {
                     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA)
             }
     )
-
-    @Summary
-    private String roomConstraintsTP;
-
     @Field(max = "max")
     private String tpDetails;
 

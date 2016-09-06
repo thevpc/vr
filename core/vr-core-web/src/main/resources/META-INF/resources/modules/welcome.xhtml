@@ -58,7 +58,7 @@ and open the template in the editor.
                     <p:tabView>
                         <p:tab title="Principale">
                             #{articlesCtrl.loadArticles('Welcome')}
-                            <p:dataGrid var="a" value="#{articlesCtrl.model.articles['Welcome']}" columns="1"
+                            <p:dataGrid var="a" value="#{articlesCtrl.getArticlesList('Welcome')}" columns="1"
                                         layout="grid"
                                         rows="10" paginator="true"
                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -68,13 +68,13 @@ and open the template in the editor.
                                         styleClass="vr-no-border-grid"
                                         emptyMessage=""
                                     >
-                                <p:panel header="#{a.content.subject}"
-                                         footer="écrit par #{(a.content.sender eq null)?'//inconnu//':a.content.sender.contact.fullName} #{(a.content.sendTime eq null)?'' : (vr.str(' - (le ',vr.date(a.content.sendTime,'dd MMM yyyy') ,')'))}"
+                                <p:panel header="#{a.subject}"
+                                         footer="écrit par #{(a.user eq null)?'//inconnu//':a.user.contact.fullName} #{(a.publishTime eq null)?'' : (vr.str(' - (le ',vr.date(a.publishTime,'dd MMM yyyy') ,')'))}"
                                          style="margin-bottom:10px"
                                          styleClass="vr-no-border-grid"
                                         >
                                     <h:panelGrid columns="1" cellpadding="10">
-                                        <h:outputText value="#{a.content.content}" escape="false"/>
+                                        <h:outputText value="#{a.content}" escape="false"/>
                                         <p:outputPanel rendered="#{a.attachments.size() ne 0}">
                                             <ui:repeat value="#{a.attachments}" var="att">
                                                 <h:outputLink rendered="#{!vr.isFSPath(att.path)}"
@@ -101,7 +101,7 @@ and open the template in the editor.
                         </p:tab>
                         <p:tab title="News">
                             #{articlesCtrl.loadArticles('News')}
-                            <p:dataGrid var="a" value="#{articlesCtrl.model.articles['News']}" columns="1" layout="grid"
+                            <p:dataGrid var="a" value="#{articlesCtrl.getArticlesList('News')}" columns="1" layout="grid"
                                         rows="10" paginator="true"
                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                         rowsPerPageTemplate="10,20,50,1000"
@@ -110,13 +110,13 @@ and open the template in the editor.
                                         styleClass="vr-no-border-grid"
                                         emptyMessage=""
                                     >
-                                <p:panel header="#{a.content.subject}"
-                                         footer="écrit par #{(a.content.sender eq null)?'//inconnu//':a.content.sender.contact.fullName} #{(a.content.sendTime eq null)?'' : (vr.str(' - (le ',vr.date(a.content.sendTime,'dd MMM yyyy') ,')'))}"
+                                <p:panel header="#{a.subject}"
+                                         footer="écrit par #{(a.user eq null)?'//inconnu//':a.user.contact.fullName} #{(a.publishTime eq null)?'' : (vr.str(' - (le ',vr.date(a.publishTime,'dd MMM yyyy') ,')'))}"
                                          style="margin-bottom:10px"
                                          styleClass="vr-no-border-grid"
                                         >
                                     <h:panelGrid columns="1" cellpadding="10">
-                                        <h:outputText value="#{a.content.content}" escape="false"/>
+                                        <h:outputText value="#{a.content}" escape="false"/>
                                         <p:outputPanel rendered="#{a.attachments.size() ne 0}">
                                             <ui:repeat value="#{a.attachments}" var="att">
                                                 <h:outputLink rendered="#{!vr.isFSPath(att.path)}"

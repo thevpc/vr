@@ -27,9 +27,9 @@
                             <div class="col-md-9">
                                 <h:panelGrid id="curr" rendered="#{articlesCtrl.model.current ne null}"
                                              style="width: 100%;">
-                                    #{articlesCtrl.updateVisit(articlesCtrl.model.current.content.id)}
+                                    #{articlesCtrl.updateVisit(articlesCtrl.model.current.id)}
                                     <div style="text-align: justify;text-justify: inter-word;color: #929da5;">
-                                        <h3>#{articlesCtrl.model.current.content.subject}</h3>
+                                        <h3>#{articlesCtrl.model.current.subject}</h3>
                                         <p:imageSwitch effect="zoom" slideshowAuto="true" style="float: left;
                                                margin-right: 10px;
                                                margin-bottom: 10px;
@@ -43,7 +43,7 @@
 
                                         <p>
                                             <h:outputText
-                                                    value="#{vr.html(articlesCtrl.model.current.content.content)}"
+                                                    value="#{vr.html(articlesCtrl.model.current.content)}"
                                                     escape="false"/>
                                         </p>
                                         <ui:repeat value="#{articlesCtrl.model.current.attachments}" var="att">
@@ -66,7 +66,7 @@
                                         </ui:repeat>
                                         <p:separator style="border-color: #63C6AE;margin-bottom: 0px;"/>
                                         <h:outputText style="margin-top: 0px;float: right; margin-right: 10px;"
-                                                      value="by #{articlesCtrl.model.current.content.sender.contact.fullName}, #{vr.date(articlesCtrl.model.current.content.sendTime,vr.getLocale('en'))}, #{articlesCtrl.model.current.content.visitCount+1} views"/>
+                                                      value="by #{articlesCtrl.model.current.user.contact.fullName}, #{vr.date(articlesCtrl.model.current.publishTime,vr.getLocale('en'))}, #{articlesCtrl.model.current.visitCount+1} views"/>
                                     </div>
                                 </h:panelGrid>
                             </div>
@@ -80,7 +80,7 @@
                                     font-size: small;
                                     margin-bottom: 1px;
                                 "><span style="color: red;">Recent</span> News &amp; Updates</h2>
-                                <p:dataGrid var="i" value="#{articlesCtrl.model.articles['News']}" columns="1"
+                                <p:dataGrid var="i" value="#{articlesCtrl.model.getArticlesList('News')}" columns="1"
                                             layout="grid"
                                             rows="5" paginator="true"
                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -89,12 +89,12 @@
                                             paginatorPosition="bottom"
                                         >
                                     <h3 style="font-size: small;margin-top: 0px;margin-bottom: 0px;padding-top: 0px;">
-                                        <span style="padding: 0 5px;background: #1777B1;color: #FFFFFF;">#{vr.date(i.content.sendTime,'dd/MM')}:</span> #{i.content.subject}
+                                        <span style="padding: 0 5px;background: #1777B1;color: #FFFFFF;">#{vr.date(i.sendTime,'dd/MM')}:</span> #{i.subject}
                                     </h3>
 
                                     <p style="font-size: x-small"><p:commandLink
                                             action="#{articlesCtrl.model.setCurrent(i)}"
-                                            update=":newsForm:curr">#{vr.strcut(vr.html2txt(i.content.content),100)}…</p:commandLink>
+                                            update=":newsForm:curr">#{vr.strcut(vr.html2txt(i.content),100)}…</p:commandLink>
                                     </p>
                                 </p:dataGrid>
                             </div>

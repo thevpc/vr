@@ -400,14 +400,14 @@ public class ArticlesPlugin {
             SyndContent description;
             for (FullArticle art : articles) {
                 entry = new SyndEntryImpl();
-                entry.setTitle(art.getContent().getSubject());
-                entry.setLink(art.getContent().getLinkURL() == null ? feed.getLink() : art.getContent().getLinkURL());
-                entry.setPublishedDate(art.getContent().getSendTime());
+                entry.setTitle(art.getSubject());
+                entry.setLink(art.getLinkURL() == null ? feed.getLink() : art.getLinkURL());
+                entry.setPublishedDate(art.getPublishTime());
                 description = new SyndContentImpl();
                 description.setType(GoMail.HTML_CONTENT_TYPE);
-                description.setValue(art.getContent().getContent());
+                description.setValue(art.getContent());
                 entry.setDescription(description);
-                entry.setAuthor(art.getContent().getSender() == null ? null : art.getContent().getSender().getContact().getFullName());
+                entry.setAuthor(art.getUser() == null ? null : art.getUser().getContact().getFullName());
                 entries.add(entry);
             }
 

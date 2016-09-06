@@ -19,8 +19,8 @@
             <h:form>
                 <div class="text-inter">
                     <div class="container">
-                        #{articlesCtrl.loadArticles('Activities')}
-                        <p:dataGrid var="i" value="#{articlesCtrl.model.articles['Activities']}" columns="1"
+                        #{vr.loadArticles('Activities')}
+                        <p:dataGrid var="i" value="#{vr.getArticlesList('Activities')}" columns="1"
                                     layout="grid"
                                     rows="10" paginator="true"
                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -29,7 +29,7 @@
                                     paginatorPosition="bottom"
                                 >
                             <div class="col-md-12" style="text-align: justify;text-justify: inter-word;color: #929da5;">
-                                <h3 style="padding-top: 0px !important;">#{i.content.subject}</h3>
+                                <h3 style="padding-top: 0px !important;">#{i.subject}</h3>
                                 <p:imageSwitch rendered="#{i.imageAttachments.size() gt 0}"
                                                effect="#{articlesCtrl.imageSwitchRandomEffect}" slideshowAuto="true"
                                                style="float: left;
@@ -48,7 +48,7 @@
                                 <p style="margin-bottom: 30px;margin-bottom: 20px;">
                                     <h:outputText escape="false" style="display: inline; margin-left: 10px;
                                                       margin-top: 10px;margin-bottom: 30px"
-                                                  value="#{vr.html(i.content.content)}"/>
+                                                  value="#{vr.html(i.content)}"/>
                                 </p>
                                 <h:panelGrid columns="3" style="border: none;margin-top: 30px;"
                                              columnClasses="ui-grid-col-10">
@@ -75,7 +75,7 @@
 
                                 <p style="margin-top: 0px;">
                                     <h:outputText style="float: right; margin-right: 10px;"
-                                                  value="by #{i.content.sender.contact.fullName}, #{vr.date(i.content.sendTime,vr.getLocale('en'))}"/>
+                                                  value="by #{i.user.contact.fullName}, #{vr.date(i.sendTime,vr.getLocale('en'))}"/>
                                 </p>
 
                             </div>

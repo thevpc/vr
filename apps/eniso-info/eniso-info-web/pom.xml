@@ -6,7 +6,7 @@
     <groupId>net.vpc.app.vain-ruling.apps.eniso-info</groupId>
     <artifactId>eniso-info-web</artifactId>
     <name>net.vpc.app.vain-ruling.apps.eniso-info.eniso-info-web</name>
-    <version>1.0.61</version>
+    <version>1.0.74</version>
     <packaging>war</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 

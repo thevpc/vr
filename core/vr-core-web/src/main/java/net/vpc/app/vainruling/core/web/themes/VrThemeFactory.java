@@ -1,5 +1,6 @@
 package net.vpc.app.vainruling.core.web.themes;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.common.strings.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +15,13 @@ import java.util.*;
 @Service
 public class VrThemeFactory {
     private Map<String,VrTheme> themes = new HashMap<>();
+    private String defaultTheme;
 
     public VrThemeFactory() {
     }
 
     public Map<String,VrTheme> loadThemes() {
+        defaultTheme= CorePlugin.get().getAppVersion().getDefaultTheme();
         Properties all=new Properties();
         try {
             Enumeration<URL> resources = Thread.currentThread().getContextClassLoader().getResources("/META-INF/vr-themes.properties");
@@ -79,7 +82,24 @@ public class VrThemeFactory {
     }
 
     public VrTheme getTheme(String id) {
-        return getThemesMap().get(id);
+        Map<String, VrTheme> themesMap = getThemesMap();
+        VrTheme vrTheme = themesMap.get(id);
+        if(vrTheme==null){
+            if("default".endsWith(id)){
+                vrTheme = themesMap.get(defaultTheme);
+                if(vrTheme==null){
+                    if(themesMap.size()>0){
+                        for (VrTheme theme : themesMap.values()) {
+                            vrTheme=theme;
+                            if(vrTheme!=null){
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return vrTheme;
     }
 
     public Map<String,VrTheme> getThemesMap() {

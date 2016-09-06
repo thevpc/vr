@@ -1843,6 +1843,68 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //                .findById(AcademicTeacher.class, t);
     }
 
+    public List<AcademicStudent> findClassStudents(int classId,int ... classNumber) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        HashSet<Integer>ns=new HashSet<>();
+        for (int i : classNumber) {
+            ns.add(i);
+        }
+        if(ns.isEmpty()){
+            return Collections.EMPTY_LIST;
+        }
+        StringBuilder sb=new StringBuilder();
+        sb.append("Select a from AcademicStudent a where 1=1 ");
+        if(ns.contains(1)){
+            ns.remove(1);
+            sb.append("and a.lasClass1Id=:clsId");
+        }
+        if(ns.contains(2)){
+            ns.remove(2);
+            sb.append("and a.lasClass2Id=:clsId");
+        }
+        if(ns.contains(3)){
+            ns.remove(3);
+            sb.append("and a.lasClass3Id=:clsId");
+        }
+        if(!ns.isEmpty()){
+            throw new IllegalArgumentException("Invalid class Number "+ns);
+        }
+        return pu.createQuery(sb.toString()).setParameter("classId",classId).getResultList();
+    }
+
+    public void updateStudentClassByClass(int classNumber, int fromClassId,int toClassId) {
+        for (AcademicStudent academicStudent : findClassStudents(fromClassId, classNumber)) {
+            updateStudentClass(academicStudent.getId(),classNumber,toClassId);
+        }
+    }
+
+    public AcademicStudent updateStudentClass(int studentId,int classNumber, int classId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AcademicClass cls = findAcademicClass(classId);
+        AcademicStudent student = findStudent(studentId);
+        if(student!=null){
+            switch (classNumber) {
+                case 1: {
+                    student.setLastClass1(cls);
+                    break;
+                }
+                case 2: {
+                    student.setLastClass2(cls);
+                    break;
+                }
+                case 3: {
+                    student.setLastClass3(cls);
+                    break;
+                }
+                default:{
+                    throw new IllegalArgumentException("Invalid class Number");
+                }
+            }
+            pu.merge(student);
+        }
+        return student;
+    }
+
     public AcademicStudent findStudent(int t) {
         return (AcademicStudent) UPA.getPersistenceUnit().findById(AcademicStudent.class, t);
     }
@@ -2981,9 +3043,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return result;
     }
 
-    public void validateAcademicData_Teacher(int teacherId,int periodId) {
+    public void validateAcademicData_Teacher(int teacherId, int periodId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        AcademicTeacher s=findTeacher(teacherId);
+        AcademicTeacher s = findTeacher(teacherId);
         Map<Integer, AcademicClass> academicClasses = findAcademicClassesMap();
         AppUser u = s.getUser();
         AppContact c = s.getContact();
@@ -3091,7 +3153,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     if (goodProfiles.contains(p.getId())) {
                         goodProfiles.remove(p.getId());
                         //ok
-                    } else if (p.isCustom() && ("Department".equals(p.getName()) || "AcademicClass".equals(p.getName()) || "AcademicProgram".equals(p.getName()))) {
+                    } else if (p.isCustom() && ("Department".equals(p.getCustomType()) || "AcademicClass".equals(p.getCustomType()) || "AcademicProgram".equals(p.getCustomType()))) {
                         core.userRemoveProfile(u.getId(), p.getId());
                     }
                 }
@@ -3102,9 +3164,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
     }
 
-    public void validateAcademicData_Student(int studentId,int periodId) {
+    public void validateAcademicData_Student(int studentId, int periodId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        AcademicStudent s=findStudent(studentId);
+        AcademicStudent s = findStudent(studentId);
         Map<Integer, AcademicClass> academicClasses = findAcademicClassesMap();
         AppUser u = s.getUser();
         AppContact c = s.getContact();
@@ -3182,6 +3244,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 goodSuffix.append(cn);
             }
             c.setPositionSuffix(goodSuffix.toString());
+            c.setPositionTitle1("Student " + goodSuffix);
             pu.merge(c);
 
             if (u != null) {
@@ -3190,7 +3253,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     if (goodProfiles.contains(p.getId())) {
                         goodProfiles.remove(p.getId());
                         //ok
-                    } else if (p.isCustom() && ("Department".equals(p.getName()) || "AcademicClass".equals(p.getName()) || "AcademicProgram".equals(p.getName()))) {
+                    } else if (p.isCustom() && ("Department".equals(p.getCustomType()) || "AcademicClass".equals(p.getCustomType()) || "AcademicProgram".equals(p.getCustomType()))) {
                         core.userRemoveProfile(u.getId(), p.getId());
                     }
                 }
@@ -3215,10 +3278,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //            }
 //        }
         for (AcademicStudent s : findStudents()) {
-            validateAcademicData_Student(s.getId(),periodId);
+            validateAcademicData_Student(s.getId(), periodId);
         }
         for (AcademicTeacher s : findTeachers()) {
-            validateAcademicData_Teacher(s.getId(),periodId);
+            validateAcademicData_Teacher(s.getId(), periodId);
         }
         generateTeacherAssignementDocumentsFolder(periodId);
     }

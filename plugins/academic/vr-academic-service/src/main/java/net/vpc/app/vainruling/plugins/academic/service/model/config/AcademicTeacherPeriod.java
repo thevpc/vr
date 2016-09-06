@@ -27,8 +27,10 @@ public class AcademicTeacherPeriod {
 
     private int id;
     @Main
-    private AppPeriod period;
     @ManyToOne(type = RelationshipType.COMPOSITION)
+    private AppPeriod period;
+
+    @Summary
     private AcademicTeacher teacher;
 
     @Summary
