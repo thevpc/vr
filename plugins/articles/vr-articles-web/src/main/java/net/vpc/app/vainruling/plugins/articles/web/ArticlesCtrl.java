@@ -90,10 +90,12 @@ public class ArticlesCtrl implements ContentTextService{
     public void loadArticles(String name) {
         List<FullArticle> a = findArticles(name);
         getModel().getArticles().put(name, a);
-        if (a != null && a.size() > 0) {
-            getModel().setCurrent(a.get(0));
-        } else {
-            getModel().setCurrent(null);
+        if(getModel().getCurrent()==null) {
+            if (a != null && a.size() > 0) {
+                getModel().setCurrent(a.get(0));
+            } else {
+                getModel().setCurrent(null);
+            }
         }
     }
 
@@ -170,6 +172,10 @@ public class ArticlesCtrl implements ContentTextService{
             list= Collections.EMPTY_LIST;
         }
         return list;
+    }
+
+    public void setSelectedArticle(int id){
+        getModel().setCurrent((FullArticle) articles.findFullArticle(id));
     }
 
     public static class Model {

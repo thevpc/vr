@@ -631,6 +631,10 @@ public class Vr {
         return getContentTextService().getArticlesList(name);
     }
 
+    public void setSelectedArticle(int id){
+        getContentTextService().setSelectedArticle(id);
+    }
+
     public List<ContentText> getArticlesListHead(String id,int max) {
         List<ContentText> list = getArticlesList(id);
         if(list.size()>max){

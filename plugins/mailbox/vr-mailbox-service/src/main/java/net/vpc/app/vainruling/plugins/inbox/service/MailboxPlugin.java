@@ -412,6 +412,7 @@ public class MailboxPlugin {
             MailData m = new MailData();
             m.setExternal(true);
             m.setTo(u.getLogin());
+            m.setRichText(true);
             m.setSubject(u.getLogin());
             m.setTemplateId(getWelcomeTemplate().getId());
             m.setCategory("Welcome");

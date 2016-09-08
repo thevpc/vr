@@ -12,4 +12,6 @@ public interface ContentTextService {
     public void loadArticles(String name);
 
     public List<ContentText> getArticlesList(String id);
+
+    public void setSelectedArticle(int id);
 }

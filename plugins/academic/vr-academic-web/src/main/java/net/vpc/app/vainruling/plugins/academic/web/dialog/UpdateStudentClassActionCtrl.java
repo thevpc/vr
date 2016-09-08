@@ -112,7 +112,7 @@ public class UpdateStudentClassActionCtrl {
             fireEventExtraDialogClosed();
         }
         //
-        //VrApp.getBean(AcademicInternshipPlugin.class).generateInternships(getModel().getInternship(), getModel().getProfile());
+        //VrApp.getBean(AcademicPlugin.class).generateInternships(getModel().getInternship(), getModel().getProfile());
     }
 
     public void fireEventExtraDialogClosed() {

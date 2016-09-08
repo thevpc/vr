@@ -11,8 +11,6 @@
         <module>core/vr-core-web</module>
         <module>plugins/academic/vr-academic-service</module>
         <module>plugins/academic/vr-academic-web</module>
-        <module>plugins/academic-internship/vr-academic-internship-service</module>
-        <module>plugins/academic-internship/vr-academic-internship-web</module>
         <module>plugins/academic-report/vr-academic-report-service</module>
         <module>plugins/academic-report/vr-academic-report-web</module>
         <module>plugins/academic-planning/vr-academic-planning-service</module>
@@ -24,9 +22,9 @@
         <module>plugins/blog/vr-blog-service</module>
         <module>plugins/mailbox/vr-mailbox-service</module>
         <module>plugins/mailbox/vr-mailbox-web</module>
-        <module>plugins/inventory/vr-inventory-service</module>
         <module>plugins/forum/vr-forum-service</module>
         <module>plugins/equipments/vr-equipments-service</module>
+        <module>plugins/equipments/vr-equipments-web</module>
         <module>plugins/articles/vr-articles-service</module>
         <module>plugins/articles/vr-articles-web</module>
         <module>plugins/dev-toolbox/vr-dev-toolbox-service</module>
