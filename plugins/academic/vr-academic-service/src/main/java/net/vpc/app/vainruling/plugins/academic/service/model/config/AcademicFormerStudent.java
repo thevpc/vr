@@ -36,6 +36,8 @@ public class AcademicFormerStudent {
     private AppPeriod graduationPeriod;
     private Date graduationDate;
     @Summary
+    private boolean eliminated;
+    @Summary
     private String eliminationReason;
     @Summary
     private AcademicClass lastClass1;
@@ -320,4 +322,11 @@ public class AcademicFormerStudent {
         this.graduationPeriod = graduationPeriod;
     }
 
+    public boolean isEliminated() {
+        return eliminated;
+    }
+
+    public void setEliminated(boolean eliminated) {
+        this.eliminated = eliminated;
+    }
 }

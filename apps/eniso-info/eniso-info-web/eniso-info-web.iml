@@ -78,18 +78,11 @@
     <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:1.4" level="project" />
     <orderEntry type="module" module-name="vr-equipments-service" />
-    <orderEntry type="module" module-name="vr-inventory-service" />
     <orderEntry type="module" module-name="vr-tasks-service" />
     <orderEntry type="module" module-name="vr-articles-service" />
     <orderEntry type="library" name="Maven: rome:rome:1.0" level="project" />
     <orderEntry type="library" name="Maven: jdom:jdom:1.0" level="project" />
     <orderEntry type="module" module-name="vr-academic-service" />
-    <orderEntry type="module" module-name="vr-mailbox-service" />
-    <orderEntry type="library" name="Maven: net.vpc.common:gomail:1.2.5" level="project" />
-    <orderEntry type="library" name="Maven: javax.mail:mail:1.5.0-b01" level="project" />
-    <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
-    <orderEntry type="module" module-name="vr-forum-service" />
-    <orderEntry type="module" module-name="vr-academic-internship-service" />
     <orderEntry type="library" name="Maven: net.sf.jgap:jgap:3.4.4" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.3" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.3" level="project" />
@@ -100,6 +93,11 @@
     <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.0" level="project" />
     <orderEntry type="library" name="Maven: tablelayout:TableLayout:20050920" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jcgrid:jcgrid:0.05" level="project" />
+    <orderEntry type="module" module-name="vr-mailbox-service" />
+    <orderEntry type="library" name="Maven: net.vpc.common:gomail:1.2.5" level="project" />
+    <orderEntry type="library" name="Maven: javax.mail:mail:1.5.0-b01" level="project" />
+    <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
+    <orderEntry type="module" module-name="vr-forum-service" />
     <orderEntry type="module" module-name="vr-academic-report-service" />
     <orderEntry type="module" module-name="vr-academic-perf-eval-service" />
     <orderEntry type="module" module-name="vr-academic-planning-service" />
@@ -158,12 +156,12 @@
     <orderEntry type="module" module-name="vr-tasks-web" />
     <orderEntry type="module" module-name="vr-articles-web" />
     <orderEntry type="module" module-name="vr-academic-web" />
-    <orderEntry type="module" module-name="vr-academic-internship-web" />
     <orderEntry type="module" module-name="vr-academic-report-web" />
     <orderEntry type="module" module-name="vr-academic-planning-web" />
     <orderEntry type="module" module-name="vr-academic-perf-eval-web" />
     <orderEntry type="module" module-name="vr-mailbox-web" />
     <orderEntry type="module" module-name="vr-dev-toolbox-web" />
+    <orderEntry type="module" module-name="vr-equipments-web" />
     <orderEntry type="library" name="Maven: org.primefaces.themes:glass-x:1.0.6" level="project" />
     <orderEntry type="library" name="Maven: net.bull.javamelody:javamelody-core:1.60.0" level="project" />
     <orderEntry type="library" name="Maven: org.jrobin:jrobin:1.5.9" level="project" />

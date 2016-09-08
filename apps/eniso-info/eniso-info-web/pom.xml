@@ -99,11 +99,6 @@
             <version>1.2.1</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.academic-internship</groupId>
-            <artifactId>vr-academic-internship-web</artifactId>
-            <version>1.4</version>
-        </dependency>
-        <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-report</groupId>
             <artifactId>vr-academic-report-web</artifactId>
             <version>1.0</version>
@@ -127,6 +122,12 @@
             <groupId>net.vpc.app.vain-ruling.plugins.dev-toolbox</groupId>
             <artifactId>vr-dev-toolbox-web</artifactId>
             <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.plugins.equipments</groupId>
+            <artifactId>vr-equipments-web</artifactId>
+            <version>1.2.0</version>
         </dependency>
 
         <dependency>

@@ -65,15 +65,14 @@ public class AcademicPersistenceUnitCallback {
         net.vpc.upa.Entity entity = event.getEntity();
         if (entity.getEntityType().equals(AcademicTeacher.class)) {
             onChangeAcademicTeacher(entity, event.getUpdatesObject());
+        }else if (entity.getEntityType().equals(AcademicStudent.class)) {
+            onChangeAcademicStudent(entity, event.getUpdatesObject());
         }
     }
 
     @OnPrePersist
     public void onPrePersist(PersistEvent event) {
         net.vpc.upa.Entity entity = event.getEntity();
-        if (entity.getEntityType().equals(AcademicFormerStudent.class)) {
-            onPreAcademicFormerStudentCreated(entity, event.getPersistedObject());
-        }
     }
 
     @OnPersist
@@ -83,8 +82,6 @@ public class AcademicPersistenceUnitCallback {
             onChangeAcademicTeacher(entity, event.getPersistedObject());
         } else if (entity.getEntityType().equals(AppPeriod.class)) {
             onAppPeriodCreated(entity, event.getPersistedObject());
-        } else if (entity.getEntityType().equals(AppPeriod.class)) {
-            onAcademicFormerStudentCreated(entity, event.getPersistedObject());
         }
     }
 
@@ -95,6 +92,18 @@ public class AcademicPersistenceUnitCallback {
             p.updateTeacherPeriod(c.findAppConfig().getMainPeriod().getId(), ((AcademicTeacher) updatesObject).getId(), -1);
         } else if (updatesObject instanceof Record) {
             p.updateTeacherPeriod(c.findAppConfig().getMainPeriod().getId(), (Integer) entity.getBuilder().objectToId(updatesObject), -1);
+        }
+    }
+    private void onChangeAcademicStudent(net.vpc.upa.Entity entity, Object updatesObject) {
+        AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
+        int id=-1;
+        if (updatesObject instanceof AcademicStudent) {
+            id = ((AcademicStudent) updatesObject).getId();
+        } else if (updatesObject instanceof Record) {
+            id=(Integer) entity.getBuilder().objectToId(updatesObject);
+        }
+        if(id>0){
+            p.moveToFormerStudent(id,true);
         }
     }
 
@@ -109,65 +118,5 @@ public class AcademicPersistenceUnitCallback {
         }
     }
 
-    private void onAcademicFormerStudentCreated(net.vpc.upa.Entity entity, Object updatesObject) {
-        CorePlugin c = VrApp.getBean(CorePlugin.class);
 
-        if (updatesObject instanceof AcademicFormerStudent) {
-
-            updatesObject = UPA.getPersistenceUnit().getEntity(AcademicFormerStudent.class).getBuilder().objectToRecord(updatesObject);
-        }
-
-        if (updatesObject instanceof Record) {
-            Record u = (Record) updatesObject;
-            AcademicStudent s = u.getObject("student");
-            if (s != null) {
-                s.setLastClass1(null);
-                s.setLastClass2(null);
-                s.setLastClass3(null);
-                UPA.getPersistenceUnit().merge(s);
-            }
-        }
-    }
-
-    private void onPreAcademicFormerStudentCreated(net.vpc.upa.Entity entity, Object updatesObject) {
-        CorePlugin c = VrApp.getBean(CorePlugin.class);
-
-        if (updatesObject instanceof AcademicFormerStudent) {
-
-            updatesObject = entity.getBuilder().objectToRecord(updatesObject);
-        }
-
-        if (updatesObject instanceof Record) {
-            Record u = (Record) updatesObject;
-            AcademicStudent s = u.getObject("student");
-            if (s != null) {
-                if (u.getObject("lastClass1") == null) {
-                    u.setObject("lastClass1", s.getLastClass1());
-                }
-                if (u.getObject("lastClass2") == null) {
-                    u.setObject("lastClass2", s.getLastClass2());
-                }
-                if (u.getObject("lastClass3") == null) {
-                    u.setObject("lastClass3", s.getLastClass3());
-                }
-
-                AppPeriod pp = c.findAppConfig().getMainPeriod();
-                if (u.getObject("graduationPeriod") == null) {
-                    u.setObject("graduationPeriod", pp);
-                }
-                if (u.getObject("graduationDate") == null) {
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(Calendar.MILLISECOND, 0);
-                    cal.set(Calendar.SECOND, 0);
-                    cal.set(Calendar.MINUTE, 0);
-                    cal.set(Calendar.HOUR, 0);
-                    cal.set(Calendar.DAY_OF_MONTH, 30);
-                    cal.set(Calendar.MONTH, Calendar.JUNE);
-                    u.setObject("graduationDate", cal.getTime());
-                }
-
-            }
-        }
-
-    }
 }

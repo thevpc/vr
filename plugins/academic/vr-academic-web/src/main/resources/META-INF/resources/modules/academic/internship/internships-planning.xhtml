@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+>
+
+<h:head>
+</h:head>
+
+<h:body>
+
+
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <!--@elvariable id="internshipsPlanningCtrl" type="net.vpc.app.vainruling.plugins.academic.web.internship.InternshipsPlanningCtrl"-->
+    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
+        <ui:define name="content">
+            <!--                <h:form id="buttonsForm">
+
+                                 /.row
+                                <div class="row">
+                                    <p:outputLabel id="buttons">
+                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                    </p:outputLabel>
+                                </div>
+
+                            </h:form>-->
+            <h:form id="listForm">
+                <p:messages id="currentMessages"/>
+
+                <div class="row" style="margin-top: 20px;">
+                    <div class="table-responsive">
+                        <p:tabView>
+                            <p:tab title="Général">
+                                <p:commandButton rendered="#{internshipsPlanningCtrl.model.manager}" title="Générer"
+                                                 icon="fa fa-search"
+                                                 styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
+                                                 ajax="true" actionListener="#{internshipsPlanningCtrl.onGenerateJury}"
+                                                 update=":listForm" alt=""/>
+                                <p:commandButton rendered="#{internshipsPlanningCtrl.model.manager}" title="Enregister"
+                                                 icon="fa fa-save"
+                                                 styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
+                                                 ajax="true" actionListener="#{internshipsPlanningCtrl.onSaveJury}"
+                                                 update=":listForm" alt=""/>
+                                <p:commandButton rendered="#{internshipsPlanningCtrl.model.manager}" title="Recharger"
+                                                 icon="fa fa-refresh"
+                                                 styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
+                                                 ajax="true" actionListener="#{internshipsPlanningCtrl.onReloadJury}"
+                                                 update=":listForm" alt=""/>
+                                <p:commandButton rendered="#{internshipsPlanningCtrl.model.manager}"
+                                                 title="Réinitialiser" icon="fa fa-trash-o"
+                                                 styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
+                                                 ajax="true" actionListener="#{internshipsPlanningCtrl.onResetJury}"
+                                                 update=":listForm" alt=""/>
+
+                                <p:splitButton title="Jury" icon="fa fa-check"
+                                               disabled="#{!internshipsPlanningCtrl.model.manager}">
+                                    <p:menuitem value="Fixer Presidents"
+                                                actionListener="#{internshipsPlanningCtrl.onSetAllFixedChair}"
+                                                update=":listForm"/>
+                                    <p:menuitem value="Dé-fixer Presidents"
+                                                actionListener="#{internshipsPlanningCtrl.onSetAllNonFixedChair}"
+                                                update=":listForm"/>
+                                    <p:separator/>
+                                    <p:menuitem value="Fixer Rapporteurs"
+                                                actionListener="#{internshipsPlanningCtrl.onSetAllFixedExaminer}"
+                                                update=":listForm"/>
+                                    <p:menuitem value="Dé-fixer Rapporteurs"
+                                                actionListener="#{internshipsPlanningCtrl.onSetAllNonFixedExaminer}"
+                                                update=":listForm"/>
+                                </p:splitButton>
+
+                                <p:splitButton title="Colonnes" icon="fa fa-columns">
+                                    <p:menuitem
+                                            value="#{internshipsPlanningCtrl.model.showVisibleColumnsOnly?'Afficher Colonnes':'Cacher Colonnes'}"
+                                            actionListener="#{internshipsPlanningCtrl.onSwitchColumnsVisibility}"
+                                            update=":listForm"/>
+                                    <p:separator/>
+                                    <p:menuitem value="Marquer colonnes comme visibles"
+                                                actionListener="#{internshipsPlanningCtrl.onSetAllColumnsVisible}"
+                                                update=":listForm"/>
+                                    <p:menuitem value="Marquer colonnes comme invisibles"
+                                                actionListener="#{internshipsPlanningCtrl.onSetAllColumnsNonVisible}"
+                                                update=":listForm"/>
+                                    <p:separator/>
+                                    <p:menuitem value="Marquer colonnes comme sélectionnées"
+                                                actionListener="#{internshipsPlanningCtrl.onSetAllColumnsHighlighted}"
+                                                update=":listForm"/>
+                                    <p:menuitem value="Marquer colonnes comme non sélectionnées"
+                                                actionListener="#{internshipsPlanningCtrl.onSetAllColumnsNonHighlighted}"
+                                                update=":listForm"/>
+                                </p:splitButton>
+
+                                <p:splitButton title="Lignes" icon="fa fa-bars">
+                                    <p:menuitem
+                                            value="#{internshipsPlanningCtrl.model.showVisibleRowsOnly?'Afficher Lignes':'Cacher Lignes'}"
+                                            actionListener="#{internshipsPlanningCtrl.onSwitchRowsVisibility}"
+                                            update=":listForm"/>
+                                    <p:separator/>
+                                    <p:menuitem value="Marquer lignes comme visibles"
+                                                actionListener="#{internshipsPlanningCtrl.onSetAllRowsVisible}"
+                                                update=":listForm"/>
+                                    <p:menuitem value="Marquer lignes comme invisibles"
+                                                actionListener="#{internshipsPlanningCtrl.onSetAllRowsNonVisible}"
+                                                update=":listForm"/>
+                                    <p:separator/>
+                                    <p:menuitem value="Marquer lignes comme sélectionnées"
+                                                actionListener="#{internshipsPlanningCtrl.onSetAllRowsHighlighted}"
+                                                update=":listForm"/>
+                                    <p:menuitem value="Marquer lignes comme non sélectionnées"
+                                                actionListener="#{internshipsPlanningCtrl.onSetAllRowsNonHighlighted}"
+                                                update=":listForm"/>
+                                </p:splitButton>
+                                <p:splitButton title="Download" icon="a fa-download">
+                                    <p:menuitem value="Download XML FET format"
+                                                ajax="false"
+                                                disabled="#{!internshipsPlanningCtrl.model.manager}"
+                                    >
+                                        <p:fileDownload value="#{internshipsPlanningCtrl.downloadFetXml()}"/>
+                                    </p:menuitem>
+                                    <p:menuitem value="Download CSV format"
+                                                ajax="false"
+                                                disabled="#{!internshipsPlanningCtrl.model.manager}"
+                                    >
+                                        <p:fileDownload value="#{internshipsPlanningCtrl.downloadCsv()}"/>
+                                    </p:menuitem>
+                                    <p:menuitem value="Download XLS format"
+                                                ajax="false"
+                                                disabled="#{!internshipsPlanningCtrl.model.manager}"
+                                    >
+                                        <p:fileDownload value="#{internshipsPlanningCtrl.downloadXls()}"/>
+                                    </p:menuitem>
+                                </p:splitButton>
+
+                                <p:selectOneMenu style="margin-left: 20px;height: 40px;"
+                                                 value="#{internshipsPlanningCtrl.model.selectedGroup}">
+                                    <p:ajax listener="#{internshipsPlanningCtrl.onGroupChanged}"
+                                            update=":listForm"/>
+                                    <f:selectItem itemLabel="Selectionner Groupe..." itemValue=""/>
+                                    <f:selectItems value="#{internshipsPlanningCtrl.model.groups}"/>
+                                </p:selectOneMenu>
+
+                                <p:selectOneMenu style="margin-left: 20px;height: 40px;"
+                                                 value="#{internshipsPlanningCtrl.model.selectedSessionType}">
+                                    <p:ajax listener="#{internshipsPlanningCtrl.onSessionTypeChanged}"
+                                            update=":listForm"/>
+                                    <f:selectItem itemLabel="Selectionner Session..." itemValue=""/>
+                                    <f:selectItems value="#{internshipsPlanningCtrl.model.sessionTypes}"/>
+                                </p:selectOneMenu>
+
+                                <p:scrollPanel style="margin-top: 10px;">
+                                    <p:dataTable id="juryTable" styleClass="vr-no-border-grid"
+                                                 style="border-style: none;border-width: 0px;width:#{internshipsPlanningCtrl.model.bestWidth}px;"
+                                                 value="#{internshipsPlanningCtrl.model.visibleRows}"
+                                                 var="row"
+                                    >
+                                        <p:columns value="#{internshipsPlanningCtrl.model.visibleColumns}" var="col"
+                                                   style="#{row.cells.get(col.index).style};width:#{col.width}px">
+                                            <p:commandButton
+                                                    rendered="#{(col.index eq 0)}"
+                                                    action="#{internshipsPlanningCtrl.onChangeRowVisibility(row)}"
+                                                    styleClass="vr-tiny-button"
+                                                    value="C" update=":listForm"
+                                            />
+                                            <p:commandButton
+                                                    rendered="#{(col.index eq 0)}"
+                                                    action="#{internshipsPlanningCtrl.onChangeRowHighlight(row)}"
+                                                    styleClass="vr-tiny-button"
+                                                    value="S" update=":listForm"
+                                            />
+                                            <p:selectBooleanCheckbox
+                                                    rendered="#{col.index eq 4 and row.enableChairFixing}"
+                                                    value="#{row.activity.fixedChair}"/>
+                                            <p:selectBooleanCheckbox
+                                                    rendered="#{col.index eq 5 and row.enableExaminerFixing}"
+                                                    value="#{row.activity.fixedExaminer}"/>
+                                            <p:outputLabel
+                                                    rendered="#{(col.index lt internshipsPlanningCtrl.model.firstJuryColumn) or (row.cells.get(col.index).value eq 'E')}"
+                                                    style="width: 100%;text-align: center;#{row.cells.get(col.index).style}"
+                                                    value="#{row.cells.get(col.index).value}"/>
+                                            <h:panelGroup layout="block"
+                                                          rendered="#{row.cells.get(col.index).enabledChairOrExaminerSwitcher}">
+                                                <p:commandButton
+                                                        action="#{internshipsPlanningCtrl.onChangeCellChair(row.cells.get(col.index))}"
+                                                        style="#{row.cells.get(col.index).chair?row.cells.get(col.index).style:''}"
+                                                        styleClass="vr-tiny-button"
+                                                        value="P" update=":listForm"
+                                                        disabled="#{!internshipsPlanningCtrl.model.manager}"
+                                                />
+                                                <p:commandButton
+                                                        action="#{internshipsPlanningCtrl.onChangeCellExaminer(row.cells.get(col.index))}"
+                                                        style="#{row.cells.get(col.index).supervisor?row.cells.get(col.index).style:''}"
+                                                        styleClass="vr-tiny-button"
+                                                        value="R" update=":listForm"
+                                                        disabled="#{!internshipsPlanningCtrl.model.manager}"
+                                                />
+                                            </h:panelGroup>
+
+                                            <f:facet name="header">
+                                                <div class="ui-grid ui-grid-responsive">
+                                                    <h:outputText value="#{col.name}" title="#{col.titleTooltip}"
+                                                                  style="#{(col.index lt internshipsPlanningCtrl.model.firstJuryColumn)?'':(col.completed)?'color:darkgreen;':'color:red;'}"/>
+                                                    <br/>
+                                                    <h:outputText
+                                                            rendered="#{(col.index ge internshipsPlanningCtrl.model.firstJuryColumn)}"
+                                                            value="#{col.titleSuffix}"/>
+                                                    <br/>
+                                                    <p:commandButton
+                                                            rendered="#{(col.index ge internshipsPlanningCtrl.model.firstJuryColumn)}"
+                                                            action="#{internshipsPlanningCtrl.onChangeColumnVisibility(col)}"
+                                                            styleClass="vr-tiny-button"
+                                                            value="C" update=":listForm"
+                                                    />
+                                                    <p:commandButton
+                                                            rendered="#{(col.index ge internshipsPlanningCtrl.model.firstJuryColumn)}"
+                                                            action="#{internshipsPlanningCtrl.onChangeColumnHighlight(col)}"
+                                                            styleClass="vr-tiny-button"
+                                                            value="S" update=":listForm"
+                                                    />
+                                                </div>
+                                            </f:facet>
+                                        </p:columns>
+                                    </p:dataTable>
+                                </p:scrollPanel>
+                            </p:tab>
+                            <p:tab title="Options">
+                                <p:commandButton
+                                        title="Enregister" icon="fa fa-save"
+                                        styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
+                                        ajax="true" actionListener="#{internshipsPlanningCtrl.onSaveOptions}"
+                                        update=":listForm" alt="" disabled="#{!internshipsPlanningCtrl.model.manager}"/>
+                                <p:panelGrid id="options" styleClass="vr-no-border-grid"
+                                             style="border-style: none;border-width: 0px;">
+                                    <p:row>
+                                        <p:column><p:outputLabel value="Nombre de jours"/></p:column>
+                                        <p:column><p:inputText style="width: 100%"
+                                                               value="#{internshipsPlanningCtrl.model.generationDays}"/></p:column>
+                                        <p:column><p:outputLabel value="Nombre de salles par jour"/></p:column>
+                                        <p:column><p:inputText style="width: 100%"
+                                                               value="#{internshipsPlanningCtrl.model.generationRoomPerDay}"/></p:column>
+                                    </p:row>
+                                    <p:row>
+                                        <p:column><p:outputLabel value="Nombre de séances par jour"/></p:column>
+                                        <p:column><p:inputText style="width: 100%"
+                                                               value="#{internshipsPlanningCtrl.model.generationSessionsPerDay}"/></p:column>
+                                        <p:column><p:outputLabel value="Durée d'une séance (mn)"/></p:column>
+                                        <p:column><p:inputText style="width: 100%"
+                                                               value="#{internshipsPlanningCtrl.model.generationMinutesPerSession}"/></p:column>
+                                    </p:row>
+                                    <p:row>
+                                        <p:column><p:outputLabel value="Date début"/></p:column>
+                                        <p:column><p:inputText style="width: 100%"
+                                                               value="#{internshipsPlanningCtrl.model.generationStartDate}"/></p:column>
+                                        <p:column><p:outputLabel value="Heure début"/></p:column>
+                                        <p:column><p:inputText style="width: 100%"
+                                                               value="#{internshipsPlanningCtrl.model.generationStartTime}"/></p:column>
+                                    </p:row>
+                                </p:panelGrid>
+                            </p:tab>
+                        </p:tabView>
+                    </div>
+                </div>
+            </h:form>
+
+
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>

@@ -44,6 +44,10 @@ public class AcademicTeacherPeriod {
     @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     private boolean enabled = true;
 
+    @Summary
+    @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
+    private boolean loadConfirmed = true;
+
     public AcademicTeacherPeriod() {
     }
 
@@ -101,5 +105,13 @@ public class AcademicTeacherPeriod {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean isLoadConfirmed() {
+        return loadConfirmed;
+    }
+
+    public void setLoadConfirmed(boolean loadConfirmed) {
+        this.loadConfirmed = loadConfirmed;
     }
 }

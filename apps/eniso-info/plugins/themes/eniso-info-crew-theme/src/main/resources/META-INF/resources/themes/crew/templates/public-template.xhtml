@@ -244,7 +244,7 @@ and open the template in the editor.
                         <li><a href="#" data-nav-section="testimonials"><span>Testimonials</span></a></li>
                         <li><a href="#" data-nav-section="courses"><span>Studies</span></a></li>
                         <li><a href="#" data-nav-section="press"><span>Press</span></a></li>
-                        <li><a href="http://localhost:8080/vr/r/login.xhtml"><span>Login</span></a></li>
+                        <li><h:commandLink action="#{vr.gotoPage('login', '')}"><span>Login</span></h:commandLink></li>
                     </ul>
                 </div>
             </nav>
@@ -588,7 +588,7 @@ and open the template in the editor.
                     <h2 class="single-animate animate-press-1">Press Releases</h2>
                     <div class="row">
                         <div class="col-md-8 col-md-offset-2 subtext single-animate animate-press-2">
-                            <h3>Announcements, call for participations and public notifications</h3>
+                            <h3>Announcements, call for participation and public notifications</h3>
                         </div>
                     </div>
                 </div>
@@ -597,7 +597,7 @@ and open the template in the editor.
                 <!-- Press Item -->
                 #{vr.loadArticles('News')}
                 <ui:repeat
-                        value="#{vr.getArticlesList('News')}"
+                        value="#{vr.getArticlesListHead('News',4)}"
                         var="listItem">
                     <div class="col-md-6">
                         <div class="fh5co-press-item to-animate">
@@ -631,7 +631,7 @@ and open the template in the editor.
                 <!-- Press Item -->
                 #{vr.loadArticles('Activities')}
                 <ui:repeat
-                        value="#{vr.getArticlesListHead('Activities',8)}"
+                        value="#{vr.getArticlesListHead('Activities',6)}"
                         var="listItem">
                     <div class="col-md-6">
                         <div class="fh5co-press-item to-animate">

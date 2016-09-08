@@ -53,6 +53,10 @@ public class ArticlesPlugin {
     @Autowired
     CorePlugin core;
 
+    public ArticlesItem findArticle(int articleId) {
+        return UPA.getPersistenceUnit().findById(ArticlesItem.class,articleId);
+    }
+
     public List<ArticlesFile> findArticlesFiles(int articleId) {
         return UPA.getPersistenceUnit().createQuery("Select u from ArticlesFile u where "
                         + " u.articleId=:articleId"
@@ -79,6 +83,38 @@ public class ArticlesPlugin {
                         + "  u.position asc"
         )
                 .getResultList();
+    }
+
+    public FullArticle findFullArticle(int id) {
+        //invoke privileged to find out article not created by self.
+        //when using non privileged mode, users can see SOLELY articles they have created
+        ArticlesItem a = UPA.getPersistenceUnit().invokePrivileged(new Action<ArticlesItem>() {
+            @Override
+            public ArticlesItem run() {
+                return findArticle(id);
+            }
+        });
+        if(a==null){
+            return null;
+        }
+        String aname = a.getLinkText();
+        String aurl = a.getLinkURL();
+        String acss = a.getLinkClassStyle();
+        List<ArticlesFile> att = new ArrayList<>();
+        if (!StringUtils.isEmpty(aname) || !StringUtils.isEmpty(aurl)) {
+            ArticlesFile baseArt = new ArticlesFile();
+            baseArt.setId(-1);
+            baseArt.setName(StringUtils.isEmpty(aname) ? "NoName" : aname);
+            baseArt.setPath(aurl);
+            baseArt.setStyle(acss);
+            att.add(baseArt);
+        }
+        List<ArticlesFile> c = findArticlesFiles(a.getId());
+        if (c != null) {
+            att.addAll(c);
+        }
+        FullArticle f = new FullArticle(a, att);
+        return f;
     }
 
     public List<FullArticle> findFullArticlesByUserAndCategory(final String login, final String disposition) {

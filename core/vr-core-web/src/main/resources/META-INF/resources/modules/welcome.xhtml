@@ -58,7 +58,7 @@ and open the template in the editor.
                     <p:tabView>
                         <p:tab title="Principale">
                             #{articlesCtrl.loadArticles('Welcome')}
-                            <p:dataGrid var="a" value="#{articlesCtrl.getArticlesList('Welcome')}" columns="1"
+                            <p:dataGrid var="a" value="#{vr.getArticlesList('Welcome')}" columns="1"
                                         layout="grid"
                                         rows="10" paginator="true"
                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -101,7 +101,7 @@ and open the template in the editor.
                         </p:tab>
                         <p:tab title="News">
                             #{articlesCtrl.loadArticles('News')}
-                            <p:dataGrid var="a" value="#{articlesCtrl.getArticlesList('News')}" columns="1" layout="grid"
+                            <p:dataGrid var="a" value="#{vr.getArticlesList('News')}" columns="1" layout="grid"
                                         rows="10" paginator="true"
                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                         rowsPerPageTemplate="10,20,50,1000"

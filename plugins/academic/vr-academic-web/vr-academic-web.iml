@@ -30,7 +30,6 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant:1.9.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant-launcher:1.9.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.poi:poi:3.9" level="project" />
-    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.5" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.poi:poi-ooxml:3.9" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: dom4j:dom4j:1.6.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: xml-apis:xml-apis:1.0.b2" level="project" />
@@ -38,7 +37,6 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.xmlbeans:xmlbeans:2.3.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: stax:stax-api:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.jexcelapi:jxl:2.6.10" level="project" />
-    <orderEntry type="library" name="Maven: log4j:log4j:1.2.14" level="project" />
     <orderEntry type="library" name="Maven: net.vpc.common:strings:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: net.vpc.common:utils:1.3" level="project" />
     <orderEntry type="library" name="Maven: net.vpc.common:streams:1.1" level="project" />
@@ -55,7 +53,6 @@
     <orderEntry type="library" name="Maven: xtc:rats-runtime:1.15.0" level="project" />
     <orderEntry type="library" name="Maven: de.fau.cs.osr.utils:utils:2.1.0" level="project" />
     <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.2" level="project" />
-    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.5" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jopt-simple:jopt-simple:4.3" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:4.12" level="project" />
     <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
@@ -105,6 +102,17 @@
     <orderEntry type="library" name="Maven: javax.servlet:jstl:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jersey.containers:jersey-container-servlet:2.14" level="project" />
     <orderEntry type="module" module-name="vr-academic-service" />
+    <orderEntry type="library" name="Maven: net.sf.jgap:jgap:3.4.4" level="project" />
+    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.3" level="project" />
+    <orderEntry type="library" name="Maven: log4j:log4j:1.2.9" level="project" />
+    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.3" level="project" />
+    <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:2.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.thoughtworks.xstream:xstream:1.2.2" level="project" />
+    <orderEntry type="library" name="Maven: xpp3:xpp3_min:1.1.3.4.O" level="project" />
+    <orderEntry type="library" name="Maven: xpp3:xpp3:1.1.3.4.O" level="project" />
+    <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.0" level="project" />
+    <orderEntry type="library" name="Maven: tablelayout:TableLayout:20050920" level="project" />
+    <orderEntry type="library" name="Maven: net.sf.jcgrid:jcgrid:0.05" level="project" />
     <orderEntry type="library" name="Maven: rome:rome:1.0" level="project" />
     <orderEntry type="library" name="Maven: jdom:jdom:1.0" level="project" />
   </component>

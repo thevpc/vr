@@ -2,7 +2,6 @@
 //
 //import net.vpc.app.vainruling.core.service.TraceService;
 //import net.vpc.app.vainruling.core.service.VrApp;
-//import net.vpc.app.vainruling.plugins.academic.internship.service.AcademicInternshipPlugin;
 //import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 //import net.vpc.common.util.Chronometer;
 //
@@ -15,7 +14,7 @@
 //        VrApp.runStandalone("taha.bensalah", "myâssword");
 //        TraceService trace = TraceService.get();
 //        AcademicPlugin aca = VrApp.getBean(AcademicPlugin.class);
-//        AcademicInternshipPlugin aci = VrApp.getBean(AcademicInternshipPlugin.class);
+//        AcademicPlugin aci = VrApp.getBean(AcademicPlugin.class);
 //        aci.findActualInternshipsByStudent(0);
 //        aci.findActualInternshipsBySupervisor(0);
 //        aci.findActualInternshipsByTeacher(1, 1);
