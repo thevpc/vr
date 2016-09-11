@@ -9,9 +9,12 @@ import java.util.List;
  * Created by vpc on 9/5/16.
  */
 public interface ContentTextService {
-    public void loadArticles(String name);
 
-    public List<ContentText> getArticlesList(String id);
+    public void loadContentTexts(String name);
 
-    public void setSelectedArticle(int id);
+    public List<ContentText> getContentTextList(String id);
+
+    public List<ContentText> getContentTextListHead(String id,int max);
+
+//    public void setSelectedContentText(int id);
 }

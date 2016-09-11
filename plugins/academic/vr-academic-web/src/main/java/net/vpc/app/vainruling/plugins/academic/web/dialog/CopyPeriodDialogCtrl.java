@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.web.dialog;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.web.admin.AcademicAdminToolsCtrl;
@@ -42,7 +42,7 @@ public class CopyPeriodDialogCtrl {
     private Model model = new Model();
 
     public void openDialog(String config) {
-        openDialog(VrHelper.parseJSONObject(config, Config.class));
+        openDialog(VrUtils.parseJSONObject(config, Config.class));
     }
 
     public void openDialog(Config config) {

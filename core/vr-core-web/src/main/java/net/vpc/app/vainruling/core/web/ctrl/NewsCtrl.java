@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.Vr;
@@ -28,12 +28,12 @@ public class NewsCtrl {
         VrMenuManager bean = VrApp.getBean(VrMenuManager.class);
         bean.getModel().setCurrentPageId("news");
         bean.setPageCtrl("news");
-        NewsCtrlCmd newsCtrlCmd = VrHelper.parseJSONObject(cmd, NewsCtrlCmd.class);
+        NewsCtrlCmd newsCtrlCmd = VrUtils.parseJSONObject(cmd, NewsCtrlCmd.class);
         if(newsCtrlCmd!=null) {
             //TODO should check for article access!!
-            Vr.get().setSelectedArticle(newsCtrlCmd.getId());
+            Vr.get().getCmsTextService().setSelectedContentText(newsCtrlCmd.getId());
         }else{
-            Vr.get().setSelectedArticle(-1);
+            Vr.get().getCmsTextService().setSelectedContentText(-1);
 
         }
     }

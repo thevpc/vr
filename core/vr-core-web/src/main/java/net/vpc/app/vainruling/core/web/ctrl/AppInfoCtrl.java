@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Scope;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
+        menu = "/Misc",
         title = "Informations Systeme", css = "fa-dashboard", url = "modules/app-info"
 )
 @Scope(value = "singleton")

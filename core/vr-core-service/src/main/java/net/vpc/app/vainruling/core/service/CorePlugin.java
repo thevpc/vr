@@ -2523,4 +2523,32 @@ public class CorePlugin {
     public void invalidateCache(){
         cacheService.invalidate();
     }
+
+    public String getDefaultUserTheme(){
+        return (String)getOrCreateAppPropertyValue("System.DefaultTheme", null, "");
+    }
+
+    public String getCurrentUserTheme(){
+        UserSession session = UserSession.get();
+        String val=null;
+        if(session!=null && session.getUser()!=null) {
+            val = UPA.getPersistenceUnit().invokePrivileged(new Action<String>() {
+                @Override
+                public String run() {
+                    return (String)getOrCreateAppPropertyValue("System.DefaultTheme", session.getUser().getLogin(), "");
+                }
+            });
+        }
+        return val==null?"":val;
+    }
+
+    public void setCurrentUserTheme(String theme){
+        UserSession session = UserSession.get();
+        if(session!=null && session.getUser()!=null){
+            setAppProperty("System.DefaultTheme", session.getUser().getLogin(), theme);
+        }
+    }
+
+
+
 }

@@ -15,10 +15,11 @@ import net.vpc.app.vainruling.core.service.stats.KPI;
 import net.vpc.app.vainruling.core.service.stats.KPIGroupBy;
 import net.vpc.app.vainruling.core.service.stats.KPIProcessProcessor;
 import net.vpc.app.vainruling.core.service.stats.KPIResult;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.academic.service.helper.AcademicConversionTableHelper;
 import net.vpc.app.vainruling.plugins.academic.service.helper.CopyAcademicDataHelper;
 import net.vpc.app.vainruling.plugins.academic.service.helper.TeacherGenerationHelper;
+import net.vpc.app.vainruling.plugins.academic.service.helper.XlsxLoadImporter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.history.*;
@@ -40,9 +41,7 @@ import net.vpc.upa.*;
 import net.vpc.upa.types.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -113,8 +112,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public void generateTeacherAssignementDocumentsFolder(int periodId, String path) {
         for (AcademicCourseAssignment a : findAcademicCourseAssignments(periodId)) {
             if (a.getTeacher() != null && a.getTeacher().getContact() != null) {
-                String n = VrHelper.toValideFileName(a.getTeacher().getContact().getFullName());
-                String c = VrHelper.toValideFileName(a.getFullName());
+                String n = VrUtils.toValidFileName(a.getTeacher().getContact().getFullName());
+                String c = VrUtils.toValidFileName(a.getFullName());
                 VFile r = core.getFileSystem().get(path + "/" + n + "/" + c);
                 r.mkdirs();
             }
@@ -1366,14 +1365,14 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public void importStudent(int periodId, AcademicStudentImport s) throws IOException {
         XlsxLoadImporter i = new XlsxLoadImporter();
         XlsxLoadImporter.ImportStudentContext ctx = new XlsxLoadImporter.ImportStudentContext();
-        ctx.mainPeriod = core.findPeriodOrMain(periodId);
+        ctx.setMainPeriod(core.findPeriodOrMain(periodId));
         i.importStudent(s, ctx);
     }
 
     public void importTeacher(int periodId, AcademicTeacherImport t) throws IOException {
         XlsxLoadImporter i = new XlsxLoadImporter();
         XlsxLoadImporter.ImportTeacherContext ctx = new XlsxLoadImporter.ImportTeacherContext();
-        ctx.mainPeriod = core.findPeriodOrMain(periodId);
+        ctx.setMainPeriod(core.findPeriodOrMain(periodId));
         i.importTeacher(t, ctx);
     }
 
@@ -2493,7 +2492,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     ok.add(cn[1]);
                 }
             } else {
-                ok.add(VrHelper.getValidString(locale, t.getName(), t.getName2(), t.getName3()));
+                ok.add(VrUtils.getValidString(locale, t.getName(), t.getName2(), t.getName3()));
             }
         }
         return ok;
@@ -3401,8 +3400,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
     }
 
-    public void generateTeachingLoad(int periodId, CourseAssignmentFilter courseAssignmentFilter, String version0) throws IOException {
-        teacherGenerationHelper.generateTeachingLoad(periodId, courseAssignmentFilter, version0);
+    public void generateTeachingLoad(int periodId, CourseAssignmentFilter courseAssignmentFilter, String version0, String oldVersion) throws IOException {
+        teacherGenerationHelper.generateTeachingLoad(periodId, courseAssignmentFilter, version0,oldVersion);
     }
 
     public Record getAppDepartmentPeriodRecord(int periodId, int departmentId) {
@@ -4462,4 +4461,5 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //            Logger.getLogger(AcademicPlugin.class.getName()).log(Level.SEVERE, null, ex);
 //        }
 //    }
+
 }

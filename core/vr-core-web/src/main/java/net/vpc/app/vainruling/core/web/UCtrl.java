@@ -30,6 +30,8 @@ public @interface UCtrl {
 
     String title() default "";
 
+    String subTitle() default "";
+
     String url() default "";
 
     String menu() default "";

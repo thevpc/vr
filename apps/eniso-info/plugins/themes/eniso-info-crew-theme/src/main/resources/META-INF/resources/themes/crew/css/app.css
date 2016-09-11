@@ -302,6 +302,10 @@
     color: var(--vr-color-main16);
     font-weight: bold;
     text-shadow: none;
+
+    background: none;
+    border-width: 0px;
+
 }
 
 .vr-cnx-nbr {
@@ -614,6 +618,8 @@ button.vr-toolbox-button > span.ui-button-text {
     border: none;
     border-width: 0px;
     border-style: none;
+    background: none;
+    padding: 0;
 }
 
 /*h2.logo-text {
@@ -930,3 +936,8 @@ span.ui-column-title {
 .vr-form-sub-row {
 
 }
+
+.ui-widget, .ui-widget .ui-widget {
+    font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+}
+

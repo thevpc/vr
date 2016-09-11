@@ -32,9 +32,11 @@ and open the template in the editor.
                     <p:separator/>
 
                     <p:commandButton value="Générer" actionListener="#{createIntershipsActionCtrl.save}"
+                                     styleClass="btn btn-primary"
                                      style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"
                                      disabled="#{createIntershipsActionCtrl.model.disabled}"/>
                     <p:commandButton value="Fermer"
+                                     styleClass="btn btn-default"
                                      actionListener="#{createIntershipsActionCtrl.fireEventExtraDialogClosed}"
                                      style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
                 </h:form>

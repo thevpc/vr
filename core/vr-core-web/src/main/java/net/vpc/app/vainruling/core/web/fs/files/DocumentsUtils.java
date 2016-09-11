@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.core.web.fs.files;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.common.streams.PathInfo;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VirtualFileSystem;
@@ -59,7 +59,7 @@ public class DocumentsUtils {
 
     public static String evalVFileDesc(VFile file) {
         if (file.isFile()) {
-            return VrHelper.formatFileSize(file.length());
+            return VrUtils.formatFileSize(file.length());
         }
         if (file.isDirectory()) {
             VFile[] files = file.listFiles();

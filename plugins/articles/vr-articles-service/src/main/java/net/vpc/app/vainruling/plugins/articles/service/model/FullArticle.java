@@ -89,6 +89,11 @@ public class FullArticle implements ContentText{
     }
 
     @Override
+    public String getCategory() {
+        return articlesItem.getDisposition()==null?null:articlesItem.getDisposition().getName();
+    }
+
+    @Override
     public String getImageURL() {
         return articlesItem.getImageURL();
     }

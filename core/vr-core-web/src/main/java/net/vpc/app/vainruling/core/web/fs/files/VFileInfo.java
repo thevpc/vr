@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web.fs.files;
 
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.common.vfs.VFile;
 
 import java.util.Date;
@@ -53,7 +53,7 @@ public class VFileInfo implements Comparable<VFileInfo> {
 
     public String lengthDesc() {
         if (file.isFile()) {
-            return VrHelper.formatFileSize(file.length());
+            return VrUtils.formatFileSize(file.length());
         }
         if (file.isDirectory()) {
             VFile[] files = file.listFiles();

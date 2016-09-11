@@ -9,7 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
@@ -44,7 +44,7 @@ public class SendExternalMailActionCtrl {
     private PropertyViewManager propertyViewManager;
 
     public void openDialog(String config) {
-        openDialog(VrHelper.parseJSONObject(config, Config.class));
+        openDialog(VrUtils.parseJSONObject(config, Config.class));
     }
 
     public void openDialog(Config config) {
@@ -90,7 +90,7 @@ public class SendExternalMailActionCtrl {
 //            public void run() {
         try {
             ArticlesItem obj = (ArticlesItem) VrApp.getBean(ObjCtrl.class).getCurrentEntityObject();
-            VrApp.getBean(ArticlesPlugin.class).sendExternalMail(obj, VrHelper.formatJSONObject(c));
+            VrApp.getBean(ArticlesPlugin.class).sendExternalMail(obj, VrUtils.formatJSONObject(c));
         } catch (Exception e) {
             FacesUtils.addErrorMessage(e.getMessage());
             e.printStackTrace();

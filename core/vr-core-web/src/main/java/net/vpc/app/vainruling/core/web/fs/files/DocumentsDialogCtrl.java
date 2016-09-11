@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.core.web.fs.files;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.common.strings.StringUtils;
@@ -35,7 +35,7 @@ public class DocumentsDialogCtrl {
     private Model model = new Model();
 
     public void openDialog(String config) {
-        openDialog(VrHelper.parseJSONObject(config, Config.class));
+        openDialog(VrUtils.parseJSONObject(config, Config.class));
     }
 
     public void openDialog(Config config) {

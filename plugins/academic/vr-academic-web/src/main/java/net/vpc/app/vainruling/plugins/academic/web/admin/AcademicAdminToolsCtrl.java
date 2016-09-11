@@ -9,11 +9,10 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.vfs.VFS;
 import net.vpc.upa.UPA;
@@ -44,10 +43,10 @@ public class AcademicAdminToolsCtrl {
         return model;
     }
 
-    public void generateTeachingLoad(int periodId, String version) {
+    public void generateTeachingLoad(int periodId, String version, String oldVersion) {
         try {
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-            p.generateTeachingLoad(periodId, null, version);
+            p.generateTeachingLoad(periodId, null, version,oldVersion);
             FacesUtils.addInfoMessage("Successful Operation");
         } catch (Exception ex) {
             Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);
@@ -59,7 +58,7 @@ public class AcademicAdminToolsCtrl {
     public void handleTeachingLoadFileUpload(FileUploadEvent event) {
         try {
             String p = VrApp.getBean(CorePlugin.class).getNativeFileSystemPath()
-                    + CorePlugin.PATH_TEMP + "/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+                    + CorePlugin.PATH_TEMP + "/Import/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
                     + "-" + UserSession.getCurrentUser().getLogin();
             new File(p).mkdirs();
             File f = new File(p, event.getFile().getFileName());

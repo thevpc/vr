@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Scope;
 @UCtrl(
         title = "Changer Utilisateur",
         url = "modules/admin/impersonate",
-        menu = "/Admin",
+        menu = "/Admin/Security",
         securityKey = "Custom.Admin.Impersonate"
 )
 @Scope(value = "singleton")

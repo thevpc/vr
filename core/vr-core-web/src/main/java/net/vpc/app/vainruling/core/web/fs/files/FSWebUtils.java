@@ -9,7 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.common.vfs.VFS;
 import net.vpc.common.vfs.VFile;
@@ -75,7 +75,7 @@ public class FSWebUtils {
     }
 
     public VFile handleFileUploadEvent(FileUploadEvent event) throws Exception {
-        String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+        String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
                 + "-" + UserSession.getCurrentUser().getLogin();
         CorePlugin fsp = VrApp.getBean(CorePlugin.class);
         String p = fsp.getNativeFileSystemPath() + tempPath;

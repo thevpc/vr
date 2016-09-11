@@ -12,12 +12,14 @@ public class BreadcrumbItem {
 
     private boolean active;
     private String title;
+    private String subTitle;
     private String css;
     private String ctrl;
     private String cmd;
 
-    public BreadcrumbItem(String title, String className, String ctrl, String cmd) {
+    public BreadcrumbItem(String title, String subTitle, String className, String ctrl, String cmd) {
         this.title = title;
+        this.subTitle = subTitle;
         this.css = className;
         this.ctrl = ctrl == null ? "" : ctrl;
         this.cmd = cmd == null ? "" : cmd;
@@ -64,4 +66,11 @@ public class BreadcrumbItem {
         this.ctrl = ctrl;
     }
 
+    public String getSubTitle() {
+        return subTitle;
+    }
+
+    public void setSubTitle(String subTitle) {
+        this.subTitle = subTitle;
+    }
 }

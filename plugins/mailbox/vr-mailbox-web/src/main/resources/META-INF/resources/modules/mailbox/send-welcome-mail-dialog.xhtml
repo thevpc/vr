@@ -33,11 +33,13 @@ and open the template in the editor.
                         </p:selectOneRadio>
 
                         <p:commandButton id="btn_start" value="Commencer"
+                                         styleClass="btn btn-primary"
                                          actionListener="#{sendWelcomeMailActionCtrl.startExec}"
                                          style="margin-right: 5px;" onclick="if (true) {
                                                  return true;
                                              }" update="messages1"/>
                         <p:commandButton value="Fermer"
+                                         styleClass="btn btn-default"
                                          actionListener="#{sendWelcomeMailActionCtrl.fireEventExtraDialogClosed}"
                                          style="margin-left: 20px;margin-right: 20px;"/>
                     </h:panelGrid>

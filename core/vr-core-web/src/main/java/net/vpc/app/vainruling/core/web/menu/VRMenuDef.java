@@ -28,14 +28,39 @@ public class VRMenuDef {
     private String securityKey;
     private String icon;
     private List<VRMenuDef> children;
+    private List<VRMenuLabel> labels=new ArrayList<>();
 
-    public VRMenuDef(String name, String path, String type, String command, String securityKey, String icon) {
+    public VRMenuDef(String name, String path, String type, String command, String securityKey, String icon,VRMenuLabel[] labels) {
         this.name = name;
         this.path = path;
         this.type = type;
         this.command = command;
         this.securityKey = securityKey;
         this.icon = icon;
+        if(labels!=null){
+            for (VRMenuLabel label : labels) {
+                if(label!=null){
+                    this.labels.add(label);
+                }
+            }
+        }
+        //should get labels for the current session
+//        int r=(int)(Math.random()*4);
+//        for (int i = 0; i < r; i++) {
+//            String stype=VrApp.getBean(Vr.class).randomize("success","warn","info","severe");
+//            String sval=VrApp.getBean(Vr.class).randomize("new","12","3..","(+)"
+//                    ,String.valueOf((int)(Math.random()*100))
+//                    ,String.valueOf((int)(Math.random()*100))
+//                    ,String.valueOf((int)(Math.random()*100))
+//                    ,String.valueOf((int)(Math.random()*100))
+//                    ,String.valueOf((int)(Math.random()*100))
+//                    );
+//            labels.add(new VRMenuLabel(sval,stype));
+//        }
+    }
+
+    public List<VRMenuLabel> getLabels() {
+        return labels;
     }
 
     public String getPrettyURL() {
@@ -79,6 +104,14 @@ public class VRMenuDef {
             }
         }
         return all;
+    }
+
+    public boolean isGroup() {
+        return getType().equals("package");
+    }
+
+    public boolean isLeaf() {
+        return !getType().equals("package");
     }
 
     public List<VRMenuDef> getGroups() {

@@ -19,7 +19,8 @@ import java.util.logging.Logger;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "Changer Mot de passe", css = "fa-dashboard", url = "modules/admin/passwd",
+        title = "Changer Mot de passe", css = "fa-dashboard", url = "modules/config/passwd",
+        menu = "/Config",
         securityKey = "Custom.Admin.Passwd"
 )
 public class PasswdCtrl {
@@ -32,7 +33,7 @@ public class PasswdCtrl {
         return model;
     }
 
-    public void changePassword() {
+    public void onChangePassword() {
         try {
             final CorePlugin t = VrApp.getBean(CorePlugin.class);
             String s1 = getModel().getPassword1();

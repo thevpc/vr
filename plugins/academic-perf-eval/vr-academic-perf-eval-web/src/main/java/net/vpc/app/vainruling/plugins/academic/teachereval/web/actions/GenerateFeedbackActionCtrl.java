@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.teachereval.web.actions;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.common.strings.StringUtils;
@@ -30,7 +30,7 @@ public class GenerateFeedbackActionCtrl {
     private Model model = new Model();
 
     public void openDialog(String config) {
-        openDialog(VrHelper.parseJSONObject(config, Config.class));
+        openDialog(VrUtils.parseJSONObject(config, Config.class));
     }
 
     public void openDialog(Config config) {

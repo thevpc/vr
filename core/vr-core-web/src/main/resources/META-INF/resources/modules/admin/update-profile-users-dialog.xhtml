@@ -38,9 +38,12 @@ and open the template in the editor.
 
                     <p:separator/>
 
-                    <p:commandButton value="Enregistrer" actionListener="#{updateProfileUsersActionCtrl.save}"
+                    <p:commandButton value="Enregistrer"
+                                     styleClass="btn btn-primary"
+                                     actionListener="#{updateProfileUsersActionCtrl.save}"
                                      style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
                     <p:commandButton value="Fermer"
+                                     styleClass="btn btn-default"
                                      actionListener="#{updateProfileRightsActionCtrl.fireEventExtraDialogClosed}"
                                      style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
                 </h:form>

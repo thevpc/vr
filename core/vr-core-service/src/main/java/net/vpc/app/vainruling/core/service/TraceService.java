@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.core.service;
 import net.vpc.app.vainruling.core.service.model.AppTrace;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.*;
 import net.vpc.upa.bulk.DataWriter;
@@ -209,8 +209,8 @@ public class TraceService {
             @Override
             public void run() {
                 Entity entity = pu.getEntity(AppTrace.class);
-                String message2 = VrHelper.strcut(message, entity, "message");
-                String data2 = VrHelper.strcut(data, entity, "data");
+                String message2 = VrUtils.strcut(message, entity, "message");
+                String data2 = VrUtils.strcut(data, entity, "data");
                 pu.persist(new AppTrace(message2, data2, module,
                         new Timestamp(System.currentTimeMillis()),
                         user,

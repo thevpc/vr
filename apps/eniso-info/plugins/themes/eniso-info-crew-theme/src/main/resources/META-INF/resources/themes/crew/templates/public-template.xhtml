@@ -11,7 +11,7 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
 >
 <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
-<head>
+<h:head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <title>Eniso.info</title>
@@ -219,8 +219,8 @@ and open the template in the editor.
 
         });
     </script>
-</head>
-<body>
+</h:head>
+<h:body>
 <h:form>
     <header role="banner" id="fh5co-header">
         <div class="container">
@@ -244,7 +244,11 @@ and open the template in the editor.
                         <li><a href="#" data-nav-section="testimonials"><span>Testimonials</span></a></li>
                         <li><a href="#" data-nav-section="courses"><span>Studies</span></a></li>
                         <li><a href="#" data-nav-section="press"><span>Press</span></a></li>
-                        <li><h:commandLink action="#{vr.gotoPage('login', '')}"><span>Login</span></h:commandLink></li>
+                        <li>
+                            <h:commandLink rendered="#{!vr.userSession.connected}" action="#{vr.gotoPage('login', '')}"><span>Login</span></h:commandLink>
+                            <h:commandLink rendered="#{vr.userSession.connected}"
+                                           action="#{vr.gotoPage('welcome', '')}"><span>Welcome</span></h:commandLink>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -255,8 +259,8 @@ and open the template in the editor.
     <div id="slider" data-section="home">
         <div class="owl-carousel owl-carousel-fullwidth">
             <!-- You may change the background color here. -->
-            #{vr.loadArticles('Main.Row1')}
-            <ui:repeat value="#{vr.getArticlesList('Main.Row1')}" var="listItem">
+            #{vr.cmsTextService.loadContentTexts('Showcase')}
+            <ui:repeat value="#{vr.cmsTextService.getContentTextListHead('Showcase',12)}" var="listItem">
                 <h:panelGroup layout="block"
                               rendered="#{!vr.isEmpty(listItem.imageURL) and vr.hashToMax(listItem.id,2) eq 0}">
                     <div class="item"
@@ -268,11 +272,17 @@ and open the template in the editor.
                                         <div class="fh5co-owl-text">
                                             <h1 class="fh5co-lead to-animate">#{vr.strcut(vr.html2txt(listItem.subject),500)}</h1>
                                             <p>#{vr.strcut(vr.html2txt(listItem.content),500)}</p>
-                                            <h2 class="fh5co-sub-lead to-animate"><a href="http://freehtml5.co/"
-                                                                                     target="_blank"></a></h2>
-                                            <p class="to-animate-2"><a href="#"
-                                                                       class="btn btn-primary btn-lg">More Information</a>
-                                            </p>
+                                            <p:outputPanel rendered="#{listItem.attachments.size() ne 0}">
+                                                <ui:repeat value="#{listItem.attachments}" var="att">
+                                                    <p class="to-animate-2">
+                                                        <h:outputLink
+                                                                value="#{vr.url(att.path)}"
+                                                                target="_blank"
+                                                                class="#{(att.style eq null or att.style eq '')?'btn btn-primary btn-lg':att.style}"><h:outputText
+                                                                value="#{att.name}"/></h:outputLink>
+                                                    </p>
+                                                </ui:repeat>
+                                            </p:outputPanel>
                                         </div>
                                     </div>
                                 </div>
@@ -300,11 +310,17 @@ and open the template in the editor.
                                         <div class="fh5co-owl-text">
                                             <h1 class="fh5co-lead to-animate">#{vr.strcut(vr.html2txt(listItem.subject),500)}</h1>
                                             <p>#{vr.strcut(vr.html2txt(listItem.content),500)}</p>
-                                            <h2 class="fh5co-sub-lead to-animate"><a href="http://freehtml5.co/"
-                                                                                     target="_blank"></a></h2>
-                                            <p class="to-animate-2"><a href="#"
-                                                                       class="btn btn-primary btn-lg">More Information</a>
-                                            </p>
+                                            <p:outputPanel rendered="#{listItem.attachments.size() ne 0}">
+                                                <ui:repeat value="#{listItem.attachments}" var="att">
+                                                    <p class="to-animate-2">
+                                                        <h:outputLink
+                                                                value="#{vr.url(att.path)}"
+                                                                target="_blank"
+                                                                class="#{(att.style eq null or att.style eq '')?'btn btn-primary btn-lg':att.style}"><h:outputText
+                                                                value="#{att.name}"/></h:outputLink>
+                                                    </p>
+                                                </ui:repeat>
+                                            </p:outputPanel>
                                         </div>
                                     </div>
                                 </div>
@@ -331,13 +347,18 @@ and open the template in the editor.
                                         <div class="fh5co-owl-text">
                                             <h1 class="fh5co-lead to-animate">#{vr.strcut(vr.html2txt(listItem.subject),500)}</h1>
                                             <p>#{vr.strcut(vr.html2txt(listItem.content),500)}</p>
-                                            <h2 class="fh5co-sub-lead to-animate"><a href="http://freehtml5.co/"
-                                                                                     target="_blank"></a></h2>
-                                            <p class="to-animate-2"><a
-                                                    href="http://www.eniso.rnu.tn/fr/index.php"
-                                                    target="_blank"
-                                                    class="btn btn-primary btn-lg">Original Website</a>
-                                            </p>
+                                            <p:outputPanel rendered="#{listItem.attachments.size() ne 0}">
+                                                <ui:repeat value="#{listItem.attachments}" var="att">
+                                                    <p class="to-animate-2">
+                                                        <h:outputLink
+                                                                value="#{vr.url(att.path)}"
+                                                                target="_blank"
+                                                                class="#{(att.style eq null or att.style eq '')?'btn btn-primary btn-lg':att.style}"><h:outputText
+                                                                value="#{att.name}"/></h:outputLink>
+                                                    </p>
+                                                </ui:repeat>
+                                            </p:outputPanel>
+
                                         </div>
                                     </div>
                                 </div>
@@ -358,23 +379,16 @@ and open the template in the editor.
                 <div class="col-md-12 section-heading text-center">
                     <h2 class="to-animate">About Us</h2>
                     <div class="row">
-                        #{vr.loadArticles('Main.Row2')}
-                        <ui:repeat
-                                value="#{vr.splitListBy(1,vr.getArticlesList('Main.Row2'))}"
-                                var="list">
-                            <div class="col-md-8 col-md-offset-2 to-animate">
-                                <ui:repeat value="#{list}" var="listItem">
-                                    <h3>#{listItem.subject}</h3>
-                                </ui:repeat>
-                            </div>
-                        </ui:repeat>
+                        <div class="col-md-8 col-md-offset-2 to-animate">
+                            <h3>Computer Engineering Department, for a better future...</h3>
+                        </div>
                     </div>
                 </div>
-                #{vr.loadArticles('Main.Row3')}
+                #{vr.cmsTextService.loadContentTexts('About')}
                 <ui:repeat
-                        value="#{vr.splitListBy(1,vr.getArticlesList('Main.Row3'))}"
-                        var="list">
-                    <ui:repeat value="#{list}" var="listItem">
+                        value="#{vr.cmsTextService.getContentTextListHead('About',3)}"
+                        var="listItem">
+                    <div class="row">
                         <div class="col-md-8 to-animate">
                             <a class="fancybox" href="#{vr.url(listItem.imageURL)}"
                                data-fancybox-group="gallery"><img src="#{vr.url(listItem.imageURL)}"
@@ -384,20 +398,38 @@ and open the template in the editor.
                         <div class="col-md-4 to-animate">
                             <h2>#{listItem.subject}</h2>
                             <p>#{vr.strcut(vr.html2txt(listItem.content),200)}</p>
-                            <p><a href="#" class="btn btn-primary">Read the whole article</a></p>
+                            <h:panelGroup layout="bloc" rendered="#{vr.html2txt(listItem.content).length() gt 200}">
+                                <p><a href="#" class="btn btn-primary">Read the whole article</a></p>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block" rendered="#{listItem.attachments.size() ne 0}">
+                                <ui:repeat value="#{listItem.attachments}" var="att">
+                                    <p class="to-animate-2">
+                                        <h:outputLink
+                                                value="#{vr.url(att.path)}"
+                                                target="_blank"
+                                                class="#{(att.style eq null or att.style eq '')?'btn btn-primary':att.style}"><h:outputText
+                                                value="#{att.name}"/></h:outputLink>
+                                    </p>
+                                </ui:repeat>
+                            </h:panelGroup>
                         </div>
-                    </ui:repeat>
+                    </div>
                 </ui:repeat>
             </div>
             <div class="row" id="team">
                 <div class="col-md-12 section-heading text-center to-animate">
                     <h2>Team</h2>
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2 to-animate">
+                            <h3>Department Heading Team</h3>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-12">
                     <div class="row row-bottom-padded-lg">
-                        #{articlesCtrl.loadArticles('Main.Row4')}
+                        #{vr.cmsTextService.loadContentTexts('People.Heading')}
                         <ui:repeat
-                                value="#{vr.splitListBy(3,vr.getArticlesList('Main.Row4'))}"
+                                value="#{vr.splitListBy(3,vr.cmsTextService.getContentTextListHead('People.Heading',6))}"
                                 var="list">
                             <div class="col-md-4 text-center to-animate">
                                 <ui:repeat value="#{list}" var="listItem">
@@ -427,26 +459,20 @@ and open the template in the editor.
     <div id="fh5co-our-services" data-section="news">
         <div class="container">
             <div class="row row-bottom-padded-sm">
-                #{vr.loadArticles('Activities')}
-                <ui:repeat
-                        value="#{vr.getArticlesListHead('Activities',5)}"
-                        var="listItem">
-                    <div class="col-md-12 section-heading text-center">
-                        <h2 class="to-animate">Activities</h2>
-                        <div class="row">
-                            <div class="col-md-8 col-md-offset-2 to-animate">
-                                <h3>#{listItem.subject}</h3>
-                                <p>#{vr.strcut(vr.html2txt(listItem.content),200)}</p>
-                            </div>
+                <div class="col-md-12 section-heading text-center">
+                    <h2 class="to-animate">Activities</h2>
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2 to-animate">
+                            <h3>Events, Contests, Exhibitions</h3>
+                            <p>we are proud to organize and/or be part of...</p>
                         </div>
                     </div>
-                </ui:repeat>
+                </div>
             </div>
             <div class="row">
-                #{vr.loadArticles('Main.Row6')}
-                <!--value="# {vr.groupListBy(vr.getArticlesList('Main.Row4').size()/3,vr.getArticlesList('Main.Row4'))}"-->
+                #{vr.cmsTextService.loadContentTexts('Activities')}
                 <ui:repeat
-                        value="#{vr.splitListBy(3,vr.getArticlesList('Main.Row6'))}"
+                        value="#{vr.splitListBy(3,vr.cmsTextService.getContentTextListHead('Activities',6))}"
                         var="list">
                     <div class="col-md-4">
                         <ui:repeat value="#{list}" var="listItem">
@@ -457,6 +483,11 @@ and open the template in the editor.
                                 </div>
                                 <h3>#{listItem.subject}</h3>
                                 <p>#{vr.strcut(vr.html2txt(listItem.content),200)}</p>
+                                <div class="row">
+                                    <div class="col-md-4 col-md-offset-4 single-animate animate-features-3">
+                                        <a href="#" class="btn btn-primary btn-block" style="font-size: xx-small;padding-left: 5px;">Learn More</a>
+                                    </div>
+                                </div>
                             </div>
                         </ui:repeat>
                     </div>
@@ -468,26 +499,19 @@ and open the template in the editor.
     <div id="fh5co-features" data-section="features">
         <div class="container">
             <div class="row">
-                #{articlesCtrl.loadArticles('Main.Row7')}
-                <ui:repeat
-                        value="#{vr.splitListBy(1,vr.getArticlesList('Main.Row7'))}"
-                        var="list">
                     <div class="col-md-12 section-heading text-center">
                         <h2 class="single-animate animate-features-1">Features</h2>
-                        <ui:repeat value="#{list}" var="listItem">
                             <div class="row">
                                 <div class="col-md-8 col-md-offset-2 single-animate animate-features-2">
-                                    <h3>#{listItem.subject}</h3>
+                                    <h3>Featured Events and Announcements</h3>
                                 </div>
                             </div>
-                        </ui:repeat>
                     </div>
-                </ui:repeat>
             </div>
             <div class="row row-bottom-padded-sm">
-                #{articlesCtrl.loadArticles('Main.Row8')}
+                #{vr.cmsTextService.loadContentTexts('Featured')}
                 <ui:repeat
-                        value="#{vr.splitListBy(3,vr.getArticlesList('Main.Row8'))}"
+                        value="#{vr.splitListBy(3,vr.cmsTextService.getContentTextListHead('Featured',6))}"
                         var="list">
                     <div class="col-md-4 col-sm-6 col-xs-6 col-xxs-12 fh5co-service to-animate">
                         <ui:repeat value="#{list}" var="listItem">
@@ -515,7 +539,7 @@ and open the template in the editor.
 
     <div id="fh5co-testimonials" data-section="testimonials">
         <div class="container">
-            #{articlesCtrl.loadArticles('Testimonials')}
+            #{vr.cmsTextService.loadContentTexts('Testimonials')}
             <div class="row">
                 <div class="col-md-12 section-heading text-center">
                     <h2 class="to-animate">Happy People Say...</h2>
@@ -527,7 +551,7 @@ and open the template in the editor.
                 </div>
             </div>
             <ui:repeat
-                    value="#{vr.groupListBy(3,vr.getArticlesListHead('Testimonials',6))}"
+                    value="#{vr.groupListBy(3,vr.cmsTextService.getContentTextListHead('Testimonials',6))}"
                     var="list">
                 <div class="row">
                     <ui:repeat value="#{list}" var="listItem">
@@ -550,19 +574,19 @@ and open the template in the editor.
     <div id="fh5co-pricing" data-section="courses">
         <div class="container">
             <div class="row">
-                    <div class="col-md-12 section-heading text-center">
-                        <h2 class="single-animate animate-pricing-1">Study at ENISo</h2>
-                        <div class="row">
-                            <div class="col-md-8 col-md-offset-2 subtext single-animate animate-pricing-2">
-                                <h3>Graduate and Professional Study, Programs, Admission...</h3>
-                            </div>
+                <div class="col-md-12 section-heading text-center">
+                    <h2 class="single-animate animate-pricing-1">Study at ENISo</h2>
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2 subtext single-animate animate-pricing-2">
+                            <h3>Graduate and Professional Study, Programs, Admission...</h3>
                         </div>
                     </div>
+                </div>
             </div>
             <div class="row">
-                #{vr.loadArticles('Education')}
+                #{vr.cmsTextService.loadContentTexts('Education')}
                 <ui:repeat
-                        value="#{vr.splitListBy(3,vr.getArticlesList('Education'))}"
+                        value="#{vr.splitListBy(3,vr.cmsTextService.getContentTextListHead('Education',6))}"
                         var="list">
                     <div class="col-md-3 col-sm-6 to-animate">
                         <ui:repeat value="#{list}" var="listItem">
@@ -595,9 +619,9 @@ and open the template in the editor.
             </div>
             <div class="row">
                 <!-- Press Item -->
-                #{vr.loadArticles('News')}
+                #{vr.cmsTextService.loadContentTexts('News')}
                 <ui:repeat
-                        value="#{vr.getArticlesListHead('News',4)}"
+                        value="#{vr.cmsTextService.getContentTextListHead('News',4)}"
                         var="listItem">
                     <div class="col-md-6">
                         <div class="fh5co-press-item to-animate">
@@ -605,45 +629,15 @@ and open the template in the editor.
                                  style="background-image: url(#{vr.url(listItem.imageURL)})">
                             </div>
                             <div class="fh5co-press-text">
-                                <h3 class="h2 fh5co-press-title">#{listItem.subject}
+                                <h3 class="h2 fh5co-press-title"
+                                    title="#{listItem.subject}">#{vr.strcut(listItem.subject,25)}
                                     <span class="fh5co-border"></span>
                                 </h3>
                                 <p>#{vr.strcut(vr.html2txt(listItem.content),60)}</p>
-                                <p><a href="#" class="btn btn-primary btn-sm">Learn more</a></p>
-                            </div>
-                        </div>
-                    </div>
-
-                </ui:repeat>
-                <!-- Press Item -->
-            </div>
-            <div class="row">
-                <div class="col-md-12 section-heading text-center">
-                    <h2 class="single-animate animate-press-1">Activities</h2>
-                    <div class="row">
-                        <div class="col-md-8 col-md-offset-2 subtext single-animate animate-press-2">
-                            <h3>Events, Contests, Exhibitions we are proud to organize and/or be part of...</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <!-- Press Item -->
-                #{vr.loadArticles('Activities')}
-                <ui:repeat
-                        value="#{vr.getArticlesListHead('Activities',6)}"
-                        var="listItem">
-                    <div class="col-md-6">
-                        <div class="fh5co-press-item to-animate">
-                            <div class="fh5co-press-img"
-                                 style="background-image: url(#{vr.url(listItem.imageURL)})">
-                            </div>
-                            <div class="fh5co-press-text">
-                                <h3 class="h2 fh5co-press-title">#{listItem.subject}
-                                    <span class="fh5co-border"></span>
-                                </h3>
-                                <p>#{vr.strcut(vr.html2txt(listItem.content),60)}</p>
-                                <p><a href="#" class="btn btn-primary btn-sm">Learn more</a></p>
+                                <p>
+                                    <h:commandLink action="#{vr.gotoPage('news', vr.strFormat('{id=%1}',listItem.id))}"
+                                                   styleClass="btn btn-primary btn-sm">Learn more</h:commandLink>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -656,28 +650,28 @@ and open the template in the editor.
 
 
     <footer id="footer" role="contentinfo">
-        #{vr.loadArticles('Footer')}
+        #{vr.cmsTextService.loadContentTexts('Footer')}
         <div class="container" style="text-align: justify;text-justify: inter-word; font-size: x-small">
             <div class="row">
-                <h:panelGroup layout="block" rendered="#{vr.getArticlesList('Footer').size() gt 0}">
+                <h:panelGroup layout="block" rendered="#{vr.cmsTextService.getContentTextList('Footer').size() gt 0}">
                     <div class="col-md-2">
-                        <h2 style="font-size: small;">#{vr.getArticlesList('Footer')[0].subject}</h2>
-                        <p>#{vr.strcut(vr.html2txt(vr.getArticlesList('Footer')[0].content),20000)}</p>
+                        <h2 style="font-size: small;">#{vr.cmsTextService.getContentTextList('Footer')[0].subject}</h2>
+                        <p>#{vr.strcut(vr.html2txt(vr.cmsTextService.getContentTextList('Footer')[0].content),20000)}</p>
                     </div>
                 </h:panelGroup>
-                <h:panelGroup layout="block" rendered="#{vr.getArticlesList('Footer').size() gt 1}">
+                <h:panelGroup layout="block" rendered="#{vr.cmsTextService.getContentTextList('Footer').size() gt 1}">
                     <div class="col-md-5">
-                        <h2 style="font-size: small;">#{vr.getArticlesList('Footer')[1].subject}</h2>
-                        <p>#{vr.strcut(vr.html2txt(vr.getArticlesList('Footer')[1].content),20000)}</p>
+                        <h2 style="font-size: small;">#{vr.cmsTextService.getContentTextList('Footer')[1].subject}</h2>
+                        <p>#{vr.strcut(vr.html2txt(vr.cmsTextService.getContentTextList('Footer')[1].content),20000)}</p>
                     </div>
                 </h:panelGroup>
-                <h:panelGroup layout="block" rendered="#{vr.getArticlesList('Footer').size() gt 2}">
+                <h:panelGroup layout="block" rendered="#{vr.cmsTextService.getContentTextList('Footer').size() gt 2}">
                     <div class="col-md-3">
-                        <h2 style="font-size: small;">#{vr.getArticlesList('Footer')[2].subject}</h2>
-                        <p>#{vr.strcut(vr.html2txt(vr.getArticlesList('Footer')[2].content),20000)}</p>
+                        <h2 style="font-size: small;">#{vr.cmsTextService.getContentTextList('Footer')[2].subject}</h2>
+                        <p>#{vr.strcut(vr.html2txt(vr.cmsTextService.getContentTextList('Footer')[2].content),20000)}</p>
                     </div>
                 </h:panelGroup>
-                <h:panelGroup layout="block" rendered="#{vr.getArticlesList('Footer').size() ge 2}">
+                <h:panelGroup layout="block" rendered="#{vr.cmsTextService.getContentTextList('Footer').size() ge 2}">
                     <div class="col-md-2">
                         <ul class="footer-links">
                             <li><a href="#">News</a></li>
@@ -771,5 +765,5 @@ and open the template in the editor.
     <!-- Main JS (Do not remove) -->
     <script src="#{vr.themeContext}/wplugins/crew/js/main.js"></script>
 </h:form>
-</body>
+</h:body>
 </html>

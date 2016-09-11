@@ -6,17 +6,23 @@
 package net.vpc.app.vainruling.plugins.tasks.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.content.ContentText;
+import net.vpc.app.vainruling.core.service.content.TaskTextService;
 import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDefFactory;
+import net.vpc.app.vainruling.core.web.menu.VRMenuLabel;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
 import net.vpc.app.vainruling.plugins.tasks.service.model.*;
 import net.vpc.common.strings.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
@@ -30,7 +36,8 @@ import java.util.List;
                 @UPathItem(title = "Todo", css = "fa-dashboard", ctrl = "")
         }, css = "fa-table", title = "Listes", url = "modules/todo/todos"
 )
-public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFactory, UCtrlProvider {
+@Scope("singleton")
+public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFactory, UCtrlProvider, TaskTextService{
 
     @Autowired
     private TaskPlugin todoService;
@@ -38,11 +45,11 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
     private CorePlugin coreService;
 
     public TodoCtrl() {
-        super(new PModel());
+        super(null);
     }
 
-    public PModel getModel() {
-        return (PModel) super.getModel();
+    public TodoModel getModel() {
+        return (TodoModel) VrApp.getBean(TodoModel.class);
     }
 
     public List<TodoList> findMyActions() {
@@ -202,10 +209,10 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
         }
         TodoList list = todoService.findTodoList(getModel().getListName());
         int currentListId = list.getId();
-        getModel().setTodo(todoService.findTodosByResponsible(currentListId, null, TodoStatusType.UNASSIGNED));
-        getModel().setInProgress(todoService.findTodosByResponsible(currentListId, null, TodoStatusType.ASSIGNED));
-        getModel().setToVerify(todoService.findTodosByResponsible(currentListId, null, TodoStatusType.TO_VERIFY));
-        getModel().setDone(todoService.findTodosByResponsible(currentListId, null, TodoStatusType.DONE));
+        getModel().setTodo(todoService.findTodosByResponsible(currentListId, null, new TodoStatusType[]{TodoStatusType.UNASSIGNED}));
+        getModel().setInProgress(todoService.findTodosByResponsible(currentListId, null, new TodoStatusType[]{TodoStatusType.ASSIGNED}));
+        getModel().setToVerify(todoService.findTodosByResponsible(currentListId, null, new TodoStatusType[]{TodoStatusType.TO_VERIFY}));
+        getModel().setDone(todoService.findTodosByResponsible(currentListId, null, new TodoStatusType[]{TodoStatusType.DONE}));
 
         getModel().setStatuses(todoService.findTodoStatuses(currentListId));
         ArrayList<SelectItem> st = new ArrayList<SelectItem>();
@@ -228,8 +235,19 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
     public List<VRMenuDef> createVRMenuDefList() {
         List<VRMenuDef> ok = new ArrayList<>();
         for (TodoList findTodoListsByResp : todoService.findTodoListsByResp(null)) {
+            AppUser user = UserSession.get().getUser();
+            int count=user==null?0:todoService.findTodosByResponsible(findTodoListsByResp.getId(),
+                    user.getId(),
+                    new TodoStatusType[]{
+                        TodoStatusType.ASSIGNED,
+                        TodoStatusType.TO_VERIFY,
+                    }
+                    ).size();
             final VRMenuDef vrMenuDef = new VRMenuDef(findTodoListsByResp.getName(), "/Todo", "todo", findTodoListsByResp.getName(),
-                    "Custom.Todo." + findTodoListsByResp.getName(), ""
+                    "Custom.Todo." + findTodoListsByResp.getName(), "",
+                    new VRMenuLabel[]{
+                        new VRMenuLabel(String.valueOf(count),"severe")
+                    }
             );
 //            vrMenuDef.
             ok.add(vrMenuDef);
@@ -255,165 +273,32 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
         d.setTitle(title);
         d.setSecurityKey("Custom.Todo." + listName);
         List<BreadcrumbItem> items = new ArrayList<>();
-        items.add(new BreadcrumbItem("Todo", "fa-dashboard", "", ""));
+        items.add(new BreadcrumbItem("Todo","Mes taches à faire","fa-dashboard", "", ""));
         d.setBreadcrumb(items.toArray(new BreadcrumbItem[items.size()]));
         return d;
     }
 
-    public static class PModel extends Model<Todo> {
-
-        private String listName = TodoList.LABO_ACTION;
-        private String title = "Titre";
-        private List<Todo> todo = new ArrayList<>();
-        private List<Todo> inProgress = new ArrayList<>();
-        private List<Todo> toVerify = new ArrayList<>();
-        private List<Todo> done = new ArrayList<>();
-        //        private List<Stat> statuses = new ArrayList<>();
-        private List<TodoStatus> statuses = new ArrayList<>();
-        private List<TodoCategory> categories = new ArrayList<>();
-        private List<SelectItem> statusItems = new ArrayList<>();
-        private List<SelectItem> categoryItems = new ArrayList<>();
-        private Integer currentCategoryId;
-        private Integer currentStatusId;
-
-        public PModel() {
-            setCurrent(new Todo());
-        }
-
-        public List<TodoStatus> getStatuses() {
-            return statuses;
-        }
-
-        public void setStatuses(List<TodoStatus> statuses) {
-            this.statuses = statuses;
-        }
-
-        public List<TodoCategory> getCategories() {
-            return categories;
-        }
-
-        public void setCategories(List<TodoCategory> categories) {
-            this.categories = categories;
-        }
-
-        public Integer getCurrentCategoryId() {
-            return currentCategoryId;
-        }
-
-        public void setCurrentCategoryId(Integer currentCategoryId) {
-            this.currentCategoryId = currentCategoryId;
-            if (getCurrent() != null) {
-                if (currentCategoryId == null) {
-                    getCurrent().setCategory(null);
-                } else {
-                    for (TodoCategory category : getCategories()) {
-                        if (category.getId() == currentCategoryId) {
-                            getCurrent().setCategory(category);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        public Integer getCurrentStatusId() {
-            return currentStatusId;
-        }
-
-        public void setCurrentStatusId(Integer currentStatusId) {
-            this.currentStatusId = currentStatusId;
-            if (getCurrent() != null) {
-                if (currentStatusId == null) {
-                    getCurrent().setStatus(null);
-                } else {
-                    for (TodoStatus status : getStatuses()) {
-                        if (status.getId() == currentStatusId) {
-                            getCurrent().setStatus(status);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        public List<SelectItem> getStatusItems() {
-            return statusItems;
-        }
-
-        public void setStatusItems(List<SelectItem> statusItems) {
-            this.statusItems = statusItems;
-        }
-
-        public List<SelectItem> getCategoryItems() {
-            return categoryItems;
-        }
-
-        public void setCategoryItems(List<SelectItem> categories) {
-            this.categoryItems = categories;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public String getListName() {
-            return listName;
-        }
-
-        public void setListName(String listName) {
-            this.listName = listName;
-        }
-
-        @Override
-        public Todo getCurrent() {
-            return super.getCurrent();
-        }
-
-        @Override
-        public void setCurrent(Todo current) {
-            super.setCurrent(current);
-            TodoCategory c = current.getCategory();
-            this.currentCategoryId = c == null ? null : c.getId();
-            TodoStatus s = current.getStatus();
-            this.currentStatusId = s == null ? null : s.getId();
-        }
-
-        public List<Todo> getTodo() {
-            return todo;
-        }
-
-        public void setTodo(List<Todo> todo) {
-            this.todo = todo;
-        }
-
-        public List<Todo> getInProgress() {
-            return inProgress;
-        }
-
-        public void setInProgress(List<Todo> inProgress) {
-            this.inProgress = inProgress;
-        }
-
-        public List<Todo> getToVerify() {
-            return toVerify;
-        }
-
-        public void setToVerify(List<Todo> toVerify) {
-            this.toVerify = toVerify;
-        }
-
-        public List<Todo> getDone() {
-            return done;
-        }
-
-        public void setDone(List<Todo> done) {
-            this.done = done;
-        }
-
+    @Override
+    public void loadContentTexts(String name) {
+        reloadPage(null,true);
     }
 
+    @Override
+    public List<ContentText> getContentTextList(String id) {
+        return (List)getModel().getTodoText();
+    }
+
+    public List<ContentText> getContentTextListHead(String id, int max) {
+        List<ContentText> list = getContentTextList(id);
+        if (list.size() > max) {
+            return list.subList(0, max);
+        }
+        return list;
+    }
+
+    @Override
+    public int getActiveCount() {
+        List<ContentText> contentTextList = getContentTextList(null);
+        return contentTextList==null?0:contentTextList.size();
+    }
 }

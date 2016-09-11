@@ -16,7 +16,11 @@ public abstract class BasePageCtrl extends BaseCtrl {
 
     public BreadcrumbItem getTitle() {
         UCtrl c = (UCtrl) PlatformReflector.getTargetClass(this).getAnnotation(UCtrl.class);
-        return new BreadcrumbItem(c == null ? "" : c.title(), c == null ? "" : c.css(), "", "");
+        return new BreadcrumbItem(c == null ? "" : c.title()
+                , c == null ? "" : c.subTitle()
+                , c == null ? "" : c.css()
+                , ""
+                , "");
     }
 
 }

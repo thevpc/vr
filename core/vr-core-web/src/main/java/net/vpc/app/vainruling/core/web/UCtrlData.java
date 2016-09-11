@@ -13,6 +13,7 @@ import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 public class UCtrlData {
 
     private String title;
+    private String subTitle;
 
     private String url;
     private String securityKey;
@@ -24,8 +25,9 @@ public class UCtrlData {
     public UCtrlData() {
     }
 
-    public UCtrlData(String title, String url, String css, String securityKey, BreadcrumbItem... breadcrumb) {
+    public UCtrlData(String title, String subTitle,String url, String css, String securityKey, BreadcrumbItem... breadcrumb) {
         this.title = title;
+        this.subTitle = subTitle;
         this.url = url;
         this.css = css;
         this.securityKey = securityKey;
@@ -74,5 +76,9 @@ public class UCtrlData {
 
     public void setSecurityKey(String securityKey) {
         this.securityKey = securityKey;
+    }
+
+    public String getSubTitle() {
+        return subTitle;
     }
 }

@@ -25,7 +25,7 @@ public class AcademicCtrlUtils {
         if (f == null) {
             return null;
         }
-        return getAbsoluteWebPath(f.getPath());
+        return VrApp.getBean(Vr.class).getAbsoluteWebPath(f.getPath());
     }
 
     public static String getTeacherAppWebPath(int id, String path) {
@@ -33,21 +33,7 @@ public class AcademicCtrlUtils {
         if (f == null) {
             return null;
         }
-        return getAppWebPath(f.getPath());
-    }
-
-    public static String getAbsoluteWebPath(String virtualAbsolutePath) {
-        if (virtualAbsolutePath == null) {
-            return null;
-        }
-        return Vr.get().getContext() + "/fs/" + virtualAbsolutePath;
-    }
-
-    public static String getAppWebPath(String virtualAbsolutePath) {
-        if (virtualAbsolutePath == null) {
-            return null;
-        }
-        return "/fs/" + virtualAbsolutePath;
+        return VrApp.getBean(Vr.class).getAppWebPath(f.getPath());
     }
 
     public static VFile getTeacherAbsoluteFile(int id, String... path) {
@@ -87,15 +73,7 @@ public class AcademicCtrlUtils {
         AcademicTeacher t = ap.findTeacher(id);
         CorePlugin fs = VrApp.getBean(CorePlugin.class);
         if (t != null && t.getUser() != null) {
-            VFile thisTeacherPhoto = fs.getUserFolder(t.getUser().getLogin()).get(path);
-            if (thisTeacherPhoto.exists()) {
-                return thisTeacherPhoto;
-            } else {
-                VFile anyTeacherPhoto = fs.getProfileFolder("Teacher").get(path);
-                if (anyTeacherPhoto.exists()) {
-                    return anyTeacherPhoto;
-                }
-            }
+            return VrApp.getBean(Vr.class).getUserAbsoluteFile(t.getId(),path);
         }
         return null;
     }

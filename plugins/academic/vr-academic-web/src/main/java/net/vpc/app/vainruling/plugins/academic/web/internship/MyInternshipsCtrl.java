@@ -11,7 +11,7 @@ import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.OpinionType;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
@@ -408,7 +408,7 @@ public class MyInternshipsCtrl {
                     String report = getModel().getRequestUploadType();
                     CorePlugin fs = VrApp.getBean(CorePlugin.class);
                     String login = UserSession.getCurrentUser().getLogin();
-                    String tempPath = CorePlugin.PATH_TEMP + "/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+                    String tempPath = CorePlugin.PATH_TEMP + "/Import/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
                             + "-" + login;
                     String p = fs.getNativeFileSystemPath() + tempPath;
                     new File(p).mkdirs();

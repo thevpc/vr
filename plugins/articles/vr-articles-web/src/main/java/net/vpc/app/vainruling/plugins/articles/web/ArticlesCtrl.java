@@ -6,8 +6,8 @@
 package net.vpc.app.vainruling.plugins.articles.web;
 
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.content.CmsTextService;
 import net.vpc.app.vainruling.core.service.content.ContentText;
-import net.vpc.app.vainruling.core.service.content.ContentTextService;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
@@ -29,12 +29,11 @@ import java.util.Map;
  * @author taha.bensalah@gmail.com
  */
 @Controller
-@Scope(value = "session")
-public class ArticlesCtrl implements ContentTextService{
+@Scope(value = "singleton")
+public class ArticlesCtrl implements CmsTextService {
 
     @Autowired
     private ArticlesPlugin articles;
-    private Model model = new Model();
     private String[] imageSwitchEffects = new String[]{
             "blindX",
             "blindY",
@@ -65,8 +64,8 @@ public class ArticlesCtrl implements ContentTextService{
             "zoom"
     };
 
-    public Model getModel() {
-        return model;
+    public ArticlesModel getModel() {
+        return VrApp.getBean(ArticlesModel.class);
     }
 
     public void refresh() {
@@ -79,7 +78,7 @@ public class ArticlesCtrl implements ContentTextService{
                 PersistenceUnit pu = UPA.getPersistenceUnit();
                 Entity entity = pu.getEntity(ArticlesItem.class);
                 Record record = entity.createRecord();
-                record.setObject("visitCount",new UserExpression("visitCount+1"));
+                record.setObject("visitCount", new UserExpression("visitCount+1"));
                 entity.createUpdateQuery()
                         .setValues(record)
                         .byId(articleId)
@@ -87,10 +86,11 @@ public class ArticlesCtrl implements ContentTextService{
             }
         });
     }
-    public void loadArticles(String name) {
+
+    public void loadContentTexts(String name) {
         List<FullArticle> a = findArticles(name);
         getModel().getArticles().put(name, a);
-        if(getModel().getCurrent()==null) {
+        if (getModel().getCurrent() == null) {
             if (a != null && a.size() > 0) {
                 getModel().setCurrent(a.get(0));
             } else {
@@ -149,58 +149,40 @@ public class ArticlesCtrl implements ContentTextService{
         return articles.findArticlesFiles(articleId);
     }
 
-    public FullArticle getFullArticle(String disposition,int pos){
+    public FullArticle getFullArticle(String disposition, int pos) {
         List<FullArticle> a = getModel().getArticles().get(disposition);
-        if(a!=null&& a.size()>pos && pos>=0){
+        if (a != null && a.size() > pos && pos >= 0) {
             return a.get(pos);
         }
         return null;
     }
 
-    public ArticlesItem getArticle(String disposition, int pos){
+    public ArticlesItem getArticle(String disposition, int pos) {
         FullArticle a = getFullArticle(disposition, pos);
-        if(a!=null){
+        if (a != null) {
             return a.getArticlesItem();
         }
         return null;
     }
 
     @Override
-    public List<ContentText> getArticlesList(String id) {
+    public List<ContentText> getContentTextList(String id) {
         List list = getModel().getArticles().get(id);
-        if(list==null){
-            list= Collections.EMPTY_LIST;
+        if (list == null) {
+            list = Collections.EMPTY_LIST;
         }
         return list;
     }
 
-    public void setSelectedArticle(int id){
+    public void setSelectedContentText(int id) {
         getModel().setCurrent((FullArticle) articles.findFullArticle(id));
     }
 
-    public static class Model {
-
-        private FullArticle current;
-        private Map<String, List<FullArticle>> articles = new HashMap<>();
-
-        public FullArticle getCurrent() {
-            return current;
+    public List<ContentText> getContentTextListHead(String id, int max) {
+        List<ContentText> list = getContentTextList(id);
+        if (list.size() > max) {
+            return list.subList(0, max);
         }
-
-        public void setCurrent(FullArticle current) {
-            this.current = current;
-        }
-
-        public Map<String, List<FullArticle>> getArticles() {
-            return articles;
-        }
-
-
-
-
-
-        public void setArticles(Map<String, List<FullArticle>> articles) {
-            this.articles = articles;
-        }
+        return list;
     }
 }

@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.core.web.obj.dialog;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.common.strings.StringUtils;
@@ -34,7 +34,7 @@ public class ProfileExprDialogCtrl {
     private Model model = new Model();
 
     public void openDialog(String config) {
-        openDialog(VrHelper.parseJSONObject(config, Config.class));
+        openDialog(VrUtils.parseJSONObject(config, Config.class));
     }
 
     public void openDialog(Config config) {

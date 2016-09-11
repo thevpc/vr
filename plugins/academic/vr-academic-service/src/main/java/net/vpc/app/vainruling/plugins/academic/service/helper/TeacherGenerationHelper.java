@@ -13,6 +13,7 @@ import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.ExcelTemplate;
 import net.vpc.app.vainruling.core.service.util.NamedDoubles;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.academic.service.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
@@ -82,6 +83,9 @@ public class TeacherGenerationHelper {
         Integer semesterId = StringUtils.isEmpty(semester) ? null : academicPlugin.findSemester(semester).getId();
         String templateFolder = options.getTemplateFolder();
         String outputFolder = options.getOutputFolder();
+        net.vpc.common.vfs.VirtualFileSystem fs = core.getFileSystem();
+        fs.get(outputFolder).mkdirs();
+
         String outputNamePattern = options.getOutputNamePattern();
         AppPeriod period = options.getPeriod();
         if (period == null) {
@@ -104,7 +108,6 @@ public class TeacherGenerationHelper {
             requestedContents.addAll(Arrays.asList(GeneratedContent.values()));
         }
         boolean writeVars = requestedContents.contains(GeneratedContent.Vars);
-        final VirtualFileSystem fs = core.getFileSystem();
         TeacherFilter teacherIdsFilter = TeacherFilterFactory.teacherIds(teacherIds);
         if (requestedContents.contains(GeneratedContent.TeacherListAssignmentsSummary)) {
             if (stats == null) {
@@ -118,7 +121,13 @@ public class TeacherGenerationHelper {
             generateTeacherListAssignmentsSummaryFile(periodId, statsArray,
                     fs.get(teacherListAssignmentsSummaryFile_template), fs.get(outputFolder + File.separator + outputNamePattern.replace("*", "teacher-list-assignments-summary") + ".xls"), writeVars);
 
-            generateTeacherAssignmentsCsvFile(periodId,statsArray,fs.get(outputFolder + File.separator +"vars"+ File.separator +"teacher-list-assignments.csv"));
+            VFile currGenFile = fs.get(outputFolder + File.separator + "vars" + File.separator + "teacher-list-assignments.csv");
+            VFile diffGenFile = fs.get(outputFolder + File.separator + "vars" + File.separator + "teacher-list-assignments-diff.html");
+            VFile oldGenFile = StringUtils.isEmpty(options.getOldOutputFolder())?null:fs.get(options.getOldOutputFolder() + File.separator + "vars" + File.separator + "teacher-list-assignments.csv");
+            generateTeacherAssignmentsCsvFile(periodId,statsArray, currGenFile);
+            if(oldGenFile!=null && oldGenFile.exists()){
+                VrUtils.diffToHtml(currGenFile,oldGenFile,diffGenFile,null);
+            }
         }
         String teacherAssignments_template = templateFolder + "/teacher-assignments-template.xls";
         String teacherAssignments_filename = outputFolder + File.separator + outputNamePattern.replace("*", "teacher-assignments") + ".xls";
@@ -226,16 +235,14 @@ public class TeacherGenerationHelper {
             throw new IllegalArgumentException("No valid Teacher found");
         }
         try {
-            Arrays.sort(stats, new Comparator<TeacherPeriodStat>() {
+            List<AcademicCourseAssignmentInfo> assignments=new ArrayList<>();
+            for (TeacherPeriodStat st : stats) {
+                assignments.addAll(st.getAssignments());
+            }
+            Collections.sort(assignments, new Comparator<AcademicCourseAssignmentInfo>() {
                 @Override
-                public int compare(TeacherPeriodStat o1, TeacherPeriodStat o2) {
-                    int x = o1.getTeacher().getContact().getFullName().compareTo(
-                            o2.getTeacher().getContact().getFullName()
-                    );
-                    if (x != 0) {
-                        return x;
-                    }
-                    return Integer.compare(o1.getTeacher().getId(), o2.getTeacher().getId());
+                public int compare(AcademicCourseAssignmentInfo o1, AcademicCourseAssignmentInfo o2) {
+                    return Integer.compare(o1.getAssignment().getId(),o2.getAssignment().getId());
                 }
             });
             final VFile p = output.getParentFile();
@@ -273,10 +280,8 @@ public class TeacherGenerationHelper {
                     }
                 });
                 DataWriter writer = csv.createWriter();
-                for (TeacherPeriodStat st : stats) {
-                    for (AcademicCourseAssignmentInfo assignment : st.getAssignments()) {
-                        writer.writeObject(assignment);
-                    }
+                for (AcademicCourseAssignmentInfo assignment : assignments) {
+                    writer.writeObject(assignment);
                 }
                 writer.close();
                 csv.close();
@@ -689,32 +694,19 @@ public class TeacherGenerationHelper {
         p.put(prefix + "teacher.discipline", c.getTeacher() == null ? null : c.getTeacher().getDiscipline());
     }
 
-    public void generateTeachingLoad(int periodId, CourseAssignmentFilter courseAssignmentFilter, String version0) throws IOException {
+    public void generateTeachingLoad(int periodId, CourseAssignmentFilter courseAssignmentFilter, String version, String oldRefVersion) throws IOException {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
 //        try {
         AppPeriod mainPeriod = core.findPeriodOrMain(periodId);
-        String year = mainPeriod.getName();
-        String version = (!StringUtils.isEmpty(version0)) ? version0 : ((String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01"));
-        String dir = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.configFolder", null, "/Config/Import/import/${year}");
-        String namePattern = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.namePattern", null, "*-eniso-ii-${year}-${version}");
-        Map<String, String> vars = new HashMap<>();
-        vars.put("home", System.getProperty("user.home"));
-        vars.put("year", year);
-        vars.put("version", version);
-
-        dir = StringUtils.replaceDollarPlaceHolders(dir, new MapStringConverter(vars));
-        ///Output/${year}/${version}
-        String outdir = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.outputFolder", null, "/Documents/ByProfile/DirectorOfStudies/Charges/${year}/${version}");
-
-        outdir = StringUtils.replaceDollarPlaceHolders(outdir, new MapStringConverter(vars));
-
-//            String dataFolder = dir + "/data";
-        String templatesFolder = dir + "/templates";
-
-        namePattern = StringUtils.replaceDollarPlaceHolders(namePattern, new MapStringConverter(vars));
-
-        net.vpc.common.vfs.VirtualFileSystem fs = core.getFileSystem();
-        fs.get(outdir).mkdirs();
+//        String year = mainPeriod.getName();
+//        String version = (!StringUtils.isEmpty(version0)) ? version0 : ((String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01"));
+//        String dir = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.configFolder", null, "/Config/Import/import/${year}");
+//        String namePattern = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.namePattern", null, "*-eniso-ii-${year}-${version}");
+//        Map<String, String> vars = new HashMap<>();
+//        vars.put("home", System.getProperty("user.home"));
+//        vars.put("year", year);
+//        vars.put("version", version);
+//
         //TODO should export from DB all this information
 //            VFS.copy(fs.get(dataFolder), fs.get(outdir), new VFileFilter() {
 //
@@ -737,10 +729,11 @@ public class TeacherGenerationHelper {
                                 GeneratedContent.TeacherListAssignmentsSummary,
                                 GeneratedContent.Bundle
                         )
-                        .setVersion(version)
-                        .setTemplateFolder(templatesFolder)
-                        .setOutputFolder(outdir)
-                        .setOutputNamePattern(namePattern)
+                        .setVersion(getVersion(periodId,version))
+                        .setTemplateFolder(getConfigFolder(periodId,version)+"/templates")
+                        .setOutputFolder(getOutputFolder(periodId,version))
+                        .setOldOutputFolder(getOutputFolder(periodId,oldRefVersion))
+                        .setOutputNamePattern(getNamePattern(periodId,version))
                         .setCourseAssignmentFilter(courseAssignmentFilter)
                         .setPeriod(mainPeriod)
         );
@@ -756,5 +749,54 @@ public class TeacherGenerationHelper {
 //        }
     }
 
+    public String getVersion(int periodId,String version0){
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        AppPeriod mainPeriod = core.findPeriodOrMain(periodId);
+        String year = mainPeriod.getName();
+        return (!StringUtils.isEmpty(version0)) ? version0 : ((String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01"));
+    }
+
+    public String getNamePattern(int periodId,String version0){
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        AppPeriod mainPeriod = core.findPeriodOrMain(periodId);
+        String year = mainPeriod.getName();
+        String version = getVersion(periodId,version0);
+        String namePattern = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.namePattern", null, "*-eniso-ii-${year}-${version}");
+        Map<String, String> vars = new HashMap<>();
+        vars.put("home", System.getProperty("user.home"));
+        vars.put("year", year);
+        vars.put("version", version);
+        return StringUtils.replaceDollarPlaceHolders(namePattern, new MapStringConverter(vars));
+    }
+
+    public String getConfigFolder(int periodId,String version){
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+//        try {
+        AppPeriod mainPeriod = core.findPeriodOrMain(periodId);
+        String year = mainPeriod.getName();
+        String goodVersion = getVersion(periodId,version);
+        String dir = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.configFolder", null, "/Config/Import/import/${year}");
+        Map<String, String> vars = new HashMap<>();
+        vars.put("home", System.getProperty("user.home"));
+        vars.put("year", year);
+        vars.put("version", goodVersion);
+
+        return StringUtils.replaceDollarPlaceHolders(dir, new MapStringConverter(vars));
+    }
+
+    public String getOutputFolder(int periodId,String version0){
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+//        try {
+        AppPeriod mainPeriod = core.findPeriodOrMain(periodId);
+        String year = mainPeriod.getName();
+        String version = (!StringUtils.isEmpty(version0)) ? version0 : ((String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.version", null, "v01"));
+        String dir = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.import.configFolder", null, "/Config/Import/import/${year}");
+        Map<String, String> vars = new HashMap<>();
+        vars.put("home", System.getProperty("user.home"));
+        vars.put("year", year);
+        vars.put("version", version);
+        String path = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.outputFolder", null, "/Documents/ByProfile/DirectorOfStudies/Charges/${year}/${version}");
+        return StringUtils.replaceDollarPlaceHolders(path, new MapStringConverter(vars));
+    }
 
 }

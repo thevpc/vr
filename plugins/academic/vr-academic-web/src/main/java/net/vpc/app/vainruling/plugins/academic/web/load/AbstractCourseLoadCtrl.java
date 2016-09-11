@@ -12,7 +12,7 @@ import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.SelectableObject;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
@@ -100,7 +100,7 @@ public abstract class AbstractCourseLoadCtrl {
             ObjCtrl.Config c = new ObjCtrl.Config();
             c.entity = "AcademicCourseAssignment";
             c.id = String.valueOf(a.getId());
-            return VrApp.getBean(VrMenuManager.class).gotoPage("obj", VrHelper.formatJSONObject(c));
+            return VrApp.getBean(VrMenuManager.class).gotoPage("obj", VrUtils.formatJSONObject(c));
         }
         return null;
     }

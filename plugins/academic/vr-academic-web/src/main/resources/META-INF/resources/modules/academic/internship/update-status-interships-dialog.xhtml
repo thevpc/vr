@@ -79,10 +79,12 @@ and open the template in the editor.
                     </p:panelGrid>
 
                     <p:commandButton value="Appliquer changements"
+                                     styleClass="btn btn-primary"
                                      actionListener="#{updateStatusInternshipsActionCtrl.apply}"
                                      style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"
                                      disabled="#{updateStatusInternshipsActionCtrl.model.disabled}"/>
                     <p:commandButton value="Fermer"
+                                     styleClass="btn btn-default"
                                      actionListener="#{updateStatusInternshipsActionCtrl.fireEventExtraDialogClosed}"
                                      style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
                 </h:form>

@@ -25,6 +25,7 @@ public class VrUPAUtils {
         old.size();//force load!
         event.getContext().setObject("updated_ids_"+entity.getName(),old);
     }
+
     public static <T> List<T> loadUpdatedIds(UpdateEvent event){
         List object = (List) event.getContext().getObject("updated_ids_" + event.getEntity().getName());
         if(object==null){

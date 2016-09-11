@@ -14,7 +14,7 @@ import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
 import net.vpc.app.vainruling.core.service.util.ProfilePatternFilter;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesDisposition;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesFile;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
@@ -309,7 +309,7 @@ public class ArticlesPlugin {
         if (!UPA.getPersistenceGroup().getSecurityManager().isAllowedKey("Custom.Article.SendExternalEmail")) {
             return;
         }
-        SendExternalMailConfig c = VrHelper.parseJSONObject(config, SendExternalMailConfig.class);
+        SendExternalMailConfig c = VrUtils.parseJSONObject(config, SendExternalMailConfig.class);
         if (c == null) {
             c = new SendExternalMailConfig();
         }
@@ -385,7 +385,7 @@ public class ArticlesPlugin {
             return;
         }
         ArticlesItem a = obj;
-        SendExternalMailConfig c = VrHelper.parseJSONObject(config, SendExternalMailConfig.class);
+        SendExternalMailConfig c = VrUtils.parseJSONObject(config, SendExternalMailConfig.class);
         if (c == null) {
             c = new SendExternalMailConfig();
         }

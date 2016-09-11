@@ -11,6 +11,8 @@ import java.util.List;
 public interface ContentText {
     public int getId();
 
+    public String getCategory();
+
     public String getSubject();
 
     public String getContent();
@@ -21,7 +23,6 @@ public interface ContentText {
 
     public List<ContentPath> getAttachments();
 
-    public void setAttachments(List<ContentPath> attachments);
 
     public List<ContentPath> getImageAttachments();
 

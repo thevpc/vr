@@ -10,7 +10,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.*;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
@@ -40,7 +40,6 @@ import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -83,7 +82,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     @Override
     public UCtrlData getUCtrl(String cmd) {
         try {
-            Config c = VrHelper.parseJSONObject(cmd, Config.class);
+            Config c = VrUtils.parseJSONObject(cmd, Config.class);
             Entity entity = UPA.getPersistenceUnit().getEntity(c.entity);
             UCtrlData d = new UCtrlData();
             d.setTitle(getPageTitleString(entity, EditCtrlMode.LIST));
@@ -95,7 +94,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             Package p = entity.getParent();
             int pos = items.size();
             while (p != null && !"/".equals(p.getPath())) {
-                items.add(pos, new BreadcrumbItem(i18n.get(p), "fa-dashboard", "", ""));
+                Package pp = p.getParent();
+                items.add(pos, new BreadcrumbItem(i18n.get(p),pp==null?null:i18n.get(pp), "fa-dashboard", "", ""));
                 p = p.getParent();
             }
             d.setBreadcrumb(items.toArray(new BreadcrumbItem[items.size()]));
@@ -442,7 +442,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         getModel().setSearch(null);
         getModel().setFieldSelection(null);
         try {
-            Config cfg = VrHelper.parseJSONObject(cmd, Config.class);
+            Config cfg = VrUtils.parseJSONObject(cmd, Config.class);
             getModel().setConfig(cfg);
             getModel().setCmd(cmd);
             setEntityName(cfg.entity);
@@ -694,7 +694,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     public void updateModelFromConfig() {
         enabledButtons.clear();
-        Config cfg = VrHelper.parseJSONObject(getModel().getCmd(), Config.class);
+        Config cfg = VrUtils.parseJSONObject(getModel().getCmd(), Config.class);
         Object o = getModel().getCurrentRecord();
         Entity e = getEntity();
         EntityBuilder builder = e.getBuilder();
@@ -974,7 +974,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             for (Map.Entry<String, Object> entry : entity.getProperties().toMap().entrySet()) {
                 if(entry.getKey().startsWith("ui.auto-filter.")){
                     String name=entry.getKey().substring("ui.auto-filter.".length());
-                    AutoFilterData d = VrHelper.parseJSONObject((String) entry.getValue(), AutoFilterData.class);
+                    AutoFilterData d = VrUtils.parseJSONObject((String) entry.getValue(), AutoFilterData.class);
                     d.setName(name);
                     d.setBaseEntityName(entity.getName());
                     autoFilterDatas.add(d);

@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.articles.service;
 
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
 import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
@@ -26,10 +26,10 @@ public class ArticlesCallbacks {
         Field f = event.getField();
         if (e.getEntityType().equals(ArticlesItem.class)) {
             if (f.getName().equals("sender")) {
-                f.setDefaultObject(VrHelper.DEFAULT_OBJECT_CURRENT_USER);
+                f.setDefaultObject(VrUtils.DEFAULT_OBJECT_CURRENT_USER);
             }
             if (f.getName().equals("sendTime")) {
-                f.setDefaultObject(VrHelper.DEFAULT_OBJECT_CURRENT_DATETIME);
+                f.setDefaultObject(VrUtils.DEFAULT_OBJECT_CURRENT_DATETIME);
             }
         }
     }

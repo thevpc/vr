@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.web.converters;
 
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -34,7 +34,7 @@ public class RelativeDateConverter implements Converter {
         } catch (Exception e) {
             //ignore error
         }
-        return VrHelper.getRelativeDateMessage(dte, s == null ? null : s.getLocale());
+        return VrUtils.getRelativeDateMessage(dte, s == null ? null : s.getLocale());
     }
 
 }

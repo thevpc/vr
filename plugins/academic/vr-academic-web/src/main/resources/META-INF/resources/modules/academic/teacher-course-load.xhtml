@@ -36,8 +36,8 @@ and open the template in the editor.
                 <!-- /.row -->
                 <div class="row">
                     <p:outputLabel id="buttons">
-                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh"
-                                         styleClass="vr-form-field vr-form-fixed-width-medium ui-ribbon-bigbutton vr-icon-aws" ajax="true"
+                        <p:commandButton value="Rafr."
+                                         styleClass="btn btn-default vr-form-field vr-form-fixed-width-medium ui-ribbon-bigbutton vr-icon-aws" ajax="true"
                                          actionListener="#{teacherCourseLoadCtrl.onRefresh}" update=":listForm"/>
 
                         <p:menuButton value="Actions..." style="margin-left: 10px;"
@@ -272,13 +272,13 @@ and open the template in the editor.
             </h:form>
             <h:form id="listForm">
 
-                <div class="row">
+                <div >
                     <div class="table-responsive">
                         <h1>
                             <p:commandLink
                                     action="#{vr.gotoPageObjItem('AcademicTeacher',vr.str(teacherCourseLoadCtrl.model.currentTeacher.id))}"
                                     style="font-weight: bold"
-                                    value="#{teacherCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.val.teacher.situation.name}"/>
+                                    value="#{teacherCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.val.teacher.situation.name}  (#{teacherCourseLoadCtrl.teacherFilter.period.name}) "/>
                         </h1>
                         <p:panelGrid>
                             <p:row>
@@ -418,7 +418,7 @@ and open the template in the editor.
                 </div>
 
                 <ui:repeat value="#{teacherCourseLoadCtrl.model.stat.semesters}" var="sem">
-                    <div class="row">
+                    <div >
                         <div class="table-responsive">
                             <h1>Semestre #{sem.val.semester.name}</h1>
                             <p:dataTable var="i" value="#{sem.assignments}"
@@ -524,7 +524,6 @@ and open the template in the editor.
 
                                 <p:column headerText="Salles" width="5%">
                                     <h:outputText value="#{i.rooms}" rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('rooms')}"
-                                                  styleClass="#{i.value.assigned?'vr-label-valid':'vr-label-invalid'}"
                                     />
                                 </p:column>
 
@@ -535,7 +534,7 @@ and open the template in the editor.
 
                 <p:separator/>
 
-                <div class="row">
+                <div >
                     <div class="table-responsive">
                         <h1>Autres modules</h1>
 

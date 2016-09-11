@@ -9,7 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
@@ -787,7 +787,7 @@ public class MyInternshipBoardsCtrl {
                 try {
                     String report = getModel().getRequestUploadType();
                     String login = UserSession.getCurrentUser().getLogin();
-                    String tempPath = CorePlugin.PATH_TEMP + "/Import/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+                    String tempPath = CorePlugin.PATH_TEMP + "/Import/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
                             + "-" + login;
                     String p = core.getNativeFileSystemPath() + tempPath;
                     new File(p).mkdirs();

@@ -9,21 +9,34 @@ and open the template in the editor.
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
-        >
+>
 
 <h:head>
 </h:head>
+<!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+<!--@elvariable id="activeSessionsCtrl" type="net.vpc.app.vainruling.core.web.ctrl.ActiveSessionsCtrl"-->
 
 <h:body>
-
-
     <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="listForm" enctype="multipart/form-data">
-                <p:commandButton style="margin-bottom: 20px;height: 40px; " value="Rafr." icon="ui-ribbonicon-refresh"
-                                 styleClass="ui-ribbon-bigbutton" ajax="true"
-                                 actionListener="#{activeSessionsCtrl.onRefresh}" update=":listForm"/>
+                <div class="row">
+                    <p:commandButton value="Rafr."
+                                     icon="ui-ribbonicon-refresh"
+                                     styleClass="btn btn-primary" ajax="true"
+                                     actionListener="#{activeSessionsCtrl.onRefresh}" update=":listForm"/>
+                    <p:commandLink rendered="#{!vr.shutdown and vr.userSession.admin}" action="#{vr.notifyShutdown}"
+                                   styleClass="btn btn-danger"
+                                   value="Notifier arrêt serveur">
+                        <i class="fa fa-sign-out fa-fw"></i>
+                    </p:commandLink>
 
+                    <p:commandLink rendered="#{vr.shutdown and vr.userSession.admin}" action="#{vr.cancelShutdown}"
+                                   styleClass="btn btn-danger"
+                                   value="Annuler arrêt">
+                        <i class="fa fa-sign-out fa-fw"></i>
+                    </p:commandLink>
+                </div>
                 <div class="row">
 
                     <div class="col-lg-6">
@@ -45,7 +58,7 @@ and open the template in the editor.
                                  rows="20"
                                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="20,50,100,200,1000"
-                            >
+                    >
                         <p:column headerText="Login">
                             <h:outputText value="#{i.user.login}"/>
                         </p:column>

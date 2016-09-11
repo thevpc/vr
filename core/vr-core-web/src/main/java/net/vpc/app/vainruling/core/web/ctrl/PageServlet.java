@@ -34,6 +34,10 @@ public class PageServlet extends HttpServlet {
             filename = filename.substring(0, filename.length() - 1);
         }
         String newPath = core.gotoPage(filename, request.getParameter("a"));
+        if(newPath==null){
+            request.getRequestDispatcher("/p/welcome").forward(request, response);
+            return;
+        }
         int i = newPath.indexOf("?");
         newPath = newPath.replaceFirst("\\?", ".xhtml?");
 //        newPath="/vr"+newPath;

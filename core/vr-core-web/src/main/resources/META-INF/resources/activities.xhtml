@@ -5,6 +5,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
         >
+<!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
 <h:head>
 </h:head>
 <h:body>
@@ -18,9 +19,8 @@
         <ui:define name="row3">
             <h:form>
                 <div class="text-inter">
-                    <div class="container">
-                        #{vr.loadArticles('Activities')}
-                        <p:dataGrid var="i" value="#{vr.getArticlesList('Activities')}" columns="1"
+                    <div class="container">#{vr.cmsTextService.loadContentTexts('Activities')}
+                        <p:dataGrid var="i" value="#{vr.cmsTextService.getContentTextList('Activities')}" columns="1"
                                     layout="grid"
                                     rows="10" paginator="true"
                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"

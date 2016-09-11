@@ -27,6 +27,19 @@ public class TeacherLoadFilterComponent {
         return model;
     }
 
+    public AppPeriod getPeriod() {
+        String p = getModel().getSelectedPeriod();
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        if (StringUtils.isEmpty(p)) {
+            AppConfig appConfig = core.findAppConfig();
+            if (appConfig != null && appConfig.getMainPeriod() != null) {
+                return appConfig.getMainPeriod();
+            }
+            return null;
+        }
+        return core.findPeriod(p);
+    }
+
     public int getPeriodId() {
         String p = getModel().getSelectedPeriod();
         if (StringUtils.isEmpty(p)) {

@@ -10,10 +10,11 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppGender;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
@@ -43,7 +44,7 @@ public class AcademicAddressBookCtrl {
     private Model model = new Model();
 
     public String getValidString(String en, String fr, String ar) {
-        return VrHelper.getValidString(getValidLocaleCode(), en, fr, ar);
+        return VrUtils.getValidString(getValidLocaleCode(), en, fr, ar);
     }
 
     public String getValidLocaleCode() {
@@ -270,7 +271,7 @@ public class AcademicAddressBookCtrl {
 
         VFile file = AcademicCtrlUtils.getTeacherAbsoluteFile(t.getId(), paths.toArray(new String[paths.size()]));
 
-        String photo = (t == null || file == null) ? null : AcademicCtrlUtils.getAppWebPath(file.getPath());
+        String photo = (t == null || file == null) ? null : Vr.get().getAppWebPath(file.getPath());
         return photo;
     }
 

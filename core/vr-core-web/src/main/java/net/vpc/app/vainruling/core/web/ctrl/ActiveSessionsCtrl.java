@@ -29,7 +29,7 @@ import java.util.*;
 @UCtrl(
         title = "Sessions Actives",
         url = "modules/admin/active-sessions",
-        menu = "/Admin/Security",
+        menu = "/Social",
         securityKey = "Custom.Admin.ActiveSessions"
 )
 @Scope(value = "singleton")

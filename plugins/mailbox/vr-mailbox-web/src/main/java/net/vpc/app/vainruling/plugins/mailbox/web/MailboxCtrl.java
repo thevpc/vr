@@ -6,8 +6,9 @@
 package net.vpc.app.vainruling.plugins.mailbox.web;
 
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UCtrlData;
@@ -16,6 +17,7 @@ import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDefFactory;
+import net.vpc.app.vainruling.core.web.menu.VRMenuLabel;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
@@ -62,7 +64,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     @Override
     public UCtrlData getUCtrl(String cmd) {
-        Config config = VrHelper.parseJSONObject(cmd, Config.class);
+        Config config = VrUtils.parseJSONObject(cmd, Config.class);
         if (config == null) {
             config = new Config();
         }
@@ -71,18 +73,18 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         }
         switch (config.folder) {
             case CURRENT: {
-                return new UCtrlData(getPreferredTitle(config.folder, config.sent), "modules/mailbox/mailbox", "fa-table", "Custom.Site.Mailbox",
-                        new BreadcrumbItem("Social", "fa-dashboard", "", "")
+                return new UCtrlData(getPreferredTitle(config.folder, config.sent),"Messages Envoyés", "modules/mailbox/mailbox", "fa-table", "Custom.Site.Mailbox",
+                        new BreadcrumbItem("Social", "Messages","fa-dashboard", "", "")
                 );
             }
             case DELETED: {
-                return new UCtrlData(getPreferredTitle(config.folder, config.sent), "modules/mailbox/mailbox", "fa-table", "Custom.Site.Mailbox",
-                        new BreadcrumbItem("Social", "fa-dashboard", "", "")
+                return new UCtrlData(getPreferredTitle(config.folder, config.sent),"Messages Envoyés Effacés", "modules/mailbox/mailbox", "fa-table", "Custom.Site.Mailbox",
+                        new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                 );
             }
             case ARCHIVED: {
-                return new UCtrlData(getPreferredTitle(config.folder, config.sent), "modules/mailbox/mailbox", "fa-table", "Custom.Site.Mailbox",
-                        new BreadcrumbItem("Social", "fa-dashboard", "", "")
+                return new UCtrlData(getPreferredTitle(config.folder, config.sent),"Messages Envoyés Archivés", "modules/mailbox/mailbox", "fa-table", "Custom.Site.Mailbox",
+                        new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                 );
             }
         }
@@ -124,8 +126,19 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     @Override
     public List<VRMenuDef> createVRMenuDefList() {
+        MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
+        List<Row> list = new ArrayList<>();
+        AppUser currentUser = UserSession.getCurrentUser();
+        int userId = currentUser==null?-1:currentUser.getId();
+        int count = userId<0?0:p.loadLocalOutbox(userId, -1, false, MailboxFolder.CURRENT).size();
         return Arrays.asList(
-                new VRMenuDef("Mes Messages", "/Social", "mailbox", "{folder:'CURRENT',sent:false}", "Custom.Site.Mailbox", "")//, 
+                new VRMenuDef("Mes Messages", "/Social", "mailbox", "{folder:'CURRENT',sent:false}", "Custom.Site.Mailbox", "",
+                        new VRMenuLabel[]{
+                    new VRMenuLabel(
+                            String.valueOf(count),"success"
+                    )
+                        }
+                        )//,
                 //                new VRMenuDef("Messages Envoyés", "/Social", "mailbox", "{folder:'CURRENT',sent:true}", "Custom.Site.Outbox","")
                 //                , new VRMenuDef("Mes Messages Archivés", "/Social", "mailbox", "{folder:'ARCHIVED'}", "Custom.Site.Mailbox.Archived")
         );

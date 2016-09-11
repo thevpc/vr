@@ -229,7 +229,9 @@ and open the template in the editor.
                     </div>
 
                 </p:fieldset>
-
+                <h1><p:outputLabel style="font-weight: bold"
+                                   value="#{allTeachersCourseLoadCtrl.teacherFilter.period.name}"/>
+                </h1>
                 <ui:repeat value="#{allTeachersCourseLoadCtrl.model.tables}" var="tab">
                     <div class="row">
                         <div class="table-responsive">

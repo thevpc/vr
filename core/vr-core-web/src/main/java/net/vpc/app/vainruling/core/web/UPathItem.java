@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 public @interface UPathItem {
 
     String title() default "";
+    String subTitle() default "";
 
     String css() default "";
 

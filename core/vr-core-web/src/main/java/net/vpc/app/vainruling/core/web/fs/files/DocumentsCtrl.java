@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.core.web.fs.files;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UCtrlData;
@@ -16,6 +16,7 @@ import net.vpc.app.vainruling.core.web.UCtrlProvider;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDefFactory;
+import net.vpc.app.vainruling.core.web.menu.VRMenuLabel;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFS;
@@ -54,15 +55,15 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
     @Override
     public List<VRMenuDef> createVRMenuDefList() {
         List<VRMenuDef> m = new ArrayList<>();
-        m.add(new VRMenuDef("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", "Custom.FileSystem.RootFileSystem", ""));
-        m.add(new VRMenuDef("Mes Documents", "/FileSystem", "documents", "{type:'me'}", "Custom.FileSystem.MyFileSystem", ""));
+        m.add(new VRMenuDef("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", "Custom.FileSystem.RootFileSystem", "",new VRMenuLabel[0]));
+        m.add(new VRMenuDef("Mes Documents", "/FileSystem", "documents", "{type:'me'}", "Custom.FileSystem.MyFileSystem", "",new VRMenuLabel[0]));
         return m;
     }
 
     @Override
     public UCtrlData getUCtrl(String cmd) {
         try {
-            Config c = VrHelper.parseJSONObject(cmd, Config.class);
+            Config c = VrUtils.parseJSONObject(cmd, Config.class);
 
             if (c == null) {
                 c = new Config();
@@ -94,7 +95,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
                 d.setTitle(CorePlugin.FOLDER_MY_DOCUMENTS);
             }
             List<BreadcrumbItem> items = new ArrayList<>();
-            items.add(new BreadcrumbItem("Système de Fichiers", "fa-dashboard", "", ""));
+            items.add(new BreadcrumbItem("Documents","Système de Fichiers", "fa-dashboard", "", ""));
             d.setBreadcrumb(items.toArray(new BreadcrumbItem[items.size()]));
             return d;
         } catch (Exception ex) {
@@ -321,7 +322,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
                         return;
                     }
                 }
-                String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+                String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
                         + "-" + UserSession.getCurrentUser().getLogin();
                 CorePlugin fsp = VrApp.getBean(CorePlugin.class);
                 String p = fsp.getNativeFileSystemPath() + tempPath;
@@ -354,7 +355,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
     public void handleUpdatedFile(FileUploadEvent event) {
         try {
             String p = VrApp.getBean(CorePlugin.class).getNativeFileSystemPath()
-                    + CorePlugin.PATH_TEMP + "/Files/" + VrHelper.date(new Date(), "yyyy-MM-dd-HH-mm")
+                    + CorePlugin.PATH_TEMP + "/Files/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
                     + "-" + UserSession.getCurrentUser().getLogin();
             new File(p).mkdirs();
             File f = new File(p, event.getFile().getFileName());

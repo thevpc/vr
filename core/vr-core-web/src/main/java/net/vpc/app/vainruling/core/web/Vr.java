@@ -7,11 +7,13 @@ package net.vpc.app.vainruling.core.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.content.ContentText;
-import net.vpc.app.vainruling.core.service.content.ContentTextService;
+import net.vpc.app.vainruling.core.service.content.*;
+import net.vpc.app.vainruling.core.service.model.AppContact;
+import net.vpc.app.vainruling.core.service.model.AppGender;
 import net.vpc.app.vainruling.core.service.model.AppProperty;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.util.VrHelper;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
 import net.vpc.app.vainruling.core.web.ctrl.ActiveSessionsCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.AppGlobalCtrl;
@@ -23,6 +25,7 @@ import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.vfs.VFile;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import org.primefaces.model.StreamedContent;
@@ -42,6 +45,10 @@ import java.util.*;
 @UCtrl
 @Scope(value = "singleton")
 public class Vr {
+    private MessageTextService messageTextService;
+    private TaskTextService taskTextService;
+    private NotificationTextService notificationTextService;
+    private CmsTextService cmsTextService;
 
     public static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.00");
 
@@ -316,6 +323,10 @@ public class Vr {
         return null;
     }
 
+    public String strFormat(String format,Object... args) {
+        return String.format(format,args);
+    }
+
     public String strcat(Object... a) {
         StringBuilder sb = new StringBuilder();
         for (Object x : a) {
@@ -369,7 +380,7 @@ public class Vr {
         } catch (Exception e) {
             //ignore error
         }
-        return VrHelper.getRelativeDateMessage(dte, s == null ? null : s.getLocale());
+        return VrUtils.getRelativeDateMessage(dte, s == null ? null : s.getLocale());
     }
 
     public String date(Date dte, Locale loc) {
@@ -382,7 +393,7 @@ public class Vr {
         if (loc == null && s != null) {
             loc = s.getLocale();
         }
-        return VrHelper.getRelativeDateMessage(dte, loc);
+        return VrUtils.getRelativeDateMessage(dte, loc);
     }
 
     public String date(Date d, String format) {
@@ -424,11 +435,11 @@ public class Vr {
     }
 
     public String html2txt(String value) {
-        return VrHelper.extratTextFormHTML(value);
+        return VrUtils.html2text(value);
     }
 
     public String html(String value) {
-        return VrHelper.extractPureHTML(value);
+        return VrUtils.extractPureHTML(value);
     }
 
     public String wiki2Html(String value) {
@@ -481,6 +492,14 @@ public class Vr {
         return getContext() + "/" + getFacesContextPrefix();
     }
 
+    public String getFullContext() {
+        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        StringBuilder sb= new StringBuilder();
+        StringBuffer requestURL = req.getRequestURL();
+        String contextPath = req.getContextPath();
+        sb.append(requestURL.substring(0, requestURL.indexOf(contextPath)+ contextPath.length()));
+        return sb.toString();
+    }
     public String getContext() {
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         return req.getContextPath();
@@ -614,33 +633,202 @@ public class Vr {
         return VrApp.getBean(DocumentsCtrl.class).downloadPath(path);
     }
 
-    public ContentTextService getContentTextService() {
-        ApplicationContext c = VrApp.getContext();
-        for (String n : c.getBeanNamesForType(ContentTextService.class)) {
-            ContentTextService s=(ContentTextService)c.getBean(n);
-            return s;
+    public CmsTextService getCmsTextService() {
+        if(cmsTextService==null) {
+            ApplicationContext c = VrApp.getContext();
+            for (String n : c.getBeanNamesForType(CmsTextService.class)) {
+                CmsTextService s = (CmsTextService) c.getBean(n);
+                return cmsTextService=s;
+            }
+            throw new IllegalArgumentException();
         }
-        throw new IllegalArgumentException();
+        return cmsTextService;
     }
 
-    public void loadArticles(String name) {
-        getContentTextService().loadArticles(name);
-    }
-
-    public List<ContentText> getArticlesList(String name) {
-        return getContentTextService().getArticlesList(name);
-    }
-
-    public void setSelectedArticle(int id){
-        getContentTextService().setSelectedArticle(id);
-    }
-
-    public List<ContentText> getArticlesListHead(String id,int max) {
-        List<ContentText> list = getArticlesList(id);
-        if(list.size()>max){
-            return list.subList(0,max);
+    public NotificationTextService getNotificationTextService() {
+        if(notificationTextService==null) {
+            ApplicationContext c = VrApp.getContext();
+            for (String n : c.getBeanNamesForType(NotificationTextService.class)) {
+                NotificationTextService s = (NotificationTextService) c.getBean(n);
+                return notificationTextService=s;
+            }
+            throw new IllegalArgumentException();
         }
-        return list;
+        return notificationTextService;
     }
 
+    public TaskTextService getTaskTextService() {
+        if(taskTextService==null) {
+            ApplicationContext c = VrApp.getContext();
+            for (String n : c.getBeanNamesForType(TaskTextService.class)) {
+                TaskTextService s = (TaskTextService) c.getBean(n);
+                return taskTextService=s;
+            }
+            throw new IllegalArgumentException();
+        }
+        return taskTextService;
+    }
+
+    public MessageTextService getMessageTextService() {
+        if(messageTextService==null) {
+            ApplicationContext c = VrApp.getContext();
+            for (String n : c.getBeanNamesForType(MessageTextService.class)) {
+                MessageTextService s = (MessageTextService) c.getBean(n);
+                return messageTextService=s;
+            }
+            throw new IllegalArgumentException();
+        }
+        return messageTextService;
+    }
+
+    public String getCurrentUserPhoto() {
+        UserSession s = getUserSession();
+        if(s!=null && s.getUser()!=null){
+            return getUserPhoto(s.getUser().getId());
+        }
+        return null;
+    }
+
+    public String getUserPhoto(int id) {
+        AppUser t = CorePlugin.get().findUser(id);
+        AppContact c = t.getContact();
+        boolean female = false;
+        if (c != null) {
+            AppGender g = c.getGender();
+            if (g != null) {
+                if ("F".equals(g.getCode())) {
+                    female = true;
+                }
+            }
+        }
+        List<String> paths = new ArrayList<String>();
+        for (String p : new String[]{"WebSite/me.png", "WebSite/me.jpg", "WebSite/me.gif"}) {
+            paths.add(p);
+        }
+        if (female) {
+            for (String p : new String[]{"WebSite/she.png", "WebSite/she.jpg", "WebSite/she.gif"}) {
+                paths.add(p);
+            }
+        } else {
+            for (String p : new String[]{"WebSite/he.png", "WebSite/he.jpg", "WebSite/he.gif"}) {
+                paths.add(p);
+            }
+        }
+        for (String p : new String[]{"WebSite/photo.png", "WebSite/photo.jpg", "WebSite/photo.gif"}) {
+            paths.add(p);
+        }
+
+        VFile file = getUserAbsoluteFile(t.getId(), paths.toArray(new String[paths.size()]));
+
+        String photo = (t == null || file == null) ? null : (file.getPath());
+        return photo;
+    }
+
+    public String getUserPhotoFullURL(int id) {
+        AppUser t = CorePlugin.get().findUser(id);
+        AppContact c = t.getContact();
+        boolean female = false;
+        if (c != null) {
+            AppGender g = c.getGender();
+            if (g != null) {
+                if ("F".equals(g.getCode())) {
+                    female = true;
+                }
+            }
+        }
+        List<String> paths = new ArrayList<>();
+        for (String p : new String[]{"WebSite/me.png", "WebSite/me.jpg", "WebSite/me.gif"}) {
+            paths.add(p);
+        }
+        if (female) {
+            for (String p : new String[]{"WebSite/she.png", "WebSite/she.jpg", "WebSite/she.gif"}) {
+                paths.add(p);
+            }
+        } else {
+            for (String p : new String[]{"WebSite/he.png", "WebSite/he.jpg", "WebSite/he.gif"}) {
+                paths.add(p);
+            }
+        }
+        for (String p : new String[]{"WebSite/photo.png", "WebSite/photo.jpg", "WebSite/photo.gif"}) {
+            paths.add(p);
+        }
+
+        VFile file = getUserAbsoluteFile(t.getId(), paths.toArray(new String[paths.size()]));
+
+        String photo = (t == null || file == null) ? null : getAppWebPath(file.getPath());
+        return photo;
+    }
+
+    public VFile getUserAbsoluteFile(int id, String path) {
+        AppUser t = CorePlugin.get().findUser(id);
+        CorePlugin fs = VrApp.getBean(CorePlugin.class);
+        if (t != null) {
+            VFile thisTeacherPhoto = fs.getUserFolder(t.getLogin()).get(path);
+            if (thisTeacherPhoto.exists()) {
+                return thisTeacherPhoto;
+            } else {
+                //should by by user type!!
+                VFile anyTeacherPhoto = fs.getProfileFolder("Teacher").get(path);
+                if (anyTeacherPhoto.exists()) {
+                    return anyTeacherPhoto;
+                }
+            }
+        }
+        return null;
+    }
+
+    public String getAppWebPath(String virtualAbsolutePath) {
+        if (virtualAbsolutePath == null) {
+            return null;
+        }
+        return "/fs/" + virtualAbsolutePath;
+    }
+
+    public String getAbsoluteWebPath(String virtualAbsolutePath) {
+        if (virtualAbsolutePath == null) {
+            return null;
+        }
+        return Vr.get().getContext() + "/fs/" + virtualAbsolutePath;
+    }
+
+
+    public VFile getUserAbsoluteFile(int id, String... path) {
+        VFile[] p = getUserAbsoluteFiles(id, path);
+        if (p.length == 0) {
+            return null;
+        }
+        return p[0];
+    }
+
+    public VFile[] getUserAbsoluteFiles(int id, String[] path) {
+        AppUser t = CorePlugin.get().findUser(id);
+        CorePlugin fs = VrApp.getBean(CorePlugin.class);
+        List<VFile> files = new ArrayList<VFile>();
+        if (t != null) {
+            VFile userFolder = fs.getUserFolder(t.getLogin());
+            VFile profileFolder = fs.getProfileFolder("Teacher");
+            for (String p : path) {
+                VFile ff = userFolder.get(p);
+                if (ff.exists()) {
+                    files.add(ff);
+                }
+            }
+            for (String p : path) {
+                VFile ff = profileFolder.get(p);
+                if (ff.exists()) {
+                    files.add(ff);
+                }
+            }
+        }
+        return files.toArray(new VFile[files.size()]);
+    }
+
+    public String mapValue(String var,String defaultVal,String ... fromTo){
+        for (int i = 0; i < fromTo.length; i+=2) {
+            if(var.equals(fromTo[i])){
+                return fromTo[i+1];
+            }
+        }
+        return defaultVal;
+    }
 }

@@ -106,11 +106,11 @@ and open the template in the editor.
 
     </header>
     <ui:insert name="row1">
-        #{articlesCtrl.loadArticles('Main.Row1')}
+        #{vr.cmsTextService.loadContentTexts('Showcase')}
         <h:form id="row1Form">
             <div class="banner">
                 <ul>
-                    <ui:fragment rendered="#{vr.getArticlesList('Main.Row1').size() eq 0}">
+                    <ui:fragment rendered="#{vr.cmsTextService.getContentTextList('Showcase').size() eq 0}">
                         <li style="background-image: url('#{vr.context}/fs/Site/wplugins/infusion/img/01.jpg');">
                             <div class="container">
                                 <div class="row">
@@ -126,7 +126,7 @@ and open the template in the editor.
                             </div>
                         </li>
                     </ui:fragment>
-                    <ui:repeat value="#{vr.getArticlesList('Main.Row1')}" var="a">
+                    <ui:repeat value="#{vr.cmsTextService.getContentTextList('Showcase')}" var="a">
                         <li style="background-image: url('#{vr.url(a.imageURL)}'); background-size:100% 100%;">
                             <div class="container">
                                 <div class="row">
@@ -271,7 +271,7 @@ and open the template in the editor.
     </ui:insert>
     <ui:insert name="row3">
         <h:form id="row3Form">
-            #{articlesCtrl.loadArticles('Main.Row3')}
+            #{vr.cmsTextService.loadContentTexts('Main.Row3')}
 
             <div class="text-inter">
                 <div class="container">
@@ -293,7 +293,7 @@ and open the template in the editor.
                             <p>Coming to ENISo isn’t all about classes and studying, we provide a large and varied programs of extracurricular activities for our students.</p>
                         </div>
 
-                        <ui:repeat value="#{vr.getArticlesList('Main.Row3')}" var="a">
+                        <ui:repeat value="#{vr.cmsTextService.getContentTextList('Main.Row3')}" var="a">
                             <div class="col-md-6">
                                 <h3><h:outputLabel value="#{a.subject}"/></h3>
 
@@ -430,7 +430,7 @@ and open the template in the editor.
     </ui:insert>
     <ui:insert name="row6">
         <h:form id="row6Form">
-            #{articlesCtrl.loadArticles('Main.Row6')}
+            #{vr.cmsTextService.loadContentTexts('Main.Row6')}
 
             <div class="quote-container">
                 <div class="container">
@@ -438,7 +438,7 @@ and open the template in the editor.
                         <div class="col-md-12">
                             <div class="col-md-10 col-md-offset-1">
                                 <div class="quote-slideshow">
-                                    <ui:repeat value="#{vr.getArticlesList('Main.Row6')}" var="a"
+                                    <ui:repeat value="#{vr.cmsTextService.getContentTextList('Main.Row6')}" var="a"
                                                varStatus="st">
                                         <figure class="#{st.first ?'show':''}">
                                             <h2><h:outputLabel value="#{a.subject}"/></h2>
@@ -456,7 +456,7 @@ and open the template in the editor.
                                                                         </figure>-->
                                 </div>
                             </div>
-                            <ui:fragment rendered="#{vr.getArticlesList('Main.Row6').size() gt 0}">
+                            <ui:fragment rendered="#{vr.cmsTextService.getContentTextList('Main.Row6').size() gt 0}">
                                 <span class="quote-prev circle"><i class="fa fa-angle-left fa-2x"></i></span>
                                 <span class="quote-next circle"><i class="fa fa-angle-right fa-2x"></i></span>
                             </ui:fragment>

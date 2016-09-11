@@ -322,7 +322,7 @@ public class TaskPlugin {
 
     }
 
-    public List<Todo> findTodosByResponsible(Integer listId, Integer responsible, TodoStatusType status) {
+    public List<Todo> findTodosByResponsible(Integer listId, Integer responsible, TodoStatusType[] statuses) {
 
         UserSession session = VrApp.getContext().getBean(UserSession.class);
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -330,9 +330,18 @@ public class TaskPlugin {
         StringBuilder q = new StringBuilder("Select a from Todo a where a.deleted=:d and a.archived=:r");
         params.put("d", false);
         params.put("r", false);
-        if (status != null) {
-            q.append(" and a.status.type = :s");
-            params.put("s", status);
+        if (statuses != null && statuses.length>0) {
+            q.append(" and ");
+            q.append(" ( ");
+            for (int i = 0; i < statuses.length; i++) {
+                TodoStatusType st = statuses[i];
+                if(i>0){
+                    q.append(" or ");
+                }
+                q.append(" a.status.type = :s"+i);
+                params.put("s"+i, st);
+            }
+            q.append(" ) ");
         }
         //a.listId=:li and a.status.type = :s and 
         if (listId != null) {

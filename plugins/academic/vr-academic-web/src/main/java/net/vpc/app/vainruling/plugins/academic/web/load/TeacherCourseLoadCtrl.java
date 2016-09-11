@@ -61,7 +61,7 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
     public void onInit() {
         super.onInit();
         getCourseFilter().getModel().setRefreshFilter(new String[]{"deviation-extra", "deviation-week"});
-        getModel().setOthersFilters(new String[]{"rooms"});
+        getModel().setOthersFilters(new String[]{"rooms","multiple-selection"});
     }
     public void onRefresh() {
         super.onRefresh();

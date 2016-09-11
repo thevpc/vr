@@ -19,6 +19,7 @@ public class TeacherGenerationOptions {
     private DeviationConfig deviationConfig=new DeviationConfig();
     private String templateFolder;
     private String outputFolder;
+    private String oldOutputFolder;
     private String outputNamePattern;
     private CourseAssignmentFilter courseAssignmentFilter;
     private boolean includeIntents;
@@ -120,6 +121,15 @@ public class TeacherGenerationOptions {
 
     public TeacherGenerationOptions setVersion(String version) {
         this.version = version;
+        return this;
+    }
+
+    public String getOldOutputFolder() {
+        return oldOutputFolder;
+    }
+
+    public TeacherGenerationOptions setOldOutputFolder(String oldOutputFolder) {
+        this.oldOutputFolder = oldOutputFolder;
         return this;
     }
 }
