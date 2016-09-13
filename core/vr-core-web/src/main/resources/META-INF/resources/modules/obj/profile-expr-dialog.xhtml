@@ -10,7 +10,7 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-        >
+>
 
 <h:head>
 
@@ -18,6 +18,8 @@ and open the template in the editor.
 
 <h:body>
 
+    <!--@elvariable id="profileExprDialogCtrl" type="net.vpc.app.vainruling.core.web.obj.dialog.ProfileExprDialogCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
     <ui:composition template="#{vr.themePath}/templates/dialog-template.xhtml">
         <ui:define name="dialog-title">
             <h:outputText value="Recherche"/>
@@ -37,31 +39,38 @@ and open the template in the editor.
                 <p:commandButton ajax="true" value="+" actionListener="#{profileExprDialogCtrl.onAdd}" update=":myform"
                                  style="    padding-top: 1px;margin-left: 2px;vertical-align: super;"/>
 
-                <h3>Liste utilisateurs</h3>
-                <p:dataTable var="ii" value="#{profileExprDialogCtrl.model.users}"
-                             paginator="true"
-                             rowsPerPageTemplate="5,10,20,50,100,500,1000,10000"
-                             rows="10"
-                             emptyMessage="Aucun résultat"
-                             paginatorPosition="bottom"
-                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                <p:tabView>
+                    <p:tab title="Liste utilisateurs">
+                        <p:dataTable var="ii" value="#{profileExprDialogCtrl.model.users}"
+                                     paginator="true"
+                                     rowsPerPageTemplate="5,10,20,50,100,500,1000,10000"
+                                     rows="10"
+                                     emptyMessage="Aucun résultat"
+                                     paginatorPosition="bottom"
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                         >
-                    <p:column headerText="Login">
-                        <p:outputLabel value="#{ii.login}"/>
-                    </p:column>
-                    <p:column headerText="Nom Complet">
-                        <p:outputLabel value="#{ii.contact.fullName}"/>
-                    </p:column>
-                    <p:column headerText="Email">
-                        <p:outputLabel value="#{ii.contact.email}"/>
-                    </p:column>
-                    <f:facet name="footer">
-                        <p:outputLabel value="Total #{profileExprDialogCtrl.model.users.size()}"/>
-                    </f:facet>
-                </p:dataTable>
+                            <p:column headerText="Login">
+                                <p:outputLabel value="#{ii.login}"/>
+                            </p:column>
+                            <p:column headerText="Nom Complet">
+                                <p:outputLabel value="#{ii.contact.fullName}"/>
+                            </p:column>
+                            <p:column headerText="Email">
+                                <p:outputLabel value="#{ii.contact.email}"/>
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:outputLabel value="Total #{profileExprDialogCtrl.model.users.size()}"/>
+                            </f:facet>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Emails" rendered="#{profileExprDialogCtrl.model.config.emails}">
+                        <p:inputTextarea value="#{profileExprDialogCtrl.model.emailListText}" disabled="true" style="width: 100%;height: 100%;"/>
+                    </p:tab>
+                </p:tabView>
                 <p:commandButton icon="ui-icon-search"
                                  actionListener="#{profileExprDialogCtrl.fireEventExtraDialogClosed()}"
-                                 value="Accepter" styleClass="btn btn-primary" style="position: absolute;right: 10px; margin-top: 10px;"/>
+                                 value="Accepter" styleClass="btn btn-primary"
+                                 style="position: absolute;right: 10px; margin-top: 10px;"/>
             </h:form>
         </ui:define>
 

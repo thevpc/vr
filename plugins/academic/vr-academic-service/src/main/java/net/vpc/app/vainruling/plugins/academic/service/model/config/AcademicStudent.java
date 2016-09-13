@@ -13,6 +13,7 @@ import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicBac;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicPreClass;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicPreClassType;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.config.*;
 
@@ -58,6 +59,7 @@ public class AcademicStudent {
     private String privateObservations;
 
     private AcademicPreClass preClass;
+    private AcademicPreClassType preClassType;
     private int preClassRank;
     private int preClassRankMax;
     private AcademicBac baccalaureateClass;
@@ -344,5 +346,13 @@ public class AcademicStudent {
 
     public void setCurriculumVitae(String curriculumVitae) {
         this.curriculumVitae = curriculumVitae;
+    }
+
+    public AcademicPreClassType getPreClassType() {
+        return preClassType;
+    }
+
+    public void setPreClassType(AcademicPreClassType preClassType) {
+        this.preClassType = preClassType;
     }
 }

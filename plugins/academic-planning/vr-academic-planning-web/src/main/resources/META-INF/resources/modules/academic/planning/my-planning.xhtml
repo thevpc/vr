@@ -24,7 +24,7 @@ and open the template in the editor.
             <!--                <h:form id="buttonsForm">
 
                                  /.row
-                                <div class="row">
+                                <div >
                                     <p:outputLabel id="buttons">
                                         <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
                                     </p:outputLabel>
@@ -32,7 +32,7 @@ and open the template in the editor.
 
                             </h:form>-->
             <h:form id="listForm">
-                <div class="row">
+                <div >
                     <div class="table-responsive">
                         <p:outputLabel value="Aucun Emploi du temps n'a pu etre resolu"
                                        rendered="#{myPlanningCtrl.model.planning eq null or (myPlanningCtrl.model.planning.size()) eq 0}"/>

@@ -119,7 +119,19 @@ public class ProfileExprDialogCtrl {
 
     public void revalidateUsersList() {
         String e = getModel().getExpression();
-        getModel().setUsers(core.findUsersByProfileFilter(e, null));
+        List<AppUser> usersByProfileFilter = core.findUsersByProfileFilter(e, null);
+        getModel().setUsers(usersByProfileFilter);
+        StringBuilder sb=new StringBuilder();
+        for (int i = 0; i < usersByProfileFilter.size(); i++) {
+            if(i>0){
+                sb.append(",");
+            }
+            AppUser appUser = usersByProfileFilter.get(i);
+            if(appUser.getContact()!=null && appUser.getContact().getEmail()!=null) {
+                sb.append(appUser.getContact().getEmail());
+            }
+        }
+        getModel().setEmailListText(sb.toString());
     }
 
     public Model getModel() {
@@ -188,6 +200,7 @@ public class ProfileExprDialogCtrl {
         private String expression;
         private String sourceId;
         private String userInfo;
+        private boolean emails;
 
         public String getTitle() {
             return title;
@@ -221,17 +234,33 @@ public class ProfileExprDialogCtrl {
             this.userInfo = userInfo;
         }
 
+        public boolean isEmails() {
+            return emails;
+        }
+
+        public void setEmails(boolean emails) {
+            this.emails = emails;
+        }
     }
 
     public static class Model {
 
         private String title = "";
+        private String emailListText = "";
         private Config config = new Config();
         private String expression = "";
         private List<SelectItem> items = new ArrayList<>();
         private List<AppUser> users = new ArrayList<>();
         private Map<String, ProfileExprItem> map = new HashMap<String, ProfileExprItem>();
         private String selected;
+
+        public String getEmailListText() {
+            return emailListText;
+        }
+
+        public void setEmailListText(String emailListText) {
+            this.emailListText = emailListText;
+        }
 
         public Config getConfig() {
             return config;

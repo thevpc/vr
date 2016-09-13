@@ -5,7 +5,17 @@ import java.util.List;
 /**
  * Created by vpc on 9/5/16.
  */
-public interface CmsTextService extends ContentTextService{
+public interface CmsTextService extends ContentTextService {
 
-    public void setSelectedContentText(int id);
+    public void setSelectedContentTextById(int id);
+
+    public ContentText getSelectedContentText();
+
+    public void setContentDisposition(String name);
+
+    public CmsTextDisposition getContentDispositionByName(String name);
+
+    public String getContentDispositionName();
+
+    public CmsTextDisposition getContentDisposition();
 }

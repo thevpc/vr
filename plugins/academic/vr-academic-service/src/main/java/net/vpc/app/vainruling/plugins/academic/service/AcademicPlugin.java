@@ -2801,9 +2801,19 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 .findById(AcademicPreClass.class, id);
     }
 
+    public AcademicPreClassType findAcademicPreClassType(int id) {
+        return (AcademicPreClassType) UPA.getPersistenceUnit()
+                .findById(AcademicPreClassType.class, id);
+    }
+
     public AcademicPreClass findAcademicPreClass(String name) {
         return (AcademicPreClass) UPA.getPersistenceUnit()
                 .findByField(AcademicPreClass.class, "name", name);
+    }
+
+    public AcademicPreClassType findAcademicPreClassType(String name) {
+        return (AcademicPreClassType) UPA.getPersistenceUnit()
+                .findByField(AcademicPreClassType.class, "name", name);
     }
 
     public AppPeriod findAcademicYearSnapshot(String t, String snapshotName) {
@@ -2983,7 +2993,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         List<AcademicClass> result = new ArrayList<>();
         Set<Integer> baseIds = new HashSet<>();
         for (AcademicClass aClass : classes) {
-            baseIds.addAll(findAcademicDownHierarchyIdList(aClass.getId(), allClasses));
+            if(aClass!=null) {
+                baseIds.addAll(findAcademicDownHierarchyIdList(aClass.getId(), allClasses));
+            }
         }
         for (Integer baseId : baseIds) {
             result.add(allClasses.get(baseId));
@@ -3177,7 +3189,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         AppUser u = s.getUser();
         AppContact c = s.getContact();
         AppDepartment d = s.getDepartment();
-
+        Set<String> managedProfileTypes=new HashSet<>(Arrays.asList("Department","StatusType","AcademicClass","AcademicProgram"));
         if (c == null && u != null) {
             c = u.getContact();
         }
@@ -3214,19 +3226,27 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 }
             }
             {
-                AppProfile p = core.findOrCreateCustomProfile("Student", "UserType");
-                goodProfiles.add(p.getId());
-            }
+                if(s.getStage()!=null){
+                    if(s.getStage()==AcademicStudentStage.ATTENDING) {
+                        AppProfile p = core.findOrCreateCustomProfile("Student", "UserType");
+                        goodProfiles.add(p.getId());
+                    }if(s.getStage()==AcademicStudentStage.GAP_YEAR){
+                        AppProfile p = core.findOrCreateCustomProfile("GapYearStudent", "StatusType");
+                        goodProfiles.add(p.getId());
+                    }else{
+                        AppProfile p = core.findOrCreateCustomProfile("FormerStudent", "StatusType");
+                        goodProfiles.add(p.getId());
+                        if(s.getStage()==AcademicStudentStage.GRADUATED){
+                            p = core.findOrCreateCustomProfile("Graduated", "StatusType");
+                            goodProfiles.add(p.getId());
 
-            TreeSet<String> classNames = new TreeSet<>();
-            AcademicClass[] clsArr = new AcademicClass[]{s.getLastClass1(), s.getLastClass2(), s.getLastClass3()};
-            for (AcademicClass ac : clsArr) {
-                if (ac != null) {
-                    String n = core.validateProfileName(ac.getName());
-                    classNames.add(n);
+                        }
+                    }
                 }
             }
-            for (AcademicClass ac : findAcademicUpHierarchyList(clsArr, academicClasses)) {
+
+
+            for (AcademicClass ac : findAcademicUpHierarchyList(new AcademicClass[]{s.getLastClass1(), s.getLastClass2(), s.getLastClass3()}, academicClasses)) {
                 if (ac != null) {
                     String n = core.validateProfileName(ac.getName());
                     //ignore inherited profiles in suffix
@@ -3243,13 +3263,46 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 }
             }
             StringBuilder goodSuffix = new StringBuilder();
+            TreeSet<String> classNames = new TreeSet<>();
+            List<AcademicClass> clsArr = new ArrayList<>();
+            clsArr.addAll(Arrays.asList(s.getLastClass1(), s.getLastClass2(), s.getLastClass3()));
+            if(s.getStage()==AcademicStudentStage.GRADUATED || s.getStage()==AcademicStudentStage.ELIMINATED){
+                AcademicFormerStudent formerStudent = findFormerStudent(s.getId());
+                if(formerStudent!=null){
+                    clsArr.addAll(Arrays.asList(formerStudent.getLastClass1(), formerStudent.getLastClass2(), formerStudent.getLastClass3()));
+                }
+            }
+
+            for (AcademicClass ac : clsArr) {
+                if (ac != null) {
+                    String n = core.validateProfileName(ac.getName());
+                    classNames.add(n);
+                }
+            }
+
             for (String cn : classNames) {
                 if (goodSuffix.length() > 0) {
                     goodSuffix.append("/");
                 }
                 goodSuffix.append(cn);
             }
+
+            if(s.getStage()!=null){
+                if(s.getStage()==AcademicStudentStage.ATTENDING) {
+                    //
+                }else if(s.getStage()==AcademicStudentStage.GAP_YEAR){
+                    goodSuffix.insert(0,"G.Y. "+(s.getLastSubscription()==null?"":s.getLastSubscription().getName())+" ");
+                }else if(s.getStage()==AcademicStudentStage.GRADUATED){
+                    goodSuffix.insert(0,"Grad. "+(s.getLastSubscription()==null?"":s.getLastSubscription().getName())+" ");
+                }else if(s.getStage()==AcademicStudentStage.ELIMINATED){
+                    goodSuffix.insert(0,"Elim. "+(s.getLastSubscription()==null?"":s.getLastSubscription().getName())+" ");
+                }else{
+                    //
+                }
+            }
+
             c.setPositionSuffix(goodSuffix.toString());
+
             c.setPositionTitle1("Student " + goodSuffix);
             pu.merge(c);
 
@@ -3259,7 +3312,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     if (goodProfiles.contains(p.getId())) {
                         goodProfiles.remove(p.getId());
                         //ok
-                    } else if (p.isCustom() && ("Department".equals(p.getCustomType()) || "AcademicClass".equals(p.getCustomType()) || "AcademicProgram".equals(p.getCustomType()))) {
+                    } else if (p.isCustom() && (p.getCustomType()!=null && managedProfileTypes.contains(p.getCustomType()))) {
                         core.userRemoveProfile(u.getId(), p.getId());
                     }
                 }

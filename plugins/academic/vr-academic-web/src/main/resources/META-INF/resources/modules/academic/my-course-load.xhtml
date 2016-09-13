@@ -33,7 +33,7 @@ and open the template in the editor.
                 </p:confirmDialog>
 
                 <!-- /.row -->
-                <div class="row">
+                <div >
                     <p:outputLabel id="buttons">
                         <p:commandButton value="Rafr." icon="vr-form-field vr-form-fixed-width-medium ui-ribbonicon-refresh"
                                          styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"
@@ -152,7 +152,7 @@ and open the template in the editor.
             </h:form>
             <h:form id="listForm">
 
-                <div class="row">
+                <div >
                     <div class="table-responsive">
                         <h1><p:outputLabel style="font-weight: bold"
                                            value="#{myCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{myCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{myCourseLoadCtrl.model.stat.val.teacher.situation.name} (#{myCourseLoadCtrl.teacherFilter.period.name}) "/>
@@ -257,7 +257,7 @@ and open the template in the editor.
                 </div>
 
                 <ui:repeat value="#{myCourseLoadCtrl.model.stat.semesters}" var="sem">
-                    <div class="row">
+                    <div >
                         <div class="table-responsive">
                             <h1>Semestre #{sem.val.semester.name}</h1>
                             <p:dataTable var="i" value="#{sem.assignments}"
@@ -336,7 +336,7 @@ and open the template in the editor.
 
                 <p:separator/>
 
-                <div class="row">
+                <div >
                     <div class="table-responsive">
                         <h1>Autres modules</h1>
                         <p:dataTable var="i" value="#{myCourseLoadCtrl.model.others}"

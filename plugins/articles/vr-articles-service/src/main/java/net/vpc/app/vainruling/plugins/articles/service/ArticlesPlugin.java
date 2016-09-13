@@ -8,7 +8,10 @@ package net.vpc.app.vainruling.plugins.articles.service;
 import com.sun.syndication.feed.synd.*;
 import com.sun.syndication.io.SyndFeedOutput;
 import net.vpc.app.vainruling.core.service.*;
+import net.vpc.app.vainruling.core.service.cache.CacheService;
+import net.vpc.app.vainruling.core.service.cache.EntityCache;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
+import net.vpc.app.vainruling.core.service.model.AppProperty;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
@@ -27,9 +30,11 @@ import net.vpc.common.gomail.GoMailListener;
 import net.vpc.common.gomail.GoMailMessage;
 import net.vpc.common.gomail.RecipientType;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.util.MapList;
 import net.vpc.common.util.MultiMap;
 import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
+import net.vpc.upa.Query;
 import net.vpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,9 +42,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,13 +51,42 @@ import java.util.logging.Logger;
  */
 @AppPlugin(dependsOn = {"mailboxPlugin"})
 public class ArticlesPlugin {
+    @Autowired
+    private CacheService cacheService;
 
     public static final String SEND_EXTERNAL_MAIL_QUEUE = "sendExternalMailQueue";
     @Autowired
     CorePlugin core;
 
+    public static ArticlesPlugin get() {
+        return VrApp.getBean(ArticlesPlugin.class);
+    }
+
     public ArticlesItem findArticle(int articleId) {
         return UPA.getPersistenceUnit().findById(ArticlesItem.class,articleId);
+    }
+
+    public ArticlesDisposition findArticleDisposition(int articleDispositionId) {
+        return UPA.getPersistenceUnit().findById(ArticlesDisposition.class,articleDispositionId);
+    }
+
+    public ArticlesDisposition findArticleDisposition(String name) {
+        final EntityCache entityCache = cacheService.get(ArticlesDisposition.class);
+        Map<String, ArticlesDisposition> m = entityCache.getProperty("findArticleDispositionByName", new Action<Map<String, ArticlesDisposition>>() {
+            @Override
+            public Map<String, ArticlesDisposition> run() {
+                Map<String, ArticlesDisposition> m = new HashMap<String, ArticlesDisposition>();
+                MapList<Integer, ArticlesDisposition> values = entityCache.getValues();
+                for (ArticlesDisposition u : values) {
+                    String key = u.getName();
+                    if (!StringUtils.isEmpty(key)) {
+                        m.put(key, u);
+                    }
+                }
+                return m;
+            }
+        });
+        return m.get(name);
     }
 
     public List<ArticlesFile> findArticlesFiles(int articleId) {
@@ -117,13 +149,13 @@ public class ArticlesPlugin {
         return f;
     }
 
-    public List<FullArticle> findFullArticlesByUserAndCategory(final String login, final String disposition) {
+    public List<FullArticle> findFullArticlesByUserAndCategory(final String login, int deptId,boolean includeNoDept, final String disposition) {
         return UPA.getContext().invokePrivileged(new Action<List<FullArticle>>() {
 
             @Override
             public List<FullArticle> run() {
                 List<FullArticle> all = new ArrayList<>();
-                List<ArticlesItem> articles = findArticlesByUserAndCategory(login, disposition);
+                List<ArticlesItem> articles = findArticlesByUserAndCategory(login, deptId, includeNoDept,disposition);
                 int[] articleIds = new int[articles.size()];
                 for (int i = 0; i < articleIds.length; i++) {
                     articleIds[i] = articles.get(i).getId();
@@ -159,19 +191,39 @@ public class ArticlesPlugin {
         }, null);
     }
 
-    public List<ArticlesItem> findArticlesByUserAndCategory(String login, String disposition) {
-        List<ArticlesItem> all = UPA.getPersistenceUnit().createQuery(
-                "Select u from ArticlesItem u where "
-                        + " u.disposition.name=:disposition"
-                        + " and u.deleted=false"
-                        + " and u.archived=false"
-                        + " order by "
-                        + "  u.position desc"
-                        + ", u.important desc"
-                        + ", u.sendTime desc"
-        )
-                .setParameter("disposition", disposition)
-                .getResultList();
+    public List<ArticlesItem> findArticlesByUserAndCategory(String login, int deptId,boolean includeNoDept,String ... dispositions) {
+        if(dispositions.length==0){
+            return Collections.EMPTY_LIST;
+        }
+        StringBuilder queryStr=new StringBuilder("Select u from ArticlesItem u where ");
+        queryStr.append(" u.deleted=false ");
+        queryStr.append(" and u.archived=false");
+        queryStr.append(" and (");
+        Map<String,Object> disps=new HashMap<>();
+        for (int i = 0; i < dispositions.length; i++) {
+            String disposition = dispositions[i];
+            if(i>0){
+                queryStr.append(" or ");
+            }
+            queryStr.append(" u.disposition.name=:disposition"+i);
+            disps.put("disposition"+i,disposition);
+        }
+        queryStr.append(" )");
+        if(includeNoDept) {
+            queryStr.append(" and (u.audienceDepartmentId=:audienceDepartmentId or u.audienceDepartmentId=null)");
+            disps.put("audienceDepartmentId",deptId);
+        }else{
+            queryStr.append(" and (u.audienceDepartmentId=:audienceDepartmentId)");
+            disps.put("audienceDepartmentId",deptId);
+        }
+
+        queryStr.append(" order by "
+                + "  u.position"
+                + ", u.important desc"
+                + ", u.sendTime desc");
+
+        Query query = UPA.getPersistenceUnit().createQuery(queryStr.toString()).setParameters(disps);
+        List<ArticlesItem> all = query.getResultList();
 
         return core.filterByProfilePattern(all, null, login, new ProfilePatternFilter<ArticlesItem>() {
             @Override
@@ -419,7 +471,7 @@ public class ArticlesPlugin {
     public void generateRSS(String login, String rss, OutputStream out) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         ArticlesDisposition t = pu.findByMainField(ArticlesDisposition.class, "rss." + rss);
-        List<FullArticle> articles = findFullArticlesByUserAndCategory(login, "rss." + rss);
+        List<FullArticle> articles = findFullArticlesByUserAndCategory(login, -1,true,"rss." + rss);
         try {
             String feedType = "rss_2.0";
 //            String fileName = "feed.xml";

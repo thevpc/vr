@@ -11,5 +11,6 @@ package net.vpc.app.vainruling.plugins.academic.service.model.config;
 public enum AcademicStudentStage {
     ATTENDING,
     ELIMINATED,
-    GRADUATED
+    GRADUATED,
+    GAP_YEAR
 }

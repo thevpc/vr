@@ -37,6 +37,10 @@ public class I18n implements Serializable {
     private final LinkedHashSet<String> bundlesUrls = new LinkedHashSet<String>();
     private final Map<String, ResourceBundleSuite> bundles = new HashMap<>();
 
+    public static I18n get(){
+        return VrApp.getBean(I18n.class);
+    }
+
     public I18n() {
     }
 
@@ -212,6 +216,17 @@ public class I18n implements Serializable {
             }
         }
         return null;
+    }
+
+    public String getOrDefault(String s, String defaultValue,Object[] params) {
+        String v = getOrNull(s, params);
+        if(v!=null){
+            return v;
+        }
+        if(params==null || params.length==0){
+            return defaultValue;
+        }
+        return format(defaultValue,params);
     }
 
     public String getOrNull(UPAObject s, Object... params) {

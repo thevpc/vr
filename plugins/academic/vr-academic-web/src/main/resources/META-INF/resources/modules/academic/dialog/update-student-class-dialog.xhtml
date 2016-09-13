@@ -10,7 +10,7 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-        >
+>
 
 <h:head>
 </h:head>
@@ -21,55 +21,99 @@ and open the template in the editor.
     <!--@elvariable id="updateStudentClassActionCtrl" type="net.vpc.app.vainruling.plugins.academic.web.dialog.UpdateStudentClassActionCtrl"-->
     <ui:composition template="#{vr.themePath}/templates/dialog-template.xhtml">
         <ui:define name="dialog-title">
-            <h:outputText value="Changer Phases"/>
+            <h:outputText value="Passage de Classes"/>
         </ui:define>
         <ui:define name="dialog-body">
             <div class="row">
                 <h:form id="listForm" style="width: 98%;">
-                    <p:panelGrid styleClass="vr-no-border-grid" style="border-style: none;border-width: 0px;width: 100%;">
+                    <p:panelGrid styleClass="vr-no-border-grid"
+                                 style="border-style: none;border-width: 0px;width: 100%;">
                         <p:row>
-                            <p:column colspan="2">
-                            <p:outputLabel
-                                    value="#{updateStudentClassActionCtrl.model.message}"/></p:column>
+                            <p:column colspan="4">
+                                <p:outputLabel id="msg"
+                                        value="#{updateStudentClassActionCtrl.model.message}"/></p:column>
                         </p:row>
                         <p:row>
                             <p:column><p:outputLabel value="Filtrer par Classe"/></p:column>
-                            <p:column>
+                            <p:column >
                                 <p:selectOneMenu value="#{updateStudentClassActionCtrl.model.selectedClassFrom}">
                                     <f:selectItem itemLabel="Selectionner Classe..." itemValue=""/>
                                     <f:selectItems value="#{updateStudentClassActionCtrl.model.classes}"/>
                                 </p:selectOneMenu>
                             </p:column>
-                        </p:row>
-                        <p:row>
                             <p:column><p:outputLabel value="Appliquer aux lignes selectionnées"/></p:column>
-                            <p:column>
+                            <p:column colspan="3">
                                 <p:selectBooleanCheckbox
                                         value="#{updateStudentClassActionCtrl.model.userSelectedOnly}"/>
                             </p:column>
                         </p:row>
+                        <p:row>
+                            <p:column><p:outputLabel value="Période ..."/></p:column>
+                            <p:column colspan="3">
+
+                                <p:selectOneMenu value="#{updateStudentClassActionCtrl.model.selectedPeriod}">
+                                    <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
+                                    <f:selectItems value="#{updateStudentClassActionCtrl.model.periods}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
 
                         <p:row>
-                            <p:column><p:outputLabel value="Changer en ..."/></p:column>
                             <p:column>
-                                <p:selectOneMenu value="#{updateStudentClassActionCtrl.model.selectedClassTo}">
-                                    <f:selectItem itemLabel="Selectionner Classe..." itemValue=""/>
-                                    <f:selectItems value="#{updateStudentClassActionCtrl.model.classes}"/>
-                                </p:selectOneMenu>
+                                <div>
+                                    <p:outputLabel value="Changer en ..."/>
+                                    <p:selectOneMenu value="#{updateStudentClassActionCtrl.model.selectedClassTo}">
+                                        <f:selectItem itemLabel="Selectionner Classe..." itemValue=""/>
+                                        <f:selectItems value="#{updateStudentClassActionCtrl.model.classes}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </p:column>
+                            <p:column>
+                                <h:outputText value=""/>
+                            </p:column>
+                            <p:column>
+                                <div>
+                                    <p:outputLabel value="Raison ..."/>
+                                    <p:inputText value="#{updateStudentClassActionCtrl.model.eliminationReason}"/>
+                                </div>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:commandButton value="Changer de classe"
+                                                 styleClass="btn btn-primary"
+                                                 actionListener="#{updateStudentClassActionCtrl.onChangeClass}"
+                                                 disabled="#{updateStudentClassActionCtrl.model.disabled}"
+                                                 update="msg"
+                                />
+                            </p:column>
+                            <p:column>
+                                <p:commandButton value="Conférer diplôme"
+                                                 styleClass="btn btn-success"
+                                                 actionListener="#{updateStudentClassActionCtrl.onGraduated}"
+                                                 disabled="#{updateStudentClassActionCtrl.model.disabled}"
+                                                 update="msg"
+                                />
+                            </p:column>
+                            <p:column>
+                                <p:commandButton value="Eliminer"
+                                                 styleClass="btn btn-danger"
+                                                 actionListener="#{updateStudentClassActionCtrl.onEliminated}"
+                                                 style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"
+                                                 disabled="#{updateStudentClassActionCtrl.model.disabled}"
+                                                 update="msg"
+                                />
+                            </p:column>
+                            <p:column>
+                                <p:commandButton value="Fermer"
+                                                 styleClass="btn btn-default"
+                                                 actionListener="#{updateStudentClassActionCtrl.fireEventExtraDialogClosed}"
+                                                 />
                             </p:column>
                         </p:row>
 
                     </p:panelGrid>
 
-                    <p:commandButton value="Appliquer changements"
-                                     styleClass="btn btn-primary"
-                                     actionListener="#{updateStudentClassActionCtrl.apply}"
-                                     style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"
-                                     disabled="#{updateStudentClassActionCtrl.model.disabled}"/>
-                    <p:commandButton value="Fermer"
-                                     styleClass="btn btn-default"
-                                     actionListener="#{updateStudentClassActionCtrl.fireEventExtraDialogClosed}"
-                                     style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
                 </h:form>
             </div>
         </ui:define>

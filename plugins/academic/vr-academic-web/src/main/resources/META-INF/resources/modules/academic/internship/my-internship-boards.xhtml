@@ -25,7 +25,7 @@ and open the template in the editor.
                 <p:messages id="currentMessages"/>
                 <ui:fragment rendered="#{myInternshipBoardsCtrl.model.list}">
 
-                    <div class="row">
+                    <div >
                         <p:selectOneMenu value="#{myInternshipBoardsCtrl.model.boardId}" style="margin-bottom: 20px;">
                             <p:ajax listener="#{myInternshipBoardsCtrl.onUpdateBoard}" update=":listForm"/>
                             <f:selectItem itemLabel="Selectionner Comité..." itemValue=""/>

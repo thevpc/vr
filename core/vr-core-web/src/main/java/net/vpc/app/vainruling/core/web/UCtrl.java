@@ -37,4 +37,6 @@ public @interface UCtrl {
     String menu() default "";
 
     String securityKey() default "";
+
+    int order() default 100;
 }

@@ -84,6 +84,11 @@ public class FullArticle implements ContentText{
     }
 
     @Override
+    public String getDecoration() {
+        return articlesItem.getDecoration();
+    }
+
+    @Override
     public String getContent() {
         return articlesItem.getContent();
     }

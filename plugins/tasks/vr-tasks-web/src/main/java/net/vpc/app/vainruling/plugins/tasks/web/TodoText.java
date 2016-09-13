@@ -34,6 +34,11 @@ public class TodoText implements ContentText{
     }
 
     @Override
+    public String getDecoration() {
+        return null;
+    }
+
+    @Override
     public String getSubject() {
         return todo.getName();
     }

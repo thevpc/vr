@@ -6,15 +6,16 @@
 package net.vpc.app.vainruling.plugins.academic.web.dialog;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.UPA;
 import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,8 +35,6 @@ public class UpdateStudentClassActionCtrl {
 
     public static final Logger log = Logger.getLogger(UpdateStudentClassActionCtrl.class.getName());
     @Autowired
-    AcademicPlugin pi;
-    @Autowired
     AcademicPlugin ap;
     @Autowired
     private CorePlugin core;
@@ -53,16 +52,23 @@ public class UpdateStudentClassActionCtrl {
 
     }
 
-    public void reloadStudentClasses() {
+    public void reloadData() {
         List<SelectItem> items = new ArrayList<>();
-        AcademicTeacher tt = ap.getCurrentTeacher();
 
-        List<AcademicClass> internshipBoards = pi.findAcademicClasses();
+        List<AcademicClass> internshipBoards = ap.findAcademicClasses();
         for (AcademicClass t : internshipBoards) {
             String n = t.getName();
             items.add(new SelectItem(String.valueOf(t.getId()), n));
         }
         getModel().setClasses(items);
+
+        items = new ArrayList<>();
+        List<AppPeriod> periods = core.findNavigatablePeriods();
+        for (AppPeriod t : periods) {
+            String n = t.getName();
+            items.add(new SelectItem(String.valueOf(t.getId()), n));
+        }
+        getModel().setPeriods(items);
 
     }
 
@@ -70,26 +76,118 @@ public class UpdateStudentClassActionCtrl {
     public void resetModel() {
         getModel().setDisabled(false);
         getModel().setMessage("");
-        reloadStudentClasses();
+        reloadData();
         getModel().setSelectedClassFrom(null);
         getModel().setSelectedClassTo(null);
+        getModel().setSelectedPeriod(null);
         getModel().setUserSelectedOnly(false);
     }
 
-    public void apply() {
+    public void onGraduated() {
         if (    //xor between board and group
                 (getModel().isUserSelectedOnly() || !StringUtils.isEmpty(getModel().getSelectedClassFrom()))
-                        && !StringUtils.isEmpty(getModel().getSelectedClassTo())) {
+                        && !StringUtils.isEmpty(getModel().getSelectedPeriod())
+                ) {
             getModel().setMessage("");
+            int periodId = Convert.toInteger(getModel().getSelectedPeriod(), IntegerParserConfig.LENIENT_F);
+            boolean userSelectedOnly = getModel().isUserSelectedOnly();
+            if (userSelectedOnly && periodId >= 0) {
+                AppPeriod period = core.findPeriod(periodId);
+                if (period != null) {
+                    try {
+                        for (String studentIdStr : getModel().getSelectionIdList()) {
+                            int studentId = Convert.toInteger(studentIdStr, IntegerParserConfig.LENIENT_F);
+                            AcademicStudent st = ap.findStudent(studentId);
+                            st.setLastSubscription(period);
+                            st.setStage(AcademicStudentStage.GRADUATED);
+                            ap.update(st);
+                        }
+                    } catch (Exception ex) {
+                        log.log(Level.SEVERE, "Error", ex);
+                        getModel().setMessage(ex.getMessage());
+                    }
+                }
+            } else {
+                int fromId = Convert.toInteger(getModel().getSelectedClassFrom(), IntegerParserConfig.LENIENT_F);
+                try {
+                    ap.updateStudentClassByClass(getModel().getClassNumber(), fromId, periodId);
+                } catch (Exception ex) {
+                    log.log(Level.SEVERE, "Error", ex);
+                    getModel().setMessage(ex.getMessage());
+                }
+            }
+        }else{
+            getModel().setMessage("Merci de faire votre selection");
+        }
+        if(StringUtils.isEmpty(getModel().getMessage())) {
+            fireEventExtraDialogClosed();
+        }
+    }
+
+    public void onEliminated() {
+        if (    //xor between board and group
+                (getModel().isUserSelectedOnly() || !StringUtils.isEmpty(getModel().getSelectedClassFrom()))
+                        && !StringUtils.isEmpty(getModel().getSelectedPeriod())
+                ) {
+            getModel().setMessage("");
+            int periodId = Convert.toInteger(getModel().getSelectedPeriod(), IntegerParserConfig.LENIENT_F);
+            boolean userSelectedOnly = getModel().isUserSelectedOnly();
+            if (userSelectedOnly && periodId >= 0) {
+                AppPeriod period = core.findPeriod(periodId);
+                if (period != null) {
+                    try {
+                        for (String studentIdStr : getModel().getSelectionIdList()) {
+                            int studentId = Convert.toInteger(studentIdStr, IntegerParserConfig.LENIENT_F);
+                            AcademicStudent st = ap.findStudent(studentId);
+                            st.setLastSubscription(period);
+                            st.setStage(AcademicStudentStage.ELIMINATED);
+                            ap.update(st);
+                            AcademicFormerStudent formerStudent = ap.findFormerStudent(studentId);
+                            formerStudent.setEliminationReason(getModel().getEliminationReason());
+                        }
+                    } catch (Exception ex) {
+                        log.log(Level.SEVERE, "Error", ex);
+                        getModel().setMessage(ex.getMessage());
+                    }
+                }
+            } else {
+                int fromId = Convert.toInteger(getModel().getSelectedClassFrom(), IntegerParserConfig.LENIENT_F);
+                try {
+                    ap.updateStudentClassByClass(getModel().getClassNumber(), fromId, periodId);
+                } catch (Exception ex) {
+                    log.log(Level.SEVERE, "Error", ex);
+                    getModel().setMessage(ex.getMessage());
+                }
+            }
+        }else{
+            getModel().setMessage("Merci de faire votre selection");
+        }
+        if(StringUtils.isEmpty(getModel().getMessage())) {
+            fireEventExtraDialogClosed();
+        }
+    }
+
+    public void onChangeClass() {
+        if (    //xor between board and group
+                (getModel().isUserSelectedOnly() || !StringUtils.isEmpty(getModel().getSelectedClassFrom()))
+                        && !StringUtils.isEmpty(getModel().getSelectedClassTo())
+                        && !StringUtils.isEmpty(getModel().getSelectedPeriod())
+                ) {
+            getModel().setMessage("");
+            int periodId = Convert.toInteger(getModel().getSelectedPeriod(), IntegerParserConfig.LENIENT_F);
             int toId = Convert.toInteger(getModel().getSelectedClassTo(), IntegerParserConfig.LENIENT_F);
             boolean userSelectedOnly = getModel().isUserSelectedOnly();
-            if (userSelectedOnly && toId >= 0) {
+            if (userSelectedOnly && toId >= 0 && periodId>=0) {
+                AppPeriod period = core.findPeriod(periodId);
                 AcademicClass cls = ap.findAcademicClass(toId);
-                if (cls != null) {
+                if (cls != null && period!=null) {
                     try {
                         for (String studentIdStr : getModel().getSelectionIdList()) {
                             int studentId = Convert.toInteger(studentIdStr, IntegerParserConfig.LENIENT_F);
                             ap.updateStudentClass(studentId, getModel().getClassNumber(), cls.getId());
+                            AcademicStudent st = ap.findStudent(studentId);
+                            st.setLastSubscription(period);
+                            ap.update(st);
                         }
                     } catch (Exception ex) {
                         log.log(Level.SEVERE, "Error", ex);
@@ -131,8 +229,11 @@ public class UpdateStudentClassActionCtrl {
         private List<String> selectionIdList;
         private String selectedClassFrom;
         private String selectedClassTo;
+        private String selectedPeriod;
+        private String eliminationReason;
         private boolean userSelectedOnly;
         private List<SelectItem> classes = new ArrayList<SelectItem>();
+        private List<SelectItem> periods = new ArrayList<SelectItem>();
 
         public boolean isDisabled() {
             return disabled;
@@ -198,6 +299,31 @@ public class UpdateStudentClassActionCtrl {
         public void setClassNumber(int classNumber) {
             this.classNumber = classNumber;
         }
+
+        public String getSelectedPeriod() {
+            return selectedPeriod;
+        }
+
+        public void setSelectedPeriod(String selectedPeriod) {
+            this.selectedPeriod = selectedPeriod;
+        }
+
+        public String getEliminationReason() {
+            return eliminationReason;
+        }
+
+        public void setEliminationReason(String eliminationReason) {
+            this.eliminationReason = eliminationReason;
+        }
+
+        public List<SelectItem> getPeriods() {
+            return periods;
+        }
+
+        public void setPeriods(List<SelectItem> periods) {
+            this.periods = periods;
+        }
+
     }
 
 }

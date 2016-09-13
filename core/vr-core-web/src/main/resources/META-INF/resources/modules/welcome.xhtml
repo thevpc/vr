@@ -100,7 +100,7 @@ and open the template in the editor.
                             </p:dataGrid>
                         </p:tab>
                         <p:tab title="News">
-                            #{vr.cmsTextService.getContentTextList('News')}
+                            #{vr.cmsTextService.loadContentTexts('News')}
                             <p:dataGrid var="a" value="#{vr.cmsTextService.getContentTextList('News')}" columns="1" layout="grid"
                                         rows="10" paginator="true"
                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"

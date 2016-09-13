@@ -124,6 +124,11 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
             this.date = date;
         }
 
+        @Override
+        public String getDecoration() {
+            return category;
+        }
+
         public String getCategory() {
             return category;
         }

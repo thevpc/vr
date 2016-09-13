@@ -466,4 +466,41 @@ public class VrUtils {
         dmp.diff_cleanupSemantic(diffs);
         return diffs;
     }
+
+    public static String getBeanName(Class cls){
+        String s = cls.getSimpleName();
+        return Character.toUpperCase(s.charAt(0))+s.substring(1);
+    }
+
+    public static String validateContactName(String name){
+        if(name==null){
+            name="";
+        }
+        name=name.trim();
+
+        StringBuilder sb=new StringBuilder();
+        boolean wasSpace=true;
+        for (int i = 0; i < name.length(); i++) {
+             char c=name.charAt(i);
+            if(Character.isWhitespace(c)){
+                if(wasSpace){
+                    //do nothing
+                }else{
+                    sb.append(c);
+                }
+                wasSpace=true;
+            }else if(Character.isLetter(c)){
+                if(wasSpace){
+                    sb.append(Character.toUpperCase(c));
+                }else{
+                    sb.append(Character.toLowerCase(c));
+                }
+                wasSpace=false;
+            }else{
+                sb.append(Character.toLowerCase(c));
+                wasSpace=false;
+            }
+        }
+        return sb.toString();
+    }
 }

@@ -78,6 +78,13 @@ public class VrWebHelper {
                     if("vr.themePath".equals(str)){
                         return Vr.get().getThemePath();
                     }
+                    if("vr.themeRelativePath".equals(str)){
+                        String themePath = Vr.get().getThemePath();
+                        if(themePath.startsWith("/")){
+                            return themePath.substring(1);
+                        }
+                        return themePath;
+                    }
                     return (String)evalSpringExpr(str);
                 }
             });

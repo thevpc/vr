@@ -41,8 +41,8 @@
 }
 
 .ui-widget-header {
-    border: 1px solid #9fbdc6;
-    background: #b2d8de;
+    border: 1px solid #367fa9;
+    background: #3c8dbc;
     color: #333333;
     font-weight: bold;
 }
@@ -97,7 +97,7 @@
 .ui-widget-content .ui-state-active,
 .ui-widget-header .ui-state-active {
     border: 1px solid #726b85;
-    background: #63b5c6;
+    background: #47a7df;
     font-weight: normal;
     color: #ffffff;
 }
@@ -115,7 +115,7 @@
 .ui-widget-content .ui-state-highlight,
 .ui-widget-header .ui-state-highlight {
     border: 1px solid #dad55e;
-    background: #63b5c6;
+    background: #47a7df;
     color: #692077;
 }
 

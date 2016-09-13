@@ -10,9 +10,7 @@ import net.vpc.app.vainruling.core.web.Vr;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +19,17 @@ import java.util.logging.Logger;
  */
 public class VRMenuDef {
 
+    public static final Comparator<VRMenuDef> VR_MENU_DEF_COMPARATOR = new Comparator<VRMenuDef>() {
+        @Override
+        public int compare(VRMenuDef o1, VRMenuDef o2) {
+            int x=Integer.compare(o1.getOrder(),o2.getOrder());
+            if(x!=0){
+                return x;
+            }
+            return o1.getName().compareTo(o2.getName());
+        }
+    };
+    private int order;
     private String name;
     private String path;
     private String type;
@@ -30,9 +39,10 @@ public class VRMenuDef {
     private List<VRMenuDef> children;
     private List<VRMenuLabel> labels=new ArrayList<>();
 
-    public VRMenuDef(String name, String path, String type, String command, String securityKey, String icon,VRMenuLabel[] labels) {
+    public VRMenuDef(String name, String path, String type, String command, String securityKey, String icon,int order,VRMenuLabel[] labels) {
         this.name = name;
         this.path = path;
+        this.order = order;
         this.type = type;
         this.command = command;
         this.securityKey = securityKey;
@@ -57,6 +67,10 @@ public class VRMenuDef {
 //                    );
 //            labels.add(new VRMenuLabel(sval,stype));
 //        }
+    }
+
+    public int getOrder() {
+        return order;
     }
 
     public List<VRMenuLabel> getLabels() {
@@ -121,6 +135,7 @@ public class VRMenuDef {
                 all.add(c);
             }
         }
+        Collections.sort(all, VR_MENU_DEF_COMPARATOR);
         return all;
     }
 
@@ -131,6 +146,7 @@ public class VRMenuDef {
                 all.add(c);
             }
         }
+        Collections.sort(all, VR_MENU_DEF_COMPARATOR);
         return all;
     }
 

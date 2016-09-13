@@ -24,7 +24,7 @@ and open the template in the editor.
             <!--                <h:form id="buttonsForm">
 
                                  /.row
-                                <div class="row">
+                                <div >
                                     <p:outputLabel id="buttons">
                                         <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
                                     </p:outputLabel>
@@ -34,7 +34,7 @@ and open the template in the editor.
             <h:form id="listForm">
                 <p:messages id="currentMessages"/>
 
-                <div class="row">
+                <div >
                     <p:selectOneMenu value="#{myInternshipsCtrl.model.internshipId}">
                         <p:ajax listener="#{myInternshipsCtrl.onRefresh}" update=":listForm"/>
                         <f:selectItem itemLabel="Selectionner Stage..." itemValue=""/>
@@ -43,7 +43,7 @@ and open the template in the editor.
                     <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
                 </div>
                 <ui:fragment id="fileUploadfragment">
-                    <div class="row">
+                    <div >
                         <p:fileUpload id="fileUpload" rendered="#{myInternshipsCtrl.model.uploading}"
                                       fileUploadListener="#{myInternshipsCtrl.handleFileUpload}" mode="advanced"
                                       update=":listForm" auto="true" sizeLimit="15000000"
@@ -51,7 +51,7 @@ and open the template in the editor.
                     </div>
                 </ui:fragment>
 
-                <div class="row" style="margin-top: 20px;">
+                <div style="margin-top: 20px;">
                     <div class="table-responsive">
                         <p:tabView rendered="#{myInternshipsCtrl.model.internship ne null}">
                             <p:tab title="Général">
@@ -629,7 +629,7 @@ and open the template in the editor.
                 </div>
 
 
-                <div class="row" style="margin-bottom: 20px;margin-top: 20px;margin-left: 20%;">
+                <div style="margin-bottom: 20px;margin-top: 20px;margin-left: 20%;">
                     <div class="table-responsive">
                         <p:commandButton rendered="#{myInternshipsCtrl.model.internship ne null}" value="Enregistrer"
                                          action="#{myInternshipsCtrl.onSave}" update="currentMessages"/>

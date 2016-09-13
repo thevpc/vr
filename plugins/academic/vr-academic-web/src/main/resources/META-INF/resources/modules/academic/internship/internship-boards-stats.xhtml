@@ -34,7 +34,7 @@ and open the template in the editor.
             <h:form id="listForm">
                 <p:messages id="currentMessages"/>
 
-                <div class="row">
+                <div >
                     <p:selectOneMenu value="#{internshipBoardsStatsCtrl.model.boardId}" style="margin-bottom: 20px;">
                         <p:ajax listener="#{internshipBoardsStatsCtrl.onUpdateBoard}" update=":listForm"/>
                         <f:selectItem itemLabel="Selectionner Comité..." itemValue=""/>
@@ -61,7 +61,7 @@ and open the template in the editor.
                                     </div>-->
                 <p:tabView>
                     <p:tab title="Stats">
-                        <div class="row">
+                        <div >
                             <div class="col-lg-6">
                                 <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut1 ne null}" type="donut"
                                          model="#{internshipBoardsStatsCtrl.model.donut1}"
@@ -73,7 +73,7 @@ and open the template in the editor.
                                          style="width:400px;height:300px"/>
                             </div>
                         </div>
-                        <div class="row">
+                        <div >
                             <div class="col-lg-6">
                                 <p:chart rendered="#{internshipBoardsStatsCtrl.model.pie1 ne null}" type="pie"
                                          model="#{internshipBoardsStatsCtrl.model.pie1}"
@@ -85,7 +85,7 @@ and open the template in the editor.
                                          style="width:400px;height:300px"/>
                             </div>
                         </div>
-                        <div class="row">
+                        <div >
                             <div class="col-lg-6">
                                 <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut5 ne null}" type="donut"
                                          model="#{internshipBoardsStatsCtrl.model.donut5}"
@@ -97,7 +97,7 @@ and open the template in the editor.
                                          style="width:400px;height:300px"/>
                             </div>
                         </div>
-                        <div class="row">
+                        <div >
                             <div class="col-lg-6">
                                 <p:chart rendered="#{internshipBoardsStatsCtrl.model.bar1 ne null}" type="bar"
                                          model="#{internshipBoardsStatsCtrl.model.bar1}"
@@ -111,7 +111,7 @@ and open the template in the editor.
                         </div>
                     </p:tab>
                     <p:tab title="Encadrements">
-                        <div class="row">
+                        <div >
                             <p:dataTable id="internTable" var="i"
                                          value="#{internshipBoardsStatsCtrl.model.academicInternshipCounts}"
                                          class="table table-bordered table-hover"

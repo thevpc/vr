@@ -13,6 +13,8 @@ public interface ContentText {
 
     public String getCategory();
 
+    public String getDecoration();
+
     public String getSubject();
 
     public String getContent();

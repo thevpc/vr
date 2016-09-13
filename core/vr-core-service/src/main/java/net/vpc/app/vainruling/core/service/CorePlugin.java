@@ -1615,31 +1615,31 @@ public class CorePlugin {
         return us != null && us.isAdmin();
     }
 
-    public String validateName(String text) {
-        //make it kamel based
-        boolean wasWhite = true;
-        char[] chars = (text == null ? "" : text).toCharArray();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < chars.length; i++) {
-            char aChar = chars[i];
-            if (Character.isWhitespace(aChar)) {
-                if (!(aChar == ' ' || aChar == '\t')) {
-                    aChar = ' ';
-                }
-                if (!wasWhite) {
-                    sb.append(aChar);
-                }
-                wasWhite = true;
-            } else if (wasWhite) {
-                sb.append(Character.toUpperCase(aChar));
-                wasWhite = false;
-            } else {
-                sb.append(Character.toLowerCase(aChar));
-                wasWhite = false;
-            }
-        }
-        return sb.toString().trim();
-    }
+//    public String validateName(String text) {
+//        //make it kamel based
+//        boolean wasWhite = true;
+//        char[] chars = (text == null ? "" : text).toCharArray();
+//        StringBuilder sb = new StringBuilder();
+//        for (int i = 0; i < chars.length; i++) {
+//            char aChar = chars[i];
+//            if (Character.isWhitespace(aChar)) {
+//                if (!(aChar == ' ' || aChar == '\t')) {
+//                    aChar = ' ';
+//                }
+//                if (!wasWhite) {
+//                    sb.append(aChar);
+//                }
+//                wasWhite = true;
+//            } else if (wasWhite) {
+//                sb.append(Character.toUpperCase(aChar));
+//                wasWhite = false;
+//            } else {
+//                sb.append(Character.toLowerCase(aChar));
+//                wasWhite = false;
+//            }
+//        }
+//        return sb.toString().trim();
+//    }
 
     public String resolvePasswordProposal(AppContact contact) {
         String fn = contact.getFirstName();
@@ -1678,7 +1678,7 @@ public class CorePlugin {
         if (ln == null) {
             ln = "";
         }
-        return fn.toLowerCase().replace(" ", "") + "." + ln.toLowerCase().replace(" ", "");
+        return StringUtils.normalize(fn.toLowerCase()).replace(" ", "") + "." + StringUtils.normalize(ln.toLowerCase()).replace(" ", "");
     }
 
     public void runThread(Runnable r) {
@@ -2545,7 +2545,21 @@ public class CorePlugin {
     public void setCurrentUserTheme(String theme){
         UserSession session = UserSession.get();
         if(session!=null && session.getUser()!=null){
-            setAppProperty("System.DefaultTheme", session.getUser().getLogin(), theme);
+            UPA.getContext().invokePrivileged(new VoidAction() {
+                                                  @Override
+                                                  public void run() {
+                                                      setAppProperty("System.DefaultTheme", session.getUser().getLogin(), theme);
+                                                  }
+                                              }
+            );
+
+        }
+    }
+
+    public void setUserTheme(int userId,String theme){
+        AppUser user = findUser(userId);
+        if(user!=null){
+            setAppProperty("System.DefaultTheme", user.getLogin(), theme);
         }
     }
 

@@ -23,7 +23,7 @@
     <!-- jvectormap -->
     <link rel="stylesheet" href="#{vr.themeContext}/wplugins/adminlte/plugins/jvectormap/jquery-jvectormap-1.2.2.css"/>
     <!-- Theme style -->
-    <link rel="stylesheet" href="#{vr.themeContext}/wplugins/adminlte/dist/css/AdminLTE.min.css"/>
+    <link rel="stylesheet" href="#{vr.themeContext}/wplugins/adminlte/dist/css/AdminLTE.css"/>
     <!-- AdminLTE Skins. Choose a skin from the css/skins
          folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="#{vr.themeContext}/wplugins/adminlte/dist/css/skins/_all-skins.min.css"/>
@@ -54,13 +54,17 @@
             <header class="main-header">
 
                 <!-- Logo -->
-                <h:commandLink action="#{vr.gotoPage('publicIndex', '')}" styleClass="logo" style="text-decoration: none;">
+                <h:commandLink action="#{vr.gotoPage('publicIndex', '')}" styleClass="logo"
+                               style="text-decoration: none;">
                     <!-- mini logo for sidebar mini 50x50 pixels -->
-                    <span class="logo-mini"><b>E</b>niso</span>
+                    <span class="logo-mini">
+                        <span style="font-family: Audiowide; font-size: 9px">ENISo</span> <span
+                            style="font-family: Stalemate; font-size: 16px">info</span>
+                    </span>
                     <!-- logo for regular state and mobile devices -->
                     <span class="logo-lg">
-                    <span style="font-family: Audiowide; font-size: 32px">Eniso</span> <span
-                            style="font-family: Stalemate; font-size: 48px">info</span>
+                    <span style="font-family: Audiowide; font-size: 24px">ENISo</span> <span
+                            style="font-family: Stalemate; font-size: 40px">info</span>
                 </span>
                 </h:commandLink>
 
@@ -95,7 +99,7 @@
                                                                  class="img-circle" alt="User Image"/>
                                                         </div>
                                                         <h4>
-                                                            #{i.category}
+                                                            #{i.user.contact.fullName}
                                                             <small><i
                                                                     class="fa fa-clock-o"></i> #{vr.date(i.publishTime)}
                                                             </small>
@@ -107,20 +111,12 @@
                                             </ui:repeat>
                                         </ul>
                                     </li>
-                                    <ui:fragment id="inboxCount" rendered="#{vr.messageTextService.unreadCount ne 0}">
-                                        <li>
-                                            <h:outputLink class="footer" value="#{vr.context}/p/mailbox">
-                                                <strong>Lire #{vr.messageTextService.unreadCount} Message(s)</strong>
-                                            </h:outputLink>
-                                        </li>
-                                    </ui:fragment>
-                                    <ui:fragment id="inboxCount0" rendered="#{vr.messageTextService.unreadCount ne 0}">
-                                        <li>
-                                            <h:outputLink class="footer" value="#{vr.context}/p/mailbox">
-                                                <h:outputText value="Aucun Messages"/>
-                                            </h:outputLink>
-                                        </li>
-                                    </ui:fragment>
+                                    <li>
+                                        <h:outputLink class="footer" value="#{vr.context}/p/mailbox"
+                                                      style="text-align: center;">
+                                            <strong>Tous les Messages</strong>
+                                        </h:outputLink>
+                                    </li>
                                 </ul>
                             </li>
                             <!-- Notifications: style can be found in dropdown.less -->
@@ -132,12 +128,13 @@
                                                   rendered="#{vr.notificationTextService.unreadCount gt 0}">#{vr.notificationTextService.unreadCount}</h:panelGroup>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li class="header">Vous avez #{vr.messageTextService.unreadCount} notifications</li>
+                                    <li class="header">Vous avez #{vr.notificationTextService.unreadCount} notifications</li>
                                     <li>
                                         <!-- inner menu: contains the actual data -->
                                         <ul class="menu">
-                                            <ui:repeat value="#{vr.messageTextService.getContentTextListHead(null,6)}"
-                                                       var="i">
+                                            <ui:repeat
+                                                    value="#{vr.notificationTextService.getContentTextListHead(null,6)}"
+                                                    var="i">
                                                 <li>
                                                     <a href="#">
                                                         <i class="fa #{vr.nvl(i.linkClassStyle,vr.rand('fa-users text-aqua','fa-warning text-yellow','fa-users text-red','fa-shopping-cart text-green','fa-user text-red'))}"></i> #{i.subject}
@@ -146,7 +143,7 @@
                                             </ui:repeat>
                                         </ul>
                                     </li>
-                                    <li class="footer"><a href="#">Tout afficher</a></li>
+                                    <li class="footer"><a href="#"><strong>Tout afficher</strong></a></li>
                                 </ul>
                             </li>
                             <!-- Tasks: style can be found in dropdown.less -->
@@ -162,7 +159,7 @@
                                     <li>
                                         <!-- inner menu: contains the actual data -->
                                         <ul class="menu">
-                                            <ui:repeat value="#{vr.messageTextService.getContentTextListHead(null,6)}"
+                                            <ui:repeat value="#{vr.taskTextService.getContentTextListHead(null,6)}"
                                                        var="i">
                                                 <li><!-- Task item -->
                                                     <a href="#">
@@ -184,7 +181,62 @@
                                         </ul>
                                     </li>
                                     <li class="footer">
-                                        <a href="#">Tout afficher</a>
+                                        <a href="#"><strong>Tout afficher</strong></a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li class="sessions-menu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-users"></i>
+                                    <h:panelGroup styleClass="label label-warning"
+                                    >#{vr.activeSessions.size()}</h:panelGroup>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="header">#{vr.activeSessions.size()} utilisateurs connectés</li>
+                                    <li>
+                                        <!-- inner menu: contains the actual data -->
+                                        <ul class="menu">
+                                            <li>
+                                                <a href="#">
+                                                    <h4>
+                                                        Enseignants
+                                                        <small><i
+                                                                class="fa fa-group"></i> #{vr.getActiveSessionsByType("Teacher").size()}
+                                                        </small>
+                                                    </h4>
+                                                    <p></p>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#">
+                                                    <h4>
+                                                        Etudiants
+                                                        <small><i
+                                                                class="fa fa-group"></i> #{vr.getActiveSessionsByType("Student").size()}
+                                                        </small>
+                                                    </h4>
+                                                    <p></p>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#">
+                                                    <h4>
+                                                        Staff Technique
+                                                        <small><i
+                                                                class="fa fa-group"></i> #{vr.getActiveSessionsByType("Technician").size()}
+                                                        </small>
+                                                    </h4>
+                                                    <p></p>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <h:outputLink class="footer" value="#{vr.context}/p/activeSessions"
+                                                      style="text-align: center;" disabled="#{not vr.allowed('Custom.Admin.ActiveSessions')}">
+                                            <strong>Tout afficher</strong>
+                                        </h:outputLink>
                                     </li>
                                 </ul>
                             </li>
@@ -247,6 +299,9 @@
                     </div>
 
                 </nav>
+                <h:form>
+                    <p:poll interval="#{vr.pollInterval}" listener="#{vr.onPoll}" update=":mainHeaderForm"/>
+                </h:form>
             </header>
         </h:form>
         <!-- Left side column. contains the logo and sidebar -->
@@ -384,12 +439,6 @@
                                 </h:outputLink>
                             </li>
                         </ui:repeat>
-                        <li><a href="documentation/index.html"><i class="fa fa-book"></i> <span>Documentation</span></a>
-                        </li>
-                        <li class="header">LABELS</li>
-                        <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Important</span></a></li>
-                        <li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Warning</span></a></li>
-                        <li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>Information</span></a></li>
                     </ul>
                 </h:form>
             </section>
@@ -1329,12 +1378,13 @@
         </div>
         <!-- /.content-wrapper -->
 
-        <footer class="main-footer">
+        <footer class="main-footer" style="font-size: small;">
             <div class="pull-right hidden-xs">
                 <p:clock styleclass="vr-clock" pattern="HH:mm:ss | dd MMM yyyy"/>
                 <b>Version</b> #{corePlugin.appVersion.version}
             </div>
-            <strong>Copyright (c) 2015-2016 <a href="http://tahabensalah.net">Taha Ben Salah</a>.</strong> All rights
+            <strong>Copyright (c) 2015-2016 <a
+                    href="http://tahabensalah.net">Taha Ben Salah</a>, ENISo.</strong> All rights
             reserved.
         </footer>
 
@@ -1552,7 +1602,7 @@
     <!-- ChartJS 1.0.1 -->
     <script src="#{vr.themeContext}/wplugins/adminlte/plugins/chartjs/Chart.min.js"></script>
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-    <script src="#{vr.themeContext}/wplugins/adminlte/dist/js/pages/dashboard2.js"></script>
+    <!--<script src="# {vr.themeContext}/wplugins/adminlte/dist/js/pages/dashboard2.js"></script>-->
     <!-- AdminLTE for demo purposes -->
     <script src="#{vr.themeContext}/wplugins/adminlte/dist/js/demo.js"></script>
 </h:body>

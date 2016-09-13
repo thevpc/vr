@@ -26,7 +26,7 @@ and open the template in the editor.
             <h:form id="buttonsForm">
 
                 <!-- /.row -->
-                <div class="row">
+                <div >
                     <p:outputLabel id="buttons">
                         <p:commandButton value="Rafr." icon="a-refresh" style="height: 40px;"
                                          styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"
@@ -160,7 +160,7 @@ and open the template in the editor.
             <h:form id="listForm">
                 <p:tabView>
                     <p:tab title="Enseignants">
-                        <div class="row">
+                        <div >
                             <div class="table-responsive">
                                 <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
                                         value="Enseignants par Disciplines"/></h1></p:column>
@@ -229,7 +229,7 @@ and open the template in the editor.
                                 </p:dataTable>
                             </div>
                         </div>
-                        <div class="row">
+                        <div >
                             <div class="table-responsive">
                                 <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
                                         value="Enseignants par Disciplines et Situation"/></h1></p:column>
@@ -284,7 +284,7 @@ and open the template in the editor.
                                 </p:dataTable>
                             </div>
                         </div>
-                        <div class="row">
+                        <div >
                             <div class="table-responsive">
                                 <p:row>
                                     <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
@@ -310,7 +310,7 @@ and open the template in the editor.
                         </div>
                     </p:tab>
                     <p:tab title="Modules">
-                        <div class="row">
+                        <div >
 
                             <div class="table-responsive">
                                 <p:panelGrid>
@@ -334,7 +334,7 @@ and open the template in the editor.
                         </div>
                     </p:tab>
                     <p:tab title="Détails Charge">
-                        <div class="row">
+                        <div >
                             <h1><p:outputLabel value="Charge Annuelle"/></h1>
 
                             <div class="table-responsive">
@@ -481,7 +481,7 @@ and open the template in the editor.
                             </div>
                         </div>
                         <ui:repeat var="sem" value="#{globalStatCtrl.model.semesters}">
-                            <div class="row">
+                            <div >
                                 <h1><p:outputLabel value="Semestre #{sem.name}"/></h1>
 
                                 <div class="table-responsive">
@@ -635,7 +635,7 @@ and open the template in the editor.
                         </ui:repeat>
 
 
-                        <div class="row">
+                        <div >
 
                             <div class="table-responsive">
                                 <p:panelGrid>
@@ -706,7 +706,7 @@ and open the template in the editor.
                         </div>
                     </p:tab>
                     <p:tab title="Détails">
-                        <div class="row">
+                        <div >
                             <div class="table-responsive">
                                 <p:selectManyCheckbox value="#{globalStatCtrl.model.filters}" layout="grid" columns="3">
                                     <p:ajax listener="#{globalStatCtrl.onFiltersChanged}" update="tabstat"/>
@@ -736,7 +736,7 @@ and open the template in the editor.
                                                                 </p:selectManyCheckbox>
                                                             </div>-->
                         </div>
-                        <div class="row">
+                        <div >
                             <div class="table-responsive">
                                 <h1>Détails</h1>
 

@@ -25,6 +25,8 @@ public class AcademicStudentImport {
     private int preClassPrepRankMax;
     private Integer preClassPrepId;
     private String preClassPrepName;
+    private Integer preClassTypeId;
+    private String preClassTypeName;
     private String email;
     private String startPeriodName;
     private Integer startPeriodId;
@@ -236,4 +238,19 @@ public class AcademicStudentImport {
         this.preClassPrepRankMax = preClassPrepRankMax;
     }
 
+    public Integer getPreClassTypeId() {
+        return preClassTypeId;
+    }
+
+    public void setPreClassTypeId(Integer preClassTypeId) {
+        this.preClassTypeId = preClassTypeId;
+    }
+
+    public String getPreClassTypeName() {
+        return preClassTypeName;
+    }
+
+    public void setPreClassTypeName(String preClassTypeName) {
+        this.preClassTypeName = preClassTypeName;
+    }
 }

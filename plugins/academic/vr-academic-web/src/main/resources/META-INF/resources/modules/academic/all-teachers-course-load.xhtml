@@ -33,7 +33,7 @@ and open the template in the editor.
                 </p:confirmDialog>
 
                 <!-- /.row -->
-                <!--                    <div class="row">
+                <!--                    <div >
                                         <p:outputLabel id="buttons">
                                             <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {allTeachersCourseLoadCtrl.onRefresh}"  update=":listForm"/>
                                         </p:outputLabel>
@@ -233,7 +233,7 @@ and open the template in the editor.
                                    value="#{allTeachersCourseLoadCtrl.teacherFilter.period.name}"/>
                 </h1>
                 <ui:repeat value="#{allTeachersCourseLoadCtrl.model.tables}" var="tab">
-                    <div class="row">
+                    <div >
                         <div class="table-responsive">
                             <h1>#{tab.title}</h1>
                             <p:dataTable id="tbl" var="i" value="#{tab.rows}"

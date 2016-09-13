@@ -277,7 +277,7 @@
 }
 
 .ui-widget, .ui-widget .ui-widget {
-    font-size: 90%;
+    font-size: 13px;
 }
 
 .legend {
@@ -296,7 +296,7 @@
 
     border-color: var(--vr-color-main16);
     font-family: dsdigi;
-    /*font-size: x-small !important;*/
+    font-size: small !important;
     font-size: medium;
 
     color: var(--vr-color-main16);
@@ -941,3 +941,6 @@ span.ui-column-title {
     font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
 }
 
+.ui-widget-content{
+ background: #ecf0f5;
+}

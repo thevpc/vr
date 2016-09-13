@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.*;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.ImportOptions;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.*;
@@ -327,8 +328,8 @@ public class XlsxLoadImporter {
         final int COL_LAST_NAME2 = 13;
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         AcademicTeacherImport academicTeacherImport = new AcademicTeacherImport();
-        academicTeacherImport.setFirstName(core.validateName(Convert.toString(values[COL_FIRST_NAME])));
-        academicTeacherImport.setLastName(core.validateName(Convert.toString(values[COL_LAST_NAME])));
+        academicTeacherImport.setFirstName(VrUtils.validateContactName(Convert.toString(values[COL_FIRST_NAME])));
+        academicTeacherImport.setLastName(VrUtils.validateContactName(Convert.toString(values[COL_LAST_NAME])));
         if (!StringUtils.isEmpty(academicTeacherImport.getNin()) || !StringUtils.isEmpty(academicTeacherImport.getFirstName()) || !StringUtils.isEmpty(academicTeacherImport.getLastName())) {
             academicTeacherImport.setFirstName2(Convert.toString(values[COL_FIRST_NAME2]));
             academicTeacherImport.setLastName2(Convert.toString(values[COL_LAST_NAME2]));
@@ -385,9 +386,9 @@ public class XlsxLoadImporter {
         AcademicTeacher academicTeacher = new AcademicTeacher();
         AppContact contact = new AppContact();
         contact.setNin(a.getNin());
-        contact.setFirstName(a.getFirstName());
-        contact.setLastName(a.getLastName());
-        contact.setFullName(core.validateName(AppContact.getName(contact)));
+        contact.setFirstName(VrUtils.validateContactName(a.getFirstName()));
+        contact.setLastName(VrUtils.validateContactName(a.getLastName()));
+        contact.setFullName(VrUtils.validateContactName(AppContact.getName(contact)));
         contact.setPhone1(a.getPhone());
 
         AppDepartment dept = null;
@@ -595,8 +596,7 @@ public class XlsxLoadImporter {
     }
 
     public AcademicStudentImport parseAcademicStudentImport(Object[] values) throws IOException {
-        int col = -1;
-        final int COL_DEPT = ++col;
+        int col = 0;
         final int COL_NIN = ++col;
         final int COL_SUBSCRIPTION_NBR = ++col;
         final int COL_FIRST_NAME = ++col;
@@ -609,9 +609,15 @@ public class XlsxLoadImporter {
         final int COL_CIVILITY = ++col;
         final int COL_LAST_NAME2 = ++col;
         final int COL_FIRST_NAME2 = ++col;
+        final int COL_PREP = ++col;
+        final int COL_PREP_SECTION = ++col;
+        final int COL_PREP_RANK = ++col;
+        final int COL_PREP_RANK_MAX = ++col;
+        final int COL_BAC = ++col;
+        final int COL_BAC_SCORE = ++col;
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        String fn = core.validateName(Convert.toString(values[COL_FIRST_NAME]));
-        String ln = core.validateName(Convert.toString(values[COL_LAST_NAME]));
+        String fn = VrUtils.validateContactName(Convert.toString(values[COL_FIRST_NAME]));
+        String ln = VrUtils.validateContactName(Convert.toString(values[COL_LAST_NAME]));
         String nin = Convert.toString(values[COL_NIN]);
         if (!StringUtils.isEmpty(nin) || !StringUtils.isEmpty(fn) || !StringUtils.isEmpty(ln)) {
             AcademicStudentImport a = new AcademicStudentImport();
@@ -621,8 +627,24 @@ public class XlsxLoadImporter {
             a.setStartPeriodName(Convert.toString(values[COL_YEAR1]));
             a.setClassName(Convert.toString(values[COL_CLASS]));
             a.setFirstName2(Convert.toString(values[COL_FIRST_NAME2]));
+            a.setPreClassPrepName(Convert.toString(values[COL_PREP]));
+            a.setPreClassTypeName(Convert.toString(values[COL_PREP_SECTION]));
+            a.setPreClassPrepRank(Convert.toInteger(values[COL_PREP_RANK],IntegerParserConfig.LENIENT));
+            a.setPreClassPrepRankMax(Convert.toInteger(values[COL_PREP_RANK_MAX],IntegerParserConfig.LENIENT));
+            a.setPreClassBacName(Convert.toString(values[COL_BAC]));
+            Object value = values[COL_BAC_SCORE];
+            if(value!=null && (value instanceof String)){
+                String s = value.toString().trim();
+                if(s.contains(",") && !s.contains(".")){
+                    s=s.replace(',','.');
+                }
+                if(s.isEmpty()){
+                    s="0";
+                }
+                value=s;
+            }
+            a.setPreClassBacScore(Convert.toDouble(value,DoubleParserConfig.LENIENT));
             a.setLastName2(Convert.toString(values[COL_LAST_NAME2]));
-            a.setDepartmentName(Convert.toString(values[COL_DEPT]));
             a.setPhone(Convert.toString(values[COL_GSM]));
             a.setGenderName(Convert.toString(values[COL_GENDER]));
             a.setSubscriptionNumber(Convert.toString(values[COL_SUBSCRIPTION_NBR]));
@@ -674,14 +696,14 @@ public class XlsxLoadImporter {
         AppDepartment dept = null;
         if (a.getDepartmentId() != null) {
             dept = core.findDepartment(a.getDepartmentId());
-//            if (dept == null) {
-//                throw new NoSuchElementException("Department Not Found " + a.getDepartmentId());
-//            }
-        } else {
-            dept = core.findDepartment(a.getDepartmentName());
-//            if (dept == null) {
-//                throw new NoSuchElementException("Department Not Found " + a.getDepartmentName());
-//            }
+            if (dept == null) {
+                throw new NoSuchElementException("Department Not Found " + a.getDepartmentId());
+            }
+        } else if(!StringUtils.isEmpty(a.getDepartmentName())){
+            dept = core.findDepartment(a.getDepartmentName().trim());
+            if (dept == null) {
+                throw new NoSuchElementException("Department Not Found " + a.getDepartmentName());
+            }
         }
 
         AppPeriod period = null;
@@ -691,7 +713,7 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Period Not Found " + a.getStartPeriodId());
             }
         } else {
-            period = core.findPeriod(a.getStartPeriodName());
+            period = core.findPeriod(a.getStartPeriodName()==null?null:a.getStartPeriodName().trim());
             if (period == null) {
                 throw new NoSuchElementException("Period Not Found " + a.getStartPeriodName());
             }
@@ -704,7 +726,7 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Gender Not Found " + a.getGenderId());
             }
         } else {
-            gender = ctx.gendersByName.get(a.getGenderName().toUpperCase());
+            gender = ctx.gendersByName.get(a.getGenderName().toUpperCase().trim());
             if (gender == null) {
                 throw new NoSuchElementException("Gender Not Found " + a.getGenderName());
             }
@@ -717,7 +739,7 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Civility Not Found " + a.getCivilityId());
             }
         } else {
-            civility = ctx.civilityByName.get(a.getCivilityName().toUpperCase());
+            civility = ctx.civilityByName.get(a.getCivilityName().toUpperCase().trim());
             if (civility == null) {
                 if (gender.getName().equals("F")) {
                     civility = ctx.civilityByName.get("MLLE");
@@ -737,22 +759,35 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Bac Not Found " + a.getPreClassBacId());
             }
         } else if (!StringUtils.isEmpty(a.getPreClassBacName())) {
-            bac = service.findAcademicBac(a.getPreClassBacName());
+            bac = service.findAcademicBac(a.getPreClassBacName().trim());
             if (bac == null) {
-                throw new NoSuchElementException("Bac Not Found " + a.getStartPeriodName());
+                throw new NoSuchElementException("Bac Not Found " + a.getPreClassBacName());
             }
         }
 
         AcademicPreClass prep = null;
-        if (a.getPreClassBacId() != null) {
+        if (a.getPreClassPrepId() != null) {
             prep = service.findAcademicPreClass(a.getPreClassPrepId());
             if (prep == null) {
                 throw new NoSuchElementException("Prep Not Found " + a.getPreClassBacId());
             }
-        } else if (!StringUtils.isEmpty(a.getPreClassBacName())) {
-            prep = service.findAcademicPreClass(a.getPreClassPrepName());
+        } else if (!StringUtils.isEmpty(a.getPreClassPrepName())) {
+            prep = service.findAcademicPreClass(a.getPreClassPrepName().trim());
             if (prep == null) {
-                throw new NoSuchElementException("Prep Not Found " + a.getStartPeriodName());
+                throw new NoSuchElementException("Prep Not Found " + a.getPreClassPrepName());
+            }
+        }
+
+        AcademicPreClassType prepType = null;
+        if (a.getPreClassTypeId() != null) {
+            prepType = service.findAcademicPreClassType(a.getPreClassTypeId());
+            if (prepType == null) {
+                throw new NoSuchElementException("Prep Type Not Found " + a.getPreClassTypeId());
+            }
+        } else if (!StringUtils.isEmpty(a.getPreClassTypeName())) {
+            prepType = service.findAcademicPreClassType(a.getPreClassTypeName().trim());
+            if (prepType == null) {
+                throw new NoSuchElementException("Prep Not Found " + a.getPreClassTypeName());
             }
         }
 
@@ -763,17 +798,17 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Class Not Found " + a.getPreClassBacId());
             }
         } else {
-            studentclass = service.findAcademicClass(a.getClassName());
+            studentclass = service.findAcademicClass(a.getClassName().trim());
             if (studentclass == null) {
-                throw new NoSuchElementException("Class Not Found " + a.getStartPeriodName());
+                throw new NoSuchElementException("Class Not Found " + a.getClassName());
             }
         }
 
         AppContact contact = new AppContact();
         contact.setNin(a.getNin());
-        contact.setFirstName(a.getFirstName());
-        contact.setLastName(a.getLastName());
-        contact.setFullName(core.validateName(AppContact.getName(contact)));
+        contact.setFirstName(VrUtils.validateContactName(a.getFirstName()));
+        contact.setLastName(VrUtils.validateContactName(a.getLastName()));
+        contact.setFullName(VrUtils.validateContactName(AppContact.getName(contact)));
         String fs2 = a.getFirstName2();
         contact = core.findOrCreateContact(contact);
         AcademicStudent academicStudent = null;
@@ -783,6 +818,9 @@ public class XlsxLoadImporter {
         } else {
             academicStudent = new AcademicStudent();
             academicStudent.setContact(contact);
+        }
+        if (academicStudent.getDepartment() == null) {
+            academicStudent.setDepartment(studentclass.getProgram().getDepartment());
         }
         if (academicStudent.getDepartment() == null) {
             academicStudent.setDepartment(dept);
@@ -810,6 +848,9 @@ public class XlsxLoadImporter {
         }
         if (academicStudent.getPreClass() == null) {
             academicStudent.setPreClass(prep);
+        }
+        if (academicStudent.getPreClassType() == null) {
+            academicStudent.setPreClassType(prepType);
         }
         if (academicStudent.getPreClassRank() <= 0) {
             academicStudent.setPreClassRank(a.getPreClassPrepRank());

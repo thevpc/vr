@@ -34,7 +34,7 @@ and open the template in the editor.
             <h:form id="listForm">
                 <p:messages id="pageMessages"/>
 
-                <div class="row">
+                <div >
                     <p:selectOneMenu value="#{studentFeedbackCtrl.model.selectedFeedback}">
                         <p:ajax listener="#{studentFeedbackCtrl.onFeedbackChange}" update=":listForm"/>
                         <f:selectItem itemLabel="Selectionner..." itemValue=""/>
@@ -42,7 +42,7 @@ and open the template in the editor.
                     </p:selectOneMenu>
                 </div>
                 <ui:repeat var="r" value="#{studentFeedbackCtrl.model.rows}">
-                    <div class="row">
+                    <div >
                         <div class="table-responsive">
                             <p:dataTable value="#{r.questions}" var="i" style="margin-top: 20px;">
                                 <p:column headerText="#{r.title}">
@@ -62,7 +62,7 @@ and open the template in the editor.
                     </div>
                 </ui:repeat>
                 <ui:fragment rendered="#{studentFeedbackCtrl.model.rows.size() gt 0}">
-                    <div class="row">
+                    <div >
                         <p:outputLabel value="valider?" style="margin-top: 20px;"/>
                         <p:selectBooleanButton id="value2" value="#{studentFeedbackCtrl.model.validate}"
                                                onLabel="Oui"

@@ -25,11 +25,11 @@ and open the template in the editor.
             <h:form id="listForm" enctype="multipart/form-data">
                 <p:messages id="messages" showDetail="true" autoUpdate="true"/>
 
-                <div class="row">
+                <div style=" margin-bottom: 20px;" >
                     <h:outputText
                             value="Vous êtes #{vr.userSession.user.contact eq null ? '':vr.userSession.user.contact.fullName} (#{userSession.user.login})"/>
                 </div>
-                <div class="row">
+                <div >
                     <p:panelGrid columns="2" styleClass="vr-no-border-grid">
 
                         <p:outputLabel value="Thème" styleClass="vr-form-field vr-form-fixed-width-medium"/>

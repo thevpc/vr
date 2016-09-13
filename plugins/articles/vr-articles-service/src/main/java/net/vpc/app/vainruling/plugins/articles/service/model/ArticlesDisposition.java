@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.articles.service.model;
 
+import net.vpc.app.vainruling.core.service.content.CmsTextDisposition;
 import net.vpc.upa.config.*;
 
 /**
@@ -12,7 +13,7 @@ import net.vpc.upa.config.*;
  */
 @Entity(listOrder = "name")
 @Path("/Social/Config")
-public class ArticlesDisposition {
+public class ArticlesDisposition implements CmsTextDisposition{
 
     @Id
     @Sequence
@@ -20,6 +21,10 @@ public class ArticlesDisposition {
     @Main
     @Unique
     private String name;
+    @Summary
+    private String title;
+    @Summary
+    private String subTitle;
     @Summary
     @Field(max = "1024")
     private String description;
@@ -48,9 +53,24 @@ public class ArticlesDisposition {
         this.description = description;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     @Override
     public String toString() {
         return String.valueOf(name);
     }
 
+    public String getSubTitle() {
+        return subTitle;
+    }
+
+    public void setSubTitle(String subTitle) {
+        this.subTitle = subTitle;
+    }
 }

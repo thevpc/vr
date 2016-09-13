@@ -5,9 +5,12 @@
  */
 package net.vpc.app.vainruling.plugins.articles.web;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.content.CmsTextDisposition;
 import net.vpc.app.vainruling.core.service.content.CmsTextService;
 import net.vpc.app.vainruling.core.service.content.ContentText;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
@@ -21,9 +24,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -89,6 +90,7 @@ public class ArticlesCtrl implements CmsTextService {
 
     public void loadContentTexts(String name) {
         List<FullArticle> a = findArticles(name);
+        getModel().setDisposition(name);
         getModel().getArticles().put(name, a);
         if (getModel().getCurrent() == null) {
             if (a != null && a.size() > 0) {
@@ -99,50 +101,23 @@ public class ArticlesCtrl implements CmsTextService {
         }
     }
 
-    public List<FullArticle> getMainRow1Articles() {
-        return findArticles("Main.Row1");
-    }
-
-//    public List<FullArticle> getWelcomeArticles() {
-//        getModel().getArticles().put("Welcome",findArticles("Welcome"))
-//        return findArticles("Welcome");
-//    }
-
-    public List<FullArticle> getMainRow2Articles() {
-        return findArticles("Main.Row2");
-    }
-
-    public List<FullArticle> getMainRow3Articles() {
-        return findArticles("Main.Row3");
-    }
-
-    public List<FullArticle> getActivities() {
-        return findArticles("Activities");
+    @Override
+    public void setContentDisposition(String name) {
+        loadContentTexts(name);
     }
 
     public String getImageSwitchRandomEffect() {
         return imageSwitchEffects[(int) (Math.random() * imageSwitchEffects.length)];
     }
 
-    public List<FullArticle> getMainRow4Articles() {
-        return findArticles("Main.Row4");
-    }
-
-    public List<FullArticle> getMainRow5Articles() {
-        return findArticles("Main.Row5");
-    }
-
-    public List<FullArticle> getMainRow6Articles() {
-        return findArticles("Main.Row6");
-    }
-
-    public List<FullArticle> getMainRow7Articles() {
-        return findArticles("Main.Row7");
-    }
-
     public List<FullArticle> findArticles(String disposition) {
+        UserSession userSession = UserSession.get();
+        AppDepartment d = userSession==null?null:userSession.getSelectedDepartment();
+        if(d==null){
+            d= CorePlugin.get().findDepartment("II");
+        }
         AppUser u = UserSession.getCurrentUser();
-        return articles.findFullArticlesByUserAndCategory(u == null ? null : u.getLogin(), disposition);
+        return articles.findFullArticlesByUserAndCategory(u == null ? null : u.getLogin(),d==null?-1:d.getId(),true, disposition);
     }
 
     public List<ArticlesFile> findArticlesFiles(int articleId) {
@@ -174,8 +149,12 @@ public class ArticlesCtrl implements CmsTextService {
         return list;
     }
 
-    public void setSelectedContentText(int id) {
+    public void setSelectedContentTextById(int id) {
         getModel().setCurrent((FullArticle) articles.findFullArticle(id));
+        FullArticle c = getModel().getCurrent();
+        if(c!=null && c.getArticlesItem().getDisposition()!=null){
+            loadContentTexts(c.getArticlesItem().getDisposition().getName());
+        }
     }
 
     public List<ContentText> getContentTextListHead(String id, int max) {
@@ -184,5 +163,25 @@ public class ArticlesCtrl implements CmsTextService {
             return list.subList(0, max);
         }
         return list;
+    }
+
+    @Override
+    public CmsTextDisposition getContentDispositionByName(String name) {
+        return ArticlesPlugin.get().findArticleDisposition(name);
+    }
+
+    @Override
+    public String getContentDispositionName() {
+        return getModel().getDisposition();
+    }
+
+    @Override
+    public CmsTextDisposition getContentDisposition() {
+        return getContentDispositionByName(getContentDispositionName());
+    }
+
+    @Override
+    public ContentText getSelectedContentText() {
+        return getModel().getCurrent();
     }
 }

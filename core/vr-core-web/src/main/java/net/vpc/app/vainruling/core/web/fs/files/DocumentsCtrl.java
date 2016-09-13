@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.core.web.fs.files;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
@@ -55,8 +56,8 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
     @Override
     public List<VRMenuDef> createVRMenuDefList() {
         List<VRMenuDef> m = new ArrayList<>();
-        m.add(new VRMenuDef("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", "Custom.FileSystem.RootFileSystem", "",new VRMenuLabel[0]));
-        m.add(new VRMenuDef("Mes Documents", "/FileSystem", "documents", "{type:'me'}", "Custom.FileSystem.MyFileSystem", "",new VRMenuLabel[0]));
+        m.add(new VRMenuDef("Mes Documents", "/FileSystem", "documents", "{type:'me'}", "Custom.FileSystem.MyFileSystem", "",100,new VRMenuLabel[0]));
+        m.add(new VRMenuDef("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", "Custom.FileSystem.RootFileSystem", "",500,new VRMenuLabel[0]));
         return m;
     }
 
@@ -95,7 +96,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
                 d.setTitle(CorePlugin.FOLDER_MY_DOCUMENTS);
             }
             List<BreadcrumbItem> items = new ArrayList<>();
-            items.add(new BreadcrumbItem("Documents","Système de Fichiers", "fa-dashboard", "", ""));
+            items.add(new BreadcrumbItem(I18n.get().getOrNull("Controller.Documents"), I18n.get().getOrNull("Controller.Documents.subTitle"), "fa-dashboard", "", ""));
             d.setBreadcrumb(items.toArray(new BreadcrumbItem[items.size()]));
             return d;
         } catch (Exception ex) {

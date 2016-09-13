@@ -27,7 +27,7 @@ public class RSSServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        final VirtualFileSystem fs = core.getFileSystem();
+        //final VirtualFileSystem fs = core.getFileSystem();
         String filename = URLDecoder.decode(request.getPathInfo().substring(1), "UTF-8");
         VrApp.getBean(ArticlesPlugin.class).generateRSS(null, filename, response.getOutputStream());
     }

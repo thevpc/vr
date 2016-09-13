@@ -27,7 +27,7 @@ import java.util.*;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "Sessions Actives",
+        title = "Utilisateurs Connectés",
         url = "modules/admin/active-sessions",
         menu = "/Social",
         securityKey = "Custom.Admin.ActiveSessions"

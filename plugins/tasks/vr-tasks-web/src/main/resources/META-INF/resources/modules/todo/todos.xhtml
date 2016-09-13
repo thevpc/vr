@@ -30,20 +30,20 @@ and open the template in the editor.
                 </p:confirmDialog>
 
                 <!-- /.row -->
-                <div class="row">
+                <div >
                     <p:outputLabel id="buttons">
                         <p:commandButton value="Rafr." rendered="#{todoCtrl.isEnabledButton('Refresh')}"
-                                         icon="a-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"
+                                         icon="a-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws btn btn-default" ajax="true"
                                          actionListener="#{todoCtrl.onRefresh}" update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Nouv." rendered="#{todoCtrl.isEnabledButton('New')}" icon="fa-plus"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton vr-icon-aws btn btn-primary" ajax="true"
                                          actionListener="#{todoCtrl.onNew}" update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Enreg." rendered="#{todoCtrl.isEnabledButton('Save')}"
                                          icon="ui-ribbonicon-save" styleClass="ui-ribbon-bigbutton vr-icon-aws"
                                          ajax="true" onclick="processOnSaveCurrent()"
                                          update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Supp." rendered="#{todoCtrl.isEnabledButton('Remove')}"
-                                         icon="ui-ribbonicon-del" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-del" styleClass="ui-ribbon-bigbutton vr-icon-aws btn btn-danger"
                                          ajax="true" onclick="PF('confirmationDelete').show();"
                                          update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Arch." rendered="#{todoCtrl.isEnabledButton('Archive')}"
@@ -114,7 +114,7 @@ and open the template in the editor.
                 <p:outputLabel id="editItemList" rendered="#{todoCtrl.isListMode()}">
 
 
-                    <div class="row">
+                    <div >
                         <div class="col-lg-6">
                             <h4>à faire
                             </h4>
@@ -229,7 +229,7 @@ and open the template in the editor.
                     </div>
                     <!-- /.row -->
 
-                    <div class="row">
+                    <div >
                         <div class="col-lg-6">
                             <h4>à vérifier</h4>
 
@@ -356,7 +356,7 @@ and open the template in the editor.
                     <!--                        width="570"
                     height="450"-->
                     <div class="panel-body">
-                        <div class="row">
+                        <div >
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label>Titre</label>

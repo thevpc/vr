@@ -8,10 +8,7 @@ package net.vpc.app.vainruling.core.web;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.*;
-import net.vpc.app.vainruling.core.service.model.AppContact;
-import net.vpc.app.vainruling.core.service.model.AppGender;
-import net.vpc.app.vainruling.core.service.model.AppProperty;
-import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
@@ -240,6 +237,38 @@ public class Vr {
         return x;
     }
 
+    public String articleImageOrRand(String imageURL) {
+        if(imageURL!=null){
+            String low = imageURL.toLowerCase();
+            for (String s : new String[]{"jpg","jpeg","png","gif"}) {
+                if(low.endsWith("."+s) || low.contains("."+s+"?")){
+                    return url(imageURL);
+                }
+            }
+            imageURL="";
+        }
+        return url((String)nvl(imageURL,strFormat("/Site/images/articles/%1s"
+                ,randomize(
+                        "article-01.jpg",
+                        "article-02.jpg",
+                        "article-03.jpg",
+                        "article-04.jpg",
+                        "article-05.jpg",
+                        "article-06.jpg",
+                        "article-07.jpg",
+                        "article-08.jpg",
+                        "article-09.jpg",
+                        "article-10.jpg"
+                )
+        )));
+    }
+
+    public String articleImageOrDefault(String imageURL) {
+        return url((String)nvl(imageURL,strFormat("/Site/images/articles/%1s"
+                ,"article-01.jpg"
+        )));
+    }
+
     public String url(String path) {
         if (path == null) {
             path = "";
@@ -442,6 +471,13 @@ public class Vr {
         return VrUtils.extractPureHTML(value);
     }
 
+    public String html(ContentText value) {
+        if(value==null){
+            return "";
+        }
+        return VrUtils.extractPureHTML(value.getContent());
+    }
+
     public String wiki2Html(String value) {
         return VrWikiParser.convertToHtml(value, "Wiki");
     }
@@ -599,6 +635,22 @@ public class Vr {
 
     public List<UserSession> getActiveSessions() {
         return VrApp.getBean(ActiveSessionsCtrl.class).getModel().getSessions();
+    }
+
+    public List<UserSession> getActiveSessionsByType(String type) {
+        List<UserSession> r=new ArrayList<>();
+        List<UserSession> activeSessions = getActiveSessions();
+        if(activeSessions!=null) {
+            for (UserSession userSession : activeSessions) {
+                String name = (userSession != null && userSession.getUser() != null && userSession.getUser().getType() != null) ? userSession.getUser().getType().getName() : null;
+                if (type == null || (
+                        type.equals(name)
+                )) {
+                    r.add(userSession);
+                }
+            }
+        }
+        return r;
     }
 
     public int getPollInterval() {
@@ -830,5 +882,15 @@ public class Vr {
             }
         }
         return defaultVal;
+    }
+
+    public boolean allowed(String key){
+        return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(key);
+    }
+
+    public String updatePublicDepartment(String departmentCode){
+        AppDepartment department = CorePlugin.get().findDepartment(departmentCode);
+        getUserSession().setSelectedDepartment(department);
+        return gotoPage("publicIndex","");
     }
 }

@@ -48,11 +48,11 @@ and open the template in the editor.
                     <p:outputPanel id="buttons">
                         <p:commandButton title="Actualiser" rendered="#{objCtrl.isEnabledButton('Refresh')}"
                                          icon="fa fa-refresh"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn btn-default" ajax="true"
                                          actionListener="#{objCtrl.onRefresh}"
                                          update=":buttonsForm :listForm :itemForm :pageTitleForm" alt=""/>
                         <p:commandButton title="Nouveau" rendered="#{objCtrl.isEnabledButton('New')}" icon="fa fa-plus"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn btn-primary" ajax="true"
                                          actionListener="#{objCtrl.onNew}"
                                          update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
 
@@ -69,7 +69,7 @@ and open the template in the editor.
 
                         <p:commandButton title="Supprimer" rendered="#{objCtrl.isEnabledButton('Remove')}"
                                          icon="fa fa-trash-o"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn btn-danger" ajax="true"
                                          onclick="PF('confirmationDelete').show();"/>
 
                         <p:splitButton title="Chercher" rendered="#{objCtrl.isEnabledButton('Search')}"
@@ -236,7 +236,7 @@ and open the template in the editor.
                         </ui:repeat>-->
                     </p:outputPanel>
                 </div>
-                <div class="row">
+                <div >
                     <p:spacer width="10" height="10"/>
                 </div>
                 <p:panelGrid rendered="#{objCtrl.isListMode() and (objCtrl.autoFilters.size() gt 0)}" styleClass="vr-no-border-grid">
@@ -261,7 +261,7 @@ and open the template in the editor.
             </h:form>
             <h:form id="listForm">
 
-                <div class="row">
+                <div >
                     <p:spacer width="10" height="10"/>
                 </div>
                 <p:growl id="growl" showDetail="true" sticky="true"/>
@@ -387,7 +387,7 @@ and open the template in the editor.
                             update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm"/>
                 </p:commandButton>
 
-                <div class="row">
+                <div >
                     <p:spacer width="10" height="10"/>
                 </div>
                 <p:outputPanel id="editItemDialog" rendered="#{objCtrl.isNewOrUpdateMode()}">

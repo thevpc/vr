@@ -499,7 +499,7 @@ public class MailboxPlugin {
             someSend = true;
         }
         if (StringUtils.isEmpty(message.getSubject())) {
-            throw new IllegalArgumentException("Empty Sujet");
+            throw new IllegalArgumentException("Empty Subject");
         }
         if (StringUtils.isEmpty(message.getContent())) {
             throw new IllegalArgumentException("Empty Body");

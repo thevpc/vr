@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.service.security;
 
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import org.springframework.context.annotation.DependsOn;
@@ -45,6 +46,7 @@ public class UserSession implements Serializable {
     private Map platformSessionMap;
     private int departmentManager = -1;
     private boolean manager;
+    private AppDepartment selectedDepartment;
 
     public static UserSession get() {
         try {
@@ -280,5 +282,17 @@ public class UserSession implements Serializable {
 
     public void setTheme(String theme) {
         this.theme = theme;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
+    }
+
+    public AppDepartment getSelectedDepartment() {
+        return selectedDepartment;
+    }
+
+    public void setSelectedDepartment(AppDepartment selectedDepartment) {
+        this.selectedDepartment = selectedDepartment;
     }
 }

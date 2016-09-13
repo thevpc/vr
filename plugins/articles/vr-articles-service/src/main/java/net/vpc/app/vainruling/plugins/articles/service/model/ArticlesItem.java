@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.articles.service.model;
 
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.AccessLevel;
@@ -23,8 +24,9 @@ import java.sql.Timestamp;
                 //i is a ObjRow!
                 @Property(name = UIConstants.Grid.ROW_STYLE,
                         value = "(i.object.deleted or i.object.archived or i.object.disposition eq null) ?'vr-row-not-relevant':''"),
-                @Property(name = "ui.auto-filter.disposition", value = "{expr='disposition',order=1}"),
-                @Property(name = "ui.auto-filter.sender", value = "{expr='sender',order=2}")
+                @Property(name = "ui.auto-filter.audienceDepartment", value = "{expr='audienceDepartment',order=1}"),
+                @Property(name = "ui.auto-filter.disposition", value = "{expr='disposition',order=2}"),
+                @Property(name = "ui.auto-filter.sender", value = "{expr='sender',order=3}")
         }
 )
 public class ArticlesItem {
@@ -54,8 +56,13 @@ public class ArticlesItem {
     private boolean includeSender;
     private boolean noSubject;
 
+    @Summary
+    private AppDepartment audienceDepartment;
+    private String decoration;
+
     @Main
     private String subject;
+
 
     @Properties(
             @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.RICHTEXTAREA))
@@ -63,7 +70,7 @@ public class ArticlesItem {
     private String content;
 
     @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Attatchment"),
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Attachment"),
             @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
@@ -291,6 +298,14 @@ public class ArticlesItem {
         this.visitCount = visitCount;
     }
 
+    public String getDecoration() {
+        return decoration;
+    }
+
+    public void setDecoration(String decoration) {
+        this.decoration = decoration;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -312,6 +327,7 @@ public class ArticlesItem {
         if (subject != null ? !subject.equals(that.subject) : that.subject != null) return false;
         if (content != null ? !content.equals(that.content) : that.content != null) return false;
         if (linkURL != null ? !linkURL.equals(that.linkURL) : that.linkURL != null) return false;
+        if (decoration != null ? !decoration.equals(that.decoration) : that.decoration != null) return false;
         if (linkText != null ? !linkText.equals(that.linkText) : that.linkText != null) return false;
         if (linkClassStyle != null ? !linkClassStyle.equals(that.linkClassStyle) : that.linkClassStyle != null)
             return false;
@@ -336,6 +352,7 @@ public class ArticlesItem {
         result = 31 * result + (content != null ? content.hashCode() : 0);
         result = 31 * result + (linkURL != null ? linkURL.hashCode() : 0);
         result = 31 * result + (linkText != null ? linkText.hashCode() : 0);
+        result = 31 * result + (decoration != null ? decoration.hashCode() : 0);
         result = 31 * result + (linkClassStyle != null ? linkClassStyle.hashCode() : 0);
         result = 31 * result + (imageURL != null ? imageURL.hashCode() : 0);
         result = 31 * result + position;
@@ -349,5 +366,13 @@ public class ArticlesItem {
         result = 31 * result + (deletedBy != null ? deletedBy.hashCode() : 0);
         result = 31 * result + (deletedOn != null ? deletedOn.hashCode() : 0);
         return result;
+    }
+
+    public AppDepartment getAudienceDepartment() {
+        return audienceDepartment;
+    }
+
+    public void setAudienceDepartment(AppDepartment audienceDepartment) {
+        this.audienceDepartment = audienceDepartment;
     }
 }

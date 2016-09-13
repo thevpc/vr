@@ -16,5 +16,5 @@ public interface ContentTextService {
 
     public List<ContentText> getContentTextListHead(String id,int max);
 
-//    public void setSelectedContentText(int id);
+//    public void setSelectedContentTextById(int id);
 }

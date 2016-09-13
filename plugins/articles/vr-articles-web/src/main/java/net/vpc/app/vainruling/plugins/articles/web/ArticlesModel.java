@@ -5,22 +5,10 @@
  */
 package net.vpc.app.vainruling.plugins.articles.web;
 
-import net.vpc.app.vainruling.core.service.content.CmsTextService;
-import net.vpc.app.vainruling.core.service.content.ContentText;
-import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
-import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesFile;
-import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
 import net.vpc.app.vainruling.plugins.articles.service.model.FullArticle;
-import net.vpc.upa.*;
-import net.vpc.upa.expressions.UserExpression;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +22,7 @@ public class ArticlesModel {
 
 
     private FullArticle current;
+    private String disposition;
 
     private Map<String, List<FullArticle>> articles = new HashMap<>();
 
@@ -54,4 +43,11 @@ public class ArticlesModel {
         this.articles = articles;
     }
 
+    public String getDisposition() {
+        return disposition;
+    }
+
+    public void setDisposition(String disposition) {
+        this.disposition = disposition;
+    }
 }

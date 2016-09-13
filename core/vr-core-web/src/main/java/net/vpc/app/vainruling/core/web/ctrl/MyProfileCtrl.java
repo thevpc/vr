@@ -7,6 +7,8 @@ package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
@@ -51,21 +53,10 @@ public class MyProfileCtrl {
     }
 
     public void onSelectTheme() {
+        final CorePlugin t = VrApp.getBean(CorePlugin.class);
         try {
-            final CorePlugin t = VrApp.getBean(CorePlugin.class);
-            UPA.getContext().invokePrivileged(new VoidAction() {
-                                                  @Override
-                                                  public void run() {
-                                                      try {
-                                                          t.setCurrentUserTheme(getModel().getTheme());
-                                                          FacesUtils.addInfoMessage(null, "Theme mis a jour");
-                                                      } catch (Exception ex) {
-                                                          log.log(Level.SEVERE, "Error", ex);
-                                                          FacesUtils.addErrorMessage(null, ex.getMessage());
-                                                      }
-                                                  }
-                                              }
-            );
+            t.setCurrentUserTheme(getModel().getTheme());
+            FacesUtils.addInfoMessage(null, "Theme mis a jour");
         } catch (Exception ex) {
             log.log(Level.SEVERE, "Error", ex);
             FacesUtils.addErrorMessage(null, ex.getMessage());

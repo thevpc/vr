@@ -36,7 +36,7 @@ and open the template in the editor.
                 </p:confirmDialog>
 
                 <!-- /.row -->
-                <div class="row">
+                <div >
                     <p:outputPanel id="buttons">
                         <p:menuButton value="#{mailboxCtrl.preferredTitle}" styleClass="vr-leftmost-menubutton">
                             <p:menuitem value="Boîte réception" actionListener="#{mailboxCtrl.onSelectInboxFolder}"
@@ -65,22 +65,22 @@ and open the template in the editor.
                                          icon="fa fa-envelope"
                                          styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
                                          onclick="processOnSendCurrent()"
-                                         update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                                         update="buttons msgs :listForm :itemForm :pageTitleForm :newItemForm"/>
                         <p:commandButton title="Répondre" rendered="#{mailboxCtrl.isEnabledButton('Reply')}"
                                          icon="fa fa-mail-reply"
                                          styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
                                          actionListener="#{mailboxCtrl.onReply}"
-                                         update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                                         update=" msgs buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
                         <p:commandButton title="Rafraichir" rendered="#{mailboxCtrl.isEnabledButton('Refresh')}"
                                          icon="fa fa-refresh"
                                          styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
                                          actionListener="#{mailboxCtrl.onRefresh}"
-                                         update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                                         update=" msgs buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
                         <p:commandButton title="Nouveau" rendered="#{mailboxCtrl.isEnabledButton('New')}"
                                          icon="fa fa-plus"
                                          styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
                                          actionListener="#{mailboxCtrl.onNew}"
-                                         update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                                         update=" msgs buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
                         <p:commandButton title="Supprimer" rendered="#{mailboxCtrl.isEnabledButton('Remove')}"
                                          icon="fa fa-trash-o"
                                          styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
@@ -93,12 +93,12 @@ and open the template in the editor.
                                          icon="fa fa-flask"
                                          styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
                                          actionListener="#{mailboxCtrl.onAdvancedSettings}"
-                                         update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                                         update=" msgs buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
                         <p:commandButton title="Fermer" rendered="#{mailboxCtrl.isEnabledButton('Cancel')}"
                                          icon="fa fa-arrow-left"
                                          styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
                                          actionListener="#{mailboxCtrl.onCancelCurrent}"
-                                         update="buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
+                                         update=" msgs buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
                     </p:outputPanel>
                 </div>
 
@@ -251,7 +251,7 @@ and open the template in the editor.
                     <div class="row">
                         <p:spacer width="10" height="10"/>
                     </div>
-                    <div class="row">
+                    <div >
                         <!--<div class="col-lg-6">-->
 
                         <div class="table-responsive">

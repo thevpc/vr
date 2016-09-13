@@ -6,8 +6,10 @@
 package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import org.springframework.context.annotation.Scope;
 
@@ -30,8 +32,12 @@ public class WelcomeCtrl {
 
     @OnPageLoad
     public void onLoad() {
-        VrApp.getBean(VrMenuManager.class).getModel().setCurrentPageId("welcome");
-        VrApp.getBean(VrMenuManager.class).setPageCtrl("welcome");
+        Vr vr = Vr.get();
+        UserSession userSession = vr.getUserSession();
+        vr.updatePublicDepartment(userSession.getSelectedDepartment()==null?null:userSession.getSelectedDepartment().getCode());
+        VrMenuManager menu = VrApp.getBean(VrMenuManager.class);
+        menu.getModel().setCurrentPageId("welcome");
+        menu.setPageCtrl("welcome");
     }
 
     public static class Model {

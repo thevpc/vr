@@ -34,6 +34,7 @@ import net.vpc.upa.UPA;
 import org.primefaces.event.SelectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.faces.context.FacesContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -132,7 +133,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         int userId = currentUser==null?-1:currentUser.getId();
         int count = userId<0?0:p.loadLocalOutbox(userId, -1, false, MailboxFolder.CURRENT).size();
         return Arrays.asList(
-                new VRMenuDef("Mes Messages", "/Social", "mailbox", "{folder:'CURRENT',sent:false}", "Custom.Site.Mailbox", "",
+                new VRMenuDef("Mes Messages", "/Social", "mailbox", "{folder:'CURRENT',sent:false}", "Custom.Site.Mailbox", "",100,
                         new VRMenuLabel[]{
                     new VRMenuLabel(
                             String.valueOf(count),"success"
@@ -159,6 +160,9 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     }
 
     public void onRefresh() {
+        if(FacesContext.getCurrentInstance()!=null) {
+            FacesUtils.clearMessages();
+        }
         MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
         List<Row> list = new ArrayList<>();
         int userId = UserSession.getCurrentUser().getId();
@@ -286,18 +290,19 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         FacesUtils.clearMessages();
         MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
         getModel().getNewItem().setSender(UserSession.getCurrentUser());
+        FacesUtils.clearMessages();
         try {
             MailboxMessageFormat mailboxMessageFormat = (MailboxMessageFormat) getModel().getMailboxMessageFormat().getValue();
             p.sendLocalMail(getModel().getNewItem(), mailboxMessageFormat == null ? null : mailboxMessageFormat.getId(), true);
+            MailboxSent item = new MailboxSent();
+            item.setRichText(true);
+            getModel().setNewItem(item);
+            getModel().setMode(EditCtrlMode.LIST);
+            onRefresh();
             FacesUtils.addInfoMessage("Envoi réussi");
         } catch (Exception e) {
             FacesUtils.addErrorMessage("Envoi impossible : " + e.getMessage());
         }
-        MailboxSent item = new MailboxSent();
-        item.setRichText(true);
-        getModel().setNewItem(item);
-        getModel().setMode(EditCtrlMode.LIST);
-        onRefresh();
     }
 
     public String evalProfileMinusLogin(String profile, String login) {
@@ -421,6 +426,9 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             e = getModel().getNewItem().getBccProfiles();
         }
         c.setExpression(e);
+        if(getModel().getNewItem()!=null && getModel().getNewItem().isExternalMessage()) {
+            c.setEmails(true);
+        }
         VrApp.getBean(ProfileExprDialogCtrl.class).openDialog(c);
     }
 
