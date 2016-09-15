@@ -42,7 +42,7 @@
 
                                         <p>
                                             <h:outputText
-                                                    value="#{vr.html(articlesCtrl.model.current.content)}"
+                                                    value="#{vr.contentText2html(articlesCtrl.model.current)}"
                                                     escape="false"/>
                                         </p>
                                         <ui:repeat value="#{articlesCtrl.model.current.attachments}" var="att">

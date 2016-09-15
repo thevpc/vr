@@ -8,15 +8,18 @@ package net.vpc.app.vainruling.core.service;
 import net.vpc.app.vainruling.core.service.model.AppVersion;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.util.PlatformReflector;
+import net.vpc.common.util.LogUtils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
+import org.apache.log4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.logging.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,6 +37,11 @@ public class BootstrapService {
 
     @PostConstruct
     public void prepare() {
+
+        //LogUtils.configure(Level.FINE,"net.vpc");
+        //disable log4j imported by jxl-api
+        org.apache.log4j.LogManager.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
+
         i18n.register("i18n.dictionary");
         i18n.register("i18n.presentation");
         i18n.register("i18n.service");

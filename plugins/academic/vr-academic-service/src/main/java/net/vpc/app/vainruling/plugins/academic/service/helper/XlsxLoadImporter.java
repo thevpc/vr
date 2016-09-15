@@ -1097,6 +1097,7 @@ public class XlsxLoadImporter {
                                 courseGroup = new AcademicCourseGroup();
                                 courseGroup.setName(stringVal);
                                 courseGroup.setAcademicClass(courseLevel.getAcademicClass());
+                                courseGroup.setPeriod(period);
                                 service.add(courseGroup);
                             }
                         }

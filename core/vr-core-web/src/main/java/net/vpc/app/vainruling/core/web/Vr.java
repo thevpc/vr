@@ -144,8 +144,10 @@ public class Vr {
         for (int i = 0; i < groupSize; i++) {
             grouped.add(new ArrayList<T>());
         }
-        for (int i = 0; i < anyList.size(); i++) {
-            grouped.get(i % groupSize).add(anyList.get(i));
+        if(anyList!=null) {
+            for (int i = 0; i < anyList.size(); i++) {
+                grouped.get(i % groupSize).add(anyList.get(i));
+            }
         }
         return grouped;
     }
@@ -153,13 +155,15 @@ public class Vr {
     public <T> List<List<T>> groupListBy(int groupSize, List<T> anyList) {
         List<List<T>> grouped = new ArrayList<>();
         List<T> curr = new ArrayList<>();
-        for (int i = 0; i < anyList.size(); i++) {
-            if (curr.size() < groupSize) {
-                curr.add(anyList.get(i));
-            } else {
-                grouped.add(curr);
-                curr = new ArrayList<>();
-                curr.add(anyList.get(i));
+        if(anyList!=null) {
+            for (int i = 0; i < anyList.size(); i++) {
+                if (curr.size() < groupSize) {
+                    curr.add(anyList.get(i));
+                } else {
+                    grouped.add(curr);
+                    curr = new ArrayList<>();
+                    curr.add(anyList.get(i));
+                }
             }
         }
         if (curr.size() > 0) {
@@ -471,7 +475,7 @@ public class Vr {
         return VrUtils.extractPureHTML(value);
     }
 
-    public String html(ContentText value) {
+    public String contentText2html(ContentText value) {
         if(value==null){
             return "";
         }

@@ -245,10 +245,10 @@ and open the template in the editor.
                             <li>
                                 <h:commandLink rendered="#{!vr.userSession.connected}"
                                                action="#{vr.gotoPage('login', '')}"><span
-                                        style="color: #777;">Login</span></h:commandLink>
+                                        style="color: #777;">My Space</span></h:commandLink>
                                 <h:commandLink rendered="#{vr.userSession.connected}"
                                                action="#{vr.gotoPage('welcome', '')}"><span
-                                        style="color: #777;">Welcome</span></h:commandLink>
+                                        style="color: #777;">My Space</span></h:commandLink>
                             </li>
                         </ul>
                     </div>
@@ -272,15 +272,15 @@ and open the template in the editor.
                         <div class="col-md-8 to-animate">
                             <h2>#{vr.cmsTextService.selectedContentText.subject}</h2>
                             <p style="text-align: justify"><h:outputText escape="false"
-                                                                         value="#{(vr.html(vr.cmsTextService.selectedContentText))}"></h:outputText>
+                                                                         value="#{(vr.contentText2html(vr.cmsTextService.selectedContentText))}"></h:outputText>
                             </p>
                             <h:panelGroup layout="block"
                                           rendered="#{vr.cmsTextService.selectedContentText.attachments.size() ne 0}">
-                                <ui:repeat value="#{vr.groupListBy(8,vr.cmsTextService.selectedContentText.attachments)}"
+                                <ui:repeat value="#{vr.groupListBy(6,vr.cmsTextService.selectedContentText.attachments)}"
                                            var="subList">
                                     <div class="row">
                                         <ui:repeat value="#{subList}" var="att">
-                                            <div class="col-md-1 text-center item-block">
+                                            <div class="col-md-2 text-center item-block">
                                                 <a class="fancybox" href="#{vr.articleImageOrDefault(att.path)}"
                                                    data-fancybox-group="gallery">
                                                     <img
@@ -293,9 +293,8 @@ and open the template in the editor.
                                                         value="#{vr.url(att.path)}"
                                                         target="_blank"
                                                 >
-
+                                                    <h3 style="font-size: small">#{att.name}</h3>
                                                 </h:outputLink>
-                                                <h3 style="font-size: small">#{att.name}</h3>
                                             </div>
                                         </ui:repeat>
                                     </div>

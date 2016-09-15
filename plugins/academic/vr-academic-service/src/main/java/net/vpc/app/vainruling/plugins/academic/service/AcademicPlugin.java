@@ -1732,7 +1732,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //    }
     public AcademicCourseGroup findCourseGroup(int periodId, int classId, String name) {
         return UPA.getPersistenceUnit().
-                createQuery("Select a from AcademicCourseGroup a where a.name=:name and a.peridoId=:periodId and a.academicClassId=:classId")
+                createQuery("Select a from AcademicCourseGroup a where a.name=:name and a.periodId=:periodId and a.academicClassId=:classId")
                 .setParameter("name", name)
                 .setParameter("classId", classId)
                 .setParameter("periodId", periodId)
