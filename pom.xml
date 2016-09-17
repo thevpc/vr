@@ -9,6 +9,8 @@
         <module>core/vr-plugin</module>
         <module>core/vr-core-service</module>
         <module>core/vr-core-web</module>
+        <module>plugins/calendars/vr-calendars-service</module>
+        <module>plugins/calendars/vr-calendars-web</module>
         <module>plugins/academic/vr-academic-service</module>
         <module>plugins/academic/vr-academic-web</module>
         <module>plugins/academic-report/vr-academic-report-service</module>

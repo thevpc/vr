@@ -136,11 +136,11 @@ and open the template in the editor.
         }
 
         #colour-variations li a {
-            width: 250px;
+            width: 260px;
             height: 20px;
             position: relative;
             float: left;
-            margin: 5px;
+            /*margin: 5px;*/
         }
 
         .option-toggle {
@@ -172,6 +172,36 @@ and open the template in the editor.
             color: #fff;
             text-decoration: none;
             outline: none;
+        }
+
+        ul.deplist li {
+            display: inline-flex;
+        }
+        ul.deplist li a {
+            padding-bottom: 30px;
+            padding-left: 10px;
+            border-radius: 5px;
+        }
+        ul.deplist li a:hover {
+            /*color: #FFFFFF !important;*/
+            /*background-image: url(/vr/themes/crew/images/deplist-hover.png);*/
+            /*background-repeat: repeat-x;*/
+            border-radius: 5px;
+            background: rgb(242,246,248);
+            background: -moz-linear-gradient(top, rgba(242,246,248,1) 0%, rgba(216,225,231,1) 50%, rgba(181,198,208,1) 51%, rgba(224,239,249,1) 100%);
+            background: -webkit-linear-gradient(top, rgba(242,246,248,1) 0%,rgba(216,225,231,1) 50%,rgba(181,198,208,1) 51%,rgba(224,239,249,1) 100%);
+            background: linear-gradient(to bottom, rgba(242,246,248,1) 0%,rgba(216,225,231,1) 50%,rgba(181,198,208,1) 51%,rgba(224,239,249,1) 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f6f8', endColorstr='#e0eff9',GradientType=0 );
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .vr-article-separator{
+            padding: 0px;
+            margin: 0px;
+            border: 0;
+            height: 1px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), #607D8B, rgba(0, 0, 0, 0));
         }
     </style>
     <!-- End demo purposes only -->
@@ -742,15 +772,15 @@ and open the template in the editor.
         <a class="option-toggle"><i class="icon-gear"></i></a>
         <h3>Departments</h3>
         <hr style="margin-top: 0px;margin-bottom: 0px;"/>
-        <ul>
-            <li style="display: inline-block"><h:commandLink action="#{vr.updatePublicDepartment('II')}"
+        <ul class="deplist">
+            <li ><h:commandLink action="#{vr.gotoPublicSubSite('II')}"
                                                              style="color: #6173f4"><i class="icon-screen-desktop"
                                                                            style="font-size: 16px;"></i> <span
                     style="margin-left: 10px">Computer engineering</span></h:commandLink></li>
-            <li style="display: inline-block"><h:commandLink action="#{vr.updatePublicDepartment('MA')}" style="color: #ff6600"><i
+            <li ><h:commandLink action="#{vr.gotoPublicSubSite('MA')}" style="color: #ff6600"><i
                     class="icon-speedometer" style="font-size: 16px;"></i> <span
                     style="margin-left: 10px">Advanced mechanics</span></h:commandLink></li>
-            <li style="display: inline-block"><h:commandLink action="#{vr.updatePublicDepartment('EI')}" style="color: #A652CC"><i
+            <li ><h:commandLink action="#{vr.gotoPublicSubSite('EI')}" style="color: #A652CC"><i
                     class="icon-crop" style="font-size: 16px;"></i> <span
                     style="margin-left: 10px">Industrial electronics</span></h:commandLink></li>
         </ul>

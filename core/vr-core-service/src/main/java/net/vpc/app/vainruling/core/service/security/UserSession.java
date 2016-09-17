@@ -20,7 +20,6 @@ import java.util.*;
  * @author taha.bensalah@gmail.com
  */
 @Service
-@DependsOn("bootstrapService")
 @Scope(value = "session")
 public class UserSession implements Serializable {
 

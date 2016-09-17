@@ -14,10 +14,11 @@ import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanningPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.PlanningData;
-import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
+import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningData;
+import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningDay;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
+import net.vpc.app.vainruling.plugins.calendars.web.AbstractPlanningCtrl;
 import net.vpc.common.strings.StringUtils;
 
 import javax.faces.model.SelectItem;

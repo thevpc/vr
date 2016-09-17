@@ -16,12 +16,12 @@ public class UpaAspect {
 //        System.out.println("Hello");
     }
 
-    @Around("@within(net.vpc.app.vainruling.core.service.UpaAware)")
+    @Around("@within(net.vpc.app.vainruling.core.service.plugins.UpaAware)")
     public Object aroundUpaMethods1(final ProceedingJoinPoint pjp) throws Throwable {
         return aroundUpaMethods0(pjp);
     }
 
-    @Around("@annotation(net.vpc.app.vainruling.core.service.UpaAware)")
+    @Around("@annotation(net.vpc.app.vainruling.core.service.plugins.UpaAware)")
     public Object aroundUpaMethods2(final ProceedingJoinPoint pjp) throws Throwable {
         return aroundUpaMethods0(pjp);
     }

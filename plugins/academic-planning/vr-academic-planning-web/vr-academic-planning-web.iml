@@ -117,6 +117,8 @@
     <orderEntry type="library" name="Maven: net.sf.jcgrid:jcgrid:0.05" level="project" />
     <orderEntry type="library" name="Maven: rome:rome:1.0" level="project" />
     <orderEntry type="library" name="Maven: jdom:jdom:1.0" level="project" />
+    <orderEntry type="module" module-name="vr-calendars-service" />
     <orderEntry type="module" module-name="vr-academic-web" />
+    <orderEntry type="module" module-name="vr-calendars-web" />
   </component>
 </module>

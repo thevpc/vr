@@ -42,12 +42,45 @@ import java.util.*;
 @UCtrl
 @Scope(value = "singleton")
 public class Vr {
+    public static final Map<String, String> extensionsToCss = new HashMap<String, String>();
+    public static final Map<String, String> extensionsToPath = new HashMap<String, String>();
     private MessageTextService messageTextService;
     private TaskTextService taskTextService;
     private NotificationTextService notificationTextService;
     private CmsTextService cmsTextService;
 
     public static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.00");
+
+    static {
+        extensionsToCss.put("csv", "file-csv");
+
+        extensionsToCss.put("txt", "file-txt");
+        extensionsToCss.put("properties", "file-txt");
+
+        extensionsToCss.put("log", "file-log");
+
+        extensionsToCss.put("xls", "file-xls");
+        extensionsToCss.put("xlsx", "file-xls");
+        extensionsToCss.put("ods", "file-xls");
+
+        extensionsToCss.put("doc", "file-doc");
+        extensionsToCss.put("docx", "file-doc");
+        extensionsToCss.put("odt", "file-doc");
+
+        extensionsToCss.put("zip", "file-zip");
+        extensionsToCss.put("tar", "file-zip");
+        extensionsToCss.put("rar", "file-zip");
+
+        extensionsToCss.put("pdf", "file-pdf");
+        extensionsToCss.put("xml", "file-xml");
+        extensionsToCss.put("css", "file-css");
+        extensionsToCss.put("html", "file-html");
+
+        extensionsToCss.put("png", "file-img");
+        extensionsToCss.put("gif", "file-img");
+        extensionsToCss.put("jpg", "file-img");
+        extensionsToCss.put("jpeg", "file-img");
+    }
 
     public Vr() {
     }
@@ -247,6 +280,11 @@ public class Vr {
             for (String s : new String[]{"jpg","jpeg","png","gif"}) {
                 if(low.endsWith("."+s) || low.contains("."+s+"?")){
                     return url(imageURL);
+                }
+            }
+            for (String s : new String[]{"xls","xlsx","pdf","html","xhtml","doc","docx","js","csv","log","text","xml","zip"}) {
+                if(low.endsWith("."+s) || low.contains("."+s+"?")){
+                    return url("/Site/images/icons/file-"+s+"16.png");
                 }
             }
             imageURL="";
@@ -892,7 +930,7 @@ public class Vr {
         return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(key);
     }
 
-    public String updatePublicDepartment(String departmentCode){
+    public String gotoPublicSubSite(String departmentCode){
         AppDepartment department = CorePlugin.get().findDepartment(departmentCode);
         getUserSession().setSelectedDepartment(department);
         return gotoPage("publicIndex","");

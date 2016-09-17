@@ -10,6 +10,9 @@ import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.cache.EntityCache;
 import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.obj.AppEntityExtendedPropertiesProvider;
+import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
+import net.vpc.app.vainruling.core.service.plugins.Install;
+import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.stats.KPI;
 import net.vpc.app.vainruling.core.service.stats.KPIGroupBy;
@@ -2557,13 +2560,13 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     @Start
-    public void startService() {
+    private void startService() {
         core.getManagerProfiles().add("Director");
         core.getManagerProfiles().add("DirectorOfStudies");
     }
 
     @Install
-    public void installService() {
+    private void installService() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         core.createRight("Custom.Education.CourseLoadUpdateIntents", "Mettre à jours les voeux de autres");
         core.createRight("Custom.Education.CourseLoadUpdateAssignments", "Mettre à jours les affectations");

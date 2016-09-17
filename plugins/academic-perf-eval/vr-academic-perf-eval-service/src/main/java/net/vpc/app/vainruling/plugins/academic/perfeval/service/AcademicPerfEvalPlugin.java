@@ -6,6 +6,8 @@
 package net.vpc.app.vainruling.plugins.academic.perfeval.service;
 
 import net.vpc.app.vainruling.core.service.*;
+import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
+import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.servicemodel.FeedbacksStats;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
@@ -24,7 +26,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin(dependsOn = "academicPlugin")
+@AppPlugin
 public class AcademicPerfEvalPlugin {
     private static final Logger log = Logger.getLogger(AcademicPerfEvalPlugin.class.getName());
 
@@ -35,7 +37,7 @@ public class AcademicPerfEvalPlugin {
     }
 
     @Start
-    public void onStart() {
+    private void onStart() {
         VrApp.getBean(CorePlugin.class).createRight("Custom.Academic.StudentFeedback", "Custom.Academic.StudentFeedback");
         VrApp.getBean(CorePlugin.class).createRight("Custom.Academic.TeacherStatFeedback", "Custom.Academic.TeacherStatFeedback");
     }

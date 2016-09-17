@@ -12,6 +12,9 @@ import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
 import net.vpc.app.vainruling.core.service.obj.AppEntityExtendedPropertiesProvider;
+import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
+import net.vpc.app.vainruling.core.service.plugins.Install;
+import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
@@ -77,12 +80,12 @@ public class MailboxPlugin {
     }
 
     @Start
-    public void start() {
+    private void start() {
         VrApp.getBean(VrNotificationManager.class).register(SEND_WELCOME_MAIL_QUEUE, SEND_WELCOME_MAIL_QUEUE, 200);
     }
 
     @Install
-    public void installService() {
+    private void installService() {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         core.createRight("Custom.Site.Mailbox", "Mailbox");
         HashSet<String> goodProfiles = new HashSet<String>(Arrays.asList(

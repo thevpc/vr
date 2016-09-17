@@ -24,7 +24,7 @@ import java.sql.Timestamp;
                 //i is a ObjRow!
                 @Property(name = UIConstants.Grid.ROW_STYLE,
                         value = "(i.object.deleted or i.object.archived or i.object.disposition eq null) ?'vr-row-not-relevant':''"),
-                @Property(name = "ui.auto-filter.audienceDepartment", value = "{expr='audienceDepartment',order=1}"),
+                @Property(name = "ui.auto-filter.dispositionGroup", value = "{expr='dispositionGroup',order=1}"),
                 @Property(name = "ui.auto-filter.disposition", value = "{expr='disposition',order=2}"),
                 @Property(name = "ui.auto-filter.sender", value = "{expr='sender',order=3}")
         }
@@ -57,7 +57,9 @@ public class ArticlesItem {
     private boolean noSubject;
 
     @Summary
+    @Deprecated
     private AppDepartment audienceDepartment;
+    private ArticlesDispositionGroup dispositionGroup;
     private String decoration;
 
     @Main
@@ -368,11 +370,21 @@ public class ArticlesItem {
         return result;
     }
 
+    @Deprecated
     public AppDepartment getAudienceDepartment() {
         return audienceDepartment;
     }
 
+    @Deprecated
     public void setAudienceDepartment(AppDepartment audienceDepartment) {
         this.audienceDepartment = audienceDepartment;
+    }
+
+    public ArticlesDispositionGroup getDispositionGroup() {
+        return dispositionGroup;
+    }
+
+    public void setDispositionGroup(ArticlesDispositionGroup dispositionGroup) {
+        this.dispositionGroup = dispositionGroup;
     }
 }

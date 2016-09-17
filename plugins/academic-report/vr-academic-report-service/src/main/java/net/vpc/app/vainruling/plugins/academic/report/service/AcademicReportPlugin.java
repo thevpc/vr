@@ -5,12 +5,12 @@
  */
 package net.vpc.app.vainruling.plugins.academic.report.service;
 
-import net.vpc.app.vainruling.core.service.AppPlugin;
+import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin(dependsOn = "academicPlugin")
+@AppPlugin
 public class AcademicReportPlugin {
 
 

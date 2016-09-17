@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.core.web.fs.files;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
+import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.common.streams.PathInfo;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VirtualFileSystem;
@@ -22,39 +23,8 @@ import java.util.logging.Logger;
 
 public class DocumentsUtils {
 
-    public static final Map<String, String> extensionsToCss = new HashMap<String, String>();
     private static final Logger log = Logger.getLogger(DocumentsUtils.class.getName());
 
-    static {
-        extensionsToCss.put("csv", "file-csv");
-
-        extensionsToCss.put("txt", "file-txt");
-        extensionsToCss.put("properties", "file-txt");
-
-        extensionsToCss.put("log", "file-log");
-
-        extensionsToCss.put("xls", "file-xls");
-        extensionsToCss.put("xlsx", "file-xls");
-        extensionsToCss.put("ods", "file-xls");
-
-        extensionsToCss.put("doc", "file-doc");
-        extensionsToCss.put("docx", "file-doc");
-        extensionsToCss.put("odt", "file-doc");
-
-        extensionsToCss.put("zip", "file-zip");
-        extensionsToCss.put("tar", "file-zip");
-        extensionsToCss.put("rar", "file-zip");
-
-        extensionsToCss.put("pdf", "file-pdf");
-        extensionsToCss.put("xml", "file-xml");
-        extensionsToCss.put("css", "file-css");
-        extensionsToCss.put("html", "file-html");
-
-        extensionsToCss.put("png", "file-img");
-        extensionsToCss.put("gif", "file-img");
-        extensionsToCss.put("jpg", "file-img");
-        extensionsToCss.put("jpeg", "file-img");
-    }
 
 
     public static String evalVFileDesc(VFile file) {
@@ -156,7 +126,7 @@ public class DocumentsUtils {
         } else {
             String n = file.getName().toLowerCase();
             String e = PathInfo.create(n).getExtensionPart();
-            iconCss = extensionsToCss.get(e);
+            iconCss = Vr.extensionsToCss.get(e);
             if (iconCss == null) {
                 iconCss = "file";
             }

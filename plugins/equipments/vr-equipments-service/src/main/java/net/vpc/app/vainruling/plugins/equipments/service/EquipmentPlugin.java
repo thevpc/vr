@@ -7,6 +7,9 @@ package net.vpc.app.vainruling.plugins.equipments.service;
 
 import net.vpc.app.vainruling.core.service.*;
 import net.vpc.app.vainruling.core.service.model.*;
+import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
+import net.vpc.app.vainruling.core.service.plugins.Install;
+import net.vpc.app.vainruling.core.service.plugins.InstallDemo;
 import net.vpc.app.vainruling.plugins.equipments.service.model.*;
 import net.vpc.common.util.Utils;
 import net.vpc.upa.PersistenceUnit;
@@ -56,7 +59,7 @@ public class EquipmentPlugin {
     }
 
     @Install
-    public void installService() {
+    private void installService() {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
 
         AppUserType technicianType;
@@ -127,7 +130,7 @@ public class EquipmentPlugin {
     }
 
     @InstallDemo
-    public void installDemoService() {
+    private void installDemoService() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         InitData initData = new InitData();
         initData.areaType_etablissement = core.findOrCreate(initData.areaType_etablissement);

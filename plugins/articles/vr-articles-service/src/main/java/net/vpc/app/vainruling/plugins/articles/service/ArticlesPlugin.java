@@ -11,11 +11,13 @@ import net.vpc.app.vainruling.core.service.*;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.cache.EntityCache;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
-import net.vpc.app.vainruling.core.service.model.AppProperty;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
+import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
+import net.vpc.app.vainruling.core.service.plugins.Install;
+import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.core.service.util.ProfilePatternFilter;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesDisposition;
@@ -49,7 +51,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin(dependsOn = {"mailboxPlugin"})
+@AppPlugin
 public class ArticlesPlugin {
     @Autowired
     private CacheService cacheService;
@@ -191,7 +193,7 @@ public class ArticlesPlugin {
         }, null);
     }
 
-    public List<ArticlesItem> findArticlesByUserAndCategory(String login, int deptId,boolean includeNoDept,String ... dispositions) {
+    public List<ArticlesItem> findArticlesByUserAndCategory(String login, int dispositionGroupId,boolean includeNoDept,String ... dispositions) {
         if(dispositions.length==0){
             return Collections.EMPTY_LIST;
         }
@@ -210,11 +212,11 @@ public class ArticlesPlugin {
         }
         queryStr.append(" )");
         if(includeNoDept) {
-            queryStr.append(" and (u.audienceDepartmentId=:audienceDepartmentId or u.audienceDepartmentId=null)");
-            disps.put("audienceDepartmentId",deptId);
+            queryStr.append(" and (u.dispositionGroupId=:dispositionGroupId or u.dispositionGroupId=null)");
+            disps.put("dispositionGroupId",dispositionGroupId);
         }else{
-            queryStr.append(" and (u.audienceDepartmentId=:audienceDepartmentId)");
-            disps.put("audienceDepartmentId",deptId);
+            queryStr.append(" and (u.dispositionGroupId=:dispositionGroupId)");
+            disps.put("dispositionGroupId",dispositionGroupId);
         }
 
         queryStr.append(" order by "
@@ -243,12 +245,12 @@ public class ArticlesPlugin {
     }
 
     @Start
-    public void start() {
+    private void start() {
         VrApp.getBean(VrNotificationManager.class).register(SEND_EXTERNAL_MAIL_QUEUE, SEND_EXTERNAL_MAIL_QUEUE, 200);
     }
 
     @Install
-    public void install() {
+    private void install() {
         core.createRight("Custom.Article.SendExternalEmail", "Send External Email");
         core.createRight("Custom.Article.SendInternalEmail", "Send Internal Email");
         ArticlesDisposition d;

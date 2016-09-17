@@ -34,6 +34,11 @@
             <artifactId>vr-academic-web</artifactId>
             <version>1.2.1</version>
         </dependency>
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.plugins.calendars</groupId>
+            <artifactId>vr-calendars-web</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
 </project>

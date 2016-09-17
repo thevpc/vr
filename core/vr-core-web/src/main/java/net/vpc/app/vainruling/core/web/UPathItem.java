@@ -20,7 +20,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Controller
-@DependsOn("bootstrapService")
 @Scope(value = "session")
 public @interface UPathItem {
 

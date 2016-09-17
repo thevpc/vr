@@ -944,3 +944,32 @@ span.ui-column-title {
 .ui-widget-content{
  background: #ecf0f5;
 }
+
+
+.deplist ul li a {
+    display: block;
+    text-decoration: none;
+    color: #000000;
+    background-color: #FFFFFF;
+    line-height: 30px;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #CCCCCC;
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+
+ul.deplist li a:hover {
+    color: #FFFFFF;
+    background-image: url(../images/deplist-hover.png);
+    background-repeat: repeat-x;
+}
+
+.vr-article-separator{
+    padding: 0px;
+    margin: 0px;
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), #607D8B, rgba(0, 0, 0, 0));
+}

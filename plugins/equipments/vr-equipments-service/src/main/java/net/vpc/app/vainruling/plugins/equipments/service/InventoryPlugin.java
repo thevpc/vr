@@ -5,16 +5,15 @@
  */
 package net.vpc.app.vainruling.plugins.equipments.service;
 
-import net.vpc.app.vainruling.core.service.AppPlugin;
+import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.Install;
+import net.vpc.app.vainruling.core.service.plugins.Install;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @AppPlugin(
-        dependsOn = {"equipmentPlugin"}
 )
 public class InventoryPlugin {
 
@@ -22,7 +21,7 @@ public class InventoryPlugin {
     CorePlugin core;
 
     @Install
-    public void installService() {
+    private void installService() {
 //        AppProfile technicianProfile;
 //        technicianProfile = new AppProfile();
 //        technicianProfile.setName("Technician");
@@ -48,7 +47,7 @@ public class InventoryPlugin {
     }
 
     @Install
-    public void installSemoService() {
+    private void installSemoService() {
 //        Inventory v = new Inventory();
 //        v.setName("INV-2015");
 //        v = core.insertOrUpdate(v);

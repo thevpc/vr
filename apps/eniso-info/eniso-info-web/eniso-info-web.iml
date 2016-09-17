@@ -102,6 +102,7 @@
     <orderEntry type="module" module-name="vr-academic-report-service" />
     <orderEntry type="module" module-name="vr-academic-perf-eval-service" />
     <orderEntry type="module" module-name="vr-academic-planning-service" />
+    <orderEntry type="module" module-name="vr-calendars-service" />
     <orderEntry type="module" module-name="vr-dev-toolbox-service" />
     <orderEntry type="module" module-name="eniso-info-infusion-theme" />
     <orderEntry type="module" module-name="eniso-info-crew-theme" />
@@ -159,6 +160,7 @@
     <orderEntry type="module" module-name="vr-academic-web" />
     <orderEntry type="module" module-name="vr-academic-report-web" />
     <orderEntry type="module" module-name="vr-academic-planning-web" />
+    <orderEntry type="module" module-name="vr-calendars-web" />
     <orderEntry type="module" module-name="vr-academic-perf-eval-web" />
     <orderEntry type="module" module-name="vr-mailbox-web" />
     <orderEntry type="module" module-name="vr-dev-toolbox-web" />

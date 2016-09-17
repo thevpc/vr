@@ -8,6 +8,10 @@ package net.vpc.app.vainruling.plugins.tasks.service;
 import net.vpc.app.vainruling.core.service.*;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
+import net.vpc.app.vainruling.core.service.plugins.Install;
+import net.vpc.app.vainruling.core.service.plugins.InstallDemo;
+import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.plugins.tasks.service.model.*;
 import net.vpc.common.util.Utils;
@@ -464,14 +468,14 @@ public class TaskPlugin {
     }
 
     @Start
-    public void startService() {
+    private void startService() {
         for (TodoList findTodoListsByResp : findTodoLists()) {
             VrApp.getBean(CorePlugin.class).createRight("Custom.Todo." + findTodoListsByResp.getName(), "TODO " + findTodoListsByResp.getName());
         }
     }
 
     @Install
-    public void installService() {
+    private void installService() {
         InitData d = new InitData();
         d.laboActions = new TodoList();
         d.laboActions.setName(TodoList.LABO_ACTION);
@@ -535,7 +539,7 @@ public class TaskPlugin {
     }
 
     @InstallDemo
-    public void installDemoService() {
+    private void installDemoService() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         final AppUser admin = core.findUser(CorePlugin.USER_ADMIN);
         TodoList laboActionsList = pu.findByMainField(TodoList.class, TodoList.LABO_ACTION);

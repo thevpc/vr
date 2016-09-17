@@ -5,14 +5,14 @@
  */
 package net.vpc.app.vainruling.plugins.academic.planning.service;
 
-import net.vpc.app.vainruling.core.service.AppPlugin;
+import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.PlanningData;
-import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
-import net.vpc.app.vainruling.plugins.academic.service.model.PlanningHour;
+import net.vpc.app.vainruling.plugins.calendars.service.VrPlanningProvider;
+import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningData;
+import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningDay;
+import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningHour;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
@@ -34,52 +34,36 @@ import java.util.*;
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin(dependsOn = "academicPlugin")
-public class AcademicPlanningPlugin {
+@AppPlugin()
+public class AcademicPlanningPlugin implements VrPlanningProvider{
 
     @Autowired
     CorePlugin core;
     @Autowired
     AcademicPlugin academicPlugin;
 
+    @Override
     public List<PlanningData> loadUserPlannings(int userId) {
-        AppUser uuu = core.findUser(userId);
-        List<PlanningData> list = new ArrayList<>();
-        if (uuu == null) {
-            return list;
-        }
-//        String teacherName = uuu == null ? "" : uuu.getContact().getFullName();
-        VFile p = core.getUserFolder(uuu.getLogin()).get("/myplanning.xml");
-        if (p != null && p.exists()) {
-            try {
-
-                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                Document doc = dBuilder.parse(p.getInputStream());
-                //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-                doc.getDocumentElement().normalize();
-
-                NodeList nList = doc.getElementsByTagName("User");
-
-                for (int temp = 0; temp < nList.getLength(); temp++) {
-
-                    Node nNode = nList.item(temp);
-
-//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-                        Element eElement = (Element) nNode;
-                        PlanningData d = parsePlanningDataXML(nNode);
-                        if (d != null) {
-                            list.add(d);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+        AcademicTeacher teacherByUser = academicPlugin.findTeacherByUser(userId);
+        AcademicStudent student = academicPlugin.findStudentByUser(userId);
+        List<PlanningData> all=new ArrayList<>();
+        if(teacherByUser!=null){
+            PlanningData e = loadTeacherPlanning(teacherByUser.getId());
+            if(e!=null) {
+                all.add(e);
             }
         }
-        return list;
+        if(student!=null){
+            List<PlanningData> e = loadStudentPlanningList(student.getId());
+            if(e!=null) {
+                for (PlanningData planningData : e) {
+                    if(planningData!=null){
+                        all.add(planningData);
+                    }
+                }
+            }
+        }
+        return all;
     }
 
     public PlanningData loadTeacherPlanning(int teacherId) {
@@ -124,6 +108,7 @@ public class AcademicPlanningPlugin {
                         if (teacherNames.contains(tn.trim().toLowerCase().trim())) {
                             PlanningData dd = parsePlanningDataXML(nNode);
                             if (dd != null) {
+                                dd.setId("Teacher-"+(temp+1));
                                 dd.setPlanningUniformName(teacherName);
                                 return dd;
                             }
@@ -307,6 +292,7 @@ public class AcademicPlanningPlugin {
                             PlanningData p2 = parsePlanningDataXML(nNode);
                             if (p2 != null) {
                                 p2.setPlanningUniformName(nameMapping.get(tn.trim().toLowerCase()));
+                                p2.setId("Student-"+(temp+1));
                                 list.add(p2);
                             }
                         }
@@ -354,6 +340,9 @@ public class AcademicPlanningPlugin {
                         String tn = eElement.getAttribute("name");
                         if (uniformClassName.equals(tn.trim().toLowerCase())) {
                             PlanningData p2 = parsePlanningDataXML(nNode);
+                            if(p2!=null) {
+                                p2.setId("Class-" + (temp + 1));
+                            }
                             return p2;
                         }
                     }
@@ -416,6 +405,26 @@ public class AcademicPlanningPlugin {
             }
         }
         return new ArrayList<>(all);
+    }
+
+    @Override
+    public List<PlanningData> loadCalendars(String type, String key) {
+        if("class-calendar".equals(type)){
+            PlanningData planningData = loadClassPlanning(key);
+            if(planningData!=null){
+                return Arrays.asList(planningData);
+            }
+        }
+        if("teacher-calendar".equals(type)){
+            PlanningData planningData = loadTeacherPlanning(Integer.parseInt(key));
+            if(planningData!=null){
+                return Arrays.asList(planningData);
+            }
+        }
+        if("student-calendar".equals(type)){
+            return  loadStudentPlanningList(Integer.parseInt(key));
+        }
+        return Collections.EMPTY_LIST;
     }
 
 }

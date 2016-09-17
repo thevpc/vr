@@ -6,8 +6,8 @@
 package net.vpc.app.vainruling.core.service.util;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.Plugin;
-import net.vpc.app.vainruling.core.service.PluginComponent;
+import net.vpc.app.vainruling.core.service.plugins.Plugin;
+import net.vpc.app.vainruling.core.service.plugins.PluginComponent;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.upa.UPAObject;

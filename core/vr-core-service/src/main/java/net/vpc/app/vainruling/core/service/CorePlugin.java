@@ -13,6 +13,7 @@ import net.vpc.app.vainruling.core.service.fs.VrFSEntry;
 import net.vpc.app.vainruling.core.service.fs.VrFSTable;
 import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.notification.PollAware;
+import net.vpc.app.vainruling.core.service.plugins.*;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.AppVersion;
 import net.vpc.app.vainruling.core.service.util.*;
@@ -29,6 +30,7 @@ import net.vpc.upa.types.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +41,6 @@ import java.util.*;
 import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -48,6 +49,7 @@ import java.util.logging.Logger;
 public class CorePlugin {
 
     public static final java.util.logging.Logger LOG_APPLICATION_STATS = java.util.logging.Logger.getLogger(CorePlugin.class.getName() + ".Stats");
+    private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePlugin.class.getName());
     public static final String PATH_LOG = "/Var/Log";
     public static final String PATH_TEMP = "/Var/Temp";
     public static final String USER_ADMIN = "admin";
@@ -55,7 +57,6 @@ public class CorePlugin {
     public static final String PROFILE_HEAD_OF_DEPARTMENT = "HeadOfDepartment";
     public static final String RIGHT_FILESYSTEM_WRITE = "Custom.FileSystem.Write";
     public static final Set<String> ADMIN_ENTITIES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("Trace", "User", "UserProfile", "UserProfileBinding", "UserProfileRight")));
-    private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePlugin.class.getName());
     public static String FOLDER_MY_DOCUMENTS = "Mes Documents";
     public static String FOLDER_ALL_DOCUMENTS = "Tous";
     public static String FOLDER_BACK = "<Dossier Parent>";
@@ -63,6 +64,10 @@ public class CorePlugin {
     private String nativeFileSystemPath;
     @Autowired
     private TraceService trace;
+    @Autowired
+    private I18n i18n;
+    @Autowired
+    private VrApp app; //actually to force dependency, may have used @DependsOn
     @Autowired
     private CacheService cacheService;
     private boolean updatingPoll = false;
@@ -90,6 +95,32 @@ public class CorePlugin {
 
     public static CorePlugin get() {
         return VrApp.getBean(CorePlugin.class);
+    }
+
+
+    @PostConstruct
+    public void prepare() {
+        //LogUtils.configure(Level.FINE,"net.vpc");
+        //disable log4j imported by jxl-api
+        org.apache.log4j.LogManager.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
+
+        i18n.register("i18n.dictionary");
+        i18n.register("i18n.presentation");
+        i18n.register("i18n.service");
+//        try {
+//            InitialContext c = new InitialContext();
+//            c.bind("java:comp/env/datasource", VrApp.getContext().getBean("datasource"));
+//        }catch(Exception ex){
+//            ex.printStackTrace();
+//        }
+        UPA.getContext().
+
+                invokePrivileged(new VoidAction() {
+                    @Override
+                    public void run() {
+                        tryInstall();
+                    }
+                });
     }
 
     public void onPoll() {
@@ -785,7 +816,7 @@ public class CorePlugin {
     }
 
     @Install
-    public void installService() {
+    private void installService() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AppCountry tunisia = pu.findByMainField(AppCountry.class, "Tunisie");
         if (tunisia == null) {
@@ -878,13 +909,13 @@ public class CorePlugin {
         mainConfig.setMainPeriod(new AppPeriod("2015-2016"));
         findOrCreate(mainConfig, "id");
 //        validateRightsDefinitions();
-        VrApp.getBean(CorePlugin.class).createRight("Custom.FileSystem.RootFileSystem", "Root FileSystem Access");
-        VrApp.getBean(CorePlugin.class).createRight("Custom.FileSystem.MyFileSystem", "My FileSystem Access");
-        VrApp.getBean(CorePlugin.class).createRight(RIGHT_FILESYSTEM_WRITE, "Enable Write Access for File System");
+        createRight("Custom.FileSystem.RootFileSystem", "Root FileSystem Access");
+        createRight("Custom.FileSystem.MyFileSystem", "My FileSystem Access");
+        createRight(RIGHT_FILESYSTEM_WRITE, "Enable Write Access for File System");
     }
 
     @Start
-    protected void onStart() {
+    private void onStart() {
         String home = System.getProperty("user.home");
         home = home.replace("\\", "/");
         if (!home.startsWith("/")) {
@@ -1560,8 +1591,7 @@ public class CorePlugin {
                     return us.isAdmin();
                 }
             }
-            CorePlugin core = VrApp.getBean(CorePlugin.class);
-            List<AppProfile> profiles = core.findProfilesByUser(u.getId());
+            List<AppProfile> profiles = findProfilesByUser(u.getId());
             for (AppProfile p : profiles) {
                 if (PROFILE_ADMIN.equals(p.getCode())) {
                     return true;
@@ -1598,8 +1628,7 @@ public class CorePlugin {
                 if (us.getUser() != null && u.getLogin().equals(us.getUser().getLogin())) {
                     return us.isAdmin();
                 }
-                CorePlugin core = VrApp.getBean(CorePlugin.class);
-                List<AppProfile> profiles = core.findProfilesByUser(u.getId());
+                List<AppProfile> profiles = findProfilesByUser(u.getId());
                 for (AppProfile p : profiles) {
                     if (PROFILE_ADMIN.equals(p.getCode())) {
                         return true;
@@ -2019,7 +2048,6 @@ public class CorePlugin {
     }
 
     protected void buildSession(UserSession s, AppUser user) {
-        CorePlugin core = VrApp.getBean(CorePlugin.class);
         final List<AppProfile> userProfiles = findProfilesByUser(user.getId());
         Set<String> userProfilesNames = new HashSet<>();
         for (AppProfile u : userProfiles) {
@@ -2038,14 +2066,14 @@ public class CorePlugin {
         s.setAdmin(false);
         s.setDepartmentManager(-1);
         s.setManager(false);
-        s.setRights(core.findUserRights(user.getId()));
+        s.setRights(findUserRights(user.getId()));
         if (user.getLogin().equalsIgnoreCase("admin") || userProfilesNames.contains(CorePlugin.PROFILE_ADMIN)) {
             s.setAdmin(true);
         }
         if (userProfilesNames.contains(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT)) {
             if (user.getDepartment() != null) {
                 AppUser d = findHeadOfDepartment(user.getDepartment().getId());
-                if (d!=null && d.getId() == user.getId()) {
+                if (d != null && d.getId() == user.getId()) {
                     s.setManager(true);
                     s.setDepartmentManager(d.getDepartment().getId());
                 }
@@ -2107,12 +2135,12 @@ public class CorePlugin {
                 for (URL url : Collections.list(Thread.currentThread().getContextClassLoader().getResources("/META-INF/vr-plugin.properties"))) {
                     PluginComponent e = PluginComponent.parsePluginComponent(url);
                     if (e != null) {
-                        if(e.getName()==null){
+                        if (e.getName() == null) {
                             String id = e.getId();
-                            if(id!=null){
-                                if(id.contains(":")){
-                                    e.setName(id.substring(id.indexOf(':')+1));
-                                }else{
+                            if (id != null) {
+                                if (id.contains(":")) {
+                                    e.setName(id.substring(id.indexOf(':') + 1));
+                                } else {
                                     e.setName(id);
                                 }
                             }
@@ -2123,10 +2151,10 @@ public class CorePlugin {
                 for (PluginComponent e : components.values()) {
                     String bundleId = e.getBundleId();
                     PluginBundle bundle = bundles.get(bundleId);
-                    if(bundle==null){
-                        bundle=new PluginBundle();
+                    if (bundle == null) {
+                        bundle = new PluginBundle();
                         bundle.setId(bundleId);
-                        bundles.put(bundleId,bundle);
+                        bundles.put(bundleId, bundle);
                     }
                     bundle.addComponent(e);
                 }
@@ -2136,16 +2164,16 @@ public class CorePlugin {
 
                 for (PluginBundle bundle : bundles.values()) {
                     for (String depIdAndVer : bundle.getDependencies()) {
-                        String depId=depIdAndVer;
-                        if(depIdAndVer.contains(":")) {
+                        String depId = depIdAndVer;
+                        if (depIdAndVer.contains(":")) {
                             depId = depIdAndVer.substring(0, depIdAndVer.lastIndexOf(":"));
                         }
                         PluginComponent comp = components.get(depId);
-                        if(comp!=null){
-                            if(!bundle.getId().equals(comp.getBundleId())) {
+                        if (comp != null) {
+                            if (!bundle.getId().equals(comp.getBundleId())) {
                                 bundle.getBundleDependencies().add(comp.getBundleId());
                             }
-                        }else{
+                        } else {
                             bundle.getExtraDependencies().add(depId);
                         }
                     }
@@ -2160,10 +2188,10 @@ public class CorePlugin {
 
     public PluginComponent getPluginComponent(Class type) {
         buildPluginInfos();
-        String id=null;
+        String id = null;
         try {
-            URL url=getPluginComponentURL(type,"/META-INF/vr-plugin.properties");
-            if(url!=null) {
+            URL url = getPluginComponentURL(type, "/META-INF/vr-plugin.properties");
+            if (url != null) {
                 id = PluginComponent.parsePluginInfoId(url);
             }
 //            id = PluginInfo.parsePluginInfoId(type.getResource("/META-INF/vr-plugin.properties"));
@@ -2172,9 +2200,10 @@ public class CorePlugin {
         }
         return components.get(id);
     }
-    public URL getPluginComponentURL(Class type,String path) {
+
+    public URL getPluginComponentURL(Class type, String path) {
         try {
-            return new URL("jar:" + type.getProtectionDomain().getCodeSource().getLocation().toString() + "!"+path);
+            return new URL("jar:" + type.getProtectionDomain().getCodeSource().getLocation().toString() + "!" + path);
         } catch (MalformedURLException e) {
             return null;
         }
@@ -2186,7 +2215,7 @@ public class CorePlugin {
 
     public PluginBundle getPluginBundle(Class type) {
         PluginComponent comp = getPluginComponent(type);
-        if(comp==null){
+        if (comp == null) {
             return null;
         }
         return comp.getBundle();
@@ -2194,7 +2223,7 @@ public class CorePlugin {
 
     public PluginBundle getPluginBundle(Object type) {
         PluginComponent comp = getPluginComponent(type);
-        if(comp==null){
+        if (comp == null) {
             return null;
         }
         return comp.getBundle();
@@ -2210,18 +2239,18 @@ public class CorePlugin {
                 PluginBundle bundle = getPluginBundle(bean);
                 if (bundle != null) {
                     instances.put(bundle.getId(), bean);
-                }else{
+                } else {
                     bundle = getPluginBundle(bean);
                 }
             }
-            List<Plugin> plugins=new ArrayList<>(bundles.size());
+            List<Plugin> plugins = new ArrayList<>(bundles.size());
             for (PluginBundle pluginInfo : bundles.values()) {
                 List<Object> objects = instances.get(pluginInfo.getId());
-                if(objects==null || objects.size()==0){
-                    if(objects==null) {
+                if (objects == null || objects.size() == 0) {
+                    if (objects == null) {
                         objects = new ArrayList<>();
                     }
-                    log.log(Level.INFO, "Plugin "+pluginInfo.getId()+" defines no configurator class");
+                    log.log(Level.INFO, "Plugin " + pluginInfo.getId() + " defines no configurator class");
                 }
                 Plugin p = new Plugin(objects, pluginInfo);
                 plugins.add(p);
@@ -2374,7 +2403,7 @@ public class CorePlugin {
                     }
                 }
             } catch (IOException ex) {
-                Logger.getLogger(CorePlugin.class.getName()).log(Level.SEVERE, null, ex);
+                log.log(Level.SEVERE, null, ex);
             }
             return mfs;
         } else {
@@ -2413,7 +2442,7 @@ public class CorePlugin {
                     mfs.mount("/" + e.getMountPoint(), fileSystem.subfs(e.getLinkPath()));
                 }
             } catch (IOException ex) {
-                Logger.getLogger(CorePlugin.class.getName()).log(Level.SEVERE, null, ex);
+                log.log(Level.SEVERE, null, ex);
             }
             if (mfs == null) {
                 return pfs;
@@ -2520,31 +2549,31 @@ public class CorePlugin {
         List<AppDepartment> departments;
     }
 
-    public void invalidateCache(){
+    public void invalidateCache() {
         cacheService.invalidate();
     }
 
-    public String getDefaultUserTheme(){
-        return (String)getOrCreateAppPropertyValue("System.DefaultTheme", null, "");
+    public String getDefaultUserTheme() {
+        return (String) getOrCreateAppPropertyValue("System.DefaultTheme", null, "");
     }
 
-    public String getCurrentUserTheme(){
+    public String getCurrentUserTheme() {
         UserSession session = UserSession.get();
-        String val=null;
-        if(session!=null && session.getUser()!=null) {
+        String val = null;
+        if (session != null && session.getUser() != null) {
             val = UPA.getPersistenceUnit().invokePrivileged(new Action<String>() {
                 @Override
                 public String run() {
-                    return (String)getOrCreateAppPropertyValue("System.DefaultTheme", session.getUser().getLogin(), "");
+                    return (String) getOrCreateAppPropertyValue("System.DefaultTheme", session.getUser().getLogin(), "");
                 }
             });
         }
-        return val==null?"":val;
+        return val == null ? "" : val;
     }
 
-    public void setCurrentUserTheme(String theme){
+    public void setCurrentUserTheme(String theme) {
         UserSession session = UserSession.get();
-        if(session!=null && session.getUser()!=null){
+        if (session != null && session.getUser() != null) {
             UPA.getContext().invokePrivileged(new VoidAction() {
                                                   @Override
                                                   public void run() {
@@ -2556,13 +2585,148 @@ public class CorePlugin {
         }
     }
 
-    public void setUserTheme(int userId,String theme){
+    public void setUserTheme(int userId, String theme) {
         AppUser user = findUser(userId);
-        if(user!=null){
+        if (user != null) {
             setAppProperty("System.DefaultTheme", user.getLogin(), theme);
         }
     }
 
 
+    private List<String> getOrderedPlugins() {
+        final Map<String, Object> s = VrApp.getContext().getBeansWithAnnotation(AppPlugin.class);
+        ArrayList<String> ordered = new ArrayList<>();
+        for (String k : s.keySet()) {
+            Object o1 = VrApp.getContext().getBean(k);
+            AppPlugin a1 = (AppPlugin) PlatformReflector.getTargetClass(o1).getAnnotation(AppPlugin.class);
+            for (String d : a1.dependsOn()) {
+                VrApp.getContext().getBean(d);
+            }
+            ordered.add(k);
+        }
+        Collections.sort(ordered, new Comparator<String>() {
+
+            @Override
+            public int compare(String s1, String s2) {
+                Object o1 = VrApp.getContext().getBean(s1);
+                AppPlugin a1 = (AppPlugin) PlatformReflector.getTargetClass(o1).getAnnotation(AppPlugin.class);
+                Object o2 = VrApp.getContext().getBean(s1);
+                AppPlugin a2 = (AppPlugin) PlatformReflector.getTargetClass(o2).getAnnotation(AppPlugin.class);
+                HashSet<String> hs1 = new HashSet<>(Arrays.asList(a1.dependsOn()));
+                HashSet<String> hs2 = new HashSet<>(Arrays.asList(a2.dependsOn()));
+                if (!s1.equals("coreService")) {
+                    hs1.add("coreService");
+                }
+                if (!s2.equals("coreService")) {
+                    hs2.add("coreService");
+                }
+                if (Arrays.asList(a1.dependsOn()).contains(s2)) {
+                    return -1;
+                }
+                if (Arrays.asList(a2.dependsOn()).contains(s2)) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+        return ordered;
+    }
+
+    private void tryInstall() {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        ArrayList<Plugin> toInstall = new ArrayList<>();
+        ArrayList<Plugin> toStart = new ArrayList<>();
+        for (Plugin pp : getPlugins()) {
+            String sver = pp.getInfo().getVersion();
+            String pluginId = pp.getId();
+            net.vpc.app.vainruling.core.service.model.AppVersion v = pu.findById(net.vpc.app.vainruling.core.service.model.AppVersion.class, pluginId);
+            if (v == null) {
+                v = pu.findById(net.vpc.app.vainruling.core.service.model.AppVersion.class, pluginId);
+            }
+            boolean ignore = false;
+            if (v == null || !sver.equals(v.getServiceVersion()) || !v.isCoherent()) {
+                if (v != null && !v.isActive()) {
+                    log.log(Level.INFO, "Plugin {0} is deactivated (version {1})", new Object[]{pluginId, pp.getInfo().getVersion()});
+                    //ignore
+                    ignore = true;
+                } else {
+                    if (v == null) {
+                        v = new net.vpc.app.vainruling.core.service.model.AppVersion();
+                        v.setActive(true);
+                        final net.vpc.upa.types.Timestamp dte = new net.vpc.upa.types.Timestamp();
+                        v.setInstallDate(dte);
+                        v.setServiceName(pluginId);
+                        v.setServiceVersion(sver);
+                        v.setUpdateDate(dte);
+                        v.setCoherent(true);
+                        pu.persist(v);
+
+                    } else {
+                        v.setActive(true);
+                        final net.vpc.upa.types.Timestamp dte = new net.vpc.upa.types.Timestamp();
+                        v.setServiceVersion(sver);
+                        v.setUpdateDate(dte);
+                        v.setCoherent(true);
+                        pu.merge(v);
+                    }
+                    toInstall.add(pp);
+                }
+            } else {
+                log.log(Level.INFO, "Plugin {0} is uptodate ({1})", new Object[]{pluginId, pp.getInfo().getVersion()});
+            }
+            if (!ignore) {
+                toStart.add(pp);
+            }
+        }
+        HashSet<String> nonCoherent = new HashSet<>();
+        Collections.sort(toInstall);
+        for (Plugin plugin : toInstall) {
+            if (!nonCoherent.contains(plugin.getId())) {
+                try {
+                    plugin.install();
+                } catch (Exception e) {
+                    nonCoherent.add(plugin.getId());
+                    log.log(Level.SEVERE, "Error Starting " + plugin.getId(), e);
+                    net.vpc.app.vainruling.core.service.model.AppVersion v = pu.findById(net.vpc.app.vainruling.core.service.model.AppVersion.class, plugin.getId());
+                    v.setCoherent(false);
+                    pu.merge(v);
+
+                }
+            }
+        }
+        for (Plugin plugin : toInstall) {
+            if (!nonCoherent.contains(plugin.getId())) {
+                try {
+                    plugin.installDemo();
+                } catch (Exception e) {
+                    nonCoherent.add(plugin.getId());
+                    log.log(Level.SEVERE, "Error Starting " + plugin.getId(), e);
+                    net.vpc.app.vainruling.core.service.model.AppVersion v = pu.findById(net.vpc.app.vainruling.core.service.model.AppVersion.class, plugin.getId());
+                    v.setCoherent(false);
+                    pu.merge(v);
+                }
+            }
+        }
+
+        Collections.sort(toStart);
+        i18n.register("i18n.dictionary");
+        i18n.register("i18n.presentation");
+        i18n.register("i18n.service");
+        for (Plugin plugin : toStart) {
+//            i18n.register("i18n." + plugin.getId() + ".dictionary");
+//            i18n.register("i18n." + plugin.getId() + ".presentation");
+//            i18n.register("i18n." + plugin.getId() + ".service");
+            try {
+                plugin.start();
+            } catch (Exception e) {
+                nonCoherent.add(plugin.getId());
+                log.log(Level.SEVERE, "Error Starting " + plugin.getId(), e);
+                net.vpc.app.vainruling.core.service.model.AppVersion v = pu.findById(net.vpc.app.vainruling.core.service.model.AppVersion.class, plugin.getId());
+                v.setCoherent(false);
+                pu.merge(v);
+
+            }
+        }
+    }
 
 }

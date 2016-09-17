@@ -10,16 +10,24 @@ import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.common.strings.StringConverter;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.upa.exceptions.IllegalArgumentException;
+import org.glassfish.jersey.internal.PropertiesDelegate;
+import org.glassfish.jersey.message.internal.OutboundJaxrsResponse;
+import org.glassfish.jersey.message.internal.TracingAwarePropertiesDelegate;
+import org.glassfish.jersey.server.ContainerRequest;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -27,8 +35,25 @@ import javax.servlet.http.HttpSession;
 public class VrWebHelper {
 
     public static void prepareUserSession() {
-        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpServletRequest req = attr.getRequest();
+        HttpServletRequest req=null;
+        try {
+            RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
+            if(requestAttributes instanceof ServletRequestAttributes){
+                req=((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+            }else if(requestAttributes.getClass().getSimpleName().equals("JaxrsRequestAttributes")){
+                try {
+                    Method m = requestAttributes.getClass().getDeclaredMethod("getHttpServletRequest");
+                    m.setAccessible(true);
+                    req = (HttpServletRequest) m.invoke(requestAttributes);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }else{
+                throw new IllegalArgumentException("Unsupported");
+            }
+        } catch (Exception e) {
+            System.err.println("Unexpected Exception " + e);
+        }
         UserSession s = VrApp.getContext().getBean(UserSession.class);
         if (s != null && s.getUser() != null) {
             s.setTheme(Vr.get().getUserTheme(s.getUser().getLogin()).getId());

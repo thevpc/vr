@@ -5,8 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.forum.service;
 
-import net.vpc.app.vainruling.core.service.AppPlugin;
-import net.vpc.app.vainruling.core.service.Install;
+import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
+import net.vpc.app.vainruling.core.service.plugins.Install;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -15,7 +15,7 @@ import net.vpc.app.vainruling.core.service.Install;
 public class ForumPlugin {
 
     @Install
-    public void installService() {
+    private void installService() {
 
     }
 }

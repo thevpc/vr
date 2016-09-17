@@ -34,7 +34,7 @@ public class WelcomeCtrl {
     public void onLoad() {
         Vr vr = Vr.get();
         UserSession userSession = vr.getUserSession();
-        vr.updatePublicDepartment(userSession.getSelectedDepartment()==null?null:userSession.getSelectedDepartment().getCode());
+        vr.gotoPublicSubSite(userSession.getSelectedDepartment()==null?null:userSession.getSelectedDepartment().getCode());
         VrMenuManager menu = VrApp.getBean(VrMenuManager.class);
         menu.getModel().setCurrentPageId("welcome");
         menu.setPageCtrl("welcome");

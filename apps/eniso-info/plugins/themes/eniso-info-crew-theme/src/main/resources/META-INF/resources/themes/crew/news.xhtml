@@ -274,10 +274,29 @@ and open the template in the editor.
                             <p style="text-align: justify"><h:outputText escape="false"
                                                                          value="#{(vr.contentText2html(vr.cmsTextService.selectedContentText))}"></h:outputText>
                             </p>
+                            <p:separator styleClass="vr-article-separator"/>
+                            <div class="row">
+                                <small style="float: right;margin-top: 0px;">
+                                    <span style="font-family: Stalemate;font-size: 28px;">by</span>
+                                    <span style="">#{vr.cmsTextService.selectedContentText.user.contact.fullName}</span>
+                                    <span style="font-family: Stalemate;font-size: 28px;"> ,</span>
+                                    <span>#{vr.date(vr.cmsTextService.selectedContentText.publishTime,vr.getLocale('en'))}</span>
+                                    <span> | </span>
+                                    <span>#{articlesCtrl.model.current.visitCount+1}</span>
+                                    <span> views</span>
+                                    <span> | </span>
+                                    <h:outputLink
+                                            value="#{vr.fullContext}/p/news?a={#{vr.strFormat('id=%d',vr.cmsTextService.selectedContentText.id)}}">
+                                        <h:graphicImage value="#{vr.strcat(vr.themePath,'/images/icons/link.png')}" width="16"/>
+                                    </h:outputLink>
+                                </small>
+                            </div>
+
                             <h:panelGroup layout="block"
                                           rendered="#{vr.cmsTextService.selectedContentText.attachments.size() ne 0}">
-                                <ui:repeat value="#{vr.groupListBy(6,vr.cmsTextService.selectedContentText.attachments)}"
-                                           var="subList">
+                                <ui:repeat
+                                        value="#{vr.groupListBy(6,vr.cmsTextService.selectedContentText.attachments)}"
+                                        var="subList">
                                     <div class="row">
                                         <ui:repeat value="#{subList}" var="att">
                                             <div class="col-md-2 text-center item-block">

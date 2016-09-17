@@ -18,8 +18,8 @@ package net.vpc.app.vainruling.plugins.academic.planning.web;
 //import net.vpc.app.vainruling.core.web.OnPageLoad;
 //import net.vpc.app.vainruling.core.web.UCtrl;
 //import net.vpc.app.vainruling.core.web.UPathItem;
-//import net.vpc.app.vainruling.plugins.academic.service.model.PlanningData;
-//import net.vpc.app.vainruling.plugins.academic.service.model.PlanningDay;
+//import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningData;
+//import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningDay;
 //import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 //
 ///**
