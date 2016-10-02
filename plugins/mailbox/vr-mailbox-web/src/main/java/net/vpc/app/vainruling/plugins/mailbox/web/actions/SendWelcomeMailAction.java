@@ -37,7 +37,7 @@ public class SendWelcomeMailAction implements ActionDialog {
     }
 
     @Override
-    public void invoke(Class entityType, Object obj, Object[] args) {
+    public void invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         MailboxPlugin mailboxPlugin = VrApp.getBean(MailboxPlugin.class);
         ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
         mailboxPlugin.sendWelcomeEmail(objCtrl.getSelectedEntityObjects(), true);

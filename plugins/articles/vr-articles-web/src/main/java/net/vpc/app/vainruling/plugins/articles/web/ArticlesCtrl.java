@@ -14,11 +14,13 @@ import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
+import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesDispositionGroup;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesFile;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
 import net.vpc.app.vainruling.plugins.articles.service.model.FullArticle;
 import net.vpc.upa.*;
 import net.vpc.upa.expressions.UserExpression;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -94,7 +96,10 @@ public class ArticlesCtrl implements CmsTextService {
         getModel().getArticles().put(name, a);
         if (getModel().getCurrent() == null) {
             if (a != null && a.size() > 0) {
-                getModel().setCurrent(a.get(0));
+                if(a.get(0)!=null) {
+                    updateVisit(a.get(0).getId());
+                }
+                setSelectedContentTextById(a.get(0).getId());
             } else {
                 getModel().setCurrent(null);
             }
@@ -112,12 +117,17 @@ public class ArticlesCtrl implements CmsTextService {
 
     public List<FullArticle> findArticles(String disposition) {
         UserSession userSession = UserSession.get();
-        AppDepartment d = userSession==null?null:userSession.getSelectedDepartment();
-        if(d==null){
-            d= CorePlugin.get().findDepartment("II");
+        String filter = userSession==null?null:userSession.getSelectedSiteFilter();
+        if(StringUtils.isEmpty(filter)) {
+            filter = "";
         }
-        AppUser u = UserSession.getCurrentUser();
-        return articles.findFullArticlesByUserAndCategory(u == null ? null : u.getLogin(),d==null?-1:d.getId(),true, disposition);
+        ArticlesDispositionGroup g = articles.findArticleDispositionGroup(filter);
+        if(g==null){
+            g=articles.findArticleDispositionGroup("II");
+        }
+
+        AppUser u = userSession==null?null:userSession.getUser();
+        return articles.findFullArticlesByUserAndCategory(u == null ? null : u.getLogin(),g==null?-1:g.getId(),true, disposition);
     }
 
     public List<ArticlesFile> findArticlesFiles(int articleId) {
@@ -153,6 +163,7 @@ public class ArticlesCtrl implements CmsTextService {
         getModel().setCurrent((FullArticle) articles.findFullArticle(id));
         FullArticle c = getModel().getCurrent();
         if(c!=null && c.getArticlesItem().getDisposition()!=null){
+            updateVisit(c.getId());
             loadContentTexts(c.getArticlesItem().getDisposition().getName());
         }
     }

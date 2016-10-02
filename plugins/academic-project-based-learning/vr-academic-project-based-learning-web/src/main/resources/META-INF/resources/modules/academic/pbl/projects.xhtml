@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+>
+
+<h:head>
+</h:head>
+
+<h:body>
+
+
+    <!--@elvariable id="academicAppProjectsCtrl" type="net.vpc.app.vainruling.plugins.academic.pbl.web.AcademicAppProjectsCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
+        <ui:define name="content">
+            <h:form id="messagesForm">
+                <p:messages id="messages"/>
+            </h:form>
+            <h:form id="listForm">
+
+                <div>
+                    <div class="table-responsive vr-toolbox-container">
+                        <p:selectOneMenu styleClass="vr-toolbox-select-one"
+                                         value="#{academicAppProjectsCtrl.model.currentSessionId}">
+                            <p:ajax listener="#{academicAppProjectsCtrl.onUpdateSession}" update=":listForm"/>
+                            <f:selectItem itemLabel="Choisir Session..." itemValue=""/>
+                            <f:selectItems value="#{academicAppProjectsCtrl.model.sessionItems}"/>
+                        </p:selectOneMenu>
+                        <p:commandButton value="Nouveau Projet" styleClass="btn btn-info vr-toolbox-long-button"
+                                         actionListener="#{academicAppProjectsCtrl.onOpenCreateProjectDialog}"
+                                         rendered="#{academicAppProjectsCtrl.isAllowed('CreateProject')}"
+
+                        >
+                            <p:ajax event="dialogReturn" update=":listForm"/>
+                        </p:commandButton>
+                        <p:commandButton value="Nouvelle Equipe" styleClass="btn btn-warning vr-toolbox-long-button"
+                                         actionListener="#{academicAppProjectsCtrl.onOpenCreateTeamDialog}"
+                                         rendered="#{academicAppProjectsCtrl.isAllowed('CreateTeam')}"
+                        >
+                            <p:ajax event="dialogReturn" update=":listForm"/>
+                        </p:commandButton>
+                        <p:commandButton value="Rafraichir" styleClass="btn btn-default vr-toolbox-long-button"
+                                         actionListener="#{academicAppProjectsCtrl.reloadProjects}"
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <div class="table-responsive">
+                        <p:treeTable value="#{academicAppProjectsCtrl.model.root}" var="document">
+                            <f:facet name="header">
+                                #{academicAppProjectsCtrl.model.session.name}
+                            </f:facet>
+                            <p:column headerText="Projet">
+                                <i style="margin-right: 5px;"
+                                   class="fa #{vr.mapValue(document.type,'fa-folder','project','fa-calendar text-teal','team','fa-users text-orange','member','fa-user text-green','coach','fa-user-secret text-blue')}"></i>
+                                <h:outputText value="#{document.name}"/>
+                                <ui:fragment rendered="#{document.childrenCount1 gt 0}">
+                                    <small class="label pull-right bg-orange">#{document.childrenCount1}</small>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{document.childrenCount2 gt 0}">
+                                    <small class="label pull-right bg-blue">#{document.childrenCount2}</small>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{document.childrenCount3 gt 0}">
+                                    <small class="label pull-right bg-green">#{document.childrenCount3}</small>
+                                </ui:fragment>
+                            </p:column>
+                            <p:column headerText="Responsable" style="width:300px">
+                                <h:outputText value="#{document.owner}"/>
+                            </p:column>
+                            <p:column style="width:300px">
+                                <p:commandButton value="ouvrir" styleClass="btn btn-info btn-xs"
+                                                 ajax="true"
+                                                 rendered="#{((document.type eq 'project' and document.value.project ne null) or document.type eq 'team')}"
+                                                 actionListener="#{academicAppProjectsCtrl.onOpenViewDialog(document)}"
+                                />
+                                <p:commandButton value="joindre" styleClass="btn btn-success btn-xs"
+                                                 ajax="true"
+                                                 rendered="#{academicAppProjectsCtrl.isJoinAllowed(document)}"
+                                                 actionListener="#{academicAppProjectsCtrl.onJoin(document)}"
+                                />
+                                <p:commandButton value="supprimer" styleClass="btn btn-danger btn-xs"
+                                                 ajax="false"
+                                                 rendered="#{academicAppProjectsCtrl.isLeaveAllowed(document)}"
+                                                 actionListener="#{academicAppProjectsCtrl.onRemove(document)}"
+                                />
+                            </p:column>
+                        </p:treeTable>
+                    </div>
+                </div>
+
+
+                <p:separator/>
+
+
+            </h:form>
+
+
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>

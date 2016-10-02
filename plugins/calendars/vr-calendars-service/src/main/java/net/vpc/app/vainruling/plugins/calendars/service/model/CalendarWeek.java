@@ -12,12 +12,16 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @XmlRootElement
-public class PlanningData {
+public class CalendarWeek {
 
     private String id;
+    private String sourceName;
     private String planningName;
     private String planningUniformName;
-    private List<PlanningDay> days;
+    private List<CalendarDay> days;
+
+    public CalendarWeek() {
+    }
 
     public String getId() {
         return id;
@@ -35,17 +39,17 @@ public class PlanningData {
         this.planningName = planningName;
     }
 
-    public List<PlanningDay> getDays() {
+    public List<CalendarDay> getDays() {
         return days;
     }
 
-    public void setDays(List<PlanningDay> days) {
+    public void setDays(List<CalendarDay> days) {
         this.days = days;
     }
 
     @Override
     public String toString() {
-        return "PlanningData{" + "planningName=" + planningName + ", days=" + days + '}';
+        return "CalendarWeek{" + "planningName=" + planningName + ", days=" + days + '}';
     }
 
     public String getPlanningUniformName() {
@@ -56,4 +60,11 @@ public class PlanningData {
         this.planningUniformName = planningUniformName;
     }
 
+    public String getSourceName() {
+        return sourceName;
+    }
+
+    public void setSourceName(String sourceName) {
+        this.sourceName = sourceName;
+    }
 }

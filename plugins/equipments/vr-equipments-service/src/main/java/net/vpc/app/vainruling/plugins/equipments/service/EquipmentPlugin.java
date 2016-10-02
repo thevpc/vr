@@ -12,10 +12,14 @@ import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.InstallDemo;
 import net.vpc.app.vainruling.plugins.equipments.service.model.*;
 import net.vpc.common.util.Utils;
+import net.vpc.upa.Entity;
+import net.vpc.upa.EntityBuilder;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -56,6 +60,68 @@ public class EquipmentPlugin {
                 .setParameter("deep", deep)
                 .getResultList();
 
+    }
+
+    public Equipment copyEquipment(Equipment eq){
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Equipment eq2=new Equipment();
+        eq2.setName(eq.getName());
+        eq2.setQuantity(eq.getQuantity());
+        eq2.setAcquisition(eq.getAcquisition());
+        eq2.setArchived(eq.isArchived());
+        eq2.setBrandLine(eq.getBrandLine());
+        eq2.setCreatedOn(new Timestamp(System.currentTimeMillis()));
+        eq2.setDeleted(eq.isDeleted());
+        eq2.setDeletedBy(eq.getDeletedBy());
+        eq2.setDeletedOn(eq.getDeletedOn());
+        eq2.setDepartment(eq.getDepartment());
+        eq2.setDescription(eq.getDescription());
+        eq2.setLocation(eq.getLocation());
+        eq2.setRelativeTo(eq.getRelativeTo());
+        eq2.setSerial(eq.getSerial());
+//        if(!StringUtils.isEmpty(eq.getSerial())) {
+//            eq2.setSerial(eq.getSerial() + "_" + i);
+//        }
+        eq2.setStatusType(eq.getStatusType());
+        eq2.setStockSerial(eq.getStockSerial());
+//        if(!StringUtils.isEmpty(eq.getStockSerial())) {
+//            eq2.setStockSerial(eq.getStockSerial());
+//        }
+        eq2.setType(eq.getType());
+        pu.persist(eq2);
+
+        for (Object child : pu.createQuery("Select e from Equipment where e.relativeToId=:id").setParameter("id", eq.getId()).getResultList()) {
+            Equipment child2 = copyEquipment((Equipment) child);
+            child2.setRelativeTo(eq2);
+            pu.merge(child2);
+        }
+        return eq2;
+    }
+
+    public int splitEquipmentQuantities(int equipmentId){
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity entity = pu.getEntity(Equipment.class);
+        Equipment eq = entity.findById(equipmentId);
+        if(Utils.isInteger(eq.getQuantity())){
+            int qte=(int) eq.getQuantity();
+            if(qte>1) {
+                for (int i = 2; i < qte+2; i++) {
+                    Equipment eq2=copyEquipment(eq);
+                    eq2.setName(eq.getName()+" "+i);
+                    if(!StringUtils.isEmpty(eq.getSerial())) {
+                        eq2.setSerial(eq.getSerial() + "_" + i);
+                    }
+                    if(!StringUtils.isEmpty(eq.getStockSerial())) {
+                        eq2.setStockSerial(eq.getStockSerial());
+                    }
+                    pu.merge(eq2);
+                }
+                eq.setQuantity(1);
+                pu.merge(eq);
+                return qte;
+            }
+        }
+        return 0;
     }
 
     @Install

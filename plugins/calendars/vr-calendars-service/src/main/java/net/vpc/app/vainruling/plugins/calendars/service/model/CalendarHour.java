@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.plugins.calendars.service.model;
 /**
  * @author taha.bensalah@gmail.com
  */
-public class PlanningHour {
+public class CalendarHour {
 
     private String hour;
     private String room;
@@ -60,7 +60,7 @@ public class PlanningHour {
 
     @Override
     public String toString() {
-        return "PlanningHour{" + "hour=" + hour + ", room=" + room + ", students=" + students + ", activity=" + activity + ", subject=" + subject + '}';
+        return "CalendarHour{" + "hour=" + hour + ", room=" + room + ", students=" + students + ", activity=" + activity + ", subject=" + subject + '}';
     }
 
     public String getTeacher() {

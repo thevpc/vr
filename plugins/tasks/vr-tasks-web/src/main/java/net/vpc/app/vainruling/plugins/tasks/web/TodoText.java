@@ -44,6 +44,11 @@ public class TodoText implements ContentText{
     }
 
     @Override
+    public String getSubTitle() {
+        return null;
+    }
+
+    @Override
     public String getContent() {
         return todo.getMessage();
     }

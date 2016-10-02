@@ -334,6 +334,37 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
+    public void onCloneCurrent() {
+        enabledButtons.clear();
+        try {
+            currentViewToModel();
+            switch (getModel().getMode()) {
+                case NEW: {
+                    Object c = getModel().getCurrentRecord();
+                    objService.save(getEntityName(), c);
+                    updateMode(EditCtrlMode.UPDATE);
+//                    onCancelCurrent();
+                    break;
+                }
+                case UPDATE: {
+                    Record c = getModel().getCurrentRecord();
+                    if(getEntity().getPrimaryFields().size()==1 && getEntity().getPrimaryFields().get(0).isGeneratedId()) {
+                        getEntity().getBuilder().setRecordId(c,null);
+                        objService.save(getEntityName(), c);
+                    }
+//                    onCancelCurrent();
+                    break;
+                }
+            }
+//            reloadPage();
+            FacesUtils.addInfoMessage("Enregistrement Réussi");
+        } catch (RuntimeException ex) {
+            log.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage("Enregistrement Echoué : " + ex.getMessage());
+//            throw ex;
+        }
+    }
+
     public void onSaveCurrentAndClose() {
         enabledButtons.clear();
         try {
@@ -1263,7 +1294,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             try {
                 currentViewToModel();
                 Object c = getModel().getCurrentRecord();
-                actionDialogManager.findAction(actionKey).invoke(getEntity().getEntityType(), c, args);
+                actionDialogManager.findAction(actionKey).invoke(getEntity().getEntityType(), c,getSelectedIdStrings(), args);
             } catch (RuntimeException ex) {
                 log.log(Level.SEVERE, "Error", ex);
                 throw ex;
@@ -1285,41 +1316,45 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         return null;
     }
 
-    public void openActionDialog(String actionId) {
+    public List<String> getSelectedIdStrings(){
+        List<String> selected = new ArrayList<>();
+        if (getModel().getMode() == EditCtrlMode.LIST) {
+            for (ObjRow r : getModel().getList()) {
+                if (r.isSelected()) {
+                    String iid = StringUtils.nonEmpty(objService.resolveId(getEntityName(), r.getRecord()));
+                    if (iid != null) {
+                        selected.add(iid);
+                    } else {
+                        System.out.println("Why?");
+                    }
+                }
+            }
+        } else if (getModel().getCurrentRecord() != null) {
+            String iid = StringUtils.nonEmpty(objService.resolveId(getEntityName(), getModel().getCurrentRecord()));
+            if (iid != null) {
+                selected.add(iid);
+            }
+        }
+        return selected;
+    }
+
+    public void proceedOpenActionDialog() {
+        String actionId=getModel().getActionId();
         if (actionId != null) {
             ActionDialogAdapter ed = VrApp.getBean(ActionDialogManager.class).findAction(actionId);
             if (ed != null) {
                 if (ed.isDialog()) {
-                    List<String> selected = new ArrayList<>();
-                    if (getModel().getMode() == EditCtrlMode.LIST) {
-                        for (ObjRow r : getModel().getList()) {
-                            if (r.isSelected()) {
-                                String iid = StringUtils.nonEmpty(objService.resolveId(getEntityName(), r.getRecord()));
-                                if (iid != null) {
-                                    selected.add(iid);
-                                } else {
-                                    System.out.println("Why?");
-                                }
-                            }
-                        }
-                    } else if (getModel().getCurrentRecord() != null) {
-                        String iid = StringUtils.nonEmpty(objService.resolveId(getEntityName(), getModel().getCurrentRecord()));
-                        if (iid != null) {
-                            selected.add(iid);
-                        } else {
-                            System.out.println("Why?");
-                        }
-                    }
+
                     currentViewToModel();
-                    ed.openDialog(actionId, selected);
+                    ed.openDialog(actionId, getSelectedIdStrings());
                     return;
                 } else {
                     try {
                         currentViewToModel();
                         Object c = getModel().getCurrentRecord();
-                        ed.invoke(getEntity().getEntityType(), c, null);
+                        ed.invoke(getEntity().getEntityType(), c,getSelectedIdStrings(), null);
                     } catch (RuntimeException ex) {
-                        FacesUtils.addInfoMessage("Erruer : " + ex.getMessage());
+                        FacesUtils.addInfoMessage("Error : " + ex.getMessage());
                         log.log(Level.SEVERE, "Error", ex);
                         throw ex;
                     }
@@ -1328,6 +1363,27 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             }
         }
         onAction(actionId, null);
+        fireEventSearchClosed();
+    }
+
+    public void openActionDialog(String actionId) {
+        if (actionId != null) {
+            ActionDialogAdapter ed = VrApp.getBean(ActionDialogManager.class).findAction(actionId);
+            if (ed != null) {
+                if(ed.isConfirm()){
+                    getModel().setActionId(actionId);
+                    getModel().setConfirmMessage("Etes vous sur de vouloir continuer?");
+                    Map<String, Object> options = new HashMap<String, Object>();
+                    options.put("resizable", false);
+                    options.put("draggable", false);
+                    options.put("modal", true);
+
+                    RequestContext.getCurrentInstance().openDialog("/modules/obj/profile-open-action-dialog", options, null);
+                }else{
+                    proceedOpenActionDialog();
+                }
+            }
+        }
     }
 
     public void onActionDialogClosed(SelectEvent event) {
@@ -1435,6 +1491,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     public class PModel extends Model<ObjRow> {
 
+        private String confirmMessage;
+        private String actionId;
         private String entityName;
         private List<ObjFormAction> actions = new ArrayList<ObjFormAction>();
         private Config config;
@@ -1446,6 +1504,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
         public List<ObjFormAction> getActions() {
             return actions;
+        }
+
+        public String getActionId() {
+            return actionId;
+        }
+
+        public void setActionId(String actionId) {
+            this.actionId = actionId;
         }
 
         public void setActions(List<ObjFormAction> actions) {
@@ -1510,6 +1576,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
         public Set<String> getDisabledFields() {
             return disabledFields;
+        }
+
+        public String getConfirmMessage() {
+            return confirmMessage;
+        }
+
+        public void setConfirmMessage(String confirmMessage) {
+            this.confirmMessage = confirmMessage;
         }
 
         public void setDisabledFields(Set<String> disabledFields) {

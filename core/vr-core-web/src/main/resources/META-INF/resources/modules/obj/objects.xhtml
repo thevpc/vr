@@ -63,6 +63,9 @@ and open the template in the editor.
                             <p:menuitem value="Enregister et Fermer" onclick="processOnSaveCurrentAndClose()"
                                         ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"
                                         icon="ui-icon-arrowrefresh-1-w"/>
+                            <p:menuitem value="Enregister une copie" onclick="processOnCloneCurrent()"
+                                        ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"
+                                        icon="ui-icon-arrowrefresh-1-w"/>
                             <p:menuitem value="Enregistrer" onclick="processOnSaveCurrent()" ajax="true"
                                         update=":buttonsForm :listForm :itemForm :pageTitleForm" icon="ui-icon-close"/>
                         </p:splitButton>
@@ -642,6 +645,8 @@ and open the template in the editor.
                                  action="#{objCtrl.onSaveCurrentAndClose()}"/>
                 <p:remoteCommand name="processOnSaveCurrent" process="@form" update=":listForm :itemForm  :buttonsForm"
                                  action="#{objCtrl.onSaveCurrent()}"/>
+                <p:remoteCommand name="processOnCloneCurrent" process="@form" update=":listForm :itemForm  :buttonsForm"
+                                 action="#{objCtrl.onCloneCurrent()}"/>
             </h:form>
 
             <h:form id="itemForm" enctype="multipart/form-data">

@@ -5,10 +5,14 @@
  */
 package net.vpc.app.vainruling.core.web.ctrl;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
 /**
@@ -20,10 +24,19 @@ import org.springframework.context.annotation.Scope;
 )
 @Scope(value = "singleton")
 public class PublicIndexCtrl {
-
+    @Autowired
+    private CorePlugin core;
     @OnPageLoad
-    public void onLoad() {
+    public void onLoad(String cmd) {
+        Config config = VrUtils.parseJSONObject(cmd, Config.class);
+        if(config!=null && StringUtils.isEmpty(config.filter)) {
+            core.getUserSession().setSelectedSiteFilter(config.filter);
+        }
         VrApp.getBean(VrMenuManager.class).getModel().setCurrentPageId("welcome");
         VrApp.getBean(VrMenuManager.class).setPageCtrl("index");
+    }
+
+    public static class Config{
+        private String filter;
     }
 }

@@ -137,6 +137,11 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
             return subject;
         }
 
+        @Override
+        public String getSubTitle() {
+            return null;
+        }
+
         public AppUser getUser() {
             return user;
         }

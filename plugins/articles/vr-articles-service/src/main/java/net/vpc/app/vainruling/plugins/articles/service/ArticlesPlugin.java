@@ -20,10 +20,7 @@ import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.core.service.util.ProfilePatternFilter;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesDisposition;
-import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesFile;
-import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
-import net.vpc.app.vainruling.plugins.articles.service.model.FullArticle;
+import net.vpc.app.vainruling.plugins.articles.service.model.*;
 import net.vpc.app.vainruling.plugins.inbox.service.MailData;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
@@ -32,8 +29,8 @@ import net.vpc.common.gomail.GoMailListener;
 import net.vpc.common.gomail.GoMailMessage;
 import net.vpc.common.gomail.RecipientType;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.util.ListValueMap;
 import net.vpc.common.util.MapList;
-import net.vpc.common.util.MultiMap;
 import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.Query;
@@ -70,6 +67,25 @@ public class ArticlesPlugin {
 
     public ArticlesDisposition findArticleDisposition(int articleDispositionId) {
         return UPA.getPersistenceUnit().findById(ArticlesDisposition.class,articleDispositionId);
+    }
+
+    public ArticlesDispositionGroup findArticleDispositionGroup(String name) {
+        final EntityCache entityCache = cacheService.get(ArticlesDispositionGroup.class);
+        Map<String, ArticlesDispositionGroup> m = entityCache.getProperty("findArticleDispositionGroup", new Action<Map<String, ArticlesDispositionGroup>>() {
+            @Override
+            public Map<String, ArticlesDispositionGroup> run() {
+                Map<String, ArticlesDispositionGroup> m = new HashMap<String, ArticlesDispositionGroup>();
+                MapList<Integer, ArticlesDispositionGroup> values = entityCache.getValues();
+                for (ArticlesDispositionGroup u : values) {
+                    String key = u.getName();
+                    if (!StringUtils.isEmpty(key)) {
+                        m.put(key, u);
+                    }
+                }
+                return m;
+            }
+        });
+        return m.get(name);
     }
 
     public ArticlesDisposition findArticleDisposition(String name) {
@@ -151,18 +167,18 @@ public class ArticlesPlugin {
         return f;
     }
 
-    public List<FullArticle> findFullArticlesByUserAndCategory(final String login, int deptId,boolean includeNoDept, final String disposition) {
+    public List<FullArticle> findFullArticlesByUserAndCategory(final String login, int dispositionGroupId,boolean includeNoDept, final String disposition) {
         return UPA.getContext().invokePrivileged(new Action<List<FullArticle>>() {
 
             @Override
             public List<FullArticle> run() {
                 List<FullArticle> all = new ArrayList<>();
-                List<ArticlesItem> articles = findArticlesByUserAndCategory(login, deptId, includeNoDept,disposition);
+                List<ArticlesItem> articles = findArticlesByUserAndCategory(login, dispositionGroupId, includeNoDept,disposition);
                 int[] articleIds = new int[articles.size()];
                 for (int i = 0; i < articleIds.length; i++) {
                     articleIds[i] = articles.get(i).getId();
                 }
-                MultiMap<Integer, ArticlesFile> articlesFilesMap = new MultiMap<Integer, ArticlesFile>();
+                ListValueMap<Integer, ArticlesFile> articlesFilesMap = new ListValueMap<Integer, ArticlesFile>();
                 for (ArticlesFile articlesFile : findArticlesFiles(articleIds)) {
                     articlesFilesMap.put(articlesFile.getArticle().getId(), articlesFile);
                 }

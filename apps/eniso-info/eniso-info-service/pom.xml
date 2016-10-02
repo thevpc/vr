@@ -43,6 +43,11 @@
             <artifactId>vr-mailbox-service</artifactId>
             <version>1.6</version>
         </dependency>
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.plugins.academic-project-based-learning</groupId>
+            <artifactId>vr-academic-project-based-learning-service</artifactId>
+            <version>1.0</version>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>net.vpc.app.vain-ruling.plugins.blog</groupId>-->
             <!--<artifactId>vr-blog-service</artifactId>-->

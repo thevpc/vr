@@ -39,7 +39,7 @@ public class CreateInternshipsAction implements ActionDialog {
     }
 
     @Override
-    public void invoke(Class entityType, Object obj, Object[] args) {
+    public void invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         //do nothing!
     }
 }

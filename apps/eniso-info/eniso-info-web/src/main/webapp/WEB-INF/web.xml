@@ -14,7 +14,7 @@
 
     <context-param>
         <param-name>upa.web.context-url-filter</param-name>
-        <param-value>*.xhtml|/fs/*|/ws/*|/p/*|/services/rss/*</param-value>
+        <param-value>*.xhtml|/fs/*|/ws/*|/p/*|/u/*|/services/rss/*</param-value>
     </context-param>
 
     <!--    <context-param>

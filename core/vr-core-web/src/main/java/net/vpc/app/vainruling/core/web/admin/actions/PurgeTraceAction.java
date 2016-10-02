@@ -35,7 +35,7 @@ public class PurgeTraceAction implements ActionDialog {
     }
 
     @Override
-    public void invoke(Class entityType, Object obj, Object[] args) {
+    public void invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         TraceService.get().archiveLogs(30);
         FacesUtils.addInfoMessage("Archivage réussi");
     }

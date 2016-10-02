@@ -800,6 +800,7 @@ a:focus {
 
 .full-width {
     width: 100% !important;
+    min-width: 120px;
 }
 
 .pe-dynaform-cell input,
@@ -972,4 +973,31 @@ ul.deplist li a:hover {
     border: 0;
     height: 1px;
     background-image: linear-gradient(to right, rgba(0, 0, 0, 0), #607D8B, rgba(0, 0, 0, 0));
+}
+
+
+.vr-toolbox-item{
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.vr-toolbox-long-button{
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.vr-toolbox-select-one{
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    padding-top: 5px;
+    padding-bottom: 5px;
+    vertical-align: middle;
+}
+
+.vr-toolbox-container{
+    margin-bottom: 20px;
 }

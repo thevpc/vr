@@ -49,4 +49,26 @@ public class VrFSEntry {
         this.linkPath = linkPath;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        VrFSEntry vrFSEntry = (VrFSEntry) o;
+
+        if (filterName != null ? !filterName.equals(vrFSEntry.filterName) : vrFSEntry.filterName != null) return false;
+        if (filterType != null ? !filterType.equals(vrFSEntry.filterType) : vrFSEntry.filterType != null) return false;
+        if (mountPoint != null ? !mountPoint.equals(vrFSEntry.mountPoint) : vrFSEntry.mountPoint != null) return false;
+        return linkPath != null ? linkPath.equals(vrFSEntry.linkPath) : vrFSEntry.linkPath == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = filterName != null ? filterName.hashCode() : 0;
+        result = 31 * result + (filterType != null ? filterType.hashCode() : 0);
+        result = 31 * result + (mountPoint != null ? mountPoint.hashCode() : 0);
+        result = 31 * result + (linkPath != null ? linkPath.hashCode() : 0);
+        return result;
+    }
 }

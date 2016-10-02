@@ -5,7 +5,10 @@
  */
 package net.vpc.app.vainruling.core.web.ctrl;
 
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.content.NotificationText;
 import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.common.util.Chronometer;
 import org.springframework.context.annotation.Scope;
 
@@ -34,12 +37,21 @@ public class AppGlobalCtrl extends BasePageCtrl {
         getModel().setShutdownTime(ii.getTime());
         getModel().setHeadMessageStyle(null);
         getModel().setHeadMessageText(null);
+
+        NotificationText notificationText = new NotificationText();
+        notificationText.setId(10001);
+        notificationText.setSubject("Arrêt dans moins de 4 minutes...");
+        notificationText.setContent("Arrêt dans moins de 4 minutes...");
+        notificationText.setDecoration("severe");
+        notificationText.setLinkClassStyle("fire-extinguisher text-red");
+        VrApp.getBean(Vr.class).getNotificationTextService().publish(notificationText);
     }
 
     public void doCancelShutdown() {
         getModel().setShutdownTime(null);
         getModel().setHeadMessageStyle(null);
         getModel().setHeadMessageText(null);
+        VrApp.getBean(Vr.class).getNotificationTextService().unpublish(10001);
     }
 
     public boolean isShutdown() {

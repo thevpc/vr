@@ -3,6 +3,7 @@ package net.vpc.app.vainruling.core.service.content;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,6 +13,31 @@ import java.util.List;
 @Controller
 @Scope(value = "singleton")
 public class SimpleNotificationService implements NotificationTextService{
+    List<NotificationText> notificationTexts=new ArrayList<>();
+
+    @Override
+    public void publish(NotificationText notificationText) {
+        for (int i = 0; i < notificationTexts.size(); i++) {
+            NotificationText text = notificationTexts.get(i);
+            if (text.getId() == notificationText.getId()) {
+                notificationTexts.set(i,notificationText);
+                return;
+            }
+        }
+        notificationTexts.add(notificationText);
+    }
+
+    @Override
+    public void unpublish(int id) {
+        for (int i = 0; i < notificationTexts.size(); i++) {
+            NotificationText text = notificationTexts.get(i);
+            if (text.getId() == id) {
+                notificationTexts.remove(i);
+                return;
+            }
+        }
+    }
+
     @Override
     public void loadContentTexts(String name) {
 
@@ -19,16 +45,20 @@ public class SimpleNotificationService implements NotificationTextService{
 
     @Override
     public List<ContentText> getContentTextList(String id) {
-        return Collections.EMPTY_LIST;
+        return (List)notificationTexts;
     }
 
     @Override
     public List<ContentText> getContentTextListHead(String id, int max) {
-        return Collections.EMPTY_LIST;
+        List<ContentText> list = getContentTextList(id);
+        if (list.size() > max) {
+            return list.subList(0, max);
+        }
+        return list;
     }
 
     @Override
     public int getUnreadCount() {
-        return 0;
+        return notificationTexts.size();
     }
 }

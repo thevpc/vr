@@ -74,6 +74,11 @@ public class FullArticle implements ContentText{
     }
 
     @Override
+    public String getSubTitle() {
+        return articlesItem.getSubTitle();
+    }
+
+    @Override
     public int getId() {
         return articlesItem.getId();
     }

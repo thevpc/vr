@@ -21,20 +21,31 @@ import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
+import net.vpc.app.vainruling.core.web.util.VrWebHelper;
+import net.vpc.common.streams.FileUtils;
+import net.vpc.common.streams.IOUtils;
+import net.vpc.common.streams.PathInfo;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
+import net.vpc.common.vfs.VFileFilter;
+import net.vpc.common.vfs.VFileVisitor;
+import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import org.primefaces.model.StreamedContent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -48,6 +59,8 @@ public class Vr {
     private TaskTextService taskTextService;
     private NotificationTextService notificationTextService;
     private CmsTextService cmsTextService;
+    @Autowired
+    private CorePlugin core;
 
     public static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.00");
 
@@ -90,16 +103,14 @@ public class Vr {
     }
 
     public VrTheme getAppTheme() {
-        CorePlugin c = VrApp.getBean(CorePlugin.class);
         String oldValue = UPA.getPersistenceUnit().invokePrivileged(new Action<String>() {
             @Override
             public String run() {
-                CorePlugin c = VrApp.getBean(CorePlugin.class);
-                return (String) c.getOrCreateAppPropertyValue("System.DefaultTheme", null, "");
+                return (String) core.getOrCreateAppPropertyValue("System.DefaultTheme", null, "");
             }
         });
         if (StringUtils.isEmpty(oldValue)) {
-            oldValue = c.getAppVersion().getDefaultTheme();
+            oldValue = core.getAppVersion().getDefaultTheme();
         }
         if (StringUtils.isEmpty(oldValue)) {
             oldValue = "default";
@@ -117,9 +128,21 @@ public class Vr {
         throw new IllegalArgumentException("Invalid Theme");
     }
 
+    public void setHttpRequestAttribute(String name, Object value) {
+        getHttpRequest().setAttribute(name, value);
+    }
+
+    public HttpServletRequest getHttpRequest() {
+        return VrWebHelper.getHttpServletRequest();
+    }
+
+    public HttpSession getHttpSession() {
+        HttpServletRequest r = VrWebHelper.getHttpServletRequest();
+        return r == null ? null : r.getSession(true);
+    }
+
     public VrTheme getUserTheme(String login) {
-        CorePlugin c = VrApp.getBean(CorePlugin.class);
-        String oldValue = (String) c.getAppPropertyValue("System.DefaultTheme", login);
+        String oldValue = (String) core.getAppPropertyValue("System.DefaultTheme", login);
         if (StringUtils.isEmpty(oldValue)) {
             oldValue = getAppTheme().getId();
         }
@@ -137,11 +160,10 @@ public class Vr {
     public VrTheme getTheme() {
         UserSession s = UserSession.get();
         if (s != null) {
-            CorePlugin c = VrApp.getBean(CorePlugin.class);
             VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
             String themeId = s.getTheme();
             if (StringUtils.isEmpty(themeId)) {
-                themeId = (String) c.getAppPropertyValue("System.DefaultTheme", s.getUser() == null ? null : s.getUser().getLogin());
+                themeId = (String) core.getAppPropertyValue("System.DefaultTheme", s.getUser() == null ? null : s.getUser().getLogin());
                 if (StringUtils.isEmpty(themeId)) {
                     themeId = getAppTheme().getId();
                 }
@@ -158,16 +180,16 @@ public class Vr {
         return getAppTheme();
     }
 
-    public <T> List<T> listHead(List<T> anyList,int maxSize) {
-        if(anyList.size()>maxSize){
-            return anyList.subList(0,maxSize);
+    public <T> List<T> listHead(List<T> anyList, int maxSize) {
+        if (anyList.size() > maxSize) {
+            return anyList.subList(0, maxSize);
         }
         return anyList;
     }
 
-    public <T> List<T> listTail(List<T> anyList,int maxSize) {
-        if(anyList.size()>maxSize){
-            return anyList.subList(anyList.size()-maxSize,maxSize);
+    public <T> List<T> listTail(List<T> anyList, int maxSize) {
+        if (anyList.size() > maxSize) {
+            return anyList.subList(anyList.size() - maxSize, maxSize);
         }
         return anyList;
     }
@@ -177,7 +199,7 @@ public class Vr {
         for (int i = 0; i < groupSize; i++) {
             grouped.add(new ArrayList<T>());
         }
-        if(anyList!=null) {
+        if (anyList != null) {
             for (int i = 0; i < anyList.size(); i++) {
                 grouped.get(i % groupSize).add(anyList.get(i));
             }
@@ -188,7 +210,7 @@ public class Vr {
     public <T> List<List<T>> groupListBy(int groupSize, List<T> anyList) {
         List<List<T>> grouped = new ArrayList<>();
         List<T> curr = new ArrayList<>();
-        if(anyList!=null) {
+        if (anyList != null) {
             for (int i = 0; i < anyList.size(); i++) {
                 if (curr.size() < groupSize) {
                     curr.add(anyList.get(i));
@@ -219,6 +241,124 @@ public class Vr {
 
     public String randomize(String... items) {
         return items[randomize(items.length)];
+    }
+
+    public Object randomizeList(List items) {
+        int size = items == null ? 0 : items.size();
+        if (size == 0) {
+            return null;
+        }
+        return items.get(randomize(size));
+    }
+
+    public List listFlattenAndTrimAndAppend(Object... objectsOrLists) {
+        List any = new ArrayList();
+        if (objectsOrLists != null) {
+            for (Object objectOtList : objectsOrLists) {
+                if (objectOtList != null) {
+                    if (objectOtList instanceof List) {
+                        for (Object o : ((List) objectOtList)) {
+                            if (o != null) {
+                                any.add(o);
+                            }
+                        }
+                    } else if (objectOtList.getClass().isArray()) {
+                        int length = Array.getLength(objectOtList);
+                        for (int i = 0; i < length; i++) {
+                            Object o = Array.get(objectOtList, i);
+                            if (o != null) {
+                                any.add(o);
+                            }
+                        }
+                    } else {
+                        any.add(objectOtList);
+                    }
+                }
+            }
+        }
+        return any;
+    }
+
+    public List<String> findImageAttachments(List<ContentPath> paths) {
+        LinkedHashSet<String> all = new LinkedHashSet<>();
+        if (paths != null) {
+            for (ContentPath path : paths) {
+                if (path != null && !StringUtils.isEmpty(path.getPath())) {
+                    if (!all.contains(path.getPath())) {
+                        all.add(path.getPath());
+                    }
+                }
+            }
+        }
+        return findValidImages(all.toArray(new String[all.size()]));
+    }
+
+    public List<String> findNonImageAttachments(List<ContentPath> paths) {
+        LinkedHashSet<String> all = new LinkedHashSet<>();
+        if (paths != null) {
+            for (ContentPath path : paths) {
+                if (path != null && !StringUtils.isEmpty(path.getPath())) {
+                    if (!all.contains(path.getPath())) {
+                        all.add(path.getPath());
+                    }
+                }
+            }
+        }
+        return findNonImages(all.toArray(new String[all.size()]));
+    }
+
+    public List<String> findValidImages(String... paths) {
+        return findValidFiles("**.(png|jpg|jpeg|gif)", paths);
+    }
+
+    public List<String> findNonImages(String... paths) {
+        return findValidFiles("!(**.(png|jpg|jpeg|gif))", paths);
+    }
+
+    public List<String> findValidFiles(String expression, String... paths) {
+        VirtualFileSystem fs = core.getFileSystem();
+        LinkedHashSet<String> all = new LinkedHashSet<>();
+        Pattern patternObj = Pattern.compile(StringUtils.wildcardToRegex(expression, '/'), Pattern.CASE_INSENSITIVE);
+        VFileFilter filter = new VFileFilter() {
+            @Override
+            public boolean accept(VFile pathname) {
+                return pathname.isDirectory() || (patternObj.matcher(pathname.getPath()).matches());
+            }
+        };
+        for (String path : paths) {
+            if ((patternObj.matcher(path).matches())) {
+                if (!all.contains(path)) {
+                    all.add(path);
+                }
+            } else {
+                VFile vFile = fs.get(path);
+                if (vFile != null) {
+                    if (vFile.isFile()) {
+                        //check match
+                        if (filter.accept(vFile)) {
+                            String p = vFile.getPath();
+                            if (!all.contains(p)) {
+                                all.add(p);
+                            }
+                        }
+                    } else if (vFile.isDirectory()) {
+                        vFile.visit(new VFileVisitor() {
+                            @Override
+                            public boolean visit(VFile pathname) {
+                                if (pathname.isFile()) {
+                                    String p = pathname.getPath();
+                                    if (!all.contains(p)) {
+                                        all.add(p);
+                                    }
+                                }
+                                return true;
+                            }
+                        }, filter);
+                    }
+                }
+            }
+        }
+        return new ArrayList<>(all);
     }
 
     public boolean isFSPath(String path) {
@@ -256,6 +396,20 @@ public class Vr {
         return values[randomize(values.length)];
     }
 
+    public boolean contextTextHasDecoration(ContentText text, String decoration) {
+        if (text != null && !StringUtils.isEmpty(decoration)) {
+            String decoration1 = text.getDecoration();
+            if (decoration1 != null) {
+                decoration1 = decoration1.toLowerCase().trim();
+                String trimmed = decoration.toLowerCase().trim();
+                if (StringUtils.indexOfWord(decoration1, trimmed) >= 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public int hashToMax(Object value, int max) {
         return Math.abs(value == null ? 0 : value.hashCode()) % max;
     }
@@ -275,22 +429,22 @@ public class Vr {
     }
 
     public String articleImageOrRand(String imageURL) {
-        if(imageURL!=null){
+        if (imageURL != null) {
             String low = imageURL.toLowerCase();
-            for (String s : new String[]{"jpg","jpeg","png","gif"}) {
-                if(low.endsWith("."+s) || low.contains("."+s+"?")){
+            for (String s : new String[]{"jpg", "jpeg", "png", "gif"}) {
+                if (low.endsWith("." + s) || low.contains("." + s + "?")) {
                     return url(imageURL);
                 }
             }
-            for (String s : new String[]{"xls","xlsx","pdf","html","xhtml","doc","docx","js","csv","log","text","xml","zip"}) {
-                if(low.endsWith("."+s) || low.contains("."+s+"?")){
-                    return url("/Site/images/icons/file-"+s+"16.png");
+            for (String s : new String[]{"xls", "xlsx", "pdf", "html", "xhtml", "doc", "docx", "js", "csv", "log", "text", "xml", "zip"}) {
+                if (low.endsWith("." + s) || low.contains("." + s + "?")) {
+                    return url("/Site/images/icons/file-" + s + "16.png");
                 }
             }
-            imageURL="";
+            imageURL = "";
         }
-        return url((String)nvl(imageURL,strFormat("/Site/images/articles/%1s"
-                ,randomize(
+        return url((String) nvl(imageURL, strFormat("/Site/images/articles/%1s"
+                , randomize(
                         "article-01.jpg",
                         "article-02.jpg",
                         "article-03.jpg",
@@ -306,9 +460,17 @@ public class Vr {
     }
 
     public String articleImageOrDefault(String imageURL) {
-        return url((String)nvl(imageURL,strFormat("/Site/images/articles/%1s"
-                ,"article-01.jpg"
+        return url((String) nvl(imageURL, strFormat("/Site/images/articles/%1s"
+                , "article-01.jpg"
         )));
+    }
+
+    public List<String> fsurlList(List<String> paths) {
+        List<String> ret = new ArrayList<>(paths.size());
+        for (String path : paths) {
+            ret.add(url(path));
+        }
+        return ret;
     }
 
     public String url(String path) {
@@ -394,8 +556,8 @@ public class Vr {
         return null;
     }
 
-    public String strFormat(String format,Object... args) {
-        return String.format(format,args);
+    public String strFormat(String format, Object... args) {
+        return String.format(format, args);
     }
 
     public String strcat(Object... a) {
@@ -514,7 +676,7 @@ public class Vr {
     }
 
     public String contentText2html(ContentText value) {
-        if(value==null){
+        if (value == null) {
             return "";
         }
         return VrUtils.extractPureHTML(value.getContent());
@@ -572,12 +734,13 @@ public class Vr {
 
     public String getFullContext() {
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        StringBuilder sb= new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         StringBuffer requestURL = req.getRequestURL();
         String contextPath = req.getContextPath();
-        sb.append(requestURL.substring(0, requestURL.indexOf(contextPath)+ contextPath.length()));
+        sb.append(requestURL.substring(0, requestURL.indexOf(contextPath) + contextPath.length()));
         return sb.toString();
     }
+
     public String getContext() {
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         return req.getContextPath();
@@ -680,9 +843,9 @@ public class Vr {
     }
 
     public List<UserSession> getActiveSessionsByType(String type) {
-        List<UserSession> r=new ArrayList<>();
+        List<UserSession> r = new ArrayList<>();
         List<UserSession> activeSessions = getActiveSessions();
-        if(activeSessions!=null) {
+        if (activeSessions != null) {
             for (UserSession userSession : activeSessions) {
                 String name = (userSession != null && userSession.getUser() != null && userSession.getUser().getType() != null) ? userSession.getUser().getType().getName() : null;
                 if (type == null || (
@@ -696,7 +859,6 @@ public class Vr {
     }
 
     public int getPollInterval() {
-        CorePlugin core = CorePlugin.get();
         AppProperty property = core.getAppProperty("System.PollInterval", null);
         if (property != null) {
             Object appPropertyValue = core.getAppPropertyValue(property);
@@ -716,7 +878,7 @@ public class Vr {
     }
 
     public void onPoll() {
-        VrApp.getBean(CorePlugin.class).onPoll();
+        core.onPoll();
     }
 
     public void error() throws Exception {
@@ -728,11 +890,11 @@ public class Vr {
     }
 
     public CmsTextService getCmsTextService() {
-        if(cmsTextService==null) {
+        if (cmsTextService == null) {
             ApplicationContext c = VrApp.getContext();
             for (String n : c.getBeanNamesForType(CmsTextService.class)) {
                 CmsTextService s = (CmsTextService) c.getBean(n);
-                return cmsTextService=s;
+                return cmsTextService = s;
             }
             throw new IllegalArgumentException();
         }
@@ -740,11 +902,11 @@ public class Vr {
     }
 
     public NotificationTextService getNotificationTextService() {
-        if(notificationTextService==null) {
+        if (notificationTextService == null) {
             ApplicationContext c = VrApp.getContext();
             for (String n : c.getBeanNamesForType(NotificationTextService.class)) {
                 NotificationTextService s = (NotificationTextService) c.getBean(n);
-                return notificationTextService=s;
+                return notificationTextService = s;
             }
             throw new IllegalArgumentException();
         }
@@ -752,11 +914,11 @@ public class Vr {
     }
 
     public TaskTextService getTaskTextService() {
-        if(taskTextService==null) {
+        if (taskTextService == null) {
             ApplicationContext c = VrApp.getContext();
             for (String n : c.getBeanNamesForType(TaskTextService.class)) {
                 TaskTextService s = (TaskTextService) c.getBean(n);
-                return taskTextService=s;
+                return taskTextService = s;
             }
             throw new IllegalArgumentException();
         }
@@ -764,11 +926,11 @@ public class Vr {
     }
 
     public MessageTextService getMessageTextService() {
-        if(messageTextService==null) {
+        if (messageTextService == null) {
             ApplicationContext c = VrApp.getContext();
             for (String n : c.getBeanNamesForType(MessageTextService.class)) {
                 MessageTextService s = (MessageTextService) c.getBean(n);
-                return messageTextService=s;
+                return messageTextService = s;
             }
             throw new IllegalArgumentException();
         }
@@ -777,14 +939,14 @@ public class Vr {
 
     public String getCurrentUserPhoto() {
         UserSession s = getUserSession();
-        if(s!=null && s.getUser()!=null){
+        if (s != null && s.getUser() != null) {
             return getUserPhoto(s.getUser().getId());
         }
         return null;
     }
 
     public String getUserPhoto(int id) {
-        AppUser t = CorePlugin.get().findUser(id);
+        AppUser t = core.findUser(id);
         AppContact c = t.getContact();
         boolean female = false;
         if (c != null) {
@@ -796,22 +958,18 @@ public class Vr {
             }
         }
         List<String> paths = new ArrayList<String>();
-        for (String p : new String[]{"WebSite/me.png", "WebSite/me.jpg", "WebSite/me.gif"}) {
+        for (String p : new String[]{"Config/photo.png", "Config/photo.jpg", "Config/photo.gif"}) {
             paths.add(p);
         }
         if (female) {
-            for (String p : new String[]{"WebSite/she.png", "WebSite/she.jpg", "WebSite/she.gif"}) {
+            for (String p : new String[]{"Config/photo-women.png", "Config/photo-women.jpg", "Config/photo-women.gif"}) {
                 paths.add(p);
             }
         } else {
-            for (String p : new String[]{"WebSite/he.png", "WebSite/he.jpg", "WebSite/he.gif"}) {
+            for (String p : new String[]{"Config/photo-men.png", "Config/photo-men.jpg", "Config/photo-men.gif"}) {
                 paths.add(p);
             }
         }
-        for (String p : new String[]{"WebSite/photo.png", "WebSite/photo.jpg", "WebSite/photo.gif"}) {
-            paths.add(p);
-        }
-
         VFile file = getUserAbsoluteFile(t.getId(), paths.toArray(new String[paths.size()]));
 
         String photo = (t == null || file == null) ? null : (file.getPath());
@@ -819,50 +977,22 @@ public class Vr {
     }
 
     public String getUserPhotoFullURL(int id) {
-        AppUser t = CorePlugin.get().findUser(id);
-        AppContact c = t.getContact();
-        boolean female = false;
-        if (c != null) {
-            AppGender g = c.getGender();
-            if (g != null) {
-                if ("F".equals(g.getCode())) {
-                    female = true;
-                }
-            }
+        String userPhoto = getUserPhoto(id);
+        if(userPhoto==null){
+            return null;
         }
-        List<String> paths = new ArrayList<>();
-        for (String p : new String[]{"WebSite/me.png", "WebSite/me.jpg", "WebSite/me.gif"}) {
-            paths.add(p);
-        }
-        if (female) {
-            for (String p : new String[]{"WebSite/she.png", "WebSite/she.jpg", "WebSite/she.gif"}) {
-                paths.add(p);
-            }
-        } else {
-            for (String p : new String[]{"WebSite/he.png", "WebSite/he.jpg", "WebSite/he.gif"}) {
-                paths.add(p);
-            }
-        }
-        for (String p : new String[]{"WebSite/photo.png", "WebSite/photo.jpg", "WebSite/photo.gif"}) {
-            paths.add(p);
-        }
-
-        VFile file = getUserAbsoluteFile(t.getId(), paths.toArray(new String[paths.size()]));
-
-        String photo = (t == null || file == null) ? null : getAppWebPath(file.getPath());
-        return photo;
+        return getAppWebPath(userPhoto);
     }
 
     public VFile getUserAbsoluteFile(int id, String path) {
-        AppUser t = CorePlugin.get().findUser(id);
-        CorePlugin fs = VrApp.getBean(CorePlugin.class);
+        AppUser t = core.findUser(id);
         if (t != null) {
-            VFile thisTeacherPhoto = fs.getUserFolder(t.getLogin()).get(path);
+            VFile thisTeacherPhoto = core.getUserFolder(t.getLogin()).get(path);
             if (thisTeacherPhoto.exists()) {
                 return thisTeacherPhoto;
             } else {
                 //should by by user type!!
-                VFile anyTeacherPhoto = fs.getProfileFolder("Teacher").get(path);
+                VFile anyTeacherPhoto = core.getProfileFolder("Teacher").get(path);
                 if (anyTeacherPhoto.exists()) {
                     return anyTeacherPhoto;
                 }
@@ -895,20 +1025,28 @@ public class Vr {
     }
 
     public VFile[] getUserAbsoluteFiles(int id, String[] path) {
-        AppUser t = CorePlugin.get().findUser(id);
-        CorePlugin fs = VrApp.getBean(CorePlugin.class);
+        AppUser t = core.findUser(id);
         List<VFile> files = new ArrayList<VFile>();
         if (t != null) {
-            VFile userFolder = fs.getUserFolder(t.getLogin());
-            VFile profileFolder = fs.getProfileFolder("Teacher");
+            VFile userFolder = core.getUserFolder(t.getLogin());
             for (String p : path) {
                 VFile ff = userFolder.get(p);
                 if (ff.exists()) {
                     files.add(ff);
                 }
             }
+            if(t.getType()!=null) {
+                VFile userTypeFolder = core.getUserTypeFolder(t.getType().getId());
+                for (String p : path) {
+                    VFile ff = userTypeFolder.get(p);
+                    if (ff.exists()) {
+                        files.add(ff);
+                    }
+                }
+            }
+            VFile userSharedFolder = core.getUserSharedFolder();
             for (String p : path) {
-                VFile ff = profileFolder.get(p);
+                VFile ff = userSharedFolder.get(p);
                 if (ff.exists()) {
                     files.add(ff);
                 }
@@ -917,22 +1055,53 @@ public class Vr {
         return files.toArray(new VFile[files.size()]);
     }
 
-    public String mapValue(String var,String defaultVal,String ... fromTo){
-        for (int i = 0; i < fromTo.length; i+=2) {
-            if(var.equals(fromTo[i])){
-                return fromTo[i+1];
+    public String mapValue(String var, String defaultVal, String... fromTo) {
+        for (int i = 0; i < fromTo.length; i += 2) {
+            if (var.equals(fromTo[i])) {
+                return fromTo[i + 1];
             }
         }
         return defaultVal;
     }
 
-    public boolean allowed(String key){
+    public boolean allowed(String key) {
         return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(key);
     }
 
-    public String gotoPublicSubSite(String departmentCode){
-        AppDepartment department = CorePlugin.get().findDepartment(departmentCode);
-        getUserSession().setSelectedDepartment(department);
-        return gotoPage("publicIndex","");
+    public String gotoPublicSubSite(String siteFilter) {
+        getUserSession().setSelectedSiteFilter(siteFilter);
+        return gotoPage("publicIndex", "");
+    }
+
+    public String getPathDirName(String path) {
+        PathInfo p = getPathInfo(path);
+        return p == null ? null : p.getDirName();
+    }
+
+    public String getPathBaseName(String path) {
+        PathInfo p = getPathInfo(path);
+        return p == null ? null : p.getBaseName();
+    }
+
+    public String getPathExtensionPart(String path) {
+        PathInfo p = getPathInfo(path);
+        return p == null ? null : p.getExtensionPart();
+    }
+
+    public String getPathNamePart(String path) {
+        PathInfo p = getPathInfo(path);
+        return p == null ? null : p.getNamePart();
+    }
+
+    public String getPathName(String path) {
+        PathInfo p = getPathInfo(path);
+        return p == null ? null : p.getPathName();
+    }
+
+    public PathInfo getPathInfo(String path) {
+        if (path == null || path.isEmpty()) {
+            return PathInfo.create("");
+        }
+        return PathInfo.create(path);
     }
 }

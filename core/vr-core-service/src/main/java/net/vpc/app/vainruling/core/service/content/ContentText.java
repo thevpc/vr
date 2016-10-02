@@ -17,6 +17,8 @@ public interface ContentText {
 
     public String getSubject();
 
+    public String getSubTitle();
+
     public String getContent();
 
     public String getImageURL();

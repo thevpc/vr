@@ -242,37 +242,7 @@ public class AcademicAddressBookCtrl {
     public String findTeacherPhoto(int id) {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = ap.findTeacher(id);
-        AppContact c = t.getContact();
-        boolean female = false;
-        if (c != null) {
-            AppGender g = c.getGender();
-            if (g != null) {
-                if ("F".equals(g.getCode())) {
-                    female = true;
-                }
-            }
-        }
-        List<String> paths = new ArrayList<>();
-        for (String p : new String[]{"WebSite/me.png", "WebSite/me.jpg", "WebSite/me.gif"}) {
-            paths.add(p);
-        }
-        if (female) {
-            for (String p : new String[]{"WebSite/she.png", "WebSite/she.jpg", "WebSite/she.gif"}) {
-                paths.add(p);
-            }
-        } else {
-            for (String p : new String[]{"WebSite/he.png", "WebSite/he.jpg", "WebSite/he.gif"}) {
-                paths.add(p);
-            }
-        }
-        for (String p : new String[]{"WebSite/photo.png", "WebSite/photo.jpg", "WebSite/photo.gif"}) {
-            paths.add(p);
-        }
-
-        VFile file = AcademicCtrlUtils.getTeacherAbsoluteFile(t.getId(), paths.toArray(new String[paths.size()]));
-
-        String photo = (t == null || file == null) ? null : Vr.get().getAppWebPath(file.getPath());
-        return photo;
+        return Vr.get().getUserPhoto(t.getUser()==null?-1:t.getUser().getId());
     }
 
     public Model getModel() {

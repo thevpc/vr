@@ -7,8 +7,8 @@ package net.vpc.app.vainruling.plugins.calendars.web;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.VrColorTable;
-import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningDay;
-import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningHour;
+import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
+import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarHour;
 import net.vpc.common.strings.StringUtils;
 
 import java.util.ArrayList;
@@ -29,15 +29,15 @@ public class AbstractPlanningCtrl {
         return model;
     }
 
-    public void updateModel(List<PlanningDay> plannings) {
+    public void updateModel(List<CalendarDay> plannings) {
         if (plannings == null) {
             plannings = new ArrayList<>();
         }
         getModel().setPlanning(plannings);
         Set<String> courses = new HashSet<>();
         Set<String> classes = new HashSet<>();
-        for (PlanningDay p : plannings) {
-            for (PlanningHour h : p.getHours()) {
+        for (CalendarDay p : plannings) {
+            for (CalendarHour h : p.getHours()) {
                 if (!StringUtils.isEmpty(h.getSubject())) {
                     courses.add(h.getSubject().trim());
                 }
@@ -88,15 +88,15 @@ public class AbstractPlanningCtrl {
 
     public static class Model {
 
-        List<PlanningDay> planning = new ArrayList<>();
+        List<CalendarDay> planning = new ArrayList<>();
         List<String> courseNames = new ArrayList<>();
         List<String> classNames = new ArrayList<>();
 
-        public List<PlanningDay> getPlanning() {
+        public List<CalendarDay> getPlanning() {
             return planning;
         }
 
-        public void setPlanning(List<PlanningDay> planning) {
+        public void setPlanning(List<CalendarDay> planning) {
             this.planning = planning;
         }
 

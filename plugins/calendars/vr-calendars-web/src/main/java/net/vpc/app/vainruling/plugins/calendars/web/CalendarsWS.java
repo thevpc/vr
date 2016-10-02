@@ -2,7 +2,7 @@ package net.vpc.app.vainruling.plugins.calendars.web;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
-import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningData;
+import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +26,8 @@ public class CalendarsWS {
     @Transactional
     @Path("/my-calendars")
     @Produces(MediaType.APPLICATION_JSON)
-    public PlanningData[] findMyCalenders(){
-        List<PlanningData> planningDatas = VrApp.getBean(CalendarsPlugin.class).loadCalendars("my-calendars", "");
-        return planningDatas.toArray(new PlanningData[planningDatas.size()]);
+    public CalendarWeek[] findMyCalenders(){
+        List<CalendarWeek> calendarWeeks = VrApp.getBean(CalendarsPlugin.class).loadCalendars("my-calendars", "");
+        return calendarWeeks.toArray(new CalendarWeek[calendarWeeks.size()]);
     }
 }

@@ -22,6 +22,7 @@ public class ActionDialogAdapter {
     private final ActionDialog instance;
     Class entityType;
     boolean dialog;
+    boolean confirm;
     String actionName;
     String label;
     String style;
@@ -31,6 +32,7 @@ public class ActionDialogAdapter {
         EntityAction a = (EntityAction) PlatformReflector.getTargetClass(instance).getAnnotation(EntityAction.class);
         entityType = a.entityType();
         dialog = a.dialog();
+        confirm = a.confirm();
         actionName = a.actionName();
         style = a.actionLabel();
         actionName = StringUtils.isEmpty(actionName) ? PlatformReflector.getTargetClass(instance).getSimpleName() : actionName;
@@ -43,6 +45,14 @@ public class ActionDialogAdapter {
             return true;
         }
         return entityType.getSimpleName().equals(entityName);
+    }
+
+    public boolean isConfirm() {
+        return confirm;
+    }
+
+    public void setConfirm(boolean confirm) {
+        this.confirm = confirm;
     }
 
     public boolean isDialog() {
@@ -74,8 +84,8 @@ public class ActionDialogAdapter {
         instance.openDialog(actionId, itemIds);
     }
 
-    public void invoke(Class entityType, Object obj, Object[] args) {
-        instance.invoke(entityType, obj, args);
+    public void invoke(Class entityType, Object obj, List<String> selectedIdStrings,Object[] args) {
+        instance.invoke(entityType, obj, selectedIdStrings, args);
     }
 
 }

@@ -14,8 +14,8 @@ import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanningPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningData;
-import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningDay;
+import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
+import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
 import net.vpc.app.vainruling.plugins.calendars.web.AbstractPlanningCtrl;
@@ -34,7 +34,7 @@ import java.util.List;
         css = "fa-table",
         title = "Emploi par Enseignant",
         url = "modules/academic/planning/teacher-planning",
-        menu = "/Education/Planning",
+        menu = "/Calendars",
         securityKey = "Custom.Education.TeacherPlanning"
 )
 public class TeacherPlanningCtrl extends AbstractPlanningCtrl {
@@ -75,9 +75,9 @@ public class TeacherPlanningCtrl extends AbstractPlanningCtrl {
             }
         }
         int t = StringUtils.isEmpty(getModel().getTeacherId()) ? -1 : Integer.parseInt(getModel().getTeacherId());
-        PlanningData plannings = pl.loadTeacherPlanning(t);
+        CalendarWeek plannings = pl.loadTeacherPlanning(t);
         if (plannings == null) {
-            updateModel(new ArrayList<PlanningDay>());
+            updateModel(new ArrayList<CalendarDay>());
         } else {
             updateModel(plannings.getDays());
         }

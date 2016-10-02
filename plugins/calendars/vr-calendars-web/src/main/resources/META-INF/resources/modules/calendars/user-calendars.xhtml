@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+        >
+
+<h:head>
+</h:head>
+
+<h:body>
+
+
+    <!--@elvariable id="userCalendarsCtrl" type="net.vpc.app.vainruling.plugins.calendars.web.UserCalendarsCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
+        <ui:define name="content">
+            <!--                <h:form id="buttonsForm">
+
+                                 /.row
+                                <div >
+                                    <p:outputLabel id="buttons">
+                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                    </p:outputLabel>
+                                </div>
+
+                            </h:form>-->
+            <h:form id="listForm">
+
+                <div >
+                    <p:selectOneMenu styleClass="vr-toolbox-select-one" value="#{userCalendarsCtrl.model.userTypeId}">
+                        <p:ajax listener="#{userCalendarsCtrl.onChangeUserType}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner Type..." itemValue=""/>
+                        <f:selectItems value="#{userCalendarsCtrl.model.userTypes}"/>
+                    </p:selectOneMenu>
+                    <p:selectOneMenu styleClass="vr-toolbox-select-one" value="#{userCalendarsCtrl.model.userId}">
+                        <p:ajax listener="#{userCalendarsCtrl.onChangeUser}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner Utilisateur..." itemValue=""/>
+                        <f:selectItems value="#{userCalendarsCtrl.model.users}"/>
+                    </p:selectOneMenu>
+                    <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
+                </div>
+
+                <div >
+                    <div class="table-responsive">
+                        <p:outputLabel value="Aucun Emploi du temps n'a pu etre resolu" rendered="#{
+                                    userCalendarsCtrl.model.userId ne null
+                                    and
+                                    (userCalendarsCtrl.model.planning eq null
+                                    or (userCalendarsCtrl.model.planning.size()) eq 0
+                                    )
+                            }"/>
+                        <p:panelGrid style="width: 100%"
+                                rendered="#{userCalendarsCtrl.model.planning ne null and (userCalendarsCtrl.model.planning.size()) gt 0}">
+                            <p:row>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="#{userCalendarsCtrl.model.planning[0].dayName}"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Mardi"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Mercredi"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Jeudi"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Vendredi"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Samedi"/></p:column>
+                            </p:row>
+                            <ui:repeat var="h" value="#{userCalendarsCtrl.model.planning[0].hours}" varStatus="hs">
+                                <p:row>
+                                    <p:column styleClass="ui-widget-header">
+                                        <p:outputLabel
+                                                value="#{userCalendarsCtrl.model.planning[hs.index].hours[hs.index].hour}"/>
+                                    </p:column>
+                                    <ui:repeat var="r" value="#{userCalendarsCtrl.model.planning}">
+                                        <p:column
+                                                style="width:15.5%;#{userCalendarsCtrl.resolveCssStyleForCourse(r.hours[hs.index].subject)}"
+                                                >
+                                            <h:panelGrid columns="1">
+                                                <p:outputLabel value="#{r.hours[hs.index].subject}"
+                                                               style="font-weight: bold"/>
+                                                <p:outputLabel value="#{r.hours[hs.index].actor}"
+                                                               style="#{userCalendarsCtrl.resolveCssStyleForClass(r.hours[hs.index].students)}"
+                                                        />
+                                                <p:outputLabel value="#{r.hours[hs.index].activity}"/>
+                                                <p:outputLabel value="#{r.hours[hs.index].room}"/>
+                                            </h:panelGrid>
+                                        </p:column>
+                                    </ui:repeat>
+                                </p:row>
+                            </ui:repeat>
+                        </p:panelGrid>
+                    </div>
+                </div>
+
+            </h:form>
+
+
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>

@@ -19,6 +19,8 @@ and open the template in the editor.
 <h:body>
 
 
+    <!--@elvariable id="myPlanningListCtrl" type="net.vpc.app.vainruling.plugins.calendars.web.MyPlanningListCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
     <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <!--                <h:form id="buttonsForm">
@@ -34,7 +36,7 @@ and open the template in the editor.
             <h:form id="listForm">
 
                 <div >
-                    <p:selectOneMenu value="#{myPlanningListCtrl.model.groupName}">
+                    <p:selectOneMenu value="#{myPlanningListCtrl.model.selectionIndex}">
                         <p:ajax listener="#{myPlanningListCtrl.onGroupChanged}" update=":listForm"/>
                         <f:selectItem itemLabel="Selectionner..." itemValue=""/>
                         <f:selectItems value="#{myPlanningListCtrl.model.groups}"/>
@@ -45,15 +47,14 @@ and open the template in the editor.
                 <div >
                     <div class="table-responsive">
                         <p:outputLabel value="Aucun Emploi du temps n'a pu etre resolu" rendered="#{
-                                    myPlanningListCtrl.model.groupName ne null 
-                                    and 
-                                    myPlanningListCtrl.model.groupName.length() gt 0
-                                    and 
+                                    myPlanningListCtrl.model.selectionIndex ne null
+                                    and
                                     (myPlanningListCtrl.model.planning eq null 
                                     or (myPlanningListCtrl.model.planning.size()) eq 0
                                     )
                             }"/>
                         <p:panelGrid
+                                style="width: 100%"
                                 rendered="#{myPlanningListCtrl.model.planning ne null and (myPlanningListCtrl.model.planning.size()) gt 0}">
                             <p:row>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
@@ -79,7 +80,7 @@ and open the template in the editor.
                                                 <p:outputLabel value="#{r.hours[hs.index].subject}"
                                                                style="font-weight: bold"/>
                                                 <p:outputLabel value="#{r.hours[hs.index].actor}"
-                                                               style="#{classPlanningCtrl.resolveCssStyleForClass(r.hours[hs.index].students)}"
+                                                               style="#{myPlanningListCtrl.resolveCssStyleForClass(r.hours[hs.index].students)}"
                                                         />
                                                 <p:outputLabel value="#{r.hours[hs.index].activity}"/>
                                                 <p:outputLabel value="#{r.hours[hs.index].room}"/>

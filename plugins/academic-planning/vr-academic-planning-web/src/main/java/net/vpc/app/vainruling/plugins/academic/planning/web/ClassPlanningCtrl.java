@@ -11,9 +11,10 @@ import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanningPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningData;
-import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningDay;
+import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
+import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
 import net.vpc.app.vainruling.plugins.calendars.web.AbstractPlanningCtrl;
+import net.vpc.upa.NamedId;
 
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import java.util.List;
         css = "fa-table",
         title = "Emploi par Groupe",
         url = "modules/academic/planning/class-planning",
-        menu = "/Education/Planning",
+        menu = "/Calendars",
         securityKey = "Custom.Education.ClassPlanning"
 )
 public class ClassPlanningCtrl extends AbstractPlanningCtrl {
@@ -46,12 +47,12 @@ public class ClassPlanningCtrl extends AbstractPlanningCtrl {
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         getModel().setGroups(new ArrayList<SelectItem>());
         AcademicPlanningPlugin pl = VrApp.getBean(AcademicPlanningPlugin.class);
-        for (String t : pl.loadStudentPlanningListNames()) {
-            getModel().getGroups().add(new SelectItem(String.valueOf(t), t));
+        for (NamedId t : pl.loadStudentPlanningListNames()) {
+            getModel().getGroups().add(new SelectItem(String.valueOf(t.getId()), t.getName()));
         }
-        PlanningData plannings = pl.loadClassPlanning(getModel().getGroupName());
+        CalendarWeek plannings = pl.loadClassPlanning(getModel().getGroupName());
         if (plannings == null) {
-            updateModel(new ArrayList<PlanningDay>());
+            updateModel(new ArrayList<CalendarDay>());
         } else {
             updateModel(plannings.getDays());
         }

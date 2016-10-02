@@ -18,8 +18,8 @@ package net.vpc.app.vainruling.plugins.academic.planning.web;
 //import net.vpc.app.vainruling.core.web.OnPageLoad;
 //import net.vpc.app.vainruling.core.web.UCtrl;
 //import net.vpc.app.vainruling.core.web.UPathItem;
-//import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningData;
-//import net.vpc.app.vainruling.plugins.calendars.service.model.PlanningDay;
+//import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
+//import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
 //import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 //
 ///**
@@ -46,7 +46,7 @@ package net.vpc.app.vainruling.plugins.academic.planning.web;
 //    @OnPageLoad
 //    public void onPageLoad() {
 //        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-//        PlanningData plannings = null;
+//        CalendarWeek plannings = null;
 //        UserSession sm = UserSession.getCurrentSession();
 //        AppUser user = (sm == null) ? null : sm.getUser();
 //        if (user != null) {
@@ -74,7 +74,7 @@ package net.vpc.app.vainruling.plugins.academic.planning.web;
 //            }
 //        }
 //
-//        updateModel(new ArrayList<PlanningDay>());
+//        updateModel(new ArrayList<CalendarDay>());
 //    }
 //
 //    public void onRefresh() {

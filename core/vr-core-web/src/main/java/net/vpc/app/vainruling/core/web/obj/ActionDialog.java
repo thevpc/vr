@@ -18,6 +18,6 @@ public interface ActionDialog {
 
     void openDialog(String actionId, List<String> itemIds);
 
-    void invoke(Class entityType, Object obj, Object[] args);
+    void invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args);
 
 }

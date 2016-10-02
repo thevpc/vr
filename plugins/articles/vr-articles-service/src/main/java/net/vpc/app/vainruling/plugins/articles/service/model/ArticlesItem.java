@@ -57,13 +57,12 @@ public class ArticlesItem {
     private boolean noSubject;
 
     @Summary
-    @Deprecated
-    private AppDepartment audienceDepartment;
     private ArticlesDispositionGroup dispositionGroup;
     private String decoration;
 
     @Main
     private String subject;
+    private String subTitle;
 
 
     @Properties(
@@ -370,21 +369,19 @@ public class ArticlesItem {
         return result;
     }
 
-    @Deprecated
-    public AppDepartment getAudienceDepartment() {
-        return audienceDepartment;
-    }
-
-    @Deprecated
-    public void setAudienceDepartment(AppDepartment audienceDepartment) {
-        this.audienceDepartment = audienceDepartment;
-    }
-
     public ArticlesDispositionGroup getDispositionGroup() {
         return dispositionGroup;
     }
 
     public void setDispositionGroup(ArticlesDispositionGroup dispositionGroup) {
         this.dispositionGroup = dispositionGroup;
+    }
+
+    public String getSubTitle() {
+        return subTitle;
+    }
+
+    public void setSubTitle(String subTitle) {
+        this.subTitle = subTitle;
     }
 }

@@ -37,7 +37,11 @@
 				$(elem.target).find(".owl-item").eq(current).find(".to-animate-2").addClass('fadeInUp animated');
 			}, 900);
      	});
-		owl.owlCarousel({
+		var owl1 = $('#owl-carousel-showcase');
+		var owl6 = $('#owl-carousel-partners');
+
+
+		owl1.owlCarousel({
 			items: 1,
 		    loop: true,
 		    margin: 0,
@@ -50,6 +54,23 @@
 			autoplayTimeout: 5000,
 			autoplayHoverPause: true,
 		    navText: [	
+		      "<i class='icon-arrow-left2 owl-direction'></i>",
+		      "<i class='icon-arrow-right2 owl-direction'></i>"
+	     	]
+		});
+		owl6.owlCarousel({
+			items: 6,
+		    loop: true,
+		    margin: 0,
+		    responsiveClass: true,
+		    nav: true,
+		    dots: true,
+		    autoHeight: false,
+		    smartSpeed: 500,
+		    autoplay: true,
+			autoplayTimeout: 5000,
+			autoplayHoverPause: true,
+		    navText: [
 		      "<i class='icon-arrow-left2 owl-direction'></i>",
 		      "<i class='icon-arrow-right2 owl-direction'></i>"
 	     	]

@@ -10,10 +10,10 @@ import java.util.List;
 /**
  * @author taha.bensalah@gmail.com
  */
-public class PlanningDay {
+public class CalendarDay {
 
     private String dayName;
-    private List<PlanningHour> hours;
+    private List<CalendarHour> hours;
 
     public String getDayName() {
         return dayName;
@@ -23,17 +23,17 @@ public class PlanningDay {
         this.dayName = dayName;
     }
 
-    public List<PlanningHour> getHours() {
+    public List<CalendarHour> getHours() {
         return hours;
     }
 
-    public void setHours(List<PlanningHour> hours) {
+    public void setHours(List<CalendarHour> hours) {
         this.hours = hours;
     }
 
     @Override
     public String toString() {
-        return "PlanningDay{" + "dayName=" + dayName + ", hours=" + String.valueOf(hours) + '}';
+        return "CalendarDay{" + "dayName=" + dayName + ", hours=" + String.valueOf(hours) + '}';
     }
 
 }

@@ -131,13 +131,11 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         List<Row> list = new ArrayList<>();
         AppUser currentUser = UserSession.getCurrentUser();
         int userId = currentUser==null?-1:currentUser.getId();
-        int count = userId<0?0:p.loadLocalOutbox(userId, -1, false, MailboxFolder.CURRENT).size();
+        int count = userId<0?0:p.loadLocalOutbox(userId, -1, true, MailboxFolder.CURRENT).size();
         return Arrays.asList(
                 new VRMenuDef("Mes Messages", "/Social", "mailbox", "{folder:'CURRENT',sent:false}", "Custom.Site.Mailbox", "",100,
                         new VRMenuLabel[]{
-                    new VRMenuLabel(
-                            String.valueOf(count),"success"
-                    )
+                                count<=0?null:new VRMenuLabel(String.valueOf(count),"success")
                         }
                         )//,
                 //                new VRMenuDef("Messages Envoyés", "/Social", "mailbox", "{folder:'CURRENT',sent:true}", "Custom.Site.Outbox","")
@@ -155,6 +153,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         }
         getModel().setFolder(config.folder);
         getModel().setSent(config.sent);
+        onCancelCurrent();
         getModel().setMailboxMessageFormat(propertyViewManager.createPropertyView("mailboxMessageFormat", MailboxMessageFormat.class, null, new ViewContext())[0]);
         onRefresh();
     }

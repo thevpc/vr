@@ -86,7 +86,7 @@
                                                   rendered="#{vr.messageTextService.unreadCount gt 0}">#{vr.messageTextService.unreadCount}</h:panelGroup>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li class="header">Vous avez #{vr.messageTextService.unreadCount} messages</li>
+                                    <li class="header">Vous avez #{vr.messageTextService.unreadCount} nouveaux messages</li>
                                     <li>
                                         <!-- inner menu: contains the actual data -->
                                         <ul class="menu">
@@ -245,9 +245,10 @@
                                     </li>
                                     <li>
                                         <h:outputLink class="footer" value="#{vr.context}/p/activeSessions"
-                                                      style="text-align: center;" disabled="#{not vr.allowed('Custom.Admin.ActiveSessions')}">
+                                                      style="text-align: center;" rendered="#{vr.allowed('Custom.Admin.ActiveSessions')}">
                                             <strong>Tout afficher</strong>
                                         </h:outputLink>
+
                                     </li>
                                 </ul>
                             </li>
@@ -396,7 +397,7 @@
                                                             <ui:repeat value="#{p2.leaves}" var="p3">
                                                                 <li>
                                                                     <h:outputLink value="#{p3.prettyURL}"><i
-                                                                            class="fa #{vr.nvl(p3.icon,'fa-circle-o')}"></i> #{p3.name}
+                                                                            class="fa #{vr.nvl(p3.icon,vr.mapValue(p3.type,'fa-cube','obj','fa-circle-o'))}"></i> #{p3.name}
                                                                         <h:panelGroup styleClass="pull-right-container">
                                                                             <ui:repeat value="#{p3.labels}" var="l">
                                                                                 <small class="label pull-right #{vr.mapValue(l.type,'bg-black','success','bg-green','info','bg-light-blue','warn','bg-orange','severe','bg-red')}">#{l.name}</small>
@@ -411,7 +412,7 @@
                                                 <ui:repeat value="#{p1.leaves}" var="p2">
                                                     <li>
                                                         <h:outputLink value="#{p2.prettyURL}"><i
-                                                                class="fa #{vr.nvl(p2.icon,'fa-circle-o')}"></i> #{p2.name}
+                                                                class="fa #{vr.nvl(p2.icon,vr.mapValue(p2.type,'fa-cube','obj','fa-circle-o'))}"></i> #{p2.name}
                                                             <h:panelGroup styleClass="pull-right-container">
                                                                 <ui:repeat value="#{p2.labels}" var="l">
                                                                     <small class="label pull-right #{vr.mapValue(l.type,'bg-black','success','bg-green','info','bg-light-blue','warn','bg-orange','severe','bg-red')}">#{l.name}</small>
@@ -426,7 +427,7 @@
                                     <ui:repeat value="#{p0.leaves}" var="p1">
                                         <li>
                                             <h:outputLink value="#{p1.prettyURL}">
-                                                <i class="fa #{vr.nvl(p1.icon,'fa-circle-o')}"></i> #{p1.name}
+                                                <i class="fa #{vr.nvl(p1.icon,vr.mapValue(p1.type,'fa-cube','obj','fa-circle-o'))}"></i> #{p1.name}
                                                 <h:panelGroup styleClass="pull-right-container">
                                                     <ui:repeat value="#{p1.labels}" var="l">
                                                         <small class="label pull-right #{vr.mapValue(l.type,'bg-black','success','bg-green','info','bg-light-blue','warn','bg-orange','severe','bg-red')}">#{l.name}</small>
@@ -441,7 +442,7 @@
                         <ui:repeat value="#{vr.menu.leaves}" var="p0">
                             <li>
                                 <h:outputLink value="#{p0.prettyURL}"><i
-                                        class="fa vr.nvl(p0.icon,'fa-circle-o')"></i> #{p0.name}
+                                        class="fa vr.nvl(p0.icon,vr.mapValue(p0.type,'fa-cube','obj','fa-circle-o'))"></i> #{p0.name}
                                     <h:panelGroup styleClass="pull-right-container">
                                         <ui:repeat value="#{p0.labels}" var="l">
                                             <small class="label pull-right #{vr.mapValue(l.type,'bg-black','success','bg-green','info','bg-light-blue','warn','bg-orange','severe','bg-red')}">#{l.name}</small>
