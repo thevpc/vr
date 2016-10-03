@@ -385,7 +385,9 @@ and open the template in the editor.
 
 
                 <p:commandButton style="display: none" id="processOpenActionDialog0"
-                                 action="#{objCtrl.openActionDialog(objCtrl.model.actions.get(0).key)}">
+                                 action="#{objCtrl.openActionDialog(objCtrl.model.actions.get(0).key)}"
+                                 update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm"
+                >
                     <p:ajax event="dialogReturn" listener="#{objCtrl.onActionDialogClosed}"
                             update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm"/>
                 </p:commandButton>

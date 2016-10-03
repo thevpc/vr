@@ -380,7 +380,7 @@ public class AcademicAppProjectsCtrl {
             RequestContext.getCurrentInstance().openDialog("/modules/academic/pbl/dialog/project-edit-dialog", options, null);
         } else if (node.getValue() instanceof TeamNode) {
             ApblTeam team = ((TeamNode) node.getValue()).getTeam();
-            getModel().setViewOnly(!(currentAdmin || currentStudent != null && team != null && team.getOwner() != null && team.getOwner().getId() == currentStudent.getId()));
+            getModel().setViewOnly(!(currentAdmin || currentStudent != null && team != null && team.getOwner() != null && currentStudent.getUser()!=null && team.getOwner().getId() == currentStudent.getUser().getId()));
             getModel().setSelectedTeam(team);
             getModel().setEditMode(true);
             Map<String, Object> options = new HashMap<String, Object>();

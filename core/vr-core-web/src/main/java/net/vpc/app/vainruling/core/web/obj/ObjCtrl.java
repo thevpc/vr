@@ -246,10 +246,16 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
-    public Object getCurrentEntityObject() {
-        Object selectedObject = getModel().getCurrentRecord();
+    public Object getCurrentId() {
+        Record selectedObject = getModel().getCurrentRecord();
         EntityBuilder b = getEntity().getBuilder();
-        return selectedObject == null ? null : (selectedObject instanceof Record) ? b.recordToObject((Record) selectedObject) : selectedObject;
+        return selectedObject == null ? null : b.recordToId(selectedObject);
+    }
+
+    public Object getCurrentEntityObject() {
+        Record selectedObject = getModel().getCurrentRecord();
+        EntityBuilder b = getEntity().getBuilder();
+        return selectedObject == null ? null : b.recordToObject(selectedObject);
     }
 
     public List getSelectedEntityObjects() {
@@ -1140,6 +1146,32 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
+    public void onReloadCurrent() {
+        switch(getModel().getMode()){
+            case NEW: {
+                onNew();
+                break;
+            }
+            case UPDATE: {
+                Object id = getCurrentId();
+                Record curr = id==null?null:objService.findRecord(getEntityName(), id);
+                onSelect(createObjRow(curr));
+                break;
+            }
+        }
+    }
+
+    public ObjRow createObjRow(Record o){
+        Entity e = getEntity();
+        EntityBuilder b = e.getBuilder();
+        ObjRow r = new ObjRow(o, b.recordToObject(o));
+        r.setRead(true);
+        r.setWrite(true);
+        r.setSelected(false);
+        r.setRowPos(-1);
+        return r;
+    }
+
     @Override
     public void onSelectCurrent() {
         enabledButtons.clear();
@@ -1294,7 +1326,29 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             try {
                 currentViewToModel();
                 Object c = getModel().getCurrentRecord();
-                actionDialogManager.findAction(actionKey).invoke(getEntity().getEntityType(), c,getSelectedIdStrings(), args);
+                ActionDialogResult r=actionDialogManager.findAction(actionKey).invoke(getEntity().getEntityType(), c,getSelectedIdStrings(), args);
+                if(r!=null){
+                    switch (r){
+                        case RELOAD_CURRENT:{
+                            if (getModel().getMode() == EditCtrlMode.LIST) {
+                                reloadPage(true);
+                            } else {
+                                onReloadCurrent();
+                            }
+                            break;
+                        }
+                        case RELOAD_ALL:{
+                            if (getModel().getMode() == EditCtrlMode.LIST) {
+                                reloadPage(true);
+                            } else {
+                                loadList();
+                                updateMode(EditCtrlMode.LIST);
+                                getModel().setCurrent(null);
+                            }
+                            break;
+                        }
+                    }
+                }
             } catch (RuntimeException ex) {
                 log.log(Level.SEVERE, "Error", ex);
                 throw ex;
@@ -1352,7 +1406,29 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     try {
                         currentViewToModel();
                         Object c = getModel().getCurrentRecord();
-                        ed.invoke(getEntity().getEntityType(), c,getSelectedIdStrings(), null);
+                        ActionDialogResult r=ed.invoke(getEntity().getEntityType(), c,getSelectedIdStrings(), null);
+                        if(r!=null){
+                            switch (r){
+                                case RELOAD_CURRENT:{
+                                    if (getModel().getMode() == EditCtrlMode.LIST) {
+                                        reloadPage(true);
+                                    } else {
+                                        onReloadCurrent();
+                                    }
+                                    break;
+                                }
+                                case RELOAD_ALL:{
+                                    if (getModel().getMode() == EditCtrlMode.LIST) {
+                                        reloadPage(true);
+                                    } else {
+                                        loadList();
+                                        updateMode(EditCtrlMode.LIST);
+                                        getModel().setCurrent(null);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
                     } catch (RuntimeException ex) {
                         FacesUtils.addInfoMessage("Error : " + ex.getMessage());
                         log.log(Level.SEVERE, "Error", ex);
@@ -1380,6 +1456,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
                     RequestContext.getCurrentInstance().openDialog("/modules/obj/profile-open-action-dialog", options, null);
                 }else{
+                    getModel().setActionId(actionId);
                     proceedOpenActionDialog();
                 }
             }

@@ -11,6 +11,7 @@ import net.vpc.app.vainruling.core.service.model.AppTrace;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
+import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
 import net.vpc.app.vainruling.plugins.equipments.service.EquipmentPlugin;
 import net.vpc.app.vainruling.plugins.equipments.service.model.Equipment;
 import net.vpc.common.jsf.FacesUtils;
@@ -25,7 +26,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = Equipment.class,
-        actionLabel = "sep.", actionStyle = "fa-calculator",
+        actionLabel = "div", actionStyle = "fa-calculator",
         dialog = false
 )
 public class SplitEquipmentQtyAction implements ActionDialog {
@@ -41,7 +42,7 @@ public class SplitEquipmentQtyAction implements ActionDialog {
     }
 
     @Override
-    public void invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         EquipmentPlugin equipmentPlugin = VrApp.getBean(EquipmentPlugin.class);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityType);
@@ -51,5 +52,6 @@ public class SplitEquipmentQtyAction implements ActionDialog {
         if (equipmentPlugin.splitEquipmentQuantities(eq.getId()) > 0) {
             FacesUtils.addInfoMessage("Separation réussie");
         }
+        return ActionDialogResult.RELOAD_ALL;
     }
 }

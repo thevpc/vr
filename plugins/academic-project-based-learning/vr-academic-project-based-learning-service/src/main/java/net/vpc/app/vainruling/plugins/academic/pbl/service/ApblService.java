@@ -110,6 +110,7 @@ public class ApblService {
                     for (ApblTeamMember apblCoaching : findTeamMembers(teamId)) {
                         pu.remove(apblCoaching);
                     }
+                    pu.remove(team);
                 }
             });
         } else {
@@ -120,6 +121,7 @@ public class ApblService {
             for (ApblTeamMember apblCoaching : findTeamMembers(teamId)) {
                 pu.remove(apblCoaching);
             }
+            pu.remove(team);
         }
     }
 
@@ -153,7 +155,7 @@ public class ApblService {
         if (old == null) {
 
 
-            ApblSession session = findSession(team.getId());
+            ApblSession session = team.getSession();
             int teamMemberhMax = session.getTeamMemberMax();
             List<AcademicStudent> students = findTeamMemberStudents(teamId);
             if (teamMemberhMax > 0 && students.size() >= teamMemberhMax) {
@@ -181,7 +183,7 @@ public class ApblService {
 
         ApblCoaching old = findTeamCoach(teamId, teacherId);
         if (old == null) {
-            ApblSession session = findSession(team.getId());
+            ApblSession session = team.getSession();
             int teamCoachMax = session.getTeamCoachMax();
             List<ApblCoaching> coaches = findTeamCoaches(teamId);
             if (teamCoachMax > 0 && coaches.size() >= teamCoachMax) {

@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
+import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
 import net.vpc.app.vainruling.plugins.articles.service.ArticlesPlugin;
 import net.vpc.app.vainruling.plugins.articles.service.model.ArticlesItem;
 
@@ -36,8 +37,9 @@ public class SendExternalMailAction implements ActionDialog {
     }
 
     @Override
-    public void invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         VrApp.getBean(ArticlesPlugin.class).sendExternalMail((ArticlesItem) obj, (String) args[0]);
+        return ActionDialogResult.VOID;
     }
 
 }

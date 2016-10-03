@@ -10,6 +10,7 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
+import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 
@@ -37,10 +38,11 @@ public class SendWelcomeMailAction implements ActionDialog {
     }
 
     @Override
-    public void invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         MailboxPlugin mailboxPlugin = VrApp.getBean(MailboxPlugin.class);
         ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
         mailboxPlugin.sendWelcomeEmail(objCtrl.getSelectedEntityObjects(), true);
+        return ActionDialogResult.VOID;
     }
 
 }

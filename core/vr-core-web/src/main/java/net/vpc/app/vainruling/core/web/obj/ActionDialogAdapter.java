@@ -84,8 +84,8 @@ public class ActionDialogAdapter {
         instance.openDialog(actionId, itemIds);
     }
 
-    public void invoke(Class entityType, Object obj, List<String> selectedIdStrings,Object[] args) {
-        instance.invoke(entityType, obj, selectedIdStrings, args);
+    public ActionDialogResult invoke(Class entityType, Object obj, List<String> selectedIdStrings,Object[] args) {
+        return instance.invoke(entityType, obj, selectedIdStrings, args);
     }
 
 }

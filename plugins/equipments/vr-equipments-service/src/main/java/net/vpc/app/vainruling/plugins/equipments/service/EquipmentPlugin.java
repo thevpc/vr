@@ -90,7 +90,7 @@ public class EquipmentPlugin {
         eq2.setType(eq.getType());
         pu.persist(eq2);
 
-        for (Object child : pu.createQuery("Select e from Equipment where e.relativeToId=:id").setParameter("id", eq.getId()).getResultList()) {
+        for (Object child : pu.createQuery("Select e from Equipment e where e.relativeToId=:id").setParameter("id", eq.getId()).getResultList()) {
             Equipment child2 = copyEquipment((Equipment) child);
             child2.setRelativeTo(eq2);
             pu.merge(child2);
@@ -105,7 +105,7 @@ public class EquipmentPlugin {
         if(Utils.isInteger(eq.getQuantity())){
             int qte=(int) eq.getQuantity();
             if(qte>1) {
-                for (int i = 2; i < qte+2; i++) {
+                for (int i = 2; i < qte+1; i++) {
                     Equipment eq2=copyEquipment(eq);
                     eq2.setName(eq.getName()+" "+i);
                     if(!StringUtils.isEmpty(eq.getSerial())) {
@@ -114,6 +114,7 @@ public class EquipmentPlugin {
                     if(!StringUtils.isEmpty(eq.getStockSerial())) {
                         eq2.setStockSerial(eq.getStockSerial());
                     }
+                    eq2.setQuantity(1);
                     pu.merge(eq2);
                 }
                 eq.setQuantity(1);
