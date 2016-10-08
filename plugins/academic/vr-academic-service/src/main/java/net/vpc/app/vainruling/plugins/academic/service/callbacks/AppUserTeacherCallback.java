@@ -37,9 +37,9 @@ public class AppUserTeacherCallback {
         AppUser user = (AppUser) event.getPersistedObject();
         AppUserType t = user.getType();
         if (t != null) {
-            if (t.getName().equals("Teacher")) {
+            if (AppUserType.getCodeOrName(t).equals("Teacher")) {
                 VrApp.getBean(CorePlugin.class).userAddProfile(user.getId(), "Teacher");
-            } else if (t.getName().equals("Student")) {
+            } else if (AppUserType.getCodeOrName(t).equals("Student")) {
                 VrApp.getBean(CorePlugin.class).userAddProfile(user.getId(), "Student");
             }
         }

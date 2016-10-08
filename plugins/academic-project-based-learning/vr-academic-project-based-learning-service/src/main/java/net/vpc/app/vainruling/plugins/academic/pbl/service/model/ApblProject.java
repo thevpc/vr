@@ -1,5 +1,6 @@
 package net.vpc.app.vainruling.plugins.academic.pbl.service.model;
 
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.config.*;
@@ -25,7 +26,7 @@ public class ApblProject {
     @Main
     private ApblSession session;
 
-    private AcademicTeacher owner;
+    private AppUser owner;
 
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     @Field(max = "maximum")
@@ -63,11 +64,11 @@ public class ApblProject {
         this.session = session;
     }
 
-    public AcademicTeacher getOwner() {
+    public AppUser getOwner() {
         return owner;
     }
 
-    public void setOwner(AcademicTeacher owner) {
+    public void setOwner(AppUser owner) {
         this.owner = owner;
     }
 

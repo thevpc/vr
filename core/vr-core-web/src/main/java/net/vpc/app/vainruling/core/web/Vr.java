@@ -847,7 +847,7 @@ public class Vr {
         List<UserSession> activeSessions = getActiveSessions();
         if (activeSessions != null) {
             for (UserSession userSession : activeSessions) {
-                String name = (userSession != null && userSession.getUser() != null && userSession.getUser().getType() != null) ? userSession.getUser().getType().getName() : null;
+                String name = (userSession != null && userSession.getUser() != null && userSession.getUser().getType() != null) ? AppUserType.getCodeOrName(userSession.getUser().getType()) : null;
                 if (type == null || (
                         type.equals(name)
                 )) {
@@ -856,6 +856,30 @@ public class Vr {
             }
         }
         return r;
+    }
+
+    public Map<String,List<UserSession>> getActiveSessionsGroupedByType() {
+        Map<String,List<UserSession>> r = new HashMap<>();
+        List<UserSession> activeSessions = getActiveSessions();
+        if (activeSessions != null) {
+            for (UserSession userSession : activeSessions) {
+                String name = (userSession != null && userSession.getUser() != null && userSession.getUser().getType() != null) ? (userSession.getUser().getType().getName()) : null;
+                if(StringUtils.isEmpty(name)){
+                    name="Autres";
+                }
+                List<UserSession> userSessions = r.get(name);
+                if(userSessions==null){
+                    userSessions=new ArrayList<>();
+                    r.put(name,userSessions);
+                }
+                userSessions.add(userSession);
+            }
+        }
+        LinkedHashMap<String,List<UserSession>> r2 = new LinkedHashMap<>();
+        for (String s : new TreeSet<String>(r.keySet())) {
+            r2.put(s,r.get(s));
+        }
+        return r2;
     }
 
     public int getPollInterval() {

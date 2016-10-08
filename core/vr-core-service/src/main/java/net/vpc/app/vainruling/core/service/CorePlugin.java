@@ -178,7 +178,7 @@ public class CorePlugin {
 
     public AppUserType findUserType(String name) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return (AppUserType) pu.findByMainField(AppUserType.class, name);
+        return (AppUserType) pu.findByField(AppUserType.class, "code",name);
     }
 
     public List<AppUserType> findUserTypes() {
@@ -1584,12 +1584,47 @@ public class CorePlugin {
 
     public AppContact findOrCreateContact(AppContact c) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        if (!StringUtils.isEmpty(c.getNin())) {
+        AppContact old = findContact(c);
+        if(old!=null){
+            return old;
+        }
+        pu.persist(c);
+        return c;
+    }
+
+    public AppContact findContact(AppContact c) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        String nin = c.getNin();
+        if (!StringUtils.isEmpty(nin)) {
+            nin=nin.trim();
             AppContact oldAcademicTeacher = pu.createQueryBuilder(AppContact.class)
-                    .byField("nin", c.getNin())
+                    .byField("nin", nin)
                     .getFirstResultOrNull();
             if (oldAcademicTeacher != null) {
                 return oldAcademicTeacher;
+            }
+            StringBuilder s=new StringBuilder(nin);
+            while(s.length()>0 && s.charAt(0)=='0'){
+                s.delete(0,1);
+            }
+            if(s.length()>0) {
+                List<AppContact> possibleContacts = pu.createQuery("Select u from AppContact u where u.nin like :nin")
+                        .setParameter("nin", "%" + s + "%")
+                        .getResultList();
+                for (AppContact o : possibleContacts) {
+                    String nin1 = o.getNin();
+                    if(!StringUtils.isEmpty(nin1)){
+                        nin1=nin1.trim();
+                        StringBuilder s1=new StringBuilder(nin1);
+                        while(s1.length()>0 && s1.charAt(0)=='0'){
+                            s1.delete(0,1);
+                        }
+                        if(s1.toString().equals(s.toString())){
+                            //okkay found!
+                            return o;
+                        }
+                    }
+                }
             }
         } else {
             AppContact oldAcademicTeacher = pu.createQueryBuilder(AppContact.class)
@@ -1600,8 +1635,7 @@ public class CorePlugin {
                 return oldAcademicTeacher;
             }
         }
-        pu.persist(c);
-        return c;
+        return null;
     }
 
     public String getActualLogin() {
@@ -2350,7 +2384,7 @@ public class CorePlugin {
         AppUser u = findUser(login);
         if (u != null) {
             AppUserType t = u.getType();
-            String typeName = t == null ? "NoType" : t.getName();
+            String typeName = t == null ? "NoType" : AppUserType.getCodeOrName(t);
             final String path = "/Documents/ByUser/" + typeName + "/" + login;
             UPA.getContext().invokePrivileged(new Action<Object>() {
 
@@ -2411,7 +2445,7 @@ public class CorePlugin {
     public VFile getUserTypeFolder(int userTypeId) {
         AppUserType u = findUserType(userTypeId);
         if (u != null) {
-            final String path = "/Documents/ByUserType/" + Utils.nonEmptyValue(u.getCode(),u.getName());
+            final String path = "/Documents/ByUserType/" + AppUserType.getCodeOrName(u);
             UPA.getContext().invokePrivileged(new Action<Object>() {
 
                 @Override

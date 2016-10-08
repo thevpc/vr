@@ -21,6 +21,7 @@ public class AcademicStudentImport {
     private Integer preClassBacId;
     private String preClassBacName;
     private double preClassBacScore;
+    private double preClassPrepScore;
     private int preClassPrepRank;
     private int preClassPrepRankMax;
     private Integer preClassPrepId;
@@ -252,5 +253,13 @@ public class AcademicStudentImport {
 
     public void setPreClassTypeName(String preClassTypeName) {
         this.preClassTypeName = preClassTypeName;
+    }
+
+    public double getPreClassPrepScore() {
+        return preClassPrepScore;
+    }
+
+    public void setPreClassPrepScore(double preClassPrepScore) {
+        this.preClassPrepScore = preClassPrepScore;
     }
 }

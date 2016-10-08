@@ -53,7 +53,7 @@ import java.util.logging.Logger;
         },
         css = "fa-table",
         title = "Projets APP",
-        url = "modules/academic/pbl/projects",
+        url = "modules/academic/pbl/app-projects",
         menu = "/Education/Internship",
         securityKey = "Custom.Education.Apbl.Projects"
 )
@@ -68,6 +68,7 @@ public class AcademicAppProjectsCtrl {
 
     private Model model = new Model();
     private AcademicTeacher currentTeacher;
+    private AppUser currentUser;
     private AcademicStudent currentStudent;
     private boolean currentAdmin;
     private boolean currentJoinAnyAllowed;
@@ -92,6 +93,7 @@ public class AcademicAppProjectsCtrl {
     private void onPageLoad() {
         currentTeacher = academic.getCurrentTeacher();
         currentStudent = academic.getCurrentStudent();
+        currentUser=UserSession.getCurrentUser();
         currentAdmin = core.isSessionAdmin();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         List<ApblSession> sessions = new ArrayList<>();
@@ -117,29 +119,28 @@ public class AcademicAppProjectsCtrl {
                             ;
                 }
                 //if any other user but not teacher or student, check it fulfills any of the other profiles
-                AppUser user = UserSession.getCurrentUser();
-                if (user != null) {
+                if (currentUser != null) {
                     if (!StringUtils.isEmpty(value.getMemberProfiles())
                             &&
-                            core.userMatchesProfileFilter(user.getId(), value.getMemberProfiles())
+                            core.userMatchesProfileFilter(currentUser.getId(), value.getMemberProfiles())
                             ) {
                         return true;
                     }
                     if (!StringUtils.isEmpty(value.getTeamOwnerProfiles())
                             &&
-                            core.userMatchesProfileFilter(user.getId(), value.getTeamOwnerProfiles())
+                            core.userMatchesProfileFilter(currentUser.getId(), value.getTeamOwnerProfiles())
                             ) {
                         return true;
                     }
                     if (!StringUtils.isEmpty(value.getCoachProfiles())
                             &&
-                            core.userMatchesProfileFilter(user.getId(), value.getCoachProfiles())
+                            core.userMatchesProfileFilter(currentUser.getId(), value.getCoachProfiles())
                             ) {
                         return true;
                     }
                     if (!StringUtils.isEmpty(value.getProjectOwnerProfiles())
                             &&
-                            core.userMatchesProfileFilter(user.getId(), value.getProjectOwnerProfiles())
+                            core.userMatchesProfileFilter(currentUser.getId(), value.getProjectOwnerProfiles())
                             ) {
                         return true;
                     }
@@ -176,11 +177,11 @@ public class AcademicAppProjectsCtrl {
             currentAddTeamAllowed = false;
             currentJoinAnyAllowed = false;
             if (session != null) {
+                currentAddProjectAllowed = core.userMatchesProfileFilter(currentUser.getId(), session.getProjectOwnerProfiles());
+                currentAddTeamAllowed = core.userMatchesProfileFilter(currentUser.getId(), session.getTeamOwnerProfiles());
                 if (currentTeacher != null && currentTeacher.getUser() != null) {
-                    currentAddProjectAllowed = core.userMatchesProfileFilter(currentTeacher.getUser().getId(), session.getProjectOwnerProfiles());
                     currentJoinAnyAllowed = core.userMatchesProfileFilter(currentTeacher.getUser().getId(), session.getCoachProfiles());
                 } else if (currentStudent != null && currentStudent.getUser() != null) {
-                    currentAddTeamAllowed = core.userMatchesProfileFilter(currentStudent.getUser().getId(), session.getTeamOwnerProfiles());
                     currentJoinAnyAllowed = core.userMatchesProfileFilter(currentStudent.getUser().getId(), session.getMemberProfiles());
                 }
             }
@@ -345,7 +346,7 @@ public class AcademicAppProjectsCtrl {
         getModel().setSelectedProject(new ApblProject());
         getModel().setEditMode(false);
         getModel().setViewOnly(false);
-        getModel().getSelectedProject().setOwner(currentTeacher);
+        getModel().getSelectedProject().setOwner(currentUser);
         getModel().getSelectedProject().setSession(getModel().getSession());
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
@@ -372,7 +373,8 @@ public class AcademicAppProjectsCtrl {
             ApblProject project = ((ProjectNode) node.getValue()).getProject();
             getModel().setSelectedProject(project);
             getModel().setEditMode(true);
-            getModel().setViewOnly(!(currentAdmin || currentTeacher != null && project != null && project.getOwner() != null && project.getOwner().getId() == currentTeacher.getId()));
+            AppUser currentUser = UserSession.getCurrentUser();
+            getModel().setViewOnly(!(currentAdmin || currentUser != null && project != null && project.getOwner() != null && project.getOwner().getId() == currentUser.getId()));
             Map<String, Object> options = new HashMap<String, Object>();
             options.put("resizable", false);
             options.put("draggable", true);
@@ -722,7 +724,7 @@ public class AcademicAppProjectsCtrl {
                                 :
                                 new NodeItem(
                                         i.getProject().getName(), i.getTeams().size()
-                                        , "project", core.getUserFullTitle(i.getProject().getOwner()==null?null:i.getProject().getOwner().getUser()), i);
+                                        , "project", core.getUserFullTitle(i.getProject().getOwner()==null?null:i.getProject().getOwner()), i);
                 if (i.getProject() != null) {
                     projectsMap.put(i.getProject().getId(), i.getProject());
                     projectItems.add(new SelectItem(i.getProject().getId(), i.getProject().getName()));

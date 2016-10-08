@@ -64,6 +64,7 @@ public class AcademicStudent {
     private int preClassRankMax;
     private AcademicBac baccalaureateClass;
     private double baccalaureateScore;
+    private double preClassScore;
     @Properties({
             @Property(name = UIConstants.Form.SEPARATOR, value = "Curriculum Vitae"),
             @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
@@ -354,5 +355,13 @@ public class AcademicStudent {
 
     public void setPreClassType(AcademicPreClassType preClassType) {
         this.preClassType = preClassType;
+    }
+
+    public double getPreClassScore() {
+        return preClassScore;
+    }
+
+    public void setPreClassScore(double preClassScore) {
+        this.preClassScore = preClassScore;
     }
 }

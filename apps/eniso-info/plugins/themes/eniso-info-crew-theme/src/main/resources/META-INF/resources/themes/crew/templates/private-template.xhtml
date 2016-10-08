@@ -197,55 +197,26 @@
                                     <li>
                                         <!-- inner menu: contains the actual data -->
                                         <ul class="menu">
-                                            <li>
-                                                <a href="#">
-                                                    <h4>
-                                                        Enseignants
-                                                        <small><i
-                                                                class="fa fa-group"></i> #{vr.getActiveSessionsByType("Teacher").size()}
-                                                        </small>
-                                                    </h4>
-                                                    <p></p>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <h4>
-                                                        Etudiants
-                                                        <small><i
-                                                                class="fa fa-group"></i> #{vr.getActiveSessionsByType("Student").size()}
-                                                        </small>
-                                                    </h4>
-                                                    <p></p>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <h4>
-                                                        Staff Technique
-                                                        <small><i
-                                                                class="fa fa-group"></i> #{vr.getActiveSessionsByType("Technician").size()}
-                                                        </small>
-                                                    </h4>
-                                                    <p></p>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <h4>
-                                                        Staff Administratif
-                                                        <small><i
-                                                                class="fa fa-group"></i> #{vr.getActiveSessionsByType("Administrative").size()}
-                                                        </small>
-                                                    </h4>
-                                                    <p></p>
-                                                </a>
-                                            </li>
+                                            <ui:repeat value="#{vr.getActiveSessionsGroupedByType().entrySet().toArray()}" var="e">
+
+                                                <li>
+                                                    <a href="#">
+                                                        <h4>
+                                                            #{e.key}
+                                                            <small><i
+                                                                    class="fa fa-group"></i> #{e.value.size()}
+                                                            </small>
+                                                        </h4>
+                                                        <p></p>
+                                                    </a>
+                                                </li>
+                                            </ui:repeat>
                                         </ul>
                                     </li>
                                     <li>
                                         <h:outputLink class="footer" value="#{vr.context}/p/activeSessions"
-                                                      style="text-align: center;" rendered="#{vr.allowed('Custom.Admin.ActiveSessions')}">
+                                                      style="text-align: center;"
+                                                      rendered="#{vr.allowed('Custom.Admin.ActiveSessions')}">
                                             <strong>Tout afficher</strong>
                                         </h:outputLink>
 

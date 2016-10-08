@@ -11,6 +11,8 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.core.web.*;
+import net.vpc.app.vainruling.core.web.obj.ActionDialogAdapter;
+import net.vpc.app.vainruling.core.web.obj.ActionDialogManager;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
@@ -163,8 +165,8 @@ public class VrMenuManager {
             UCtrlData d = new UCtrlData();
             d.setCss(c2Ann.css());
             String title = I18n.get().getOrNull("Controller." + ctrl0);
-            if(StringUtils.isEmpty(title)){
-                title=c2Ann.title();
+            if (StringUtils.isEmpty(title)) {
+                title = c2Ann.title();
             }
             d.setTitle(title);
             String url = VrWebHelper.evalSpringExprMessage(c2Ann.url());
@@ -188,7 +190,7 @@ public class VrMenuManager {
                         }
                     }
                 }
-                aa.add(new BreadcrumbItem(title, subTitle,css, ctrl, cmd2));
+                aa.add(new BreadcrumbItem(title, subTitle, css, ctrl, cmd2));
             }
             d.setBreadcrumb(aa.toArray(new BreadcrumbItem[aa.size()]));
             return d;
@@ -255,9 +257,9 @@ public class VrMenuManager {
             }
         }
         if (d != null) {
-            bc.add(new BreadcrumbItem(d.getTitle(), d.getSubTitle(),d.getCss(), "", ""));
+            bc.add(new BreadcrumbItem(d.getTitle(), d.getSubTitle(), d.getCss(), "", ""));
         } else {
-            bc.add(new BreadcrumbItem("", "", "", "",""));
+            bc.add(new BreadcrumbItem("", "", "", "", ""));
         }
         getModel().setBreadcrumb(bc);
         UserSession s = VrApp.getContext().getBean(UserSession.class);
@@ -271,11 +273,11 @@ public class VrMenuManager {
             }
         }
         s.setLastVisitedPage(lvp.toString());
-        String data = command ;
-        if(!StringUtils.isEmpty(arguments)){
-            data+= " ; " + arguments;
+        String data = command;
+        if (!StringUtils.isEmpty(arguments)) {
+            data += " ; " + arguments;
         }
-        TraceService.get().trace("visit.page","page visited "+lvp.toString(), data,"/System/Access", Level.FINE);
+        TraceService.get().trace("visit.page", "page visited " + lvp.toString(), data, "/System/Access", Level.FINE);
         if (StringUtils.isEmpty(url)) {
             return null;
         }
@@ -342,36 +344,53 @@ public class VrMenuManager {
 
     @PostConstruct
     public void initCustomMenus() {
-        for (String beanName : VrApp.getContext().getBeanNamesForAnnotation(UCtrl.class)) {
-            if ("vrMenuManager".equals(beanName)) {
-                continue; //unless we have unresolvable circular reference
-            }
-            Object b = VrApp.getContext().getBean(beanName);
-            UCtrl c = (UCtrl) PlatformReflector.getTargetClass(b).getAnnotation(UCtrl.class);
-            if (c != null) {
-                final String securityKey = c.securityKey();
-                if (!StringUtils.isEmpty(securityKey)) {
-                    UPA.getContext().invokePrivileged(new VoidAction() {
-                        @Override
-                        public void run() {
-                            VrApp.getBean(CorePlugin.class).createRight(securityKey, securityKey);
-                        }
-                    });
-                }
-            }
-
-            if (b instanceof VRMenuDefFactory) {
-                for (VRMenuDef md : ((VRMenuDefFactory) b).createVRMenuDefList()) {
-
-                    if (md != null) {
-                        String securityKey = md.getSecurityKey();
+        final CorePlugin core = VrApp.getBean(CorePlugin.class);
+        UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                for (String beanName : VrApp.getContext().getBeanNamesForAnnotation(UCtrl.class)) {
+                    if ("vrMenuManager".equals(beanName)) {
+                        continue; //unless we have unresolvable circular reference
+                    }
+                    Object b = VrApp.getContext().getBean(beanName);
+                    UCtrl c = (UCtrl) PlatformReflector.getTargetClass(b).getAnnotation(UCtrl.class);
+                    if (c != null) {
+                        final String securityKey = c.securityKey();
                         if (!StringUtils.isEmpty(securityKey)) {
-                            VrApp.getBean(CorePlugin.class).createRight(securityKey, securityKey);
+                            UPA.getContext().invokePrivileged(new VoidAction() {
+                                @Override
+                                public void run() {
+                                    core.createRight(securityKey, securityKey);
+                                }
+                            });
+                        }
+                    }
+
+                    if (b instanceof VRMenuDefFactory) {
+                        for (VRMenuDef md : ((VRMenuDefFactory) b).createVRMenuDefList()) {
+
+                            if (md != null) {
+                                String securityKey = md.getSecurityKey();
+                                if (!StringUtils.isEmpty(securityKey)) {
+                                    core.createRight(securityKey, securityKey);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                ActionDialogManager actionDialogManager = VrApp.getBean(ActionDialogManager.class);
+                for (Entity entity : UPA.getPersistenceUnit().getEntities()) {
+                    for (ActionDialogAdapter a : actionDialogManager.findActionsByEntity(entity.getName())) {
+                        if (!StringUtils.isEmpty(a.getId())) {
+                            core.createRight(a.getId(), a.getId());
                         }
                     }
                 }
             }
-        }
+        });
+
+
     }
 
     public List<VRMenuDef> resolveAutowiredCustomMenusByCtrl() {
@@ -385,10 +404,10 @@ public class VrMenuManager {
                     menu = "/" + menu;
                 }
                 String title = I18n.get().getOrNull("Controller." + beanName);
-                if(StringUtils.isEmpty(title)){
-                    title=c.title();
+                if (StringUtils.isEmpty(title)) {
+                    title = c.title();
                 }
-                VRMenuDef md = new VRMenuDef(title, menu, beanName, "", c.securityKey(), "",c.order(),new VRMenuLabel[0]);
+                VRMenuDef md = new VRMenuDef(title, menu, beanName, "", c.securityKey(), "", c.order(), new VRMenuLabel[0]);
                 UCtrlData uc = getUCtrlData(md.getType(), md.getCommand());
                 if (uc != null) {
                     md.setName(uc.getTitle());
@@ -419,7 +438,7 @@ public class VrMenuManager {
     public static class Model {
 
         private List<BreadcrumbItem> breadcrumb = new ArrayList<BreadcrumbItem>();
-        private BreadcrumbItem titleCrumb = new BreadcrumbItem("","", "", "", "");
+        private BreadcrumbItem titleCrumb = new BreadcrumbItem("", "", "", "", "");
         private List<VRMenuDef> menuCtrl = null;
         private String currentPageId;
         private VRMenuDef root;
@@ -447,7 +466,7 @@ public class VrMenuManager {
                 breadcrumb.get(i).setActive(i == breadcrumb.size() - 1);
             }
             if (this.breadcrumb.isEmpty()) {
-                titleCrumb = new BreadcrumbItem("","", "", "", "");
+                titleCrumb = new BreadcrumbItem("", "", "", "", "");
                 titleCrumb.setActive(false);
             } else {
                 titleCrumb = breadcrumb.get(breadcrumb.size() - 1);
@@ -493,7 +512,7 @@ public class VrMenuManager {
 
     private class MenuTree implements TreeDefinition<VRMenuDef> {
 
-        final VRMenuDef root = new VRMenuDef("/", "/", "package", "", "", "",0,new VRMenuLabel[0]);
+        final VRMenuDef root = new VRMenuDef("/", "/", "package", "", "", "", 0, new VRMenuLabel[0]);
         final List<VRMenuDef> autowiredCustomMenusByCtrl = resolveAutowiredCustomMenusByCtrl();
         final HashSet<VRMenuDef> nonVisitedCustomMenus = new HashSet<>(autowiredCustomMenusByCtrl);
         final HashSet<VRMenuDef> visitedCustomMenus = new HashSet<>();
@@ -527,15 +546,15 @@ public class VrMenuManager {
                             p0 = "/" + p0;
                         }
                         String orderString = i18n.getOrNull("Package." + p0 + ".order");
-                        int order=100;
+                        int order = 100;
                         try {
-                            if(!StringUtils.isEmpty(orderString)) {
+                            if (!StringUtils.isEmpty(orderString)) {
                                 order = Integer.parseInt(orderString);
                             }
-                        }catch(Exception e){
+                        } catch (Exception e) {
                             //ignore
                         }
-                        children.add(new VRMenuDef(i18n.get(p), p.getPath(), "package", "", "", i18n.getOrNull("Package." + p0 + ".css-icon-class"),order,new VRMenuLabel[0]));
+                        children.add(new VRMenuDef(i18n.get(p), p.getPath(), "package", "", "", i18n.getOrNull("Package." + p0 + ".css-icon-class"), order, new VRMenuLabel[0]));
                     }
                     for (String p : findCustomPaths(t.getPath(), autowiredCustomMenusByCtrl)) {
                         if (!subFolders.contains(p)) {
@@ -545,16 +564,16 @@ public class VrMenuManager {
                                 p0 = "/" + p0;
                             }
                             String orderString = i18n.getOrNull("Package." + p0 + ".order");
-                            int order=100;
+                            int order = 100;
                             try {
-                                if(!StringUtils.isEmpty(orderString)) {
+                                if (!StringUtils.isEmpty(orderString)) {
                                     order = Integer.parseInt(orderString);
                                 }
-                            }catch(Exception e){
+                            } catch (Exception e) {
                                 //ignore
                             }
 
-                            children.add(new VRMenuDef(i18n.get("Package." + p0), p0, "package", "", "", i18n.getOrNull("Package." + p0 + ".css-icon-class"),order,new VRMenuLabel[0]));
+                            children.add(new VRMenuDef(i18n.get("Package." + p0), p0, "package", "", "", i18n.getOrNull("Package." + p0 + ".css-icon-class"), order, new VRMenuLabel[0]));
                         }
                     }
                     for (VRMenuDef p : findCustomMenus(t.getPath(), autowiredCustomMenusByCtrl)) {
@@ -576,9 +595,9 @@ public class VrMenuManager {
                                     ee.getShield().checkNavigate();
                                     if (UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(
                                             ee.getAbsoluteName() + ".DefaultEditor")) {
-                                        int order=100;
+                                        int order = 100;
                                         //UCtrlData d = ;
-                                        VRMenuDef md = new VRMenuDef(i18n.get(ee), t.getPath(), "obj", "{entity:'" + ee.getName() + "'}", "", "",100,new VRMenuLabel[0]);
+                                        VRMenuDef md = new VRMenuDef(i18n.get(ee), t.getPath(), "obj", "{entity:'" + ee.getName() + "'}", "", "", 100, new VRMenuLabel[0]);
                                         UCtrlData uc = getUCtrlData(md.getType(), md.getCommand());
                                         if (uc != null) {
                                             md.setName(uc.getTitle());
@@ -601,8 +620,8 @@ public class VrMenuManager {
                                         ee.getShield().checkNavigate();
                                         if (UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(
                                                 ee.getAbsoluteName() + ".DefaultEditor")) {
-                                            int order=100;
-                                            VRMenuDef md = new VRMenuDef(i18n.get(ee), t.getPath(), "obj", "{entity:'" + ee.getName() + "'}", "", "",100,new VRMenuLabel[0]);
+                                            int order = 100;
+                                            VRMenuDef md = new VRMenuDef(i18n.get(ee), t.getPath(), "obj", "{entity:'" + ee.getName() + "'}", "", "", 100, new VRMenuLabel[0]);
                                             UCtrlData uc = getUCtrlData(md.getType(), md.getCommand());
                                             if (uc != null) {
                                                 md.setName(uc.getTitle());

@@ -389,7 +389,12 @@ public class MailboxPlugin {
                 }
             }
             if (ok) {
-                sendWelcomeEmail(u, null, notifPusher);
+                try {
+                    sendWelcomeEmail(u, null, notifPusher);
+                }catch(Exception exc){
+                    String email=u.getContact()==null?null:u.getContact().getEmail();
+                    VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_WELCOME_MAIL_QUEUE, 60, null, "touser:" + u.getLogin() + " ; email=" + email + " : " + exc, null, Level.SEVERE));
+                }
             }
         }
     }

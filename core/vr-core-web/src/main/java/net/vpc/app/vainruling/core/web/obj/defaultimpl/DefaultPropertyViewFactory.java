@@ -103,7 +103,7 @@ public class DefaultPropertyViewFactory implements PropertyViewFactory {
                     }
                 }
                 if (propView == null) {
-                    String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.DATE);
+                    String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.DATETIME);
                     propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
                 }
             } else if (PlatformTypes.isBooleanType(t)) {

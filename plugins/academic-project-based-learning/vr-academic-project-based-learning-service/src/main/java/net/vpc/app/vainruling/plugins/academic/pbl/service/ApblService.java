@@ -3,6 +3,7 @@ package net.vpc.app.vainruling.plugins.academic.pbl.service;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
+import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.CoachNode;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.MemberNode;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ProjectNode;
@@ -59,12 +60,12 @@ public class ApblService {
     }
 
     public void removeProject(int projectId) {
-        AcademicTeacher teacher = academic.getCurrentTeacher();
+        AppUser teacher = UserSession.get().getUser();
         ApblProject project = findProject(projectId);
         if (project == null) {
             return;
         }
-        AcademicTeacher owner = project.getOwner();
+        AppUser owner = project.getOwner();
         boolean forceAllowed = false;
         if (owner != null && teacher != null && owner.getId() == teacher.getId()) {
             forceAllowed = true;
@@ -343,6 +344,89 @@ public class ApblService {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from ApblTeam u where u.projectId=:projectId")
                 .setParameter("projectId", projectId)
+                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
+                .getResultList();
+    }
+
+    public void addProgressionLog(ApblProgressionLog log){
+        if(log.getTeam()==null){
+            throw new RuntimeException("Empty Team");
+        }
+        if(StringUtils.isEmpty(log.getDescription())){
+            throw new RuntimeException("Empty Description");
+        }
+        if(log.getProgressionPercent()<=0){
+            throw new RuntimeException("Empty Progression");
+        }
+        if(log.getProgressionDate()==null){
+            throw new RuntimeException("Empty Date");
+        }
+        UPA.getPersistenceUnit().persist(log);
+    }
+
+    public void addCoachingLog(ApblCoachingLog log){
+        if(log.getCoaching()==null){
+            throw new RuntimeException("Empty Team");
+        }
+        if(StringUtils.isEmpty(log.getDescription())){
+            throw new RuntimeException("Empty Description");
+        }
+        if(log.getDurationMinutes()<=0){
+            throw new RuntimeException("Empty Duration");
+        }
+        if(log.getAppointmentDate()==null){
+            throw new RuntimeException("Empty Date");
+        }
+        UPA.getPersistenceUnit().persist(log);
+    }
+
+    public List<ApblProgressionLog> findTeamProgressionLog(int teamId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select u from ApblProgressionLog u where u.teamId = :teamId order by u.progressionDate desc")
+                .setParameter("teamId", teamId)
+                .setHint(QueryHints.NAVIGATION_DEPTH, 4)
+                .getResultList();
+    }
+
+    public List<ApblCoachingLog> findTeamCoachingLog(int teamId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select u from ApblCoachingLog u where u.coaching.teamId = :teamId order by u.appointmentDate desc")
+                .setParameter("teamId", teamId)
+                .setHint(QueryHints.NAVIGATION_DEPTH, 4)
+                .getResultList();
+    }
+
+    public List<ApblTeam> findOpenTeamsByStudent(int studentId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select u from ApblTeam u where u.session.status != :status and exists (Select m from ApblTeamMember m where m.teamId=u.id and m.studentId=:studentId)")
+                .setParameter("studentId", studentId)
+                .setParameter("status", ApblSessionStatus.CLOSED)
+                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
+                .getResultList();
+    }
+
+    public List<ApblTeam> findOpenTeamsByTeacher(int teacherId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        ApblTeam t=new ApblTeam();
+        return pu.createQuery("Select u from ApblTeam u where u.session.status != :status and exists (Select m from ApblCoaching m where m.teamId=u.id and m.teacherId=:teacherId)")
+                .setParameter("teacherId", teacherId)
+                .setParameter("status", ApblSessionStatus.CLOSED)
+                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
+                .getResultList();
+    }
+
+    public List<ApblTeam> findOpenTeamsByUser(int userId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        ApblTeam t=new ApblTeam();
+        return pu.createQuery("Select u from ApblTeam u where u.session.status != :status and  ( " +
+                        "exists ((Select m from ApblTeamMember m where m.teamId=u.id and m.student.userId=:userId)) " +
+                        "or exists ((Select m from ApblCoaching m where m.teamId=u.id and m.teacher.userId=:userId)) " +
+                        "or exists ((Select m from ApblProject m where m.ownerId=:userId))" +
+                        "or u.ownerId=:userId " +
+                        ")"
+                )
+                .setParameter("userId", userId)
+                .setParameter("status", ApblSessionStatus.CLOSED)
                 .setHint(QueryHints.NAVIGATION_DEPTH, 3)
                 .getResultList();
     }

@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.service.model;
 
+import joptsimple.internal.Strings;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.config.*;
 
@@ -18,10 +19,13 @@ public class AppUserType {
     @Id
     @Sequence
     private int id;
+    @Summary
     private String code;
     @Main
     private String name;
+    @Summary
     private String name2;
+    @Summary
     private String name3;
 
     public AppUserType() {
@@ -77,4 +81,16 @@ public class AppUserType {
         this.name3 = name3;
     }
 
+    public static String getCodeOrName(AppUserType u){
+        if(u==null){
+            return null;
+        }
+        if(!Strings.isNullOrEmpty(u.getCode())){
+            return u.getCode();
+        }
+        if(!Strings.isNullOrEmpty(u.getName())){
+            return u.getName();
+        }
+        return null;
+    }
 }

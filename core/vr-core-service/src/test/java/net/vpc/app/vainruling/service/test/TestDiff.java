@@ -26,7 +26,7 @@ public class TestDiff {
         // Create an instance of the diff_match_patch object.
         dmp = new GoogleDiffMatchPatch();
     }
-    @Test
+    //@Test
     public void diffMain(){
         String phrase1="1391;MsGT1-S2-?-Modélisation et Simulation-?-JBHT-C;Jamel Bel Hadj Taher;1.0;1.0\n" +
                 "1393;MsGT1-S2-?-Réseaux de télécoms-?-C;Aref Meddeb;1.0;1.0\n" +

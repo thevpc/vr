@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+>
+
+<h:head>
+</h:head>
+
+<h:body>
+
+
+    <!--@elvariable id="academicAppMyTeamsCtrl" type="net.vpc.app.vainruling.plugins.academic.pbl.web.AcademicAppMyTeamsCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
+        <ui:define name="content">
+            <h:form id="messagesForm">
+                <p:messages id="messages"/>
+            </h:form>
+            <h:form id="listForm">
+
+                <div>
+                    <div class="table-responsive vr-toolbox-container">
+                        <p:selectOneMenu styleClass="vr-toolbox-select-one"
+                                         value="#{academicAppMyTeamsCtrl.model.selectedTeamId}">
+                            <p:ajax listener="#{academicAppMyTeamsCtrl.onChangeSelectedTeam}" update=":listForm"/>
+                            <f:selectItem itemLabel="Choisir Equipe..." itemValue=""/>
+                            <f:selectItems value="#{academicAppMyTeamsCtrl.model.teamItems}"/>
+                        </p:selectOneMenu>
+                        <p:commandButton value="Nouvelle Séance de Travail"
+                                         styleClass="btn btn-info vr-toolbox-long-button"
+                                         actionListener="#{academicAppMyTeamsCtrl.onOpenCoachingLogDialog}"
+                                         rendered="#{academicAppMyTeamsCtrl.addCoachingLogAllowed}"
+
+                        >
+                            <p:ajax event="dialogReturn" update=":listForm"/>
+                        </p:commandButton>
+                        <p:commandButton value="Nouvel Avancement" styleClass="btn btn-warning vr-toolbox-long-button"
+                                         actionListener="#{academicAppMyTeamsCtrl.onOpenProgressionLogDialog}"
+                                         rendered="#{academicAppMyTeamsCtrl.addProgressionLogAllowed}"
+                        >
+                            <p:ajax event="dialogReturn" update=":listForm"/>
+                        </p:commandButton>
+                        <p:commandButton value="Rafraichir"
+                                         styleClass="btn btn-default vr-toolbox-long-button"
+                                         ajax="false"
+                                         actionListener="#{academicAppMyTeamsCtrl.reloadTeams}"
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <div class="table-responsive">
+                        <p:tabView>
+                            <p:tab title="Avancements">
+                                <p:dataTable var="e" value="#{academicAppMyTeamsCtrl.model.progressionLogs}">
+                                    <p:column headerText="Date">
+                                        <p:outputLabel value="#{vr.date(e.progressionDate)}"/>
+                                    </p:column>
+                                    <p:column headerText="Progression">
+                                        <p:outputLabel value="#{(e.progressionPercent)}"/>
+                                    </p:column>
+                                    <p:column headerText="Description">
+                                        <p:outputLabel value="#{vr.strcut(e.description,60)}"
+                                                       title="#{e.description}"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                            <p:tab title="Séances de suivi">
+                                <p:dataTable var="e" value="#{academicAppMyTeamsCtrl.model.coachingLogs}">
+                                    <p:column headerText="Date">
+                                        <p:outputLabel value="#{vr.date(e.appointmentDate)}"/>
+                                    </p:column>
+                                    <p:column headerText="Durée (mn)">
+                                        <p:outputLabel value="#{(e.durationMinutes)}"/>
+                                    </p:column>
+                                    <p:column headerText="Enseignant">
+                                        <p:outputLabel value="#{(e.coaching.teacher.contact.fullTitle)}"/>
+                                    </p:column>
+                                    <p:column headerText="Description">
+                                        <p:outputLabel value="#{vr.strcut(e.description,60)}"
+                                                       title="#{e.description}"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                        </p:tabView>
+                    </div>
+                </div>
+            </h:form>
+
+
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>

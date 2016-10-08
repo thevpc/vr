@@ -35,7 +35,10 @@ public class ActionDialogAdapter {
         confirm = a.confirm();
         actionName = a.actionName();
         style = a.actionLabel();
-        actionName = StringUtils.isEmpty(actionName) ? PlatformReflector.getTargetClass(instance).getSimpleName() : actionName;
+        actionName = StringUtils.isEmpty(actionName) ? (
+                entityType.getSimpleName()+".Action."+
+                PlatformReflector.getTargetClass(instance).getSimpleName()
+        ) : actionName;
         label = a.actionLabel();
         label = StringUtils.isEmpty(label) ? actionName : label;
     }
@@ -75,7 +78,8 @@ public class ActionDialogAdapter {
         boolean b = instance.isEnabled(entityType, mode, value);
         if (b) {
             PersistenceUnit e = UPA.getPersistenceUnit();
-            return e.getSecurityManager().isAllowedKey(e.getEntity(entityType), getId());
+//            return e.getSecurityManager().isAllowedKey(e.getEntity(entityType), getId());
+            return e.getSecurityManager().isAllowedKey(getId());
         }
         return b;
     }

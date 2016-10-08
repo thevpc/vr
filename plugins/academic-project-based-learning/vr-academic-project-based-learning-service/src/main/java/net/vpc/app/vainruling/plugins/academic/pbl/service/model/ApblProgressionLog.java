@@ -1,5 +1,6 @@
 package net.vpc.app.vainruling.plugins.academic.pbl.service.model;
 
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.config.*;
 
@@ -17,16 +18,17 @@ import java.util.Date;
                 @Property(name = "ui.auto-filter.team", value = "{expr='coaching.team',order=3}"),
         }
 )
-public class ApblCoachingLog {
+public class ApblProgressionLog {
     @Id
     @Sequence
     private int id;
     @Main
-    private ApblCoaching coaching;
+    private ApblTeam team;
+    private AppUser user;
     @Summary
-    private Date appointmentDate;
+    private Date progressionDate;
     @Summary
-    private int durationMinutes;
+    private int progressionPercent;
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     @Field(max = "4000")
     private String description;
@@ -39,29 +41,6 @@ public class ApblCoachingLog {
         this.id = id;
     }
 
-    public ApblCoaching getCoaching() {
-        return coaching;
-    }
-
-    public void setCoaching(ApblCoaching coaching) {
-        this.coaching = coaching;
-    }
-
-    public Date getAppointmentDate() {
-        return appointmentDate;
-    }
-
-    public void setAppointmentDate(Date appointmentDate) {
-        this.appointmentDate = appointmentDate;
-    }
-
-    public int getDurationMinutes() {
-        return durationMinutes;
-    }
-
-    public void setDurationMinutes(int durationMinutes) {
-        this.durationMinutes = durationMinutes;
-    }
 
     public String getDescription() {
         return description;
@@ -71,4 +50,35 @@ public class ApblCoachingLog {
         this.description = description;
     }
 
+    public ApblTeam getTeam() {
+        return team;
+    }
+
+    public void setTeam(ApblTeam team) {
+        this.team = team;
+    }
+
+    public Date getProgressionDate() {
+        return progressionDate;
+    }
+
+    public void setProgressionDate(Date progressionDate) {
+        this.progressionDate = progressionDate;
+    }
+
+    public int getProgressionPercent() {
+        return progressionPercent;
+    }
+
+    public void setProgressionPercent(int progressionPercent) {
+        this.progressionPercent = progressionPercent;
+    }
+
+    public AppUser getUser() {
+        return user;
+    }
+
+    public void setUser(AppUser user) {
+        this.user = user;
+    }
 }

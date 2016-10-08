@@ -433,6 +433,8 @@ public class ArticlesPlugin {
                         VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(ArticlesPlugin.SEND_EXTERNAL_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject() + " : " + exc, null, Level.SEVERE));
                     }
                 });
+                VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(ArticlesPlugin.SEND_EXTERNAL_MAIL_QUEUE, 60, null, "Send Finished", null, Level.INFO));
+
             } catch (IOException ex) {
                 Logger.getLogger(ArticlesPlugin.class.getName()).log(Level.SEVERE, null, ex);
                 throw new RuntimeException(ex);
