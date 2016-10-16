@@ -134,7 +134,20 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
             fs = fsp.getUserFileSystem(login);
         }
         getModel().setFileSystem(fs);
-        getModel().setCurrent(DocumentsUtils.createFileInfo("/", getModel().getFileSystem().get("/")));
+        updatePath(c.getPath());
+        onRefresh();
+    }
+
+    public void updatePath(String path){
+        if (StringUtils.isEmpty(path)) {
+            path="/";
+        }
+        VFile file = getModel().getFileSystem().get(path);
+        if(file.exists() && file.isDirectory()) {
+            getModel().setCurrent(DocumentsUtils.createFileInfo(path, file));
+        }else{
+            getModel().setCurrent(DocumentsUtils.createFileInfo("/", getModel().getFileSystem().get("/")));
+        }
         onRefresh();
     }
 
@@ -383,6 +396,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
 
         private String type;
         private String value;
+        private String path;
 
         public String getType() {
             return type;
@@ -400,6 +414,13 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
             this.value = value;
         }
 
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
     }
 
     public static class Model {

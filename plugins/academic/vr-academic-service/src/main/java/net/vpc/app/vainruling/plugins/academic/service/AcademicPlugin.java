@@ -2767,7 +2767,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
         AppDepartment d = academicStudent.getDepartment();
         if (d != null) {
-            String s = d.getName();
+            String s = d.getCode();
             s = core.validateProfileName(s);
             AppProfile p = core.findOrCreateCustomProfile(s, "Department");
             core.userAddProfile(u.getId(), p.getCode());
@@ -3233,7 +3233,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     if(s.getStage()==AcademicStudentStage.ATTENDING) {
                         AppProfile p = core.findOrCreateCustomProfile("Student", "UserType");
                         goodProfiles.add(p.getId());
-                    }if(s.getStage()==AcademicStudentStage.GAP_YEAR){
+                    }else if(s.getStage()==AcademicStudentStage.GAP_YEAR){
                         AppProfile p = core.findOrCreateCustomProfile("GapYearStudent", "StatusType");
                         goodProfiles.add(p.getId());
                     }else{

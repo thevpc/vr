@@ -278,12 +278,27 @@ public class AcademicAppProjectsCtrl {
                 if (t.getProject() == null) {
                     return false;
                 }
+                if(currentUser!=null){
+                    if(t.getProject().getOwner()!=null){
+                        if(t.getProject().getOwner().getId()==currentUser.getId()){
+                            return true;
+                        }
+                    }
+                }
                 if (currentAdmin) {
                     return true;
                 }
             } else if ("team".equals(type)) {
+                TeamNode t = (TeamNode) item.getValue();
                 if (currentAdmin) {
                     return true;
+                }
+                if(currentUser!=null){
+                    if(t.getTeam().getOwner()!=null){
+                        if(t.getTeam().getOwner().getId()==currentUser.getId()){
+                            return true;
+                        }
+                    }
                 }
             }
         }

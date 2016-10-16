@@ -200,7 +200,7 @@ public class AcademicPerfEvalPlugin {
     public List<AcademicFeedback> findStudentFeedbacks(int studentId, Boolean validated, Boolean archived, Boolean enabled) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (enabled != null && enabled) {
-            Boolean ok = UPA.getContext().invokePrivileged(new Action<Boolean>() {
+            Boolean ok = UPA.getPersistenceUnit().invokePrivileged(new Action<Boolean>() {
                 @Override
                 public Boolean run() {
                     return (Boolean) VrApp.getBean(CorePlugin.class).getOrCreateAppPropertyValue("AcademicPerfEvalPlugin.EnableStudentFeedbacks", null, true);

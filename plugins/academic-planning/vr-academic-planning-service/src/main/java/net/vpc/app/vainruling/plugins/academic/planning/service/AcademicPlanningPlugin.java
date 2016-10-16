@@ -14,8 +14,6 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStud
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.calendars.service.VrCalendarProvider;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarHour;
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.ListValueMap;
@@ -192,33 +190,18 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
         VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
         if (p != null && p.exists()) {
             try {
-
-                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                Document doc = dBuilder.parse(p.getInputStream());
-                //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-                doc.getDocumentElement().normalize();
-
-                NodeList nList = doc.getElementsByTagName("Teacher");
-
-                for (int temp = 0; temp < nList.getLength(); temp++) {
-
-                    Node nNode = nList.item(temp);
-
-//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-                        Element eElement = (Element) nNode;
-                        String tn = eElement.getAttribute("name");
-                        if (teacherNames.contains(tn.trim().toLowerCase().trim())) {
-                            CalendarWeek dd = parsePlanningDataXML(nNode,"Formation Ingénieur");
-                            if (dd != null) {
-                                dd.setId("Teacher-"+(temp+1));
-                                dd.setPlanningUniformName(teacherName);
-                                return dd;
-                            }
+                FETXmlParser parser=new FETXmlParser(p,"Teacher","Formation Ingénieur");
+                CalendarWeekParser week;
+                try {
+                    int counter=0;
+                    while ((week = parser.next()) != null) {
+                        if (teacherNames.contains(week.getName().trim().toLowerCase().trim())) {
+                            counter++;
+                            return week.parse("Teacher-" + counter);
                         }
                     }
+                }finally{
+                    parser.close();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -235,7 +218,7 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
             return core.getFileSystem().get(ts);
         } else {
             final String defaultPath = core.getProfileFileSystem("DirectorOfStudies").get("/Emplois").getBaseFile("vrfs").getPath();
-            t = UPA.getContext().invokePrivileged(new Action<Object>() {
+            t = UPA.getPersistenceUnit().invokePrivileged(new Action<Object>() {
                 @Override
                 public Object run() {
                     return core.getOrCreateAppPropertyValue(academicPlanningPluginPlanningRoot, null, defaultPath);
@@ -246,110 +229,6 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
         }
     }
 
-    private CalendarWeek parsePlanningDataXML(Node planningNode, String sourceName) {
-//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
-        if (planningNode.getNodeType() == Node.ELEMENT_NODE) {
-
-            Element eElement = (Element) planningNode;
-            String tn = eElement.getAttribute("name");
-            CalendarWeek p2 = new CalendarWeek();
-            p2.setSourceName(sourceName);
-            p2.setPlanningName(tn.trim());
-            p2.setDays(new ArrayList<CalendarDay>());
-            NodeList days = eElement.getElementsByTagName("Day");
-            for (int di = 0; di < days.getLength(); di++) {
-                Node dayNode = days.item(di);
-                CalendarDay dd = parsePlanningDayXML(dayNode);
-                if (dd != null) {
-                    p2.getDays().add(dd);
-                }
-            }
-            while (p2.getDays().size() < 6) {
-                CalendarDay d = new CalendarDay();
-                d.setDayName("Day " + p2.getDays().size());
-                p2.getDays().add(d);
-            }
-            return p2;
-        }
-        return null;
-    }
-
-    private CalendarDay parsePlanningDayXML(Node dayNode) {
-        if (dayNode.getNodeType() == Node.ELEMENT_NODE) {
-            Element dayElement = (Element) dayNode;
-            CalendarDay calendarDay = new CalendarDay();
-            calendarDay.setDayName(dayElement.getAttribute("name"));
-            List<CalendarHour> calendarHours = new ArrayList<>();
-            NodeList hours = dayElement.getElementsByTagName("Hour");
-            for (int hi = 0; hi < hours.getLength(); hi++) {
-                Node hourNode = hours.item(hi);
-                CalendarHour ph = parsePlanningHourXML(hourNode);
-                if (ph != null) {
-                    calendarHours.add(ph);
-                }
-
-            }
-            calendarDay.setHours(calendarHours);
-
-            if (calendarDay.getHours() == null || calendarDay.getHours().size() < 5) {
-                List<CalendarHour> all = new ArrayList<>();
-                if (calendarDay.getHours() != null) {
-                    all.addAll((calendarDay.getHours()));
-                }
-                while (all.size() < 5) {
-                    CalendarHour dd = new CalendarHour();
-                    dd.setHour("H #" + all.size());
-                    all.add(dd);
-                }
-                calendarDay.setHours(all);
-            }
-
-            return (calendarDay);
-        }
-        return null;
-    }
-
-    private CalendarHour parsePlanningHourXML(Node hourNode) {
-        if (hourNode.getNodeType() == Node.ELEMENT_NODE) {
-            Element hourElement = (Element) hourNode;
-            CalendarHour ph = new CalendarHour();
-            ph.setHour(hourElement.getAttribute("name"));
-            NodeList childNodes = hourElement.getChildNodes();
-            for (int ci = 0; ci < childNodes.getLength(); ci++) {
-                Node cNode = childNodes.item(ci);
-                if (cNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element cElement = (Element) cNode;
-                    if ("Activity_Tag".equals(cElement.getNodeName())) {
-                        ph.setActivity(cElement.getAttribute("name"));
-                    } else if ("Students".equals(cElement.getNodeName())) {
-                        ph.setStudents(cElement.getAttribute("name"));
-                    } else if ("Teacher".equals(cElement.getNodeName())) {
-                        ph.setTeacher(cElement.getAttribute("name"));
-                    } else if ("Subject".equals(cElement.getNodeName())) {
-                        ph.setSubject(cElement.getAttribute("name"));
-                    } else if ("Room".equals(cElement.getNodeName())) {
-                        ph.setRoom(cElement.getAttribute("name"));
-                    }
-                }
-            }
-            String actor = "";
-            if (!StringUtils.isEmpty(ph.getStudents())) {
-                if (actor.length() > 0) {
-                    actor += " / ";
-                }
-                actor += ph.getStudents();
-            }
-            if (!StringUtils.isEmpty(ph.getTeacher())) {
-                if (actor.length() > 0) {
-                    actor += " / ";
-                }
-                actor += ph.getTeacher();
-            }
-            ph.setActor(actor);
-            return (ph);
-        }
-        return null;
-    }
 
     public Set<Integer> retainStudentsWithPublicCalendars(Set<Integer> studentIds) {
         Set<Integer> all=new HashSet<>();
@@ -434,32 +313,22 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
         if (p != null && p.exists()) {
             try {
 
-                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                Document doc = dBuilder.parse(p.getInputStream());
-                //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-                doc.getDocumentElement().normalize();
-
-                NodeList nList = doc.getElementsByTagName("Subgroup");
-
-                for (int temp = 0; temp < nList.getLength(); temp++) {
-
-                    Node nNode = nList.item(temp);
-
-//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-                        Element eElement = (Element) nNode;
-                        String tn = eElement.getAttribute("name");
-                        if (nameMapping.containsKey(tn.trim().toLowerCase())) {
-                            CalendarWeek p2 = parsePlanningDataXML(nNode,"Formation Ingénieur");
-                            if (p2 != null) {
-                                p2.setPlanningUniformName(nameMapping.get(tn.trim().toLowerCase()));
-                                p2.setId("Student-"+(temp+1));
-                                list.add(p2);
+                try {
+                    FETXmlParser parser=new FETXmlParser(p,"Subgroup","Formation Ingénieur");
+                    CalendarWeekParser week;
+                    try {
+                        int counter=0;
+                        while ((week = parser.next()) != null) {
+                            if (nameMapping.containsKey(week.getName().trim().toLowerCase().trim())) {
+                                counter++;
+                                list.add(week.parse("Class-" + counter));
                             }
                         }
+                    }finally{
+                        parser.close();
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -483,32 +352,18 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
         VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
         if (p != null && p.exists()) {
             try {
-
-                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                Document doc = dBuilder.parse(p.getInputStream());
-                //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-                doc.getDocumentElement().normalize();
-
-                NodeList nList = doc.getElementsByTagName("Subgroup");
-
-                for (int temp = 0; temp < nList.getLength(); temp++) {
-
-                    Node nNode = nList.item(temp);
-
-//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-                        Element eElement = (Element) nNode;
-                        String tn = eElement.getAttribute("name");
-                        if (uniformClassName.equals(tn.trim().toLowerCase())) {
-                            CalendarWeek p2 = parsePlanningDataXML(nNode,"Formation Ingénieur");
-                            if(p2!=null) {
-                                p2.setId("Class-" + (temp + 1));
-                            }
-                            return p2;
+                FETXmlParser parser=new FETXmlParser(p,"Subgroup","Formation Ingénieur");
+                CalendarWeekParser week;
+                try {
+                    int counter=0;
+                    while ((week = parser.next()) != null) {
+                        if (uniformClassName.equals(week.getName().trim().toLowerCase().trim())) {
+                            counter++;
+                            return week.parse("Class-" + counter);
                         }
                     }
+                }finally{
+                    parser.close();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -551,26 +406,16 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
         VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
         if (p != null && p.exists()) {
             try {
-
-                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                Document doc = dBuilder.parse(p.getInputStream());
-                //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-                doc.getDocumentElement().normalize();
-
-                NodeList nList = doc.getElementsByTagName("Subgroup");
-
-                for (int temp = 0; temp < nList.getLength(); temp++) {
-
-                    Node nNode = nList.item(temp);
-
-//                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-                        Element eElement = (Element) nNode;
-                        String tn = eElement.getAttribute("name");
-                        all.add(new NamedId(tn,tn));
+                FETXmlParser parser=new FETXmlParser(p,"Subgroup","Formation Ingénieur");
+                CalendarWeekParser week;
+                try {
+                    int counter=0;
+                    while ((week = parser.next()) != null) {
+                        String tn = week.getName().trim().toLowerCase().trim();
+                        all.add(new NamedId(tn,week.getName()));
                     }
+                }finally{
+                    parser.close();
                 }
             } catch (Exception e) {
                 e.printStackTrace();

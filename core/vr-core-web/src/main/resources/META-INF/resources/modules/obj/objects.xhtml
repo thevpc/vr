@@ -44,15 +44,17 @@ and open the template in the editor.
                 </p:confirmDialog>
 
                 <!-- /.row -->
-                <div >
+                <div>
                     <p:outputPanel id="buttons">
                         <p:commandButton title="Actualiser" rendered="#{objCtrl.isEnabledButton('Refresh')}"
                                          icon="fa fa-refresh"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn btn-default" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn btn-default"
+                                         ajax="true"
                                          actionListener="#{objCtrl.onRefresh}"
                                          update=":buttonsForm :listForm :itemForm :pageTitleForm" alt=""/>
                         <p:commandButton title="Nouveau" rendered="#{objCtrl.isEnabledButton('New')}" icon="fa fa-plus"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn btn-primary" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn btn-primary"
+                                         ajax="true"
                                          actionListener="#{objCtrl.onNew}"
                                          update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
 
@@ -72,7 +74,8 @@ and open the template in the editor.
 
                         <p:commandButton title="Supprimer" rendered="#{objCtrl.isEnabledButton('Remove')}"
                                          icon="fa fa-trash-o"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn btn-danger" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn btn-danger"
+                                         ajax="true"
                                          onclick="PF('confirmationDelete').show();"/>
 
                         <p:splitButton title="Chercher" rendered="#{objCtrl.isEnabledButton('Search')}"
@@ -239,15 +242,17 @@ and open the template in the editor.
                         </ui:repeat>-->
                     </p:outputPanel>
                 </div>
-                <div >
+                <div>
                     <p:spacer width="10" height="10"/>
                 </div>
-                <p:panelGrid rendered="#{objCtrl.isListMode() and (objCtrl.autoFilters.size() gt 0)}" styleClass="vr-no-border-grid">
+                <p:panelGrid rendered="#{objCtrl.isListMode() and (objCtrl.autoFilters.size() gt 0)}"
+                             styleClass="vr-no-border-grid">
                     <ui:repeat value="#{vr.groupListBy(3,objCtrl.autoFilters)}" var="autoFilterList">
                         <p:row>
                             <ui:repeat value="#{autoFilterList}" var="autoFilter">
                                 <p:column>
-                                    <p:outputLabel value="#{autoFilter.data.label}" styleClass="vr-form-field vr-form-fixed-width-short"/>
+                                    <p:outputLabel value="#{autoFilter.data.label}"
+                                                   styleClass="vr-form-field vr-form-fixed-width-short"/>
                                     <!--valueChangeListener="#_{objCtrl.onAutoFilterChange}"-->
                                     <!--onchange="document.getElementById('listForm:processOnAutoFilterLink').click();"-->
                                     <p:selectOneMenu value="#{autoFilter.selectedString}" styleClass="vr-form-field"
@@ -264,7 +269,7 @@ and open the template in the editor.
             </h:form>
             <h:form id="listForm">
 
-                <div >
+                <div>
                     <p:spacer width="10" height="10"/>
                 </div>
                 <p:growl id="growl" showDetail="true" sticky="true"/>
@@ -338,6 +343,7 @@ and open the template in the editor.
                                            var="column" columnIndexVar="colIndex"
                                            sortBy="#{objCtrl.getSortLayoutPropertyValue(i.record,column.property)}"
                                            style="#{objCtrl.getPropertyColumnStyle(column.property,i)}"
+                                           styleClass="#{objCtrl.getPropertyColumnStyleClass(column.property,i)}"
                                 >
                                     <f:facet name="header">
                                         <h:outputText value="#{column.header}"/>
@@ -374,12 +380,15 @@ and open the template in the editor.
                 <p:remoteCommand name="processOnUpdate" process="@form" update=":listForm :itemForm  :buttonsForm"
                                  action="#{objCtrl.onDoNothing()}"/>
 
-                <p:commandLink id="processOnSimpleSearchLink" action="#{objCtrl.onSimpleSearch()}">
+                <p:commandLink id="processOnSimpleSearchLink" action="#{objCtrl.onSimpleSearch()}"
+                               update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm">
                     <p:ajax event="dialogReturn" listener="#{objCtrl.onSearchDialogClosed}" update=":listForm"/>
                 </p:commandLink>
-                <p:commandLink id="processOnAutoFilterLink" action="#{objCtrl.onAutoFilterChange()}">
+                <p:commandLink id="processOnAutoFilterLink" action="#{objCtrl.onAutoFilterChange()}"
+                               update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm">
                 </p:commandLink>
-                <p:commandLink id="processOnSimpleFieldSelectionLink" action="#{objCtrl.onSimpleFieldSelection()}">
+                <p:commandLink id="processOnSimpleFieldSelectionLink" action="#{objCtrl.onSimpleFieldSelection()}"
+                               update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm">
                     <p:ajax event="dialogReturn" listener="#{objCtrl.onSearchDialogClosed}" update=":listForm"/>
                 </p:commandLink>
 
@@ -392,7 +401,7 @@ and open the template in the editor.
                             update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm"/>
                 </p:commandButton>
 
-                <div >
+                <div>
                     <p:spacer width="10" height="10"/>
                 </div>
                 <p:outputPanel id="editItemDialog" rendered="#{objCtrl.isNewOrUpdateMode()}">
@@ -404,23 +413,23 @@ and open the template in the editor.
                             <pe:dynaForm id="dynaForm" value="#{objCtrl.dynModel}" var="data">
                                 <pe:dynaFormControl type="text" for="txt">
                                     <p:inputText id="txt" value="#{data.value}" required="#{data.required}"
-                                                 disabled="#{data.disabled}"/>
+                                                 disabled="#{data.disabled}" styleClass="form-control"/>
                                 </pe:dynaFormControl>
                                 <pe:dynaFormControl type="integer" for="tinteger">
                                     <p:inputText id="tinteger" value="#{data.valueInteger}" required="#{data.required}"
-                                                 disabled="#{data.disabled}"/>
+                                                 disabled="#{data.disabled}" styleClass="form-control"/>
                                 </pe:dynaFormControl>
                                 <pe:dynaFormControl type="long" for="tlong">
                                     <p:inputText id="tlong" value="#{data.valueLong}" required="#{data.required}"
-                                                 disabled="#{data.disabled}"/>
+                                                 disabled="#{data.disabled}" styleClass="form-control"/>
                                 </pe:dynaFormControl>
                                 <pe:dynaFormControl type="double" for="tdouble">
                                     <p:inputText id="tdouble" value="#{data.valueDouble}" required="#{data.required}"
-                                                 disabled="#{data.disabled}"/>
+                                                 disabled="#{data.disabled}" styleClass="form-control"/>
                                 </pe:dynaFormControl>
                                 <pe:dynaFormControl type="float" for="tfloat">
                                     <p:inputText id="tfloat" value="#{data.valueFloat}" required="#{data.required}"
-                                                 disabled="#{data.disabled}"/>
+                                                 disabled="#{data.disabled}" styleClass="form-control"/>
                                 </pe:dynaFormControl>
                                 <pe:dynaFormControl type="datetime" for="tdatetime" styleClass="calendar">
                                     <p:calendar id="tdatetime" value="#{data.value}"
@@ -511,7 +520,7 @@ and open the template in the editor.
 
                                 <pe:dynaFormControl type="textarea" for="tarea">
                                     <p:inputTextarea id="tarea" value="#{data.value}" required="#{data.required}"
-                                                     autoResize="false" disabled="#{data.disabled}"/>
+                                                     autoResize="false" disabled="#{data.disabled}" styleClass="form-control"/>
                                 </pe:dynaFormControl>
                                 <pe:dynaFormControl type="richtextarea" for="trichtextarea">
                                     <p:editor id="trichtextarea" value="#{data.value}" required="#{data.required}"
@@ -534,7 +543,7 @@ and open the template in the editor.
                                             <p:column>
                                                 <p:inputTextarea id="twikiarea"
                                                                  value="#{data.value}" required="#{data.required}"
-                                                                 autoResize="false" disabled="#{data.disabled}"/>
+                                                                 autoResize="false" disabled="#{data.disabled}" styleClass="form-control"/>
                                             </p:column>
                                         </p:row>
                                         <p:row rendered="#{!('Edit'.equals(data.componentState))}">
@@ -582,7 +591,7 @@ and open the template in the editor.
                                                  columnClasses="nopadding,nopadding">
 
                                         <p:inputText id="tprofileexpr" value="#{data.value}" required="#{data.required}"
-                                                     disabled="#{data.disabled}"/>
+                                                     disabled="#{data.disabled}" styleClass="form-control"/>
                                         <p:commandButton
                                                 style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
                                                 ajax="true" value=""
@@ -602,7 +611,7 @@ and open the template in the editor.
                                                  columnClasses="nopadding,nopadding">
 
                                         <p:inputText id="tdiscipline" value="#{data.value}" required="#{data.required}"
-                                                     disabled="#{data.disabled}"/>
+                                                     disabled="#{data.disabled}" styleClass="form-control"/>
                                         <p:commandButton
                                                 style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
                                                 ajax="true" value=""
@@ -622,7 +631,7 @@ and open the template in the editor.
                                                  columnClasses="nopadding,nopadding">
 
                                         <p:inputText id="tfile" value="#{data.value}" required="#{data.required}"
-                                                     disabled="#{data.disabled}"/>
+                                                     disabled="#{data.disabled}" styleClass="form-control"/>
                                         <p:commandButton
                                                 style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
                                                 ajax="true" value=""

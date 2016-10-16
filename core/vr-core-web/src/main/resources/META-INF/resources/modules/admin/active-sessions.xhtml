@@ -20,19 +20,19 @@ and open the template in the editor.
     <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="listForm" enctype="multipart/form-data">
-                <div class="row">
-                    <p:commandButton value="Rafr."
+                <div class="row" style="margin-left: 10px;margin-bottom: 20px;">
+                    <p:commandLink value="Rafr."
                                      icon="ui-ribbonicon-refresh"
-                                     styleClass="btn btn-primary" ajax="true"
+                                     styleClass="btn btn-primary vr-toolbox-button-fixed-height" ajax="true"
                                      actionListener="#{activeSessionsCtrl.onRefresh}" update=":listForm"/>
                     <p:commandLink rendered="#{!vr.shutdown and vr.userSession.admin}" action="#{vr.notifyShutdown}"
-                                   styleClass="btn btn-danger"
+                                   styleClass="btn btn-danger vr-toolbox-button-fixed-height"
                                    value="Notifier arrêt serveur">
                         <i class="fa fa-sign-out fa-fw"></i>
                     </p:commandLink>
 
                     <p:commandLink rendered="#{vr.shutdown and vr.userSession.admin}" action="#{vr.cancelShutdown}"
-                                   styleClass="btn btn-danger"
+                                   styleClass="btn btn-danger vr-toolbox-button-fixed-height"
                                    value="Annuler arrêt">
                         <i class="fa fa-sign-out fa-fw"></i>
                     </p:commandLink>
@@ -50,22 +50,25 @@ and open the template in the editor.
                 </div>
 
                 <div class="row">
-                    <p:dataTable id="activeSessionsTable" var="i" value="#{activeSessionsCtrl.model.sessions}"
+                    <p:dataTable id="activeSessionsTable" var="i" value="#{activeSessionsCtrl.model.orderedSessions}"
                                  class="table table-bordered table-hover"
                                  paginatorAlwaysVisible="false"
                                  paginator="true"
                                  paginatorPosition="bottom"
-                                 rows="20"
+                                 rows="100"
                                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="20,50,100,200,1000"
                     >
-                        <p:column headerText="Login">
+                        <p:column headerText="Login" style="width: 30%;">
+                            <img src="#{vr.url(vr.getUserPhoto(i.user.id))}"
+                                 style="width: 40px ; height: 40px; margin-right: 10px;"
+                                 alt="User Image"/>
                             <h:outputText value="#{i.user.login}"/>
                         </p:column>
                         <p:column headerText="Nom">
                             <h:outputText value="#{i.user.contact.fullTitle}"/>
                         </p:column>
-                        <p:column headerText="Type">
+                        <p:column headerText="Groupe">
                             <h:outputText value="#{i.user.type}"/>
                         </p:column>
                         <!--                            <p:column headerText="Connexion" rendered="# {activeSessionsCtrl.model.admin}">
@@ -82,7 +85,7 @@ and open the template in the editor.
                         <p:column headerText="IP" rendered="#{activeSessionsCtrl.model.admin}">
                             <h:outputText value="#{i.clientIpAddress}"/>
                         </p:column>
-                        <p:column headerText="Lang" rendered="#{activeSessionsCtrl.model.admin}">
+                        <p:column headerText="Lang" rendered="#{activeSessionsCtrl.model.admin}" style="width: 50px;">
                             <h:outputText value="#{i.locale}"/>
                         </p:column>
                         <!--                            <p:column headerText="Flags">

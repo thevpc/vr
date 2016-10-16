@@ -63,7 +63,7 @@ public class GenerateLoadDialogCtrl {
     String getVersion(int periodId) {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         final AppPeriod period = core.findPeriod(periodId);
-        return UPA.getContext().invokePrivileged(new Action<String>() {
+        return UPA.getPersistenceUnit().invokePrivileged(new Action<String>() {
             @Override
             public String run() {
                 return (String) VrApp.getBean(CorePlugin.class).getOrCreateAppPropertyValue("AcademicPlugin.generate." + period.getName() + ".version", null, "v01");

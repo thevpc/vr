@@ -21,12 +21,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @WebServlet(name = "FSServlet", urlPatterns = "/fs/*")
 public class FSServlet extends HttpServlet {
+    private static final Logger log = Logger.getLogger(FSServlet.class.getName());
     final int DEFAULT_BUFFER_SIZE = 4 * 1024 * 1024;
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -46,7 +49,16 @@ public class FSServlet extends HttpServlet {
                     buffezSize = (int) length;
                 }
                 response.setBufferSize(buffezSize);
-                FileUtils.copy(in, response.getOutputStream(), buffezSize);
+                try {
+                    FileUtils.copy(in, response.getOutputStream(), buffezSize);
+                }catch(java.io.IOException ex){
+                    if(ex.getClass().getName().endsWith(".ClientAbortException")){
+                        //this is a tomcat 'Broken pipe' handling i suppose
+                        log.log(Level.SEVERE, "Error serving file "+file.getPath()+". "+ex.getMessage());
+                    }else{
+                        log.log(Level.SEVERE, "Error serving file "+file.getPath()+". "+ex.getMessage(),ex);
+                    }
+                }
             } finally {
                 if (in != null) {
                     in.close();

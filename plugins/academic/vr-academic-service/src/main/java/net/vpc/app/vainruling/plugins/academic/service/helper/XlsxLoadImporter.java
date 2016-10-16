@@ -285,7 +285,7 @@ public class XlsxLoadImporter {
                 importTeacherDegrees(file);
             } else {
                 count++;
-                trace.trace("importTeachingLoad", "Import Default Teacher Degrees", null, "/Education/Config", Level.INFO);
+                trace.trace("import-teaching-load", "Import Default Teacher Degrees", null, "/Education/Config", Level.INFO);
                 XlsxLoadImporter.this.importTeacherDegrees();
             }
         }
@@ -303,10 +303,10 @@ public class XlsxLoadImporter {
         }
         long end = System.currentTimeMillis();
         if (count > 0) {
-            trace.trace("importTeachingLoad", "data file " + file.getPath() + " imported in " + Chronometer.formatPeriod(end - start), null, "/Education/Config", Level.INFO);
+            trace.trace("import-teaching-load", "data file " + file.getPath() + " imported in " + Chronometer.formatPeriod(end - start), null, "/Education/Config", Level.INFO);
             System.out.println("data file " + file.getPath() + " imported in " + Chronometer.formatPeriod(end - start));
         } else {
-            trace.trace("importTeachingLoad", "ignored data file " + file.getPath(), null, "/Education/Config", Level.INFO);
+            trace.trace("import-teaching-load", "ignored data file " + file.getPath(), null, "/Education/Config", Level.INFO);
             System.out.println("ignored data file " + file.getPath());
         }
         return count;
@@ -975,7 +975,7 @@ public class XlsxLoadImporter {
             }
         }
         TraceService trace = TraceService.get();
-        trace.trace("importStudents" + (simulate ? " Simulation" : ""), (simulate ? " Simulate " : "") + "importStudents from " + file + " in " + ch.stop() + " (" + count + " rows)", null, getClass().getSimpleName(), Level.INFO);
+        trace.trace("import-students" + (simulate ? "-simulation" : ""), (simulate ? " Simulate " : "") + "import-students from " + file + " in " + ch.stop() + " (" + count + " rows)", null, "/Education/Import", Level.INFO);
         log.log(Level.INFO, (simulate ? " Simulate " : "") + "importStudents from {0} in {1} " + " (" + count + " rows)", new Object[]{file, ch.stop()});
         return count;
     }
@@ -1272,7 +1272,7 @@ public class XlsxLoadImporter {
             }
         }
         TraceService trace = TraceService.get();
-        trace.trace("importCourseAssignments", "importTeachers from " + file + " in " + ch.stop() + " (" + count + " rows)", null, getClass().getSimpleName(), Level.INFO);
+        trace.trace("import-course-assignments", "importTeachers from " + file + " in " + ch.stop() + " (" + count + " rows)", null, getClass().getSimpleName(), Level.INFO);
         log.log(Level.INFO, "importCourseAssignments from {0} in {1}", new Object[]{file, ch.stop()});
         service.updateAllCoursePlanValuesByLoadValues(periodId);
     }

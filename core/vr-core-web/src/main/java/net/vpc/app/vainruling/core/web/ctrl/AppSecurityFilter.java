@@ -92,7 +92,12 @@ public class AppSecurityFilter implements Filter {
                         return;
                     }
                 }
-
+                if(e.getClass().getName().endsWith(".ClientAbortException")){
+                    //this is a tomcat 'Broken pipe' handling i suppose
+                    log.log(Level.SEVERE, "ClientAbortException");
+                    HttpServletResponse webresponse = (HttpServletResponse) response;
+                    webresponse.sendRedirect(contextPath+"/r/index.xhtml?faces-redirect=true");
+                }
                 log.log(Level.SEVERE, "Unhandled Error", e);
                 HttpServletResponse webresponse = (HttpServletResponse) response;
                 webresponse.sendRedirect(contextPath+"/r/index.xhtml?faces-redirect=true");

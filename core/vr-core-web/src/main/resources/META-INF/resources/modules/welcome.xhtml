@@ -74,7 +74,7 @@ and open the template in the editor.
                                          styleClass="vr-no-border-grid"
                                         >
                                     <h:panelGrid columns="1" cellpadding="10">
-                                        <h:outputText value="#{a.content}" escape="false"/>
+                                        <h:outputText value="#{vr.replaceCustomURLs(a.content)}" escape="false"/>
                                         <p:outputPanel rendered="#{a.attachments.size() ne 0}">
                                             <ui:repeat value="#{a.attachments}" var="att">
                                                 <h:outputLink rendered="#{!vr.isFSPath(att.path)}"
@@ -116,7 +116,7 @@ and open the template in the editor.
                                          styleClass="vr-no-border-grid"
                                         >
                                     <h:panelGrid columns="1" cellpadding="10">
-                                        <h:outputText value="#{a.content}" escape="false"/>
+                                        <h:outputText value="#{vr.replaceCustomURLs(a.content)}" escape="false"/>
                                         <p:outputPanel rendered="#{a.attachments.size() ne 0}">
                                             <ui:repeat value="#{a.attachments}" var="att">
                                                 <h:outputLink rendered="#{!vr.isFSPath(att.path)}"

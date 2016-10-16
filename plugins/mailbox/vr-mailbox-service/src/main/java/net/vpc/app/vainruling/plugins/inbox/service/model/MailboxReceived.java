@@ -52,6 +52,7 @@ public class MailboxReceived {
 
     private String ccProfiles;
 
+    @Summary
     private AppUser owner;
 
     @Properties(

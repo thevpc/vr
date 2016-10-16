@@ -63,6 +63,10 @@ public class AppContact {
     private String phone2;
     private String phone3;
 
+    @Summary
+    private String officeLocationNumber;
+    @Summary
+    private String officePhoneNumber;
 
     @Summary
     private String positionTitle1;
@@ -353,4 +357,19 @@ public class AppContact {
         this.updateDate = updateDate;
     }
 
+    public String getOfficeLocationNumber() {
+        return officeLocationNumber;
+    }
+
+    public void setOfficeLocationNumber(String officeLocationNumber) {
+        this.officeLocationNumber = officeLocationNumber;
+    }
+
+    public String getOfficePhoneNumber() {
+        return officePhoneNumber;
+    }
+
+    public void setOfficePhoneNumber(String officePhoneNumber) {
+        this.officePhoneNumber = officePhoneNumber;
+    }
 }

@@ -85,6 +85,7 @@ and open the template in the editor.
                                                  ajax="true"
                                                  rendered="#{((document.type eq 'project' and document.value.project ne null) or document.type eq 'team')}"
                                                  actionListener="#{academicAppProjectsCtrl.onOpenViewDialog(document)}"
+                                                 update=":listForm"
                                 />
                                 <p:commandButton value="joindre" styleClass="btn btn-success btn-xs"
                                                  ajax="true"

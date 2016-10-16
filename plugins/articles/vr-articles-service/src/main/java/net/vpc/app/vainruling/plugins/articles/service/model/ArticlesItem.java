@@ -23,7 +23,7 @@ import java.sql.Timestamp;
         {
                 //i is a ObjRow!
                 @Property(name = UIConstants.Grid.ROW_STYLE,
-                        value = "(i.object.deleted or i.object.archived or i.object.disposition eq null) ?'vr-row-not-relevant':''"),
+                        value = "(i.object.deleted or i.object.archived) ?'vr-row-deleted':(i.object.disposition eq null) ?'vr-row-invalid':(i.object.important) ?'vr-row-important' : ''"),
                 @Property(name = "ui.auto-filter.dispositionGroup", value = "{expr='dispositionGroup',order=1}"),
                 @Property(name = "ui.auto-filter.disposition", value = "{expr='disposition',order=2}"),
                 @Property(name = "ui.auto-filter.sender", value = "{expr='sender',order=3}")
@@ -48,7 +48,10 @@ public class ArticlesItem {
     @Summary
     @Properties(
             {
-                    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+                    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE"),
+                    @Property(name = UIConstants.Grid.COLUMN_STYLE_CLASS, value = "#{" +
+                            " hashToStringArr(this.disposition.name,'vr-label-bg01','vr-label-bg02','vr-label-bg03','vr-label-bg04','vr-label-bg05','vr-label-bg06','vr-label-bg07','vr-label-bg08','vr-label-bg09','vr-label-bg10','vr-label-bg11','vr-label-bg12','vr-label-bg13','vr-label-bg14','vr-label-bg15','vr-label-bg16','vr-label-bg17','vr-label-bg18','vr-label-bg19','vr-label-bg20')" +
+                            "}")
             }
     )
     private ArticlesDisposition disposition;
@@ -92,9 +95,8 @@ public class ArticlesItem {
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Flags"))
-    @Summary
     private int position;
-    @Summary
+
     private boolean important;
 
     @Summary
@@ -110,10 +112,14 @@ public class ArticlesItem {
             updateAccessLevel = AccessLevel.PROTECTED
     )
     @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
+            {
+                    @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"),
+                    @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
+
+            }
+    )
     private int visitCount;
 
-    @Summary
     @Field(readAccessLevel = AccessLevel.PROTECTED)
     private String filterExpression;
 
@@ -124,7 +130,6 @@ public class ArticlesItem {
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     private boolean archived;
 
-    @Summary
     private boolean deleted;
 
     private String deletedBy;

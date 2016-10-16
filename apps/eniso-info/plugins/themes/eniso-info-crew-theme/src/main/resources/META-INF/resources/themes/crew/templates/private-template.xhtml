@@ -27,6 +27,7 @@
     <!-- AdminLTE Skins. Choose a skin from the css/skins
          folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="#{vr.themeContext}/wplugins/adminlte/dist/css/skins/_all-skins.min.css"/>
+    <link rel="stylesheet" href="#{vr.themeContext}/wplugins/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css"/>
     <link href='https://fonts.googleapis.com/css?family=Stalemate' rel='stylesheet' type='text/css'/>
     <link href='https://fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css'/>
 
@@ -93,7 +94,8 @@
                                             <ui:repeat value="#{vr.messageTextService.getContentTextListHead(null,4)}"
                                                        var="i">
                                                 <li><!-- start message -->
-                                                    <a href="#">
+                                                    <h:outputLink value="#{vr.context}/p/mailbox"
+                                                                  >
                                                         <div class="pull-left">
                                                             <img src="#{vr.url(vr.getUserPhoto(i.user.id))}"
                                                                  class="img-circle" alt="User Image"/>
@@ -105,7 +107,7 @@
                                                             </small>
                                                         </h4>
                                                         <p>#{i.subject}</p>
-                                                    </a>
+                                                    </h:outputLink>
                                                 </li>
                                                 <!-- end message -->
                                             </ui:repeat>
@@ -124,7 +126,7 @@
                             <li class="dropdown notifications-menu">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <i class="fa fa-bell-o"></i>
-                                    <h:panelGroup styleClass="label label-warning"
+                                    <h:panelGroup styleClass="label label-danger"
                                                   rendered="#{vr.notificationTextService.unreadCount gt 0}">#{vr.notificationTextService.unreadCount}</h:panelGroup>
                                 </a>
                                 <ul class="dropdown-menu">
@@ -1580,6 +1582,8 @@
     <!-- jvectormap -->
     <script src="#{vr.themeContext}/wplugins/adminlte/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
     <script src="#{vr.themeContext}/wplugins/adminlte/plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+    <!-- Bootstrap WYSIHTML5 -->
+    <script src="#{vr.themeContext}/wplugins/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
     <!-- SlimScroll 1.3.0 -->
     <script src="#{vr.themeContext}/wplugins/adminlte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
     <!-- ChartJS 1.0.1 -->

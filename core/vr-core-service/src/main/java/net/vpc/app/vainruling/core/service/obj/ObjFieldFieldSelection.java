@@ -34,11 +34,15 @@ public class ObjFieldFieldSelection extends ObjFieldSelection {
 
     @Override
     public void prepare(Entity entity) {
-        setEntity(entity);
         Entity old = getEntity();
+        setEntity(entity);
         Set<String> oldSelection = new HashSet<>();
         if (old == null || !old.getName().equals(entity.getName())) {
             //do nothing!
+            oldSelection=new HashSet<>();
+            for (Field field : getEntity().getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY))) {
+                oldSelection.add(field.getName());
+            }
         } else {
             for (SelField field : fields) {
                 if (field.isSelected()) {
@@ -52,7 +56,8 @@ public class ObjFieldFieldSelection extends ObjFieldSelection {
     private void updateFields(Entity entity, Set<String> selectedFieldNames) {
         fields.clear();
         int pos = 0;
-        boolean admin = VrApp.getBean(CorePlugin.class).isUserSessionAdmin();
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        boolean admin = core.isUserSessionAdmin();
         I18n i18n = VrApp.getBean(I18n.class);
         for (Field field : entity.getFields()) {
             //should test on field visibility
@@ -70,6 +75,7 @@ public class ObjFieldFieldSelection extends ObjFieldSelection {
                     break;
                 }
                 default: {
+
                     show = true;
                     break;
                 }

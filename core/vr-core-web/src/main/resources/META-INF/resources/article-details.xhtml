@@ -26,7 +26,7 @@
                             <h3>#{articlesCtrl.model.current.subject}</h3>
 
                             <p>
-                                <p:outputLabel escape="false" value="#{articlesCtrl.model.current.content}"/>
+                                <p:outputLabel escape="false" value="#{vr.replaceCustomURLs(articlesCtrl.model.current.content)}"/>
                             </p>
                             <a href="#" class="button solid-color">see profile</a>
 

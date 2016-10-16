@@ -45,6 +45,7 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -53,6 +54,7 @@ import java.util.regex.Pattern;
 @UCtrl
 @Scope(value = "singleton")
 public class Vr {
+
     public static final Map<String, String> extensionsToCss = new HashMap<String, String>();
     public static final Map<String, String> extensionsToPath = new HashMap<String, String>();
     private MessageTextService messageTextService;
@@ -675,15 +677,24 @@ public class Vr {
         return VrUtils.extractPureHTML(value);
     }
 
-    public String contentText2html(ContentText value) {
+    public String lightHtml(Object value) {
         if (value == null) {
             return "";
         }
-        return VrUtils.extractPureHTML(value.getContent());
+        String v=null;
+        if(value instanceof ContentText) {
+            v=((ContentText) value).getContent();
+        }else{
+            v = String.valueOf(value).trim();
+        }
+        if (v.isEmpty()) {
+            return "";
+        }
+        return VrUtils.extractPureHTML(replaceCustomURLs(v));
     }
 
     public String wiki2Html(String value) {
-        return VrWikiParser.convertToHtml(value, "Wiki");
+        return VrWikiParser.convertToHtml(replaceCustomWikiURLs(value), "Wiki");
     }
 
     public double percent(double val, double max) {
@@ -969,9 +980,13 @@ public class Vr {
         return null;
     }
 
+    public String getUnknownUserPhoto(String login) {
+        return getUserPhoto(-1);
+    }
+
     public String getUserPhoto(int id) {
         AppUser t = core.findUser(id);
-        AppContact c = t.getContact();
+        AppContact c = t==null?null:t.getContact();
         boolean female = false;
         if (c != null) {
             AppGender g = c.getGender();
@@ -994,9 +1009,9 @@ public class Vr {
                 paths.add(p);
             }
         }
-        VFile file = getUserAbsoluteFile(t.getId(), paths.toArray(new String[paths.size()]));
+        VFile file = getUserAbsoluteFile(t==null?-1:t.getId(), paths.toArray(new String[paths.size()]));
 
-        String photo = (t == null || file == null) ? null : (file.getPath());
+        String photo = (file == null) ? null : (file.getPath());
         return photo;
     }
 
@@ -1068,12 +1083,12 @@ public class Vr {
                     }
                 }
             }
-            VFile userSharedFolder = core.getUserSharedFolder();
-            for (String p : path) {
-                VFile ff = userSharedFolder.get(p);
-                if (ff.exists()) {
-                    files.add(ff);
-                }
+        }
+        VFile userSharedFolder = core.getUserSharedFolder();
+        for (String p : path) {
+            VFile ff = userSharedFolder.get(p);
+            if (ff.exists()) {
+                files.add(ff);
             }
         }
         return files.toArray(new VFile[files.size()]);
@@ -1127,5 +1142,69 @@ public class Vr {
             return PathInfo.create("");
         }
         return PathInfo.create(path);
+    }
+
+    public String replaceCustomURLs(String format) {
+        Pattern pattern = Pattern.compile("href=\"(?<url>[^\"]*)\"");
+        StringBuffer sb = new StringBuffer();
+        Matcher m = pattern.matcher(format);
+        while (m.find()) {
+            String url = m.group("url");
+            int x=url.indexOf("://");
+            String processed=null;
+            if(x>0){
+                String protocol=url.substring(0,x);
+                String path=url.substring(protocol.length()+"://".length());
+                processed=processCustomURL(protocol,path);
+            }
+            if(processed!=null) {
+                m.appendReplacement(sb,"href=\""+processed+"\"");
+            }else{
+                m.appendReplacement(sb,m.group());
+            }
+        }
+        m.appendTail(sb);
+
+        return sb.toString();
+    }
+    public String replaceCustomWikiURLs(String format) {
+        Pattern pattern = Pattern.compile("\\[\\[(?<url>[^\"]*)\\]\\]");
+        StringBuffer sb = new StringBuffer();
+        Matcher m = pattern.matcher(format);
+        while (m.find()) {
+            String url = m.group("url");
+            int x=url.indexOf("://");
+            String processed=null;
+            if(x>0){
+                String protocol=url.substring(0,x);
+                String path=url.substring(protocol.length()+"://".length());
+                processed=processCustomURL(protocol,path);
+            }
+            if(processed!=null) {
+                m.appendReplacement(sb,"[["+processed+"]]");
+            }else{
+                m.appendReplacement(sb,m.group());
+            }
+        }
+        m.appendTail(sb);
+
+        return sb.toString();
+    }
+
+    private String processCustomURL(String protocol,String path){
+        if("docs".equals(protocol)){
+            if(!path.startsWith("/")){
+                path="/"+path;
+            }
+            path=path.replace('\'','_');//fix injection issues
+            return (getContext()+"/p/documents?a={path='"+path+"'}");
+        }
+        if("pages".equals(protocol)){
+            if(!path.startsWith("/")){
+                path="/"+path;
+            }
+            return (getContext()+"/p"+path);
+        }
+        return null;
     }
 }

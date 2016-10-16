@@ -630,6 +630,46 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         return val;
     }
 
+    public Object getPropertyColumnStyleClass(String property, ObjRow row) {
+        Field p = getEntity().getField(property);
+        String v = p.getProperties().getString(UIConstants.Grid.COLUMN_STYLE_CLASS);
+        if (v != null) {
+            v = v.trim();
+            if (v.startsWith("#{") && v.endsWith("}")) {
+                VrColorTable table = VrApp.getBean(VrColorTable.class);
+                PersistenceUnit pu = UPA.getPersistenceUnit();
+                Map<String, Object> map = new HashMap<>();
+                map.put("this", row == null ? null : row.getRecord());
+                Record r = pu.getFactory().createObject(Record.class);
+                r.setObject("pos", row == null ? -1 : row.getRowPos());
+                map.put("ui", r);
+                String expr = v.substring(2, v.length() - 1);
+                ExpressionManager expressionManager = pu.getExpressionManager();
+                if(!expressionManager.containsFunction("inthash")){
+                    expressionManager.addFunction("inthash", TypesFactory.INT, inthash);
+                }
+                if(!expressionManager.containsFunction("hashToStringArr")){
+                    expressionManager.addFunction("hashToStringArr", TypesFactory.STRING, hashToStringArr);
+                }
+                Expression expression = expressionManager.simplifyExpression(expr, map);
+                QLEvaluator evaluator = expressionManager.createEvaluator();
+                evaluator.getRegistry().registerFunctionEvaluator("hashToStringArr", hashToStringArr);
+                evaluator.getRegistry().registerFunctionEvaluator("inthash", inthash);
+                expression= evaluator.evalObject(expression,null);
+                if (expression instanceof Literal) {
+                    Object t = ((Literal) expression).getValue();
+                    String ret = t == null ? "" : t.toString().trim();
+                    for (int i = 0; i < 20; i++) {
+                        ret = ret.replace("{bgcolor" + i + "}", table.getBgColor(i));
+                        ret = ret.replace("{fgcolor" + i + "}", table.getFgColor(i));
+                    }
+                    return ret;
+                }
+            }
+        }
+        return v;
+    }
+
     public Object getPropertyColumnStyle(String property, ObjRow row) {
         Field p = getEntity().getField(property);
         String v = p.getProperties().getString(UIConstants.Grid.COLUMN_STYLE);
@@ -644,7 +684,18 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 r.setObject("pos", row == null ? -1 : row.getRowPos());
                 map.put("ui", r);
                 String expr = v.substring(2, v.length() - 1);
-                Expression expression = pu.getExpressionManager().simplifyExpression(expr, map);
+                ExpressionManager expressionManager = pu.getExpressionManager();
+                if(!expressionManager.containsFunction("inthash")){
+                    expressionManager.addFunction("inthash", TypesFactory.INT, inthash);
+                }
+                if(!expressionManager.containsFunction("hashToStringArr")){
+                    expressionManager.addFunction("hashToStringArr", TypesFactory.STRING, hashToStringArr);
+                }
+                Expression expression = expressionManager.simplifyExpression(expr, map);
+                QLEvaluator evaluator = expressionManager.createEvaluator();
+                evaluator.getRegistry().registerFunctionEvaluator("hashToStringArr", hashToStringArr);
+                evaluator.getRegistry().registerFunctionEvaluator("inthash", inthash);
+                expression= evaluator.evalObject(expression,null);
                 if (expression instanceof Literal) {
                     Object t = ((Literal) expression).getValue();
                     String ret = t == null ? "" : t.toString().trim();
@@ -1204,6 +1255,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
+    public void fireEventSearchCancelled() {
+        RequestContext ctx = RequestContext.getCurrentInstance();
+        ctx.closeDialog(null);
+    }
+
     public void fireEventSearchClosed() {
         onRefresh();
         RequestContext ctx = RequestContext.getCurrentInstance();
@@ -1487,9 +1543,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     public void onPropertyViewDialogClosed(SelectEvent event) {
         DialogResult o = (DialogResult) event.getObject();
-        PropertyView p = findPropertyView(o.getUserInfo());
-        if (p != null) {
-            p.setValue(o.getValue());
+        if(o!=null) {
+            PropertyView p = findPropertyView(o.getUserInfo());
+            if (p != null) {
+                p.setValue(o.getValue());
+            }
         }
     }
 
@@ -1668,4 +1726,46 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
 
     }
+
+    private static Function hashToStringArr = new Function() {
+        @Override
+        public Object eval(EvalContext evalContext) {
+            Object[] a = evalContext.getArguments();
+            if (a.length == 0) {
+                return "";
+            }
+            if (a.length == 1) {
+                return a[0] == null ? "" : String.valueOf(a[0]);
+            }
+            int x = Math.abs(a[0] == null ? 0 : a[0].hashCode()) % (a.length - 1);
+            return a[x] == null ? "" : String.valueOf(a[x]);
+        }
+    };
+    Function inthash = new Function() {
+        @Override
+        public Object eval(EvalContext evalContext) {
+            Object[] a = evalContext.getArguments();
+            if (a.length == 0) {
+                return 0;
+            }
+            if (a.length == 1) {
+                if (a[0] == null) {
+                    return 0;
+                }
+                return a[0].hashCode();
+            }
+            if (a.length == 2) {
+                if (a[0] == null) {
+                    return 0;
+                }
+                int h = a[0].hashCode();
+                if (a[1] != null) {
+                    int g = Math.abs(a[1].hashCode());
+                    return h % g;
+                }
+                return h;
+            }
+            return a;
+        }
+    };
 }

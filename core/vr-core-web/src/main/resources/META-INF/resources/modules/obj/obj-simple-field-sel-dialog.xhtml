@@ -19,13 +19,14 @@ and open the template in the editor.
 
     <ui:composition template="#{vr.themePath}/templates/dialog-template.xhtml">
         <ui:define name="dialog-title">
-            <h:outputText value="Générer Stages"/>
+            <h:outputText value="Sélectionner propriétés"/>
         </ui:define>
         <ui:define name="dialog-body">
 
             <h:form id="myform">
 
                 <p:dataTable id="listTable" var="i" value="#{objCtrl.model.fieldSelection.fields}"
+                             style="margin-top: 20px;"
                              class="table table-bordered table-hover"
                              paginatorAlwaysVisible="false"
                              paginator="true"

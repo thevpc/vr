@@ -34,6 +34,15 @@ import java.util.*;
 )
 @Scope(value = "singleton")
 public class ActiveSessionsCtrl implements PollAware {
+    public static final Date MIN_DATE = new Date(Long.MIN_VALUE);
+    private static final Comparator<UserSession> SESSION_COMPARATOR = new Comparator<UserSession>() {
+        @Override
+        public int compare(UserSession o1, UserSession o2) {
+            Date d1=(o1!=null && o1.getConnexionTime()!=null)?o1.getConnexionTime(): MIN_DATE;
+            Date d2=(o2!=null && o2.getConnexionTime()!=null)?o2.getConnexionTime(): MIN_DATE;
+            return -d1.compareTo(d2);
+        }
+    };
 
     private final Model model = new Model();
 
@@ -152,6 +161,9 @@ public class ActiveSessionsCtrl implements PollAware {
             return "";
         }
         final Date t = s.getConnexionTime();
+        if(t==null){
+            return null;
+        }
         return Chronometer.formatPeriod(System.currentTimeMillis() - t.getTime(), Chronometer.DatePart.s);
     }
 
@@ -202,6 +214,12 @@ public class ActiveSessionsCtrl implements PollAware {
         private boolean admin = false;
         private DonutChartModel donut1;
         private DonutChartModel donut2;
+
+        public List<UserSession> getOrderedSessions() {
+            List<UserSession> arr=new ArrayList<>(getSessions());
+            Collections.sort(arr, SESSION_COMPARATOR);
+            return arr;
+        }
 
         public List<UserSession> getSessions() {
             return sessions;

@@ -66,6 +66,7 @@ public final class UIConstants {
 
     public static final class Grid {
         public static final String COLUMN_STYLE = "ui.grid.list-column-style";
+        public static final String COLUMN_STYLE_CLASS = "ui.grid.list-column-style-class";
         public static final String ROW_STYLE = "ui.grid.list-row-style";
 
     }

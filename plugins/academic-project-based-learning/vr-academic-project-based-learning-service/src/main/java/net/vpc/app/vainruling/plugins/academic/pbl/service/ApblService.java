@@ -79,6 +79,7 @@ public class ApblService {
                         team.setProject(null);
                         pu.merge(team);
                     }
+                    pu.remove(project);
                 }
             });
         } else {
@@ -86,6 +87,7 @@ public class ApblService {
                 team.setProject(null);
                 pu.merge(team);
             }
+            pu.remove(project);
         }
     }
 

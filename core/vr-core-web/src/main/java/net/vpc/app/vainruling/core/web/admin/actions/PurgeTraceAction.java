@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.core.web.admin.actions;
 
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppTrace;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
@@ -19,7 +20,7 @@ import java.util.List;
 /**
  * @author taha.bensalah@gmail.com
  */
-@EntityAction(entityType = AppTrace.class,
+@EntityAction(entityType = AppConfig.class,
         actionLabel = "Arch", actionStyle = "fa-calculator",
         dialog = false
 )

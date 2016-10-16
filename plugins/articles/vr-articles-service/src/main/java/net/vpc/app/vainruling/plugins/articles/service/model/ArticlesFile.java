@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.articles.service.model;
 
+import net.vpc.app.vainruling.core.service.obj.AppFile;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.RelationshipType;
 import net.vpc.upa.config.*;
@@ -14,7 +15,7 @@ import net.vpc.upa.config.*;
  */
 @Entity(listOrder = "name")
 @Path("Social")
-public class ArticlesFile {
+public class ArticlesFile implements AppFile{
 
     @Id
     @Sequence

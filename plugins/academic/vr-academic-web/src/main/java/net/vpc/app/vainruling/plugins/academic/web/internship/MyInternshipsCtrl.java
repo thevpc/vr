@@ -374,7 +374,7 @@ public class MyInternshipsCtrl {
 
     public StreamedContent download(final String report) {
         final CorePlugin fs = VrApp.getBean(CorePlugin.class);
-        return UPA.getContext().invokePrivileged(new Action<StreamedContent>() {
+        return UPA.getPersistenceUnit().invokePrivileged(new Action<StreamedContent>() {
             @Override
             public StreamedContent run() {
                 VFile f = null;

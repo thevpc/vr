@@ -33,6 +33,7 @@ import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 import net.vpc.upa.types.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +57,8 @@ public class MailboxPlugin {
     public static final String HEADER_CATEGORY = "header.X-App-Category";
     public static final String SEND_WELCOME_MAIL_QUEUE = "sendWelcomeMailQueue";
 
+    @Autowired
+    public CorePlugin core;
     public GoMailFactory gomailFactory = DefaultGoMailFactory.INSTANCE;
     //    public GoMailModuleProcessor externalMailProcessor = new GoMailModuleProcessor(new VrExternalMailAgent());
     public GoMailModuleSerializer serializer = new GoMailModuleSerializer();
@@ -149,28 +152,53 @@ public class MailboxPlugin {
         }
     }
 
-    public void markRead(int mailboxReceivedId, boolean read) {
+    public boolean markRead(int mailboxReceivedId, boolean read) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        MailboxReceived t = pu.findById(MailboxReceived.class, mailboxReceivedId);
-        if (t != null) {
-            DateTime now = new DateTime();
-            if (t.isRead() != read) {
-                t.setRead(read);
-                t.setReadTime(now);
-                pu.merge(t);
-                if (t.isRead()) {
-                    MailboxSent o = t.getOutboxMessage();
-                    if (o != null) {
+        MailboxReceived msg = pu.findById(MailboxReceived.class, mailboxReceivedId);
+        DateTime now = new DateTime();
+        if (msg != null && msg.isRead() != read) {
+            if (core.getUserSession().isAdmin()) {
+                msg.setRead(read);
+                msg.setReadTime(now);
+                pu.merge(msg);
+                if (msg.isRead()) {
+                    MailboxSent o = msg.getOutboxMessage();
+                    if (o != null && !o.isRead()) {
                         o.setRead(true);
                         o.setReadTime(now);
+                        pu.merge(o);
                     }
                 }
-            }
+                return true;
+            } else {
+                AppUser user = core.getUserSession().getUser();
+                return UPA.getPersistenceUnit().invokePrivileged(new Action<Boolean>() {
 
+                    @Override
+                    public Boolean run() {
+                        if (msg.getOwner() != null && user != null && user.getId() == msg.getOwner().getId()) {
+                            msg.setRead(read);
+                            msg.setReadTime(now);
+                            pu.merge(msg);
+                            if (msg.isRead()) {
+                                MailboxSent o = msg.getOutboxMessage();
+                                if (o != null && !o.isRead()) {
+                                    o.setRead(true);
+                                    o.setReadTime(now);
+                                    pu.merge(o);
+                                }
+                            }
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+            }
         }
+        return false;
     }
 
-    public List<MailboxReceived> loadLocalMailbox(final int userId, final int maxCount, final boolean unreadOnly, final MailboxFolder folder) {
+    public List<MailboxReceived> loadLocalInbox(final int userId, final int maxCount, final boolean unreadOnly, final MailboxFolder folder) {
         return UPA.getContext().invokePrivileged(new Action<List<MailboxReceived>>() {
 
             @Override
@@ -391,8 +419,8 @@ public class MailboxPlugin {
             if (ok) {
                 try {
                     sendWelcomeEmail(u, null, notifPusher);
-                }catch(Exception exc){
-                    String email=u.getContact()==null?null:u.getContact().getEmail();
+                } catch (Exception exc) {
+                    String email = u.getContact() == null ? null : u.getContact().getEmail();
                     VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_WELCOME_MAIL_QUEUE, 60, null, "touser:" + u.getLogin() + " ; email=" + email + " : " + exc, null, Level.SEVERE));
                 }
             }
@@ -452,8 +480,8 @@ public class MailboxPlugin {
         }
     }
 
-    public void sendLocalMail(GoMail email, final boolean persistOutbox, final boolean sendExternal) throws IOException {
-        sendMailByAgent(email, null, new GoMailListener() {
+    public int sendLocalMail(GoMail email, final boolean persistOutbox, final boolean sendExternal) throws IOException {
+        return sendMailByAgent(email, null, new GoMailListener() {
             @Override
             public void onBeforeSend(GoMailMessage mail) {
             }
@@ -572,12 +600,13 @@ public class MailboxPlugin {
         }
     }
 
-    public void sendMailByAgent(GoMail email, Properties roProperties, GoMailListener listener, GoMailAgent agent) throws IOException {
+    public int sendMailByAgent(GoMail email, Properties roProperties, GoMailListener listener, GoMailAgent agent) throws IOException {
         GoMailModuleProcessor _processor = gomailFactory.createProcessor(agent, null);
         int count = _processor.sendMessage(email, roProperties, listener);
         if (count <= 0) {
             throw new IllegalArgumentException("No valid Address");
         }
+        return count;
     }
 
     public String gomailToString(GoMail mail) throws IOException {
@@ -745,8 +774,8 @@ public class MailboxPlugin {
     public void prepareToEach(GoMail m, String recipientProfiles, String filterExpression, boolean preferLogin) {
         m.namedDataSources().put("all", createUsersEmailDatasource(recipientProfiles));
         m.repeatDatasource(GoMailModuleSerializer.deserializeDataSource(
-                        "all "
-                                + (StringUtils.isEmpty(filterExpression) ? "" : " where " + filterExpression)
+                "all "
+                        + (StringUtils.isEmpty(filterExpression) ? "" : " where " + filterExpression)
                 )
         );
         String mailAddr = preferLogin ? "login" : "email";
@@ -848,4 +877,38 @@ public class MailboxPlugin {
         return UPA.getPersistenceUnit().findByMainField(MailboxMessageFormat.class, "DefaultLocalMail");
     }
 
+    public Set<String> findCategories() {
+        return UPA.getPersistenceUnit().createQuery("Select distinct a.category from MailboxSent a order by a.category").getValueSet(0);
+    }
+
+    public List<String> autoCompleteCategory(String catName) {
+        if (catName == null) {
+            catName = "";
+        }
+        catName = catName.trim().toLowerCase();
+        List<String> all = new ArrayList<>();
+        for (String cat : findCategories()) {
+            if (cat != null && cat.toLowerCase().contains(catName)) {
+                all.add(cat);
+            }
+        }
+        return all;
+    }
+
+    public List<String> autoCompleteCategoryExpression(String queryExpr) {
+        if (queryExpr == null) {
+            queryExpr = "";
+        }
+        List<String> all = new ArrayList<>();
+        queryExpr = queryExpr.trim();
+        if (!queryExpr.contains(" ") && !queryExpr.contains(",")
+                && !queryExpr.contains("(") && !queryExpr.contains(")")
+                && !queryExpr.contains("+") && !queryExpr.contains("|")
+                && !queryExpr.contains("&")
+                ) {
+            all.addAll(autoCompleteCategory(queryExpr));
+        }
+        //reorder and remove duplicates
+        return new ArrayList<String>(new TreeSet<String>(all));
+    }
 }

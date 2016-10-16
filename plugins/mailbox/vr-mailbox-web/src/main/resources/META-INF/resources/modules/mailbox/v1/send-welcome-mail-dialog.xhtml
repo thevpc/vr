@@ -13,84 +13,50 @@ and open the template in the editor.
         >
 
 <h:head>
-    <title><h:outputText value="#{sendExternalMailActionCtrl.model.title}"/></title>
-    <style type="text/css">
-        .ui-widget {
-            font-size: 90%;
-        }
 
-        .ui-selectonemenu-list,
-        .ui-selectonemenu-panel,
-        .ui-widget-content {
-            height: 50% !important
-        }
-
-        .ui-selectonemenu-items-wrapper {
-            height: 100% !important
-        }
-
-        .ui-dialog {
-            width: auto !important;
-            min-height: 370px !important;
-        }
-
-    </style>
-    <link href="#{vr.themeContext}/css/app.css" rel="stylesheet" type="text/css"/>
 </h:head>
 
 <h:body>
     <ui:composition template="#{vr.themePath}/templates/dialog-template.xhtml">
         <ui:define name="dialog-title">
-            <h:outputText value="Mail Externe"/>
+            <h:outputText value="#{sendWelcomeMailActionCtrl.model.title}"/>
         </ui:define>
         <ui:define name="dialog-body">
 
             <div class="row">
                 <h:form id="listForm">
-                    <h:panelGrid columns="6">
-                        <p:outputLabel value="Type Destination"/>
-                        <p:selectOneMenu id="temailType"
-                                         value="#{sendExternalMailActionCtrl.model.emailType.selectedItem}"
-                                         required="#{sendExternalMailActionCtrl.model.emailType.required}"
-                                         disabled="#{sendExternalMailActionCtrl.model.emailType.disabled}"
-                                >
-                            <f:selectItems value="#{sendExternalMailActionCtrl.model.emailType.items}"/>
-                        </p:selectOneMenu>
-
-                        <p:outputLabel value="Template"/>
-                        <p:selectOneMenu id="tmailboxMessageFormat"
-                                         value="#{sendExternalMailActionCtrl.model.mailboxMessageFormat.selectedItem}"
-                                         required="#{sendExternalMailActionCtrl.model.mailboxMessageFormat.required}"
-                                         disabled="#{sendExternalMailActionCtrl.model.mailboxMessageFormat.disabled}"
-                                >
-                            <f:selectItems value="#{sendExternalMailActionCtrl.model.mailboxMessageFormat.items}"/>
-                        </p:selectOneMenu>
+                    <h:panelGrid columns="4">
+                        <p:outputLabel value="Cible"/>
+                        <p:selectOneRadio id="console" value="#{sendWelcomeMailActionCtrl.model.target}">
+                            <f:selectItem itemLabel="Sélection" itemValue="selected"/>
+                            <f:selectItem itemLabel="Nouveaux" itemValue="new"/>
+                        </p:selectOneRadio>
 
                         <p:commandButton id="btn_start" value="Commencer"
                                          styleClass="btn btn-primary"
-                                         actionListener="#{sendExternalMailActionCtrl.startExec}"
-                                         style="margin-left: 20px;" onclick="if (true) {
-                                return true;
-                            }" update="messages1"/>
+                                         actionListener="#{sendWelcomeMailActionCtrl.startExec}"
+                                         style="margin-right: 5px;" onclick="if (true) {
+                                                 return true;
+                                             }" update="messages1"/>
                         <p:commandButton value="Fermer"
                                          styleClass="btn btn-default"
-                                         actionListener="#{sendExternalMailActionCtrl.fireEventExtraDialogClosed}"
+                                         actionListener="#{sendWelcomeMailActionCtrl.fireEventExtraDialogClosed}"
                                          style="margin-left: 20px;margin-right: 20px;"/>
                     </h:panelGrid>
                     <p:messages id="messages1" showDetail="true" autoUpdate="true" closable="true"/>
                 </h:form>
                 <h:form id="listForm2">
                     <p:messages id="messages2" showDetail="true" autoUpdate="true" closable="true"/>
-                    <p:poll interval="5" update="llist" listener="#{sendExternalMailActionCtrl.onUpdate}"/>
+                    <p:poll interval="5" update="llist" listener="#{sendWelcomeMailActionCtrl.onUpdate}"/>
                     <h:panelGrid columns="2">
                         <p:outputLabel value="Afficher Erreurs"/>
-                        <p:selectBooleanCheckbox value="#{sendExternalMailActionCtrl.model.errorsOnly}"
+                        <p:selectBooleanCheckbox value="#{sendWelcomeMailActionCtrl.model.errorsOnly}"
                                                  style="margin-right: 20px;">
-                            <p:ajax update="llist" listener="#{sendExternalMailActionCtrl.onChange}"/>
+                            <p:ajax update="llist" listener="#{sendWelcomeMailActionCtrl.onChange}"/>
                         </p:selectBooleanCheckbox>
                     </h:panelGrid>
                     <h4>Trace</h4>
-                    <p:dataTable id="llist" var="i" value="#{sendExternalMailActionCtrl.model.events}"
+                    <p:dataTable id="llist" var="i" value="#{sendWelcomeMailActionCtrl.model.events}"
                                  class="table table-bordered table-hover"
                                  paginatorAlwaysVisible="false"
                                  paginator="true"
@@ -112,7 +78,7 @@ and open the template in the editor.
                                            value="#{i.title}"/>
                         </p:column>
                         <f:facet name="footer">
-                            <p:outputLabel value="Total #{sendExternalMailActionCtrl.model.events.size()}"/>
+                            <p:outputLabel value="Total #{sendWelcomeMailActionCtrl.model.events.size()}"/>
                         </f:facet>
                     </p:dataTable>
                 </h:form>

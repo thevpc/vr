@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.service.model;
 
+import joptsimple.internal.Strings;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.config.*;
@@ -132,5 +133,16 @@ public class AppProfile {
         return String.valueOf(name);
     }
 
-
+    public static String getCodeOrName(AppProfile u){
+        if(u==null){
+            return null;
+        }
+        if(!Strings.isNullOrEmpty(u.getCode())){
+            return u.getCode();
+        }
+        if(!Strings.isNullOrEmpty(u.getName())){
+            return u.getName();
+        }
+        return null;
+    }
 }

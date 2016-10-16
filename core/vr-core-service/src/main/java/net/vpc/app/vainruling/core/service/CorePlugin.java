@@ -1185,6 +1185,72 @@ public class CorePlugin {
 //        }
 //        return Collections.EMPTY_LIST;
 //    }
+
+//    private static void removeDuplicates(List<String> list){
+//        HashSet<String> noDuplicates=new HashSet<>();
+//        for(Iterator<String> i =list.iterator()){
+//            String s=i.next();
+//            if(noDuplicates.contains(s)){
+//                i.remove();
+//            }else{
+//                noDuplicates.add(s);
+//            }
+//        }
+//    }
+
+    public List<String> autoCompleteUserOrProfile(String userOrProfile){
+        if(userOrProfile==null){
+            userOrProfile="";
+        }
+        userOrProfile=userOrProfile.trim().toLowerCase();
+        List<String> all=new ArrayList<>();
+        for (AppProfile appProfile : findProfiles()) {
+            if(appProfile.getName()!=null && appProfile.getName().toLowerCase().contains(userOrProfile)){
+                all.add(appProfile.getName().trim());
+            }
+        }
+        for (AppUser appUser : findUsers()) {
+            if(appUser.getLogin()!=null && appUser.getLogin().toLowerCase().contains(userOrProfile)){
+                all.add(appUser.getLogin().trim());
+            }
+        }
+        return all;
+    }
+
+    public List<String> autoCompleteProfileExpression(String queryExpr){
+        if(queryExpr==null){
+            queryExpr="";
+        }
+        queryExpr=queryExpr.trim();
+        int x=queryExpr.length()-1;
+        while(x>=0){
+            char c=queryExpr.charAt(x);
+            if(!Character.isLetterOrDigit(c) && c!='.'){
+                break;
+            }
+            x--;
+        }
+        if(x>0){
+            if(x<queryExpr.length()-1) {
+                String prefix = queryExpr.substring(0, x+1);
+                String suffix =queryExpr.substring(x+1);
+                List<String> all=new ArrayList<>();
+                List<String> strings = autoCompleteUserOrProfile(suffix);
+                if(strings.isEmpty()){
+                    strings=Arrays.asList("");
+                }
+                for (String s : strings) {
+                    all.add(prefix+s);
+                }
+                return all;
+            }else{
+                return Arrays.asList(queryExpr);
+            }
+        }else{
+            return new ArrayList<String>(new TreeSet<String>(autoCompleteUserOrProfile(queryExpr)));
+        }
+    }
+
     public List<AppUser> findUsersByProfileFilter(String profilePattern, Integer userType) {
         //check if pattern contains where clause!
         ProfileFilterExpression ee = new ProfileFilterExpression(profilePattern);
@@ -1562,9 +1628,17 @@ public class CorePlugin {
 
     public void setAppProperty(AppProperty ap) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        AppProperty old = pu.createQueryBuilder(AppProperty.class)
-                .byField("propertyName", ap.getPropertyName())
-                .getFirstResultOrNull();
+        AppProperty old =null;
+        if(ap.getUser()==null) {
+            old=pu.createQuery("Select a from AppProperty a where a.propertyName=:propertyName and a.userId=null")
+                    .setParameter("propertyName", ap.getPropertyName())
+                    .getFirstResultOrNull();
+        }else{
+            old=pu.createQuery("Select a from AppProperty a where a.propertyName=:propertyName and a.userId=:userId")
+                    .setParameter("propertyName", ap.getPropertyName())
+                    .setParameter("userId", ap.getUser().getId())
+                    .getFirstResultOrNull();
+        }
         if (old == null) {
             pu.persist(ap);
         } else {
@@ -1992,6 +2066,21 @@ public class CorePlugin {
                 .setParameter("name", name).getFirstResultOrNull();
     }
 
+    public AppUser getCurrentUser() {
+        UserSession s = getUserSession();
+        return s == null ? null : s.getUser();
+    }
+
+    public Integer getCurrentUserId() {
+        AppUser s = getCurrentUser();
+        return s == null ? null : s.getId();
+    }
+
+    public String getCurrentUserLogin() {
+        AppUser s = getCurrentUser();
+        return s == null ? null : s.getLogin();
+    }
+
     public UserSession getUserSession() {
         return VrApp.getContext().getBean(UserSession.class);
     }
@@ -2369,6 +2458,9 @@ public class CorePlugin {
     }
 
     public VirtualFileSystem getFileSystem() {
+        if(fileSystem==null){
+            throw new RuntimeException("FileSystem is not initialized yet. It seems that installService() has never been called...");
+        }
         return fileSystem;
     }
 
@@ -2582,7 +2674,7 @@ public class CorePlugin {
     }
 
     public long getDownloadsCount(final VFile file) {
-        return UPA.getContext().invokePrivileged(new Action<Long>() {
+        return UPA.getPersistenceUnit().invokePrivileged(new Action<Long>() {
 
             @Override
             public Long run() {
@@ -2604,7 +2696,7 @@ public class CorePlugin {
     }
 
     public void markDownloaded(final VFile file) {
-        UPA.getContext().invokePrivileged(new Action<Object>() {
+        UPA.getPersistenceUnit().invokePrivileged(new Action<Object>() {
 
             @Override
             public Object run() {

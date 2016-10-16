@@ -754,7 +754,7 @@ public class MyInternshipBoardsCtrl {
     }
 
     public StreamedContent download(final String report) {
-        return UPA.getContext().invokePrivileged(new Action<StreamedContent>() {
+        return UPA.getPersistenceUnit().invokePrivileged(new Action<StreamedContent>() {
             @Override
             public StreamedContent run() {
                 VFile f = null;

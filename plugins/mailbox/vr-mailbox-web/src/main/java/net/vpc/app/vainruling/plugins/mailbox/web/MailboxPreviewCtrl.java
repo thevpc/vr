@@ -52,7 +52,7 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
         MailboxPreviewModel model = getModel();
         if (user != null) {
             int userId = user.getId();
-            List<MailboxReceived> loadUnreadInbox = p.loadLocalMailbox(userId, 3, true, MailboxFolder.CURRENT);
+            List<MailboxReceived> loadUnreadInbox = p.loadLocalInbox(userId, 3, true, MailboxFolder.CURRENT);
             List<MessagePreview> previews = new ArrayList<>();
             for (MailboxReceived lo : loadUnreadInbox) {
                 String cat = lo.getCategory();

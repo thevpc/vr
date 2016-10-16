@@ -55,8 +55,6 @@ public class AcademicTeacher {
     private AppPeriod startPeriod;
     private AppPeriod lastPeriod;
     private String uniqueCode;
-    private String officeLocationNumber;
-    private String officePhoneNumber;
     private String otherNames;
 
     @Field(max = "4000")
@@ -200,22 +198,6 @@ public class AcademicTeacher {
 
     public void setUniqueCode(String uniqueCode) {
         this.uniqueCode = uniqueCode;
-    }
-
-    public String getOfficeLocationNumber() {
-        return officeLocationNumber;
-    }
-
-    public void setOfficeLocationNumber(String officeLocationNumber) {
-        this.officeLocationNumber = officeLocationNumber;
-    }
-
-    public String getOfficePhoneNumber() {
-        return officePhoneNumber;
-    }
-
-    public void setOfficePhoneNumber(String officePhoneNumber) {
-        this.officePhoneNumber = officePhoneNumber;
     }
 
     @Override

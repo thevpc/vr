@@ -11,6 +11,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.core.web.*;
+import net.vpc.app.vainruling.core.web.fs.FSServlet;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogAdapter;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogManager;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //import net.vpc.app.vainruling.tasks.TaskPlugin;
 //import net.vpc.app.vainruling.tasks.model.TodoList;
@@ -36,6 +38,7 @@ import java.util.logging.Level;
  */
 @UCtrl
 public class VrMenuManager {
+    private static final Logger log = Logger.getLogger(FSServlet.class.getName());
 
     private Model model = new Model();
     private Object pageCtrl;
@@ -243,7 +246,12 @@ public class VrMenuManager {
             url = d.getUrl();
             if (!StringUtils.isEmpty(d.getSecurityKey())) {
                 if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey(d.getSecurityKey())) {
-                    throw new SecurityException("Page is Inaccessible");
+                    if("publicIndex".equals(command)) {
+                        throw new SecurityException("Page is Inaccessible");
+                    }else{
+                        log.warning("Illegal Access to "+command+" by "+UserSession.getCurrentUser());
+                        return gotoPage("publicIndex","");
+                    }
                 }
             }
         }
@@ -277,7 +285,7 @@ public class VrMenuManager {
         if (!StringUtils.isEmpty(arguments)) {
             data += " ; " + arguments;
         }
-        TraceService.get().trace("visit.page", "page visited " + lvp.toString(), data, "/System/Access", Level.FINE);
+        TraceService.get().trace("visit-page", "page visited " + lvp.toString(), data, "/System/Access", Level.FINE);
         if (StringUtils.isEmpty(url)) {
             return null;
         }

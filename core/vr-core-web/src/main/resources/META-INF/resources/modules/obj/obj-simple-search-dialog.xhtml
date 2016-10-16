@@ -23,11 +23,14 @@ and open the template in the editor.
         <ui:define name="dialog-body">
 
             <h:form id="myform">
-                <p:inputText value="#{objCtrl.model.search.expression}" style="width: 90%"/>
+                <p:inputText value="#{objCtrl.model.search.expression}" style="width: 100%; margin-top: 20px;"/>
                 <p:separator/>
+                <p:commandButton icon="ui-icon-search" actionListener="#{objCtrl.fireEventSearchCancelled}"
+                                 value="Annuler" styleClass="btn btn-default"
+                                 style="float: left;"/>
                 <p:commandButton icon="ui-icon-search" actionListener="#{objCtrl.fireEventSearchClosed}"
                                  value="Chercher" styleClass="btn btn-primary"
-                                 style="position: absolute;right: 10px; margin-top: 10px;"/>
+                                 style="float: right;"/>
             </h:form>
 
         </ui:define>
