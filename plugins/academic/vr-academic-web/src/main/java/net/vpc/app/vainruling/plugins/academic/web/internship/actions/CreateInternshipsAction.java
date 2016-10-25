@@ -26,17 +26,16 @@ public class CreateInternshipsAction implements ActionDialog {
 
     @Override
     public void openDialog(String actionId, List<String> itemIds) {
-        Object co = VrApp.getBean(ObjCtrl.class).getCurrentEntityObject();
-        if (co == null) {
-            return;
-        }
-        AcademicInternship a = (AcademicInternship) co;
-        VrApp.getBean(CreateInternshipsActionCtrl.class).openDialog(a);
+//        Object co = VrApp.getBean(ObjCtrl.class).getCurrentEntityObject();
+//        if (co == null) {
+//            return;
+//        }
+        VrApp.getBean(CreateInternshipsActionCtrl.class).openDialog();
     }
 
     @Override
     public boolean isEnabled(Class entityType, EditCtrlMode mode, Object value) {
-        return value != null && (mode == EditCtrlMode.NEW || mode == EditCtrlMode.UPDATE);
+        return mode == EditCtrlMode.LIST;
     }
 
     @Override

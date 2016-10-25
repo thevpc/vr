@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
 import net.vpc.app.vainruling.core.web.obj.ViewContext;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.upa.*;
 import net.vpc.upa.types.DataType;
@@ -126,7 +127,7 @@ public class ManyToOneTypePropertyView extends FieldPropertyView {
             items.add(new SelectItem(null, "N/A"));
         }
         for (NamedId val : this.getValues()) {
-            items.add(new SelectItem(val.getId(), val.getName()));
+            items.add(new SelectItem(val.getId(), StringUtils.nonNull(val.getName())));
         }
         this.setItems(items);
     }

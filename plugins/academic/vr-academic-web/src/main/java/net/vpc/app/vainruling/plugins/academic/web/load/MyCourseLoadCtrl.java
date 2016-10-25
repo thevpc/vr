@@ -26,7 +26,9 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 public class MyCourseLoadCtrl extends AbstractCourseLoadCtrl {
 
     public MyCourseLoadCtrl() {
+        getModel().setDisplayOtherModules(false);
     }
+
 
     public AcademicTeacher getCurrentTeacher() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);

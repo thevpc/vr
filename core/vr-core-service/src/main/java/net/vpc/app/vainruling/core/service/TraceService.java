@@ -382,7 +382,7 @@ public class TraceService {
         UPA.getContext().invokePrivileged(makeSilenced(new VoidAction() {
             @Override
             public void run() {
-                int rowsPerFile = rowsPerFile0<=9? 10000:rowsPerFile0;
+                int rowsPerFile = rowsPerFile0<=9? 100000:rowsPerFile0;
                 PersistenceUnit pu = UPA.getPersistenceUnit();
                 String filter0=filter;
                 if(StringUtils.isEmpty(filter0)){

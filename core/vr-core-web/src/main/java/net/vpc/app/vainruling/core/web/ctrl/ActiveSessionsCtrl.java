@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.agent.ActiveSessionsTracker;
 import net.vpc.app.vainruling.core.service.model.AppContact;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.AppUserType;
 import net.vpc.app.vainruling.core.service.notification.PollAware;
@@ -96,10 +97,10 @@ public class ActiveSessionsCtrl implements PollAware {
                         circle1.put(entry.getValue().getType(), entry.getValue().getCount());
                     }
                     for (UserSession i : list) {
-                        if (i != null && i.getUser() != null && i.getUser().getContact() != null) {
-                            AppContact c = i.getUser().getContact();
-                            if (!StringUtils.isEmpty(c.getPositionSuffix())) {
-                                ChartUtils.incKey(circle2, c.getPositionSuffix());
+                        if (i != null && i.getUser() != null && i.getUser().getDepartment() != null) {
+                            AppDepartment c = i.getUser().getDepartment();
+                            if (c!=null && !StringUtils.isEmpty(c.getName())) {
+                                ChartUtils.incKey(circle2, c.getName());
                             }
                         }
                     }

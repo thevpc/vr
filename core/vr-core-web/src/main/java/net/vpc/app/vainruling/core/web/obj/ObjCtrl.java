@@ -7,6 +7,9 @@ package net.vpc.app.vainruling.core.web.obj;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.obj.*;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
@@ -25,6 +28,7 @@ import net.vpc.upa.*;
 import net.vpc.upa.Package;
 import net.vpc.upa.expressions.Expression;
 import net.vpc.upa.expressions.Literal;
+import net.vpc.upa.filters.EntityFilters;
 import net.vpc.upa.filters.FieldFilters;
 import net.vpc.upa.types.*;
 import org.primefaces.context.RequestContext;
@@ -65,6 +69,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     private final List<AutoFilter> autoFilters = new ArrayList<>();
     private final Map<String, Boolean> enabledButtons = new HashMap<>();
     @Autowired
+    private CorePlugin core;
+    @Autowired
     private ObjManagerService objService;
     @Autowired
     private ActionDialogManager actionDialogManager;
@@ -95,7 +101,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             int pos = items.size();
             while (p != null && !"/".equals(p.getPath())) {
                 Package pp = p.getParent();
-                items.add(pos, new BreadcrumbItem(i18n.get(p),pp==null?null:i18n.get(pp), "fa-dashboard", "", ""));
+                items.add(pos, new BreadcrumbItem(i18n.get(p), pp == null ? null : i18n.get(pp), "fa-dashboard", "", ""));
                 p = p.getParent();
             }
             d.setBreadcrumb(items.toArray(new BreadcrumbItem[items.size()]));
@@ -186,12 +192,19 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                         return UPA.getPersistenceUnit().getSecurityManager().isAllowedRemove(getEntity());
                     }
                     if ("Advanced".equals(buttonId)) {
-                        return isEnabledButton("Archive");
+                        return
+                                isEnabledButton("Archive")
+                                        || isEnabledButton("ReCalc");
                     }
+
                     if ("Archive".equals(buttonId)) {
                         return UPA.getPersistenceUnit().getSecurityManager()
                                 .isAllowedUpdate(getEntity())
                                 && objService.isArchivable(getModel().getEntityName());
+                    }
+
+                    if ("ReCalc".equals(buttonId)) {
+                        return core.isUserSessionAdmin();
                     }
 
                     ActionDialogAdapter e = actionDialogManager.findAction(buttonId);
@@ -216,6 +229,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 case UPDATE: {
                     if ("Save".equals(buttonId)) {
                         return UPA.getPersistenceUnit().getSecurityManager().isAllowedUpdate(getEntity());
+                    }
+                    if ("New".equals(buttonId)) {
+                        return UPA.getPersistenceUnit().getSecurityManager().isAllowedPersist(getEntity());
                     }
                     if ("List".equals(buttonId)) {
                         return true;
@@ -312,6 +328,16 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         this.dynModel = dynModel;
     }
 
+    public void onReCalc() {
+        try {
+            UPA.getPersistenceUnit().updateFormulas(EntityFilters.byName(getEntityName()), null);
+            FacesUtils.addInfoMessage("Realcul Réussi");
+        } catch (RuntimeException ex) {
+            log.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage("Recalcul Echoué : " + ex.getMessage());
+        }
+    }
+
     public void onSaveCurrent() {
         enabledButtons.clear();
         try {
@@ -354,8 +380,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 }
                 case UPDATE: {
                     Record c = getModel().getCurrentRecord();
-                    if(getEntity().getPrimaryFields().size()==1 && getEntity().getPrimaryFields().get(0).isGeneratedId()) {
-                        getEntity().getBuilder().setRecordId(c,null);
+                    if (getEntity().getPrimaryFields().size() == 1 && getEntity().getPrimaryFields().get(0).isGeneratedId()) {
+                        getEntity().getBuilder().setRecordId(c, null);
                         objService.save(getEntityName(), c);
                     }
 //                    onCancelCurrent();
@@ -466,6 +492,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     public void onPageLoad(String cmd) {
         getAutoFilters().clear();
         getModel().setSearch(null);
+        getModel().setSearchText(null);
         reloadPage(cmd, false);
     }
 
@@ -509,13 +536,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     getModel().setSearch(new ObjSimpleSearch(cfg.searchExpr));
                 }
             }
-            loadList();
             if (cfg.id == null || cfg.id.trim().length() == 0) {
                 updateMode(EditCtrlMode.LIST);
+                loadList();
                 getModel().setCurrent(null);
             } else if (enableCustomization && getModel().getMode() == EditCtrlMode.LIST) {
                 //do nothing
                 updateMode(EditCtrlMode.LIST);
+                loadList();
                 getModel().setCurrent(null);
             } else {
                 Entity entity = getEntity();
@@ -523,7 +551,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 EntityBuilder b = entity.getBuilder();
                 Object eid = resolveEntityId(cfg.id);
                 Record curr = objService.findRecord(getEntityName(), eid);
-                if(curr==null){
+                if (curr == null) {
                     //should not happen though!
                     updateMode(EditCtrlMode.LIST);
                     getModel().setCurrent(null);
@@ -553,25 +581,25 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public void loadList() {
-        String _listFilter=getModel().getConfig().listFilter;
-        if(!StringUtils.isEmpty(_listFilter)){
-            _listFilter="("+_listFilter+")";
-        }else{
-            _listFilter="";
+        String _listFilter = getModel().getConfig().listFilter;
+        if (!StringUtils.isEmpty(_listFilter)) {
+            _listFilter = "(" + _listFilter + ")";
+        } else {
+            _listFilter = "";
         }
         HashMap<String, Object> parameters = new HashMap<>();
-        int autoFilterIndex=1;
-        for (AutoFilter o : getAutoFilters()){
-            String filterExpression = o.createFilterExpression(parameters,"af"+autoFilterIndex);
-            if(!StringUtils.isEmpty(filterExpression)){
-                if(!StringUtils.isEmpty(_listFilter)) {
-                    _listFilter+=" and ";
+        int autoFilterIndex = 1;
+        for (AutoFilter o : getAutoFilters()) {
+            String filterExpression = o.createFilterExpression(parameters, "af" + autoFilterIndex);
+            if (!StringUtils.isEmpty(filterExpression)) {
+                if (!StringUtils.isEmpty(_listFilter)) {
+                    _listFilter += " and ";
                 }
-                _listFilter+="("+filterExpression+")";
+                _listFilter += "(" + filterExpression + ")";
             }
             autoFilterIndex++;
         }
-        List<Record> found = objService.findRecordsByFilter(getEntityName(), _listFilter, getModel().getSearch(), parameters);
+        List<Record> found = objService.findRecordsByFilter(getEntityName(), _listFilter, getModel().getSearch(), getModel().getSearchText(), parameters);
         List<ObjRow> filteredObjects = new ArrayList<>();
         Entity entity = getEntity();
         UPASecurityManager sm = entity.getPersistenceUnit().getSecurityManager();
@@ -645,17 +673,17 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 map.put("ui", r);
                 String expr = v.substring(2, v.length() - 1);
                 ExpressionManager expressionManager = pu.getExpressionManager();
-                if(!expressionManager.containsFunction("inthash")){
+                if (!expressionManager.containsFunction("inthash")) {
                     expressionManager.addFunction("inthash", TypesFactory.INT, inthash);
                 }
-                if(!expressionManager.containsFunction("hashToStringArr")){
+                if (!expressionManager.containsFunction("hashToStringArr")) {
                     expressionManager.addFunction("hashToStringArr", TypesFactory.STRING, hashToStringArr);
                 }
                 Expression expression = expressionManager.simplifyExpression(expr, map);
                 QLEvaluator evaluator = expressionManager.createEvaluator();
                 evaluator.getRegistry().registerFunctionEvaluator("hashToStringArr", hashToStringArr);
                 evaluator.getRegistry().registerFunctionEvaluator("inthash", inthash);
-                expression= evaluator.evalObject(expression,null);
+                expression = evaluator.evalObject(expression, null);
                 if (expression instanceof Literal) {
                     Object t = ((Literal) expression).getValue();
                     String ret = t == null ? "" : t.toString().trim();
@@ -685,17 +713,17 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 map.put("ui", r);
                 String expr = v.substring(2, v.length() - 1);
                 ExpressionManager expressionManager = pu.getExpressionManager();
-                if(!expressionManager.containsFunction("inthash")){
+                if (!expressionManager.containsFunction("inthash")) {
                     expressionManager.addFunction("inthash", TypesFactory.INT, inthash);
                 }
-                if(!expressionManager.containsFunction("hashToStringArr")){
+                if (!expressionManager.containsFunction("hashToStringArr")) {
                     expressionManager.addFunction("hashToStringArr", TypesFactory.STRING, hashToStringArr);
                 }
                 Expression expression = expressionManager.simplifyExpression(expr, map);
                 QLEvaluator evaluator = expressionManager.createEvaluator();
                 evaluator.getRegistry().registerFunctionEvaluator("hashToStringArr", hashToStringArr);
                 evaluator.getRegistry().registerFunctionEvaluator("inthash", inthash);
-                expression= evaluator.evalObject(expression,null);
+                expression = evaluator.evalObject(expression, null);
                 if (expression instanceof Literal) {
                     Object t = ((Literal) expression).getValue();
                     String ret = t == null ? "" : t.toString().trim();
@@ -912,7 +940,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             Entity ot = UPA.getPersistenceUnit().getEntity(getEntityName());
             columns.clear();
             properties.clear();
-            boolean adm = VrApp.getBean(CorePlugin.class).isUserSessionAdmin();
+            boolean adm = core.isUserSessionAdmin();
 
             List<Field> fields = new ArrayList<Field>();
             if (getModel().getFieldSelection() == null) {
@@ -951,7 +979,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 if (getModel().getDisabledFields().contains(field.getName())) {
                     config.put("disabled", true);
                 }
-                PropertyView[] ctrls = propertyViewManager.createPropertyView(field.getName(), field, config, viewContext);
+                PropertyView[] ctrls = propertyViewManager.createPropertyViews(field.getName(), field, config, viewContext);
                 if (ctrls != null) {
                     for (PropertyView ctrl : ctrls) {
                         if (ctrl != null) {
@@ -1056,12 +1084,12 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
             }
 
-            List<AutoFilterData> autoFilterDatas=new ArrayList<>();
-            List<AutoFilter> newAutoFilters=new ArrayList<>();
+            List<AutoFilterData> autoFilterDatas = new ArrayList<>();
+            List<AutoFilter> newAutoFilters = new ArrayList<>();
             //autoFilters.clear();
             for (Map.Entry<String, Object> entry : entity.getProperties().toMap().entrySet()) {
-                if(entry.getKey().startsWith("ui.auto-filter.")){
-                    String name=entry.getKey().substring("ui.auto-filter.".length());
+                if (entry.getKey().startsWith("ui.auto-filter.")) {
+                    String name = entry.getKey().substring("ui.auto-filter.".length());
                     AutoFilterData d = VrUtils.parseJSONObject((String) entry.getValue(), AutoFilterData.class);
                     d.setName(name);
                     d.setBaseEntityName(entity.getName());
@@ -1071,30 +1099,30 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             Collections.sort(autoFilterDatas);
             for (AutoFilterData autoFilterData : autoFilterDatas) {
                 String type = autoFilterData.getFilterType();
-                if(StringUtils.isEmpty(type)||type.equals("single-selection")){
-                    String expr=autoFilterData.getExpr();
-                    if(!expr.matches("[a-zA-Z0-9.]+")){
-                        throw new IllegalArgumentException("Invalid Auto Filter Expr "+expr);
+                if (StringUtils.isEmpty(type) || type.equals("single-selection")) {
+                    String expr = autoFilterData.getExpr();
+                    if (!expr.matches("[a-zA-Z0-9.]+")) {
+                        throw new IllegalArgumentException("Invalid Auto Filter Expr " + expr);
                     }
                     I18n i18n = VrApp.getBean(I18n.class);
-                    DataType curr= entity.getDataType();
-                    String evalLabel=i18n.get(entity);
+                    DataType curr = entity.getDataType();
+                    String evalLabel = i18n.get(entity);
                     for (String s : expr.split("\\.")) {
-                        if(curr instanceof KeyType) {
+                        if (curr instanceof KeyType) {
                             Field field = ((KeyType) curr).getEntity().getField(s);
                             evalLabel = i18n.get(field);
                             if (field.getDataType() instanceof ManyToOneType) {
                                 curr = (KeyType) ((ManyToOneType) field.getDataType()).getTargetEntity().getDataType();
                             } else if (field.getDataType() instanceof EnumType) {
                                 curr = field.getDataType();
-                            } else  {
+                            } else {
                                 curr = field.getDataType();
                             }
-                        }else {
-                            throw new IllegalArgumentException("Unsupported Filter Type "+expr);
+                        } else {
+                            throw new IllegalArgumentException("Unsupported Filter Type " + expr);
                         }
                     }
-                    if(StringUtils.isEmpty(autoFilterData.getLabel())){
+                    if (StringUtils.isEmpty(autoFilterData.getLabel())) {
                         String label = i18n.getOrNull("UI.Entity." + entity.getName() + ".ui.auto-filter.class");
                         autoFilterData.setLabel(evalLabel);
 //                        if(StringUtils.isEmpty(label)){
@@ -1106,51 +1134,68 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 //                        }
                     }
                     PropertyViewManager manager = VrApp.getBean(PropertyViewManager.class);
-                    AutoFilter autoFilter0=null;
+                    AutoFilter autoFilter0 = null;
                     for (AutoFilter autoFilter : autoFilters) {
-                        if(autoFilter.getData().equals(autoFilterData)){
-                            autoFilter0=autoFilter;
+                        if (autoFilter.getData().equals(autoFilterData)) {
+                            autoFilter0 = autoFilter;
                             break;
                         }
                     }
-                    if(autoFilter0!=null){
+                    if (autoFilter0 != null) {
                         newAutoFilters.add(autoFilter0);
-                    }else{
-                        SingleSelectionAutoFilter f=new SingleSelectionAutoFilter(curr,autoFilterData);
+                    } else {
+                        SingleSelectionAutoFilter f = new SingleSelectionAutoFilter(curr, autoFilterData);
                         f.getValues().add(FacesUtils.createSelectItem(String.valueOf(""), "-------", ""));
-                        if((curr instanceof KeyType) || (curr instanceof EnumType)) {
+                        if ((curr instanceof KeyType) || (curr instanceof EnumType)) {
                             List<NamedId> namedIds = manager.getPropertyViewValuesProvider(null, curr).resolveValues(null, null, curr, viewContext);
                             for (NamedId namedId : namedIds) {
-                                f.getValues().add(FacesUtils.createSelectItem(String.valueOf(namedId.getId()), namedId.getName(), ""));
+                                f.getValues().add(FacesUtils.createSelectItem(String.valueOf(namedId.getId()), StringUtils.nonNull(namedId.getName()), ""));
                             }
                             newAutoFilters.add(f);
-                        }else if(curr instanceof StringType){
-                            List<String> values=UPA.getPersistenceUnit().createQuery("Select distinct "+autoFilterData.getExpr()+" from "+getEntityName())
+                            if (curr instanceof KeyType) {
+                                Entity ee = ((KeyType) curr).getEntity();
+                                Object defaultSelection = getDefaultFilterSelectedObject(autoFilterData, curr);
+                                if (defaultSelection != null) {
+                                    Object theId = ee.getBuilder().objectToId(defaultSelection);
+                                    f.setSelectedString(String.valueOf(theId));
+                                }
+                            } else if (curr instanceof EnumType) {
+                                Object defaultSelection = getDefaultFilterSelectedObject(autoFilterData, curr);
+                                if (defaultSelection != null) {
+                                    f.setSelectedString(String.valueOf(defaultSelection));
+                                }
+                            }
+                        } else if (curr instanceof StringType) {
+                            List<String> values = UPA.getPersistenceUnit().createQuery("Select distinct " + autoFilterData.getExpr() + " from " + getEntityName())
                                     .getResultList();
                             Collections.sort(values, new Comparator<String>() {
                                 @Override
                                 public int compare(String o1, String o2) {
-                                    if(o1==null){
-                                        o1="";
+                                    if (o1 == null) {
+                                        o1 = "";
                                     }
-                                    if(o2==null){
-                                        o2="";
+                                    if (o2 == null) {
+                                        o2 = "";
                                     }
                                     return o1.compareTo(o2);
                                 }
                             });
                             for (String value : values) {
-                                if(value!=null) {
+                                if (value != null) {
                                     f.getValues().add(FacesUtils.createSelectItem(value, value, ""));
                                 }
                             }
                             newAutoFilters.add(f);
-                        }else{
+                            Object defaultSelection = getDefaultFilterSelectedObject(autoFilterData, curr);
+                            if (defaultSelection != null) {
+                                f.setSelectedString(String.valueOf(defaultSelection));
+                            }
+                        } else {
                             throw new IllegalArgumentException("Unsupported");
                         }
                     }
-                }else{
-                    throw new IllegalArgumentException("Unsupported Auto Filter Type "+type);
+                } else {
+                    throw new IllegalArgumentException("Unsupported Auto Filter Type " + type);
                 }
             }
             autoFilters.clear();
@@ -1161,6 +1206,28 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
         }
+    }
+
+    public Object getDefaultFilterSelectedObject(AutoFilterData autoFilterData, DataType filterType) {
+        if (filterType instanceof KeyType) {
+            Entity ee = ((KeyType) filterType).getEntity();
+            if (ee.getEntityType().equals(AppPeriod.class)) {
+                return core.findAppConfig().getMainPeriod();
+            } else if (ee.getEntityType().equals(AppDepartment.class)) {
+                AppUser u = core.getCurrentUser();
+                return u == null ? null : u.getDepartment();
+            } else if (ee.getEntityType().equals(AppUser.class)) {
+                AppUser u = core.getCurrentUser();
+                return u == null ? null : u;
+            }
+        }
+        if (autoFilterData.getBaseEntityName().equals("AppTrace")) {
+            if (autoFilterData.getName().equals("user")) {
+                AppUser u = core.getCurrentUser();
+                return u == null ? null : u.getLogin();
+            }
+        }
+        return null;
     }
 
     public void onAutoFilterChange() {
@@ -1198,21 +1265,21 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public void onReloadCurrent() {
-        switch(getModel().getMode()){
+        switch (getModel().getMode()) {
             case NEW: {
                 onNew();
                 break;
             }
             case UPDATE: {
                 Object id = getCurrentId();
-                Record curr = id==null?null:objService.findRecord(getEntityName(), id);
+                Record curr = id == null ? null : objService.findRecord(getEntityName(), id);
                 onSelect(createObjRow(curr));
                 break;
             }
         }
     }
 
-    public ObjRow createObjRow(Record o){
+    public ObjRow createObjRow(Record o) {
         Entity e = getEntity();
         EntityBuilder b = e.getBuilder();
         ObjRow r = new ObjRow(o, b.recordToObject(o));
@@ -1382,10 +1449,10 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             try {
                 currentViewToModel();
                 Object c = getModel().getCurrentRecord();
-                ActionDialogResult r=actionDialogManager.findAction(actionKey).invoke(getEntity().getEntityType(), c,getSelectedIdStrings(), args);
-                if(r!=null){
-                    switch (r){
-                        case RELOAD_CURRENT:{
+                ActionDialogResult r = actionDialogManager.findAction(actionKey).invoke(getEntity().getEntityType(), c, getSelectedIdStrings(), args);
+                if (r != null) {
+                    switch (r) {
+                        case RELOAD_CURRENT: {
                             if (getModel().getMode() == EditCtrlMode.LIST) {
                                 reloadPage(true);
                             } else {
@@ -1393,7 +1460,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                             }
                             break;
                         }
-                        case RELOAD_ALL:{
+                        case RELOAD_ALL: {
                             if (getModel().getMode() == EditCtrlMode.LIST) {
                                 reloadPage(true);
                             } else {
@@ -1426,7 +1493,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         return null;
     }
 
-    public List<String> getSelectedIdStrings(){
+    public List<String> getSelectedIdStrings() {
         List<String> selected = new ArrayList<>();
         if (getModel().getMode() == EditCtrlMode.LIST) {
             for (ObjRow r : getModel().getList()) {
@@ -1449,7 +1516,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public void proceedOpenActionDialog() {
-        String actionId=getModel().getActionId();
+        String actionId = getModel().getActionId();
         if (actionId != null) {
             ActionDialogAdapter ed = VrApp.getBean(ActionDialogManager.class).findAction(actionId);
             if (ed != null) {
@@ -1462,10 +1529,10 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     try {
                         currentViewToModel();
                         Object c = getModel().getCurrentRecord();
-                        ActionDialogResult r=ed.invoke(getEntity().getEntityType(), c,getSelectedIdStrings(), null);
-                        if(r!=null){
-                            switch (r){
-                                case RELOAD_CURRENT:{
+                        ActionDialogResult r = ed.invoke(getEntity().getEntityType(), c, getSelectedIdStrings(), null);
+                        if (r != null) {
+                            switch (r) {
+                                case RELOAD_CURRENT: {
                                     if (getModel().getMode() == EditCtrlMode.LIST) {
                                         reloadPage(true);
                                     } else {
@@ -1473,7 +1540,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                                     }
                                     break;
                                 }
-                                case RELOAD_ALL:{
+                                case RELOAD_ALL: {
                                     if (getModel().getMode() == EditCtrlMode.LIST) {
                                         reloadPage(true);
                                     } else {
@@ -1502,7 +1569,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         if (actionId != null) {
             ActionDialogAdapter ed = VrApp.getBean(ActionDialogManager.class).findAction(actionId);
             if (ed != null) {
-                if(ed.isConfirm()){
+                if (ed.isConfirm()) {
                     getModel().setActionId(actionId);
                     getModel().setConfirmMessage("Etes vous sur de vouloir continuer?");
                     Map<String, Object> options = new HashMap<String, Object>();
@@ -1511,7 +1578,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     options.put("modal", true);
 
                     RequestContext.getCurrentInstance().openDialog("/modules/obj/profile-open-action-dialog", options, null);
-                }else{
+                } else {
                     getModel().setActionId(actionId);
                     proceedOpenActionDialog();
                 }
@@ -1543,7 +1610,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     public void onPropertyViewDialogClosed(SelectEvent event) {
         DialogResult o = (DialogResult) event.getObject();
-        if(o!=null) {
+        if (o != null) {
             PropertyView p = findPropertyView(o.getUserInfo());
             if (p != null) {
                 p.setValue(o.getValue());
@@ -1561,6 +1628,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             p.setComponentState("Default");
         }
     }
+
     private static class FormHelper {
 
         DynaFormModel dynModel = new DynaFormModel();
@@ -1632,6 +1700,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         private List<ObjFormAction> actions = new ArrayList<ObjFormAction>();
         private Config config;
         private Set<String> disabledFields = new HashSet<String>();
+        private String searchText;
 
         public PModel() {
             setCurrent(null);
@@ -1723,6 +1792,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
         public void setDisabledFields(Set<String> disabledFields) {
             this.disabledFields = disabledFields;
+        }
+
+        public String getSearchText() {
+            return searchText;
+        }
+
+        public void setSearchText(String searchText) {
+            this.searchText = searchText;
         }
 
     }

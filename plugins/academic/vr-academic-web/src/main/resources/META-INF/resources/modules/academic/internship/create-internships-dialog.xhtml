@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+
+<h:head>
+
+</h:head>
+
+<h:body>
+
+    <!--@elvariable id="createInternshipsActionCtrl" type="net.vpc.app.vainruling.plugins.academic.web.internship.actions.CreateInternshipsActionCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <ui:composition template="#{vr.themePath}/templates/dialog-template.xhtml">
+        <ui:define name="dialog-title">
+            <h:outputText value="Générer Stages"/>
+        </ui:define>
+        <ui:define name="dialog-body">
+            <div class="row">
+                <h:form id="listForm" style="width: 98%; margin-top: 10px; margin-left: 10px; margin-right: 10px;">
+                    <div class="row">
+                        <p:outputLabel value="#{createInternshipsActionCtrl.model.message}"/>
+                    </div>
+
+                    <div class="row">
+                        <p:outputLabel value="Intitulé"/>
+                    </div>
+
+                    <div class="row">
+                        <p:inputText style="width: 100%" value="#{createInternshipsActionCtrl.model.internship.name}"/>
+                    </div>
+
+                    <div class="row">
+                        <p:outputLabel value="Description"/>
+                    </div>
+
+                    <div class="row">
+                        <p:inputTextarea style="width: 100%"
+                                         value="#{createInternshipsActionCtrl.model.internship.description}"/>
+                    </div>
+
+
+                    <div class="row" style="display: inline-flex;">
+                        <div class="col-md-2">
+                            <p:outputLabel value="Groupe"/>
+                        </div>
+                        <div class="col-md-4">
+                            <p:selectOneMenu
+                                    value="#{createInternshipsActionCtrl.model.group.selectedItem}"
+                                    required="#{createInternshipsActionCtrl.model.group.required}"
+                                    disabled="#{createInternshipsActionCtrl.model.group.disabled}"
+                            >
+                                <f:selectItems value="#{createInternshipsActionCtrl.model.group.items}"/>
+                            </p:selectOneMenu>
+                        </div>
+                        <div class="col-md-2">
+                            <p:outputLabel value="Comité"/>
+                        </div>
+                        <div class="col-md-4">
+                            <p:selectOneMenu
+                                    value="#{createInternshipsActionCtrl.model.board.selectedItem}"
+                                    required="#{createInternshipsActionCtrl.model.board.required}"
+                                    disabled="#{createInternshipsActionCtrl.model.board.disabled}"
+                            >
+                                <f:selectItems value="#{createInternshipsActionCtrl.model.board.items}"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+
+
+                    <div class="row" style="display: inline-flex;">
+                        <div class="col-md-2">
+                            <p:outputLabel value="Variante"/>
+                        </div>
+                        <div class="col-md-4">
+                            <p:selectOneMenu
+                                    value="#{createInternshipsActionCtrl.model.internshipVariant.selectedItem}"
+                                    required="#{createInternshipsActionCtrl.model.internshipVariant.required}"
+                                    disabled="#{createInternshipsActionCtrl.model.internshipVariant.disabled}"
+                            >
+                                <f:selectItems value="#{createInternshipsActionCtrl.model.internshipVariant.items}"/>
+                            </p:selectOneMenu>
+                        </div>
+
+                        <div class="col-md-2">
+                            <p:outputLabel value="Phase"/>
+                        </div>
+                        <div class="col-md-4">
+                            <p:selectOneMenu
+                                    value="#{createInternshipsActionCtrl.model.status.selectedItem}"
+                                    required="#{createInternshipsActionCtrl.model.status.required}"
+                                    disabled="#{createInternshipsActionCtrl.model.status.disabled}"
+                            >
+                                <f:selectItems value="#{createInternshipsActionCtrl.model.status.items}"/>
+                            </p:selectOneMenu>
+                        </div>
+
+
+                    </div>
+
+                    <div class="row">
+                        <p:outputLabel value="Profils"/>
+                    </div>
+                    <div class="row">
+                        <p:inputText style="width: 100%" value="#{createInternshipsActionCtrl.model.profile}"/>
+                    </div>
+
+
+                    <p:separator/>
+
+                    <p:commandButton value="Générer" actionListener="#{createInternshipsActionCtrl.save}"
+                                     styleClass="btn btn-primary"
+                                     style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"
+                                     ajax="true"
+                                     update=":listForm"
+                                     disabled="#{createInternshipsActionCtrl.model.disabled}"/>
+                    <p:commandButton value="Fermer"
+                                     styleClass="btn btn-default"
+                                     actionListener="#{createInternshipsActionCtrl.fireEventExtraDialogClosed}"
+                                     style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
+                </h:form>
+            </div>
+        </ui:define>
+    </ui:composition>
+
+
+</h:body>
+
+</html>

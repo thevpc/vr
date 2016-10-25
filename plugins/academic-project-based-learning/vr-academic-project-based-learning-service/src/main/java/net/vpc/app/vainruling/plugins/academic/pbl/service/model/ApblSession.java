@@ -25,7 +25,7 @@ public class ApblSession {
     @Main @Unique
     private String name;
     private AppPeriod period;
-    private ApblSessionStatus status=ApblSessionStatus.INIT;
+    private ApblSessionStatus status;
     private java.util.Date startDate;
     private java.util.Date endDate;
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)

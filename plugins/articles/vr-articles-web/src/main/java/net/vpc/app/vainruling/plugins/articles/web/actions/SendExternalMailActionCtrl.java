@@ -53,10 +53,10 @@ public class SendExternalMailActionCtrl {
         }
 
         ViewContext viewContext = new ViewContext();
-        PropertyView emailType = propertyViewManager.createPropertyView("emailType", RecipientType.class, null, viewContext)[0];
+        PropertyView emailType = propertyViewManager.createPropertyViews("emailType", RecipientType.class, null, viewContext)[0];
         getModel().setEmailType(emailType);
         //MailboxMessageFormat
-        getModel().setMailboxMessageFormat(propertyViewManager.createPropertyView("mailboxMessageFormat", MailboxMessageFormat.class, null, viewContext)[0]);
+        getModel().setMailboxMessageFormat(propertyViewManager.createPropertyViews("mailboxMessageFormat", MailboxMessageFormat.class, null, viewContext)[0]);
         String t = config.getTitle();
 
         getModel().setTitle(StringUtils.isEmpty(t) ? "Envoi de Mail" : t);

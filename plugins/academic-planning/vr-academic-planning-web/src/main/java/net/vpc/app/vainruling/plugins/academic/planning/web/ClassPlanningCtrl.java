@@ -14,6 +14,7 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
 import net.vpc.app.vainruling.plugins.calendars.web.AbstractPlanningCtrl;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.NamedId;
 
 import javax.faces.model.SelectItem;
@@ -48,7 +49,7 @@ public class ClassPlanningCtrl extends AbstractPlanningCtrl {
         getModel().setGroups(new ArrayList<SelectItem>());
         AcademicPlanningPlugin pl = VrApp.getBean(AcademicPlanningPlugin.class);
         for (NamedId t : pl.loadStudentPlanningListNames()) {
-            getModel().getGroups().add(new SelectItem(String.valueOf(t.getId()), t.getName()));
+            getModel().getGroups().add(new SelectItem(String.valueOf(t.getId()), StringUtils.nonNull(t.getName())));
         }
         CalendarWeek plannings = pl.loadClassPlanning(getModel().getGroupName());
         if (plannings == null) {

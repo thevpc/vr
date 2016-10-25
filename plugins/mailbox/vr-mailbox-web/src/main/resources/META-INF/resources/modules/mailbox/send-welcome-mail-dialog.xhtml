@@ -24,9 +24,9 @@ and open the template in the editor.
         <ui:define name="dialog-body">
 
             <div class="row">
-                <h:form id="listForm">
+                <h:form id="listForm" style="margin-top: 10px;">
                     <h:panelGrid columns="4">
-                        <p:outputLabel value="Cible"/>
+                        <p:outputLabel value="Cible" style="margin-right: 20px;"/>
                         <p:selectOneRadio id="console" value="#{sendWelcomeMailActionCtrl.model.target}">
                             <f:selectItem itemLabel="Sélection" itemValue="selected"/>
                             <f:selectItem itemLabel="Nouveaux" itemValue="new"/>
@@ -35,7 +35,7 @@ and open the template in the editor.
                         <p:commandButton id="btn_start" value="Commencer"
                                          styleClass="btn btn-primary"
                                          actionListener="#{sendWelcomeMailActionCtrl.startExec}"
-                                         style="margin-right: 5px;" onclick="if (true) {
+                                         style="margin-right: 5px;margin-left: 20px;" onclick="if (true) {
                                                  return true;
                                              }" update="messages1"/>
                         <p:commandButton value="Fermer"
@@ -49,7 +49,7 @@ and open the template in the editor.
                     <p:messages id="messages2" showDetail="true" autoUpdate="true" closable="true"/>
                     <p:poll interval="5" update="llist" listener="#{sendWelcomeMailActionCtrl.onUpdate}"/>
                     <h:panelGrid columns="2">
-                        <p:outputLabel value="Afficher Erreurs"/>
+                        <p:outputLabel value="Afficher Erreurs" style="margin-right: 10px;"/>
                         <p:selectBooleanCheckbox value="#{sendWelcomeMailActionCtrl.model.errorsOnly}"
                                                  style="margin-right: 20px;">
                             <p:ajax update="llist" listener="#{sendWelcomeMailActionCtrl.onChange}"/>

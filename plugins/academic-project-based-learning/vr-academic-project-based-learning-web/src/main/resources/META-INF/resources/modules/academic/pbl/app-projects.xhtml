@@ -57,9 +57,16 @@ and open the template in the editor.
                     </div>
                 </div>
 
+                <div style="margin-bottom: 10px;">
+                    <p:inputText value="#{academicAppProjectsCtrl.model.filterText}" placeholder="Chercher ..."
+                                 styleClass="form-control"
+                                 style="width: 100%" onkeypress="if (event.keyCode == 13) { onSearchByText(); return false; }"
+                    />
+                    <p:remoteCommand name="onSearchByText" actionListener="#{academicAppProjectsCtrl.onSearchByText}" update="treeTable"/>
+                </div>
                 <div>
                     <div class="table-responsive">
-                        <p:treeTable value="#{academicAppProjectsCtrl.model.root}" var="document">
+                        <p:treeTable id="treeTable" value="#{academicAppProjectsCtrl.model.root}" var="document" >
                             <f:facet name="header">
                                 #{academicAppProjectsCtrl.model.session.name}
                             </f:facet>

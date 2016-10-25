@@ -103,6 +103,11 @@ and open the template in the editor.
                             <p:menuitem rendered="#{objCtrl.isEnabledButton('Archive')}" value="Archiver"
                                         icon="fa fa-archive" onclick="PF('confirmationArchive').show();" ajax="true"/>
                             <p:separator/>
+                            <p:menuitem rendered="#{objCtrl.isEnabledButton('ReCalc')}" value="ReCalc"
+                                        icon="fa fa-calculator" ajax="true"
+                                        actionListener="#{objCtrl.onReCalc}"
+                            />
+                            <p:separator/>
                         </p:splitButton>
 
                         <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Assign')}"
@@ -252,7 +257,7 @@ and open the template in the editor.
                             <ui:repeat value="#{autoFilterList}" var="autoFilter">
                                 <p:column>
                                     <p:outputLabel value="#{autoFilter.data.label}"
-                                                   styleClass="vr-form-field vr-form-fixed-width-short"/>
+                                                   styleClass="vr-form-field vr-form-fixed-width-short" autofocus="autofocus"/>
                                     <!--valueChangeListener="#_{objCtrl.onAutoFilterChange}"-->
                                     <!--onchange="document.getElementById('listForm:processOnAutoFilterLink').click();"-->
                                     <p:selectOneMenu value="#{autoFilter.selectedString}" styleClass="vr-form-field"
@@ -268,7 +273,14 @@ and open the template in the editor.
                 <!-- /.row -->
             </h:form>
             <h:form id="listForm">
-
+                <div>
+                    <p:inputText
+                            rendered="#{objCtrl.isListMode()}"
+                            value="#{objCtrl.model.searchText}" placeholder="Chercher ..."  styleClass="form-control"
+                                 style="width: 100%" onkeypress="if (event.keyCode == 13) { onSearchByText(); return false; }"
+                    />
+                    <p:remoteCommand name="onSearchByText" actionListener="#{objCtrl.onAutoFilterChange}" update=":listForm"/>
+                </div>
                 <div>
                     <p:spacer width="10" height="10"/>
                 </div>

@@ -49,9 +49,9 @@ public class AcademicTeacher {
     @Summary
     private AppDepartment department;
 
-    @Summary
-    @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
-    private boolean enabled = true;
+//    @Summary
+//    @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
+//    private boolean enabled = true;
     private AppPeriod startPeriod;
     private AppPeriod lastPeriod;
     private String uniqueCode;
@@ -144,13 +144,13 @@ public class AcademicTeacher {
         this.department = department;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+//    public boolean isEnabled() {
+//        return enabled;
+//    }
+//
+//    public void setEnabled(boolean enabled) {
+//        this.enabled = enabled;
+//    }
 
     public AppPeriod getStartPeriod() {
         return startPeriod;

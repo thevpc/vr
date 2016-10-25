@@ -932,6 +932,7 @@ div.vr-progress-container > div.invalid3 {
     margin-left: 10px;
 }
 
+
 legend.ui-fieldset-legend {
     font-size: 13px;
 }
@@ -1001,6 +1002,10 @@ ul.deplist li a:hover {
     border: 0;
     height: 1px;
     background-image: linear-gradient(to right, rgba(0, 0, 0, 0), #607D8B, rgba(0, 0, 0, 0));
+}
+
+.vr-toolbox-menu-button {
+    height: 38px;
 }
 
 .vr-toolbox-item {
@@ -1162,4 +1167,8 @@ span.ui-autocomplete.vr-form-control:focus{
     border-color: #3c8dbc;
     box-shadow: none;
     outline: 0;
+}
+
+.vr-selected-many-selected {
+    color: #3c8dbc !important;
 }

@@ -48,7 +48,7 @@ public class FETXmlParser implements Closeable {
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode;
                     String tn = eElement.getAttribute("name");
-                    return new CalendarWeekParser(tn.trim().toLowerCase().trim(),sourceName,nNode);
+                    return new CalendarWeekParser(tn.trim(),sourceName,nNode);
                 }
             }
             close();

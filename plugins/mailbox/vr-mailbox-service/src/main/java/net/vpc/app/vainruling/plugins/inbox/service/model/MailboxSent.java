@@ -69,6 +69,7 @@ public class MailboxSent {
 
     @Summary
     private String category;
+    private int threadId;
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
@@ -236,5 +237,13 @@ public class MailboxSent {
 
     public void setRichText(boolean richText) {
         this.richText = richText;
+    }
+
+    public int getThreadId() {
+        return threadId;
+    }
+
+    public void setThreadId(int threadId) {
+        this.threadId = threadId;
     }
 }

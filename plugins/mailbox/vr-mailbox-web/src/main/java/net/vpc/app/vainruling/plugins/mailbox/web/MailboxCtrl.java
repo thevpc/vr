@@ -20,7 +20,6 @@ import net.vpc.app.vainruling.core.web.menu.*;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
-import net.vpc.app.vainruling.core.web.obj.ViewContext;
 import net.vpc.app.vainruling.core.web.obj.dialog.ProfileExprDialogCtrl;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.app.vainruling.plugins.inbox.service.model.*;
@@ -36,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.faces.context.FacesContext;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,16 +57,23 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     private PropertyViewManager propertyViewManager;
 
     public void onNew() {
-
         MailboxSent item = new MailboxSent();
         item.setRichText(true);
+        resetNewMessage(item,EditCtrlMode.NEW);
+    }
+
+    private void resetNewMessage(MailboxSent item,EditCtrlMode mode){
         getModel().setNewItem(item);
         getModel().setNewItemAttachments(new ArrayList<>());
-        getModel().setMode(EditCtrlMode.NEW);
+        getModel().setMode(mode);
         getModel().setToCount(0);
         getModel().setCcCount(0);
         getModel().setBccCount(0);
+        resetCurrent();
+    }
+    private void resetCurrent(){
         getModel().setCurrent(null);
+        getModel().setThreadList(Collections.emptyList());
     }
 
     @Override
@@ -153,11 +160,10 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     @Override
     public List<VRMenuDef> createVRMenuDefList() {
-        MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
         List<Row> list = new ArrayList<>();
         AppUser currentUser = UserSession.getCurrentUser();
         int userId = currentUser == null ? -1 : currentUser.getId();
-        int count = userId < 0 ? 0 : p.loadLocalInbox(userId, -1, true, MailboxFolder.CURRENT).size();
+        int count = userId < 0 ? 0 : mailboxPlugin.findLocalReceivedMessages(userId, -1, true, MailboxFolder.CURRENT).size();
         return Arrays.asList(
                 new VRMenuDef("Mes Messages", "/Social", "mailbox", "{folder:'CURRENT',sent:false}", "Custom.Site.Mailbox", "", 100,
                         new VRMenuLabel[]{
@@ -180,7 +186,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         getModel().setFolder(config.folder);
         getModel().setSent(config.sent);
         onCancelCurrent();
-        getModel().setMailboxMessageFormat(propertyViewManager.createPropertyView("mailboxMessageFormat", MailboxMessageFormat.class, null, new ViewContext())[0]);
+        getModel().setMailboxMessageFormat(propertyViewManager.createPropertyView(MailboxMessageFormat.class));
         onRefresh();
     }
 
@@ -188,39 +194,38 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         if (FacesContext.getCurrentInstance() != null) {
             FacesUtils.clearMessages();
         }
-        MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
         List<Row> list = new ArrayList<>();
         int userId = UserSession.getCurrentUser().getId();
         getModel().setTitle(getPreferredTitle());
         VrApp.getBean(VrMenuManager.class).getModel().getTitleCrumb().setTitle(getModel().getTitle());
         if (getModel().isSent()) {
-            List<MailboxSent> mailboxSents = p.loadLocalOutbox(userId, -1, false, getModel().getFolder());
+            List<MailboxSent> mailboxSents = mailboxPlugin.findLocalSentMessages(userId, -1, -1, false, getModel().getFolder());
             for (MailboxSent inbox : mailboxSents) {
                 Row r = new Row();
-                r.setValue(new Message(inbox, loadOutboxFiles(inbox.getId())));
-                r.setHasAttachment(false);
+                r.setValue(new Message(inbox, loadMailboxFiles(inbox.getId())));
+                r.setHasAttachment(r.getValue().hasAttachment());
                 list.add(r);
             }
         } else {
-            for (MailboxReceived inbox : p.loadLocalInbox(userId, -1, false, getModel().getFolder())) {
+            for (MailboxReceived inbox : mailboxPlugin.findLocalReceivedMessages(userId, -1, false, getModel().getFolder())) {
                 Row r = new Row();
-                r.setValue(new Message(inbox, loadInboxFiles(inbox.getId())));
-                r.setHasAttachment(false);
+                r.setValue(new Message(inbox, loadMailboxFiles(inbox.getId())));
+                r.setHasAttachment(r.getValue().hasAttachment());
                 list.add(r);
             }
         }
         model.setInbox(list);
-        getModel().setCountInbox(p.loadLocalInbox(userId, -1, true, MailboxFolder.CURRENT).size());
-        getModel().setCountOutbox(p.loadLocalOutbox(userId, -1, true, MailboxFolder.CURRENT).size());
+        getModel().setCountInbox(mailboxPlugin.findLocalReceivedMessages(userId, -1, true, MailboxFolder.CURRENT).size());
+        getModel().setCountOutbox(mailboxPlugin.findLocalSentMessages(userId, -1, -1,true, MailboxFolder.CURRENT).size());
     }
 
-    private List<AppFile> loadInboxFiles(int id) {
+    private List<AppFile> loadMailboxFiles(int id) {
+        if (getModel().isSent()){
+            return new ArrayList<>();
+        }
         return new ArrayList<>();
     }
 
-    private List<AppFile> loadOutboxFiles(int id) {
-        return new ArrayList<>();
-    }
 
     public void updateUserCounts() {
         getModel().setToCount(countUsers("to"));
@@ -245,7 +250,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         getModel().setSent(false);
         getModel().setFolder(MailboxFolder.CURRENT);
         getModel().setMode(EditCtrlMode.LIST);
-        getModel().setCurrent(null);
+        resetCurrent();
         onRefresh();
     }
 
@@ -254,7 +259,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         getModel().setSent(false);
         getModel().setFolder(MailboxFolder.DELETED);
         getModel().setMode(EditCtrlMode.LIST);
-        getModel().setCurrent(null);
+        resetCurrent();
         onRefresh();
     }
 
@@ -263,7 +268,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         getModel().setSent(false);
         getModel().setFolder(MailboxFolder.ARCHIVED);
         getModel().setMode(EditCtrlMode.LIST);
-        getModel().setCurrent(null);
+        resetCurrent();
         onRefresh();
     }
 
@@ -272,7 +277,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         getModel().setSent(true);
         getModel().setFolder(MailboxFolder.CURRENT);
         getModel().setMode(EditCtrlMode.LIST);
-        getModel().setCurrent(null);
+        resetCurrent();
         onRefresh();
     }
 
@@ -281,7 +286,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         getModel().setSent(true);
         getModel().setFolder(MailboxFolder.DELETED);
         getModel().setMode(EditCtrlMode.LIST);
-        getModel().setCurrent(null);
+        resetCurrent();
         onRefresh();
     }
 
@@ -290,18 +295,30 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         getModel().setSent(true);
         getModel().setFolder(MailboxFolder.ARCHIVED);
         getModel().setMode(EditCtrlMode.LIST);
-        getModel().setCurrent(null);
+        resetCurrent();
         onRefresh();
+    }
+
+    private void loadThreadList(Message r,boolean ignoreThis) {
+        ArrayList<Message> messages = new ArrayList<>();
+        if(r.getThreadId()>0){
+            for (MailboxReceived mailboxReceived : mailboxPlugin.findLocalReceivedMessagesThread(corePlugin.getCurrentUserId(), -1, r.getThreadId(),false,getModel().getFolder())) {
+                if(!ignoreThis || mailboxReceived.getId()!=r.getId()) {
+                    messages.add(new Message(mailboxReceived, loadMailboxFiles(mailboxReceived.getId())));
+                }
+            }
+        }
+        getModel().setThreadList(messages);
     }
 
     public void onSelect(Message r) {
         if (r != null) {
             getModel().setCurrent(r);
+            loadThreadList(r,true);
             getModel().setMode(EditCtrlMode.UPDATE);
-            MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
             if(r.isInbox()) {
                 MailboxReceived m = (MailboxReceived) r.getMsg();
-                p.markRead(m.getId(), true);
+                mailboxPlugin.markRead(m.getId(), true);
                 m.setRead(true);//no need for refresh
             }
         }
@@ -331,6 +348,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
                                     pu.remove(inbox.value.getMsg());
                                 }
                             }
+                            onRefresh();
                             return;
                         }
                         for (Row inbox : getModel().getInbox()) {
@@ -347,6 +365,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
                         if (getModel().getCurrent() != null && getModel().getCurrent().getMsg() != null) {
                             if (getModel().getFolder() == MailboxFolder.DELETED) {
                                 pu.remove(getModel().getCurrent().getMsg());
+                                onRefresh();
                                 return;
                             }
                             Message msg = (Message) getModel().getCurrent().getMsg();
@@ -394,12 +413,11 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     public void onSend() {
         FacesUtils.clearMessages();
-        MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
         getModel().getNewItem().setSender(UserSession.getCurrentUser());
         FacesUtils.clearMessages();
         try {
             MailboxMessageFormat mailboxMessageFormat = (MailboxMessageFormat) getModel().getMailboxMessageFormat().getValue();
-            p.sendLocalMail(getModel().getNewItem(), mailboxMessageFormat == null ? null : mailboxMessageFormat.getId(), true);
+            mailboxPlugin.sendLocalMail(getModel().getNewItem(), mailboxMessageFormat == null ? null : mailboxMessageFormat.getId(), true);
             MailboxSent item = new MailboxSent();
             item.setRichText(true);
             getModel().setNewItem(item);
@@ -432,13 +450,9 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             s.setCcProfiles(r.getCcProfiles());
             s.setSubject("RE:" + r.getSubject());
             s.setRichText(true);
-            getModel().setNewItem(s);
-            getModel().setNewItemAttachments(new ArrayList<>());
-            getModel().setMode(EditCtrlMode.NEW);
-            getModel().setToCount(0);
-            getModel().setCcCount(0);
-            getModel().setBccCount(0);
-            getModel().setCurrent(null);
+            s.setThreadId(r.getOutboxMessage()==null?0:r.getOutboxMessage().getThreadId());
+            resetNewMessage(s,EditCtrlMode.NEW);
+            loadThreadList(current,false);
         }
     }
 
@@ -452,14 +466,10 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             s.setToProfiles("" + r.getSender().getLogin() + (StringUtils.isEmpty(ee) ? "" : ",(" + ee + ")"));
             s.setCcProfiles(r.getCcProfiles());
             s.setSubject("RE:" + r.getSubject());
+            s.setThreadId(r.getOutboxMessage()==null?0:r.getOutboxMessage().getThreadId());
             s.setRichText(true);
-            getModel().setNewItem(s);
-            getModel().setNewItemAttachments(new ArrayList<>());
-            getModel().setMode(EditCtrlMode.NEW);
-            getModel().setToCount(0);
-            getModel().setCcCount(0);
-            getModel().setBccCount(0);
-            getModel().setCurrent(null);
+            resetNewMessage(s,EditCtrlMode.NEW);
+            loadThreadList(current,false);
         }
     }
 
@@ -674,6 +684,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         private int ccCount = 0;
         private int bccCount = 0;
         private Message current;
+        private List<Message> threadList=new ArrayList<>();
         private PropertyView mailboxMessageFormat;
         private MailboxSent newItem = new MailboxSent();
         private List<MailboxSentAttachment> newItemAttachments = new ArrayList<>();
@@ -801,5 +812,12 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             this.mailboxMessageFormat = mailboxMessageFormat;
         }
 
+        public List<Message> getThreadList() {
+            return threadList;
+        }
+
+        public void setThreadList(List<Message> threadList) {
+            this.threadList = threadList;
+        }
     }
 }

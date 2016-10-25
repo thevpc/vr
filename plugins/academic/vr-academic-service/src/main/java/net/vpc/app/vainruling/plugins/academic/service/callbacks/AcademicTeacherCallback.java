@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.service.callbacks;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
@@ -41,20 +42,10 @@ public class AcademicTeacherCallback {
 
     @OnPersist
     public void onPersist(PersistEvent event) {
-        PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
         AcademicPlugin ap = AcademicPlugin.get();
         if (isEntity(entity, AcademicTeacher.class)) {
-            int s = ap.findSemesters().size();
             AcademicTeacher persistedObject = (AcademicTeacher) event.getPersistedObject();
-            for (int i = 1; i < s + 1; i++) {
-                AcademicTeacherSemestrialLoad load = new AcademicTeacherSemestrialLoad();
-                load.setSemester(i);
-                load.setWeeksLoad(ap.getSemesterMaxWeeks());
-                load.setTeacher(persistedObject);
-                load.setPeriod(CorePlugin.get().findAppConfig().getMainPeriod());
-                pu.persist(load);
-            }
             ap.validateAcademicData_Teacher(persistedObject.getId(), CorePlugin.get().findPeriodOrMain(-1).getId());
         } else if (isEntity(entity, AcademicStudent.class)) {
             AcademicStudent persistedObject = (AcademicStudent) event.getPersistedObject();
@@ -64,7 +55,6 @@ public class AcademicTeacherCallback {
 
     @OnPreUpdate
     public void onPreUpdate(UpdateEvent event) {
-        PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
         if (isEntity(entity, AcademicTeacher.class) || isEntity(entity, AcademicStudent.class)) {
             VrUPAUtils.storeUpdatedIds(event);
@@ -72,22 +62,14 @@ public class AcademicTeacherCallback {
     }
     @OnUpdate
     public void onUpdate(UpdateEvent event) {
-        PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
         AcademicPlugin ap = AcademicPlugin.get();
         if (isEntity(entity, AcademicTeacher.class)) {
+            AppPeriod mainPeriod = CorePlugin.get().findAppConfig().getMainPeriod();
             int s = ap.findSemesters().size();
             List<Integer> integers = VrUPAUtils.loadUpdatedIds(event);
             for (Integer id : integers) {
                 AcademicTeacher t = ap.findTeacher(id);
-                for (int i = 1; i < s + 1; i++) {
-                    AcademicTeacherSemestrialLoad load = new AcademicTeacherSemestrialLoad();
-                    load.setSemester(i);
-                    load.setWeeksLoad(ap.getSemesterMaxWeeks());
-                    load.setTeacher(t);
-                    load.setPeriod(CorePlugin.get().findAppConfig().getMainPeriod());
-                    pu.persist(load);
-                }
                 ap.validateAcademicData_Teacher(t.getId(), CorePlugin.get().findPeriodOrMain(-1).getId());
             }
         } else if (isEntity(entity, AcademicStudent.class)) {

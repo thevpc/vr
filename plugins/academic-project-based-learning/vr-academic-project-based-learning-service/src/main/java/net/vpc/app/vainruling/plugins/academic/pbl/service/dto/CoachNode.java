@@ -6,7 +6,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 /**
  * Created by vpc on 9/25/16.
  */
-public class CoachNode {
+public class CoachNode extends ApblNode{
     private ApblCoaching coaching;
 
     public CoachNode() {

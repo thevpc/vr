@@ -13,6 +13,8 @@ import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxSent;
 import net.vpc.common.gomail.*;
 import net.vpc.common.gomail.util.GoMailUtils;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import net.vpc.upa.types.DateTime;
@@ -31,23 +33,29 @@ import java.util.logging.Logger;
  */
 class VrLocalMailAgent implements GoMailAgent {
 
-    boolean persistOutbox;
     int total;
     private GoMail email;
     private MailboxSent fms;
+    private int sentMessageId;
 
-    public VrLocalMailAgent(GoMail email, boolean persistOutbox) {
+    public VrLocalMailAgent(GoMail email, int sentMessageId) {
         this.email = email;
-        this.persistOutbox = persistOutbox;
+        this.sentMessageId = sentMessageId;
     }
 
     @Override
     public int sendMessage(GoMailMessage mail, Properties properties, GoMailContext expr) throws IOException {
         MailboxSent ms = null;
-        if (fms == null && persistOutbox) {
+        if(sentMessageId>0){
+            fms=VrApp.getBean(MailboxPlugin.class).findMailboxSent(sentMessageId);
+            if(fms==null){
+                throw new IOException("Sent Message not found");
+            }
+        }else{
             ms = new MailboxSent();
             ms.setSubject(email.subject());
             ms.setContent(bodyToString(email.body()));
+            int threadId = Convert.toInteger(email.getProperties().getProperty(MailboxPlugin.HEADER_THREAD_ID), IntegerParserConfig.LENIENT_F);
             String prio = email.getProperties().getProperty(MailboxPlugin.HEADER_PRIORITY);
             ms.setImportant(prio != null);
             ms.setToProfiles(email.getProperties().getProperty(MailboxPlugin.HEADER_TO_PROFILES));
@@ -56,9 +64,14 @@ class VrLocalMailAgent implements GoMailAgent {
             ms.setSender(email.from() == null ? null : email.from().contains("$") ? UserSession.getCurrentUser() : VrApp.getBean(CorePlugin.class).findUser(email.from()));
             ms.setCategory(email.getProperties().getProperty(MailboxPlugin.HEADER_CATEGORY));
             ms.setSendTime(new DateTime());
+            ms.setThreadId(threadId);
             fms = ms;
             PersistenceUnit pu = UPA.getPersistenceUnit();
             pu.persist(ms);
+            if(threadId<=0){
+                ms.setThreadId(ms.getId());
+                pu.merge(ms);
+            }
         }
         int c = sendLocalMessage(mail, fms);
         total += c;

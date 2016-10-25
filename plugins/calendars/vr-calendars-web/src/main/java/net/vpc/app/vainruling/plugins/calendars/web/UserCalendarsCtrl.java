@@ -7,10 +7,7 @@ package net.vpc.app.vainruling.plugins.calendars.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppConfig;
-import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.model.AppUserType;
+import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
@@ -48,15 +45,22 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
         model = new ModelExt();
     }
 
+    public void onChangeDepartment() {
+        onChangeUserType();
+    }
+
     public void onChangeUserType() {
         getModel().getUsers().clear();
         int userTypeId = Convert.toInteger(getModel().getUserTypeId(), IntegerParserConfig.LENIENT_F);
+        int userDeptId = Convert.toInteger(getModel().getUserDepartmentId(), IntegerParserConfig.LENIENT_F);
         int oldSelectedUser = Convert.toInteger(getModel().getUserId(), IntegerParserConfig.LENIENT_F);
         boolean oldSelectedUserFound = false;
         Set<Integer> userIds = new HashSet<>();
-        for (AppUser user : userTypeId < 0 ? core.findUsers() : core.findUsersByType(userTypeId)) {
-            if (user.isEnabled() && user.getContact() != null) {
-                userIds.add(user.getId());
+        if(userTypeId>=0 && userDeptId>=0) {
+            for (AppUser user : userTypeId < 0 ? core.findUsers() : core.findUsersByTypeAndDepartment(userTypeId,userDeptId)) {
+                if (user.isEnabled() && user.getContact() != null) {
+                    userIds.add(user.getId());
+                }
             }
         }
         userIds = calendars.findUsersWithPublicCalendars(userIds);
@@ -116,11 +120,18 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
 
     @OnPageLoad
     public void onRefresh(String cmd) {
-        getModel().getUserTypes().clear();
         getModel().setUserTypeId(null);
+
+        getModel().getUserTypes().clear();
         for (AppUserType userType : core.findUserTypes()) {
             getModel().getUserTypes().add(new SelectItem(userType.getId(), userType.getName()));
         }
+
+        getModel().getDepartments().clear();
+        for (AppDepartment userType : core.findDepartments()) {
+            getModel().getDepartments().add(new SelectItem(userType.getId(), userType.getName()));
+        }
+
         onChangeUserType();
     }
 
@@ -145,8 +156,10 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
 
         String userId;
         String userTypeId;
+        String userDepartmentId;
         List<SelectItem> users = new ArrayList<SelectItem>();
         List<SelectItem> userTypes = new ArrayList<SelectItem>();
+        List<SelectItem> departments = new ArrayList<SelectItem>();
 
         public List<SelectItem> getUsers() {
             return users;
@@ -164,6 +177,14 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
             return userTypeId;
         }
 
+        public String getUserDepartmentId() {
+            return userDepartmentId;
+        }
+
+        public void setUserDepartmentId(String userDepartmentId) {
+            this.userDepartmentId = userDepartmentId;
+        }
+
         public void setUserTypeId(String userTypeId) {
             this.userTypeId = userTypeId;
         }
@@ -178,6 +199,14 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
 
         public void setUserTypes(List<SelectItem> userTypes) {
             this.userTypes = userTypes;
+        }
+
+        public List<SelectItem> getDepartments() {
+            return departments;
+        }
+
+        public void setDepartments(List<SelectItem> departments) {
+            this.departments = departments;
         }
     }
 }

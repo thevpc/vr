@@ -94,7 +94,6 @@ public class CorePlugin {
 //        System.out.println(text);
 //    }
 
-
     public static CorePlugin get() {
         return VrApp.getBean(CorePlugin.class);
     }
@@ -650,13 +649,44 @@ public class CorePlugin {
         return all;
     }
 
+    public List<AppUser> findUsersByTypeAndDepartment(int userType,int userDepartment) {
+        if(userDepartment<0){
+            return findUsersByType(userType);
+        }
+        final EntityCache entityCache = cacheService.get(AppUser.class);
+        Map<String, List<AppUser>> m = entityCache
+                .getProperty("findUsersByTypeAndDepartment", new Action<Map<String, List<AppUser>>>() {
+                    @Override
+                    public Map<String, List<AppUser>> run() {
+                        List<AppUser> bindings = entityCache.getValues();
+                        Map<String, List<AppUser>> m = new HashMap<String, List<AppUser>>();
+                        for (AppUser user : bindings) {
+                            if (user.getType() != null) {
+                                List<AppUser> found = m.get(user.getType().getId());
+                                if (found == null) {
+                                    found = new ArrayList<AppUser>();
+                                    String key = (user.getType()==null?"":user.getType().getId()) + ";" + (user.getDepartment()==null?"":user.getDepartment().getId());
+                                    m.put(key,found);
+                                }
+                                found.add(user);
+                            }
+                        }
+                        return m;
+                    }
+                });
+        List<AppUser> all = m.get((userType<0?"":String.valueOf(userType))+";"+(userDepartment<0?"":String.valueOf(userDepartment)));
+        if (all == null) {
+            all = Collections.EMPTY_LIST;
+        }
+        return all;
+    }
+
     public List<AppUser> findUsersByType(int userType) {
         final EntityCache entityCache = cacheService.get(AppUser.class);
         Map<Integer, List<AppUser>> m = entityCache
                 .getProperty("findUsersByType", new Action<Map<Integer, List<AppUser>>>() {
                     @Override
                     public Map<Integer, List<AppUser>> run() {
-                        PersistenceUnit pu = UPA.getPersistenceUnit();
                         List<AppUser> bindings = entityCache.getValues();
                         Map<Integer, List<AppUser>> m = new HashMap<Integer, List<AppUser>>();
                         for (AppUser user : bindings) {
@@ -955,9 +985,6 @@ public class CorePlugin {
     private void onStart() {
         String home = System.getProperty("user.home");
         home = home.replace("\\", "/");
-        if (!home.startsWith("/")) {
-            home = "/" + home;
-        }
         String path = (String) getOrCreateAppPropertyValue("System.FileSystem", null,
                 home + "/filesystem/"
 

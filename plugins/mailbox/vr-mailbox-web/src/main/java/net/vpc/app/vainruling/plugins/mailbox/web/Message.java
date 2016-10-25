@@ -124,7 +124,7 @@ public class Message {
     }
 
     public boolean hasAttachment() {
-        return false;
+        return files.size()>0;
     }
 
     public void setRead(boolean read) {
@@ -161,6 +161,13 @@ public class Message {
         return ((MailboxSent) msg).isDeleted();
     }
 
+    public int getId() {
+        if (received) {
+            return ((MailboxReceived) msg).getId();
+        }
+        return ((MailboxSent) msg).getId();
+    }
+
     public void setDeleted(boolean value) {
         if (received) {
             ((MailboxReceived) msg).setDeleted(value);
@@ -182,6 +189,14 @@ public class Message {
         } else {
             ((MailboxSent) msg).setArchived(value);
         }
+    }
+
+    public int getThreadId() {
+        if (received) {
+            MailboxSent outboxMessage = ((MailboxReceived) msg).getOutboxMessage();
+            return outboxMessage==null?-1:outboxMessage.getThreadId();
+        }
+        return ((MailboxSent) msg).getThreadId();
     }
 
     public String getDeletedBy() {

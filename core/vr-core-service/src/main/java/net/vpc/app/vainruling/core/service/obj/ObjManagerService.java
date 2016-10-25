@@ -371,7 +371,7 @@ public class ObjManagerService {
         return list;
     }
 
-    public List<Record> findRecordsByFilter(String entityName, String criteria, ObjSearch objSearch,Map<String,Object> parameters) {
+    public List<Record> findRecordsByFilter(String entityName, String criteria, ObjSearch objSearch,String textSearch,Map<String,Object> parameters) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         QueryBuilder q = pu
@@ -404,6 +404,9 @@ public class ObjManagerService {
         List<Record> list = q.getRecordList();
         if (objSearch != null) {
             list = objSearch.filterList(list, entityName);
+        }
+        if (!StringUtils.isEmpty(textSearch)) {
+            list = new ObjSimpleSearch(textSearch).filterList(list, entityName);
         }
         return list;
     }

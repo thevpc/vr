@@ -11,9 +11,12 @@ import net.vpc.upa.config.*;
 @Path("Education/Internship")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.session", value = "{expr='team.session',order=1}"),
-                @Property(name = "ui.auto-filter.team", value = "{expr='team',order=2}"),
-                @Property(name = "ui.auto-filter.student", value = "{expr='student',order=3}"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='student.department',order=1}"),
+                @Property(name = "ui.auto-filter.session", value = "{expr='team.session',order=2}"),
+                @Property(name = "ui.auto-filter.team", value = "{expr='team',order=3}"),
+                @Property(name = "ui.auto-filter.student", value = "{expr='student',order=4}"),
+                @Property(name = "ui.auto-filter.program", value = "{expr='student.lastClass1.program',order=5}"),
+                @Property(name = "ui.auto-filter.lastClass1", value = "{expr='student.lastClass1',order=5}"),
         }
 )
 public class ApblTeamMember {

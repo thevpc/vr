@@ -12,6 +12,7 @@ import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.common.strings.StringComparator;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.QueryHints;
 import net.vpc.upa.UPA;
@@ -289,10 +290,13 @@ public class ApblService {
 
     public List<ProjectNode> findProjectNodes(int sessionId) {
         List<ProjectNode> projects = new ArrayList<>();
-        for (ApblProject project : findProjects(sessionId)) {
+        List<ApblProject> foundProjectsAndNull = new ArrayList<>(findProjects(sessionId));
+        foundProjectsAndNull.add(null);
+        for (ApblProject project : foundProjectsAndNull) {
             ProjectNode pnode = new ProjectNode();
             pnode.setProject(project);
-            for (ApblTeam team : findTeamsByProject(project.getId())) {
+            List<ApblTeam> teamsByProject = project==null?findTeamsWithNoProject(sessionId):findTeamsByProject(project.getId());
+            for (ApblTeam team : teamsByProject) {
                 TeamNode tnode = new TeamNode();
                 tnode.setTeam(team);
                 pnode.getTeams().add(tnode);
@@ -307,30 +311,67 @@ public class ApblService {
                     tnode.getMembers().add(mnode);
                 }
             }
-            projects.add(pnode);
-        }
-
-        ProjectNode pnode = new ProjectNode();
-        pnode.setProject(null);
-        for (ApblTeam team : findTeamsWithNoProject(sessionId)) {
-            TeamNode tnode = new TeamNode();
-            tnode.setTeam(team);
-            pnode.getTeams().add(tnode);
-            for (ApblCoaching teacher : findTeamCoaches(team.getId())) {
-                CoachNode cnode = new CoachNode();
-                cnode.setCoaching(teacher);
-                tnode.getCoaches().add(cnode);
-            }
-            for (ApblTeamMember student : findTeamMembers(team.getId())) {
-                MemberNode mnode = new MemberNode();
-                mnode.setMember(student);
-                tnode.getMembers().add(mnode);
+            if(project!=null || pnode.getTeams().size() > 0) {
+                projects.add(pnode);
             }
         }
-        if (pnode.getTeams().size() > 0) {
-            projects.add(pnode);
-        }
+        return projects;
+    }
 
+    public List<ProjectNode> findProjectNodes(int sessionId, StringComparator comparator) {
+        List<ProjectNode> allProjectNodes = findProjectNodes(sessionId);
+
+
+        List<ProjectNode> projects = new ArrayList<>();
+        for (ProjectNode project : allProjectNodes) {
+            ProjectNode pnode = new ProjectNode();
+            pnode.setProject(project.getProject());
+            pnode.setSelectionMatch(project.getProject()!=null &&
+
+                    (
+                            comparator.matches(project.getProject().getName())
+                            || (project.getProject().getOwner()!=null && comparator.matches(project.getProject().getOwner().getContact().getFullTitle()))
+                    )
+            );
+            boolean someTeam=false;
+            for (TeamNode team : project.getTeams()) {
+                TeamNode tnode = new TeamNode();
+                tnode.setTeam(team.getTeam());
+                tnode.setSelectionMatch(
+                        comparator.matches(team.getTeam().getName())
+                        ||(team.getTeam().getOwner()!=null && comparator.matches(team.getTeam().getOwner().getContact().getFullTitle()))
+                );
+                boolean someCoach=false;
+                for (CoachNode teacher : team.getCoaches()) {
+                    CoachNode cnode = new CoachNode();
+                    cnode.setCoaching(teacher.getCoaching());
+                    cnode.setSelectionMatch(comparator.matches(teacher.getCoaching().getTeacher().getContact().getFullTitle()));
+                    someCoach|=cnode.isSelectionMatch();
+                    //if(cnode.isSelectionMatch() || tnode.isSelectionMatch() || pnode.isSelectionMatch()) {
+                        tnode.getCoaches().add(cnode);
+                    //}
+                }
+                boolean someMember=false;
+                for (MemberNode student : team.getMembers()) {
+                    MemberNode mnode = new MemberNode();
+                    mnode.setMember(student.getMember());
+                    mnode.setSelectionMatch(comparator.matches(student.getMember().getStudent().getContact().getFullTitle()));
+                    someMember|=mnode.isSelectionMatch();
+                    //if(mnode.isSelectionMatch() || tnode.isSelectionMatch() || pnode.isSelectionMatch()) {
+                        tnode.getMembers().add(mnode);
+                    //}
+                }
+                if(someMember || someCoach || tnode.isSelectionMatch() || pnode.isSelectionMatch()) {
+                    pnode.getTeams().add(tnode);
+                    someTeam|=true;
+                }
+            }
+            if(project.getProject()!=null || pnode.getTeams().size() > 0) {
+                if(someTeam || pnode.isSelectionMatch()) {
+                    projects.add(pnode);
+                }
+            }
+        }
         return projects;
     }
 
@@ -400,9 +441,8 @@ public class ApblService {
 
     public List<ApblTeam> findOpenTeamsByStudent(int studentId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery("Select u from ApblTeam u where u.session.status != :status and exists (Select m from ApblTeamMember m where m.teamId=u.id and m.studentId=:studentId)")
+        return pu.createQuery("Select u from ApblTeam u where u.session.status.closed = false and exists (Select m from ApblTeamMember m where m.teamId=u.id and m.studentId=:studentId)")
                 .setParameter("studentId", studentId)
-                .setParameter("status", ApblSessionStatus.CLOSED)
                 .setHint(QueryHints.NAVIGATION_DEPTH, 3)
                 .getResultList();
     }
@@ -410,9 +450,8 @@ public class ApblService {
     public List<ApblTeam> findOpenTeamsByTeacher(int teacherId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         ApblTeam t=new ApblTeam();
-        return pu.createQuery("Select u from ApblTeam u where u.session.status != :status and exists (Select m from ApblCoaching m where m.teamId=u.id and m.teacherId=:teacherId)")
+        return pu.createQuery("Select u from ApblTeam u where u.session.status.closed = false and exists (Select m from ApblCoaching m where m.teamId=u.id and m.teacherId=:teacherId)")
                 .setParameter("teacherId", teacherId)
-                .setParameter("status", ApblSessionStatus.CLOSED)
                 .setHint(QueryHints.NAVIGATION_DEPTH, 3)
                 .getResultList();
     }
@@ -420,7 +459,7 @@ public class ApblService {
     public List<ApblTeam> findOpenTeamsByUser(int userId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         ApblTeam t=new ApblTeam();
-        return pu.createQuery("Select u from ApblTeam u where u.session.status != :status and  ( " +
+        return pu.createQuery("Select u from ApblTeam u where u.session.status.closed = false and  ( " +
                         "exists ((Select m from ApblTeamMember m where m.teamId=u.id and m.student.userId=:userId)) " +
                         "or exists ((Select m from ApblCoaching m where m.teamId=u.id and m.teacher.userId=:userId)) " +
                         "or exists ((Select m from ApblProject m where m.ownerId=:userId))" +
@@ -428,7 +467,6 @@ public class ApblService {
                         ")"
                 )
                 .setParameter("userId", userId)
-                .setParameter("status", ApblSessionStatus.CLOSED)
                 .setHint(QueryHints.NAVIGATION_DEPTH, 3)
                 .getResultList();
     }
@@ -499,22 +537,32 @@ public class ApblService {
         return pu.findById(ApblSession.class, sessionId);
     }
 
-    public List<ApblSession> findSessions(ApblSessionStatus... status) {
+    public List<ApblSession> findOpenSessions() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        StringBuilder sb = new StringBuilder("Select u from ApblSession u where 1=1 ");
-        Map<String, Object> params = new HashMap();
-        if (status.length > 0) {
-            sb.append(" and u.status in (");
-            for (int i = 0; i < status.length; i++) {
-                String var = "s" + i;
-                if (i > 0) {
-                    sb.append(",");
-                }
-                sb.append(":" + var);
-                params.put(var, status[i]);
-            }
-            sb.append(") ");
-        }
-        return pu.createQuery(sb.toString()).setParameters(params).getResultList();
+        return pu.createQuery("Select u from ApblSession u where u.status.closed=false ").getResultList();
     }
+
+    public List<ApblSession> findOpenVisibleSessions() {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select u from ApblSession u where u.status.closed=false and u.status.active=true").getResultList();
+    }
+
+//    public List<ApblSession> findSessions(ApblSessionStatus... status) {
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        StringBuilder sb = new StringBuilder("Select u from ApblSession u where 1=1 ");
+//        Map<String, Object> params = new HashMap();
+//        if (status.length > 0) {
+//            sb.append(" and u.status in (");
+//            for (int i = 0; i < status.length; i++) {
+//                String var = "s" + i;
+//                if (i > 0) {
+//                    sb.append(",");
+//                }
+//                sb.append(":" + var);
+//                params.put(var, status[i]);
+//            }
+//            sb.append(") ");
+//        }
+//        return pu.createQuery(sb.toString()).setParameters(params).getResultList();
+//    }
 }

@@ -18,5 +18,5 @@ public interface PropertyViewFactory {
     PropertyView[] createPropertyView(String componentId, Field field, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext);
 
     PropertyView[] createPropertyView(String componentId, DataType dt, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext);
-//    public PropertyView[] createPropertyView(String componentId, Field field, DataType dt, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext);
+//    public PropertyView[] createPropertyViews(String componentId, Field field, DataType dt, Map<String, Object> configuration, PropertyViewManager manager, ViewContext viewContext);
 }

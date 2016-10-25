@@ -41,6 +41,11 @@ and open the template in the editor.
                         <f:selectItem itemLabel="Selectionner Type..." itemValue=""/>
                         <f:selectItems value="#{userCalendarsCtrl.model.userTypes}"/>
                     </p:selectOneMenu>
+                    <p:selectOneMenu styleClass="vr-toolbox-select-one" value="#{userCalendarsCtrl.model.userDepartmentId}">
+                        <p:ajax listener="#{userCalendarsCtrl.onChangeDepartment}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner Departement..." itemValue=""/>
+                        <f:selectItems value="#{userCalendarsCtrl.model.departments}"/>
+                    </p:selectOneMenu>
                     <p:selectOneMenu styleClass="vr-toolbox-select-one" value="#{userCalendarsCtrl.model.userId}">
                         <p:ajax listener="#{userCalendarsCtrl.onChangeUser}" update=":listForm"/>
                         <f:selectItem itemLabel="Selectionner Utilisateur..." itemValue=""/>

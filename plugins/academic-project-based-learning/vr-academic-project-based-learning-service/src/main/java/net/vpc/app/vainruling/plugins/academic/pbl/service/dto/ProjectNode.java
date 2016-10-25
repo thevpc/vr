@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by vpc on 9/25/16.
  */
-public class ProjectNode {
+public class ProjectNode extends ApblNode{
     private ApblProject project;
     private List<TeamNode> teams = new ArrayList<>();
 

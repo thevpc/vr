@@ -80,7 +80,7 @@ public class ManyToOneTypePropertyViewFactory implements PropertyViewFactory {
         List<PropertyView> all = new ArrayList<>();
         String ih = UPAObjectHelper.findStringProperty(me, UIConstants.ENTITY_ID_HIERARCHY, null, null);
         if (ih != null) {
-            PropertyView[] r = manager.createPropertyView(me.getField(ih).getName(), me.getField(ih), configuration, viewContext);
+            PropertyView[] r = manager.createPropertyViews(me.getField(ih).getName(), me.getField(ih), configuration, viewContext);
             if (r != null) {
                 for (int i = 0; i < r.length; i++) {
                     PropertyView r0 = r[i];

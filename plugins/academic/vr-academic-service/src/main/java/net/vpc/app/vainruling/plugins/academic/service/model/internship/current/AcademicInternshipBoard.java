@@ -20,10 +20,11 @@ import net.vpc.upa.config.*;
 @Path("Education/Internship")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),
-                @Property(name = "ui.auto-filter.program", value = "{expr='program',order=2}"),
-                @Property(name = "ui.auto-filter.academicClass", value = "{expr='academicClass',order=3}"),
-                @Property(name = "ui.auto-filter.internshipType", value = "{expr='internshipType',order=4}"),
+                @Property(name = "ui.auto-filter.period", value = "{expr='period',order=1}"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='department',order=2}"),
+                @Property(name = "ui.auto-filter.program", value = "{expr='program',order=3}"),
+                @Property(name = "ui.auto-filter.academicClass", value = "{expr='academicClass',order=4}"),
+                @Property(name = "ui.auto-filter.internshipType", value = "{expr='internshipType',order=5}"),
         })
 public class AcademicInternshipBoard {
 

@@ -2313,7 +2313,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         a.setSituation(t.getSituation());
         a.setDegree(t.getDegree());
         a.setDepartment(t.getDepartment());
-        a.setEnabled(t.isEnabled());
+//        a.setEnabled(t.isEnabled());
         a.setPeriod(VrApp.getBean(CorePlugin.class).findPeriod(periodId));
         return a;
     }
@@ -2804,6 +2804,11 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 .findById(AcademicPreClass.class, id);
     }
 
+    public AcademicInternshipGroup findInternshipGroup(int id) {
+        return (AcademicInternshipGroup) UPA.getPersistenceUnit()
+                .findById(AcademicInternshipGroup.class, id);
+    }
+
     public AcademicPreClassType findAcademicPreClassType(int id) {
         return (AcademicPreClassType) UPA.getPersistenceUnit()
                 .findById(AcademicPreClassType.class, id);
@@ -3097,6 +3102,19 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 UPA.getPersistenceUnit().merge(u);
             }
         }
+
+
+
+        int ss = findSemesters().size();
+        for (int i = 1; i < ss + 1; i++) {
+            addAcademicTeacherSemestrialLoad(
+                    i,getSemesterMaxWeeks()
+                    ,s.getId()
+                    , periodId
+            );
+        }
+
+
         if (c != null) {
             HashSet<Integer> goodProfiles = new HashSet<>();
             String depCode = null;
@@ -3440,13 +3458,13 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (copyFromPeriod <= 0 || copyFromPeriod == periodId) {
             item.setDegree(teacher.getDegree());
             item.setSituation(teacher.getSituation());
-            item.setEnabled(teacher.isEnabled());
+//            item.setEnabled(teacher.isEnabled());
             item.setDepartment(teacher.getDepartment());
         } else {
             AcademicTeacherPeriod other = findAcademicTeacherPeriod(copyFromPeriod, teacher);
             item.setDegree(other.getDegree());
             item.setSituation(other.getSituation());
-            item.setEnabled(other.isEnabled());
+//            item.setEnabled(other.isEnabled());
             item.setDepartment(other.getDepartment());
         }
         if (toPersist) {
@@ -4259,6 +4277,16 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (internship == null) {
             throw new RuntimeException("Internship with id " + internshipId + " not found");
         }
+        generateInternships(internship,studentProfiles);
+    }
+
+    public void generateInternships(AcademicInternship internship, String studentProfiles) {
+        if(internship.getBoard()==null){
+            throw new RuntimeException("Internship board missing");
+        }
+        if(internship.getMainGroup()==null){
+            throw new RuntimeException("Internship group missing");
+        }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         AcademicPlugin acad = VrApp.getBean(AcademicPlugin.class);
         DecimalFormat df = new DecimalFormat("000");
@@ -4268,7 +4296,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         List<AcademicInternship> allFound = pu.createQuery("Select u from AcademicInternship u where "
                 + "u.boardId=:boardId "
         )
-                .setParameter("departmentId", internship.getBoard().getId())
+                .setParameter("boardId", internship.getBoard().getId())
                 .getResultList();
         HashSet<String> validCodes = new HashSet<>();
         for (AcademicInternship vc : allFound) {
@@ -4281,10 +4309,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             if (student != null) {
                 AcademicInternship i = pu.createQuery("Select u from AcademicInternship u where "
                         + "(u.studentId=:studentId or u.secondStudentId==:studentId) "
-                        + "and u.departmentId=:departmentId "
-                        + "and u.periodId=:periodId "
-                        + "and u.programId=:programId "
-                        + "and u.internshipTypeId=:internshipTypeId "
+                        + "and u.boardId=:boardId "
                 )
                         .setParameter("studentId", student.getId())
                         .setParameter("boardId", internship.getBoard().getId())
@@ -4294,6 +4319,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     i = new AcademicInternship();
                     i.setStudent(student);
                     i.setBoard(internship.getBoard());
+                    i.setMainGroup(internship.getMainGroup());
                     i.setDescription(internship.getDescription());
                     i.setStartDate(internship.getStartDate());
                     i.setEndDate(internship.getEndDate());
@@ -4482,6 +4508,36 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         student.setLastClass3(null);
         pu.merge(student);
         return formerStudent;
+    }
+
+    public void addAcademicTeacherSemestrialLoad(int semester,int weeksLoad,int teacherId,int periodId){
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        List<AcademicTeacherSemestrialLoad> allFound = pu.createQuery("Select u from AcademicTeacherSemestrialLoad u where u.teacherId=:teacherId and u.periodId=:periodId")
+                .setParameter("teacherId", teacherId)
+                .setParameter("periodId", periodId)
+                .getResultList();
+        if(allFound.isEmpty()) {
+            AcademicTeacher teacher = findTeacher(teacherId);
+            AppPeriod period = core.findPeriod(periodId);
+            if (teacher != null && period != null) {
+                AcademicTeacherSemestrialLoad load = new AcademicTeacherSemestrialLoad();
+                load.setSemester(semester);
+                load.setWeeksLoad(weeksLoad);
+                load.setTeacher(teacher);
+                load.setPeriod(period);
+                pu.persist(load);
+            }
+        }else if(allFound.size()>1){
+            AcademicTeacherSemestrialLoad sample = allFound.get(0);
+            log.log(Level.SEVERE, "Some issue forced making multiple duplicates ("+allFound.size()+") of AcademicTeacherSemestrialLoad for "+
+                    sample.getPeriod()+"-"
+                    + sample.getTeacher()
+                    +". Cleaning up this mess now...");
+            allFound.remove(0);
+            for (AcademicTeacherSemestrialLoad mess : allFound) {
+                pu.remove(mess);
+            }
+        }
     }
 
 //    public static void main(String[] args) {

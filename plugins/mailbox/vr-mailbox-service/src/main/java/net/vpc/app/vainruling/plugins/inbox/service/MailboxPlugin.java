@@ -50,6 +50,7 @@ import java.util.logging.Logger;
 public class MailboxPlugin {
 
     //    public void
+    public static final String HEADER_THREAD_ID = "header.X-Thread";
     public static final String HEADER_PRIORITY = "header.X-Priority";
     public static final String HEADER_TO_PROFILES = "header.X-App-ToProfiles";
     public static final String HEADER_CC_PROFILES = "header.X-App-CCProfiles";
@@ -198,7 +199,23 @@ public class MailboxPlugin {
         return false;
     }
 
-    public List<MailboxReceived> loadLocalInbox(final int userId, final int maxCount, final boolean unreadOnly, final MailboxFolder folder) {
+    public MailboxReceived findMailboxReceived(final int id) {
+        return UPA.getPersistenceUnit().findById(MailboxReceived.class,id);
+    }
+
+    public MailboxSent findMailboxSent(final int id) {
+        return UPA.getPersistenceUnit().findById(MailboxSent.class,id);
+    }
+
+    public List<MailboxReceived> findLocalReceivedMessagesThread(final int userId, final int maxCount, int threadId,final boolean unreadOnly, final MailboxFolder folder) {
+        return findLocalReceivedMessages(userId, maxCount, threadId, true,unreadOnly, folder);
+    }
+
+    public List<MailboxReceived> findLocalReceivedMessages(final int userId, final int maxCount, final boolean unreadOnly, final MailboxFolder folder) {
+        return findLocalReceivedMessages(userId, maxCount, -1, false,unreadOnly, folder);
+    }
+
+    public List<MailboxReceived> findLocalReceivedMessages(final int userId, final int maxCount, int threadId, boolean fullThread,final boolean unreadOnly, final MailboxFolder folder) {
         return UPA.getContext().invokePrivileged(new Action<List<MailboxReceived>>() {
 
             @Override
@@ -206,15 +223,20 @@ public class MailboxPlugin {
                 String maxCountQL = maxCount > 0 ? (" top " + maxCount + " ") : "";
                 String unreadOnlyQL = unreadOnly ? (" and u.read=false ") : "";
                 List<MailboxReceived> list = new ArrayList<>();
+                String threadIdExpr=(threadId<=0)?"":" and u.outboxMessage.threadId="+threadId;
                 switch (folder) {
                     case CURRENT: {
                         if (userId >= 0) {
+                            String ownerExpr="u.ownerId=:userId";
+                            if(threadId>0 && fullThread){
+                                ownerExpr="(u.ownerId=:userId or u.senderId=:userId)";
+                            }
                             list = UPA.getPersistenceUnit()
-                                    .createQuery("Select " + maxCountQL + " u from MailboxReceived u where u.ownerId=:userId and u.deleted=false and u.archived=false " + unreadOnlyQL + " order by u.sendTime desc")
+                                    .createQuery("Select " + maxCountQL + " u from MailboxReceived u where "+ownerExpr+" and u.deleted=false and u.archived=false " + unreadOnlyQL+threadIdExpr + " order by u.sendTime desc")
                                     .setParameter("userId", userId).getResultList();
                         } else {
                             list = UPA.getPersistenceUnit()
-                                    .createQuery("Select " + maxCountQL + " u from MailboxReceived u where and u.deleted=false and u.archived=false " + unreadOnlyQL + " order by u.sendTime desc")
+                                    .createQuery("Select " + maxCountQL + " u from MailboxReceived u where and u.deleted=false and u.archived=false " + unreadOnlyQL +threadIdExpr+ " order by u.sendTime desc")
                                     .getResultList();
                         }
                         break;
@@ -222,11 +244,11 @@ public class MailboxPlugin {
                     case DELETED: {
                         if (userId >= 0) {
                             list = UPA.getPersistenceUnit()
-                                    .createQuery("Select " + maxCountQL + "  u from MailboxReceived u where u.ownerId=:userId and u.deleted=true " + unreadOnlyQL + " order by u.sendTime desc")
+                                    .createQuery("Select " + maxCountQL + "  u from MailboxReceived u where u.ownerId=:userId and u.deleted=true " + unreadOnlyQL +threadIdExpr+ " order by u.sendTime desc")
                                     .setParameter("userId", userId).getResultList();
                         } else {
                             list = UPA.getPersistenceUnit()
-                                    .createQuery("Select " + maxCountQL + "  u from MailboxReceived u where u.deleted=true " + unreadOnlyQL + " order by u.sendTime desc")
+                                    .createQuery("Select " + maxCountQL + "  u from MailboxReceived u where u.deleted=true " + unreadOnlyQL +threadIdExpr+ " order by u.sendTime desc")
                                     .setParameter("userId", userId).getResultList();
                         }
                         break;
@@ -234,11 +256,11 @@ public class MailboxPlugin {
                     case ARCHIVED: {
                         if (userId >= 0) {
                             list = UPA.getPersistenceUnit()
-                                    .createQuery("Select " + maxCountQL + " u from MailboxReceived u where u.ownerId=:userId and u.deleted=false and u.archived=true " + unreadOnlyQL + " order by u.sendTime desc")
+                                    .createQuery("Select " + maxCountQL + " u from MailboxReceived u where u.ownerId=:userId and u.deleted=false and u.archived=true " + unreadOnlyQL+threadIdExpr + " order by u.sendTime desc")
                                     .setParameter("userId", userId).getResultList();
                         } else {
                             list = UPA.getPersistenceUnit()
-                                    .createQuery("Select " + maxCountQL + " u from MailboxReceived u where u.deleted=false and u.archived=true " + unreadOnlyQL + " order by u.sendTime desc")
+                                    .createQuery("Select " + maxCountQL + " u from MailboxReceived u where u.deleted=false and u.archived=true " + unreadOnlyQL+threadIdExpr + " order by u.sendTime desc")
                                     .getResultList();
                         }
                         break;
@@ -255,44 +277,45 @@ public class MailboxPlugin {
         }, null);
     }
 
-    public List<MailboxSent> loadLocalOutbox(final int userId, final int maxCount, final boolean unreadOnly, final MailboxFolder folder) {
+    public List<MailboxSent> findLocalSentMessages(final int userId, final int maxCount, int threadId, final boolean unreadOnly, final MailboxFolder folder) {
         return UPA.getContext().invokePrivileged(new Action<List<MailboxSent>>() {
 
             @Override
             public List<MailboxSent> run() {
                 String maxCountQL = maxCount > 0 ? (" top " + maxCount + " ") : "";
                 String unreadOnlyQL = unreadOnly ? (" and u.read=false ") : "";
+                String threadIdExpr=(threadId<=0)?"":" and u.threadId="+threadId;
                 switch (folder) {
                     case CURRENT: {
                         if (userId >= 0) {
                             return UPA.getPersistenceUnit()
-                                    .createQuery("Select " + maxCountQL + " u from MailboxSent u where u.senderId=:userId and u.deleted=false and u.archived=false " + unreadOnlyQL + " order by u.sendTime desc")
+                                    .createQuery("Select " + maxCountQL + " u from MailboxSent u where u.senderId=:userId and u.deleted=false and u.archived=false " + unreadOnlyQL+threadIdExpr + " order by u.sendTime desc")
                                     .setParameter("userId", userId).getResultList();
                         } else {
                             return UPA.getPersistenceUnit()
-                                    .createQuery("Select " + maxCountQL + " u from MailboxSent u where and u.deleted=false and u.archived=false " + unreadOnlyQL + " order by u.sendTime desc")
+                                    .createQuery("Select " + maxCountQL + " u from MailboxSent u where and u.deleted=false and u.archived=false " + unreadOnlyQL +threadIdExpr+ " order by u.sendTime desc")
                                     .getResultList();
                         }
                     }
                     case DELETED: {
                         if (userId >= 0) {
                             return UPA.getPersistenceUnit()
-                                    .createQuery("Select " + maxCountQL + "  u from MailboxSent u where u.senderId=:userId and u.deleted=true " + unreadOnlyQL + " order by u.sendTime desc")
+                                    .createQuery("Select " + maxCountQL + "  u from MailboxSent u where u.senderId=:userId and u.deleted=true " + unreadOnlyQL +threadIdExpr+ " order by u.sendTime desc")
                                     .setParameter("userId", userId).getResultList();
                         } else {
                             return UPA.getPersistenceUnit()
-                                    .createQuery("Select " + maxCountQL + "  u from MailboxSent u where u.deleted=true " + unreadOnlyQL + " order by u.sendTime desc")
+                                    .createQuery("Select " + maxCountQL + "  u from MailboxSent u where u.deleted=true " + unreadOnlyQL +threadIdExpr+ " order by u.sendTime desc")
                                     .setParameter("userId", userId).getResultList();
                         }
                     }
                     case ARCHIVED: {
                         if (userId >= 0) {
                             return UPA.getPersistenceUnit()
-                                    .createQuery("Select " + maxCountQL + " u from MailboxSent u where u.senderId=:userId and u.deleted=false and u.archived=true " + unreadOnlyQL + " order by u.sendTime desc")
+                                    .createQuery("Select " + maxCountQL + " u from MailboxSent u where u.senderId=:userId and u.deleted=false and u.archived=true " + unreadOnlyQL +threadIdExpr+ " order by u.sendTime desc")
                                     .setParameter("userId", userId).getResultList();
                         } else {
                             return UPA.getPersistenceUnit()
-                                    .createQuery("Select " + maxCountQL + " u from MailboxSent u where u.deleted=false and u.archived=true " + unreadOnlyQL + " order by u.sendTime desc")
+                                    .createQuery("Select " + maxCountQL + " u from MailboxSent u where u.deleted=false and u.archived=true " + unreadOnlyQL +threadIdExpr+ " order by u.sendTime desc")
                                     .getResultList();
                         }
                     }
@@ -411,17 +434,21 @@ public class MailboxPlugin {
     public void sendWelcomeEmail(List<AppUser> users, boolean applyFilter) {
         for (AppUser u : users) {
             boolean ok = true;
-            if (applyFilter) {
-                if (u.isWelcomeSent() || u.isDeleted() || !u.isEnabled()) {
-                    ok = false;
+            //should reload user
+            u=core.findUser(u.getId());
+            if(u!=null) {
+                if (applyFilter) {
+                    if (u.isWelcomeSent() || u.isDeleted() || !u.isEnabled()) {
+                        ok = false;
+                    }
                 }
-            }
-            if (ok) {
-                try {
-                    sendWelcomeEmail(u, null, notifPusher);
-                } catch (Exception exc) {
-                    String email = u.getContact() == null ? null : u.getContact().getEmail();
-                    VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_WELCOME_MAIL_QUEUE, 60, null, "touser:" + u.getLogin() + " ; email=" + email + " : " + exc, null, Level.SEVERE));
+                if (ok) {
+                    try {
+                        sendWelcomeEmail(u, null, notifPusher);
+                    } catch (Exception exc) {
+                        String email = u.getContact() == null ? null : u.getContact().getEmail();
+                        VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_WELCOME_MAIL_QUEUE, 60, null, "touser:" + u.getLogin() + " ; email=" + email + " : " + exc, null, Level.SEVERE));
+                    }
                 }
             }
         }
@@ -480,7 +507,7 @@ public class MailboxPlugin {
         }
     }
 
-    public int sendLocalMail(GoMail email, final boolean persistOutbox, final boolean sendExternal) throws IOException {
+    public int sendLocalMail(GoMail email, final int sentMessageId, final boolean sendExternal) throws IOException {
         return sendMailByAgent(email, null, new GoMailListener() {
             @Override
             public void onBeforeSend(GoMailMessage mail) {
@@ -505,7 +532,7 @@ public class MailboxPlugin {
             public void onSendError(GoMailMessage mail, Throwable exc) {
 
             }
-        }, new VrLocalMailAgent(email, persistOutbox));
+        }, new VrLocalMailAgent(email, sentMessageId));
     }
 
     public void sendLocalMail(MailboxSent message, Integer templateId, boolean persistOutbox) throws IOException {
@@ -556,8 +583,15 @@ public class MailboxPlugin {
         m.setProperty(MailboxPlugin.HEADER_CATEGORY, message.getCategory());
         m.setProperty(MailboxPlugin.HEADER_TO_PROFILES, message.getToProfiles());
         m.setProperty(MailboxPlugin.HEADER_CC_PROFILES, message.getCcProfiles());
+        if(message.getThreadId()>0) {
+            m.setProperty(MailboxPlugin.HEADER_THREAD_ID, String.valueOf(message.getThreadId()));
+        }
         if (persistOutbox) {
             UPA.getPersistenceUnit().persist(message);
+            if(message.getThreadId()<=0){
+                message.setThreadId(message.getId());
+                UPA.getPersistenceUnit().merge(message);
+            }
         }
 //        if (message.isExternalMessage()) {
 //            try {
@@ -585,7 +619,7 @@ public class MailboxPlugin {
 //                Logger.getLogger(MailboxPlugin.class.getName()).log(Level.SEVERE, null, ex);
 //            }
 //        }
-        sendLocalMail(m, false, message.isExternalMessage());
+        sendLocalMail(m, message.getId(), message.isExternalMessage());
     }
 
     //    public void sendExternalMail(GoMail mail) throws IOException {

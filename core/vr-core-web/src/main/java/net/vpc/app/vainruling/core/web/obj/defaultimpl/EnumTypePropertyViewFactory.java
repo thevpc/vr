@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.core.web.obj.*;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Field;
 import net.vpc.upa.NamedId;
 import net.vpc.upa.types.DataType;
@@ -64,7 +65,7 @@ public class EnumTypePropertyViewFactory implements PropertyViewFactory {
             items.add(new SelectItem(null, "N/A"));
         }
         for (NamedId value : propView.getValues()) {
-            items.add(new SelectItem(value.getId(), value.getName()));
+            items.add(new SelectItem(value.getId(), StringUtils.nonNull(value.getName())));
         }
         propView.setItems(items);
         propView.setDisabled(nfo.disabled);

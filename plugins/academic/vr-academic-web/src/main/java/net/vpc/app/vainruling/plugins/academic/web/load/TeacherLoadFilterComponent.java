@@ -115,6 +115,17 @@ public class TeacherLoadFilterComponent {
         return defaultTeacherFilter;
     }
 
+    public String getPeriodName(){
+        String n=getModel().getSelectedPeriod();
+        for (SelectItem selectItem : getModel().getPeriodItems()) {
+            String v=StringUtils.nonNull(selectItem.getValue());
+            if(n.equals(v)){
+                return selectItem.getLabel();
+            }
+        }
+        return null;
+    }
+
 //    public boolean containsRefreshFilter(String s) {
 //        String[] f = getModel().getRefreshFilter();
 //        return Arrays.asList(f).indexOf(s) >= 0;

@@ -155,7 +155,7 @@ and open the template in the editor.
                 <div >
                     <div class="table-responsive">
                         <h1><p:outputLabel style="font-weight: bold"
-                                           value="#{myCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{myCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{myCourseLoadCtrl.model.stat.val.teacher.situation.name} (#{myCourseLoadCtrl.teacherFilter.period.name}) "/>
+                                           value="#{myCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{myCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{myCourseLoadCtrl.model.stat.val.teacher.situation.name} (#{myCourseLoadCtrl.teacherFilter.periodName}) "/>
                         </h1>
                         <p:panelGrid>
                             <p:row>
@@ -338,8 +338,9 @@ and open the template in the editor.
 
                 <div >
                     <div class="table-responsive">
-                        <h1>Autres modules</h1>
-                        <p:dataTable var="i" value="#{myCourseLoadCtrl.model.others}"
+                        <h1>Autres modules <p:commandButton value="Afficher/Cacher" action="#{myCourseLoadCtrl.onSwitchDisplayOtherModules}"
+                                                            style="margin-left:10px; width:130px" update=":listForm" /></h1>
+                        <p:dataTable id="otherModulesTable" var="i" value="#{myCourseLoadCtrl.model.others}"
                                      class="table table-bordered table-hover"
                                      paginatorAlwaysVisible="false"
                                      paginator="true"
@@ -349,6 +350,7 @@ and open the template in the editor.
                                      rowsPerPageTemplate="1000,2000,5000,1000"
                                      widgetVar="othersTable"
                                      emptyMessage="Aucune charge"
+                                     rendered="#{myCourseLoadCtrl.model.displayOtherModules}"
                         >
                             <p:column styleClass="ui-widget-header" headerText="" width="5%">
                                 <f:facet name="header">

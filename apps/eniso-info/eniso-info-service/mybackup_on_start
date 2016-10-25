@@ -1,4 +1,0 @@
-#!/bin/bash 
-echo cleaning $0 ... 
-base=$(dirname $0)
-rm -R $base/target/*

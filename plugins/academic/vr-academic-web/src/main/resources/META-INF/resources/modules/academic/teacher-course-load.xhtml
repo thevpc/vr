@@ -42,7 +42,7 @@ and open the template in the editor.
 
                         <p:menuButton value="Actions..." style="margin-left: 10px;"
                                       rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
-                                      styleClass="vr-form-field vr-form-fixed-width-medium">
+                                      styleClass="vr-form-field vr-form-fixed-width-medium vr-toolbox-menu-button">
                             <p:menuitem value="Affectations => Voeux (tous)"
                                         disabled="#{!vr.userSession.departmentManager and !vr.userSession.admin}"
                                         actionListener="#{teacherCourseLoadCtrl.assignmentsToIntentsAll()}"
@@ -278,7 +278,7 @@ and open the template in the editor.
                             <p:commandLink
                                     action="#{vr.gotoPageObjItem('AcademicTeacher',vr.str(teacherCourseLoadCtrl.model.currentTeacher.id))}"
                                     style="font-weight: bold"
-                                    value="#{teacherCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.val.teacher.situation.name}  (#{teacherCourseLoadCtrl.teacherFilter.period.name}) "/>
+                                    value="#{teacherCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.val.teacher.situation.name}  (#{teacherCourseLoadCtrl.teacherFilter.periodName}) "/>
                         </h1>
                         <p:panelGrid>
                             <p:row>
@@ -300,7 +300,7 @@ and open the template in the editor.
                                         value="H.Supp. / Sem"/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel
                                         value="Balance"/></p:column>
-                                <p:column styleClass="ui-widget-header" style="widows: 100px;"><p:outputLabel
+                                <p:column styleClass="ui-widget-header" style="width: 60px;"><p:outputLabel
                                         value=""/></p:column>
                             </p:row>
 
@@ -522,8 +522,8 @@ and open the template in the editor.
                                     />
                                 </p:column>
 
-                                <p:column headerText="Salles" width="5%">
-                                    <h:outputText value="#{i.rooms}" rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('rooms')}"
+                                <p:column headerText="Salles" width="5%" rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('rooms')}">
+                                    <h:outputText value="#{i.rooms}"
                                     />
                                 </p:column>
 
@@ -536,7 +536,8 @@ and open the template in the editor.
 
                 <div >
                     <div class="table-responsive">
-                        <h1>Autres modules</h1>
+                        <h1>Autres modules <p:commandButton value="Afficher/Cacher" action="#{teacherCourseLoadCtrl.onSwitchDisplayOtherModules}"
+                                                           style="margin-left:10px; width:130px" update=":listForm" /></h1>
 
                         <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.others}"
                                      class="table table-bordered table-hover"
@@ -548,6 +549,7 @@ and open the template in the editor.
                                      rowsPerPageTemplate="1000,2000,5000,1000"
                                      widgetVar="othersTable"
                                      emptyMessage="Aucune charge"
+                                     rendered="#{teacherCourseLoadCtrl.model.displayOtherModules}"
                         >
                             <p:column style="padding: 0;" styleClass="ui-widget-header" headerText="" width="5%">
                                 <f:facet name="header">

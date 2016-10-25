@@ -200,16 +200,16 @@ public class AcademicAppMyTeamsCtrl {
             }
             for (ApblTeamMember apblCoaching : apbl.findTeamMembers(i)) {
                 if (apblCoaching.getStudent() != null && apblCoaching.getStudent().getUser() != null) {
-                    coachs.add(apblCoaching.getStudent().getUser().getId());
+                    members.add(apblCoaching.getStudent().getUser().getId());
                 }
             }
             if (team != null && team.getOwner() != null) {
                 members.add(team.getOwner().getId());
             }
         }
-        addCoachingLogAllowed = team != null && (currentAdmin || (team.getOwner() != null && currentUser != null && coachs.contains(currentUser.getId())));
-        addProgressionLogAllowed = team != null && (currentAdmin || (team.getOwner() != null && currentUser != null && members.contains(currentUser.getId())));
-        updateTeamAllowed = team != null && (currentAdmin || (team.getOwner() != null && currentUser != null && currentUser.getId() == team.getOwner().getId()));
+        addCoachingLogAllowed = team != null && ((currentUser != null && coachs.contains(currentUser.getId())));
+        addProgressionLogAllowed = team != null && ((team.getOwner() != null && currentUser != null && members.contains(currentUser.getId())));
+        updateTeamAllowed = team != null && ((team.getOwner() != null && currentUser != null && currentUser.getId() == team.getOwner().getId()));
     }
 
     public boolean isUpdateTeamAllowed() {

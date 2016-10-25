@@ -30,8 +30,8 @@ public class TestRestWS {
         TestRestWS s = new TestRestWS();
         s.start();
         s.exec("/core/login"
-                ,"login","taha.bensalah"
-                ,"password","canard77"
+                ,"login","admin"
+                ,"password","admin"
         );
 
         String ret = s.exec("/calendars/my-calendars");

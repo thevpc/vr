@@ -27,7 +27,7 @@ public class GoMailServiceTest {
     public static void main1(String[] args) {
         try {
             GoMail m = new GoMail();
-            m.setCredentials("eniso.info", "canard77");
+            m.setCredentials("eniso.info", "mypassword");
             m.from("eniso.info@gmail.com");
             m.to("taha.bensalah@gmail.com");
             m.subject("Hi");

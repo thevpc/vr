@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by vpc on 9/25/16.
  */
-public class TeamNode {
+public class TeamNode extends ApblNode{
     private ApblTeam team;
     private List<MemberNode> members = new ArrayList<>();
     private List<CoachNode> coaches = new ArrayList<>();

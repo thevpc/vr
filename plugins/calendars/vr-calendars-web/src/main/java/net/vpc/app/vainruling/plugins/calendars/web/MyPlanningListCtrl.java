@@ -61,9 +61,15 @@ public class MyPlanningListCtrl extends AbstractPlanningCtrl {
             if (plannings.size() >0) {
                 getModel().setSelectionIndex(0);
             }
+        }else if(getModel().getSelectionIndex() <0 || getModel().getSelectionIndex()>=getModel().getSelectionIndex()){
+            if (plannings.size() >0) {
+                getModel().setSelectionIndex(0);
+            }else{
+                getModel().setSelectionIndex(null);
+            }
         }
 
-        CalendarWeek planning = getModel().getSelectionIndex()==null?null:plannings.get(getModel().getSelectionIndex());
+        CalendarWeek planning = getModel().getSelectionIndex()==null?null: plannings.get(getModel().getSelectionIndex());
         if (planning == null) {
             updateModel(new ArrayList<CalendarDay>());
         } else {

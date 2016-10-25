@@ -31,6 +31,7 @@ public class UserSession implements Serializable {
     private String sessionId;
     private String clientIpAddress;
     private String lastVisitedPage;
+    private String lastVisitedPageInfo;
     //    private String componentsTheme="glass-x";
 //    private String componentsTheme = "eniso-green";
     private String theme = null;
@@ -44,6 +45,14 @@ public class UserSession implements Serializable {
     private int departmentManager = -1;
     private boolean manager;
     private String selectedSiteFilter;
+
+    public String getLastVisitedPageInfo() {
+        return lastVisitedPageInfo;
+    }
+
+    public void setLastVisitedPageInfo(String lastVisitedPageInfo) {
+        this.lastVisitedPageInfo = lastVisitedPageInfo;
+    }
 
     public static UserSession get() {
         try {

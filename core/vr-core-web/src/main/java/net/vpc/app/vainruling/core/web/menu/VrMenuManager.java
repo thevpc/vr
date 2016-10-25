@@ -281,6 +281,7 @@ public class VrMenuManager {
             }
         }
         s.setLastVisitedPage(lvp.toString());
+        s.setLastVisitedPageInfo(null);
         String data = command;
         if (!StringUtils.isEmpty(arguments)) {
             data += " ; " + arguments;

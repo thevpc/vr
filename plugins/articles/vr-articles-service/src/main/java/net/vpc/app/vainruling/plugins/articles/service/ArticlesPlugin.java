@@ -478,7 +478,7 @@ public class ArticlesPlugin {
             MailboxPlugin mailboxPlugin = VrApp.getBean(MailboxPlugin.class);
             try {
                 GoMail m = mailboxPlugin.createGoMail(mailData);
-                mailboxPlugin.sendLocalMail(m, true, false);
+                mailboxPlugin.sendLocalMail(m, -1, false);
             } catch (Exception ex) {
                 Logger.getLogger(ArticlesPlugin.class.getName()).log(Level.SEVERE, null, ex);
                 throw new RuntimeException(ex);

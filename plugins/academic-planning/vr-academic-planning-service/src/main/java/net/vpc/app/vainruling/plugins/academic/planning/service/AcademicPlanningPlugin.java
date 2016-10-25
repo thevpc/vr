@@ -388,11 +388,13 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
         TreeSet<NamedId> all = new TreeSet<>(new Comparator<NamedId>() {
             @Override
             public int compare(NamedId o1, NamedId o2) {
-                int i = o1.getName().compareTo(o2.getName());
+                String n1 = StringUtils.nonNull(o1.getName());
+                String n2 = StringUtils.nonNull(o2.getName());
+                int i = n1.compareTo(n2);
                 if(i!=0){
                     return i;
                 }
-                return o1.getId().toString().compareTo(o2.getId().toString());
+                return StringUtils.nonNull(o1.getId()).compareTo(StringUtils.nonNull(o2.getId()));
             }
         });
 
@@ -411,7 +413,7 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
                 try {
                     int counter=0;
                     while ((week = parser.next()) != null) {
-                        String tn = week.getName().trim().toLowerCase().trim();
+                        String tn = week.getName().trim().toLowerCase();
                         all.add(new NamedId(tn,week.getName()));
                     }
                 }finally{

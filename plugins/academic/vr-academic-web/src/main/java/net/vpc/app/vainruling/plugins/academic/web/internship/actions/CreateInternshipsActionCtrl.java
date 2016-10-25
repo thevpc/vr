@@ -7,8 +7,15 @@ package net.vpc.app.vainruling.plugins.academic.web.internship.actions;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.web.obj.PropertyView;
+import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
+import net.vpc.app.vainruling.core.web.obj.defaultimpl.FieldPropertyView;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipStatus;
+import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipVariant;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
+import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipBoard;
+import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipGroup;
 import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -29,31 +36,43 @@ public class CreateInternshipsActionCtrl {
     @Autowired
     private CorePlugin core;
     private Model model = new Model();
+    @Autowired
+    private PropertyViewManager propertyViewManager;
 
-    public void openDialog(AcademicInternship internship) {
-        getModel().setDisabled(true);
+    public void openDialog() {
+        getModel().setDisabled(false);
         getModel().setMessage("");
         getModel().setProfile("");
+        AcademicInternship internship = new AcademicInternship();
         getModel().setInternship(internship);
 
-        if (internship.getBoard() == null) {
-            getModel().setMessage("Merci de preciser le Comité");
-        } else if (internship.getInternshipStatus() == null) {
-            getModel().setMessage("Merci de preciser l'étape");
-        } else {
-            getModel().setDisabled(false);
-        }
+
+        getModel().setBoard((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipBoard.class));
+        getModel().setGroup((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipGroup.class));
+        getModel().setInternshipVariant((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipVariant.class));
+        getModel().setStatus((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipStatus.class));
 
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
         options.put("draggable", false);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/internship/create-interships-dialog", options, null);
+        RequestContext.getCurrentInstance().openDialog("/modules/academic/internship/create-internships-dialog", options, null);
 
     }
 
     public void save() {
-        VrApp.getBean(AcademicPlugin.class).generateInternships(getModel().getInternship().getId(), getModel().getProfile());
+        getModel().getInternship().setMainGroup((AcademicInternshipGroup) getModel().getGroup().getObjectValue());
+        getModel().getInternship().setBoard((AcademicInternshipBoard) getModel().getBoard().getObjectValue());
+        getModel().getInternship().setInternshipStatus((AcademicInternshipStatus) getModel().getStatus().getObjectValue());
+        getModel().getInternship().setInternshipVariant((AcademicInternshipVariant) getModel().getInternshipVariant().getObjectValue());
+        if (getModel().getInternship().getBoard() == null) {
+            getModel().setMessage("Merci de preciser le Comité");
+        } else if (getModel().getInternship().getInternshipStatus() == null) {
+            getModel().setMessage("Merci de preciser l'étape");
+        } else {
+            VrApp.getBean(AcademicPlugin.class).generateInternships(getModel().getInternship(), getModel().getProfile());
+            fireEventExtraDialogClosed();
+        }
     }
 
     public void onChange() {
@@ -73,7 +92,43 @@ public class CreateInternshipsActionCtrl {
         private String profile;
         private boolean disabled;
         private String message;
+        private FieldPropertyView group;
+        private FieldPropertyView board;
+        private FieldPropertyView status;
+        private FieldPropertyView internshipVariant;
         private AcademicInternship internship;
+
+        public FieldPropertyView getGroup() {
+            return group;
+        }
+
+        public void setGroup(FieldPropertyView group) {
+            this.group = group;
+        }
+
+        public FieldPropertyView getBoard() {
+            return board;
+        }
+
+        public void setBoard(FieldPropertyView board) {
+            this.board = board;
+        }
+
+        public FieldPropertyView getStatus() {
+            return status;
+        }
+
+        public void setStatus(FieldPropertyView status) {
+            this.status = status;
+        }
+
+        public FieldPropertyView getInternshipVariant() {
+            return internshipVariant;
+        }
+
+        public void setInternshipVariant(FieldPropertyView internshipVariant) {
+            this.internshipVariant = internshipVariant;
+        }
 
         public String getProfile() {
             return profile;

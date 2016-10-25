@@ -7,7 +7,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 /**
  * Created by vpc on 9/25/16.
  */
-public class MemberNode {
+public class MemberNode extends ApblNode{
     private ApblTeamMember member;
 
     public MemberNode() {

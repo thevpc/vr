@@ -354,7 +354,7 @@ public class TaskPlugin {
         }
         if (!session.allowed("TASK_VIEW_ALL")) {
             q.append(" and a.responsibleId=:i");
-            params.put("i", session.getUser().getId());
+            params.put("i", session.getUser()==null?-1:session.getUser().getId());
         } else {
             if (responsible != null) {
                 q.append(" and a.responsibleId=:i");

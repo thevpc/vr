@@ -84,22 +84,24 @@ public class AppSecurityFilter implements Filter {
             try {
                 chain.doFilter(request, response);
             } catch (Exception e) {
+                HttpServletResponse webresponse = (HttpServletResponse) response;
                 if (e instanceof ServletException) {
                     Throwable rootCause = ((ServletException) e).getRootCause();
                     if (rootCause instanceof ViewExpiredException) {
-                        HttpServletResponse webresponse = (HttpServletResponse) response;
                         webresponse.sendRedirect(contextPath+"/r/index.xhtml?faces-redirect=true");
                         return;
                     }
                 }
+                if (e instanceof ViewExpiredException) {
+                    webresponse.sendRedirect(contextPath+"/r/index.xhtml?faces-redirect=true");
+                    return;
+                }
                 if(e.getClass().getName().endsWith(".ClientAbortException")){
                     //this is a tomcat 'Broken pipe' handling i suppose
                     log.log(Level.SEVERE, "ClientAbortException");
-                    HttpServletResponse webresponse = (HttpServletResponse) response;
                     webresponse.sendRedirect(contextPath+"/r/index.xhtml?faces-redirect=true");
                 }
                 log.log(Level.SEVERE, "Unhandled Error", e);
-                HttpServletResponse webresponse = (HttpServletResponse) response;
                 webresponse.sendRedirect(contextPath+"/r/index.xhtml?faces-redirect=true");
 //                HttpServletResponse res = (HttpServletResponse) response;
 //                res.sendError(500);

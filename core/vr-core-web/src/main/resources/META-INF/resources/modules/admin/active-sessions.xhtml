@@ -80,7 +80,7 @@ and open the template in the editor.
                             <h:outputText value="#{activeSessionsCtrl.connectionPeriod(i)}"/>
                         </p:column>
                         <p:column headerText="Activité" rendered="#{activeSessionsCtrl.model.admin}">
-                            <h:outputText value="#{i.lastVisitedPage}"/>
+                            <span title="#{i.lastVisitedPageInfo}"> <h:outputText value="#{i.lastVisitedPage}"/></span>
                         </p:column>
                         <p:column headerText="IP" rendered="#{activeSessionsCtrl.model.admin}">
                             <h:outputText value="#{i.clientIpAddress}"/>

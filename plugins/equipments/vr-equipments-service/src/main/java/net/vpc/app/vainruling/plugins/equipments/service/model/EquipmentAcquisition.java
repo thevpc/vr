@@ -6,6 +6,8 @@
 package net.vpc.app.vainruling.plugins.equipments.service.model;
 
 import net.vpc.app.vainruling.core.service.model.AppCompany;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.config.*;
@@ -17,6 +19,12 @@ import java.util.Date;
  */
 @Entity(listOrder = "date desc")
 @Path("Equipment")
+@Properties(
+        {
+                @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),
+                @Property(name = "ui.auto-filter.orderPeriod", value = "{expr='orderPeriod',order=2}"),
+                @Property(name = "ui.auto-filter.acquisitionPeriod", value = "{expr='acquisitionPeriod',order=3}"),
+        })
 public class EquipmentAcquisition {
 
     @Id
@@ -29,6 +37,12 @@ public class EquipmentAcquisition {
     private AppCompany provider;
     @Summary
     private AppUser user;
+    @Summary
+    private EquipmentAcquisitionStatus status;
+    @Summary
+    private AppDepartment department;
+    private AppPeriod orderPeriod;
+    private AppPeriod acquisitionPeriod;
     private AppUser orderUser;
     private Date orderDate;
     @Properties(
@@ -112,9 +126,40 @@ public class EquipmentAcquisition {
         this.admissionObs = admissionObs;
     }
 
+    public AppDepartment getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(AppDepartment department) {
+        this.department = department;
+    }
+
     @Override
     public String toString() {
         return String.valueOf(name);
     }
 
+    public AppPeriod getOrderPeriod() {
+        return orderPeriod;
+    }
+
+    public void setOrderPeriod(AppPeriod orderPeriod) {
+        this.orderPeriod = orderPeriod;
+    }
+
+    public AppPeriod getAcquisitionPeriod() {
+        return acquisitionPeriod;
+    }
+
+    public void setAcquisitionPeriod(AppPeriod acquisitionPeriod) {
+        this.acquisitionPeriod = acquisitionPeriod;
+    }
+
+    public EquipmentAcquisitionStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EquipmentAcquisitionStatus status) {
+        this.status = status;
+    }
 }

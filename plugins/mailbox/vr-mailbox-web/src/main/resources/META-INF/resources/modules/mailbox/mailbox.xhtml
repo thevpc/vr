@@ -111,8 +111,9 @@ and open the template in the editor.
                     </div>
                     <!-- /.col -->
                     <div class="col-md-9">
-                        <div class="box box-primary">
                             <ui:fragment rendered="#{mailboxCtrl.model.mode.toString() eq 'LIST'}">
+                                <div class="box box-primary">
+
                                 <div class="box-header with-border">
                                     <h3 class="box-title">#{mailboxCtrl.model.title}</h3>
 
@@ -194,7 +195,7 @@ and open the template in the editor.
                                                 <span class="pull-right-container">
                                                     <small class="label pull-right vr-mailbox-label-emblem #{vr.hashToArr(i.value.category,'bg-red','bg-yellow','bg-aqua','bg-blue','bg-light-blue','bg-green','bg-navy','bg-teal','bg-olive','bg-lime','bg-orange','bg-fuchsi','bg-purple','bg-maroon','bg-black')}">#{vr.strcut(i.value.category, 10)}</small>
                                                 </span>
-                                                <p:outputLabel value="#{i.value.userFullName}"
+                                                <p:outputLabel value="#{vr.strcat(mailboxCtrl.model.sent ?'A: ':'De: ',i.value.userFullName)}"
                                                                styleClass="vr-mailbox-name-label"/>
                                             </p:column>
                                             <p:column headerText="" styleClass="vr-mailbox-subject">
@@ -265,10 +266,12 @@ and open the template in the editor.
                                         <!-- /.pull-right -->
                                     </div>
                                 </div>
+                                </div>
                             </ui:fragment>
 
 
                             <ui:fragment rendered="#{mailboxCtrl.model.mode.toString() eq 'UPDATE'}">
+                                <div class="box box-primary">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Lire Mail</h3>
 
@@ -283,7 +286,7 @@ and open the template in the editor.
                                 <div class="box-body no-padding">
                                     <div class="mailbox-read-info">
                                         <h3>#{mailboxCtrl.model.current.subject}</h3>
-                                        <h5>#{mailboxCtrl.model.sent ?vr.strcat('A: ',mailboxCtrl.model.current.userFullName): vr.strcat('De: ',mailboxCtrl.model.current.userFullName)}
+                                        <h5>#{vr.strcat(mailboxCtrl.model.sent ?'A: ':'De: ',mailboxCtrl.model.current.userFullName)}
                                             <span class="mailbox-read-time pull-right">#{vr.date(mailboxCtrl.model.current.sendTime)}</span>
                                         </h5>
                                     </div>
@@ -364,13 +367,84 @@ and open the template in the editor.
                                     </ul>
                                 -->
                                 </div>
-                                <div class="box-footer">
-
                                 </div>
+                                <ui:repeat value="#{mailboxCtrl.model.threadList}" var="tm">
+                                    <div class="box box-default">
+
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">#{tm.subject}</h3>
+                                    </div>
+                                    <!-- /.box-header -->
+                                    <div class="box-body no-padding">
+                                        <div class="mailbox-read-info">
+                                            <h5>#{mailboxCtrl.model.sent ?vr.strcat('A: ',tm.userFullName): vr.strcat('De: ',tm.userFullName)}
+                                                <span class="mailbox-read-time pull-right">#{vr.date(tm.sendTime)}</span>
+                                            </h5>
+                                        </div>
+                                        <div class="mailbox-read-message">
+                                            <p:outputLabel style="font-style: normal;"
+                                                           value="#{vr.replaceCustomURLs(tm.content)}"
+                                                           escape="false"/>
+                                        </div>
+                                    </div>
+                                    <!-- /.box-body -->
+                                    <div class="box-footer">
+                                        <!--
+                                        <ul class="mailbox-attachments clearfix">
+                                            <li>
+                                                <span class="mailbox-attachment-icon"><i class="fa fa-file-pdf-o"></i></span>
+
+                                                <div class="mailbox-attachment-info">
+                                                    <a href="#" class="mailbox-attachment-name"><i class="fa fa-paperclip"></i> Sep2014-report.pdf</a>
+                                                    <span class="mailbox-attachment-size">
+                                  1,245 KB
+                                  <a href="#" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a>
+                                </span>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <span class="mailbox-attachment-icon"><i class="fa fa-file-word-o"></i></span>
+
+                                                <div class="mailbox-attachment-info">
+                                                    <a href="#" class="mailbox-attachment-name"><i class="fa fa-paperclip"></i> App Description.docx</a>
+                                                    <span class="mailbox-attachment-size">
+                                  1,245 KB
+                                  <a href="#" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a>
+                                </span>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <span class="mailbox-attachment-icon has-img"><img src="../../dist/img/photo1.png" alt="Attachment"></span>
+
+                                                <div class="mailbox-attachment-info">
+                                                    <a href="#" class="mailbox-attachment-name"><i class="fa fa-camera"></i> photo1.png</a>
+                                                    <span class="mailbox-attachment-size">
+                                  2.67 MB
+                                  <a href="#" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a>
+                                </span>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <span class="mailbox-attachment-icon has-img"><img src="../../dist/img/photo2.png" alt="Attachment"></span>
+
+                                                <div class="mailbox-attachment-info">
+                                                    <a href="#" class="mailbox-attachment-name"><i class="fa fa-camera"></i> photo2.png</a>
+                                                    <span class="mailbox-attachment-size">
+                                  1.9 MB
+                                  <a href="#" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a>
+                                </span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    -->
+                                    </div>
+                                    </div>
+                                </ui:repeat>
                                 <!-- /.box-footer -->
                             </ui:fragment>
 
                             <ui:fragment rendered="#{mailboxCtrl.model.mode.toString() eq 'NEW'}">
+                                <div class="box box-primary">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Nouveau Message</h3>
                                 </div>
@@ -439,8 +513,79 @@ and open the template in the editor.
                                     <p:commandButton styleClass="btn btn-default" icon="fa fa-times" update=":mainForm"
                                                      actionListener="#{mailboxCtrl.onCancelCurrent}" value=" Annuler"/>
                                 </div>
+                                </div>
+                                <ui:repeat value="#{mailboxCtrl.model.threadList}" var="tm">
+                                    <div class="box box-default">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">#{tm.subject}</h3>
+                                    </div>
+                                    <!-- /.box-header -->
+                                    <div class="box-body no-padding">
+                                        <div class="mailbox-read-info">
+                                            <h5>#{mailboxCtrl.model.sent ?vr.strcat('A: ',tm.userFullName): vr.strcat('De: ',tm.userFullName)}
+                                                <span class="mailbox-read-time pull-right">#{vr.date(tm.sendTime)}</span>
+                                            </h5>
+                                        </div>
+                                        <div class="mailbox-read-message">
+                                            <p:outputLabel style="font-style: normal;"
+                                                           value="#{vr.replaceCustomURLs(tm.content)}"
+                                                           escape="false"/>
+                                        </div>
+                                    </div>
+                                    <!-- /.box-body -->
+                                    <div class="box-footer">
+                                        <!--
+                                        <ul class="mailbox-attachments clearfix">
+                                            <li>
+                                                <span class="mailbox-attachment-icon"><i class="fa fa-file-pdf-o"></i></span>
+
+                                                <div class="mailbox-attachment-info">
+                                                    <a href="#" class="mailbox-attachment-name"><i class="fa fa-paperclip"></i> Sep2014-report.pdf</a>
+                                                    <span class="mailbox-attachment-size">
+                                  1,245 KB
+                                  <a href="#" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a>
+                                </span>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <span class="mailbox-attachment-icon"><i class="fa fa-file-word-o"></i></span>
+
+                                                <div class="mailbox-attachment-info">
+                                                    <a href="#" class="mailbox-attachment-name"><i class="fa fa-paperclip"></i> App Description.docx</a>
+                                                    <span class="mailbox-attachment-size">
+                                  1,245 KB
+                                  <a href="#" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a>
+                                </span>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <span class="mailbox-attachment-icon has-img"><img src="../../dist/img/photo1.png" alt="Attachment"></span>
+
+                                                <div class="mailbox-attachment-info">
+                                                    <a href="#" class="mailbox-attachment-name"><i class="fa fa-camera"></i> photo1.png</a>
+                                                    <span class="mailbox-attachment-size">
+                                  2.67 MB
+                                  <a href="#" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a>
+                                </span>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <span class="mailbox-attachment-icon has-img"><img src="../../dist/img/photo2.png" alt="Attachment"></span>
+
+                                                <div class="mailbox-attachment-info">
+                                                    <a href="#" class="mailbox-attachment-name"><i class="fa fa-camera"></i> photo2.png</a>
+                                                    <span class="mailbox-attachment-size">
+                                  1.9 MB
+                                  <a href="#" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a>
+                                </span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    -->
+                                    </div>
+                                    </div>
+                                </ui:repeat>
                             </ui:fragment>
-                        </div>
                         <!-- /. box -->
                     </div>
                     <!-- /.col -->

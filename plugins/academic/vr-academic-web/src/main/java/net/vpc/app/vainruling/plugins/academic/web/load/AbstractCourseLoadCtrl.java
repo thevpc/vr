@@ -122,6 +122,9 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
 
+    public void onDoNothing() {
+        System.out.println("....");
+    }
     public void onChangeOther() {
         onRefresh();
     }
@@ -627,6 +630,10 @@ public abstract class AbstractCourseLoadCtrl {
 //        return sb.toString();
     }
 
+    public void onSwitchDisplayOtherModules(){
+        getModel().setDisplayOtherModules(!getModel().isDisplayOtherModules());
+    }
+
     public static class SelectableAssignment extends SelectableObject<AcademicCourseAssignmentInfo> {
         private String intents;
         private String rooms;
@@ -757,6 +764,7 @@ public abstract class AbstractCourseLoadCtrl {
         boolean nonIntentedOnly = false;
         boolean multipleSelection = false;
         boolean enableLoadEditing = false;
+        boolean displayOtherModules = false;
         AcademicCourseAssignmentInfo selectedFromOthers = null;
         AcademicCourseAssignmentInfo selectedFromMine1 = null;
         AcademicCourseAssignmentInfo selectedFromMine2 = null;
@@ -888,5 +896,12 @@ public abstract class AbstractCourseLoadCtrl {
             this.enableLoadEditing = enableLoadEditing;
         }
 
+        public boolean isDisplayOtherModules() {
+            return displayOtherModules;
+        }
+
+        public void setDisplayOtherModules(boolean displayOtherModules) {
+            this.displayOtherModules = displayOtherModules;
+        }
     }
 }

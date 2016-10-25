@@ -45,7 +45,7 @@ import java.util.logging.Level;
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         css = "fa-table",
-        title = "Planification",
+        title = "Planification de Stages",
         menu = "/Education/Internship",
         securityKey = "Custom.Education.InternshipsPlanning",
         url = "modules/academic/internship/internships-planning"

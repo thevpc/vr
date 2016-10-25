@@ -24,7 +24,7 @@ import java.util.List;
         actionLabel = "w-mail", actionStyle = "fa-envelope-o",
         dialog = true
 )
-public class SendWelcomeMailAction implements ActionDialog {
+public class SendUserWelcomeMailAction implements ActionDialog {
 
     @Override
     public void openDialog(String actionId, List<String> itemIds) {

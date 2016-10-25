@@ -65,7 +65,9 @@ public class CalendarsPlugin {
                     name=user.getLogin();
                 }
             }
-            all.add(0,mergeCalendars(all,name+" (*)"));
+            if(all.size()>1) {
+                all.add(0, mergeCalendars(all, name + " (*)"));
+            }
         }
         return all;
     }

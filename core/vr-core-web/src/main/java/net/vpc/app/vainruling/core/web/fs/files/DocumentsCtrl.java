@@ -148,6 +148,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         }else{
             getModel().setCurrent(DocumentsUtils.createFileInfo("/", getModel().getFileSystem().get("/")));
         }
+        UserSession.get().setLastVisitedPageInfo(getModel().getCurrent().file.getPath());
         onRefresh();
     }
 
@@ -160,6 +161,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
 
     public void updateCurrent(VFile file) {
         getModel().setCurrent(DocumentsUtils.createFileInfo(file.getName(), file));
+        UserSession.get().setLastVisitedPageInfo(getModel().getCurrent().file.getPath());
         onRefresh();
     }
 

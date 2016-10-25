@@ -92,19 +92,47 @@ public class PropertyViewManager {
         return defaultPropertyViewFactory;
     }
 
-    public PropertyView[] createPropertyView(String componentId, Field field, Map<String, Object> configuration, ViewContext viewContext) {
+    public PropertyView createPropertyView(String componentId, Field field, Map<String, Object> configuration, ViewContext viewContext) {
+        PropertyView[] propertyViews = createPropertyViews(componentId, field, configuration, viewContext);
+        if(propertyViews.length==1){
+            return propertyViews[0];
+        }
+        if(propertyViews.length==0){
+            throw new RuntimeException("No Property view could be created");
+        }
+        throw new RuntimeException("Too many Property views");
+    }
+    public PropertyView[] createPropertyViews(String componentId, Field field, Map<String, Object> configuration, ViewContext viewContext) {
         return getPropertyViewFactory(field).createPropertyView(componentId, field, configuration, this, viewContext);
     }
 
-    public PropertyView[] createPropertyView(String componentId, Class dt, Map<String, Object> configuration, ViewContext viewContext) {
-        if (UPA.getPersistenceUnit().findEntity(dt) != null) {
-            Entity ee = UPA.getPersistenceUnit().findEntity(dt);
-            return createPropertyView(componentId, ee.getDataType(), configuration, viewContext);
-        }
-        return createPropertyView(componentId, TypesFactory.forPlatformType(dt), configuration, viewContext);
+    public PropertyView createPropertyView(Class dt) {
+        return createPropertyView(dt.getSimpleName(),dt,null,null);
     }
 
-    public PropertyView[] createPropertyView(String componentId, DataType dt, Map<String, Object> configuration, ViewContext viewContext) {
+    public PropertyView createPropertyView(String componentId, Class dt, Map<String, Object> configuration, ViewContext viewContext) {
+        PropertyView[] propertyViews = createPropertyViews(componentId, dt, configuration, viewContext);
+        if(propertyViews.length==1){
+            return propertyViews[0];
+        }
+        if(propertyViews.length==0){
+            throw new RuntimeException("No Property view could be created");
+        }
+        throw new RuntimeException("Too many Property views");
+    }
+
+    public PropertyView[] createPropertyViews(String componentId, Class dt, Map<String, Object> configuration, ViewContext viewContext) {
+        if (UPA.getPersistenceUnit().findEntity(dt) != null) {
+            Entity ee = UPA.getPersistenceUnit().findEntity(dt);
+            return createPropertyViews(componentId, ee.getDataType(), configuration, viewContext);
+        }
+        return createPropertyViews(componentId, TypesFactory.forPlatformType(dt), configuration, viewContext);
+    }
+
+    public PropertyView[] createPropertyViews(String componentId, DataType dt, Map<String, Object> configuration, ViewContext viewContext) {
+        if(viewContext==null){
+            viewContext=new ViewContext();
+        }
         return getPropertyViewFactory(dt).createPropertyView(componentId, dt, configuration, this, viewContext);
     }
 
