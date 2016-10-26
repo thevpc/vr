@@ -8,9 +8,7 @@ package net.vpc.app.vainruling.core.web.fs;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUrl;
-import net.vpc.common.streams.FileUtils;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.UPA;
 
@@ -21,7 +19,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 

@@ -6,7 +6,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.planning.PlanningActivityTable;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.planning.PlanningResult;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.planning.PlanningService;
-import net.vpc.common.streams.FileUtils;
+import net.vpc.common.io.FileUtils;
 import net.vpc.common.util.Chronometer;
 
 import javax.xml.parsers.ParserConfigurationException;

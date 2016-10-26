@@ -7,22 +7,14 @@ package net.vpc.app.vainruling.core.web.util;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.Vr;
-import net.vpc.common.jsf.FacesUtils;
-import net.vpc.common.streams.FileUtils;
+import net.vpc.common.io.FileUtils;
 import net.vpc.common.strings.StringConverter;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.vfs.VFS;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.exceptions.IllegalArgumentException;
-import org.glassfish.jersey.internal.PropertiesDelegate;
-import org.glassfish.jersey.message.internal.OutboundJaxrsResponse;
-import org.glassfish.jersey.message.internal.TracingAwarePropertiesDelegate;
-import org.glassfish.jersey.server.ContainerRequest;
 import org.primefaces.event.FileUploadEvent;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.expression.Expression;
@@ -36,11 +28,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author taha.bensalah@gmail.com

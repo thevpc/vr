@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.core.service.util;
 import com.google.gson.Gson;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
-import net.vpc.common.streams.IOUtils;
+import net.vpc.common.io.IOUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.CustomDefaultObject;

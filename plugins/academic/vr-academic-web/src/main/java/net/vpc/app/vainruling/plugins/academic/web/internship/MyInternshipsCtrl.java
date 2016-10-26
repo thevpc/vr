@@ -23,8 +23,8 @@ import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.A
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipVariant;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
 import net.vpc.app.vainruling.plugins.academic.web.dialog.DisciplineDialogCtrl;
+import net.vpc.common.io.PathInfo;
 import net.vpc.common.jsf.FacesUtils;
-import net.vpc.common.streams.PathInfo;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;

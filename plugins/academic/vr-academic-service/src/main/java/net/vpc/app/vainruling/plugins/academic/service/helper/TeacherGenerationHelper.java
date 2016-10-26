@@ -25,7 +25,7 @@ import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherSemesterStat;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilterAnd;
 import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.util.TeacherFilterFactory;
-import net.vpc.common.streams.PathInfo;
+import net.vpc.common.io.PathInfo;
 import net.vpc.common.strings.MapStringConverter;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;

@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.core.web.fs;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.common.streams.FileUtils;
+import net.vpc.common.io.FileUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VirtualFileSystem;
