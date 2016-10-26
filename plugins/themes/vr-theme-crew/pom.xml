@@ -2,10 +2,10 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>net.vpc.app.vain-ruling.apps.eniso-info.plugins.themes</groupId>
-    <artifactId>eniso-info-crew-theme</artifactId>
-    <name>net.vpc.app.vain-ruling.apps.eniso-info.plugins.themes.eniso-info-crew-theme</name>
-    <version>1.1</version>
+    <groupId>net.vpc.app.vain-ruling.plugins.themes</groupId>
+    <artifactId>vr-crew-theme</artifactId>
+    <name>net.vpc.app.vain-ruling.plugins.themes.plugins.themes.vr-theme-crew</name>
+    <version>1.2</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 
@@ -49,7 +49,7 @@
     <properties>
         <vr-plugin.component-type>service</vr-plugin.component-type>
         <vr-plugin.name>Crew Theme</vr-plugin.name>
-        <vr-plugin.description>eniso.info Crew Theme (2016)</vr-plugin.description>
+        <vr-plugin.description>Crew Theme (2016)</vr-plugin.description>
     </properties>
 
     <dependencies>

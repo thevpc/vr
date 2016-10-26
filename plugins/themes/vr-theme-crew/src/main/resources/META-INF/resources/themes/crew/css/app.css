@@ -1172,3 +1172,7 @@ span.ui-autocomplete.vr-form-control:focus{
 .vr-selected-many-selected {
     color: #3c8dbc !important;
 }
+
+.vr-form-button-icon-only{
+    width: 25px;
+}
