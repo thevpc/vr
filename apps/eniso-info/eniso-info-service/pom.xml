@@ -29,11 +29,6 @@
             <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.articles</groupId>
-            <artifactId>vr-articles-service</artifactId>
-            <version>1.8</version>
-        </dependency>
-        <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-service</artifactId>
             <version>1.2.1</version>

@@ -15,6 +15,8 @@ import net.vpc.app.vainruling.core.service.obj.AppEntityExtendedPropertiesProvid
 import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.Start;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
@@ -150,6 +152,57 @@ public class MailboxPlugin {
             w.setFooterEmbeddedImage("/Config/VisualIdentity/Institution.jpg");
             w.setPreferFormattedText(true);
             UPA.getPersistenceUnit().persist(w);
+        }
+        {
+            MailboxMessageFormat m = new MailboxMessageFormat();
+            m.setName("DefaultExternalMail");
+            m.setPreferFormattedText(true);
+            m.setSubject("[ENISo][II] ${mail_subject}");
+            m.setFormattedBody("<p>${if gender='F' then 'Chère' else 'Cher' end} ${civility} ${firstName},</p>"
+                    + "\n ${mail_body}"
+                    + "\n <p>Cordialement,</p>"
+                    + "\n <p>${from_fullName}</p>"
+                    + "\n <p>${from_positionTitle1}</p>"
+                    + "\n <p>${from_positionTitle2}</p>"
+                    + "\n <p>${from_positionTitle3}</p>"
+                    + "\n <p>" + "Restez connectés sur http://www.eniso.info </p>"
+            );
+            m.setPlainBody("${if gender='F' then 'Chère' else 'Cher' end} ${civility} ${firstName},"
+                    + "\n ${mail_body}"
+                    + "\n Cordialement,"
+                    + "\n ${from_fullName}"
+                    + "\n ${from_positionTitle1}"
+                    + "\n ${from_positionTitle2}"
+                    + "\n ${from_positionTitle3}"
+                    + "\n Restez connectés sur http://www.eniso.info"
+            );
+            m.setFooterEmbeddedImage("/Config/VisualIdentity/Institution.jpg");
+            core.findOrCreate(m);
+        }
+        {
+            MailboxMessageFormat m = new MailboxMessageFormat();
+            m.setName("DefaultLocalMail");
+            m.setPreferFormattedText(true);
+            m.setSubject("${mail_subject}");
+            m.setFormattedBody("<p>${if gender='F' then 'Chère' else 'Cher' end} ${civility} ${firstName},</p>"
+                    + "\n ${mail_body}"
+                    + "\n <p>Cordialement,</p>"
+                    + "\n <p>${from_fullName}</p>"
+                    + "\n <p>${from_positionTitle1}</p>"
+                    + "\n <p>${from_positionTitle2}</p>"
+                    + "\n <p>${from_positionTitle3}</p>"
+                    + "\n <p>" + "Restez connectés sur http://www.eniso.info </p>");
+            m.setPlainBody("${if gender='F' then 'Chère' else 'Cher' end} ${civility} ${firstName},"
+                    + "\n ${mail_body}"
+                    + "\n Cordialement"
+                    + "\n ${from_fullName}"
+                    + "\n ${from_positionTitle1}"
+                    + "\n ${from_positionTitle2}"
+                    + "\n ${from_positionTitle3}"
+            );
+            m.setFooterEmbeddedImage(null);
+            m.setFooterEmbeddedImage("/Config/VisualIdentity/Institution.jpg");
+            core.findOrCreate(m);
         }
     }
 
@@ -894,6 +947,14 @@ public class MailboxPlugin {
             }
         }
     }
+//    public MailboxMessageFormat getExternalMailTemplate() {
+//        return UPA.getPersistenceUnit().findByMainField(MailboxMessageFormat.class, "DefaultExternalMail");
+//    }
+//
+//    public MailboxMessageFormat getInternalMailTemplate() {
+//        return UPA.getPersistenceUnit().findByMainField(MailboxMessageFormat.class, "DefaultLocalMail");
+//    }
+//
 
     public MailboxMessageFormat getMailTemplate(int id) {
         return UPA.getPersistenceUnit().findById(MailboxMessageFormat.class, id);
@@ -945,4 +1006,118 @@ public class MailboxPlugin {
         //reorder and remove duplicates
         return new ArrayList<String>(new TreeSet<String>(all));
     }
+
+    public void sendExternalMail(ArticlesItem obj, String config) {
+        if (obj == null) {
+            return;
+        }
+        if (!UPA.getPersistenceGroup().getSecurityManager().isAllowedKey("Custom.Article.SendExternalEmail")) {
+            return;
+        }
+        SendExternalMailConfig c = VrUtils.parseJSONObject(config, SendExternalMailConfig.class);
+        if (c == null) {
+            c = new SendExternalMailConfig();
+        }
+        ArticlesItem a = obj;
+        RecipientType etype = c.getEmailType();
+        if (etype == null) {
+            etype = RecipientType.TOEACH;
+        }
+        if (!StringUtils.isEmpty(a.getRecipientProfiles())) {
+            MailData mailData = new MailData();
+            mailData.setFrom(a.getSender() == null ? null : a.getSender().getLogin());
+            mailData.setTemplateId(c.getTemplateId());
+            mailData.setSubject(a.getSubject());
+            mailData.setBody(a.getContent());
+            mailData.setTo(a.getRecipientProfiles());
+            mailData.setToFilter(a.getFilterExpression());
+            mailData.setCategory("Article");
+            mailData.setEmailType(etype);
+            mailData.setRichText(true);
+            mailData.setExternal(true);
+
+//            GoMail m = new GoMail();
+//
+//            emailPlugin.prepareSender(m);
+//
+//            MailboxMessageFormat mailTemplate = getExternalMailTemplate();
+//            emailPlugin.prepareBody(
+//                    a.getSubject(),
+//                    a.getContent(),
+//                    m,
+//                    a.getSender() == null
+//                            ? core.getUserSession().getUser().getId()
+//                            : a.getSender().getId(), mailTemplate);
+//            prepareRecipients(m, etype, a.getRecipientProfiles(), a.getFilterExpression(), false);
+            MailboxPlugin emailPlugin = VrApp.getBean(MailboxPlugin.class);
+            try {
+                GoMail m = emailPlugin.createGoMail(mailData);
+                emailPlugin.sendExternalMail(m, null, new GoMailListener() {
+                    @Override
+                    public void onBeforeSend(GoMailMessage mail) {
+
+                    }
+
+                    @Override
+                    public void onAfterSend(GoMailMessage mail) {
+                        VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(CorePlugin.SEND_EXTERNAL_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject(), null, Level.INFO));
+                    }
+
+                    @Override
+                    public void onSendError(GoMailMessage mail, Throwable exc) {
+                        VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(CorePlugin.SEND_EXTERNAL_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject() + " : " + exc, null, Level.SEVERE));
+                    }
+                });
+                VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(CorePlugin.SEND_EXTERNAL_MAIL_QUEUE, 60, null, "Send Finished", null, Level.INFO));
+
+            } catch (IOException ex) {
+                Logger.getLogger(CorePlugin.class.getName()).log(Level.SEVERE, null, ex);
+                throw new RuntimeException(ex);
+            }
+        } else {
+            throw new IllegalArgumentException("Could not send email to EVERY ONE");
+        }
+    }
+
+    public void sendLocalMail(ArticlesItem obj, String config) {
+        if (obj == null) {
+            return;
+        }
+        if (!UPA.getPersistenceGroup().getSecurityManager().isAllowedKey("Custom.Article.SendInternalEmail")) {
+            return;
+        }
+        ArticlesItem a = obj;
+        SendExternalMailConfig c = VrUtils.parseJSONObject(config, SendExternalMailConfig.class);
+        if (c == null) {
+            c = new SendExternalMailConfig();
+        }
+        RecipientType type = c.getEmailType();
+        if (type == null) {
+            type = RecipientType.TO;
+        }
+        if (!StringUtils.isEmpty(a.getRecipientProfiles())) {
+            MailData mailData = new MailData();
+            mailData.setFrom(a.getSender() == null ? null : a.getSender().getLogin());
+            mailData.setTemplateId(c.getTemplateId());
+            mailData.setSubject(a.getSubject());
+            mailData.setBody(a.getContent());
+            mailData.setTo(a.getRecipientProfiles());
+            mailData.setToFilter(a.getFilterExpression());
+            mailData.setCategory("Article");
+            mailData.setEmailType(type);
+            MailboxPlugin mailboxPlugin = VrApp.getBean(MailboxPlugin.class);
+            try {
+                GoMail m = mailboxPlugin.createGoMail(mailData);
+                mailboxPlugin.sendLocalMail(m, -1, false);
+            } catch (Exception ex) {
+                Logger.getLogger(MailboxPlugin.class.getName()).log(Level.SEVERE, null, ex);
+                throw new RuntimeException(ex);
+            }
+        } else {
+            throw new IllegalArgumentException("Could not send email to EVERY ONE");
+        }
+    }
+
+
+
 }

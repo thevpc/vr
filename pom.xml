@@ -29,10 +29,9 @@
         <module>plugins/forum/vr-forum-service</module>
         <module>plugins/equipments/vr-equipments-service</module>
         <module>plugins/equipments/vr-equipments-web</module>
-        <module>plugins/articles/vr-articles-service</module>
-        <module>plugins/articles/vr-articles-web</module>
         <module>plugins/dev-toolbox/vr-dev-toolbox-service</module>
         <module>plugins/dev-toolbox/vr-dev-toolbox-web</module>
+        <module>plugins/themes/vr-theme-crew</module>
     </modules>
 
 </project>

@@ -75,18 +75,18 @@
         </dependency>
         <dependency>
             <groupId>net.vpc.common</groupId>
-            <artifactId>strings</artifactId>
-            <version>1.2.4</version>
+            <artifactId>vpc-common-strings</artifactId>
+            <version>1.2.5</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.common</groupId>
-            <artifactId>utils</artifactId>
-            <version>1.4</version>
+            <artifactId>vpc-common-utils</artifactId>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.common</groupId>
-            <artifactId>streams</artifactId>
-            <version>1.2</version>
+            <artifactId>vpc-common-streams</artifactId>
+            <version>1.3</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -96,7 +96,12 @@
         <dependency>
             <groupId>net.vpc.common</groupId>
             <artifactId>vfs</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>rome</groupId>
+            <artifactId>rome</artifactId>
+            <version>1.0</version>
         </dependency>
         <!--        <dependency>
             <groupId>net.vpc.upa.extensions</groupId>

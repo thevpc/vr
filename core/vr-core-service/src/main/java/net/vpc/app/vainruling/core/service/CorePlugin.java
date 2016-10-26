@@ -5,6 +5,8 @@
  */
 package net.vpc.app.vainruling.core.service;
 
+import com.sun.syndication.feed.synd.*;
+import com.sun.syndication.io.SyndFeedOutput;
 import net.vpc.app.vainruling.core.service.agent.ActiveSessionsTracker;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.cache.EntityCache;
@@ -12,7 +14,9 @@ import net.vpc.app.vainruling.core.service.fs.VrFS;
 import net.vpc.app.vainruling.core.service.fs.VrFSEntry;
 import net.vpc.app.vainruling.core.service.fs.VrFSTable;
 import net.vpc.app.vainruling.core.service.model.*;
+import net.vpc.app.vainruling.core.service.model.content.*;
 import net.vpc.app.vainruling.core.service.notification.PollAware;
+import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
 import net.vpc.app.vainruling.core.service.plugins.*;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.AppVersion;
@@ -32,10 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Timestamp;
@@ -51,6 +52,7 @@ import java.util.logging.Level;
 public class CorePlugin {
 
     public static final java.util.logging.Logger LOG_APPLICATION_STATS = java.util.logging.Logger.getLogger(CorePlugin.class.getName() + ".Stats");
+    public static final String SEND_EXTERNAL_MAIL_QUEUE = "sendExternalMailQueue";
     private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePlugin.class.getName());
     public static final String PATH_LOG = "/Var/Log";
     public static final String PATH_TEMP = "/Var/Temp";
@@ -979,6 +981,53 @@ public class CorePlugin {
         createRight("Custom.FileSystem.RootFileSystem", "Root FileSystem Access");
         createRight("Custom.FileSystem.MyFileSystem", "My FileSystem Access");
         createRight(RIGHT_FILESYSTEM_WRITE, "Enable Write Access for File System");
+
+
+        createRight("Custom.Article.SendExternalEmail", "Send External Email");
+        createRight("Custom.Article.SendInternalEmail", "Send Internal Email");
+        ArticlesDisposition ad;
+
+        for (int i = 1; i <= 7; i++) {
+            ad = new ArticlesDisposition();
+            ad.setName("Main.Row" + i);
+            ad.setDescription("Page principale, Ligne " + i);
+            findOrCreate(ad);
+        }
+
+        ad = new ArticlesDisposition();
+        ad.setName("Welcome");
+        ad.setDescription("Page de bienvenue");
+        findOrCreate(ad);
+
+        ad = new ArticlesDisposition();
+        ad.setName("News");
+        ad.setDescription("Page actualités");
+        findOrCreate(ad);
+
+        ad = new ArticlesDisposition();
+        ad.setName("Activities");
+        ad.setDescription("Page activités");
+        findOrCreate(ad);
+
+
+        {
+            AppProfile p = new AppProfile();
+            p.setCode("Publisher");
+            p.setName("Publisher");
+            p = findOrCreate(p);
+            addProfileRight(p.getId(), "ArticlesItem.DefaultEditor");
+            addProfileRight(p.getId(), "ArticlesItem.Load");
+            addProfileRight(p.getId(), "ArticlesItem.Navigate");
+            addProfileRight(p.getId(), "ArticlesItem.Persist");
+            addProfileRight(p.getId(), "ArticlesItem.Update");
+            addProfileRight(p.getId(), "ArticlesItem.Remove");
+            addProfileRight(p.getId(), "ArticlesFile.DefaultEditor");
+            addProfileRight(p.getId(), "ArticlesFile.Load");
+            addProfileRight(p.getId(), "ArticlesFile.Navigate");
+            addProfileRight(p.getId(), "ArticlesFile.Persist");
+            addProfileRight(p.getId(), "ArticlesFile.Update");
+            addProfileRight(p.getId(), "ArticlesFile.Remove");
+        }
     }
 
     @Start
@@ -1010,9 +1059,9 @@ public class CorePlugin {
             e.printStackTrace();
         }
         validateRightsDefinitions();
+        VrApp.getBean(VrNotificationManager.class).register(SEND_EXTERNAL_MAIL_QUEUE, SEND_EXTERNAL_MAIL_QUEUE, 200);
     }
 
-    //    @Start
     protected void validateRightsDefinitions() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         for (Entity entity : pu.getEntities()) {
@@ -2975,5 +3024,312 @@ public class CorePlugin {
             return "";
         }
         return user.getContact().getFullName();
+    }
+
+
+
+    public ArticlesItem findArticle(int articleId) {
+        return UPA.getPersistenceUnit().findById(ArticlesItem.class,articleId);
+    }
+
+    public ArticlesDisposition findArticleDisposition(int articleDispositionId) {
+        return UPA.getPersistenceUnit().findById(ArticlesDisposition.class,articleDispositionId);
+    }
+
+    public List<ArticlesDispositionGroupType> findArticleDispositionGroupTypes() {
+        EntityCache entityCache = cacheService.get(ArticlesDispositionGroupType.class);
+        return entityCache.getValues();
+    }
+
+    public List<ArticlesDispositionGroup> findArticleDispositionGroups(int siteType) {
+        final EntityCache entityCache = cacheService.get(ArticlesDispositionGroup.class);
+        return entityCache.getProperty("findArticleDispositionGroups:"+siteType, new Action<List<ArticlesDispositionGroup>>() {
+            @Override
+            public List<ArticlesDispositionGroup> run() {
+                return UPA.getPersistenceUnit()
+                        .createQuery("Select u from ArticlesDispositionGroup u where u.typeId=:typeId order by u.index,u.title")
+                        .setParameter("typeId",siteType)
+                        .getResultList();
+            }
+        });
+    }
+
+    public ArticlesDispositionGroup findArticleDispositionGroup(String name) {
+        final EntityCache entityCache = cacheService.get(ArticlesDispositionGroup.class);
+        Map<String, ArticlesDispositionGroup> m = entityCache.getProperty("findArticleDispositionGroup", new Action<Map<String, ArticlesDispositionGroup>>() {
+            @Override
+            public Map<String, ArticlesDispositionGroup> run() {
+                Map<String, ArticlesDispositionGroup> m = new HashMap<String, ArticlesDispositionGroup>();
+                MapList<Integer, ArticlesDispositionGroup> values = entityCache.getValues();
+                for (ArticlesDispositionGroup u : values) {
+                    String key = u.getName();
+                    if (!StringUtils.isEmpty(key)) {
+                        m.put(key, u);
+                    }
+                }
+                return m;
+            }
+        });
+        return m.get(name);
+    }
+
+    public ArticlesDisposition findArticleDisposition(String name) {
+        final EntityCache entityCache = cacheService.get(ArticlesDisposition.class);
+        Map<String, ArticlesDisposition> m = entityCache.getProperty("findArticleDispositionByName", new Action<Map<String, ArticlesDisposition>>() {
+            @Override
+            public Map<String, ArticlesDisposition> run() {
+                Map<String, ArticlesDisposition> m = new HashMap<String, ArticlesDisposition>();
+                MapList<Integer, ArticlesDisposition> values = entityCache.getValues();
+                for (ArticlesDisposition u : values) {
+                    String key = u.getName();
+                    if (!StringUtils.isEmpty(key)) {
+                        m.put(key, u);
+                    }
+                }
+                return m;
+            }
+        });
+        return m.get(name);
+    }
+
+    public List<ArticlesFile> findArticlesFiles(int articleId) {
+        return UPA.getPersistenceUnit().createQuery("Select u from ArticlesFile u where "
+                + " u.articleId=:articleId"
+                + " order by "
+                + "  u.position asc"
+        )
+                .setParameter("articleId", articleId)
+                .getResultList();
+    }
+
+    public List<ArticlesFile> findArticlesFiles(int[] articleIds) {
+        if (articleIds.length == 0) {
+            return Collections.emptyList();
+        }
+        StringBuilder ids_string = new StringBuilder();
+        ids_string.append(articleIds[0]);
+        for (int i = 1; i < articleIds.length; i++) {
+            ids_string.append(",");
+            ids_string.append(articleIds[i]);
+        }
+        return UPA.getPersistenceUnit().createQuery("Select u from ArticlesFile u where "
+                + " u.articleId in(" + ids_string + ")"
+                + " order by "
+                + "  u.position asc"
+        )
+                .getResultList();
+    }
+
+    public FullArticle findFullArticle(int id) {
+        //invoke privileged to find out article not created by self.
+        //when using non privileged mode, users can see SOLELY articles they have created
+        ArticlesItem a = UPA.getPersistenceUnit().invokePrivileged(new Action<ArticlesItem>() {
+            @Override
+            public ArticlesItem run() {
+                return findArticle(id);
+            }
+        });
+        if(a==null){
+            return null;
+        }
+        String aname = a.getLinkText();
+        String aurl = a.getLinkURL();
+        String acss = a.getLinkClassStyle();
+        List<ArticlesFile> att = new ArrayList<>();
+        if (!StringUtils.isEmpty(aname) || !StringUtils.isEmpty(aurl)) {
+            ArticlesFile baseArt = new ArticlesFile();
+            baseArt.setId(-1);
+            baseArt.setName(StringUtils.isEmpty(aname) ? "NoName" : aname);
+            baseArt.setPath(aurl);
+            baseArt.setStyle(acss);
+            att.add(baseArt);
+        }
+        List<ArticlesFile> c = findArticlesFiles(a.getId());
+        if (c != null) {
+            att.addAll(c);
+        }
+        FullArticle f = new FullArticle(a, att);
+        return f;
+    }
+
+    public List<FullArticle> findFullArticlesByUserAndCategory(final String login, int dispositionGroupId,boolean includeNoDept, final String disposition) {
+        return UPA.getContext().invokePrivileged(new Action<List<FullArticle>>() {
+
+            @Override
+            public List<FullArticle> run() {
+                List<FullArticle> all = new ArrayList<>();
+                List<ArticlesItem> articles = findArticlesByUserAndCategory(login, dispositionGroupId, includeNoDept,disposition);
+                int[] articleIds = new int[articles.size()];
+                for (int i = 0; i < articleIds.length; i++) {
+                    articleIds[i] = articles.get(i).getId();
+                }
+                ListValueMap<Integer, ArticlesFile> articlesFilesMap = new ListValueMap<Integer, ArticlesFile>();
+                for (ArticlesFile articlesFile : findArticlesFiles(articleIds)) {
+                    articlesFilesMap.put(articlesFile.getArticle().getId(), articlesFile);
+                }
+                for (ArticlesItem a : articles) {
+                    String aname = a.getLinkText();
+                    String aurl = a.getLinkURL();
+                    String acss = a.getLinkClassStyle();
+                    List<ArticlesFile> att = new ArrayList<>();
+                    if (!StringUtils.isEmpty(aname) || !StringUtils.isEmpty(aurl)) {
+                        ArticlesFile baseArt = new ArticlesFile();
+                        baseArt.setId(-1);
+                        baseArt.setName(StringUtils.isEmpty(aname) ? "NoName" : aname);
+                        baseArt.setPath(aurl);
+                        baseArt.setStyle(acss);
+                        att.add(baseArt);
+                    }
+
+                    List<ArticlesFile> c = articlesFilesMap.get(a.getId());
+                    if (c != null) {
+                        att.addAll(c);
+                    }
+                    FullArticle f = new FullArticle(a, att);
+                    all.add(f);
+                }
+                return all;
+            }
+
+        }, null);
+    }
+
+    public List<ArticlesItem> findArticlesByUserAndCategory(String login, int dispositionGroupId,boolean includeNoDept,String ... dispositions) {
+        if(dispositions.length==0){
+            return Collections.EMPTY_LIST;
+        }
+        StringBuilder queryStr=new StringBuilder("Select u from ArticlesItem u where ");
+        queryStr.append(" u.deleted=false ");
+        queryStr.append(" and u.archived=false");
+        queryStr.append(" and (");
+        Map<String,Object> disps=new HashMap<>();
+        for (int i = 0; i < dispositions.length; i++) {
+            String disposition = dispositions[i];
+            if(i>0){
+                queryStr.append(" or ");
+            }
+            queryStr.append(" u.disposition.name=:disposition"+i);
+            disps.put("disposition"+i,disposition);
+        }
+        queryStr.append(" )");
+        if(includeNoDept) {
+            queryStr.append(" and (u.dispositionGroupId=:dispositionGroupId or u.dispositionGroupId=null)");
+            disps.put("dispositionGroupId",dispositionGroupId);
+        }else{
+            queryStr.append(" and (u.dispositionGroupId=:dispositionGroupId)");
+            disps.put("dispositionGroupId",dispositionGroupId);
+        }
+
+        queryStr.append(" order by "
+                + "  u.position"
+                + ", u.important desc"
+                + ", u.sendTime desc");
+
+        Query query = UPA.getPersistenceUnit().createQuery(queryStr.toString()).setParameters(disps);
+        List<ArticlesItem> all = query.getResultList();
+
+        return filterByProfilePattern(all, null, login, new ProfilePatternFilter<ArticlesItem>() {
+            @Override
+            public String getProfilePattern(ArticlesItem t) {
+                AppUser s = t.getSender();
+                String author = s == null ? null : s.getLogin();
+                String p = t.getRecipientProfiles();
+                if (StringUtils.isEmpty(p)) {
+                    return p;
+                }
+                if (StringUtils.isEmpty(author)) {
+                    return p;
+                }
+                return "( " + p + " ) , " + author;
+            }
+        });
+    }
+
+//    @EntityActionList(entityType = ArticlesItem.class)
+//    public String[] findArticleActions(){
+//        return new String[]{"SendEmail"};
+//    }
+
+    public void generateRSS(String login, String rss, OutputStream out) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        ArticlesDisposition t = pu.findByMainField(ArticlesDisposition.class, "rss." + rss);
+        List<FullArticle> articles = findFullArticlesByUserAndCategory(login, -1,true,"rss." + rss);
+        try {
+            String feedType = "rss_2.0";
+//            String fileName = "feed.xml";
+
+            SyndFeed feed = new SyndFeedImpl();
+            feed.setFeedType(feedType);
+
+            feed.setTitle("ENISo Computer Engeneering Department");
+            feed.setLink("http://www.eniso.info");
+            feed.setDescription(t == null ? null : t.getDescription());
+
+            List entries = new ArrayList();
+            SyndEntry entry;
+            SyndContent description;
+            for (FullArticle art : articles) {
+                entry = new SyndEntryImpl();
+                entry.setTitle(art.getSubject());
+                entry.setLink(art.getLinkURL() == null ? feed.getLink() : art.getLinkURL());
+                entry.setPublishedDate(art.getPublishTime());
+                description = new SyndContentImpl();
+                description.setType("text/html;charset=UTF-8");
+                description.setValue(art.getContent());
+                entry.setDescription(description);
+                entry.setAuthor(art.getUser() == null ? null : art.getUser().getContact().getFullName());
+                entries.add(entry);
+            }
+
+            feed.setEntries(entries);
+
+            Writer writer = new OutputStreamWriter(out);
+            SyndFeedOutput output = new SyndFeedOutput();
+            output.output(feed, writer);
+            writer.flush();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public String getArticlesProperty(String value){
+        return getArticlesProperties().get(value);
+    }
+
+    public String getArticlesPropertyOrCreate(String value,String defaultValue){
+        String s = getArticlesProperties().get(value);
+        if(StringUtils.isEmpty(s) && !StringUtils.isEmpty(defaultValue)){
+            PersistenceUnit pu = UPA.getPersistenceUnit();
+            pu.invokePrivileged(new VoidAction() {
+                @Override
+                public void run() {
+                    ArticlesProperty p=new ArticlesProperty();
+                    p.setName(value);
+                    p.setValue(defaultValue);
+                    pu.persist(p);
+                }
+            });
+            s=defaultValue;
+        }
+        return s;
+    }
+
+    public Map<String,String> getArticlesProperties(){
+        final EntityCache entityCache = cacheService.get(ArticlesProperty.class);
+        Map<String, String> m = entityCache.getProperty("getArticlesProperties", new Action<Map<String, String>>() {
+            @Override
+            public Map<String, String> run() {
+                Map<String, String> m = new HashMap<String, String>();
+                MapList<Integer, ArticlesProperty> values = entityCache.getValues();
+                for (ArticlesProperty u : values) {
+                    String key = u.getName();
+                    if (!StringUtils.isEmpty(key)) {
+                        m.put(key, u.getValue());
+                    }
+                }
+                return m;
+            }
+        });
+        return m;
     }
 }

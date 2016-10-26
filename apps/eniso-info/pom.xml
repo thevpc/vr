@@ -10,6 +10,5 @@
         <module>eniso-info-service</module>
         <module>eniso-info-web</module>
         <module>plugins/themes/eniso-info-infusion-theme</module>
-        <module>plugins/themes/eniso-info-crew-theme</module>
     </modules>
 </project>

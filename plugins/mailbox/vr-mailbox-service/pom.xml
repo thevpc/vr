@@ -27,10 +27,11 @@
             <artifactId>vr-core-service</artifactId>
             <version>1.11</version>
         </dependency>
+
         <dependency>
             <groupId>net.vpc.common</groupId>
             <artifactId>gomail</artifactId>
-            <version>1.2.5</version>
+            <version>1.2.6</version>
         </dependency>
     </dependencies>
 

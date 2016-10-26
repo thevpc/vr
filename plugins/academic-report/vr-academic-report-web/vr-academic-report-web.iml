@@ -41,11 +41,13 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: stax:stax-api:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.jexcelapi:jxl:2.6.10" level="project" />
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.14" level="project" />
-    <orderEntry type="library" name="Maven: net.vpc.common:strings:1.2.4" level="project" />
-    <orderEntry type="library" name="Maven: net.vpc.common:utils:1.4" level="project" />
-    <orderEntry type="library" name="Maven: net.vpc.common:streams:1.2" level="project" />
+    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-strings:1.2.5" level="project" />
+    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-utils:1.5" level="project" />
+    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-streams:1.3" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.3.1" level="project" />
-    <orderEntry type="library" name="Maven: net.vpc.common:vfs:1.5" level="project" />
+    <orderEntry type="library" name="Maven: net.vpc.common:vfs:1.6" level="project" />
+    <orderEntry type="library" name="Maven: rome:rome:1.0" level="project" />
+    <orderEntry type="library" name="Maven: jdom:jdom:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.fathzer:javaluator:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.8.3" level="project" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.9.3" level="project" />
@@ -84,7 +86,7 @@
     <orderEntry type="library" name="Maven: org.primefaces.extensions:primefaces-extensions:3.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.1" level="project" />
     <orderEntry type="module" module-name="upa-web" />
-    <orderEntry type="library" name="Maven: net.vpc.common:web-jsf:1.2.1" level="project" />
+    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-web-jsf:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jersey.ext:jersey-spring3:2.17-custom-vpc-u1.0" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jersey.core:jersey-server:2.14" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jersey.core:jersey-client:2.14" level="project" />
@@ -107,7 +109,6 @@
     <orderEntry type="library" name="Maven: javax.ws.rs:javax.ws.rs-api:2.0.1" level="project" />
     <orderEntry type="module" module-name="vr-academic-report-service" />
     <orderEntry type="module" module-name="vr-academic-service" />
-    <orderEntry type="library" name="Maven: org.webjars:google-diff-match-patch:20121119-1" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jgap:jgap:3.4.4" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.3" level="project" />
     <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:2.0.2" level="project" />
@@ -117,8 +118,6 @@
     <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.0" level="project" />
     <orderEntry type="library" name="Maven: tablelayout:TableLayout:20050920" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jcgrid:jcgrid:0.05" level="project" />
-    <orderEntry type="library" name="Maven: rome:rome:1.0" level="project" />
-    <orderEntry type="library" name="Maven: jdom:jdom:1.0" level="project" />
     <orderEntry type="module" module-name="vr-academic-web" />
   </component>
 </module>

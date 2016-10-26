@@ -111,7 +111,7 @@
                                     componentType="service";
                                 }else if(artifactId.endsWith("-web")){
                                     componentType="web";
-                                }else if(artifactId.endsWith("-theme")){
+                                }else if(artifactId.endsWith("-theme") || artifactId.startsWith("theme-") || artifactId.contains("-theme-")){
                                     componentType="theme";
                                 }else{
                                     componentType="component";
@@ -128,7 +128,7 @@
                                     bundleId=project.groupId+":"+artifactId.substring(0,artifactId.length()-"-service".length());
                                 }else if(artifactId.endsWith("-web")){
                                     bundleId=project.groupId+":"+artifactId.substring(0,artifactId.length()-"-web".length());
-                                }else if(artifactId.endsWith("-theme")){
+                                }else if(artifactId.endsWith("-theme")|| artifactId.startsWith("theme-") || artifactId.contains("-theme-")){
                                     bundleId=project.groupId+":"+artifactId.substring(0,artifactId.length()-"-theme".length());
                                 }else{
                                     bundleId=project.groupId+":"+artifactId;

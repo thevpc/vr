@@ -638,6 +638,21 @@ public class Vr {
         return d == null ? "" : new SimpleDateFormat(format).format(d);
     }
 
+    public List<String> strsplit(String value, String chars) {
+        if(value==null){
+            value="";
+        }
+        StringTokenizer st=new StringTokenizer(value,chars);
+        List<String> all=new ArrayList<>();
+        while(st.hasMoreElements()){
+            String s=st.nextToken();
+            if(!StringUtils.isEmpty(s)){
+                all.add(s.trim());
+            }
+        }
+        return all;
+    }
+
     public String strcut(String value, int max) {
         if (value == null) {
             value = "";
@@ -1206,5 +1221,9 @@ public class Vr {
             return (getContext()+"/p"+path);
         }
         return null;
+    }
+
+    public CorePlugin getCore(){
+        return core;
     }
 }

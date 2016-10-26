@@ -63,8 +63,8 @@
         </dependency>
         <dependency>
             <groupId>net.vpc.common</groupId>
-            <artifactId>web-jsf</artifactId>
-            <version>1.2.1</version>
+            <artifactId>vpc-common-web-jsf</artifactId>
+            <version>1.2.2</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.ext</groupId>
