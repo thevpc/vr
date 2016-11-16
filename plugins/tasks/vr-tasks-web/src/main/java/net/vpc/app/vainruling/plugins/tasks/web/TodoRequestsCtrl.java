@@ -26,7 +26,7 @@ import java.util.List;
  */
 @UCtrl(
         breadcrumb = {
-                @UPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = ""),}, css = "fa-table", title = "Listes", url = "modules/todo/todo-requests"
+                @UPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = "")}, url = "modules/todo/todo-requests"
 )
 @Scope(value = "session")
 public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {

@@ -97,3 +97,4 @@
 private/
 .idea/
 /plugins/academic-project-based-learning/vr-academic-project-based-learning-service/src/main/java/net/vpc/app/vainruling/plugins/academic/pbl/service/ApblService.java
+/apps/eniso-info/eniso-info-service/target/

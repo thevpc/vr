@@ -211,6 +211,7 @@ public class UserSession implements Serializable {
         setLocale(null);
         setConnexionTime(null);
         setUser(null);
+        setRootUser(null);
         setAdmin(false);
         setRights(new HashSet<String>());
         setProfileNames(new HashSet<String>());

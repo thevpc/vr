@@ -155,7 +155,7 @@ public class I18n implements Serializable {
     public ResourceBundleSuite getResourceBundleSuite() {
         UserSession s = null;
         try {
-            s = UserSession.get();
+            s = CorePlugin.get().getUserSession();
         } catch (Exception e) {
             // not in session context!
         }

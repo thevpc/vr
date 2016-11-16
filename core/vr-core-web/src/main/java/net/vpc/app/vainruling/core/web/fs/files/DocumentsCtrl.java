@@ -42,7 +42,8 @@ import java.util.logging.Logger;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "Documents", css = "fa-dashboard", url = "modules/files/documents"
+//        title = "Documents", css = "fa-dashboard",
+        url = "modules/files/documents"
 //        ,menu = "/FileSystem", securityKey = "Custom.FileSystem.Documents"
 )
 public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {

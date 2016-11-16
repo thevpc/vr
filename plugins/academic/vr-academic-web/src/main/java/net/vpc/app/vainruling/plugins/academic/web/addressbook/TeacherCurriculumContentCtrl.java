@@ -24,8 +24,8 @@ import java.util.List;
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "CV Teacher",
+//        css = "fa-table",
+//        title = "CV Teacher",
         url = "public/academic/addressbook/teacher-cv-content.xhtml"
 )
 public class TeacherCurriculumContentCtrl extends TeacherCurriculumCtrl {

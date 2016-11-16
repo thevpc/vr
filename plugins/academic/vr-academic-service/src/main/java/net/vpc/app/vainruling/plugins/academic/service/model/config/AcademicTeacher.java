@@ -13,6 +13,7 @@ import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.FormulaType;
+import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
@@ -42,9 +43,17 @@ public class AcademicTeacher {
     private String discipline;
     private AcademicOfficialDiscipline officialDiscipline;
     @Summary
+    @Field(
+            updateAccessLevel = AccessLevel.PROTECTED,
+            readAccessLevel = AccessLevel.PROTECTED
+    )
     private AcademicTeacherDegree degree;
 
     @Summary
+    @Field(
+            updateAccessLevel = AccessLevel.PROTECTED,
+            readAccessLevel = AccessLevel.PROTECTED
+    )
     private AcademicTeacherSituation situation;
     @Summary
     private AppDepartment department;
@@ -67,6 +76,7 @@ public class AcademicTeacher {
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
+    @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;

@@ -155,9 +155,10 @@ and open the template in the editor.
                 <div >
                     <div class="table-responsive">
                         <h1><p:outputLabel style="font-weight: bold"
+                                           rendered="#{myCourseLoadCtrl.model.currentTeacher ne null}"
                                            value="#{myCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{myCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{myCourseLoadCtrl.model.stat.val.teacher.situation.name} (#{myCourseLoadCtrl.teacherFilter.periodName}) "/>
                         </h1>
-                        <p:panelGrid>
+                        <p:panelGrid rendered="#{myCourseLoadCtrl.model.currentTeacher ne null}">
                             <p:row>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="Semaines"/></p:column>
@@ -340,6 +341,15 @@ and open the template in the editor.
                     <div class="table-responsive">
                         <h1>Autres modules <p:commandButton value="Afficher/Cacher" action="#{myCourseLoadCtrl.onSwitchDisplayOtherModules}"
                                                             style="margin-left:10px; width:130px" update=":listForm" /></h1>
+                        <div style="margin-bottom: 10px;">
+                            <p:inputText
+                                    rendered="#{myCourseLoadCtrl.model.displayOtherModules}"
+                                    value="#{myCourseLoadCtrl.model.othersTextFilter}" placeholder="Chercher ..."  styleClass="form-control"
+                                    style="width: 100%" onkeypress="if (event.keyCode == 13) { onSearchByText(); return false; }"
+                            />
+                            <p:remoteCommand name="onSearchByText" actionListener="#{myCourseLoadCtrl.applyOthersTextFilter}" update=":listForm"/>
+                        </div>
+
                         <p:dataTable id="otherModulesTable" var="i" value="#{myCourseLoadCtrl.model.others}"
                                      class="table table-bordered table-hover"
                                      paginatorAlwaysVisible="false"
@@ -377,7 +387,7 @@ and open the template in the editor.
                                 <h:outputText
                                         value="#{i.academicClass.name}"/>
                             </p:column>
-                            <p:column headerText="Module" filterBy="#{i.value.assignment.coursePlan.name}">
+                            <p:column headerText="Module" >
                                 <h:outputText styleClass="#{i.value.assigned?'vr-assigned-course':''}"
                                               value="#{i.value.assignment.coursePlan.name} - #{i.value.assignment.courseType.name}"/>
                             </p:column>

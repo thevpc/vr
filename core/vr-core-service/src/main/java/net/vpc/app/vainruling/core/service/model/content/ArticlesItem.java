@@ -55,7 +55,7 @@ public class ArticlesItem {
     )
     private ArticlesDisposition disposition;
 
-    private boolean includeSender;
+    private boolean includeSender=true;
     private boolean noSubject;
 
     @Summary

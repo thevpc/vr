@@ -20,7 +20,8 @@ import java.util.*;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "Developer Tools", css = "fa-dashboard", url = "modules/devtoolbox/dev-ql", menu = "/Admin", securityKey = "Custom.DevTools"
+        //title = "Developer Tools", css = "fa-dashboard",
+        url = "modules/devtoolbox/dev-ql", menu = "/Admin", securityKey = "Custom.DevTools"
 )
 @Scope(value = "session")
 public class DevToolsCtrl {

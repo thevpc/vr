@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+>
+
+<h:head>
+</h:head>
+
+<h:body>
+
+
+    <!--@elvariable id="academicAppStatusCtrl" type="net.vpc.app.vainruling.plugins.academic.pbl.web.AcademicAppStatusCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
+        <ui:define name="content">
+            <h:form id="messagesForm">
+                <p:messages id="messages"/>
+            </h:form>
+            <h:form id="listForm">
+
+                <div>
+                    <div class="table-responsive vr-toolbox-container">
+                        <p:selectCheckboxMenu styleClass="vr-toolbox-select-one"
+                                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px"
+                                              label="Sessions"
+                                              value="#{academicAppStatusCtrl.model.selectedSessions}">
+                            <p:ajax listener="#{academicAppStatusCtrl.onChangeSelectedSession}" update=":listForm"/>
+                            <f:selectItems value="#{academicAppStatusCtrl.model.sessions}"/>
+                        </p:selectCheckboxMenu>
+
+                        <p:selectOneMenu styleClass="vr-toolbox-select-one"
+                                         filter="true" filterMatchMode="startsWith" panelStyle="width:250px"
+                                         label="Sessions"
+                                         value="#{academicAppStatusCtrl.model.selectedDepartment}">
+                            <p:ajax listener="#{academicAppStatusCtrl.onChangeSelectedSession}" update=":listForm"/>
+                            <f:selectItem itemLabel="Choisir Departement..." itemValue=""/>
+                            <f:selectItems value="#{academicAppStatusCtrl.model.departments}"/>
+                        </p:selectOneMenu>
+
+                        <p:commandButton value="Rafraichir"
+                                         styleClass="btn btn-default vr-toolbox-long-button"
+                                         ajax="false"
+                                         actionListener="#{academicAppStatusCtrl.reloadTeacherAndStudentInfos}"
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <div class="table-responsive">
+                        <p:tabView activeIndex="#{academicAppStatusCtrl.model.activeTabIndex}"
+                                   onTabShow="$('.sparkline').each(function () {
+                            var $this = $(this);
+                            $this.sparkline('html', $this.data());
+                            });"
+                                   onTabChange="$('.sparkline').each(function () {
+                            var $this = $(this);
+                            $this.sparkline('html', $this.data());
+                            });"
+
+                        >
+                            <p:tab title="Enseignants">
+                                <div style="margin-bottom: 10px;">
+                                    <p:inputText value="#{academicAppStatusCtrl.model.teachersFilterText}"
+                                                 placeholder="Chercher ..."
+                                                 styleClass="form-control"
+                                                 style="width: 100%"
+                                                 onkeypress="if (event.keyCode == 13) { onSearchTeachersByText(); return false; }"
+                                    />
+                                    <p:remoteCommand name="onSearchTeachersByText"
+                                                     actionListener="#{academicAppStatusCtrl.onSearchTeachersByText}"
+                                                     update="teachersList"/>
+                                </div>
+                                <p:dataTable id="teachersList" var="e"
+                                             value="#{academicAppStatusCtrl.model.filteredTeachers}">
+                                    <p:column headerText="Enseignant" sortBy="#{e.teacher.contact.fullTitle}">
+                                        <p:outputLabel value="#{e.teacher.contact.fullTitle}"/>
+                                    </p:column>
+                                    <p:column headerText="Nbr Equipes" sortBy="#{e.teamsCount}">
+                                        <p:outputLabel styleClass="vr-center-text" value="#{(e.teamsCount)}"/>
+                                    </p:column>
+                                    <p:column headerText="Nbr Elèves" sortBy="#{e.studentsCount}">
+                                        <p:outputLabel styleClass="vr-center-text"
+                                                       value="#{vr.dblFormat(e.studentsCount)}"/>
+                                    </p:column>
+                                    <p:column headerText="Charge" sortBy="#{e.studentsCount}">
+                                        <p:outputLabel styleClass="vr-center-text"
+                                                       value="#{vr.dblCustomFormat(e.studentsCount * 100 / academicAppStatusCtrl.model.students.size(),'0.00')}"/>
+                                    </p:column>
+                                    <f:facet name="footer">
+                                        #{academicAppStatusCtrl.model.filteredTeachers.size()} enseignants
+                                    </f:facet>
+                                </p:dataTable>
+                            </p:tab>
+                            <p:tab title="Elèves" >
+                                <div style="width: 100%;margin-top: 10px;margin-bottom: 10px;">
+                                    <span style="width: 100px;">#{vr.dblCustomFormat(academicAppStatusCtrl.validStudentsPercent,"0.00")}% valides</span>
+                                    <div class="sparkline" data-type="pie" data-offset="90" data-width="32px"
+                                         data-height="32px" style="display: inline">
+                                        #{academicAppStatusCtrl.getHomogenousCount(true)},#{academicAppStatusCtrl.getInterClassCount(true)},#{academicAppStatusCtrl.getInterDepartmentPercent(true)}
+                                    </div>
+                                    <div class="vr-progress-container" style="width: calc(100% - 140px);">
+                                        <div class="valid3"
+                                             style="width:#{vr.frame(vr.abs(academicAppStatusCtrl.validStudentsPercent),0,100)}%">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <p:inputText value="#{academicAppStatusCtrl.model.studentsFilterText}"
+                                                 placeholder="Chercher ..."
+                                                 styleClass="form-control"
+                                                 style="width: 100%"
+                                                 onkeypress="if (event.keyCode == 13) { onSearchStudentsByText(); return false; }"
+                                    />
+                                    <p:remoteCommand name="onSearchStudentsByText"
+                                                     actionListener="#{academicAppStatusCtrl.onSearchStudentsByText}"
+                                                     update="studentsList"/>
+                                </div>
+                                <p:dataTable id="studentsList" var="s"
+                                             value="#{academicAppStatusCtrl.model.filteredStudents}">
+                                    <p:column headerText="Elève" sortBy="#{s.student.contact.fullTitle}">
+                                        <p:outputLabel value="#{s.student.contact.fullTitle}"/>
+                                    </p:column>
+                                    <p:column headerText="Equipe" sortBy="#{s.team.team.name}">
+                                        <p:outputLabel value="#{s.team eq null? '':s.team.team.name}"/>
+                                    </p:column>
+                                    <p:column headerText="Coach" sortBy="#{s.coach.contact.fullTitle}">
+                                        <p:outputLabel value="#{s.coach eq null? '':s.coach.contact.fullTitle}"/>
+                                    </p:column>
+                                    <p:column headerText="Projet" sortBy="#{s.project.project.name}">
+                                        <p:outputLabel value="#{s.project eq null? '':s.project.project.name}"/>
+                                    </p:column>
+                                    <p:column headerText="Classe" style="width: 5%;"
+                                              sortBy="#{s.student.lastClass1.name}">
+                                        <p:outputLabel
+                                                value="#{s.student.lastClass1 eq null? '':s.student.lastClass1.name}"/>
+                                    </p:column>
+                                    <p:column headerText="Diversité" style="width: 5%;">
+                                        <h:graphicImage
+                                                style="display: block; margin-left: auto; margin-right: auto;"
+                                                value="#{s.interDepartments ? '/public/academic/images/multi-dept.png': '/public/academic/images/multi-cls.png'}"
+                                                rendered="#{s.interDepartments or s.interClasses}"
+                                                width="32" height="32"
+                                        />
+                                    </p:column>
+                                    <p:column headerText="Observations" styleClass="#{s.invalid?'vr-label-invalid':''}"
+                                              sortBy="#{s.invalidObservations}">
+                                        <p:outputLabel value="#{s.invalidObservations}"/>
+                                    </p:column>
+                                    <f:facet name="footer">
+                                        #{academicAppStatusCtrl.model.filteredStudents.size()} élèves ; #{vr.dblCustomFormat(academicAppStatusCtrl.getInterDepartmentPercent(false),"0.00")}% inter-départements ; #{vr.dblCustomFormat(academicAppStatusCtrl.getInterClassPercent(false),"0.00")}% inter-classes
+                                    </f:facet>
+                                </p:dataTable>
+                                <ui:fragment>
+                                    <script>
+                                        $(".sparkline").each(function () {
+                                            var $this = $(this);
+                                            $this.sparkline('html', $this.data());
+                                        });
+                                    </script>
+                                </ui:fragment>
+                            </p:tab>
+                        </p:tabView>
+                    </div>
+                </div>
+
+            </h:form>
+
+
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>

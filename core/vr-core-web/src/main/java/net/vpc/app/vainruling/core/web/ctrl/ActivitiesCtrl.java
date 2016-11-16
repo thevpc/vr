@@ -14,7 +14,7 @@ import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "Activités",
+//        title = "Activités",
         url = "activities"
 )
 public class ActivitiesCtrl {

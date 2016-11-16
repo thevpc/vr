@@ -34,7 +34,7 @@ import java.util.List;
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Todo", css = "fa-dashboard", ctrl = "")
-        }, css = "fa-table", title = "Listes", url = "modules/todo/todos"
+        }, url = "modules/todo/todos"
 )
 @Scope("singleton")
 public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFactory, UCtrlProvider, TaskTextService{

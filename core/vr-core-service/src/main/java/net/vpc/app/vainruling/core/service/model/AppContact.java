@@ -7,7 +7,9 @@ package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.upa.AccessLevel;
 import net.vpc.upa.FormulaType;
+import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
@@ -21,7 +23,7 @@ import java.sql.Timestamp;
         {
                 @Property(name = "ui.auto-filter.company", value = "{expr='company',order=1}"),
                 @Property(name = "ui.auto-filter.positionTitle1", value = "{expr='positionTitle1',order=2}"),
-                @Property(name = "ui.auto-filter.company", value = "{expr='company',order=3}")
+//                @Property(name = "ui.auto-filter.company", value = "{expr='company',order=3}")
         }
 )
 public class AppContact {
@@ -59,8 +61,20 @@ public class AppContact {
     private AppCompany company;
 
     @Summary
+    @Field(
+            updateAccessLevel = AccessLevel.PROTECTED,
+            readAccessLevel = AccessLevel.PROTECTED
+    )
     private String phone1;
+    @Field(
+            updateAccessLevel = AccessLevel.PROTECTED,
+            readAccessLevel = AccessLevel.PROTECTED
+    )
     private String phone2;
+    @Field(
+            updateAccessLevel = AccessLevel.PROTECTED,
+            readAccessLevel = AccessLevel.PROTECTED
+    )
     private String phone3;
 
     @Summary
@@ -80,6 +94,7 @@ public class AppContact {
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
+    @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;

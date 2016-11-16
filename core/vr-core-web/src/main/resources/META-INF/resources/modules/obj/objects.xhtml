@@ -52,12 +52,6 @@ and open the template in the editor.
                                          ajax="true"
                                          actionListener="#{objCtrl.onRefresh}"
                                          update=":buttonsForm :listForm :itemForm :pageTitleForm" alt=""/>
-                        <p:commandButton title="Nouveau" rendered="#{objCtrl.isEnabledButton('New')}" icon="fa fa-plus"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn btn-primary"
-                                         ajax="true"
-                                         actionListener="#{objCtrl.onNew}"
-                                         update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
-
                         <p:splitButton title="Enregistrer" rendered="#{objCtrl.isEnabledButton('Save')}"
                                        onclick="processOnSaveCurrent()"
                                        update=":buttonsForm :listForm :itemForm :pageTitleForm" icon="fa fa-save"
@@ -71,6 +65,12 @@ and open the template in the editor.
                             <p:menuitem value="Enregistrer" onclick="processOnSaveCurrent()" ajax="true"
                                         update=":buttonsForm :listForm :itemForm :pageTitleForm" icon="ui-icon-close"/>
                         </p:splitButton>
+
+                        <p:commandButton title="Nouveau" rendered="#{objCtrl.isEnabledButton('New')}" icon="fa fa-plus"
+                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn btn-primary"
+                                         ajax="true"
+                                         actionListener="#{objCtrl.onNew}"
+                                         update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
 
                         <p:commandButton title="Supprimer" rendered="#{objCtrl.isEnabledButton('Remove')}"
                                          icon="fa fa-trash-o"
@@ -273,16 +273,13 @@ and open the template in the editor.
                 <!-- /.row -->
             </h:form>
             <h:form id="listForm">
-                <div>
+                <div style="margin-bottom: 10px;">
                     <p:inputText
                             rendered="#{objCtrl.isListMode()}"
                             value="#{objCtrl.model.searchText}" placeholder="Chercher ..."  styleClass="form-control"
                                  style="width: 100%" onkeypress="if (event.keyCode == 13) { onSearchByText(); return false; }"
                     />
                     <p:remoteCommand name="onSearchByText" actionListener="#{objCtrl.onAutoFilterChange}" update=":listForm"/>
-                </div>
-                <div>
-                    <p:spacer width="10" height="10"/>
                 </div>
                 <p:growl id="growl" showDetail="true" sticky="true"/>
                 <p:outputPanel id="editItemList" rendered="#{objCtrl.isListMode()}">
@@ -478,6 +475,7 @@ and open the template in the editor.
                                     <p:selectOneMenu id="tselect" value="#{data.selectedItem}"
                                                      required="#{data.required}"
                                                      disabled="#{data.disabled}"
+                                                     filter="true" filterMatchMode="contains"
                                     >
                                         <f:selectItems value="#{data.items}"/>
                                     </p:selectOneMenu>
@@ -488,7 +486,9 @@ and open the template in the editor.
                                                      required="#{data.required}"
                                                      disabled="#{data.disabled}"
                                                      valueChangeListener="#{data.onChange}"
-                                                     onchange="submit();">
+                                                     onchange="submit();"
+                                                     filter="true" filterMatchMode="contains"
+                                    >
                                         <f:selectItems value="#{data.items}"/>
                                     </p:selectOneMenu>
                                 </pe:dynaFormControl>
@@ -500,6 +500,7 @@ and open the template in the editor.
                                                          required="#{data.required}"
                                                          disabled="#{data.disabled}"
                                                          styleClass="full-width"
+                                                         filter="true" filterMatchMode="contains"
                                         >
                                             <f:selectItems value="#{data.items}"/>
                                         </p:selectOneMenu>
@@ -518,7 +519,9 @@ and open the template in the editor.
                                                          required="#{data.required}"
                                                          disabled="#{data.disabled}"
                                                          valueChangeListener="#{data.onChange}"
-                                                         onchange="submit();">
+                                                         onchange="submit();"
+                                                         filter="true" filterMatchMode="contains"
+                                        >
                                             <f:selectItems value="#{data.items}"/>
                                         </p:selectOneMenu>
                                         <p:commandButton
@@ -598,24 +601,50 @@ and open the template in the editor.
                                 </pe:dynaFormControl>
 
 
-                                <pe:dynaFormControl type="profileExpr" for="tprofileexpr" styleClass="select">
-                                    <p:panelGrid columns="2" style="border-style: hidden"
-                                                 columnClasses="nopadding,nopadding">
+                                <!--<pe:dynaFormControl type="profileExpr" for="tprofileexpr" styleClass="select">-->
+                                    <!--<p:panelGrid columns="2" style="border-style: hidden"-->
+                                                 <!--columnClasses="nopadding,nopadding">-->
 
-                                        <p:inputText id="tprofileexpr" value="#{data.value}" required="#{data.required}"
-                                                     disabled="#{data.disabled}" styleClass="form-control"/>
+                                        <!--<p:inputText id="tprofileexpr" value="#{data.value}" required="#{data.required}"-->
+                                                     <!--disabled="#{data.disabled}" styleClass="form-control"/>-->
+                                        <!--<p:commandButton-->
+                                                <!--style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"-->
+                                                <!--ajax="true" value=""-->
+                                                <!--icon="fa fa-users"-->
+                                                <!--actionListener="#{objCtrl.openPropertyViewDialog(data.componentId)}"-->
+                                        <!--&gt;-->
+                                            <!--<p:ajax event="dialogReturn"-->
+                                                    <!--listener="#{objCtrl.onPropertyViewDialogClosed}"-->
+                                                    <!--update="tprofileexpr"/>-->
+
+                                        <!--</p:commandButton>-->
+                                    <!--</p:panelGrid>-->
+                                <!--</pe:dynaFormControl>-->
+
+                                <pe:dynaFormControl type="profileExpr" for="tprofileexpr" styleClass="select">
+                                    <div class="form-group">
+                                        <p:autoComplete id="tprofileexpr" styleClass="vr-form-control vr-form-control-with-button60"
+                                                        placeholder="A:" value="#{data.value}"
+                                                        completeMethod="#{vr.autoCompleteProfileExpression}"
+                                                        queryDelay="1000"
+                                                        disabled="#{data.disabled}"
+                                        >
+                                            <p:ajax event="blur" listener="#{vr.updateProfileExpressionUsersCount}"
+                                                    process="@this"
+                                                    update="btnto"/>
+                                        </p:autoComplete>
                                         <p:commandButton
-                                                style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
-                                                ajax="true" value=""
+                                                id="btnto"
+                                                styleClass="vr-form-control-right-button60"
+                                                ajax="true" value="#{data.hint}"
                                                 icon="fa fa-users"
                                                 actionListener="#{objCtrl.openPropertyViewDialog(data.componentId)}"
                                         >
                                             <p:ajax event="dialogReturn"
                                                     listener="#{objCtrl.onPropertyViewDialogClosed}"
                                                     update="tprofileexpr"/>
-
                                         </p:commandButton>
-                                    </p:panelGrid>
+                                    </div>
                                 </pe:dynaFormControl>
 
                                 <pe:dynaFormControl type="discipline" for="tdiscipline" styleClass="select">
@@ -639,13 +668,12 @@ and open the template in the editor.
                                 </pe:dynaFormControl>
 
                                 <pe:dynaFormControl type="file" for="tfile" styleClass="select">
-                                    <p:panelGrid columns="2" style="border-style: hidden;width: 100%"
-                                                 columnClasses="nopadding,nopadding">
+                                    <div class="form-group">
 
                                         <p:inputText id="tfile" value="#{data.value}" required="#{data.required}"
-                                                     disabled="#{data.disabled}" styleClass="form-control"/>
+                                                     disabled="#{data.disabled}" styleClass="form-control vr-form-control vr-form-control-with-button60"/>
                                         <p:commandButton
-                                                style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
+                                                styleClass="vr-form-control-right-button60"
                                                 ajax="true" value=""
                                                 icon="fa fa-folder-open-o"
                                                 actionListener="#{objCtrl.openPropertyViewDialog(data.componentId)}"
@@ -654,7 +682,7 @@ and open the template in the editor.
                                                     listener="#{objCtrl.onPropertyViewDialogClosed}" update="tfile"/>
 
                                         </p:commandButton>
-                                    </p:panelGrid>
+                                    </div>
                                 </pe:dynaFormControl>
 
 

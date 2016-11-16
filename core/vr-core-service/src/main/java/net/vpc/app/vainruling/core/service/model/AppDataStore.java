@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.upa.FormulaType;
+import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
@@ -23,6 +24,8 @@ public class AppDataStore {
     private String idName;
     @Field(max = "maximum")
     private String propertyValue;
+    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST})
+    @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;

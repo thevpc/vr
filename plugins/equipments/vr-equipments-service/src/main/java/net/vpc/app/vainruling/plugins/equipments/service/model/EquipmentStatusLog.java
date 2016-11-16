@@ -16,21 +16,40 @@ import java.sql.Timestamp;
  */
 @Entity(listOrder = "name")
 @Path("Equipment")
+@Properties(
+        {
+                @Property(name = UIConstants.ENTITY_ID_HIERARCHY, value = "brandLine"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='equipment.department',order=1}"),
+                @Property(name = "ui.auto-filter.equipment", value = "{expr='equipment',order=2}"),
+                @Property(name = "ui.auto-filter.type", value = "{expr='type',order=3}"),
+                @Property(name = "ui.auto-filter.actor", value = "{expr='actor',order=4}"),
+                @Property(name = "ui.auto-filter.responsible", value = "{expr='responsible',order=5}"),
+        })
 public class EquipmentStatusLog {
 
     @Id
     @Sequence
     private int id;
-    /**
-     * description of the status, for instance when borrowed tell why
-     */
-    @Main
-    private String name;
 
     @Summary
-    @Field(max = "1024")
-    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
-    private String description;
+    private Equipment equipment;
+
+    @Summary
+    @ToString
+    private EquipmentStatusType type;
+
+    /**
+     * technician
+     */
+    @Summary
+    private AppUser actor;
+
+    /**
+     * may be borrower if status=borrowed
+     */
+    @Summary
+    private AppUser responsible;
+
 
     @Summary
     private Timestamp startDate;
@@ -41,17 +60,18 @@ public class EquipmentStatusLog {
     @Summary
     private Timestamp endDate;
 
-    @Summary
-    private Equipment equipment;
-
-    @Summary
-    @ToString
-    private EquipmentStatusType type;
 
     /**
-     * may be borrower if status=borrowed
+     * description of the status, for instance when borrowed tell why
      */
-    private AppUser responsible;
+    @Main
+    private String name;
+
+    @Field(max = "1024")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
+    private String description;
+
+
 
     public Equipment getEquipment() {
         return equipment;
@@ -117,5 +137,11 @@ public class EquipmentStatusLog {
         this.endDate = endDate;
     }
 
+    public AppUser getActor() {
+        return actor;
+    }
 
+    public void setActor(AppUser actor) {
+        this.actor = actor;
+    }
 }

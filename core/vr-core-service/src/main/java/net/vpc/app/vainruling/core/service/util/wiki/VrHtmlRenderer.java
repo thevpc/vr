@@ -1,5 +1,6 @@
 package net.vpc.app.vainruling.core.service.util.wiki;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.config.WikiConfig;
@@ -121,7 +122,7 @@ public class VrHtmlRenderer extends HtmlRenderer {
     @Override
     public void visit(WtSignature n)
     {
-        UserSession s = UserSession.get();
+        UserSession s = CorePlugin.get().getUserSession();
 
         String usr = (s == null || s.getUser() == null) ? "anonymous" : s.getUser().getLogin();
         switch (n.getTildeCount()){

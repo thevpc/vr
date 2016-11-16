@@ -62,6 +62,7 @@ public class ObjFieldFieldSelection extends ObjFieldSelection {
         for (Field field : entity.getFields()) {
             //should test on field visibility
             AccessLevel r = field.getReadAccessLevel();
+            AccessLevel u = field.getUpdateAccessLevel();
             boolean show = false;
             switch (r) {
                 case PRIVATE: {
@@ -71,7 +72,7 @@ public class ObjFieldFieldSelection extends ObjFieldSelection {
                 }
                 case PROTECTED: {
                     //show if admin
-                    show = admin;
+                    show = admin || entity.getPersistenceUnit().getSecurityManager().isAllowedRead(field);
                     break;
                 }
                 default: {

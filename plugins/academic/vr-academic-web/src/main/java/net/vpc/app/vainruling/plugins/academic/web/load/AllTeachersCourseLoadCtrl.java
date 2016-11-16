@@ -31,8 +31,8 @@ import java.util.*;
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "Charge Enseignants",
+//        css = "fa-table",
+//        title = "Charge Enseignants",
         url = "modules/academic/all-teachers-course-load",
         menu = "/Education/Load",
         securityKey = "Custom.Education.AllTeachersCourseLoad"

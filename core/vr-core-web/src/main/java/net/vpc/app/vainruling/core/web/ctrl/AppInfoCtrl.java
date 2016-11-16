@@ -13,7 +13,8 @@ import org.springframework.context.annotation.Scope;
  */
 @UCtrl(
         menu = "/Misc",
-        title = "Informations Systeme", css = "fa-dashboard", url = "modules/app-info"
+//        title = "Informations Systeme", css = "fa-dashboard",
+        url = "modules/app-info"
 )
 @Scope(value = "singleton")
 public class AppInfoCtrl extends BasePageCtrl {

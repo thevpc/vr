@@ -61,6 +61,7 @@ public class Vr {
     private CmsTextService cmsTextService;
     @Autowired
     private CorePlugin core;
+    private WeakHashMap<String,DecimalFormat> decimalFormats=new WeakHashMap<>();
 
     public static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.00");
 
@@ -483,6 +484,28 @@ public class Vr {
         if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("ftp://")) {
             return path;
         }
+        if (path.startsWith("context://")) {
+            String s = path.substring("context://".length());
+            if (!s.startsWith("/")) {
+                s = "/" + s;
+            }
+            return getContext() + s;
+        }
+        if (path.startsWith("theme-context://")) {
+            String s = path.substring("theme-context://".length());
+            if (!s.startsWith("/")) {
+                s = "/" + s;
+            }
+            return getThemeContext() + s;
+        }
+        if (path.startsWith("file://")) {
+            String s = path.substring("file://".length());
+            String prefix = getContext() + "/fs";
+            if (!s.startsWith("/")) {
+                prefix += "/";
+            }
+            return prefix + s;
+        }
         String prefix = getContext() + "/fs";
         if (!path.startsWith("/")) {
             prefix += "/";
@@ -637,14 +660,14 @@ public class Vr {
     }
 
     public List<String> strsplit(String value, String chars) {
-        if(value==null){
-            value="";
+        if (value == null) {
+            value = "";
         }
-        StringTokenizer st=new StringTokenizer(value,chars);
-        List<String> all=new ArrayList<>();
-        while(st.hasMoreElements()){
-            String s=st.nextToken();
-            if(!StringUtils.isEmpty(s)){
+        StringTokenizer st = new StringTokenizer(value, chars);
+        List<String> all = new ArrayList<>();
+        while (st.hasMoreElements()) {
+            String s = st.nextToken();
+            if (!StringUtils.isEmpty(s)) {
                 all.add(s.trim());
             }
         }
@@ -694,10 +717,10 @@ public class Vr {
         if (value == null) {
             return "";
         }
-        String v=null;
-        if(value instanceof ContentText) {
-            v=((ContentText) value).getContent();
-        }else{
+        String v = null;
+        if (value instanceof ContentText) {
+            v = ((ContentText) value).getContent();
+        } else {
             v = String.valueOf(value).trim();
         }
         if (v.isEmpty()) {
@@ -882,26 +905,26 @@ public class Vr {
         return r;
     }
 
-    public Map<String,List<UserSession>> getActiveSessionsGroupedByType() {
-        Map<String,List<UserSession>> r = new HashMap<>();
+    public Map<String, List<UserSession>> getActiveSessionsGroupedByType() {
+        Map<String, List<UserSession>> r = new HashMap<>();
         List<UserSession> activeSessions = getActiveSessions();
         if (activeSessions != null) {
             for (UserSession userSession : activeSessions) {
                 String name = (userSession != null && userSession.getUser() != null && userSession.getUser().getType() != null) ? (userSession.getUser().getType().getName()) : null;
-                if(StringUtils.isEmpty(name)){
-                    name="Autres";
+                if (StringUtils.isEmpty(name)) {
+                    name = "Autres";
                 }
                 List<UserSession> userSessions = r.get(name);
-                if(userSessions==null){
-                    userSessions=new ArrayList<>();
-                    r.put(name,userSessions);
+                if (userSessions == null) {
+                    userSessions = new ArrayList<>();
+                    r.put(name, userSessions);
                 }
                 userSessions.add(userSession);
             }
         }
-        LinkedHashMap<String,List<UserSession>> r2 = new LinkedHashMap<>();
+        LinkedHashMap<String, List<UserSession>> r2 = new LinkedHashMap<>();
         for (String s : new TreeSet<String>(r.keySet())) {
-            r2.put(s,r.get(s));
+            r2.put(s, r.get(s));
         }
         return r2;
     }
@@ -999,7 +1022,7 @@ public class Vr {
 
     public String getUserPhoto(int id) {
         AppUser t = core.findUser(id);
-        AppContact c = t==null?null:t.getContact();
+        AppContact c = t == null ? null : t.getContact();
         boolean female = false;
         if (c != null) {
             AppGender g = c.getGender();
@@ -1022,15 +1045,18 @@ public class Vr {
                 paths.add(p);
             }
         }
-        VFile file = getUserAbsoluteFile(t==null?-1:t.getId(), paths.toArray(new String[paths.size()]));
+        VFile file = getUserAbsoluteFile(t == null ? -1 : t.getId(), paths.toArray(new String[paths.size()]));
 
         String photo = (file == null) ? null : (file.getPath());
+        if (photo == null) {
+            return "theme-context://images/person.png";
+        }
         return photo;
     }
 
     public String getUserPhotoFullURL(int id) {
         String userPhoto = getUserPhoto(id);
-        if(userPhoto==null){
+        if (userPhoto == null) {
             return null;
         }
         return getAppWebPath(userPhoto);
@@ -1087,7 +1113,7 @@ public class Vr {
                     files.add(ff);
                 }
             }
-            if(t.getType()!=null) {
+            if (t.getType() != null) {
                 VFile userTypeFolder = core.getUserTypeFolder(t.getType().getId());
                 for (String p : path) {
                     VFile ff = userTypeFolder.get(p);
@@ -1163,40 +1189,41 @@ public class Vr {
         Matcher m = pattern.matcher(format);
         while (m.find()) {
             String url = m.group("url");
-            int x=url.indexOf("://");
-            String processed=null;
-            if(x>0){
-                String protocol=url.substring(0,x);
-                String path=url.substring(protocol.length()+"://".length());
-                processed=processCustomURL(protocol,path);
+            int x = url.indexOf("://");
+            String processed = null;
+            if (x > 0) {
+                String protocol = url.substring(0, x);
+                String path = url.substring(protocol.length() + "://".length());
+                processed = processCustomURL(protocol, path);
             }
-            if(processed!=null) {
-                m.appendReplacement(sb,"href=\""+processed+"\"");
-            }else{
-                m.appendReplacement(sb,m.group());
+            if (processed != null) {
+                m.appendReplacement(sb, "href=\"" + processed + "\"");
+            } else {
+                m.appendReplacement(sb, m.group());
             }
         }
         m.appendTail(sb);
 
         return sb.toString();
     }
+
     public String replaceCustomWikiURLs(String format) {
         Pattern pattern = Pattern.compile("\\[\\[(?<url>[^\"]*)\\]\\]");
         StringBuffer sb = new StringBuffer();
         Matcher m = pattern.matcher(format);
         while (m.find()) {
             String url = m.group("url");
-            int x=url.indexOf("://");
-            String processed=null;
-            if(x>0){
-                String protocol=url.substring(0,x);
-                String path=url.substring(protocol.length()+"://".length());
-                processed=processCustomURL(protocol,path);
+            int x = url.indexOf("://");
+            String processed = null;
+            if (x > 0) {
+                String protocol = url.substring(0, x);
+                String path = url.substring(protocol.length() + "://".length());
+                processed = processCustomURL(protocol, path);
             }
-            if(processed!=null) {
-                m.appendReplacement(sb,"[["+processed+"]]");
-            }else{
-                m.appendReplacement(sb,m.group());
+            if (processed != null) {
+                m.appendReplacement(sb, "[[" + processed + "]]");
+            } else {
+                m.appendReplacement(sb, m.group());
             }
         }
         m.appendTail(sb);
@@ -1204,24 +1231,57 @@ public class Vr {
         return sb.toString();
     }
 
-    private String processCustomURL(String protocol,String path){
-        if("docs".equals(protocol)){
-            if(!path.startsWith("/")){
-                path="/"+path;
+    private String processCustomURL(String protocol, String path) {
+        if ("docs".equals(protocol)) {
+            if (!path.startsWith("/")) {
+                path = "/" + path;
             }
-            path=path.replace('\'','_');//fix injection issues
-            return (getContext()+"/p/documents?a={path='"+path+"'}");
+            path = path.replace('\'', '_');//fix injection issues
+            return (getContext() + "/p/documents?a={path='" + path + "'}");
         }
-        if("pages".equals(protocol)){
-            if(!path.startsWith("/")){
-                path="/"+path;
+        if ("pages".equals(protocol)) {
+            if (!path.startsWith("/")) {
+                path = "/" + path;
             }
-            return (getContext()+"/p"+path);
+            return (getContext() + "/p" + path);
         }
         return null;
     }
 
-    public CorePlugin getCore(){
+    public CorePlugin getCore() {
         return core;
+    }
+
+    public List<String> autoCompleteProfileExpression(String query) {
+        return core.autoCompleteProfileExpression(query);
+    }
+
+    public void updateProfileExpressionUsersCount(Object any) {
+        System.out.println("Hi");
+    }
+
+    public String dblFormat(double d) {
+        if (d == (long) d) {
+            return String.format("%d", (long) d);
+        } else {
+            return String.format("%s", d);
+        }
+    }
+
+    public String dblCustomFormat(double d,String format) {
+        if (d == (long) d) {
+            return String.format("%d", (long) d);
+        } else {
+            return getDecimalFormat(format).format(d);
+        }
+    }
+
+    public DecimalFormat getDecimalFormat(String format){
+        DecimalFormat decimalFormat = decimalFormats.get(format);
+        if(decimalFormat==null){
+            decimalFormat=new DecimalFormat(format);
+            decimalFormats.put(format,decimalFormat);
+        }
+        return decimalFormat;
     }
 }

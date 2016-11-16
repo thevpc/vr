@@ -6,12 +6,14 @@
 package net.vpc.app.vainruling.core.service.util;
 
 import com.google.gson.Gson;
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
 import net.vpc.common.io.IOUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.CustomDefaultObject;
+import net.vpc.upa.filters.ObjectFilter;
 import net.vpc.upa.types.DateTime;
 import net.vpc.upa.types.StringType;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -199,7 +201,7 @@ public class VrUtils {
 
     public static String fstr(String format, Object... a) {
         UserSession s = null;
-        s = UserSession.get();
+        s = CorePlugin.get().getUserSession();
         Locale loc = s == null ? null : s.getLocale();
         if (loc == null) {
             loc = Locale.getDefault(Locale.Category.DISPLAY);
@@ -502,5 +504,15 @@ public class VrUtils {
             }
         }
         return sb.toString();
+    }
+
+    public static <T> List<T> filterList(List<T> list,ObjectFilter<T> filter){
+        ArrayList li=new ArrayList();
+        for (T t : list) {
+            if(filter==null || filter.accept(t)){
+                li.add(t);
+            }
+        }
+        return li;
     }
 }

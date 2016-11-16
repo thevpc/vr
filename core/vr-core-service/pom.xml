@@ -60,12 +60,12 @@
         <dependency>
             <groupId>net.vpc.upa</groupId>
             <artifactId>upa-api</artifactId>
-            <version>1.2.0.28</version>
+            <version>1.2.0.29</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.upa</groupId>
             <artifactId>upa-impl</artifactId>
-            <version>1.2.0.28.0</version>
+            <version>1.2.0.29.0</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -76,12 +76,12 @@
         <dependency>
             <groupId>net.vpc.common</groupId>
             <artifactId>vpc-common-strings</artifactId>
-            <version>1.2.5</version>
+            <version>1.2.6</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.common</groupId>
             <artifactId>vpc-common-utils</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.common</groupId>

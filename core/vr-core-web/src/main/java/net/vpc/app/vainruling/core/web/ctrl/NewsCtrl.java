@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Scope;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "News",
+//        title = "News",
         url = "#{vr.themeRelativePath}/news"
 )
 @Scope(value = "singleton")

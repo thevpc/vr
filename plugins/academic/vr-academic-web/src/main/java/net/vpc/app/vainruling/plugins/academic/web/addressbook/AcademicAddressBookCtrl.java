@@ -35,9 +35,9 @@ import java.util.List;
  */
 @UCtrl(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "Address Book"
+                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")}
+//        , css = "fa-table"
+//        , title = "Address Book"
 )
 public class AcademicAddressBookCtrl {
 

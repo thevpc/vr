@@ -79,7 +79,7 @@ and open the template in the editor.
                                 <p:row>
                                     <p:column styleClass="ui-widget-header">
                                         <p:outputLabel
-                                                value="#{userCalendarsCtrl.model.planning[hs.index].hours[hs.index].hour}"/>
+                                                value="#{userCalendarsCtrl.model.planning[0].hours[hs.index].hour}"/>
                                     </p:column>
                                     <ui:repeat var="r" value="#{userCalendarsCtrl.model.planning}">
                                         <p:column
@@ -87,12 +87,12 @@ and open the template in the editor.
                                                 >
                                             <h:panelGrid columns="1">
                                                 <p:outputLabel value="#{r.hours[hs.index].subject}"
-                                                               style="font-weight: bold"/>
-                                                <p:outputLabel value="#{r.hours[hs.index].actor}"
+                                                               style="font-weight: bold" rendered="#{not vr.isEmpty(r.hours[hs.index].subject)}"/>
+                                                <p:outputLabel value="#{r.hours[hs.index].actor}" rendered="#{not vr.isEmpty(r.hours[hs.index].actor)}"
                                                                style="#{userCalendarsCtrl.resolveCssStyleForClass(r.hours[hs.index].students)}"
                                                         />
-                                                <p:outputLabel value="#{r.hours[hs.index].activity}"/>
-                                                <p:outputLabel value="#{r.hours[hs.index].room}"/>
+                                                <p:outputLabel value="#{r.hours[hs.index].activity}" rendered="#{not vr.isEmpty(r.hours[hs.index].activity)}"/>
+                                                <p:outputLabel value="#{r.hours[hs.index].room}" rendered="#{not vr.isEmpty(r.hours[hs.index].room)}"/>
                                             </h:panelGrid>
                                         </p:column>
                                     </ui:repeat>

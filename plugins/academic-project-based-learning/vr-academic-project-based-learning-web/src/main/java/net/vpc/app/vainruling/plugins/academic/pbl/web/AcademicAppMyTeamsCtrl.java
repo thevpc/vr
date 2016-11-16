@@ -11,13 +11,12 @@ import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblService;
+import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPlugin;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.common.jsf.FacesUtils;
-import net.vpc.upa.types.DateTime;
 import org.apache.commons.lang.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +34,8 @@ import java.util.logging.Logger;
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = ""),
                 @UPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),
         },
-        css = "fa-table",
-        title = "Mes Equipes APP",
+//        css = "fa-table",
+//        title = "Mes Equipes APP",
         url = "modules/academic/pbl/my-app-teams",
         menu = "/Education/Internship",
         securityKey = "Custom.Education.Apbl.MyTeams"
@@ -44,7 +43,7 @@ import java.util.logging.Logger;
 public class AcademicAppMyTeamsCtrl {
     public static final Logger log = Logger.getLogger(AcademicAppProjectsCtrl.class.getName());
     @Autowired
-    private ApblService apbl;
+    private ApblPlugin apbl;
     @Autowired
     private CorePlugin core;
     @Autowired
@@ -166,7 +165,7 @@ public class AcademicAppMyTeamsCtrl {
     public void reloadTeams() {
         ArrayList<SelectItem> teamItems = new ArrayList<>();
         if (currentUser != null) {
-            for (ApblTeam apblTeam : apbl.findOpenTeamsByUser(currentUser.getId())) {
+            for (ApblTeam apblTeam : apbl.findOpenTeamsByUser(currentUser.getId(),true,false)) {
                 teamItems.add(new SelectItem(
                         apblTeam.getId(),
                         apblTeam.getName()

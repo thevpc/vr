@@ -58,9 +58,9 @@ public class ManyToOneTypePropertyView extends FieldPropertyView {
             }
             Class idType = entity.getIdType();
             if (idType.equals(Integer.class) || idType.equals(Integer.TYPE)) {
-                entity.getBuilder().idToObject(Convert.toInteger(value));
+                entity.getBuilder().idToObject(Convert.toInt(value));
             } else if (idType.equals(Long.class) || idType.equals(Long.TYPE)) {
-                entity.getBuilder().idToObject(Convert.toInteger(value));
+                entity.getBuilder().idToObject(Convert.toInt(value));
             } else {
                 throw new UnsupportedOperationException();
             }

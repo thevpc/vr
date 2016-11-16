@@ -4,7 +4,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:c="http://java.sun.com/jstl/core"
+      xmlns:c="http://java.sun.com/jstl/core" xmlns:f="http://xmlns.jcp.org/jsf/core"
 >
 <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
 <!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
@@ -79,6 +79,45 @@
                     #{vr.messageTextService.loadContentTexts(null)}
                     <div class="navbar-custom-menu">
                         <ul class="nav navbar-nav">
+                            <!--<li>-->
+                                <!--<div class="pull-right hidden-xs">-->
+                                    <!--<p:ajaxStatus style="vertical-align: middle;  height:48px">-->
+                                        <!--<f:facet name="default">-->
+
+                                        <!--</f:facet>-->
+
+                                        <!--<f:facet name="start">-->
+                                            <!--<div>-->
+                                            <!--&lt;!&ndash;<p:graphicImage name="/themes/crew/images/loading.gif" width="48" height="48"/>&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<img src="# {vr.url('/Site/loading.gif')}"/>&ndash;&gt;-->
+
+                                                <!--<div class="vr-loader-container">-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                    <!--<div class="vr-loader-block"></div>-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                        <!--</f:facet>-->
+
+                                        <!--<f:facet name="complete">-->
+
+                                        <!--</f:facet>-->
+                                    <!--</p:ajaxStatus>-->
+                                <!--</div>-->
+                            <!--</li>-->
                             <!-- Messages: style can be found in dropdown.less-->
                             <li class="dropdown messages-menu">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -1592,5 +1631,15 @@
     <!--<script src="# {vr.themeContext}/wplugins/adminlte/dist/js/pages/dashboard2.js"></script>-->
     <!-- AdminLTE for demo purposes -->
     <script src="#{vr.themeContext}/wplugins/adminlte/dist/js/demo.js"></script>
+
+    <script>
+        $( document ).ready(function () {
+            $(".sparkline").each(function () {
+                var $this = $(this);
+                $this.sparkline('html', $this.data());
+            });
+        });
+    </script>
+
 </h:body>
 </html>

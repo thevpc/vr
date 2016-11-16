@@ -89,14 +89,14 @@ public class UpdateStudentClassActionCtrl {
                         && !StringUtils.isEmpty(getModel().getSelectedPeriod())
                 ) {
             getModel().setMessage("");
-            int periodId = Convert.toInteger(getModel().getSelectedPeriod(), IntegerParserConfig.LENIENT_F);
+            int periodId = Convert.toInt(getModel().getSelectedPeriod(), IntegerParserConfig.LENIENT_F);
             boolean userSelectedOnly = getModel().isUserSelectedOnly();
             if (userSelectedOnly && periodId >= 0) {
                 AppPeriod period = core.findPeriod(periodId);
                 if (period != null) {
                     try {
                         for (String studentIdStr : getModel().getSelectionIdList()) {
-                            int studentId = Convert.toInteger(studentIdStr, IntegerParserConfig.LENIENT_F);
+                            int studentId = Convert.toInt(studentIdStr, IntegerParserConfig.LENIENT_F);
                             AcademicStudent st = ap.findStudent(studentId);
                             st.setLastSubscription(period);
                             st.setStage(AcademicStudentStage.GRADUATED);
@@ -108,7 +108,7 @@ public class UpdateStudentClassActionCtrl {
                     }
                 }
             } else {
-                int fromId = Convert.toInteger(getModel().getSelectedClassFrom(), IntegerParserConfig.LENIENT_F);
+                int fromId = Convert.toInt(getModel().getSelectedClassFrom(), IntegerParserConfig.LENIENT_F);
                 try {
                     ap.updateStudentClassByClass(getModel().getClassNumber(), fromId, periodId);
                 } catch (Exception ex) {
@@ -130,14 +130,14 @@ public class UpdateStudentClassActionCtrl {
                         && !StringUtils.isEmpty(getModel().getSelectedPeriod())
                 ) {
             getModel().setMessage("");
-            int periodId = Convert.toInteger(getModel().getSelectedPeriod(), IntegerParserConfig.LENIENT_F);
+            int periodId = Convert.toInt(getModel().getSelectedPeriod(), IntegerParserConfig.LENIENT_F);
             boolean userSelectedOnly = getModel().isUserSelectedOnly();
             if (userSelectedOnly && periodId >= 0) {
                 AppPeriod period = core.findPeriod(periodId);
                 if (period != null) {
                     try {
                         for (String studentIdStr : getModel().getSelectionIdList()) {
-                            int studentId = Convert.toInteger(studentIdStr, IntegerParserConfig.LENIENT_F);
+                            int studentId = Convert.toInt(studentIdStr, IntegerParserConfig.LENIENT_F);
                             AcademicStudent st = ap.findStudent(studentId);
                             st.setLastSubscription(period);
                             st.setStage(AcademicStudentStage.ELIMINATED);
@@ -151,7 +151,7 @@ public class UpdateStudentClassActionCtrl {
                     }
                 }
             } else {
-                int fromId = Convert.toInteger(getModel().getSelectedClassFrom(), IntegerParserConfig.LENIENT_F);
+                int fromId = Convert.toInt(getModel().getSelectedClassFrom(), IntegerParserConfig.LENIENT_F);
                 try {
                     ap.updateStudentClassByClass(getModel().getClassNumber(), fromId, periodId);
                 } catch (Exception ex) {
@@ -174,8 +174,8 @@ public class UpdateStudentClassActionCtrl {
                         && !StringUtils.isEmpty(getModel().getSelectedPeriod())
                 ) {
             getModel().setMessage("");
-            int periodId = Convert.toInteger(getModel().getSelectedPeriod(), IntegerParserConfig.LENIENT_F);
-            int toId = Convert.toInteger(getModel().getSelectedClassTo(), IntegerParserConfig.LENIENT_F);
+            int periodId = Convert.toInt(getModel().getSelectedPeriod(), IntegerParserConfig.LENIENT_F);
+            int toId = Convert.toInt(getModel().getSelectedClassTo(), IntegerParserConfig.LENIENT_F);
             boolean userSelectedOnly = getModel().isUserSelectedOnly();
             if (userSelectedOnly && toId >= 0 && periodId>=0) {
                 AppPeriod period = core.findPeriod(periodId);
@@ -183,7 +183,7 @@ public class UpdateStudentClassActionCtrl {
                 if (cls != null && period!=null) {
                     try {
                         for (String studentIdStr : getModel().getSelectionIdList()) {
-                            int studentId = Convert.toInteger(studentIdStr, IntegerParserConfig.LENIENT_F);
+                            int studentId = Convert.toInt(studentIdStr, IntegerParserConfig.LENIENT_F);
                             ap.updateStudentClass(studentId, getModel().getClassNumber(), cls.getId());
                             AcademicStudent st = ap.findStudent(studentId);
                             st.setLastSubscription(period);
@@ -195,7 +195,7 @@ public class UpdateStudentClassActionCtrl {
                     }
                 }
             } else {
-                int fromId = Convert.toInteger(getModel().getSelectedClassFrom(), IntegerParserConfig.LENIENT_F);
+                int fromId = Convert.toInt(getModel().getSelectedClassFrom(), IntegerParserConfig.LENIENT_F);
                 try {
                     ap.updateStudentClassByClass(getModel().getClassNumber(), fromId, toId);
                 } catch (Exception ex) {

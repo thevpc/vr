@@ -84,8 +84,8 @@ public class CopyPeriodDialogCtrl {
         try {
             final CorePlugin cp = VrApp.getBean(CorePlugin.class);
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-            int p1 = Convert.toInteger(getModel().getFromPeriod(), IntegerParserConfig.LENIENT_F);
-            int p2 = Convert.toInteger(getModel().getToPeriod(), IntegerParserConfig.LENIENT_F);
+            int p1 = Convert.toInt(getModel().getFromPeriod(), IntegerParserConfig.LENIENT_F);
+            int p2 = Convert.toInt(getModel().getToPeriod(), IntegerParserConfig.LENIENT_F);
             if (p1 > 0 && p2 > 0 && p1 != p2) {
                 p.copyAcademicData(p1, p2);
             }

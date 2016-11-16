@@ -4,7 +4,6 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.plugins.themes</groupId>
     <artifactId>vr-crew-theme</artifactId>
-    <name>net.vpc.app.vain-ruling.plugins.themes.plugins.themes.vr-theme-crew</name>
     <version>1.2</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>

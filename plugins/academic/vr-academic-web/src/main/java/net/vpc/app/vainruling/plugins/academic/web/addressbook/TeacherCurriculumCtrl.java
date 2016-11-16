@@ -22,8 +22,8 @@ import net.vpc.common.strings.StringUtils;
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "CV Teacher",
+//        css = "fa-table",
+//        title = "CV Teacher",
         url = "public/academic/addressbook/teacher-cv-index.xhtml"
 )
 public class TeacherCurriculumCtrl {

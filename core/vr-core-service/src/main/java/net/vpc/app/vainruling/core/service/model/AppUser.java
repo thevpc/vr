@@ -10,6 +10,7 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.PasswordStrategyType;
+import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 import net.vpc.upa.types.DateTime;
 
@@ -36,9 +37,16 @@ public class AppUser {
 
     @Summary
     @Unique
+    @Field(
+            updateAccessLevel = AccessLevel.PROTECTED
+    )
     private String login;
 
     @Password(strategyType = PasswordStrategyType.MD5)
+    @Field(
+            updateAccessLevel = AccessLevel.PROTECTED,
+            readAccessLevel = AccessLevel.PROTECTED
+    )
     private String password;
 
     @Main
@@ -51,6 +59,7 @@ public class AppUser {
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
+    @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;

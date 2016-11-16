@@ -1324,7 +1324,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
 
     public AcademicTeacher findCurrentHeadOfDepartment() {
-        UserSession sm = UserSession.get();
+        UserSession sm = core.getUserSession();
         AppUser user = (sm == null) ? null : sm.getUser();
         if (user == null || user.getDepartment() == null) {
             return null;
@@ -1333,7 +1333,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public boolean isUserSessionManager() {
-        UserSession sm = UserSession.get();
+        UserSession sm = core.getUserSession();
         AppUser user = (sm == null) ? null : sm.getUser();
         if (user == null || user.getDepartment() == null) {
             return false;
@@ -1440,19 +1440,19 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     /**
-     * @param studentFilter ql expression x based. example "x.fullName like '%R%'"
+     * @param studentUpqlFilter ql expression x based. example "x.fullName like '%R%'"
      * @return
      */
-    public List<AcademicStudent> findStudents(String studentFilter) {
+    public List<AcademicStudent> findStudents(String studentUpqlFilter) {
         return UPA.getPersistenceUnit().createQuery("Select x from AcademicStudent x " +
                 " where " +
                 " x.deleted=false " +
-                ((StringUtils.isEmpty(studentFilter)) ? "" : (" and " + studentFilter)) +
+                ((StringUtils.isEmpty(studentUpqlFilter)) ? "" : (" and " + studentUpqlFilter)) +
                 " order by x.contact.fullName").getResultList();
     }
 
-    public List<AcademicStudent> findStudents(String studentProfileFilter, String studentFilter) {
-        List<AcademicStudent> base = findStudents(studentFilter);
+    public List<AcademicStudent> findStudents(String studentProfileFilter, String studentUpqlFilter) {
+        List<AcademicStudent> base = findStudents(studentUpqlFilter);
         if (!StringUtils.isEmpty(studentProfileFilter)) {
             List<AcademicStudent> goodStudents = new ArrayList<>();
             HashSet<Integer> goodUsers = new HashSet<Integer>();
@@ -2542,7 +2542,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public AcademicTeacher getCurrentTeacher() {
-        UserSession sm = UserSession.get();
+        UserSession sm = core.getUserSession();
         AppUser user = (sm == null) ? null : sm.getUser();
         if (user != null) {
             return findTeacherByUser(user.getId());
@@ -2551,7 +2551,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public AcademicStudent getCurrentStudent() {
-        UserSession sm = UserSession.get();
+        UserSession sm = core.getUserSession();
         AppUser user = (sm == null) ? null : sm.getUser();
         if (user != null) {
             return findStudentByUser(user.getId());
@@ -4512,9 +4512,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     public void addAcademicTeacherSemestrialLoad(int semester,int weeksLoad,int teacherId,int periodId){
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        List<AcademicTeacherSemestrialLoad> allFound = pu.createQuery("Select u from AcademicTeacherSemestrialLoad u where u.teacherId=:teacherId and u.periodId=:periodId")
+        List<AcademicTeacherSemestrialLoad> allFound = pu.createQuery("Select u from AcademicTeacherSemestrialLoad u where u.teacherId=:teacherId and u.periodId=:periodId and u.semester=:semester")
                 .setParameter("teacherId", teacherId)
                 .setParameter("periodId", periodId)
+                .setParameter("semester", semester)
                 .getResultList();
         if(allFound.isEmpty()) {
             AcademicTeacher teacher = findTeacher(teacherId);

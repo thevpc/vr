@@ -92,7 +92,7 @@
             <plugin>
                 <groupId>net.vpc.common.maven</groupId>
                 <artifactId>writer-maven-plugin</artifactId>
-                <version>1.0.1</version>
+                <version>1.0.2</version>
                 <configuration>
                     <outputFile>${project.build.outputDirectory}/META-INF/vr-plugin.properties</outputFile>
                     <text>
@@ -137,6 +137,7 @@
                                 cancel();
                             }
                         }
+                        log.info("Detected vr-plugin bundleId="+bundleId+" of type "+componentType);
                         println("########################################");
                         println("#");
                         println("# VR Plugin File Descriptor");

@@ -22,8 +22,6 @@ import java.util.List;
         breadcrumb = {
                 @UPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = ""),
         }
-        , css = "fa-table"
-        , title = "Etats Todo"
         , url = "modules/todo/config-todo-status"
 )
 public class TodoStatusCtrl extends AbstractNameCtrl<TodoStatus> {

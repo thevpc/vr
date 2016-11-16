@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Scope;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "Changer Utilisateur",
         url = "modules/admin/impersonate",
         menu = "/Admin/Security",
         securityKey = "Custom.Admin.Impersonate"
@@ -20,13 +19,4 @@ import org.springframework.context.annotation.Scope;
 @Scope(value = "singleton")
 public class ImpersonateCtrl {
 
-    private Model model = new Model();
-
-    public Model getModel() {
-        return model;
-    }
-
-    public static class Model {
-
-    }
 }

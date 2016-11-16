@@ -40,7 +40,7 @@ import java.util.logging.Logger;
 public class XlsxLoadImporter {
 
     private static Logger log = Logger.getLogger(XlsxLoadImporter.class.getName());
-    private static DoubleParserConfig LENIENT_1 = DoubleParserConfig.LENIENT.setNullValue(1).setInvalidValue(1);
+    private static DoubleParserConfig LENIENT_1 = DoubleParserConfig.LENIENT.setNullValue(1.0).setInvalidValue(1.0);
 
     private ParseFormatManager pfm = UPA.getBootstrap().getFactory().createObject(ParseFormatManager.class);
 
@@ -133,7 +133,7 @@ public class XlsxLoadImporter {
 //            d.setValueTP(Convert.toDouble(values[3]));
 //            d.setValuePM(Convert.toDouble(values[4]));
             d.setValueDU(Convert.toDouble(values[5]));
-            d.setPosition(Convert.toInteger(values[6]));
+            d.setPosition(Convert.toInt(values[6]));
             if (old == null) {
                 service.add(d);
             } else {
@@ -341,8 +341,8 @@ public class XlsxLoadImporter {
             academicTeacherImport.setEmail(Convert.toString(values[COL_EMAIL]));
             academicTeacherImport.setDiscipline(Convert.toString(values[COL_DISCIPLINE]));
             academicTeacherImport.setWeekLoads(new int[]{
-                    Convert.toInteger(values[COL_WEEK_LOAD_1], IntegerParserConfig.LENIENT),
-                    Convert.toInteger(values[COL_WEEK_LOAD_2], IntegerParserConfig.LENIENT)
+                    Convert.toInt(values[COL_WEEK_LOAD_1], IntegerParserConfig.LENIENT),
+                    Convert.toInt(values[COL_WEEK_LOAD_2], IntegerParserConfig.LENIENT)
             });
             return academicTeacherImport;
         }
@@ -596,6 +596,7 @@ public class XlsxLoadImporter {
     }
 
     public AcademicStudentImport parseAcademicStudentImport(Object[] values) throws IOException {
+
         int col = 0;
         final int COL_NIN = ++col;
         final int COL_SUBSCRIPTION_NBR = ++col;
@@ -630,8 +631,8 @@ public class XlsxLoadImporter {
             a.setFirstName2(Convert.toString(values[COL_FIRST_NAME2]));
             a.setPreClassPrepName(Convert.toString(values[COL_PREP]));
             a.setPreClassTypeName(Convert.toString(values[COL_PREP_SECTION]));
-            a.setPreClassPrepRank(Convert.toInteger(values[COL_PREP_RANK], IntegerParserConfig.LENIENT));
-            a.setPreClassPrepRankMax(Convert.toInteger(values[COL_PREP_RANK_MAX], IntegerParserConfig.LENIENT));
+            a.setPreClassPrepRank(Convert.toInt(values[COL_PREP_RANK], IntegerParserConfig.LENIENT));
+            a.setPreClassPrepRankMax(Convert.toInt(values[COL_PREP_RANK_MAX], IntegerParserConfig.LENIENT));
             a.setPreClassBacName(Convert.toString(values[COL_BAC]));
             Object value = values[COL_PREP_SCORE];
             if (value != null && (value instanceof String)) {

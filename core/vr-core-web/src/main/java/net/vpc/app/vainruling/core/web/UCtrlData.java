@@ -61,6 +61,11 @@ public class UCtrlData {
         return this;
     }
 
+    public UCtrlData setSubTitle(String subTitle) {
+        this.subTitle = subTitle;
+        return this;
+    }
+
     public String getUrl() {
         return url;
     }

@@ -36,7 +36,7 @@ public class UPAObjectHelper {
     }
 
     public static int findIntProperty(UPAObject f, String property, String context, int defaultValue) {
-        return Convert.toInteger(findObjectProperty(f, property, context, defaultValue));
+        return Convert.toInt(findObjectProperty(f, property, context, defaultValue));
     }
 
     public static String findStringProperty(UPAObject f, String property, String context, String defaultValue) {
@@ -62,13 +62,13 @@ public class UPAObjectHelper {
                 if (spanned[0].equalsIgnoreCase("MAX_VALUE")) {
                     pv.setColspan(Integer.MAX_VALUE);
                 } else {
-                    pv.setColspan(Convert.toInteger(spanned[0], IntegerParserConfig.LENIENT.setInvalidValue(pv.getColspan()).setNullValue(1)));
+                    pv.setColspan(Convert.toInt(spanned[0], IntegerParserConfig.LENIENT.setInvalidValue(pv.getColspan()).setNullValue(1)));
                 }
                 if (spanned.length > 1) {
                     if (spanned[1].equalsIgnoreCase("MAX_VALUE")) {
                         pv.setRowpan(Integer.MAX_VALUE);
                     } else {
-                        pv.setRowpan(Convert.toInteger(spanned[1], IntegerParserConfig.LENIENT.setInvalidValue(pv.getRowpan()).setNullValue(1)));
+                        pv.setRowpan(Convert.toInt(spanned[1], IntegerParserConfig.LENIENT.setInvalidValue(pv.getRowpan()).setNullValue(1)));
                     }
                 }
             }

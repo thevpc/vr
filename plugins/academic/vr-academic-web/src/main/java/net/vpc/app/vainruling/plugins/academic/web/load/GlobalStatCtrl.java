@@ -33,8 +33,8 @@ import java.util.*;
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "Stats Charge",
+//        css = "fa-table",
+//        title = "Stats Charge",
         url = "modules/academic/global-stat",
         menu = "/Education/Load",
         securityKey = "Custom.Education.GlobalStat"

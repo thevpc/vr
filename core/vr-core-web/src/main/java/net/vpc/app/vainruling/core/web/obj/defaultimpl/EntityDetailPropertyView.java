@@ -5,8 +5,8 @@
  */
 package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.obj.ObjManagerService;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
@@ -73,10 +73,10 @@ public class EntityDetailPropertyView extends PropertyView {
         String idExpr = "o.`" + f.getName() + "`.`" + relation.getTargetEntity().getPrimaryFields().get(0).getName() + "`";
         Object idVal = getRelationship().getTargetEntity().getBuilder().recordToId(ctrl.getModel().getCurrentRecord());
         HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("idval",idVal);
+        parameters.put("idval", idVal);
 
-        ObjManagerService objService = VrApp.getBean(ObjManagerService.class);
-        count = objService.findCountByFilter(relation.getSourceEntity().getName(), idExpr + "=:idval", null, parameters);
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        count = core.findCountByFilter(relation.getSourceEntity().getName(), idExpr + "=:idval", null, parameters);
     }
 
     public long getCount() {

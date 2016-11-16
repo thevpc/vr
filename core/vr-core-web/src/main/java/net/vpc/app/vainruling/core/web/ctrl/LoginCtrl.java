@@ -23,7 +23,7 @@ import javax.faces.context.FacesContext;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "Login",
+//        title = "Login",
         url = "login"
 )
 public class LoginCtrl {

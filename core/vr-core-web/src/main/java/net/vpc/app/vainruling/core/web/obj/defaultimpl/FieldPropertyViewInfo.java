@@ -14,6 +14,7 @@ import net.vpc.app.vainruling.core.web.obj.UPAObjectHelper;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.Field;
 import net.vpc.upa.FieldModifier;
+import net.vpc.upa.FlagSet;
 import net.vpc.upa.types.DataType;
 
 import java.util.Map;
@@ -39,11 +40,14 @@ public class FieldPropertyViewInfo {
     private FieldPropertyViewInfo(Field field, DataType dataType, Map<String, Object> configuration) {
         this.dataType = dataType != null ? dataType : field.getDataType();
         if (field != null) {
-            main = field.getModifiers().contains(FieldModifier.MAIN);
-            id = field.getModifiers().contains(FieldModifier.ID);
-            insert = field.getModifiers().contains(FieldModifier.PERSIST_DEFAULT);
-            insert_seq = field.getModifiers().contains(FieldModifier.PERSIST_SEQUENCE);
-            update = !id && field.getModifiers().contains(FieldModifier.UPDATE_DEFAULT);
+            FlagSet<FieldModifier> modifiers = field.getModifiers();
+            main = modifiers.contains(FieldModifier.MAIN);
+            id = modifiers.contains(FieldModifier.ID);
+            insert = modifiers.contains(FieldModifier.PERSIST_DEFAULT);
+            insert_seq = modifiers.contains(FieldModifier.PERSIST_SEQUENCE);
+            update = !id && modifiers.contains(FieldModifier.UPDATE_DEFAULT)
+                    //this is added to fix problem for creation date
+                    && modifiers.contains(FieldModifier.PERSIST_DEFAULT);
         } else {
             insert = true;
             update = true;
@@ -89,7 +93,7 @@ public class FieldPropertyViewInfo {
             if (rl == AccessLevel.PRIVATE) {
                 visible = false;
             } else if (rl == AccessLevel.PROTECTED) {
-                visible = admin;
+                visible = admin || field.getPersistenceGroup().getSecurityManager().isAllowedRead(field);
             }
         }
 
@@ -99,7 +103,7 @@ public class FieldPropertyViewInfo {
                 if (u == AccessLevel.PRIVATE) {
                     update = false;
                 } else if (u == AccessLevel.PROTECTED) {
-                    update = admin;
+                    update = admin|| field.getPersistenceGroup().getSecurityManager().isAllowedWrite(field);
                 }
             }
             if (!update) {
@@ -113,7 +117,7 @@ public class FieldPropertyViewInfo {
                 if (u == AccessLevel.PRIVATE) {
                     insert = false;
                 } else if (u == AccessLevel.PROTECTED) {
-                    insert = admin;
+                    insert = admin|| field.getPersistenceGroup().getSecurityManager().isAllowedWrite(field);
                 }
             }
             if (!insert) {

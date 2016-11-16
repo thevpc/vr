@@ -20,25 +20,14 @@ import java.util.logging.Logger;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "Invalider cache", css = "fa-dashboard",
         menu = "/Admin",
         securityKey = "Custom.Admin.InvalidateCache"
 )
 public class InvalidateCacheCtrl {
-
-    private static final Logger log = Logger.getLogger(InvalidateCacheCtrl.class.getName());
-
-    private Model model = new Model();
-
-    public Model getModel() {
-        return model;
-    }
 
     @OnPageLoad
     public void onInvoke() {
         CorePlugin.get().invalidateCache();
     }
 
-    public static class Model {
-    }
 }

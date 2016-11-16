@@ -32,8 +32,8 @@ import java.util.List;
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Site", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "Apercu Messages",
+//        css = "fa-table",
+//        title = "Apercu Messages",
         securityKey = "Custom.Inbox"
 )
 public class MailboxPreviewCtrl implements PollAware,MessageTextService {

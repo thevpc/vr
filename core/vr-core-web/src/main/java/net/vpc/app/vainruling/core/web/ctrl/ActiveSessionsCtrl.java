@@ -20,15 +20,17 @@ import net.vpc.app.vainruling.core.web.util.ChartUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
 import org.primefaces.model.chart.DonutChartModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
+import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "Utilisateurs Connectés",
+//        title = "Utilisateurs Connectés",
         url = "modules/admin/active-sessions",
         menu = "/Social",
         securityKey = "Custom.Admin.ActiveSessions"
@@ -45,7 +47,65 @@ public class ActiveSessionsCtrl implements PollAware {
         }
     };
 
+    @Autowired
+    private CorePlugin core;
     private final Model model = new Model();
+
+    public boolean isInvalidatable(UserSession s){
+        UserSession userSession = core.getUserSession();
+        if(userSession==null || s==null){
+            return false;
+        }
+        if(s.getPlatformSession()==null){
+            return false;
+        }
+        if(StringUtils.nonNull(userSession.getSessionId()).equals(StringUtils.nonNull(s.getSessionId()))){
+            return false;
+        }
+        return true;
+    }
+
+    public void onInvalidateSession(UserSession s){
+        if(isInvalidatable(s)){
+            Object session = s.getPlatformSession();
+            core.logout(s.getSessionId());
+            if(session instanceof HttpSession){
+                try {
+                    ((HttpSession) session).invalidate();
+                }catch(IllegalStateException ex){
+                    //already invalid
+                    core.getSessions().onDestroy(s.getSessionId());
+                }catch(Exception ex){
+                    //any other exception
+                    core.getSessions().onDestroy(s.getSessionId());
+                }
+            }
+        }
+    }
+
+    public List<UserSession> getOrderedAndValidSessions(){
+        List<UserSession> validOnly=new ArrayList<>();
+        for (UserSession userSession : core.getSessions().getOrderedActiveSessions()) {
+            boolean validSession=true;
+            if(isInvalidatable(userSession)) {
+                Object session = userSession.getPlatformSession();
+                if (session instanceof HttpSession) {
+                    HttpSession hsession = (HttpSession) session;
+                    try {
+                        hsession.getLastAccessedTime();
+                    } catch (IllegalStateException ex) {
+                        validSession = false;
+                    }
+                }
+            }
+            if(!validSession){
+                onInvalidateSession(userSession);
+            }else{
+                validOnly.add(userSession);
+            }
+        }
+        return validOnly;
+    }
 
     @OnPageLoad
     public void onRefresh() {
@@ -55,7 +115,7 @@ public class ActiveSessionsCtrl implements PollAware {
         synchronized (model) {
             model.updating = true;
             try {
-                List<UserSession> list = VrApp.getBean(ActiveSessionsTracker.class).getOrderedActiveSessions();
+                List<UserSession> list = getOrderedAndValidSessions();
                 Map<Integer, TypeStat> stats = new HashMap<Integer, TypeStat>();
                 for (UserSession i : list) {
                     if (i != null && i.getUser() != null) {

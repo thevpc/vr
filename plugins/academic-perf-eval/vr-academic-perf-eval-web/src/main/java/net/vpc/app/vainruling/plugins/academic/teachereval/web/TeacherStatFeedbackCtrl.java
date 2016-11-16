@@ -32,8 +32,8 @@ import java.util.logging.Logger;
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "Stats Eval. Enseignements",
+//        css = "fa-table",
+//        title = "Stats Eval. Enseignements",
         menu = "/Education/Evaluation",
         url = "modules/academic/perfeval/teacher-stat-feedback",
         securityKey = "Custom.Academic.TeacherStatFeedback"

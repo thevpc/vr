@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Scope;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "Accueil",
+//        title = "Accueil",
         url = "modules/welcome",
         menu = "/"
 )

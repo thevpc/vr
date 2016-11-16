@@ -27,7 +27,8 @@ import java.util.logging.Logger;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "Mon Profil", css = "fa-dashboard", url = "modules/config/my-profile",
+//        title = "Mon Profil", css = "fa-dashboard",
+        url = "modules/config/my-profile",
         menu = "/Config",
         securityKey = "Custom.MyProfile"
 )

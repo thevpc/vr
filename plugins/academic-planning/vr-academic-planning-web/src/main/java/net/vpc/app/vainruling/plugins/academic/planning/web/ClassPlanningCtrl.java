@@ -27,8 +27,8 @@ import java.util.List;
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "Emploi par Groupe",
+//        css = "fa-table",
+//        title = "Emploi par Groupe",
         url = "modules/academic/planning/class-planning",
         menu = "/Calendars",
         securityKey = "Custom.Education.ClassPlanning"

@@ -1,0 +1,70 @@
+package net.vpc.app.vainruling.core.service.util;
+
+import net.vpc.common.strings.StringUtils;
+import net.vpc.upa.Entity;
+import net.vpc.upa.PersistenceUnit;
+import net.vpc.upa.Record;
+import net.vpc.upa.UPA;
+import org.springframework.beans.BeanUtils;
+
+import java.beans.PropertyDescriptor;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Created by vpc on 10/30/16.
+ */
+public class DefaultObjectToMapConverter implements ObjectToMapConverter{
+    public static final ObjectToMapConverter INSTANCE=new DefaultObjectToMapConverter();
+    @Override
+    public Map<String, Object> convert(Object o) {
+        if(o==null){
+            return null;
+        }
+        if(o instanceof Map){
+            return (Map) o;
+        }
+        if(o instanceof Record){
+            return ((Record) o).toMap();
+        }
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity entity = pu.findEntity(o.getClass());
+        Map<String, Object> words = new HashMap<>();
+        if(entity!=null){
+            Record r = (o instanceof Record) ? ((Record) o) : entity.getBuilder().objectToRecord(o, true);
+            if (r != null) {
+                for (Map.Entry<String, Object> entry : r.entrySet()) {
+                    String k = entry.getKey();
+                    Object v = entry.getValue();
+                    if (v != null) {
+                        Entity ve = pu.findEntity(v.getClass());
+                        if (ve != null) {
+                            Object mv = ve.getBuilder().getMainValue(v);
+                            String v2 = String.valueOf(mv);
+                            if (!StringUtils.isEmpty(v2)) {
+                                words.put(k, (v2));
+                            }
+                        } else if (v instanceof String) {
+                            if (!StringUtils.isEmpty(v.toString())) {
+                                words.put(k, (v));
+                            }
+                        } else {
+                            words.put(k, (v));
+                        }
+                    }
+                }
+            }
+            return words;
+        }else{
+            for (PropertyDescriptor propertyDescriptor : BeanUtils.getPropertyDescriptors(o.getClass())) {
+                propertyDescriptor.getReadMethod().setAccessible(true);
+                try {
+                    words.put(propertyDescriptor.getName(),propertyDescriptor.getReadMethod().invoke(o));
+                } catch (Exception e) {
+                    throw new IllegalArgumentException(e);
+                }
+            }
+        }
+        return words;
+    }
+}

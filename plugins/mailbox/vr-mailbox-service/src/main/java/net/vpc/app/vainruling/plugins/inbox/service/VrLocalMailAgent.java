@@ -55,7 +55,7 @@ class VrLocalMailAgent implements GoMailAgent {
             ms = new MailboxSent();
             ms.setSubject(email.subject());
             ms.setContent(bodyToString(email.body()));
-            int threadId = Convert.toInteger(email.getProperties().getProperty(MailboxPlugin.HEADER_THREAD_ID), IntegerParserConfig.LENIENT_F);
+            int threadId = Convert.toInt(email.getProperties().getProperty(MailboxPlugin.HEADER_THREAD_ID), IntegerParserConfig.LENIENT_F);
             String prio = email.getProperties().getProperty(MailboxPlugin.HEADER_PRIORITY);
             ms.setImportant(prio != null);
             ms.setToProfiles(email.getProperties().getProperty(MailboxPlugin.HEADER_TO_PROFILES));

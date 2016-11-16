@@ -54,8 +54,8 @@ import java.util.logging.Logger;
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "Mes Stages",
+//        css = "fa-table",
+//        title = "Mes Stages",
         menu = "/Education/Internship",
         securityKey = "Custom.Education.MyInternships",
         url = "modules/academic/internship/my-internships"

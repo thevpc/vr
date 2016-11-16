@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.FormulaType;
+import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
@@ -55,6 +56,7 @@ public class AppCompany {
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
+    @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;

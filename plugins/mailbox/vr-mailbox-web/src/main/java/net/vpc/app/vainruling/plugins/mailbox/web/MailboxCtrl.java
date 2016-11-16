@@ -448,7 +448,11 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             MailboxReceived r = (MailboxReceived) current.getMsg();
             s.setToProfiles(r.getSender().getLogin());
             s.setCcProfiles(r.getCcProfiles());
-            s.setSubject("RE:" + r.getSubject());
+            String subject = r.getSubject();
+            if(!subject.startsWith("RE:")){
+                subject="RE:" + subject;
+            }
+            s.setSubject(subject);
             s.setRichText(true);
             s.setThreadId(r.getOutboxMessage()==null?0:r.getOutboxMessage().getThreadId());
             resetNewMessage(s,EditCtrlMode.NEW);
@@ -465,7 +469,10 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             String ee = evalProfileMinusLogin(r.getToProfiles(), r.getOwner().getLogin());
             s.setToProfiles("" + r.getSender().getLogin() + (StringUtils.isEmpty(ee) ? "" : ",(" + ee + ")"));
             s.setCcProfiles(r.getCcProfiles());
-            s.setSubject("RE:" + r.getSubject());
+            String subject = r.getSubject();
+            if(!subject.startsWith("RE:")){
+                subject="RE:" + subject;
+            }
             s.setThreadId(r.getOutboxMessage()==null?0:r.getOutboxMessage().getThreadId());
             s.setRichText(true);
             resetNewMessage(s,EditCtrlMode.NEW);

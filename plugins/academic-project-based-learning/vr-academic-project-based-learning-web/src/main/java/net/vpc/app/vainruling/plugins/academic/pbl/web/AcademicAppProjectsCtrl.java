@@ -15,7 +15,7 @@ import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsDialogCtrl;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblService;
+import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPlugin;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.CoachNode;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.MemberNode;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ProjectNode;
@@ -27,10 +27,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringComparators;
 import net.vpc.common.strings.StringTransforms;
-import net.vpc.common.util.Filter;
-import net.vpc.common.util.Utils;
 import net.vpc.common.vfs.VFile;
-import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import org.apache.commons.lang.StringUtils;
 import org.primefaces.context.RequestContext;
@@ -53,8 +50,8 @@ import java.util.logging.Logger;
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = ""),
                 @UPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),
         },
-        css = "fa-table",
-        title = "Projets APP",
+//        css = "fa-table",
+//        title = "Projets APP",
         url = "modules/academic/pbl/app-projects",
         menu = "/Education/Internship",
         securityKey = "Custom.Education.Apbl.Projects"
@@ -62,7 +59,7 @@ import java.util.logging.Logger;
 public class AcademicAppProjectsCtrl {
     public static final Logger log = Logger.getLogger(AcademicAppProjectsCtrl.class.getName());
     @Autowired
-    private ApblService apbl;
+    private ApblPlugin apbl;
     @Autowired
     private CorePlugin core;
     @Autowired
@@ -97,55 +94,7 @@ public class AcademicAppProjectsCtrl {
         currentStudent = academic.getCurrentStudent();
         currentUser=UserSession.getCurrentUser();
         currentAdmin = core.isSessionAdmin();
-        List<ApblSession> sessions = new ArrayList<>();
-        if (core.isSessionAdmin()) {
-            sessions = apbl.findOpenSessions();
-        } else {
-            sessions = apbl.findOpenVisibleSessions();
-        }
-        sessions = (List<ApblSession>) Utils.retainAll(new ArrayList<>(sessions), new Filter<ApblSession>() {
-            @Override
-            public boolean accept(ApblSession value) {
-                if (currentTeacher != null && currentTeacher.getUser() != null) {
-                    return true;
-                }
-                if (currentStudent != null && currentStudent.getUser() != null) {
-                    return
-                            core.userMatchesProfileFilter(currentStudent.getUser().getId(), value.getMemberProfiles())
-                                    || core.userMatchesProfileFilter(currentStudent.getUser().getId(), value.getTeamOwnerProfiles())
-                            ;
-                }
-                //if any other user but not teacher or student, check it fulfills any of the other profiles
-                if (currentUser != null) {
-                    if (!StringUtils.isEmpty(value.getMemberProfiles())
-                            &&
-                            core.userMatchesProfileFilter(currentUser.getId(), value.getMemberProfiles())
-                            ) {
-                        return true;
-                    }
-                    if (!StringUtils.isEmpty(value.getTeamOwnerProfiles())
-                            &&
-                            core.userMatchesProfileFilter(currentUser.getId(), value.getTeamOwnerProfiles())
-                            ) {
-                        return true;
-                    }
-                    if (!StringUtils.isEmpty(value.getCoachProfiles())
-                            &&
-                            core.userMatchesProfileFilter(currentUser.getId(), value.getCoachProfiles())
-                            ) {
-                        return true;
-                    }
-                    if (!StringUtils.isEmpty(value.getProjectOwnerProfiles())
-                            &&
-                            core.userMatchesProfileFilter(currentUser.getId(), value.getProjectOwnerProfiles())
-                            ) {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        });
+        List<ApblSession> sessions = apbl.findAvailableSessions();
         getModel().getSessionsMap().clear();
         getModel().getSessionItems().clear();
         for (ApblSession session : sessions) {

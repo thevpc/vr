@@ -29,8 +29,8 @@ import java.util.logging.Logger;
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "Admin Tools",
+//        css = "fa-table",
+//        title = "Admin Tools",
         url = "modules/academic/admin-tools",
         menu = "/Education/Config",
         securityKey = "Custom.Education.AdminTools"

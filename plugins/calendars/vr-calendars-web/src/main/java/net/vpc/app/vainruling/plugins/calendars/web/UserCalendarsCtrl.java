@@ -28,8 +28,8 @@ import java.util.*;
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "Tous les Emplois",
+//        css = "fa-table",
+//        title = "Tous les Emplois",
         url = "modules/calendars/user-calendars",
         menu = "/Calendars",
         securityKey = "Custom.Education.UserCalendars"
@@ -51,9 +51,9 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
 
     public void onChangeUserType() {
         getModel().getUsers().clear();
-        int userTypeId = Convert.toInteger(getModel().getUserTypeId(), IntegerParserConfig.LENIENT_F);
-        int userDeptId = Convert.toInteger(getModel().getUserDepartmentId(), IntegerParserConfig.LENIENT_F);
-        int oldSelectedUser = Convert.toInteger(getModel().getUserId(), IntegerParserConfig.LENIENT_F);
+        int userTypeId = Convert.toInt(getModel().getUserTypeId(), IntegerParserConfig.LENIENT_F);
+        int userDeptId = Convert.toInt(getModel().getUserDepartmentId(), IntegerParserConfig.LENIENT_F);
+        int oldSelectedUser = Convert.toInt(getModel().getUserId(), IntegerParserConfig.LENIENT_F);
         boolean oldSelectedUserFound = false;
         Set<Integer> userIds = new HashSet<>();
         if(userTypeId>=0 && userDeptId>=0) {
@@ -89,7 +89,7 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
     }
 
     public void onChangeUser() {
-        int oldSelectedUser = Convert.toInteger(getModel().getUserId(), IntegerParserConfig.LENIENT_F);
+        int oldSelectedUser = Convert.toInt(getModel().getUserId(), IntegerParserConfig.LENIENT_F);
         CalendarWeek plannings = calendars.findMergedUserPublicCalendar(oldSelectedUser);
         if (plannings == null) {
             updateModel(new ArrayList<CalendarDay>());

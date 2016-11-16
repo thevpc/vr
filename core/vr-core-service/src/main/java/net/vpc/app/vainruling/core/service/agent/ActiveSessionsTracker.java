@@ -14,11 +14,13 @@ import java.util.*;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Service
-@Scope(value = "singleton")
 public class ActiveSessionsTracker {
 
     private Map<String, UserSession> activeSessions = new HashMap<>();
+
+    public UserSession getUserSession(String sessionId) {
+        return activeSessions.get(sessionId);
+    }
 
     public void onCreate(UserSession s) {
         if (s.getSessionId() == null) {

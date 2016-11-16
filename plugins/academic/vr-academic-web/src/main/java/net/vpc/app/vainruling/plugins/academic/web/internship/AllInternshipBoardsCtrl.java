@@ -25,8 +25,8 @@ import java.util.List;
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "Tous les Stages",
+//        css = "fa-table",
+//        title = "Tous les Stages",
         menu = "/Education/Internship",
         securityKey = "Custom.Education.AllInternships",
         url = "modules/academic/internship/all-internships"

@@ -15,7 +15,6 @@ import java.util.logging.Logger;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "Notifier arrêt serveur", css = "fa-dashboard",
         menu = "/Admin",
         securityKey = "Custom.Admin"
 )

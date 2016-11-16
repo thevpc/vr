@@ -278,9 +278,10 @@ and open the template in the editor.
                             <p:commandLink
                                     action="#{vr.gotoPageObjItem('AcademicTeacher',vr.str(teacherCourseLoadCtrl.model.currentTeacher.id))}"
                                     style="font-weight: bold"
+                                    rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
                                     value="#{teacherCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.val.teacher.situation.name}  (#{teacherCourseLoadCtrl.teacherFilter.periodName}) "/>
                         </h1>
-                        <p:panelGrid>
+                        <p:panelGrid rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}">
                             <p:row>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="Semaines"/></p:column>
@@ -539,6 +540,15 @@ and open the template in the editor.
                         <h1>Autres modules <p:commandButton value="Afficher/Cacher" action="#{teacherCourseLoadCtrl.onSwitchDisplayOtherModules}"
                                                            style="margin-left:10px; width:130px" update=":listForm" /></h1>
 
+                        <div style="margin-bottom: 10px;">
+                            <p:inputText
+                                    rendered="#{teacherCourseLoadCtrl.model.displayOtherModules}"
+                                    value="#{teacherCourseLoadCtrl.model.othersTextFilter}" placeholder="Chercher ..."  styleClass="form-control"
+                                    style="width: 100%" onkeypress="if (event.keyCode == 13) { onSearchByText(); return false; }"
+                            />
+                            <p:remoteCommand name="onSearchByText" actionListener="#{teacherCourseLoadCtrl.applyOthersTextFilter}" update=":listForm"/>
+                        </div>
+
                         <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.others}"
                                      class="table table-bordered table-hover"
                                      paginatorAlwaysVisible="false"
@@ -618,7 +628,7 @@ and open the template in the editor.
                             <p:column headerText="" width="8%">
                                 <h:outputText value="#{i.academicClass.name}"/>
                             </p:column>
-                            <p:column headerText="Module" filterBy="#{i.value.assignment.coursePlan.name}">
+                            <p:column headerText="Module" >
                                 <p:commandLink
                                         action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.value.assignment)}"
                                         styleClass="#{i.value.assigned?'vr-assigned-course':''}"

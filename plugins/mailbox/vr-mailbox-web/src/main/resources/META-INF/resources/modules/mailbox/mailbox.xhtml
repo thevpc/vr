@@ -58,8 +58,8 @@ and open the template in the editor.
                                         </p:commandLink>
                                     </li>
                                     <li class="#{(mailboxCtrl.model.folder.toString() eq 'CURRENT' and mailboxCtrl.model.sent) ? 'active':''}">
-                                        <p:commandLink actionListener="#{mailboxCtrl.onSelectOutboxFolder}"
-                                                       ajax="false"><i class="fa fa-envelope-o"></i> Envoi
+                                        <p:commandLink actionListener="#{mailboxCtrl.onSelectOutboxFolder}" ajax="false">
+                                            <i class="fa fa-envelope-o"></i> Envoi
                                             <ui:fragment rendered="#{mailboxCtrl.model.countOutbox gt 0}">
                                                 <span class="label label-success pull-right">#{mailboxCtrl.model.countOutbox}</span>
                                             </ui:fragment>
@@ -192,16 +192,17 @@ and open the template in the editor.
                                                         class="fa #{i.value.read ?'fa-eye text-gray':'fa-eye-slash text-green'}  vr-mailbox-star-icon"
                                                         title="#{i.value.read ?'déjà lu':'non lu'}"
                                                 ></i></p:commandLink>
+                                                <p:commandLink ajax="false" actionListener="#{mailboxCtrl.onSelect(i.value)}" update=":mainForm :pageTitleForm">
+
                                                 <span class="pull-right-container">
                                                     <small class="label pull-right vr-mailbox-label-emblem #{vr.hashToArr(i.value.category,'bg-red','bg-yellow','bg-aqua','bg-blue','bg-light-blue','bg-green','bg-navy','bg-teal','bg-olive','bg-lime','bg-orange','bg-fuchsi','bg-purple','bg-maroon','bg-black')}">#{vr.strcut(i.value.category, 10)}</small>
                                                 </span>
                                                 <p:outputLabel value="#{vr.strcat(mailboxCtrl.model.sent ?'A: ':'De: ',i.value.userFullName)}"
                                                                styleClass="vr-mailbox-name-label"/>
+                                                </p:commandLink>
                                             </p:column>
                                             <p:column headerText="" styleClass="vr-mailbox-subject">
-                                                <p:commandLink ajax="false"
-                                                               actionListener="#{mailboxCtrl.onSelect(i.value)}"
-                                                               update=":mainForm :pageTitleForm">
+                                                <p:commandLink ajax="false" actionListener="#{mailboxCtrl.onSelect(i.value)}" update=":mainForm :pageTitleForm">
                                                     <p:outputLabel
                                                             styleClass="#{i.value.read ?'vr-mailbox-read':'vr-mailbox-unread'}"
                                                             value="#{vr.strexpand(vr.strcut(i.value.subject, 50),'.',3)}"/>
@@ -224,9 +225,12 @@ and open the template in the editor.
                                                 </ui:fragment>
                                             </p:column>
                                             <p:column headerText="" styleClass="vr-mailbox-date">
+                                                <p:commandLink ajax="false" actionListener="#{mailboxCtrl.onSelect(i.value)}" update=":mainForm :pageTitleForm">
+
                                                 <p:outputLabel value="#{i.value.sendTime}">
                                                     <f:converter converterId="RelativeDateConverter"/>
                                                 </p:outputLabel>
+                                                </p:commandLink>
                                             </p:column>
                                             <f:facet name="footer">
                                                 <p:outputLabel value="Total #{mailboxCtrl.model.inbox.size()}"/>

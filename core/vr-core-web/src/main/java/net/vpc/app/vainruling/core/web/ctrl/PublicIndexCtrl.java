@@ -19,7 +19,6 @@ import org.springframework.context.annotation.Scope;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "Front",
         url = "index"
 )
 @Scope(value = "singleton")
@@ -38,5 +37,13 @@ public class PublicIndexCtrl {
 
     public static class Config{
         private String filter;
+
+        public String getFilter() {
+            return filter;
+        }
+
+        public void setFilter(String filter) {
+            this.filter = filter;
+        }
     }
 }

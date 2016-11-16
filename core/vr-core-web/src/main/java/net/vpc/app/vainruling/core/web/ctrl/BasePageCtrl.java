@@ -5,11 +5,14 @@
  */
 package net.vpc.app.vainruling.core.web.ctrl;
 
+import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.util.PlatformReflector;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.UCtrlData;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
+import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.common.strings.StringUtils;
 
 /**
@@ -18,15 +21,11 @@ import net.vpc.common.strings.StringUtils;
 public abstract class BasePageCtrl extends BaseCtrl {
 
     public BreadcrumbItem getTitle() {
-        Class cls = PlatformReflector.getTargetClass(this);
-        UCtrl c = (UCtrl) cls.getAnnotation(UCtrl.class);
-        String title = I18n.get().getOrNull("Controller." + VrUtils.getBeanName(cls));
-        if(StringUtils.isEmpty(title)){
-            title=c.title();
-        }
-        return new BreadcrumbItem(c == null ? "" : c.title()
-                , c == null ? "" : c.subTitle()
-                , c == null ? "" : c.css()
+        UCtrlData c = VrApp.getBean(VrMenuManager.class).getUCtrlDataByObj(this, null);
+
+        return new BreadcrumbItem(c == null ? "" : c.getTitle()
+                , c == null ? "" : c.getSubTitle()
+                , c == null ? "" : c.getCss()
                 , ""
                 , "");
     }

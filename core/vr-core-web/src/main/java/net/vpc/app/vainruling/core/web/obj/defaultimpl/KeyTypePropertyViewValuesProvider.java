@@ -5,8 +5,8 @@
  */
 package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.obj.ObjManagerService;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewValuesProvider;
@@ -35,7 +35,7 @@ public class KeyTypePropertyViewValuesProvider implements PropertyViewValuesProv
             dependentPropertyViews = propertyView.getDependentPropertyViews();
             componentId = propertyView.getComponentId();
         }
-        final ObjManagerService objService = VrApp.getBean(ObjManagerService.class);
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
         final ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
         Map<String, Object> currentValues = objCtrl.currentViewToMap();
 
@@ -55,7 +55,7 @@ public class KeyTypePropertyViewValuesProvider implements PropertyViewValuesProv
         return viewContext.getCacheItem("EntityPropertyViewValuesProvider." + me.getName() + ":" + constraints, new Action<List<NamedId>>() {
             @Override
             public List<NamedId> run() {
-                return objService.findAllNamedIds(mtype.getEntity(), constraints, objCtrl.getModel().getCurrentRecord());
+                return core.findAllNamedIds(mtype.getEntity(), constraints, objCtrl.getModel().getCurrentRecord());
             }
         });
     }

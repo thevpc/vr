@@ -17,15 +17,15 @@ import net.vpc.upa.expressions.UserExpression;
 /**
  * @author taha.bensalah@gmail.com
  */
-@SecurityContext(entity = "MailboxSent")
-public class MailboxSentSecurer extends DefaultEntitySecurityManager {
-
-    @Override
-    public Expression getEntityFilter(Entity entity) throws UPAException {
-        if (VrApp.getBean(CorePlugin.class).isUserSessionAdmin()) {
-            return null;
-        }
-        return new UserExpression("this.deleted=false and this.sender.login=currentUser()");
-    }
-
-}
+//@SecurityContext(entity = "MailboxSent")
+//public class MailboxSentSecurer extends DefaultEntitySecurityManager {
+//
+//    @Override
+//    public Expression getEntityFilter(Entity entity) throws UPAException {
+//        if (VrApp.getBean(CorePlugin.class).isUserSessionAdmin()) {
+//            return null;
+//        }
+//        return new UserExpression("this.deleted=false and this.sender.login=currentUser()");
+//    }
+//
+//}

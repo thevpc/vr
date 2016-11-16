@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.model.AppArea;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.FormulaType;
+import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
@@ -32,11 +33,12 @@ public class Equipment {
     @Id
     @Sequence
     private int id;
-    @Summary
     private String serial;
     private String stockSerial;
-    @Main
     private String name;
+    @Main
+    @Formula(value = "concat(this.name,'-',this.serial)")
+    private String fullName;
     @Properties(
             @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
     @Field(max = "400")
@@ -83,6 +85,7 @@ public class Equipment {
 
     @Summary
     @Formula(value = "currentTimestamp()", type = FormulaType.PERSIST)
+    @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private Timestamp createdOn;
 
     public int getId() {
@@ -240,5 +243,13 @@ public class Equipment {
     @Override
     public String toString() {
         return String.valueOf(name);
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }

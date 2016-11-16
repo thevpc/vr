@@ -44,8 +44,8 @@ import java.util.logging.Level;
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "Planification de Stages",
+//        css = "fa-table",
+//        title = "Planification de Stages",
         menu = "/Education/Internship",
         securityKey = "Custom.Education.InternshipsPlanning",
         url = "modules/academic/internship/internships-planning"
@@ -513,7 +513,7 @@ public class InternshipsPlanningCtrl {
 
     public void reloadActivityTable() {
         List<AcademicInternship> internshipsList = new ArrayList<>();
-        int groupId = Convert.toInteger(getModel().getSelectedGroup(), IntegerParserConfig.LENIENT_F);
+        int groupId = Convert.toInt(getModel().getSelectedGroup(), IntegerParserConfig.LENIENT_F);
         if (groupId > 0) {
             internshipsList = academicPlugin.findInternships(-1, groupId, -1, -1, -1, true);
         }

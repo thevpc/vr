@@ -88,6 +88,12 @@ and open the template in the editor.
                         <p:column headerText="Lang" rendered="#{activeSessionsCtrl.model.admin}" style="width: 50px;">
                             <h:outputText value="#{i.locale}"/>
                         </p:column>
+                        <p:column headerText="" rendered="#{activeSessionsCtrl.model.admin}" style="width: 50px;">
+                            <p:commandButton  icon="fa fa-trash-o" styleClass="btn btn-danger"
+                                              rendered="#{activeSessionsCtrl.isInvalidatable(i)}" action="#{activeSessionsCtrl.onInvalidateSession(i)}"
+                                              update=":listForm"
+                            />
+                        </p:column>
                         <!--                            <p:column headerText="Flags">
                                                         <h:outputText value="# {' '+(i.admin?'A':'-')+(i.connected?'C':'-')+(i.destroyed?'D':'-')}" />
                                                     </p:column>-->

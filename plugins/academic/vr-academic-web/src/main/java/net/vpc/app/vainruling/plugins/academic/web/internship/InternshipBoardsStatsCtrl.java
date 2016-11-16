@@ -32,8 +32,8 @@ import java.util.*;
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "Stats Stages",
+//        css = "fa-table",
+//        title = "Stats Stages",
         menu = "/Education/Internship",
         securityKey = "Custom.Education.InternshipBoardsStat",
         url = "modules/academic/internship/internship-boards-stats"

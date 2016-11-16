@@ -157,29 +157,58 @@ public class VrMenuManager {
         return out;
     }
 
-    private UCtrlData getUCtrlData(String ctrl0, String cmd) {
-        Object ccc = getPageCtrl(ctrl0);
-        if (ccc instanceof UCtrlProvider) {
-            UCtrlProvider up = (UCtrlProvider) ccc;
-            return up.getUCtrl(cmd);
+    public UCtrlData getUCtrlDataByObj(Object obj,String typeName){
+        Class targetClass = PlatformReflector.getTargetClass(obj);
+        if(StringUtils.isEmpty(typeName)){
+            char[] chars = targetClass.getSimpleName().toCharArray();
+            chars[0]=Character.toLowerCase(chars[0]);
+            typeName= new String(chars);
+
         }
-        UCtrl c2Ann = (UCtrl) PlatformReflector.getTargetClass(ccc).getAnnotation(UCtrl.class);
+        UCtrl c2Ann = (UCtrl) targetClass.getAnnotation(UCtrl.class);
         if (c2Ann != null) {
+            return getUCtrlDataByAnnotation(c2Ann, typeName);
+        }
+        return null;
+    }
+
+    public UCtrlData getUCtrlDataByAnnotation(UCtrl c2Ann,String typeName){
+        if (c2Ann != null) {
+            String uniformCtrlName=typeName;
+            if(uniformCtrlName.endsWith("Ctrl") && uniformCtrlName.length()>"Ctrl".length()){
+                uniformCtrlName=uniformCtrlName.substring(0,uniformCtrlName.length()-"Ctrl".length());
+            }
             UCtrlData d = new UCtrlData();
-            d.setCss(c2Ann.css());
-            String title = I18n.get().getOrNull("Controller." + ctrl0);
+
+            String title = I18n.get().getOrNull("Controller." + uniformCtrlName);
             if (StringUtils.isEmpty(title)) {
                 title = c2Ann.title();
             }
+            if (StringUtils.isEmpty(title)) {
+                title = "Controller." + uniformCtrlName;
+            }
             d.setTitle(title);
+
+            String subTitle = I18n.get().getOrNull("Controller." + uniformCtrlName+".subTitle");
+            if (StringUtils.isEmpty(subTitle)) {
+                subTitle = c2Ann.subTitle();
+            }
+            d.setSubTitle(subTitle);
+
+            String css = I18n.get().getOrNull("Controller." + uniformCtrlName+".css");
+            if (StringUtils.isEmpty(css)) {
+                css= c2Ann.css();
+            }
+            d.setCss(css);
+
             String url = VrWebHelper.evalSpringExprMessage(c2Ann.url());
             d.setUrl(url);
             d.setSecurityKey(c2Ann.securityKey());
             List<BreadcrumbItem> aa = new ArrayList<>();
             for (UPathItem breadcrumb : c2Ann.breadcrumb()) {
                 title = breadcrumb.title();
-                String subTitle = breadcrumb.subTitle();
-                String css = breadcrumb.css();
+                subTitle = breadcrumb.subTitle();
+                css = breadcrumb.css();
                 String ctrl = breadcrumb.ctrl();
                 String cmd2 = breadcrumb.cmd();
                 if (!StringUtils.isEmpty(ctrl)) {
@@ -189,7 +218,10 @@ public class VrMenuManager {
                             css = d2.getCss();
                         }
                         if (StringUtils.isEmpty(title)) {
-                            css = d2.getTitle();
+                            title = d2.getTitle();
+                        }
+                        if (StringUtils.isEmpty(subTitle)) {
+                            subTitle = d2.getSubTitle();
                         }
                     }
                 }
@@ -199,6 +231,15 @@ public class VrMenuManager {
             return d;
         }
         return null;
+    }
+
+    public UCtrlData getUCtrlData(String ctrl0, String cmd) {
+        Object ccc = getPageCtrl(ctrl0);
+        if (ccc instanceof UCtrlProvider) {
+            UCtrlProvider up = (UCtrlProvider) ccc;
+            return up.getUCtrl(cmd);
+        }
+        return getUCtrlDataByObj(ccc,null);
     }
 
     private String resolveGoodBeanName(Object o) {
@@ -650,5 +691,9 @@ public class VrMenuManager {
             return t.getChildren();
         }
 
+    }
+
+    public List<PageInfo> getPageHistory() {
+        return pageHistory;
     }
 }

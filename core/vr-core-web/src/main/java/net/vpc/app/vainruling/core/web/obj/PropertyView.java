@@ -34,6 +34,7 @@ public class PropertyView implements Serializable {
     private Object referrer;
     private Object rootReferrer;
     private String name;
+    private String hint;
     private String header;
     private DataType dataType;
     private List<SelectItem> items = new ArrayList<>();
@@ -144,7 +145,7 @@ public class PropertyView implements Serializable {
 
     public Integer getValueInteger() {
         Object v = getValue();
-        return v == null ? null : Convert.toInteger(v);
+        return v == null ? null : Convert.toInt(v);
     }
 
     public void setValueInteger(Integer v) {
@@ -415,5 +416,13 @@ public class PropertyView implements Serializable {
 
     public void setComponentState(String componentState) {
         this.componentState = componentState;
+    }
+
+    public String getHint() {
+        return hint;
+    }
+
+    public void setHint(String hint) {
+        this.hint = hint;
     }
 }

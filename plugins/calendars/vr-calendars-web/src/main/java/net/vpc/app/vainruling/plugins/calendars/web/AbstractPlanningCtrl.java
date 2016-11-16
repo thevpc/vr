@@ -92,6 +92,10 @@ public class AbstractPlanningCtrl {
         List<String> courseNames = new ArrayList<>();
         List<String> classNames = new ArrayList<>();
 
+        public CalendarHour getHour(int index) {
+            return planning.get(0).getHours().get(index);
+        }
+
         public List<CalendarDay> getPlanning() {
             return planning;
         }

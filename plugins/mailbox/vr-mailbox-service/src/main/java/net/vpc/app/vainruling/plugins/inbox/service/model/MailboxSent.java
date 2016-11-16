@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "sendTime")
+@Entity(listOrder = "sendTime desc")
 @Path("Social")
 public class MailboxSent {
 

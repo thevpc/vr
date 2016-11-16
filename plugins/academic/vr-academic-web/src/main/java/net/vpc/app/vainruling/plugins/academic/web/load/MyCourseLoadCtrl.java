@@ -17,8 +17,8 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 @UCtrl(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-        css = "fa-table",
-        title = "Ma charge",
+//        css = "fa-table",
+//        title = "Ma charge",
         url = "modules/academic/my-course-load",
         menu = "/Education/Load",
         securityKey = "Custom.Education.MyCourseLoad"

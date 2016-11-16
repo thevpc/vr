@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  * @author taha.bensalah@gmail.com
  */
 @UCtrl(
-        title = "Changer Mot de passe", css = "fa-dashboard", url = "modules/config/passwd",
+        url = "modules/config/passwd",
         menu = "/Config",
         securityKey = "Custom.Admin.Passwd"
 )

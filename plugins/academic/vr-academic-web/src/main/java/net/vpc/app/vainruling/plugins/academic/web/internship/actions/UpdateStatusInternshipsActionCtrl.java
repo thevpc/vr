@@ -111,8 +111,8 @@ public class UpdateStatusInternshipsActionCtrl {
                 !StringUtils.isEmpty(getModel().getSelectedStatusFrom())
                         && !StringUtils.isEmpty(getModel().getSelectedStatusTo())) {
             PersistenceUnit pu = UPA.getPersistenceUnit();
-            int boardId = Convert.toInteger(getModel().getSelectedBoard(), IntegerParserConfig.LENIENT_F);
-            int groupId = Convert.toInteger(getModel().getSelectedGroup(), IntegerParserConfig.LENIENT_F);
+            int boardId = Convert.toInt(getModel().getSelectedBoard(), IntegerParserConfig.LENIENT_F);
+            int groupId = Convert.toInt(getModel().getSelectedGroup(), IntegerParserConfig.LENIENT_F);
             boolean userSelectedOnly = getModel().isUserSelectedOnly();
             int from = StringUtils.isEmpty(getModel().getSelectedStatusFrom()) ? -1 : Integer.parseInt(getModel().getSelectedStatusFrom());
             int to = Integer.parseInt(getModel().getSelectedStatusTo());

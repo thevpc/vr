@@ -11,8 +11,7 @@ import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.util.SelectableObject;
-import net.vpc.app.vainruling.core.service.util.VrUtils;
+import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
@@ -25,6 +24,7 @@ import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherPeriodStat;
 import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherSemesterStat;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.util.Chronometer;
+import org.apache.commons.collections.map.HashedMap;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
@@ -218,9 +218,35 @@ public abstract class AbstractCourseLoadCtrl {
                 }
             }
         }
-        getModel().setOthers(wrap(others, all));
+
+        getModel().setNonFilteredOthers(wrap(others, all));
+        applyOthersTextFilter();
         chronometer.stop();
         System.out.println(chronometer);
+    }
+
+    public void applyOthersTextFilter(){
+        getModel().setOthers(new TextSearchFilter(getModel().getOthersTextFilter(),
+                new ObjectToMapConverter() {
+                    @Override
+                    public Map<String, Object> convert(Object o) {
+                        Map<String, Object> m=new HashMap();
+//                        m.putAll(DefaultObjectToMapConverter.INSTANCE.convert(o));
+                        SelectableAssignment sa=(SelectableAssignment) o;
+                        m.putAll(DefaultObjectToMapConverter.INSTANCE.convert(sa.getValue().getAssignment()));
+                        int keyIndex=1;
+                        for (TeacherAssignmentChunck chunck : sa.getValue().getAssignmentChunck().getChuncks().values()) {
+                            m.put("key"+keyIndex,chunck.getTeacherName());
+                            keyIndex++;
+                        }
+                        for (TeacherAssignmentChunck chunck : sa.getValue().getCourseChunck().getChuncks().values()) {
+                            m.put("key"+keyIndex,chunck.getTeacherName());
+                            keyIndex++;
+                        }
+                        return m;
+                    }
+                }
+        ).filterList(getModel().getNonFilteredOthers()));
     }
 
     public void assignmentsToIntentsAll() {
@@ -409,7 +435,7 @@ public abstract class AbstractCourseLoadCtrl {
 
     public AppDepartment getUserDepartment() {
         //enableLoadEditing
-        UserSession userSession = UserSession.get();
+        UserSession userSession = VrApp.getBean(CorePlugin.class).getUserSession();
         if (userSession == null) {
             return null;
         }
@@ -421,7 +447,7 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public boolean isAllowedUpdateMineIntents(Integer assignmentId) {
-        UserSession userSession = UserSession.get();
+        UserSession userSession = VrApp.getBean(CorePlugin.class).getUserSession();
         if (userSession == null) {
             return false;
         }
@@ -472,7 +498,7 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public boolean isAllowedUpdateMineAssignments(Integer assignementId) {
-        UserSession userSession = UserSession.get();
+        UserSession userSession = VrApp.getBean(CorePlugin.class).getUserSession();
         if (userSession == null) {
             return false;
         }
@@ -759,6 +785,7 @@ public abstract class AbstractCourseLoadCtrl {
         //        List<AcademicCourseAssignmentInfo> mineS1 = new ArrayList<>();
 //        List<AcademicCourseAssignmentInfo> mineS2 = new ArrayList<>();
         List<SelectableAssignment> others = new ArrayList<>();
+        List<SelectableAssignment> nonFilteredOthers = new ArrayList<>();
         Map<Integer, SelectableAssignment> all = new HashMap<>();
         TeacherPeriodStatExt stat;
         boolean nonIntentedOnly = false;
@@ -772,6 +799,7 @@ public abstract class AbstractCourseLoadCtrl {
         String[] defaultFilters = {"situation", "degree", "valueWeek", "extraWeek", "c", "td", "tp", "pm"};
         String[] othersFilters = defaultFilters;
         List<SelectItem> filterSelectItems = new ArrayList<>();
+        String othersTextFilter;
 
         AcademicTeacher currentTeacher;
 
@@ -813,6 +841,15 @@ public abstract class AbstractCourseLoadCtrl {
 
         public void setAll(Map<Integer, SelectableAssignment> all) {
             this.all = all;
+        }
+
+        public List<SelectableAssignment> getNonFilteredOthers() {
+            return nonFilteredOthers;
+        }
+
+        public Model setNonFilteredOthers(List<SelectableAssignment> nonFilteredOthers) {
+            this.nonFilteredOthers = nonFilteredOthers;
+            return this;
         }
 
         public List<SelectableAssignment> getOthers() {
@@ -902,6 +939,14 @@ public abstract class AbstractCourseLoadCtrl {
 
         public void setDisplayOtherModules(boolean displayOtherModules) {
             this.displayOtherModules = displayOtherModules;
+        }
+
+        public String getOthersTextFilter() {
+            return othersTextFilter;
+        }
+
+        public void setOthersTextFilter(String othersTextFilter) {
+            this.othersTextFilter = othersTextFilter;
         }
     }
 }

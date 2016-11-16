@@ -1,35 +1,34 @@
 package net.vpc.app.vainruling.plugins.academic.pbl.service;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.CoachNode;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.MemberNode;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ProjectNode;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.TeamNode;
+import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.*;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.common.strings.StringComparator;
+import net.vpc.common.util.Filter;
+import net.vpc.common.util.Utils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.QueryHints;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
+import net.vpc.upa.filters.ObjectFilter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by vpc on 9/25/16.
  */
 @AppPlugin
-public class ApblService {
+public class ApblPlugin {
     @Autowired
     private CorePlugin core;
     @Autowired
@@ -61,7 +60,7 @@ public class ApblService {
     }
 
     public void removeProject(int projectId) {
-        AppUser teacher = UserSession.get().getUser();
+        AppUser teacher = core.getCurrentUser();
         ApblProject project = findProject(projectId);
         if (project == null) {
             return;
@@ -288,6 +287,138 @@ public class ApblService {
         return pu.findById(ApblProject.class, projectId);
     }
 
+    public List<ApblTeacherInfo> findTeacherInfos(int[] sessionIds, boolean includeMissingTeachers,ObjectFilter<AcademicTeacher> teacherFilter) {
+        Map<Integer,ApblTeacherInfo> rows=new HashMap<>();
+        for (Integer sessionId : new HashSet<Integer>(Arrays.asList(Utils.toIntArray(sessionIds)))) {
+            for (ProjectNode projectNode : findProjectNodes(sessionId)) {
+                for (TeamNode teamNode : projectNode.getTeams()) {
+                    for (CoachNode coachNode : teamNode.getCoaches()) {
+                        ApblCoaching c = coachNode.getCoaching();
+                        if(c!=null){
+                            if(teacherFilter==null || teacherFilter.accept(c.getTeacher())) {
+                                ApblTeacherInfo apblTeacherInfo = rows.get(c.getTeacher().getId());
+                                if (apblTeacherInfo == null) {
+                                    apblTeacherInfo = new ApblTeacherInfo();
+                                    apblTeacherInfo.setTeacher(c.getTeacher());
+                                    rows.put(c.getTeacher().getId(), apblTeacherInfo);
+                                }
+                                for (MemberNode memberNode : teamNode.getMembers()) {
+                                    apblTeacherInfo.getStudents().add(memberNode.getMember().getStudent());
+                                }
+                                apblTeacherInfo.setStudentsCount(apblTeacherInfo.getStudentsCount() + teamNode.getMembers().size() / ((double) teamNode.getCoaches().size()));
+                                apblTeacherInfo.getTeams().add(teamNode);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if(includeMissingTeachers){
+            for (Integer sessionId : new HashSet<Integer>(Arrays.asList(Utils.toIntArray(sessionIds)))) {
+                ApblSession s = findSession(sessionId);
+                if(s!=null){
+                    for (AcademicTeacher ss : academic.findTeachers(s.getMemberProfiles())) {
+                        ApblTeacherInfo r = rows.get(ss.getId());
+                        if(r==null){
+                            if(teacherFilter==null|| teacherFilter.accept(ss)) {
+                                r = new ApblTeacherInfo();
+                                r.setTeacher(ss);
+                                rows.put(ss.getId(), r);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        ArrayList<ApblTeacherInfo> apblTeacherInfos = new ArrayList<>(rows.values());
+        Collections.sort(apblTeacherInfos, new Comparator<ApblTeacherInfo>() {
+            @Override
+            public int compare(ApblTeacherInfo o1, ApblTeacherInfo o2) {
+                String s1 = o1.getTeacher().getContact()!=null?o1.getTeacher().getContact().getFullTitle():"";
+                String s2 = o2.getTeacher().getContact()!=null?o2.getTeacher().getContact().getFullTitle():"";
+                return s1.compareTo(s2);
+            }
+        });
+        return apblTeacherInfos;
+    }
+
+    public List<ApblStudentInfo> findStudentInfos(int[] sessionIds, boolean includeMissingStudents, ObjectFilter<AcademicStudent> studentFilter) {
+        Map<Integer,ApblStudentInfo> rows=new HashMap<>();
+        for (Integer sessionId : new HashSet<Integer>(Arrays.asList(Utils.toIntArray(sessionIds)))) {
+            for (ProjectNode projectNode : findProjectNodes(sessionId)) {
+                for (TeamNode teamNode : projectNode.getTeams()) {
+                    for (MemberNode coachNode : teamNode.getMembers()) {
+                        AcademicStudent student = coachNode.getMember().getStudent();
+                        if(studentFilter==null|| studentFilter.accept(student)) {
+                            ApblStudentInfo apblStudentInfo = rows.get(student.getId());
+                            if (apblStudentInfo == null) {
+                                apblStudentInfo = new ApblStudentInfo();
+                                apblStudentInfo.setStudent(student);
+                                rows.put(student.getId(), apblStudentInfo);
+                            }
+                            apblStudentInfo.setTeam(teamNode);
+                            apblStudentInfo.setProject(projectNode);
+                            apblStudentInfo.getTeams().add(teamNode);
+                            apblStudentInfo.getProjects().add(projectNode);
+
+                            for (CoachNode memberNode : teamNode.getCoaches()) {
+                                apblStudentInfo.getCoaches().add(memberNode.getCoaching().getTeacher());
+                                apblStudentInfo.setCoach(memberNode.getCoaching().getTeacher());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for (ApblStudentInfo apblStudentInfo : rows.values()) {
+            HashSet<String> classes=new HashSet<>();
+            HashSet<String> departments=new HashSet<>();
+            for (TeamNode node : apblStudentInfo.getTeams()) {
+                if(node.getTeam()!=null){
+                    for (MemberNode m : node.getMembers()) {
+                        AcademicClass lastClass1 = m.getMember().getStudent().getLastClass1();
+                        if(lastClass1!=null) {
+                            classes.add(lastClass1.getName());
+                        }
+                        AppDepartment department = m.getMember().getStudent().getDepartment();
+                        if(department!=null) {
+                            departments.add(department.getCode());
+                        }
+                    }
+                }
+            }
+            apblStudentInfo.setInterClasses(classes.size()>1);
+            apblStudentInfo.setInterDepartments(departments.size()>1);
+        }
+        if(includeMissingStudents){
+            for (Integer sessionId : new HashSet<Integer>(Arrays.asList(Utils.toIntArray(sessionIds)))) {
+                ApblSession s = findSession(sessionId);
+                if(s!=null){
+                    for (AcademicStudent ss : academic.findStudents(s.getMemberProfiles(), null)) {
+                        ApblStudentInfo r = rows.get(ss.getId());
+                        if(r==null){
+                            if(studentFilter==null|| studentFilter.accept(ss)) {
+                                r = new ApblStudentInfo();
+                                r.setStudent(ss);
+                                rows.put(ss.getId(), r);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        ArrayList<ApblStudentInfo> apblStudentInfos = new ArrayList<>(rows.values());
+        Collections.sort(apblStudentInfos, new Comparator<ApblStudentInfo>() {
+            @Override
+            public int compare(ApblStudentInfo o1, ApblStudentInfo o2) {
+                String s1 = o1.getStudent().getContact()!=null?o1.getStudent().getContact().getFullTitle():"";
+                String s2 = o2.getStudent().getContact()!=null?o2.getStudent().getContact().getFullTitle():"";
+                return s1.compareTo(s2);
+            }
+        });
+        return apblStudentInfos;
+    }
+
     public List<ProjectNode> findProjectNodes(int sessionId) {
         List<ProjectNode> projects = new ArrayList<>();
         List<ApblProject> foundProjectsAndNull = new ArrayList<>(findProjects(sessionId));
@@ -456,14 +587,19 @@ public class ApblService {
                 .getResultList();
     }
 
-    public List<ApblTeam> findOpenTeamsByUser(int userId) {
+    public List<ApblTeam> findOpenTeamsByUser(int userId,boolean asMember,boolean asOwner) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         ApblTeam t=new ApblTeam();
+        if(!asMember && !asOwner){
+            return Collections.EMPTY_LIST;
+        }
         return pu.createQuery("Select u from ApblTeam u where u.session.status.closed = false and  ( " +
-                        "exists ((Select m from ApblTeamMember m where m.teamId=u.id and m.student.userId=:userId)) " +
-                        "or exists ((Select m from ApblCoaching m where m.teamId=u.id and m.teacher.userId=:userId)) " +
-                        "or exists ((Select m from ApblProject m where m.ownerId=:userId))" +
-                        "or u.ownerId=:userId " +
+                        "1=2 " +
+                        (asMember?("or exists ((Select m from ApblTeamMember m where m.teamId=u.id and m.student.userId=:userId)) " +
+                        "or exists ((Select m from ApblCoaching m where m.teamId=u.id and m.teacher.userId=:userId)) "):"") +
+                        (asOwner ?
+                                ("or exists ((Select m from ApblProject m where m.ownerId=:userId))" +
+                        "or u.ownerId=:userId ") :"")+
                         ")"
                 )
                 .setParameter("userId", userId)
@@ -535,6 +671,63 @@ public class ApblService {
     public ApblSession findSession(int sessionId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.findById(ApblSession.class, sessionId);
+    }
+
+    public List<ApblSession> findAvailableSessions() {
+        AcademicTeacher currentTeacher = academic.getCurrentTeacher();
+        AcademicStudent currentStudent = academic.getCurrentStudent();
+        AppUser currentUser= UserSession.getCurrentUser();
+        boolean currentAdmin = core.isSessionAdmin();
+        List<ApblSession> sessions = new ArrayList<>();
+        if (core.isSessionAdmin()) {
+            sessions = findOpenSessions();
+        } else {
+            sessions = findOpenVisibleSessions();
+        }
+        sessions = (List<ApblSession>) Utils.retainAll(new ArrayList<>(sessions), new Filter<ApblSession>() {
+            @Override
+            public boolean accept(ApblSession value) {
+                if (currentTeacher != null && currentTeacher.getUser() != null) {
+                    return true;
+                }
+                if (currentStudent != null && currentStudent.getUser() != null) {
+                    return
+                            core.userMatchesProfileFilter(currentStudent.getUser().getId(), value.getMemberProfiles())
+                                    || core.userMatchesProfileFilter(currentStudent.getUser().getId(), value.getTeamOwnerProfiles())
+                            ;
+                }
+                //if any other user but not teacher or student, check it fulfills any of the other profiles
+                if (currentUser != null) {
+                    if (!StringUtils.isEmpty(value.getMemberProfiles())
+                            &&
+                            core.userMatchesProfileFilter(currentUser.getId(), value.getMemberProfiles())
+                            ) {
+                        return true;
+                    }
+                    if (!StringUtils.isEmpty(value.getTeamOwnerProfiles())
+                            &&
+                            core.userMatchesProfileFilter(currentUser.getId(), value.getTeamOwnerProfiles())
+                            ) {
+                        return true;
+                    }
+                    if (!StringUtils.isEmpty(value.getCoachProfiles())
+                            &&
+                            core.userMatchesProfileFilter(currentUser.getId(), value.getCoachProfiles())
+                            ) {
+                        return true;
+                    }
+                    if (!StringUtils.isEmpty(value.getProjectOwnerProfiles())
+                            &&
+                            core.userMatchesProfileFilter(currentUser.getId(), value.getProjectOwnerProfiles())
+                            ) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        });
+        return sessions;
     }
 
     public List<ApblSession> findOpenSessions() {

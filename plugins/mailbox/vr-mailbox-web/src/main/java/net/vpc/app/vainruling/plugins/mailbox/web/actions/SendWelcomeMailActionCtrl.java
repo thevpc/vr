@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.mailbox.web.actions;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
@@ -71,9 +72,22 @@ public class SendWelcomeMailActionCtrl {
 //            @Override
 //            public void run() {
         try {
-            List<AppUser> users = VrApp.getBean(ObjCtrl.class).getSelectedEntityObjects();
+            ObjCtrl obj = VrApp.getBean(ObjCtrl.class);
             if ("selected".equals(getModel().getTarget())) {
-                VrApp.getBean(MailboxPlugin.class).sendWelcomeEmail(users, true);
+                if("AppUser".equals(obj.getEntity().getName())) {
+                    List<AppUser> users = obj.getSelectedEntityObjects();
+                    VrApp.getBean(MailboxPlugin.class).sendWelcomeEmail(users, true);
+                }else if("AppContact".equals(obj.getEntity().getName())) {
+                    List<AppContact> contacts = obj.getSelectedEntityObjects();
+                    List<AppUser> users = new ArrayList<>();
+                    for (AppContact contact : contacts) {
+                        AppUser u = core.findUserByContact(contact.getId());
+                        if(u!=null) {
+                            users.add(u);
+                        }
+                    }
+                    VrApp.getBean(MailboxPlugin.class).sendWelcomeEmail(users, true);
+                }
             } else if ("new".equals(getModel().getTarget())) {
                 VrApp.getBean(MailboxPlugin.class).sendWelcomeEmail(true);
             }

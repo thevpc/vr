@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.RelationshipType;
+import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
@@ -49,7 +50,7 @@ public class AcademicLoadConversionRow {
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
-    @Field(updateAccessLevel = AccessLevel.PRIVATE)
+    @Field(updateAccessLevel = AccessLevel.PRIVATE,excludeModifiers = UserFieldModifier.UPDATE)
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
