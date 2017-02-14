@@ -39,7 +39,7 @@ import java.util.logging.Logger;
                 @UPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),
         },
         url = "modules/academic/pbl/app-status",
-        menu = "/Education/Internship",
+        menu = "/Education/Projects/Apbl",
         securityKey = "Custom.Education.Apbl.AppStatus"
 )
 public class AcademicAppStatusCtrl {

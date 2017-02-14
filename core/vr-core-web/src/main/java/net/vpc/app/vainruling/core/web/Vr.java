@@ -252,6 +252,13 @@ public class Vr {
         return items.get(randomize(size));
     }
 
+    public String trim(Object obj) {
+        if(obj==null){
+            return "";
+        }
+        return obj.toString().trim();
+    }
+
     public List listFlattenAndTrimAndAppend(Object... objectsOrLists) {
         List any = new ArrayList();
         if (objectsOrLists != null) {
@@ -1133,7 +1140,41 @@ public class Vr {
         return files.toArray(new VFile[files.size()]);
     }
 
+    public static void main(String[] args) {
+        Vr vr = new Vr();
+        System.out.println(vr.extractLabels(" r r:t r:\"f\""));
+    }
+
+    public List<StrLabel> extractLabels(String expr) {
+        List<StrLabel> labels=new ArrayList<>();
+        Pattern pattern = Pattern.compile("(?<labelName>\\w+)[:]((?<kindName>\\w+)[:])?(([\"](?<labelVal1>[^\"])[\"])|(?<labelVal2>[^ ]+))");
+        Matcher m = pattern.matcher(expr);
+        while (m.find()) {
+            String labelName = m.group("labelName");
+            String kindName = m.group("kindName");
+            String labelVal1 = m.group("labelVal1");
+            String labelVal2 = m.group("labelVal2");
+            if(labelVal1==null){
+                labelVal1=labelVal2;
+            }
+            labels.add(new StrLabel(labelName,kindName==null?"":kindName,labelVal1));
+        }
+        return labels;
+    }
+
+    public String mapToken(String var, String defaultVal, String... fromTo) {
+        var=trim(var);
+        for (String s : var.split(" +")) {
+            String v=mapValue(s, null, fromTo);
+            if(v!=null){
+                return v;
+            }
+        }
+        return defaultVal;
+    }
+
     public String mapValue(String var, String defaultVal, String... fromTo) {
+        var=trim(var);
         for (int i = 0; i < fromTo.length; i += 2) {
             if (var.equals(fromTo[i])) {
                 return fromTo[i + 1];
@@ -1197,7 +1238,7 @@ public class Vr {
                 processed = processCustomURL(protocol, path);
             }
             if (processed != null) {
-                m.appendReplacement(sb, "href=\"" + processed + "\"");
+                m.appendReplacement(sb, "href=\"" + processed + "\" target=\"_blank\"");
             } else {
                 m.appendReplacement(sb, m.group());
             }

@@ -31,6 +31,9 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
     private Set<Integer> rejectedClasses = new HashSet<>();
     private Set<String> acceptedLabels = new HashSet<>();
     private Set<String> rejectedLabels = new HashSet<>();
+    private boolean acceptIntents = true;
+    private boolean acceptAssignments = true;
+    private boolean acceptNoTeacher = true;
 
     public static DefaultCourseAssignmentFilter build(Set<String> refreshFilter) {
         DefaultCourseAssignmentFilter filter = new DefaultCourseAssignmentFilter();
@@ -67,6 +70,38 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
             refreshFilter.add("label:!" + id);
         }
         return filter;
+    }
+
+    public boolean isAcceptNoTeacher() {
+        return acceptNoTeacher;
+    }
+
+    public DefaultCourseAssignmentFilter setAcceptNoTeacher(boolean acceptNoTeacher) {
+        this.acceptNoTeacher = acceptNoTeacher;
+        return this;
+    }
+
+    public boolean isAcceptIntents() {
+        return acceptIntents;
+    }
+
+    public DefaultCourseAssignmentFilter setAcceptIntents(boolean acceptIntents) {
+        this.acceptIntents = acceptIntents;
+        return this;
+    }
+
+    public boolean isAcceptAssignments() {
+        return acceptAssignments;
+    }
+
+    public DefaultCourseAssignmentFilter setAcceptAssignments(boolean acceptAssignments) {
+        this.acceptAssignments = acceptAssignments;
+        return this;
+    }
+
+    @Override
+    public boolean lookupIntents() {
+        return isAcceptIntents();
     }
 
     public Set<Integer> getAcceptedProgramTypes() {
@@ -367,6 +402,15 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
     }
 
     public boolean acceptAssignment(AcademicCourseAssignment a) {
+//        if(!isAcceptIntents() && a.getTeacher()==null){
+//                return false;
+//        }
+//        if(!isAcceptAssignments() && a.getTeacher()!=null){
+//            return false;
+//        }
+        if(!isAcceptNoTeacher() && a.getTeacher()!=null){
+            return false;
+        }
         if (this.getAcceptedLabels().size() > 0 || this.getRejectedLabels().size() > 0) {
             Set<String> foundLabels = buildCoursePlanLabelsFromString(a.getCoursePlan().getLabels());
             if (this.getAcceptedLabels().size() > 0) {

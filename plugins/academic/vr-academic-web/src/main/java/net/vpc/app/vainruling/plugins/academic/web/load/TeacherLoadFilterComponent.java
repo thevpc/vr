@@ -5,9 +5,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.TeacherFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
@@ -17,7 +15,6 @@ import net.vpc.common.strings.StringUtils;
 
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class TeacherLoadFilterComponent {
@@ -31,7 +28,7 @@ public class TeacherLoadFilterComponent {
         String p = getModel().getSelectedPeriod();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         if (StringUtils.isEmpty(p)) {
-            AppConfig appConfig = core.findAppConfig();
+            AppConfig appConfig = core.getCurrentConfig();
             if (appConfig != null && appConfig.getMainPeriod() != null) {
                 return appConfig.getMainPeriod();
             }
@@ -44,7 +41,7 @@ public class TeacherLoadFilterComponent {
         String p = getModel().getSelectedPeriod();
         if (StringUtils.isEmpty(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
-            AppConfig appConfig = core.findAppConfig();
+            AppConfig appConfig = core.getCurrentConfig();
             if (appConfig != null && appConfig.getMainPeriod() != null) {
                 return appConfig.getMainPeriod().getId();
             }
@@ -57,7 +54,7 @@ public class TeacherLoadFilterComponent {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
         List<AppPeriod> navigatablePeriods = core.findNavigatablePeriods();
-        AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
+        AppPeriod mainPeriod = core.getCurrentPeriod();
         getModel().setSelectedPeriod(null);
         getModel().getPeriodItems().clear();
         for (AppPeriod p : navigatablePeriods) {

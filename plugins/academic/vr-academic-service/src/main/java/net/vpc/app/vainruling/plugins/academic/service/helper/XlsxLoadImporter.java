@@ -17,7 +17,10 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.util.*;
+import net.vpc.common.util.Chronometer;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.DoubleParserConfig;
+import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.common.vfs.VFS;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.Action;
@@ -82,7 +85,7 @@ public class XlsxLoadImporter {
         final CorePlugin core = VrApp.getBean(CorePlugin.class);
         AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
         Chronometer ch = new Chronometer();
-        File tmp = VFS.copyNativeTempFile(file);
+        File tmp = file.copyToNativeTempFile();
         SheetParser sp = pfm.createSheetParser(tmp);
         sp.setContainsHeader(true);
         DataReader rows = sp.parse();
@@ -111,7 +114,7 @@ public class XlsxLoadImporter {
     public void importTeacherDegrees(VFile file) throws IOException {
         AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
         Chronometer ch = new Chronometer();
-        File tmp = VFS.copyNativeTempFile(file);
+        File tmp = file.copyToNativeTempFile();
         SheetParser sp = pfm.createSheetParser(tmp);
         sp.setContainsHeader(true);
         DataReader rows = sp.parse();
@@ -149,7 +152,7 @@ public class XlsxLoadImporter {
     public void importLoadConversionTable(VFile file) throws IOException {
         AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
         Chronometer ch = new Chronometer();
-        File tmp = VFS.copyNativeTempFile(file);
+        File tmp = file.copyToNativeTempFile();
         SheetParser sp = pfm.createSheetParser(tmp);
         sp.setContainsHeader(true);
         DataReader rows = sp.parse();
@@ -357,11 +360,11 @@ public class XlsxLoadImporter {
             ctx = new ImportTeacherContext();
         }
         if (ctx.mainCompany == null) {
-            AppConfig appConfig = core.findAppConfig();
+            AppConfig appConfig = core.getCurrentConfig();
             ctx.mainCompany = appConfig == null ? null : appConfig.getMainCompany();
         }
         if (ctx.mainPeriod == null) {
-            AppConfig appConfig = core.findAppConfig();
+            AppConfig appConfig = core.getCurrentConfig();
             ctx.mainPeriod = appConfig == null ? null : appConfig.getMainPeriod();
         }
         if (ctx.gendersById == null) {
@@ -572,7 +575,7 @@ public class XlsxLoadImporter {
     public void importTeachers(int periodId, VFile file) throws IOException {
         Chronometer ch = new Chronometer();
         log.log(Level.INFO, "importTeachers from {0}", file);
-        File tmp = VFS.copyNativeTempFile(file);
+        File tmp = file.copyToNativeTempFile();
         SheetParser sp = pfm.createSheetParser(tmp);
         sp.setContainsHeader(true);
         sp.setSheetIndex(0);
@@ -677,7 +680,7 @@ public class XlsxLoadImporter {
             ctx = new ImportStudentContext();
         }
         if (ctx.mainCompany == null) {
-            AppConfig appConfig = core.findAppConfig();
+            AppConfig appConfig = core.getCurrentConfig();
             ctx.mainCompany = appConfig == null ? null : appConfig.getMainCompany();
         }
         if (ctx.profiles == null) {
@@ -841,7 +844,7 @@ public class XlsxLoadImporter {
             academicStudent = new AcademicStudent();
             academicStudent.setContact(contact);
         }
-        if (checkUpdatable(academicStudent.getDepartment(),studentclass.getProgram().getDepartment(),force)) {
+        if (checkUpdatable(academicStudent.getDepartment(), studentclass.getProgram().getDepartment(), force)) {
             academicStudent.setDepartment(studentclass.getProgram().getDepartment());
         }
         if (academicStudent.getDepartment() == null) {
@@ -852,59 +855,59 @@ public class XlsxLoadImporter {
         contact.setLastName2(ln2);
         contact.setFullName2(AppContact.getName2(contact));
 
-        if (checkUpdatable(contact.getPhone1(),a.getPhone(),force)) {
+        if (checkUpdatable(contact.getPhone1(), a.getPhone(), force)) {
             contact.setPhone1(a.getPhone());
         }
-        if (checkUpdatable(academicStudent.getFirstSubscription(),period,force)) {
+        if (checkUpdatable(academicStudent.getFirstSubscription(), period, force)) {
             academicStudent.setFirstSubscription(period);
         }
-        if (checkUpdatable(academicStudent.getLastClass1(),studentclass,force)) {
+        if (checkUpdatable(academicStudent.getLastClass1(), studentclass, force)) {
             academicStudent.setLastClass1(studentclass);
         }
-        if (studentclass.getProgram()!=null && checkUpdatable(academicStudent.getDepartment(),studentclass.getProgram().getDepartment(),force)) {
+        if (studentclass.getProgram() != null && checkUpdatable(academicStudent.getDepartment(), studentclass.getProgram().getDepartment(), force)) {
             academicStudent.setDepartment(studentclass.getProgram().getDepartment());
         }
-        if (checkUpdatable(contact.getGender(),gender,force)) {
+        if (checkUpdatable(contact.getGender(), gender, force)) {
             contact.setGender(gender);
         }
-        if (checkUpdatable(contact.getCivility(),civility,force)) {
+        if (checkUpdatable(contact.getCivility(), civility, force)) {
             contact.setCivility(civility);
         }
-        if (checkUpdatable(academicStudent.getSubscriptionNumber(),a.getSubscriptionNumber(),force)) {
+        if (checkUpdatable(academicStudent.getSubscriptionNumber(), a.getSubscriptionNumber(), force)) {
             academicStudent.setSubscriptionNumber(a.getSubscriptionNumber());
         }
-        if (checkUpdatable(academicStudent.getBaccalaureateClass(),bac,force)) {
+        if (checkUpdatable(academicStudent.getBaccalaureateClass(), bac, force)) {
             academicStudent.setBaccalaureateClass(bac);
         }
-        if (checkUpdatable(academicStudent.getPreClass(),prep,force)) {
+        if (checkUpdatable(academicStudent.getPreClass(), prep, force)) {
             academicStudent.setPreClass(prep);
         }
-        if (checkUpdatable(academicStudent.getPreClassType(),prepType,force)) {
+        if (checkUpdatable(academicStudent.getPreClassType(), prepType, force)) {
             academicStudent.setPreClassType(prepType);
         }
-        if (checkUpdatable(academicStudent.getPreClassRank(),a.getPreClassPrepRank(),force)) {
+        if (checkUpdatable(academicStudent.getPreClassRank(), a.getPreClassPrepRank(), force)) {
             academicStudent.setPreClassRank(a.getPreClassPrepRank());
         }
-        if (checkUpdatable(academicStudent.getPreClassRankMax(),a.getPreClassPrepRankMax(),force)) {
+        if (checkUpdatable(academicStudent.getPreClassRankMax(), a.getPreClassPrepRankMax(), force)) {
             academicStudent.setPreClassRankMax(a.getPreClassPrepRankMax());
         }
-        if (checkUpdatable(academicStudent.getBaccalaureateScore(),a.getPreClassBacScore(),force)) {
+        if (checkUpdatable(academicStudent.getBaccalaureateScore(), a.getPreClassBacScore(), force)) {
             academicStudent.setBaccalaureateScore(a.getPreClassBacScore());
         }
 
-        if (checkUpdatable(academicStudent.getPreClassScore(),a.getPreClassPrepScore(),force)) {
+        if (checkUpdatable(academicStudent.getPreClassScore(), a.getPreClassPrepScore(), force)) {
             academicStudent.setPreClassScore(a.getPreClassPrepScore());
         }
 
-        if (checkUpdatable(contact.getEmail(),a.getEmail(),force)) {
+        if (checkUpdatable(contact.getEmail(), a.getEmail(), force)) {
             contact.setEmail(a.getEmail());
         }
-        if (checkUpdatable(contact.getPositionSuffix(),studentclass.getName(),force)) {
+        if (checkUpdatable(contact.getPositionSuffix(), studentclass.getName(), force)) {
             contact.setPositionSuffix(studentclass.getName());
         }
         contact.setPositionTitle1("Student " + studentclass.getName());
         contact.setEnabled(true);
-        if (checkUpdatable(contact.getCompany(),ctx.mainCompany,force)) {
+        if (checkUpdatable(contact.getCompany(), ctx.mainCompany, force)) {
             contact.setCompany(ctx.mainCompany);
         }
         if (!ctx.isSimulate()) {
@@ -936,7 +939,7 @@ public class XlsxLoadImporter {
             return StringUtils.isEmpty((String) oldVal);
         }
         if (oldVal instanceof Integer) {
-            return ((Integer)oldVal).intValue()<=0;
+            return ((Integer) oldVal).intValue() <= 0;
         }
         return false;
     }
@@ -954,7 +957,7 @@ public class XlsxLoadImporter {
         final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
         Chronometer ch = new Chronometer();
         log.log(Level.INFO, (simulate ? " Simulate " : "") + "importStudents from {0}", file);
-        File tmp = VFS.copyNativeTempFile(file);
+        File tmp = file.copyToNativeTempFile();
         SheetParser sp = pfm.createSheetParser(tmp);
         sp.setContainsHeader(true);
         sp.setSheetIndex(0);
@@ -993,7 +996,7 @@ public class XlsxLoadImporter {
         }
         Chronometer ch = new Chronometer();
         log.log(Level.INFO, "importCourseAssignments from {0}", file);
-        File tmp = VFS.copyNativeTempFile(file);
+        File tmp = file.copyToNativeTempFile();
         SheetParser sp = pfm.createSheetParser(tmp);
         sp.setContainsHeader(true);
         int DEPARTMENT_COLUMN = 0;

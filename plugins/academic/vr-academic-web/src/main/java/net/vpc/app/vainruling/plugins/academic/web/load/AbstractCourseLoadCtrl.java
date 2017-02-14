@@ -22,6 +22,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherPeriodStat;
 import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherSemesterStat;
+import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.util.Chronometer;
 import org.apache.commons.collections.map.HashedMap;
@@ -70,7 +71,7 @@ public abstract class AbstractCourseLoadCtrl {
     public void onRefresh(String cmd) {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
 //        List<AppPeriod> navigatablePeriods = core.findNavigatablePeriods();
-//        AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
+//        AppPeriod mainPeriod = core.getCurrentPeriod();
         onInit();
         onChangePeriod();
     }
@@ -164,10 +165,11 @@ public abstract class AbstractCourseLoadCtrl {
         reset();
 
         Map<Integer, SelectableAssignment> all = new HashMap<>();
-        CourseAssignmentFilter courseAssignmentFilter = getCourseFilter().getCourseAssignmentFilter();
+        DefaultCourseAssignmentFilter allCourseAssignmentFilter = getCourseFilter().getCourseAssignmentFilter();
+        allCourseAssignmentFilter.setAcceptAssignments(true).setAcceptIntents(true).setAcceptNoTeacher(true);
         DeviationConfig deviationConfig = getCourseFilter().getDeviationConfig();
-        boolean includeIntents = !isFiltered("no-current-intents");
-        List<AcademicCourseAssignmentInfo> allCourseAssignmentsAndIntents = a.findCourseAssignmentsAndIntents(periodId, null, null, true, courseAssignmentFilter);
+//        boolean includeIntents = !isFiltered("no-current-intents");
+        List<AcademicCourseAssignmentInfo> allCourseAssignmentsAndIntents = a.findCourseAssignmentsAndIntents(periodId, null, allCourseAssignmentFilter);
         int id = t == null ? -1 : t.getId();
         for (AcademicCourseAssignmentInfo b : allCourseAssignmentsAndIntents) {
             all.put(b.getAssignment().getId(), new SelectableAssignment(b, id));
@@ -175,7 +177,8 @@ public abstract class AbstractCourseLoadCtrl {
         getModel().setAll(all);
         HashSet<Integer> visited = new HashSet<Integer>();
         if (t != null) {
-            TeacherPeriodStat stat = a.evalTeacherStat(periodId, id, courseAssignmentFilter, includeIntents, deviationConfig);
+            DefaultCourseAssignmentFilter courseAssignmentFilter = getCourseFilter().getCourseAssignmentFilter();
+            TeacherPeriodStat stat = a.evalTeacherStat(periodId, id, courseAssignmentFilter, deviationConfig);
             for (TeacherSemesterStat teacherSemesterStat : stat.getSemesters()) {
                 for (AcademicCourseAssignmentInfo m : teacherSemesterStat.getAssignments()) {
                     visited.add(m.getAssignment().getId());
@@ -413,15 +416,15 @@ public abstract class AbstractCourseLoadCtrl {
 
     public void doUnAssignSelected() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getModel().getCurrentTeacher();
-        if (t != null) {
+//        AcademicTeacher t = getModel().getCurrentTeacher();
+//        if (t != null) {
             for (SelectableAssignment s : getModel().getAll().values()) {
                 if (s.isSelected()) {
                     int assignementId = s.getValue().getAssignment().getId();
                     a.removeCourseAssignment(assignementId);
                 }
             }
-        }
+//        }
         onRefresh();
     }
 
@@ -677,9 +680,10 @@ public abstract class AbstractCourseLoadCtrl {
             if(academicClass==null){
                 academicClass=value.getAssignment().getCoursePlan().getCourseLevel().getAcademicClass();
             }
-            if(value.getAssignment().getCourseType().getName().equalsIgnoreCase("C")) {
+            AcademicCourseType courseType = value.getAssignment().getCourseType();
+            if(courseType!=null && courseType.getName().equalsIgnoreCase("C")) {
                 rooms = value.getAssignment().getCoursePlan().getRoomConstraintsC();
-            }else if(value.getAssignment().getCourseType().getName().equalsIgnoreCase("TP")){
+            }else if(courseType!=null && courseType.getName().equalsIgnoreCase("TP")){
                 rooms=value.getAssignment().getCoursePlan().getRoomConstraintsTP();
             }
             if(value.isAssigned() && value.getAssignment().getTeacher()!=null){
@@ -715,9 +719,6 @@ public abstract class AbstractCourseLoadCtrl {
         }
 
         public void setSelected(boolean selected) {
-            if (getValue().getAssignment().getId() == 1446) {
-                System.out.println("Why?");
-            }
             super.setSelected(selected);
         }
 

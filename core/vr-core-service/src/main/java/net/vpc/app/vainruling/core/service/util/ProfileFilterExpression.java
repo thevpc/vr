@@ -5,6 +5,10 @@
  */
 package net.vpc.app.vainruling.core.service.util;
 
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+
 /**
  * @author taha.bensalah@gmail.com
  */
@@ -37,6 +41,7 @@ public class ProfileFilterExpression {
         this.mainExpression = mainExpression;
         this.profileListExpression = profileListExpression;
         this.filterExpression = filterExpression;
+        profileListExpression = validateProfileListExpr(profileListExpression,true,null);
     }
 
     public ProfileFilterExpression(String mainExpression) {
@@ -89,6 +94,92 @@ public class ProfileFilterExpression {
                 }
             }
         }
+        profileListExpression = validateProfileListExpr(profileListExpression,true,null);
+    }
+
+    public static void main(String[] args) {
+        String str = "( ( h)) , tt";
+//        String str = " ('taha  hammadi' ) ( ( h))";
+        System.out.println(validateProfileListExpr(str,true,null));
+    }
+
+    public static String validateProfileListExpr(String str,boolean trim,ProfileStringConverter converter) {
+        if (str == null) {
+            str = "";
+        }
+        StreamTokenizer st = new StreamTokenizer(new StringReader(str));
+        st.resetSyntax();
+        st.wordChars('a', 'z');
+        st.wordChars('A', 'Z');
+        st.wordChars('0', '9');
+        st.wordChars('_', '_');
+        st.wordChars(128 + 32, 255);
+        if(trim) {
+        st.whitespaceChars(0, ' ');
+        }
+        st.quoteChar('"');
+        st.quoteChar('\'');
+
+        StringBuilder sb = new StringBuilder();
+        int token = -1;
+        try {
+            int lastNonSpace = -1;
+            while ((token = st.nextToken()) != StreamTokenizer.TT_EOF) {
+                switch (token) {
+                    case StreamTokenizer.TT_WORD: {
+                        if (lastNonSpace==StreamTokenizer.TT_WORD || lastNonSpace==')' ) {
+                            sb.append(",");
+                        }
+                        String sval = st.sval;
+                        if(converter!=null){
+                            sval=converter.convert(sval);
+                        }
+                        sb.append(sval);
+                        lastNonSpace = token;
+                        break;
+                    }
+                    case ' ': {
+                        sb.append((char) token);
+                        break;
+                    }
+                    case '\'':
+                    case '\"': {
+                        sb.append((char) token);
+                        if (lastNonSpace==StreamTokenizer.TT_WORD || lastNonSpace==')' ) {
+                            sb.append(",");
+                        }
+                        String sval = st.sval;
+                        if(converter!=null){
+                            sval=converter.convert(sval);
+                        }
+                        sb.append(sval);
+                        sb.append((char) token);
+                        lastNonSpace = token;
+                        break;
+                    }
+                    case '(': {
+                        if (lastNonSpace==StreamTokenizer.TT_WORD || lastNonSpace==')' ) {
+                            sb.append(",");
+                        }
+                        sb.append((char) token);
+                        lastNonSpace = token;
+                        break;
+                    }
+                    default: {
+                        sb.append((char) token);
+                        lastNonSpace=token;
+                    }
+
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
+
+    public interface ProfileStringConverter{
+        public String convert(String s);
     }
 
     public String getMainExpression() {

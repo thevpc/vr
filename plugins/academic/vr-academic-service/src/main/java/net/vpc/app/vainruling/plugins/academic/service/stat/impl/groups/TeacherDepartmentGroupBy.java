@@ -14,7 +14,7 @@ import java.util.*;
  * Created by vpc on 8/29/16.
  */
 public class TeacherDepartmentGroupBy implements KPIGroupBy<AcademicCourseAssignmentInfo> {
-    private static StringArrayKPIGroup NON_VALUE = new StringArrayKPIGroup("<<No Dept>>", null, null);
+    private static StringArrayKPIGroup NON_VALUE = new StringArrayKPIGroup("<<No Dept>>", null);
     private boolean intents;
 
     public TeacherDepartmentGroupBy(boolean intents) {

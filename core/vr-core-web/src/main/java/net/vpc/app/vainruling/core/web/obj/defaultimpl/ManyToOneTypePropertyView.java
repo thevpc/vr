@@ -65,7 +65,8 @@ public class ManyToOneTypePropertyView extends FieldPropertyView {
                 throw new UnsupportedOperationException();
             }
         }
-        throw new UnsupportedOperationException();
+        return value;
+//        throw new UnsupportedOperationException();
 //        return value;
     }
 

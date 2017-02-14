@@ -111,7 +111,6 @@ public class AllTeachersCourseLoadCtrl {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         int periodId = getTeacherFilter().getPeriodId();
         CourseAssignmentFilter filter = getCourseFilter().getCourseAssignmentFilter();
-        boolean includeIntents = getCourseFilter().isIncludeIntents();
         reset();
         TeacherFilter customTeacherFilter = getTeacherFilter().getTeacherFilter();
         DeviationConfig deviationConfig = getCourseFilter().getDeviationConfig();
@@ -121,7 +120,7 @@ public class AllTeachersCourseLoadCtrl {
             List<String> semesterNames=new ArrayList<>();
             List<TeacherBaseStatTable> all=new ArrayList<>();
             Map<Integer,List<TeacherBaseStat>> semesters=new HashMap<>();
-            MapList<Integer, TeacherPeriodStat> year = a.evalTeacherStatList(periodId, customTeacherFilter, filter, includeIntents, deviationConfig);
+            MapList<Integer, TeacherPeriodStat> year = a.evalTeacherStatList(periodId, customTeacherFilter, filter, deviationConfig);
             for (TeacherPeriodStat teacherPeriodStat : year) {
                 if(semesterIds.isEmpty()){
                     for (TeacherSemesterStat teacherSemesterStat : teacherPeriodStat.getSemesters()) {

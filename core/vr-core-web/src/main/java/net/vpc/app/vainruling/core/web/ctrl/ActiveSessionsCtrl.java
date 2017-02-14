@@ -278,7 +278,23 @@ public class ActiveSessionsCtrl implements PollAware {
 
         public List<UserSession> getOrderedSessions() {
             List<UserSession> arr=new ArrayList<>(getSessions());
-            Collections.sort(arr, SESSION_COMPARATOR);
+            UserSession curr = UserSession.get();
+            if(curr!=null) {
+                Collections.sort(arr, SESSION_COMPARATOR);
+                if (!curr.isAdmin()) {
+                    HashSet<Integer> visited = new HashSet<>();
+                    for (Iterator<UserSession> iterator = arr.iterator(); iterator.hasNext(); ) {
+                        UserSession userSession = iterator.next();
+                        if (userSession.getUser() == null) {
+                            iterator.remove();
+                        } else if (visited.contains(userSession.getUser().getId())) {
+                            iterator.remove();
+                        } else {
+                            visited.add(userSession.getUser().getId());
+                        }
+                    }
+                }
+            }
             return arr;
         }
 

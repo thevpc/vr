@@ -19,8 +19,12 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStud
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UPA;
+import org.primefaces.component.slider.Slider;
+import org.primefaces.event.SlideEndEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Logger;
@@ -53,14 +57,34 @@ public class StudentFeedbackCtrl {
         onReloadFeedbacks();
     }
 
+    public void onSlideEnd(SlideEndEvent event) {
+        Slider s=(Slider) event.getSource();
+        for (UIComponent uiComponent : s.getParent().getChildren()) {
+            if(uiComponent.getId().equals("responseId")){
+                UIInput input=(UIInput) uiComponent;
+                Object value = input.getValue();
+                int id = Integer.parseInt(""+value);
+                for (Row row : getModel().getRows()) {
+                    for (Question question : row.getQuestions()) {
+                        AcademicFeedbackResponse response = question.getResponse();
+                        if(response.getId()== id){
+                            response.setResponse(""+event.getValue());
+                            return;
+                        }
+                    }
+                }
+                //uiComponent.get
+            }
+        }
+    }
+
     public void onReloadFeedbacks() {
-        getModel().setValidate(false);
         AcademicStudent s = academic.getCurrentStudent();
         getModel().setFeedbacks(new ArrayList<SelectItem>());
         if (s != null) {
             HashSet<String> ids = new HashSet<>();
-            for (AcademicFeedback f : feedback.findStudentFeedbacks(s.getId(), false, false, true)) {
-                getModel().getFeedbacks().add(new SelectItem(String.valueOf(f.getId()), f.getCourse().getFullName() + " - " + f.getCourse().getTeacher().getContact().getFullName()));
+            for (AcademicFeedback f : feedback.findStudentFeedbacks(core.getCurrentPeriod().getId(),s.getId(), false, false, true)) {
+                getModel().getFeedbacks().add(new SelectItem(String.valueOf(f.getId()), f.getCourse().getFullName() + " - " + academic.getValidName(f.getCourse().getTeacher())));
                 ids.add(String.valueOf(f.getId()));
             }
             if (!ids.contains(getModel().getSelectedFeedback())) {
@@ -75,7 +99,6 @@ public class StudentFeedbackCtrl {
     }
 
     public void onFeedbackChange() {
-        getModel().setValidate(false);
         List<Row> rows = new ArrayList<>();
         if (!StringUtils.isEmpty(getModel().getSelectedFeedback())) {
             getModel().setFeedback(feedback.findFeedback(Integer.parseInt(getModel().getSelectedFeedback())));
@@ -115,28 +138,36 @@ public class StudentFeedbackCtrl {
     }
 
     public void onSave() {
+        for (Row row : getModel().getRows()) {
+            for (Question question : row.getQuestions()) {
+                feedback.saveResponse(question.getResponse());
+            }
+        }
+        FacesUtils.addInfoMessage("Formulaire enregistré");
+    }
+
+    public void onSaveAndValidate() {
+        onSave();
         boolean allvalid = true;
         for (Row row : getModel().getRows()) {
             for (Question question : row.getQuestions()) {
                 if (StringUtils.isEmpty(question.getResponse().getResponse())) {
                     allvalid = false;
                 }
-                feedback.saveResponse(question.getResponse());
             }
         }
-        if (getModel().isValidate()) {
-            if (allvalid) {
-                getModel().getFeedback().setValidated(true);
-                UPA.getPersistenceUnit().merge(getModel().getFeedback());
-                getModel().setSelectedFeedback(null);
-                getModel().setFeedback(null);
-                onReloadFeedbacks();
-                FacesUtils.addInfoMessage("Formulaire validé");
-            } else {
-                FacesUtils.addErrorMessage("Merci de repondre à toutes les questions avant de valider");
+        if (allvalid) {
+            getModel().getFeedback().setValidated(true);
+            UPA.getPersistenceUnit().merge(getModel().getFeedback());
+            getModel().setSelectedFeedback(null);
+            getModel().setFeedback(null);
+            onReloadFeedbacks();
+            FacesUtils.addInfoMessage("Formulaire validé");
+            if(getModel().getFeedbacks().isEmpty()){
+                FacesUtils.addInfoMessage("Merci beaucoup pour votre implication. Toutes les fiches sont validées");
             }
         } else {
-            FacesUtils.addInfoMessage("Formulaire enregistré");
+            FacesUtils.addErrorMessage("Merci de repondre à toutes les questions avant de valider");
         }
     }
 
@@ -188,7 +219,6 @@ public class StudentFeedbackCtrl {
         private List<SelectItem> feedbacks = new ArrayList<SelectItem>();
         private AcademicFeedback feedback = null;
         private List<Row> rows = new ArrayList<>();
-        private boolean validate = false;
 
         public String getTitle() {
             return title;
@@ -228,14 +258,6 @@ public class StudentFeedbackCtrl {
 
         public void setFeedback(AcademicFeedback feedback) {
             this.feedback = feedback;
-        }
-
-        public boolean isValidate() {
-            return validate;
-        }
-
-        public void setValidate(boolean validate) {
-            this.validate = validate;
         }
 
     }

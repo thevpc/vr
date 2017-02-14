@@ -13,7 +13,7 @@ import net.vpc.upa.config.*;
  * @author taha.bensalah@gmail.com
  */
 @Entity
-@Path("Education/Internship")
+@Path("Education/Projects/Internships")
 @Properties(
         {
                 @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),

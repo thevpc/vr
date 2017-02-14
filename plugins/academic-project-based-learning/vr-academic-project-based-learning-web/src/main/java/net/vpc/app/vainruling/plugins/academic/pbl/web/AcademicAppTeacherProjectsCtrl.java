@@ -34,7 +34,7 @@
 //        css = "fa-table",
 //        title = "Mes Projets APP",
 //        url = "modules/academic/pbl/teacher-projects",
-//        menu = "/Education/Internship",
+//        menu = "/Education/Projects/Internships",
 //        securityKey = "Custom.Education.Apbl.TeacherProjects"
 //)
 //public class AcademicAppTeacherProjectsCtrl {

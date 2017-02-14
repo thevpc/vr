@@ -21,7 +21,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AppConfig.class,
-        actionLabel = "Arch", actionStyle = "fa-calculator",
+        actionLabel = "zlog", actionStyle = "fa-calculator",
         dialog = false
 )
 public class PurgeTraceAction implements ActionDialog {

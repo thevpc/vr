@@ -34,7 +34,9 @@ and open the template in the editor.
             <h:form id="listForm">
 
                 <div >
-                    <p:selectOneMenu value="#{teacherPlanningCtrl.model.teacherId}">
+                    <p:selectOneMenu value="#{teacherPlanningCtrl.model.teacherId}"
+                                     filter="true" filterMatchMode="contains"
+                    >
                         <p:ajax listener="#{teacherPlanningCtrl.onTeacherChanged}" update=":listForm"/>
                         <f:selectItem itemLabel="Selectionner Enseignant..." itemValue=""/>
                         <f:selectItems value="#{teacherPlanningCtrl.model.teachers}"/>

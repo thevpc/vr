@@ -6,25 +6,19 @@
 package net.vpc.app.vainruling.plugins.academic.service.callbacks;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherSemestrialLoad;
 import net.vpc.upa.Entity;
 import net.vpc.upa.EntityModifier;
-import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.callbacks.PersistEvent;
 import net.vpc.upa.callbacks.UpdateEvent;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.config.OnPersist;
 import net.vpc.upa.config.OnPreUpdate;
 import net.vpc.upa.config.OnUpdate;
-import net.vpc.upa.expressions.Expression;
-import net.vpc.upa.expressions.IdEnumerationExpression;
-import net.vpc.upa.expressions.Var;
 
 import java.util.List;
 
@@ -65,7 +59,7 @@ public class AcademicTeacherCallback {
         Entity entity = event.getEntity();
         AcademicPlugin ap = AcademicPlugin.get();
         if (isEntity(entity, AcademicTeacher.class)) {
-            AppPeriod mainPeriod = CorePlugin.get().findAppConfig().getMainPeriod();
+            AppPeriod mainPeriod = CorePlugin.get().getCurrentPeriod();
             int s = ap.findSemesters().size();
             List<Integer> integers = VrUPAUtils.loadUpdatedIds(event);
             for (Integer id : integers) {

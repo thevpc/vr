@@ -13,7 +13,7 @@ import java.util.List;
  * Created by vpc on 8/29/16.
  */
 public class OwnerDepartmentGroupBy implements KPIGroupBy<AcademicCourseAssignmentInfo> {
-    private static StringArrayKPIGroup NON_ASSIGNED = new StringArrayKPIGroup("<<No Semester>>", null, null);
+    private static StringArrayKPIGroup NON_ASSIGNED = new StringArrayKPIGroup("<<No Semester>>", null);
     @Override
     public List<KPIGroup> createGroups(AcademicCourseAssignmentInfo assignment) {
         AcademicSemester t = assignment.getAssignment().getCoursePlan().getCourseLevel().getSemester();

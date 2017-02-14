@@ -27,7 +27,7 @@ import java.util.List;
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Tous les Stages",
-        menu = "/Education/Internship",
+        menu = "/Education/Projects/Internships",
         securityKey = "Custom.Education.AllInternships",
         url = "modules/academic/internship/all-internships"
 )

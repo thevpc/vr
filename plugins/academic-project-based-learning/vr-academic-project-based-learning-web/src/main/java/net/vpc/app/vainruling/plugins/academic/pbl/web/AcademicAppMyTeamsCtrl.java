@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 //        css = "fa-table",
 //        title = "Mes Equipes APP",
         url = "modules/academic/pbl/my-app-teams",
-        menu = "/Education/Internship",
+        menu = "/Education/Projects/Apbl",
         securityKey = "Custom.Education.Apbl.MyTeams"
 )
 public class AcademicAppMyTeamsCtrl {

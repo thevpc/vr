@@ -7,8 +7,8 @@ package net.vpc.app.vainruling.plugins.devtoolbox.web;
 
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.upa.MultiRecord;
-import net.vpc.upa.Record;
+import net.vpc.upa.Document;
+import net.vpc.upa.MultiDocument;
 import net.vpc.upa.UPA;
 import net.vpc.upa.persistence.Parameter;
 import net.vpc.upa.persistence.QueryResult;
@@ -81,10 +81,10 @@ public class DevToolsCtrl {
             } else if (getModel().isupql()) {
                 if (q.toLowerCase().startsWith("select")) {
                     try {
-                        List<MultiRecord> r = UPA.getPersistenceUnit().createQuery(q).getMultiRecordList();
+                        List<MultiDocument> r = UPA.getPersistenceUnit().createQuery(q).getMultiDocumentList();
                         HashMap<String, Integer> indices = new HashMap<String, Integer>();
-                        for (MultiRecord r1 : r) {
-                            Record rec = r1.merge();
+                        for (MultiDocument r1 : r) {
+                            Document rec = r1.merge();
                             List<Object> row = new ArrayList<>();
                             for (String k : rec.keySet()) {
                                 Integer p = indices.get(k);

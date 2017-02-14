@@ -1,9 +1,9 @@
 package net.vpc.app.vainruling.core.service.util;
 
 import net.vpc.common.strings.StringUtils;
+import net.vpc.upa.Document;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.Record;
 import net.vpc.upa.UPA;
 import org.springframework.beans.BeanUtils;
 
@@ -24,14 +24,14 @@ public class DefaultObjectToMapConverter implements ObjectToMapConverter{
         if(o instanceof Map){
             return (Map) o;
         }
-        if(o instanceof Record){
-            return ((Record) o).toMap();
+        if(o instanceof Document){
+            return ((Document) o).toMap();
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.findEntity(o.getClass());
         Map<String, Object> words = new HashMap<>();
         if(entity!=null){
-            Record r = (o instanceof Record) ? ((Record) o) : entity.getBuilder().objectToRecord(o, true);
+            Document r = (o instanceof Document) ? ((Document) o) : entity.getBuilder().objectToDocument(o, true);
             if (r != null) {
                 for (Map.Entry<String, Object> entry : r.entrySet()) {
                     String k = entry.getKey();

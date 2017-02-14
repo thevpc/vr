@@ -60,12 +60,12 @@
         <dependency>
             <groupId>net.vpc.upa</groupId>
             <artifactId>upa-api</artifactId>
-            <version>1.2.0.29</version>
+            <version>1.2.0.31</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.upa</groupId>
             <artifactId>upa-impl</artifactId>
-            <version>1.2.0.29.0</version>
+            <version>1.2.0.31.0</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -96,7 +96,7 @@
         <dependency>
             <groupId>net.vpc.common</groupId>
             <artifactId>vfs</artifactId>
-            <version>1.6</version>
+            <version>1.8</version>
         </dependency>
         <dependency>
             <groupId>rome</groupId>

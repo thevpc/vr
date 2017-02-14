@@ -35,7 +35,7 @@ public class CourseLoadFilterComponent {
         String p = getModel().getSelectedPeriod();
         if (StringUtils.isEmpty(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
-            AppConfig appConfig = core.findAppConfig();
+            AppConfig appConfig = core.getCurrentConfig();
             if (appConfig != null && appConfig.getMainPeriod() != null) {
                 return appConfig.getMainPeriod().getId();
             }
@@ -48,7 +48,7 @@ public class CourseLoadFilterComponent {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
         List<AppPeriod> navigatablePeriods = core.findNavigatablePeriods();
-        AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
+        AppPeriod mainPeriod = core.getCurrentPeriod();
         getModel().setSelectedPeriod(null);
         getModel().getPeriodItems().clear();
         for (AppPeriod p : navigatablePeriods) {
@@ -142,7 +142,7 @@ public class CourseLoadFilterComponent {
         return deviationConfig;
     }
 
-    public CourseAssignmentFilter getCourseAssignmentFilter() {
+    public DefaultCourseAssignmentFilter getCourseAssignmentFilter() {
         DefaultCourseAssignmentFilter c = new DefaultCourseAssignmentFilter();
         for (String s : getModel().getSelectedProgramTypes()) {
             c.addAcceptedProgramType(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
@@ -175,6 +175,8 @@ public class CourseLoadFilterComponent {
 //        for (String s : getModel().getSelectedSituations()) {
 //            c.addAcceptedSituation(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
 //        }
+        c.setAcceptAssignments(true);
+        c.setAcceptIntents(isIncludeIntents());
         return c;
     }
 

@@ -10,7 +10,7 @@ import java.util.Date;
  * Created by vpc on 9/19/16.
  */
 @Entity
-@Path("Education/Internship")
+@Path("Education/Projects/Apbl")
 @Properties(
         {
                 @Property(name = "ui.auto-filter.period", value = "{expr='period',order=1}"),

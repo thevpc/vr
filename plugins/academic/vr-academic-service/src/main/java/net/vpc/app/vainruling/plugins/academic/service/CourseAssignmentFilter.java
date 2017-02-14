@@ -10,4 +10,5 @@ import java.util.Set;
  */
 public interface CourseAssignmentFilter {
     boolean acceptAssignment(AcademicCourseAssignment academicCourseAssignment) ;
+    boolean lookupIntents() ;
 }

@@ -11,7 +11,9 @@ import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.common.io.PathInfo;
 import net.vpc.common.vfs.VFile;
+import net.vpc.common.vfs.VirtualFileACL;
 import net.vpc.common.vfs.VirtualFileSystem;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -95,21 +97,21 @@ public class DocumentsUtils {
         VFile[] all = curr.getFileSystem().listFiles(curr.getPath());
         ArrayList<VFileInfo> ret = new ArrayList<>();
         for (VFile a : all) {
-            ret.add(DocumentsUtils.createFileInfo(a.getName(), a));
+            ret.add(DocumentsUtils.createFileInfo(a));
         }
         Collections.sort(ret);
         if (!"/".equals(curr.getPath())) {
-            ret.add(0, DocumentsUtils.createFileInfo(CorePlugin.FOLDER_BACK, curr.getParentFile()));
+            ret.add(0, DocumentsUtils.createFileInfo(CorePlugin.FOLDER_BACK, VFileKind.BACK, curr.getParentFile()));
         }
         return ret;
     }
 
 
     public static VFileInfo createFileInfo(VFile file) {
-        return createFileInfo(file.getName(), file);
+        return createFileInfo(file.getName(),VFileKind.ORDINARY, file);
     }
 
-    public static VFileInfo createFileInfo(String name, VFile file) {
+    public static VFileInfo createFileInfo(String name, VFileKind kind, VFile file) {
         String iconCss = "file";
         String labelCss = "";
         long downloads = 0;
@@ -137,7 +139,50 @@ public class DocumentsUtils {
         }
         String desc = backFolder ? "" : evalVFileDesc(file);
         labelCss = homeFolder ? "color:#349dc9;font-weight: bold;" : backFolder ? "color:#9e9e9e;" : "";
-        return new VFileInfo(name, file, labelCss, iconCss, downloads, desc);
+        if(!backFolder) {
+            VirtualFileACL acl = file.getACL();
+            if (acl != null) {
+                //should never be null
+                String view = acl.getProperty("ViewFormat");
+                if (view != null) {
+                    ViewFormat format = null;
+                    try {
+                        format = VrUtils.parseJSONObject(view, ViewFormat.class);
+                    } catch (Exception ex) {
+                        //ignore any error
+                    }
+                    if (format != null) {
+                        if (StringUtils.isEmpty(format.getIconCss())) {
+                            iconCss=format.getIconCss();
+                        }
+                        if (StringUtils.isEmpty(format.getIconCss())) {
+                            iconCss=format.getIconCss();
+                        }
+                    }
+                }
+            }
+        }
+        return new VFileInfo(name,kind, file, labelCss, iconCss, downloads, desc);
+    }
+    public static class ViewFormat{
+        private String labelCss;
+        private String iconCss;
+
+        public String getLabelCss() {
+            return labelCss;
+        }
+
+        public void setLabelCss(String labelCss) {
+            this.labelCss = labelCss;
+        }
+
+        public String getIconCss() {
+            return iconCss;
+        }
+
+        public void setIconCss(String iconCss) {
+            this.iconCss = iconCss;
+        }
     }
 
 

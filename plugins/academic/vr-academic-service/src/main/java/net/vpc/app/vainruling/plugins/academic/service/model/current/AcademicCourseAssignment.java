@@ -47,7 +47,7 @@ public class AcademicCourseAssignment {
     private String periodLabel;
 
     @Formula(
-            value = "concat((select a.name from AcademicCoursePlan a where a.id=this.coursePlanId),'-',(select a.name from AcademicCourseType a where a.id=this.courseTypeId))",
+            value = "concat(coalesce((select a.name from AcademicCoursePlan a where a.id=this.coursePlanId),'?'),'-',coalesce((select a.name from AcademicCourseType a where a.id=this.courseTypeId),'?'))",
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String name;
@@ -58,7 +58,7 @@ public class AcademicCourseAssignment {
                     "(select a.fullName from AcademicCoursePlan a where a.id=this.coursePlanId)" +
                     ",'-',Coalesce((select a.Name from AcademicClass a where a.id=this.subClassId),'?')" +
                     ",Coalesce(concat('-',this.discriminator),'')" +
-                    ",'-',(select a.name from AcademicCourseType a where a.id=this.courseTypeId)" +
+                    ",'-',coalesce((select a.name from AcademicCourseType a where a.id=this.courseTypeId),'?')" +
                     ")",
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
     )

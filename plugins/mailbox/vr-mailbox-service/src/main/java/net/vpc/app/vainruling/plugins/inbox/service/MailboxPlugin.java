@@ -272,7 +272,7 @@ public class MailboxPlugin {
 
             @Override
             public List<MailboxReceived> run() {
-                String maxCountQL = maxCount > 0 ? (" top " + maxCount + " ") : "";
+                String maxCountQL = "";//maxCount > 0 ? (" top " + maxCount + " ") : "";
                 String unreadOnlyQL = unreadOnly ? (" and u.read=false ") : "";
                 List<MailboxReceived> list = new ArrayList<>();
                 String threadIdExpr=(threadId<=0)?"":" and u.outboxMessage.threadId="+threadId;
@@ -316,6 +316,19 @@ public class MailboxPlugin {
                                     .getResultList();
                         }
                         break;
+                    }
+                }
+                list=new ArrayList<MailboxReceived>(list);
+                HashSet<Integer> visited=new HashSet<Integer>();
+                for (Iterator<MailboxReceived> x=list.iterator();x.hasNext();){
+                    MailboxReceived next = x.next();
+                    if(next.getOwner().getId()!=userId){
+                        //check if already visited
+                        if(!visited.contains(next.getOutboxMessage().getId())){
+                            visited.add(next.getOutboxMessage().getId());
+                        }else{
+                            x.remove();
+                        }
                     }
                 }
                 if (maxCount > 0) {

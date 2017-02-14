@@ -419,7 +419,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             MailboxMessageFormat mailboxMessageFormat = (MailboxMessageFormat) getModel().getMailboxMessageFormat().getValue();
             mailboxPlugin.sendLocalMail(getModel().getNewItem(), mailboxMessageFormat == null ? null : mailboxMessageFormat.getId(), true);
             MailboxSent item = new MailboxSent();
-            item.setRichText(true);
+            item.setRichText(false);
             getModel().setNewItem(item);
             getModel().setNewItemAttachments(new ArrayList<>());
             getModel().setMode(EditCtrlMode.LIST);
@@ -597,7 +597,12 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             e = getModel().getNewItem().getBccProfiles();
         }
         c.setExpression(e);
-        if (getModel().getNewItem() != null && getModel().getNewItem().isExternalMessage()) {
+        if (getModel().getNewItem() != null
+                &&
+                (getModel().getNewItem().isExternalMessage()
+                        ||
+                        UserSession.get().isAdmin()
+                )) {
             c.setEmails(true);
         }
         VrApp.getBean(ProfileExprDialogCtrl.class).openDialog(c);

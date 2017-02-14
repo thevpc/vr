@@ -73,12 +73,10 @@ public class GlobalStatCtrl {
 
         StatCache cache = new StatCache();
         TeacherFilter teacherFilter = getTeacherFilter().getTeacherFilter();
-        boolean includeIntents = getCourseFilter().isIncludeIntents();
         DeviationConfig deviationConfig = getCourseFilter().getDeviationConfig();
         CourseAssignmentFilter courseAssignmentFilter = getCourseFilter().getCourseAssignmentFilter();
         GlobalStat allTeachers = p.evalGlobalStat(periodId <= 0 ? -100 : periodId,
                 teacherFilter, courseAssignmentFilter,
-                includeIntents,
                 deviationConfig);
         getModel().setStat(allTeachers);
         List<GlobalStatByDiscipline> globalStatByDisciplines = new ArrayList<>();
@@ -90,7 +88,6 @@ public class GlobalStatCtrl {
                                     TeacherFilterFactory.custom().addAcceptedOfficialDisciplines(_discipline.getId()),
                                     teacherFilter
                             ), courseAssignmentFilter,
-                            includeIntents,
                             deviationConfig)
             ));
         }

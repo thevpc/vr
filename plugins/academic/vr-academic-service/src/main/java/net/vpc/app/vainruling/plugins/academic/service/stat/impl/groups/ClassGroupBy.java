@@ -17,7 +17,7 @@ import java.util.List;
  * Created by vpc on 8/29/16.
  */
 public class ClassGroupBy implements KPIGroupBy<AcademicCourseAssignmentInfo> {
-    private static StringArrayKPIGroup NON_ASSIGNED = new StringArrayKPIGroup("<<No Class>>", null, null);
+    private static StringArrayKPIGroup NON_ASSIGNED = new StringArrayKPIGroup("<<No Class>>", null);
     @Override
     public List<KPIGroup> createGroups(AcademicCourseAssignmentInfo assignment) {
         List<AcademicClass> classes=new ArrayList<>();

@@ -14,7 +14,7 @@ import java.util.*;
  * Created by vpc on 8/29/16.
  */
 public class TeacherSituationGroupBy implements KPIGroupBy<AcademicCourseAssignmentInfo> {
-    private static StringArrayKPIGroup NON_VALUE = new StringArrayKPIGroup("<<No Discipline>>", null, null);
+    private static StringArrayKPIGroup NON_VALUE = new StringArrayKPIGroup("<<No Discipline>>", null);
     private boolean intents;
 
     public TeacherSituationGroupBy(boolean intents) {

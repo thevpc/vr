@@ -18,11 +18,13 @@ and open the template in the editor.
 <h:body>
 
 
+    <!--@elvariable id="documentsCtrl" type="net.vpc.app.vainruling.core.web.fs.files.DocumentsCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
     <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="listForm" enctype="multipart/form-data">
                 <p:messages showDetail="false"/>
-                <p:confirmDialog message="Are you sure, you want to delete ?" header="Initiating deleting process"
+                <p:confirmDialog message="Etes vous sur de vouloir supprimer ce document/repertoire ?" header="Processus de suppression"
                                  widgetVar="confirmationDelete">
                     <p:commandButton value="Yes Sure" onclick="PF('confirmationDelete').hide();
                                 processOnDeleteCurrent();"/>
@@ -48,7 +50,7 @@ and open the template in the editor.
                                      actionListener="#{documentsCtrl.onNewFile}" update=":listForm"/>
                     <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Upload')}"
                                      title="Téléverser" icon="fa fa-cloud-upload"
-                                     styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn-default" ajax="true"
+                                     styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn-success" ajax="true"
                                      actionListener="#{documentsCtrl.onUpload}" update=":listForm"/>
                     <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Remove')}"
                                      title="Supprimer" icon="fa fa-trash-o"
@@ -58,6 +60,10 @@ and open the template in the editor.
                                      title="Fermer" icon="fa fa-arrow-left"
                                      styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn-default" ajax="true"
                                      actionListener="#{documentsCtrl.onCancel}" update=":listForm"/>
+                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Security')}"
+                                     title="Sucurite" icon="fa fa-users"
+                                     styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn-default" ajax="true"
+                                     actionListener="#{documentsCtrl.onShowSecurityDialog}" update=":listForm"/>
                     <p:fileUpload rendered="#{documentsCtrl.model.area.equals('Upload')}" multiple="true"
                                   fileUploadListener="#{documentsCtrl.handleNewFile}"
                                   dragDropSupport="true"
@@ -68,6 +74,7 @@ and open the template in the editor.
                                   uploadLabel="Téléverser"
                                   cancelLabel="Annuler"
                                   update=":listForm"
+                                  style="margin-top: 5px;"
                             />
                 </div>
                 <div >

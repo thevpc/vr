@@ -6,13 +6,19 @@
 package net.vpc.app.vainruling.plugins.academic.teachereval.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
+import net.vpc.app.vainruling.core.service.util.ValueCountSet;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.*;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.GroupView;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.QuestionView;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.StatData;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
@@ -48,30 +54,176 @@ public class TeacherStatFeedbackCtrl {
     @Autowired
     private AcademicPerfEvalPlugin feedback;
     private Model model = new Model();
+    private List<GroupCondition> conditions = new ArrayList<>();
+
+    public TeacherStatFeedbackCtrl() {
+        conditions.add(new TeacheGroupCondition());
+        conditions.add(new AssignmentGroupCondition());
+        conditions.add(new CourseGroupCondition());
+        conditions.add(new CourseTypeGroupCondition());
+        conditions.add(new ClassGroupCondition());
+    }
+
+    public int getSelectedFilterIntId() {
+        String selectedFilter = getModel().getSelectedFilter();
+        if (StringUtils.isEmpty(selectedFilter)) {
+            return -1;
+        }
+        int pos = selectedFilter.indexOf(":");
+//            String filterType = selectedFilter.substring(0, pos);
+        String idString = selectedFilter.substring(pos + 1);
+        return Integer.parseInt(idString);
+    }
 
     @OnPageLoad
     public void onLoad() {
         getModel().setValidate(false);
         getModel().setTeacherListEnabled(academic.isUserSessionManager());
-        ArrayList<SelectItem> academicTeachers = new ArrayList<>();
-        for (AcademicTeacher f : academic.findTeachers()) {
-            academicTeachers.add(new SelectItem(String.valueOf(f.getId()), f.getContact().getFullTitle()));
-        }
-        getModel().setTeachersList(academicTeachers);
 
         ArrayList<SelectItem> filterTypesList = new ArrayList<>();
-        filterTypesList.add(new SelectItem("teacher", "Enseignant"));
-        filterTypesList.add(new SelectItem("assignment", "Enseignement"));
-        filterTypesList.add(new SelectItem("course", "Cours"));
+        for (GroupCondition condition : conditions) {
+            filterTypesList.add(new SelectItem(condition.getId(), condition.getLabel()));
+        }
         getModel().setFilterTypesList(filterTypesList);
-        getModel().setFilterType("teacher");
+        getModel().setFilterType((String) filterTypesList.get(0).getValue());
+
+
+        ArrayList<SelectItem> items = new ArrayList<>();
+        List<AppPeriod> periods = core.findNavigatablePeriods();
+        for (AppPeriod t : periods) {
+            String n = t.getName();
+            items.add(new SelectItem(String.valueOf(t.getId()), n));
+        }
+        getModel().setPeriods(items);
+
+        onChangePeriod();
+    }
+
+    public void onChangePeriod() {
+        onReloadFilterByType();
+    }
+
+    public GroupCondition getSelectedGroupCondition() {
+        String filterType = getModel().getSelectedFilterType();
+        if (!StringUtils.isEmpty(filterType)) {
+            for (GroupCondition condition : conditions) {
+                if (condition.getId().equals(filterType)) {
+                    return condition;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void onReloadFilterByType() {
+        int periodId = -1;
+        String selectedPeriodString = getModel().getSelectedPeriod();
+        if (!StringUtils.isEmpty(selectedPeriodString)) {
+            periodId = (Integer.parseInt(selectedPeriodString));
+        }
+
+
+        getModel().setFilterTeachersEnabled(false);
+        GroupCondition cond = getSelectedGroupCondition();
+        getModel().setTeachersList(new ArrayList<>());
+        if (cond != null) {
+            cond.onSelected();
+        }
         onReloadFeedbacks();
+    }
+
+    protected void reloadTeachersList() {
+        ArrayList<SelectItem> academicTeachers = new ArrayList<>();
+        if (getModel().isFilterTeachersEnabled()) {
+            List<AcademicTeacher> teachersWithFeedbacks = feedback.findTeachersWithFeedbacks(getSelectedPeriodId(), getModel().getValidatedFilter(), false, true);
+            for (AcademicTeacher f : teachersWithFeedbacks) {
+                academicTeachers.add(new SelectItem(String.valueOf(f.getId()), f.getContact().getFullTitle()));
+            }
+        }
+        getModel().setTeachersList(academicTeachers);
     }
 
     public void onReloadFeedbacks() {
 
         ArrayList<SelectItem> theList = new ArrayList<>();
         getModel().setFilterList(theList);
+
+
+        getModel().setFilterList(new ArrayList<>());
+        GroupCondition cond = getSelectedGroupCondition();
+        if (cond != null) {
+            cond.onPrepareModel();
+        }
+        onFilterChange();
+    }
+
+    public void onFilterChange() {
+        getModel().setValidate(false);
+        StatData statData = feedback.evalStatData(findAcademicFeedbacks());
+        statData.setGlobalChart(createBarChartModel(statData.getGlobalValues()));
+        for (GroupView row : statData.getGroupedQuestionsList()) {
+            row.setChart(createBarChartModel(row.getValues()));
+            for (QuestionView questionView : row.getQuestions()) {
+                questionView.setChart(createBarChartModel(questionView.getValues()));
+            }
+        }
+
+        getModel().setStatData(statData);
+    }
+
+//    public List<AcademicFeedback> findAcademicFeedbacksByAssignment(int id) {
+//        AcademicCourseAssignment a = academic.findAcademicCourseAssignment(id);
+//        if (a == null) {
+//            return Collections.emptyList();
+//        }
+//        return feedback.findAssignmentFeedbacks(a.getId(), getModel().getValidatedFilter(), false);
+//    }
+
+    public List<AcademicFeedback> findAcademicFeedbacks() {
+        GroupCondition selectedGroupCondition = getSelectedGroupCondition();
+        if (selectedGroupCondition == null) {
+            return new ArrayList<>();
+        }
+        return selectedGroupCondition.findFeedbacks();
+    }
+
+
+    private BarChartModel createBarChartModel(ValueCountSet valueCountSet) {
+        if (valueCountSet.isEmpty()) {
+            return null;
+        }
+        BarChartModel bmodel = new BarChartModel();
+        bmodel.setShadow(true);
+        bmodel.setLegendCols(1);
+        bmodel.setLegendPlacement(LegendPlacement.OUTSIDE);
+        bmodel.setLegendPosition("e");
+        bmodel.setBarMargin(0);
+        bmodel.setBarPadding(0);
+//                        boys.setLabel("Boys");
+        for (String val : new TreeSet<String>((Set) valueCountSet.keySet())) {
+            ChartSeries boys = new ChartSeries();
+            String vv = String.valueOf(val);
+            String vv0 = getModel().getValueTexts().get(vv);
+            if (vv0 != null) {
+                vv = vv0;
+            }
+            boys.set(" ", valueCountSet.getCount(val));
+            boys.setLabel(vv);
+            bmodel.addSeries(boys);
+        }
+        return bmodel;
+    }
+
+    public int getSelectedPeriodId() {
+        int periodId = -1;
+        String selectedPeriodString = getModel().getSelectedPeriod();
+        if (!StringUtils.isEmpty(selectedPeriodString)) {
+            periodId = (Integer.parseInt(selectedPeriodString));
+        }
+        return periodId;
+    }
+
+    public int getSelectedTeacherId() {
         AcademicTeacher s = null;
         if (getModel().isTeacherListEnabled()) {
             String selectedTeacherString = getModel().getSelectedTeacher();
@@ -81,202 +233,15 @@ public class TeacherStatFeedbackCtrl {
         } else {
             s = academic.getCurrentTeacher();
         }
-        if (s != null) {
-            HashSet<String> ids = new HashSet<>();
-
-            String filterType = getModel().getSelectedFilterType();
-            if ("assignment".equals(filterType)) {
-                for (AcademicCourseAssignment f : feedback.findAssignmentsWithFeedbacks(s.getId(), getModel().getValidatedFilter(), false, true)) {
-                    theList.add(new SelectItem(filterType + ":" + String.valueOf(f.getId()), f.getFullName()));
-                    ids.add(filterType + ":" + String.valueOf(f.getId()));
-                }
-            } else if ("course".equals(filterType)) {
-                for (AcademicCoursePlan f : feedback.findAcademicCoursePlansWithFeedbacks(s.getId(), getModel().getValidatedFilter(), false, true)) {
-                    theList.add(new SelectItem(filterType + ":" + String.valueOf(f.getId()), f.getFullName()));
-                    ids.add(filterType + ":" + String.valueOf(f.getId()));
-                }
-            } else if ("courseType".equals(filterType)) {
-                for (AcademicCourseType f : feedback.findAcademicCourseTypesWithFeedbacks(s.getId(), getModel().getValidatedFilter(), false, true)) {
-                    theList.add(new SelectItem(filterType + ":" + String.valueOf(f.getId()), f.getName()));
-                    ids.add(filterType + ":" + String.valueOf(f.getId()));
-                }
-            } else if ("teacher".equals(filterType)) {
-                for (AcademicCourseType f : feedback.findAcademicCourseTypesWithFeedbacks(s.getId(), getModel().getValidatedFilter(), false, true)) {
-                    //do nothing
-//                    theList.add(new SelectItem(filterType + ":" + String.valueOf(f.getId()), f.getName()));
-//                    ids.add(filterType + ":" + String.valueOf(f.getId()));
-                }
-            }
-            if (!ids.contains(getModel().getSelectedFilter())) {
-                getModel().setSelectedFilter(null);
-                for (String id : ids) {
-                    getModel().setSelectedFilter(id);
-                    break;
-                }
-            }
-        }
-        onFilterChange();
+        return s == null ? -1 : s.getId();
     }
 
-    public void onFilterChange() {
-        getModel().setValidate(false);
-        getModel().setRows(evaluateGroupViews(findAcademicFeedbacks()));
-    }
-
-    public List<AcademicFeedback> findAcademicFeedbacksByAssignment(int id) {
-        AcademicCourseAssignment a = academic.findAcademicCourseAssignment(id);
-        if (a == null) {
-            return Collections.emptyList();
+    public String getSearchTitle() {
+        GroupCondition c = getSelectedGroupCondition();
+        if (c == null) {
+            return "Toutes les evals";
         }
-        return feedback.findAssignmentFeedbacks(a.getId(), getModel().getValidatedFilter(), false);
-    }
-
-    public List<AcademicFeedback> findAcademicFeedbacks() {
-        String selectedFilter = getModel().getSelectedFilter();
-        if (StringUtils.isEmpty(selectedFilter)) {
-            return Collections.emptyList();
-        }
-        int pos = selectedFilter.indexOf(":");
-        String filterType = selectedFilter.substring(0, pos);
-        String idString = selectedFilter.substring(pos + 1);
-        if ("assignment".equals(filterType)) {
-            int id = Integer.parseInt(idString);
-            return feedback.findAssignmentFeedbacks(id, getModel().getValidatedFilter(), false);
-        } else if ("course".equals(filterType)) {
-            int teacherId = -1;
-            if (getModel().isTeacherListEnabled()) {
-                String selectedTeacher = getModel().getSelectedTeacher();
-                if (!StringUtils.isEmpty(selectedTeacher)) {
-                    teacherId = Integer.parseInt(selectedTeacher);
-                }
-            } else {
-                teacherId = academic.getCurrentTeacher().getId();
-            }
-            int courseId = Integer.parseInt(idString);
-            return feedback.findFeedbacks(
-                    courseId,
-                    teacherId,
-                    null,
-                    null,
-                    getModel().getValidatedFilter(),
-                    false
-            );
-        } else if ("courseType".equals(filterType)) {
-            int teacherId = -1;
-            if (getModel().isTeacherListEnabled()) {
-                String selectedTeacher = getModel().getSelectedTeacher();
-                if (!StringUtils.isEmpty(selectedTeacher)) {
-                    teacherId = Integer.parseInt(selectedTeacher);
-                }
-            } else {
-                teacherId = academic.getCurrentTeacher().getId();
-            }
-            int courseTypeId = Integer.parseInt(idString);
-            return feedback.findFeedbacks(
-                    null,
-                    teacherId,
-                    courseTypeId,
-                    null,
-                    getModel().getValidatedFilter(),
-                    false
-            );
-        } else if ("teacher".equals(filterType)) {
-            int teacherId = -1;
-            if (getModel().isTeacherListEnabled()) {
-                String selectedTeacher = getModel().getSelectedTeacher();
-                if (!StringUtils.isEmpty(selectedTeacher)) {
-                    teacherId = Integer.parseInt(selectedTeacher);
-                }
-            } else {
-                teacherId = academic.getCurrentTeacher().getId();
-            }
-            return feedback.findFeedbacks(
-                    null,
-                    teacherId,
-                    null,
-                    null,
-                    getModel().getValidatedFilter(),
-                    false
-            );
-        } else {
-            return Collections.emptyList();
-        }
-    }
-
-    public List<GroupView> evaluateGroupViews(List<AcademicFeedback> feedbacks) {
-        int countFeedbacks = feedbacks.size();
-        int countQuestions = 0;
-        int countValidResponses = 0;
-        double countResponseCompletion = 0;
-        List<GroupView> rows = new ArrayList<>();
-        if (feedbacks.size() > 0) {
-            AcademicFeedbackModel fmodel = feedbacks.get(0).getModel();
-            List<AcademicFeedbackGroup> groups = feedback.findStudentFeedbackGroups(fmodel.getId());
-            Map<Integer, QuestionView> questionsMap = new HashMap<Integer, QuestionView>();
-
-            for (AcademicFeedbackGroup group : groups) {
-                GroupView row = new GroupView();
-                row.setTitle(group.getName());
-                ArrayList<QuestionView> questions = new ArrayList<QuestionView>();
-                row.setQuestions(questions);
-                for (AcademicFeedbackQuestion r : feedback.findAcademicFeedbackQuestionByGroup(group.getId())) {
-                    QuestionView q = new QuestionView();
-                    q.setQuestion(r);
-                    q.getValues().touch("1");
-                    q.getValues().touch("2");
-                    q.getValues().touch("3");
-                    q.getValues().touch("4");
-                    questions.add(q);
-                    questionsMap.put(r.getId(), q);
-                }
-                countQuestions += questions.size();
-                rows.add(row);
-            }
-            int[] feedbacksIds = new int[feedbacks.size()];
-            for (int i = 0; i < feedbacks.size(); i++) {
-                feedbacksIds[i] = feedbacks.get(i).getId();
-            }
-            for (AcademicFeedbackResponse r : feedback.findStudentFeedbackResponses(feedbacksIds)) {
-                QuestionView qv = questionsMap.get(r.getQuestion().getId());
-                if (qv != null && !StringUtils.isEmpty(r.getResponse())) {
-                    qv.getValues().inc(r.getResponse());
-                    countValidResponses++;
-                }
-            }
-            for (QuestionView value : questionsMap.values()) {
-                if (!value.getValues().isEmpty()) {
-                    BarChartModel bmodel = new BarChartModel();
-                    bmodel.setShadow(true);
-                    bmodel.setLegendCols(1);
-                    bmodel.setLegendPlacement(LegendPlacement.OUTSIDE);
-                    bmodel.setLegendPosition("e");
-                    bmodel.setBarMargin(0);
-                    bmodel.setBarPadding(0);
-//                        boys.setLabel("Boys");
-                    for (String val : new TreeSet<String>((Set) value.getValues().keySet())) {
-                        ChartSeries boys = new ChartSeries();
-                        String vv = String.valueOf(val);
-                        String vv0 = getModel().getValueTexts().get(vv);
-                        if (vv0 != null) {
-                            vv = vv0;
-                        }
-                        boys.set(" ", value.getValues().getCount(val));
-                        boys.setLabel(vv);
-                        bmodel.addSeries(boys);
-                    }
-
-                    value.setChart(bmodel);
-                }
-            }
-        }
-        if (countQuestions != 0 && countFeedbacks != 0) {
-            countResponseCompletion = (countValidResponses * 100) / (countQuestions * countFeedbacks);
-        }
-        getModel().setCountFeedbacks(countFeedbacks);
-        getModel().setCountQuestions(countQuestions);
-        getModel().setCountValidResponses(countValidResponses);
-        getModel().setCountResponseCompletion(countResponseCompletion);
-        return rows;
+        return c.getSearchTitle();
     }
 
     public void onValidate() {
@@ -287,33 +252,392 @@ public class TeacherStatFeedbackCtrl {
         return model;
     }
 
+    public interface GroupCondition {
+        String getId();
+
+        String getLabel();
+
+        void onSelected();
+
+        void onPrepareModel();
+
+        String getSearchTitle();
+
+        List<AcademicFeedback> findFeedbacks();
+    }
+
+    public abstract class AbstractGroupCondition implements GroupCondition {
+        private String id;
+        private String label;
+
+        public AbstractGroupCondition(String id, String label) {
+            this.id = id;
+            this.label = label;
+        }
+
+        @Override
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public class TeacheGroupCondition extends AbstractGroupCondition {
+        public TeacheGroupCondition() {
+            super("teacher", "Enseignent");
+        }
+
+        @Override
+        public String getSearchTitle() {
+            int teacherId = getSelectedFilterIntId();
+            if (teacherId < 0) {
+                return "Tous les Enseignants";
+            }
+            AcademicTeacher teacher = academic.findTeacher(teacherId);
+            String validName = academic.getValidName(teacher);
+            return teacher == null ? "Enseignant Inconnu" : validName;
+        }
+
+        @Override
+        public void onSelected() {
+            getModel().setFilterTeachersEnabled(false);
+        }
+
+        @Override
+        public void onPrepareModel() {
+            ArrayList<SelectItem> theList = new ArrayList<>();
+            int periodId = getSelectedPeriodId();
+            for (AcademicTeacher f : feedback.findTeachersWithFeedbacks(periodId, getModel().getValidatedFilter(), false, true)) {
+                theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getContact().getFullTitle()));
+            }
+            getModel().setFilterList(theList);
+            revalidateSelectedFilter();
+        }
+
+        @Override
+        public List<AcademicFeedback> findFeedbacks() {
+            int teacherId = getSelectedFilterIntId();
+            return feedback.findFeedbacks(
+                    getSelectedPeriodId(),
+                    null,
+                    teacherId < 0 ? null : teacherId,
+                    null,
+                    null,
+                    getModel().getValidatedFilter(),
+                    false
+            );
+        }
+    }
+
+    public class ClassGroupCondition extends AbstractGroupCondition {
+        public ClassGroupCondition() {
+            super("class", "Classe");
+        }
+
+        @Override
+        public void onSelected() {
+            getModel().setFilterTeachersEnabled(getModel().isTeacherListEnabled());
+            reloadTeachersList();
+        }
+
+        @Override
+        public String getSearchTitle() {
+            StringBuilder sb = new StringBuilder();
+            int teacherId = getSelectedTeacherId();
+            if (teacherId < 0) {
+                sb.append("Tous les Enseignants");
+            } else {
+                AcademicTeacher teacher = academic.findTeacher(teacherId);
+                String validName = academic.getValidName(teacher);
+                sb.append(teacher == null ? "Enseignant Inconnu" : validName);
+            }
+            sb.append(", ");
+            int classId = getSelectedFilterIntId();
+            if (classId < 0) {
+                sb.append("Toutes les classes");
+            } else {
+                AcademicClass className = academic.findAcademicClass(classId);
+                sb.append(className == null ? "Classe Inconnue" : className.getName());
+            }
+            return sb.toString();
+        }
+
+        @Override
+        public void onPrepareModel() {
+            ArrayList<SelectItem> theList = new ArrayList<>();
+            int periodId = getSelectedPeriodId();
+            for (AcademicClass f : feedback.findClassesWithFeedbacks(periodId, getModel().getValidatedFilter(), false, true)) {
+                theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getName()));
+            }
+            getModel().setFilterList(theList);
+            revalidateSelectedFilter();
+        }
+
+        @Override
+        public List<AcademicFeedback> findFeedbacks() {
+            int classId = getSelectedFilterIntId();
+            return feedback.findFeedbacks(
+                    getSelectedPeriodId(),
+                    null,
+                    getSelectedTeacherId(),
+                    null,
+                    classId < 0 ? null : classId,
+                    getModel().getValidatedFilter(),
+                    false
+            );
+        }
+    }
+
+    public class AssignmentGroupCondition extends AbstractGroupCondition {
+        public AssignmentGroupCondition() {
+            super("assignment", "Enseignement");
+        }
+
+        @Override
+        public void onSelected() {
+            getModel().setFilterTeachersEnabled(getModel().isTeacherListEnabled());
+            reloadTeachersList();
+        }
+
+        @Override
+        public void onPrepareModel() {
+            ArrayList<SelectItem> theList = new ArrayList<>();
+            int periodId = getSelectedPeriodId();
+            int teacherId = getSelectedTeacherId();
+            for (AcademicCourseAssignment f : feedback.findAssignmentsWithFeedbacks(periodId, teacherId, getModel().getValidatedFilter(), false, true)) {
+                theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getFullName()));
+            }
+            getModel().setFilterList(theList);
+            revalidateSelectedFilter();
+        }
+
+        @Override
+        public List<AcademicFeedback> findFeedbacks() {
+            String selectedFilter = getModel().getSelectedFilter();
+            int pos = selectedFilter.indexOf(":");
+//            String filterType = selectedFilter.substring(0, pos);
+            String idString = selectedFilter.substring(pos + 1);
+            int id = Integer.parseInt(idString);
+            return feedback.findAssignmentFeedbacks(id, getModel().getValidatedFilter(), false);
+        }
+
+        @Override
+        public String getSearchTitle() {
+            StringBuilder sb = new StringBuilder();
+            int assignementId = getSelectedTeacherId();
+            if (assignementId < 0) {
+                sb.append("Tous les Enseignements");
+            } else {
+                AcademicCourseAssignment assignement = academic.findCourseAssignment(assignementId);
+                sb.append(assignement == null ? "Enseignement Inconnu" : assignement.getFullName());
+            }
+            return sb.toString();
+        }
+    }
+
+    public class CourseGroupCondition extends AbstractGroupCondition {
+        public CourseGroupCondition() {
+            super("course", "Cours");
+        }
+
+
+        @Override
+        public void onSelected() {
+            getModel().setFilterTeachersEnabled(getModel().isTeacherListEnabled());
+            reloadTeachersList();
+        }
+
+        @Override
+        public void onPrepareModel() {
+            ArrayList<SelectItem> theList = new ArrayList<>();
+            int periodId = getSelectedPeriodId();
+            int teacherId = getSelectedTeacherId();
+            for (AcademicCoursePlan f : feedback.findAcademicCoursePlansWithFeedbacks(periodId, teacherId, getModel().getValidatedFilter(), false, true)) {
+                theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getFullName()));
+            }
+            getModel().setFilterList(theList);
+            revalidateSelectedFilter();
+        }
+
+        @Override
+        public List<AcademicFeedback> findFeedbacks() {
+            int teacherId = getSelectedTeacherId();
+            int courseId = getSelectedFilterIntId();
+            return feedback.findFeedbacks(
+                    getSelectedPeriodId(),
+                    courseId <= 0 ? null : courseId,
+                    teacherId < 0 ? null : teacherId,
+                    null,
+                    null,
+                    getModel().getValidatedFilter(),
+                    false
+            );
+        }
+
+        @Override
+        public String getSearchTitle() {
+            StringBuilder sb = new StringBuilder();
+            int teacherId = getSelectedTeacherId();
+            if (teacherId < 0) {
+                sb.append("Tous les Enseignants");
+            } else {
+                AcademicTeacher teacher = academic.findTeacher(teacherId);
+                String validName = academic.getValidName(teacher);
+                sb.append(teacher == null ? "Enseignant Inconnu" : validName);
+            }
+            sb.append(", ");
+            int classId = getSelectedFilterIntId();
+            if (classId < 0) {
+                sb.append("Tous les cours");
+            } else {
+                AcademicCoursePlan className = academic.findCoursePlan(classId);
+                sb.append(className == null ? "Cours Inconnu" : className.getName());
+            }
+            return sb.toString();
+        }
+    }
+
+    public class CourseTypeGroupCondition extends AbstractGroupCondition {
+        public CourseTypeGroupCondition() {
+            super("courseType", "Type Enseignement");
+        }
+
+        @Override
+        public void onSelected() {
+            getModel().setFilterTeachersEnabled(getModel().isTeacherListEnabled());
+            reloadTeachersList();
+        }
+
+        @Override
+        public void onPrepareModel() {
+            ArrayList<SelectItem> theList = new ArrayList<>();
+            int periodId = getSelectedPeriodId();
+            int teacherId = getSelectedTeacherId();
+            for (AcademicCourseType f : feedback.findAcademicCourseTypesWithFeedbacks(periodId, teacherId, getModel().getValidatedFilter(), false, true)) {
+                theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getName()));
+            }
+            getModel().setFilterList(theList);
+            revalidateSelectedFilter();
+        }
+
+        @Override
+        public List<AcademicFeedback> findFeedbacks() {
+            int teacherId = getSelectedTeacherId();
+            int courseTypeId = (getSelectedFilterIntId());
+            return feedback.findFeedbacks(
+                    getSelectedPeriodId(),
+                    null,
+                    teacherId < 0 ? null : teacherId,
+                    courseTypeId < 0 ? null : courseTypeId,
+                    null,
+                    getModel().getValidatedFilter(),
+                    false
+            );
+        }
+
+        @Override
+        public String getSearchTitle() {
+            StringBuilder sb = new StringBuilder();
+            int teacherId = getSelectedTeacherId();
+            if (teacherId < 0) {
+                sb.append("Tous les Enseignants");
+            } else {
+                AcademicTeacher teacher = academic.findTeacher(teacherId);
+                String validName = academic.getValidName(teacher);
+                sb.append(teacher == null ? "Enseignant Inconnu" : validName);
+            }
+            sb.append(", ");
+            int classId = getSelectedFilterIntId();
+            if (classId < 0) {
+                sb.append("Tous les types");
+            } else {
+                AcademicCourseType className = academic.findCourseType(classId);
+                sb.append(className == null ? "Type Cours Inconnu" : className.getName());
+            }
+            return sb.toString();
+        }
+    }
+
+    private void revalidateSelectedFilter() {
+        List<SelectItem> filterList = getModel().getFilterList();
+        HashSet<String> ids = new HashSet<>();
+        for (SelectItem selectItem : filterList) {
+            Object value = selectItem.getValue();
+            if (value != null) {
+                ids.add(String.valueOf(value));
+            }
+        }
+        if (!ids.contains(getModel().getSelectedFilter())) {
+            getModel().setSelectedFilter(null);
+            for (String id : ids) {
+                getModel().setSelectedFilter(id);
+                break;
+            }
+        }
+    }
+
     public static class Model {
 
         private String title;
+        private boolean filterTeachersEnabled = false;
         private boolean teacherListEnabled = false;
         private String selectedTeacher;
+        private String selectedPeriod;
         private String selectedFilterType = "assignement";
         private List<SelectItem> teachersList = new ArrayList<SelectItem>();
         private List<SelectItem> filterTypesList = new ArrayList<SelectItem>();
 
-        private int countFeedbacks;
-        private int countQuestions;
-        private int countValidResponses;
-        private double countResponseCompletion;
         private Boolean validatedFilter;
         private String filterType;
         private String selectedFilter;
+        private List<SelectItem> periods = new ArrayList<SelectItem>();
         private List<SelectItem> filterList = new ArrayList<SelectItem>();
-        private List<GroupView> rows = new ArrayList<>();
+
         private boolean validate = false;
         private Map<String, String> valueTexts = new HashMap<>();
+        private StatData statData = new StatData();
 
         public Model() {
-            valueTexts.put("1", "+");
-            valueTexts.put("2", "++");
-            valueTexts.put("3", "+++");
-            valueTexts.put("4", "++++");
-            valueTexts.put("5", "+++++");
+            valueTexts.put("1", "Tout a fait en desaccord");
+            valueTexts.put("2", "Plutot en desaccord");
+            valueTexts.put("3", "Plutot en accord");
+            valueTexts.put("4", "Tout a fait en accord");
+        }
+
+        public StatData getStatData() {
+            return statData;
+        }
+
+        public void setStatData(StatData statData) {
+            this.statData = statData;
+        }
+
+        public boolean isFilterTeachersEnabled() {
+            return filterTeachersEnabled;
+        }
+
+        public void setFilterTeachersEnabled(boolean filterTeachersEnabled) {
+            this.filterTeachersEnabled = filterTeachersEnabled;
+        }
+
+        public List<SelectItem> getPeriods() {
+            return periods;
+        }
+
+        public void setPeriods(List<SelectItem> periods) {
+            this.periods = periods;
+        }
+
+        public String getSelectedPeriod() {
+            return selectedPeriod;
+        }
+
+        public void setSelectedPeriod(String selectedPeriod) {
+            this.selectedPeriod = selectedPeriod;
         }
 
         public String getTitle() {
@@ -339,15 +663,6 @@ public class TeacherStatFeedbackCtrl {
         public void setSelectedFilter(String selectedFilter) {
             this.selectedFilter = selectedFilter;
         }
-
-        public List<GroupView> getRows() {
-            return rows;
-        }
-
-        public void setRows(List<GroupView> rows) {
-            this.rows = rows;
-        }
-
 
         public boolean isValidate() {
             return validate;
@@ -424,41 +739,6 @@ public class TeacherStatFeedbackCtrl {
             this.filterTypesList = filterTypesList;
         }
 
-        public int getCountFeedbacks() {
-            return countFeedbacks;
-        }
-
-        public Model setCountFeedbacks(int countFeedbacks) {
-            this.countFeedbacks = countFeedbacks;
-            return this;
-        }
-
-        public int getCountQuestions() {
-            return countQuestions;
-        }
-
-        public Model setCountQuestions(int countQuestions) {
-            this.countQuestions = countQuestions;
-            return this;
-        }
-
-        public int getCountValidResponses() {
-            return countValidResponses;
-        }
-
-        public Model setCountValidResponses(int countValidResponses) {
-            this.countValidResponses = countValidResponses;
-            return this;
-        }
-
-        public double getCountResponseCompletion() {
-            return countResponseCompletion;
-        }
-
-        public Model setCountResponseCompletion(double countResponseCompletion) {
-            this.countResponseCompletion = countResponseCompletion;
-            return this;
-        }
     }
 
 }

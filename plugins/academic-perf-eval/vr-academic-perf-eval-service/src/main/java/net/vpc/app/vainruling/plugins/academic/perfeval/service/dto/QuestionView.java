@@ -1,17 +1,12 @@
-package net.vpc.app.vainruling.plugins.academic.teachereval.web;
+package net.vpc.app.vainruling.plugins.academic.perfeval.service.dto;
 
-import net.vpc.app.vainruling.core.service.util.ValueCountSet;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackQuestion;
-import org.primefaces.model.chart.BarChartModel;
 
-/**
- * Created by vpc on 5/15/16.
- */
 public class QuestionView {
 
     AcademicFeedbackQuestion question;
-    ValueCountSet values = new ValueCountSet();
-    BarChartModel chart;
+    StatCountSet values = new StatCountSet();
+    Object chart;
 
     public AcademicFeedbackQuestion getQuestion() {
         return question;
@@ -21,19 +16,19 @@ public class QuestionView {
         this.question = question;
     }
 
-    public ValueCountSet getValues() {
+    public StatCountSet getValues() {
         return values;
     }
 
-    public void setValues(ValueCountSet values) {
+    public void setValues(StatCountSet values) {
         this.values = values;
     }
 
-    public BarChartModel getChart() {
+    public Object getChart() {
         return chart;
     }
 
-    public void setChart(BarChartModel chart) {
+    public void setChart(Object chart) {
         this.chart = chart;
     }
 

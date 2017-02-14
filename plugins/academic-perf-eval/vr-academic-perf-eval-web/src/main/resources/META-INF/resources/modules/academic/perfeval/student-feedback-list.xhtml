@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+>
+
+<h:head>
+</h:head>
+
+<h:body>
+
+
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <!--@elvariable id="studentFeedbackListCtrl" type="net.vpc.app.vainruling.plugins.academic.teachereval.web.StudentFeedbackListCtrl"-->
+    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
+        <ui:define name="content">
+            <!--                <h:form id="buttonsForm">
+
+                                 /.row
+                                <div class="row">
+                                    <p:outputLabel id="buttons">
+                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                    </p:outputLabel>
+                                </div>
+
+                            </h:form>-->
+            <h:form id="listForm">
+                <p:messages id="pageMessages"/>
+
+                <div>
+                    <p:inputText value="#{studentFeedbackListCtrl.model.studentsFilter}" placeholder="Chercher ..."
+                                 styleClass="form-control"
+                                 style="width: 100%"
+                                 onkeypress="if (event.keyCode == 13) { onSearchByText(); return false; }"
+                    />
+                    <p:remoteCommand name="onSearchByText" actionListener="#{studentFeedbackListCtrl.onReloadStudents}"
+                                     update="students feedbacks"/>
+                </div>
+                <div>
+                    <p:selectOneMenu id="students" value="#{studentFeedbackListCtrl.model.selectedStudent}"
+                                     filter="true" filterMatchMode="contains"
+                                     style="margin-top: 10px;"
+                                     styleClass="vr-form-field form-control"
+                    >
+                        <p:ajax listener="#{studentFeedbackListCtrl.onReloadFeedbacks}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner élève..." itemValue=""/>
+                        <f:selectItems value="#{studentFeedbackListCtrl.model.students}"/>
+                    </p:selectOneMenu>
+                </div>
+                <p:dataTable id="feedbacks" value="#{studentFeedbackListCtrl.model.feedbacks}" var="f"
+                             emptyMessage="Il ny'a aucune fiche à renseigner"
+                >
+                    <p:column headerText="Module">
+                        <p:outputLabel value="#{f.course.fullName}"/>
+                    </p:column>
+                    <p:column headerText="Enseignant">
+                        <p:outputLabel value="#{f.course.teacher.contact.fullName}"/>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>

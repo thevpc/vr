@@ -8,7 +8,7 @@ import net.vpc.upa.config.*;
  * Created by vpc on 9/19/16.
  */
 @Entity
-@Path("Education/Internship")
+@Path("Education/Projects/Apbl")
 @Properties(
         {
                 @Property(name = "ui.auto-filter.session", value = "{expr='session',order=1}"),
@@ -44,6 +44,17 @@ public class ApblTeam {
     }
     )
     private String report;
+    private boolean lockedMembers;
+    private boolean freeMembers;
+    private boolean lockedCoaches;
+
+    public boolean isFreeMembers() {
+        return freeMembers;
+    }
+
+    public void setFreeMembers(boolean freeMembers) {
+        this.freeMembers = freeMembers;
+    }
 
     public int getId() {
         return id;
@@ -99,5 +110,21 @@ public class ApblTeam {
 
     public void setProject(ApblProject project) {
         this.project = project;
+    }
+
+    public boolean isLockedMembers() {
+        return lockedMembers;
+    }
+
+    public void setLockedMembers(boolean lockedMembers) {
+        this.lockedMembers = lockedMembers;
+    }
+
+    public boolean isLockedCoaches() {
+        return lockedCoaches;
+    }
+
+    public void setLockedCoaches(boolean lockedCoaches) {
+        this.lockedCoaches = lockedCoaches;
     }
 }

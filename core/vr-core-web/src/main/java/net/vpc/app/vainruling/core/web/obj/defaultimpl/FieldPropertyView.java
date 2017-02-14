@@ -12,7 +12,7 @@ import net.vpc.app.vainruling.core.web.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
 import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
-import net.vpc.upa.Record;
+import net.vpc.upa.Document;
 import net.vpc.upa.types.DataType;
 import net.vpc.upa.types.ManyToOneType;
 
@@ -52,7 +52,7 @@ public class FieldPropertyView extends PropertyView {
             Field field = getField();
             final Object v2 = field.getDataType().convert(getObjectValue());
             if (o != null
-                    && (o instanceof Record
+                    && (o instanceof Document
                     || field.getEntity().getEntityType().isAssignableFrom(o.getClass()))) {
                 field.getEntity().getBuilder().setProperty(o, field.getName(), v2);
             }

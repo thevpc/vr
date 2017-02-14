@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.core.service.agent;
 
 import net.vpc.app.vainruling.core.service.TraceService;
-import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
@@ -81,7 +80,7 @@ public class TraceServiceCallback {
             IdEnumerationExpression k = (IdEnumerationExpression) expr;
             expr = new IdEnumerationExpression(k.getIds(), new Var(entity.getName()));
         }
-        List old = pu.createQueryBuilder(entity.getName()).byExpression(expr).getRecordList();
+        List old = pu.createQueryBuilder(entity.getName()).byExpression(expr).getDocumentList();
         old.size();//force load!
         event.getContext().setObject("updated_objects", old);
     }
@@ -100,7 +99,7 @@ public class TraceServiceCallback {
         List old = event.getContext().getObject("updated_objects");
         if (old.size() == 1) {
             if (trace != null) {
-                trace.updated(entity.getName(), event.getUpdatesRecord(), old.get(0), entity.getParent().getPath(), Level.FINE);
+                trace.updated(entity.getName(), event.getUpdatesDocument(), old.get(0), entity.getParent().getPath(), Level.FINE);
             }
         } else {
             //??

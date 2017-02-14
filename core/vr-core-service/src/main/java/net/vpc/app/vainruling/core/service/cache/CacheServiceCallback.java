@@ -34,7 +34,7 @@ public class CacheServiceCallback {
         Entity entity = event.getEntity();
         CacheService service = getEntityCacheService();
         if (service != null) {
-            service.invalidate(entity, event.getPersistedRecord());
+            service.invalidate(entity, event.getPersistedDocument());
         }
     }
 
@@ -48,7 +48,7 @@ public class CacheServiceCallback {
         CacheService service = getEntityCacheService();
         Entity entity = event.getEntity();
         if (service != null) {
-            service.invalidate(entity, event.getUpdatesRecord());
+            service.invalidate(entity, event.getUpdatesDocument());
         }
     }
 

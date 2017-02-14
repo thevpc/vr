@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+
+<h:head>
+</h:head>
+
+<h:body>
+    <!--@elvariable id="documentsCtrl" type="net.vpc.app.vainruling.core.web.fs.files.DocumentsCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <ui:composition template="#{vr.themePath}/templates/dialog-template.xhtml">
+        <ui:define name="dialog-title">
+            <h:outputText value="Droits d acces"/> </ui:define>
+        <ui:define name="dialog-body">
+
+
+            <h:form id="listForm">
+
+                <div class="box box-danger">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Securité</h3>
+                        <h3 class="box-sub-title">#{documentsCtrl.model.current.file.path}</h3>
+                        <div class="box-body">
+                            <div class="form-group">
+                                    <div >
+                                        <p:outputLabel value="Proprietaires"/>
+                                        <p:inputText value="#{documentsCtrl.model.current.aclOwner}" styleClass="form-control"/>
+                                    </div>
+                                    <div >
+                                        <p:outputLabel value="Supprimer ce fichier/repertoire"/>
+                                        <p:inputText value="#{documentsCtrl.model.current.aclRemove}" styleClass="form-control"/>
+                                    </div>
+                                    <div >
+                                        <p:outputLabel value="Creer des sous repertoires"/>
+                                        <p:inputText value="#{documentsCtrl.model.current.aclDirCreateDirectory}" styleClass="form-control"/>
+                                    </div>
+                                    <ui:fragment rendered="#{documentsCtrl.model.current.file.directory}">
+                                        <div >
+                                            <p:outputLabel value="Ajouter des fichiers"/>
+                                            <p:inputText value="#{documentsCtrl.model.current.aclDirCreateFile}" styleClass="form-control"/>
+                                        </div>
+                                        <div >
+                                            <p:outputLabel value="Supprimer des sous repertoires"/>
+                                            <p:inputText value="#{documentsCtrl.model.current.aclDirRemoveDirectory}" styleClass="form-control"/>
+                                        </div>
+                                        <div >
+                                            <p:outputLabel value="Supprimer des fichiers"/>
+                                            <p:inputText value="#{documentsCtrl.model.current.aclDirRemoveFile}" styleClass="form-control"/>
+                                        </div>
+                                        <div >
+                                            <p:outputLabel value="Lister le contenu"/>
+                                            <p:inputText value="#{documentsCtrl.model.current.aclDirList}" styleClass="form-control"/>
+                                        </div>
+                                    </ui:fragment>
+                                    <div >
+                                        <p:outputLabel
+                                                value="#{documentsCtrl.model.current.file.directory ?'Lire Contenu Fichiers':'Lire Contenu Fichier'}"/>
+                                        <p:inputText value="#{documentsCtrl.model.current.aclReadFile}" styleClass="form-control"/>
+                                    </div>
+                                    <div >
+                                        <p:outputLabel
+                                                value="#{documentsCtrl.model.current.file.directory ?'Modifier Contenu Fichiers':'Modifier Contenu Fichier'}"/>
+                                        <p:inputText value="#{documentsCtrl.model.current.aclWriteFile}" styleClass="form-control"/>
+                                    </div>
+                                    <ui:fragment rendered="#{not documentsCtrl.model.current.file.directory}">
+                                        <div >
+                                            <p:outputLabel value="Lister le contenu"/>
+                                            <p:inputText value="#{documentsCtrl.model.current.aclDirList}" styleClass="form-control"/>
+                                        </div>
+                                    </ui:fragment>
+
+                            </div>
+                        </div>
+                        <div class="box-footer"
+                             >
+                            <p:commandButton styleClass="bnt btn-lg btn-default" value="Fermer" style="margin-right: 10px;"
+                                             action="#{documentsCtrl.fireEventExtraDialogClosed}"
+                            />
+                            <p:commandButton styleClass="bnt btn-lg btn-primary" value="Enregistrer"
+                                             action="#{documentsCtrl.onSaveSecurity}"
+                            />
+                        </div>
+                    </div>
+
+                </div>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</h:body>
+
+</html>

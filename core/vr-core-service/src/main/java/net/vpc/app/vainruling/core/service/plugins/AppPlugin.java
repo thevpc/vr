@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Service
 @UpaAware
-@Scope(value = "singleton")
+@Scope(value = "singleton") //@Singleton
 public @interface AppPlugin {
     String[] dependsOn() default {};
     String description() default "";

@@ -23,7 +23,7 @@ import java.sql.Timestamp;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "name")
-@Path("Education/Internship")
+@Path("Education/Projects/Internships")
 @Properties(
         {
                 @Property(name = "ui.auto-filter.period", value = "{expr='board.period',order=1}"),

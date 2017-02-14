@@ -55,7 +55,7 @@ public class KeyTypePropertyViewValuesProvider implements PropertyViewValuesProv
         return viewContext.getCacheItem("EntityPropertyViewValuesProvider." + me.getName() + ":" + constraints, new Action<List<NamedId>>() {
             @Override
             public List<NamedId> run() {
-                return core.findAllNamedIds(mtype.getEntity(), constraints, objCtrl.getModel().getCurrentRecord());
+                return core.findAllNamedIds(mtype.getEntity(), constraints, objCtrl.getModel().getCurrentDocument());
             }
         });
     }

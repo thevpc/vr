@@ -8,7 +8,7 @@ import net.vpc.upa.config.*;
  * Created by vpc on 9/19/16.
  */
 @Entity
-@Path("Education/Internship")
+@Path("Education/Projects/Apbl")
 @Properties(
         {
                 @Property(name = "ui.auto-filter.department", value = "{expr='student.department',order=1}"),
@@ -27,6 +27,15 @@ public class ApblTeamMember {
     private AcademicStudent student;
     @Summary
     private ApblTeam team;
+    private String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public int getId() {
         return id;

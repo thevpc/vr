@@ -52,7 +52,7 @@ public class TeacherPlanningCtrl extends AbstractPlanningCtrl {
         String p = "";//getModel().getSelectedPeriod();
         if (StringUtils.isEmpty(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
-            AppConfig appConfig = core.findAppConfig();
+            AppConfig appConfig = core.getCurrentConfig();
             if(appConfig!=null) {
                 AppPeriod mainPeriod = appConfig.getMainPeriod();
                 if(mainPeriod!=null) {

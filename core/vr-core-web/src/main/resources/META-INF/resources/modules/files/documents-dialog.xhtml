@@ -17,13 +17,62 @@ and open the template in the editor.
 
 <h:body>
 
+    <!--@elvariable id="documentsDialogCtrl" type="net.vpc.app.vainruling.core.web.fs.files.DocumentsDialogCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
     <ui:composition template="#{vr.themePath}/templates/dialog-template.xhtml">
         <ui:define name="dialog-title">
             <h:outputText value="#{documentsDialogCtrl.model.title}"/> </ui:define>
         <ui:define name="dialog-body">
 
 
-            <h:form id="listForm">
+            <h:form id="listForm" enctype="multipart/form-data" style="margin-top: 10px;">
+                <div style="margin-bottom: 10px;">
+                    <p:commandButton rendered="#{documentsDialogCtrl.isEnabledButton('Refresh')}"
+                                     title="Actualiser" icon="fa fa-refresh"
+                                     styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn btn-default" ajax="true"
+                                     actionListener="#{documentsDialogCtrl.onRefresh}" update=":listForm"/>
+                    <p:commandButton rendered="#{documentsDialogCtrl.isEnabledButton('Save')}"
+                                     title="Enregister" icon="fa fa-save"
+                                     styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn btn-primary" ajax="true"
+                                     actionListener="#{documentsDialogCtrl.onSave}" update=":listForm"/>
+                    <p:commandButton rendered="#{documentsDialogCtrl.isEnabledButton('NewFolder')}"
+                                     title="Nouveau Répertoire" icon="fa fa-folder-o"
+                                     styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn-primary" ajax="true"
+                                     actionListener="#{documentsDialogCtrl.onNewFolder}" update=":listForm"/>
+                    <p:commandButton rendered="#{documentsDialogCtrl.isEnabledButton('Upload')}"
+                                     title="Téléverser" icon="fa fa-cloud-upload"
+                                     styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn-success" ajax="true"
+                                     actionListener="#{documentsDialogCtrl.onUpload}" update=":listForm"/>
+                    <p:commandButton rendered="#{documentsDialogCtrl.isEnabledButton('Cancel')}"
+                                     title="Fermer" icon="fa fa-arrow-left"
+                                     styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn-default" ajax="true"
+                                     actionListener="#{documentsDialogCtrl.onCancel}" update=":listForm"/>
+
+                    <!--<p:commandButton rendered="#{documentsDialogCtrl.isEnabledButton('Security')}"-->
+                                     <!--title="Sucurite" icon="fa fa-users"-->
+                                     <!--styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn-default" ajax="true"-->
+                                     <!--actionListener="# {documentsDialogCtrl.onShowSecurityDialog}" update=":listForm"/>-->
+
+                    <p:fileUpload rendered="#{documentsDialogCtrl.uploadFileMode}" multiple="true"
+                                  fileUploadListener="#{documentsDialogCtrl.handleNewFile}"
+                                  dragDropSupport="true"
+                                  label="ajouter fichiers"
+                                  mode="advanced"
+                                  auto="true"
+                                  skinSimple="true"
+                                  uploadLabel="Téléverser"
+                                  cancelLabel="Annuler"
+                                  update=":listForm"
+                                  style="margin-top: 5px;"
+                    />
+                </div>
+                <p:panel id="newFilePanel"
+                         rendered="#{documentsDialogCtrl.newFolderMode}"
+                         styleClass="vr-panel"
+                         style="margin-bottom: 10px;">
+                    <p:outputLabel value="Intitulé"/>
+                    <p:inputText value="#{documentsDialogCtrl.model.newFolderName}" styleClass="form-control"/>
+                </p:panel>
                 <div class="row">
                     <p:dataTable var="i" value="#{documentsDialogCtrl.model.files}"
                                  class="table table-bordered table-hover"

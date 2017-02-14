@@ -35,7 +35,7 @@
 //        css = "fa-table",
 //        title = "Equipes APP",
 //        url = "modules/academic/pbl/teams",
-//        menu = "/Education/Internship",
+//        menu = "/Education/PRojects/Internships",
 //        securityKey = "Custom.Education.Apbl.Teams"
 //)
 //public class AcademicAppTeamsCtrl {

@@ -19,7 +19,6 @@ public class TeacherPeriodStat extends TeacherBaseStat {
     private AcademicTeacherPeriod teacherPeriod;
     private AcademicTeacherSemestrialLoad[] semestrialLoad=new AcademicTeacherSemestrialLoad[0];
     private CourseAssignmentFilter courseAssignmentFilter;
-    private boolean includeIntents;
     private TeacherSemesterStat[] semesters=new TeacherSemesterStat[0];
     private int confirmedTeacherAssignmentCount = 0;
     private LoadValue confirmedTeacherAssignment = new LoadValue();
@@ -62,14 +61,6 @@ public class TeacherPeriodStat extends TeacherBaseStat {
 
     public void setTeacherPeriod(AcademicTeacherPeriod teacherPeriod) {
         this.teacherPeriod = teacherPeriod;
-    }
-
-    public boolean isIncludeIntents() {
-        return includeIntents;
-    }
-
-    public void setIncludeIntents(boolean includeIntents) {
-        this.includeIntents = includeIntents;
     }
 
     public int getConfirmedTeacherAssignmentCount() {

@@ -96,12 +96,12 @@ public class GenerateLoadDialogCtrl {
 
         getModel().getPeriodItems().clear();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        AppPeriod curr = core.findAppConfig().getMainPeriod();
+        AppPeriod curr = core.getCurrentPeriod();
         for (AppPeriod period : core.findNavigatablePeriods()) {
             SelectItem item = new SelectItem(String.valueOf(period.getId()), period.getName());
-            if (!period.isReadOnly()) {
+            //if (!period.isReadOnly()) {
                 getModel().getPeriodItems().add(item);
-            }
+            //}
         }
         getModel().setPeriod(String.valueOf(curr.getId()));
 
@@ -116,7 +116,7 @@ public class GenerateLoadDialogCtrl {
         String p = getModel().getPeriod();
         if (StringUtils.isEmpty(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
-            AppConfig a = core.findAppConfig();
+            AppConfig a = core.getCurrentConfig();
             if(a==null || a.getMainPeriod()==null){
                 return -1;
             }

@@ -78,10 +78,10 @@ public class ArticlesCtrl implements CmsTextService {
             public void run() {
                 PersistenceUnit pu = UPA.getPersistenceUnit();
                 Entity entity = pu.getEntity(ArticlesItem.class);
-                Record record = entity.createRecord();
-                record.setObject("visitCount", new UserExpression("visitCount+1"));
+                Document document = entity.createDocument();
+                document.setObject("visitCount", new UserExpression("visitCount+1"));
                 entity.createUpdateQuery()
-                        .setValues(record)
+                        .setValues(document)
                         .byId(articleId)
                         .execute();
             }

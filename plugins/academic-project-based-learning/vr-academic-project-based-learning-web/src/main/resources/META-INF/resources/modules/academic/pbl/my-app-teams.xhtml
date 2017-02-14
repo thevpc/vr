@@ -62,7 +62,9 @@ and open the template in the editor.
                     <div class="table-responsive">
                         <p:tabView>
                             <p:tab title="Avancements">
-                                <p:dataTable var="e" value="#{academicAppMyTeamsCtrl.model.progressionLogs}">
+                                <p:dataTable var="e" value="#{academicAppMyTeamsCtrl.model.progressionLogs}"
+                                             emptyMessage="Aucune progression"
+                                >
                                     <p:column headerText="Date">
                                         <p:outputLabel value="#{vr.date(e.progressionDate)}"/>
                                     </p:column>
@@ -76,7 +78,9 @@ and open the template in the editor.
                                 </p:dataTable>
                             </p:tab>
                             <p:tab title="Séances de suivi">
-                                <p:dataTable var="e" value="#{academicAppMyTeamsCtrl.model.coachingLogs}">
+                                <p:dataTable var="e" value="#{academicAppMyTeamsCtrl.model.coachingLogs}"
+                                             emptyMessage="Aucun suivi"
+                                >
                                     <p:column headerText="Date">
                                         <p:outputLabel value="#{vr.date(e.appointmentDate)}"/>
                                     </p:column>

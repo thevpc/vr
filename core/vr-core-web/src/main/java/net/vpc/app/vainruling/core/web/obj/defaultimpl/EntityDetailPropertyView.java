@@ -71,7 +71,7 @@ public class EntityDetailPropertyView extends PropertyView {
         }
         ObjCtrl ctrl = VrApp.getBean(ObjCtrl.class);
         String idExpr = "o.`" + f.getName() + "`.`" + relation.getTargetEntity().getPrimaryFields().get(0).getName() + "`";
-        Object idVal = getRelationship().getTargetEntity().getBuilder().recordToId(ctrl.getModel().getCurrentRecord());
+        Object idVal = getRelationship().getTargetEntity().getBuilder().documentToId(ctrl.getModel().getCurrentDocument());
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("idval", idVal);
 
@@ -85,7 +85,7 @@ public class EntityDetailPropertyView extends PropertyView {
 
     public String buildActionCommand() {
         ObjCtrl ctrl = VrApp.getBean(ObjCtrl.class);
-        Object idVal = getRelationship().getTargetEntity().getBuilder().recordToId(ctrl.getModel().getCurrentRecord());
+        Object idVal = getRelationship().getTargetEntity().getBuilder().documentToId(ctrl.getModel().getCurrentDocument());
         if (idVal == null) {
             idVal = "null";
         } else if (idVal instanceof Number) {

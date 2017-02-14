@@ -34,7 +34,7 @@ import java.util.*;
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Stats Stages",
-        menu = "/Education/Internship",
+        menu = "/Education/Projects/Internships",
         securityKey = "Custom.Education.InternshipBoardsStat",
         url = "modules/academic/internship/internship-boards-stats"
 )
@@ -211,7 +211,7 @@ public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
                 Map<String, Number> circle2 = new LinkedHashMap<String, Number>();
 
                 CorePlugin cp = VrApp.getBean(CorePlugin.class);
-                AppCompany currentCompany = cp.findAppConfig().getMainCompany();
+                AppCompany currentCompany = cp.getCurrentConfig().getMainCompany();
                 MyInternshipBoardsCtrl.LocationInfo currentLocation = resolveLocation(currentCompany);
                 String id_company = currentLocation.companyName;
                 String id_governorate = currentLocation.governorateName + " Sauf " + currentLocation.companyName;

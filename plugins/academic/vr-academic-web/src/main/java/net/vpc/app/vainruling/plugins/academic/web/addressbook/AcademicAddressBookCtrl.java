@@ -7,8 +7,6 @@ package net.vpc.app.vainruling.plugins.academic.web.addressbook;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppContact;
-import net.vpc.app.vainruling.core.service.model.AppGender;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
@@ -21,9 +19,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStud
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherCV;
-import net.vpc.app.vainruling.plugins.academic.web.AcademicCtrlUtils;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.vfs.VFile;
 import net.vpc.upa.filters.ObjectFilter;
 
 import java.util.ArrayList;
@@ -128,7 +124,7 @@ public class AcademicAddressBookCtrl {
             {
                 if (qt.equals("teachers")) {
                     CorePlugin core = VrApp.getBean(CorePlugin.class);
-                    AppPeriod mainPeriod = core.findAppConfig().getMainPeriod();
+                    AppPeriod mainPeriod = core.getCurrentPeriod();
                     AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
 
                     for (AcademicTeacher t : ap.findEnabledTeachers(mainPeriod.getId())) {

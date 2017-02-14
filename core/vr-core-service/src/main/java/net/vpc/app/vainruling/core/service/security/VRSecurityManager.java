@@ -56,7 +56,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
 //                || pu.createQuery("Select u from AppUserProfileBinding u where u.user.login=:login and u.profile.name=:profile")
 //                .setParameter("login", s)
 //                .setParameter("profile", CorePlugin.PROFILE_ADMIN)
-//                .getRecordList().size() > 0;
+//                .getDocumentList().size() > 0;
     }
 
     public boolean isAllowedKey(Entity e, String key) throws UPAException {

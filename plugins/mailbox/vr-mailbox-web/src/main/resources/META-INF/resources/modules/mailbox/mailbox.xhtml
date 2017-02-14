@@ -58,7 +58,8 @@ and open the template in the editor.
                                         </p:commandLink>
                                     </li>
                                     <li class="#{(mailboxCtrl.model.folder.toString() eq 'CURRENT' and mailboxCtrl.model.sent) ? 'active':''}">
-                                        <p:commandLink actionListener="#{mailboxCtrl.onSelectOutboxFolder}" ajax="false">
+                                        <p:commandLink actionListener="#{mailboxCtrl.onSelectOutboxFolder}"
+                                                       ajax="false">
                                             <i class="fa fa-envelope-o"></i> Envoi
                                             <ui:fragment rendered="#{mailboxCtrl.model.countOutbox gt 0}">
                                                 <span class="label label-success pull-right">#{mailboxCtrl.model.countOutbox}</span>
@@ -87,7 +88,7 @@ and open the template in the editor.
                             </div>
                             <!-- /.box-body -->
                         </div>
-                        <!-- /. box -->
+                        <!--
                         <div class="box box-solid">
                             <div class="box-header with-border">
                                 <h3 class="box-title">Labels</h3>
@@ -105,14 +106,14 @@ and open the template in the editor.
                                     <li><a href="#"><i class="fa fa-circle-o text-light-blue"></i> Social</a></li>
                                 </ul>
                             </div>
-                            <!-- /.box-body -->
                         </div>
+                            -->
                         <!-- /.box -->
                     </div>
                     <!-- /.col -->
                     <div class="col-md-9">
-                            <ui:fragment rendered="#{mailboxCtrl.model.mode.toString() eq 'LIST'}">
-                                <div class="box box-primary">
+                        <ui:fragment rendered="#{mailboxCtrl.model.mode.toString() eq 'LIST'}">
+                            <div class="box box-primary">
 
                                 <div class="box-header with-border">
                                     <h3 class="box-title">#{mailboxCtrl.model.title}</h3>
@@ -192,17 +193,22 @@ and open the template in the editor.
                                                         class="fa #{i.value.read ?'fa-eye text-gray':'fa-eye-slash text-green'}  vr-mailbox-star-icon"
                                                         title="#{i.value.read ?'déjà lu':'non lu'}"
                                                 ></i></p:commandLink>
-                                                <p:commandLink ajax="false" actionListener="#{mailboxCtrl.onSelect(i.value)}" update=":mainForm :pageTitleForm">
+                                                <p:commandLink ajax="false"
+                                                               actionListener="#{mailboxCtrl.onSelect(i.value)}"
+                                                               update=":mainForm :pageTitleForm">
 
                                                 <span class="pull-right-container">
                                                     <small class="label pull-right vr-mailbox-label-emblem #{vr.hashToArr(i.value.category,'bg-red','bg-yellow','bg-aqua','bg-blue','bg-light-blue','bg-green','bg-navy','bg-teal','bg-olive','bg-lime','bg-orange','bg-fuchsi','bg-purple','bg-maroon','bg-black')}">#{vr.strcut(i.value.category, 10)}</small>
                                                 </span>
-                                                <p:outputLabel value="#{vr.strcat(mailboxCtrl.model.sent ?'A: ':'De: ',i.value.userFullName)}"
-                                                               styleClass="vr-mailbox-name-label"/>
+                                                    <p:outputLabel
+                                                            value="#{vr.strcat(mailboxCtrl.model.sent ?'A: ':'De: ',i.value.userFullName)}"
+                                                            styleClass="vr-mailbox-name-label"/>
                                                 </p:commandLink>
                                             </p:column>
                                             <p:column headerText="" styleClass="vr-mailbox-subject">
-                                                <p:commandLink ajax="false" actionListener="#{mailboxCtrl.onSelect(i.value)}" update=":mainForm :pageTitleForm">
+                                                <p:commandLink ajax="false"
+                                                               actionListener="#{mailboxCtrl.onSelect(i.value)}"
+                                                               update=":mainForm :pageTitleForm">
                                                     <p:outputLabel
                                                             styleClass="#{i.value.read ?'vr-mailbox-read':'vr-mailbox-unread'}"
                                                             value="#{vr.strexpand(vr.strcut(i.value.subject, 50),'.',3)}"/>
@@ -225,11 +231,13 @@ and open the template in the editor.
                                                 </ui:fragment>
                                             </p:column>
                                             <p:column headerText="" styleClass="vr-mailbox-date">
-                                                <p:commandLink ajax="false" actionListener="#{mailboxCtrl.onSelect(i.value)}" update=":mainForm :pageTitleForm">
+                                                <p:commandLink ajax="false"
+                                                               actionListener="#{mailboxCtrl.onSelect(i.value)}"
+                                                               update=":mainForm :pageTitleForm">
 
-                                                <p:outputLabel value="#{i.value.sendTime}">
-                                                    <f:converter converterId="RelativeDateConverter"/>
-                                                </p:outputLabel>
+                                                    <p:outputLabel value="#{i.value.sendTime}">
+                                                        <f:converter converterId="RelativeDateConverter"/>
+                                                    </p:outputLabel>
                                                 </p:commandLink>
                                             </p:column>
                                             <f:facet name="footer">
@@ -270,12 +278,12 @@ and open the template in the editor.
                                         <!-- /.pull-right -->
                                     </div>
                                 </div>
-                                </div>
-                            </ui:fragment>
+                            </div>
+                        </ui:fragment>
 
 
-                            <ui:fragment rendered="#{mailboxCtrl.model.mode.toString() eq 'UPDATE'}">
-                                <div class="box box-primary">
+                        <ui:fragment rendered="#{mailboxCtrl.model.mode.toString() eq 'UPDATE'}">
+                            <div class="box box-primary">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Lire Mail</h3>
 
@@ -314,9 +322,10 @@ and open the template in the editor.
                                     </div>
                                     <!-- /.mailbox-controls -->
                                     <div class="mailbox-read-message">
-                                        <p:outputLabel style="font-style: normal;"
-                                                       value="#{vr.replaceCustomURLs(mailboxCtrl.model.current.content)}"
-                                                       escape="false"/>
+                                        <p:outputLabel
+                                                style="font-style: normal;#{mailboxCtrl.model.current.richText ?'':'white-space: pre-wrap'}"
+                                                value="#{mailboxCtrl.model.current.richText ?  vr.replaceCustomURLs(mailboxCtrl.model.current.content) :  mailboxCtrl.model.current.content}"
+                                                escape="#{not mailboxCtrl.model.current.richText}"/>
                                     </div>
                                     <!-- /.mailbox-read-message -->
                                 </div>
@@ -371,9 +380,9 @@ and open the template in the editor.
                                     </ul>
                                 -->
                                 </div>
-                                </div>
-                                <ui:repeat value="#{mailboxCtrl.model.threadList}" var="tm">
-                                    <div class="box box-default">
+                            </div>
+                            <ui:repeat value="#{mailboxCtrl.model.threadList}" var="tm">
+                                <div class="box box-default">
 
                                     <div class="box-header with-border">
                                         <h3 class="box-title">#{tm.subject}</h3>
@@ -386,9 +395,11 @@ and open the template in the editor.
                                             </h5>
                                         </div>
                                         <div class="mailbox-read-message">
-                                            <p:outputLabel style="font-style: normal;"
-                                                           value="#{vr.replaceCustomURLs(tm.content)}"
-                                                           escape="false"/>
+                                            <p:outputLabel
+                                                    style="font-style: normal;#{tm.richText ?'':'white-space: pre-wrap'}"
+                                                    value="#{tm.richText ?  vr.replaceCustomURLs(tm.content) :  tm.content}"
+                                                    escape="#{not tm.richText}"/>
+
                                         </div>
                                     </div>
                                     <!-- /.box-body -->
@@ -442,21 +453,22 @@ and open the template in the editor.
                                         </ul>
                                     -->
                                     </div>
-                                    </div>
-                                </ui:repeat>
-                                <!-- /.box-footer -->
-                            </ui:fragment>
+                                </div>
+                            </ui:repeat>
+                            <!-- /.box-footer -->
+                        </ui:fragment>
 
-                            <ui:fragment rendered="#{mailboxCtrl.model.mode.toString() eq 'NEW'}">
-                                <div class="box box-primary">
+                        <ui:fragment rendered="#{mailboxCtrl.model.mode.toString() eq 'NEW'}">
+                            <div class="box box-primary">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Nouveau Message</h3>
                                 </div>
                                 <!-- /.box-header -->
                                 <div class="box-body">
                                     <div class="form-group">
-                                        <p:autoComplete id="txtto" styleClass="vr-form-control vr-form-control-with-button60"
-                                                     placeholder="A:" value="#{mailboxCtrl.model.newItem.toProfiles}"
+                                        <p:autoComplete id="txtto"
+                                                        styleClass="vr-form-control vr-form-control-with-button60"
+                                                        placeholder="A:" value="#{mailboxCtrl.model.newItem.toProfiles}"
                                                         completeMethod="#{mailboxCtrl.completeProfileExpr}"
                                                         queryDelay="1000"
                                         >
@@ -479,7 +491,7 @@ and open the template in the editor.
                                     <div class="form-group">
                                         <p:autoComplete styleClass="vr-form-control" placeholder="Label:"
                                                         completeMethod="#{mailboxCtrl.completeCategoryExpr}"
-                                                     value="#{mailboxCtrl.model.newItem.category}"/>
+                                                        value="#{mailboxCtrl.model.newItem.category}"/>
                                     </div>
                                     <div class="form-group">
                                         <p:inputText styleClass="form-control" placeholder="Sujet:"
@@ -489,15 +501,15 @@ and open the template in the editor.
                                         <p:inputTextarea id="compose-textarea" styleClass="form-control"
                                                          value="#{mailboxCtrl.model.newItem.content}"/>
                                     </div>
-                                    <div class="form-group">
-                                        <p:fileUpload id="fileUpload" disabled="true"
-                                                      label="Attachements (Max. 15MB)"
-                                                      fileUploadListener="#{mailboxCtrl.onHandleProjectFileUpload}"
-                                                      mode="advanced"
-                                                      update=":mainForm" auto="true" sizeLimit="15000000"
-                                                      allowTypes="/(\.|\/)(pdf|zip|xls|xlsx|doc|docx|txt)$/"/>
-                                        <p class="help-block">Fichiers supportés : pdf,zip,xls,xlsx,doc,docx,txt</p>
-                                    </div>
+                                    <!--<div class="form-group">-->
+                                        <!--<p:fileUpload id="fileUpload" disabled="true"-->
+                                                      <!--label="Attachements (Max. 15MB)"-->
+                                                      <!--fileUploadListener="# {mailboxCtrl.onHandleProjectFileUpload}"-->
+                                                      <!--mode="advanced"-->
+                                                      <!--update=":mainForm" auto="true" sizeLimit="15000000"-->
+                                                      <!--allowTypes="/(\.|\/)(pdf|zip|xls|xlsx|doc|docx|txt)$/"/>-->
+                                        <!--<p class="help-block">Fichiers supportés : pdf,zip,xls,xlsx,doc,docx,txt</p>-->
+                                    <!--</div>-->
                                     <div class="form-group">
                                         <ui:repeat value="#{mailboxCtrl.model.newItemAttachments}" var="att">
                                             <div class="btn btn-default btn-file">
@@ -517,9 +529,9 @@ and open the template in the editor.
                                     <p:commandButton styleClass="btn btn-default" icon="fa fa-times" update=":mainForm"
                                                      actionListener="#{mailboxCtrl.onCancelCurrent}" value=" Annuler"/>
                                 </div>
-                                </div>
-                                <ui:repeat value="#{mailboxCtrl.model.threadList}" var="tm">
-                                    <div class="box box-default">
+                            </div>
+                            <ui:repeat value="#{mailboxCtrl.model.threadList}" var="tm">
+                                <div class="box box-default">
                                     <div class="box-header with-border">
                                         <h3 class="box-title">#{tm.subject}</h3>
                                     </div>
@@ -587,9 +599,9 @@ and open the template in the editor.
                                         </ul>
                                     -->
                                     </div>
-                                    </div>
-                                </ui:repeat>
-                            </ui:fragment>
+                                </div>
+                            </ui:repeat>
+                        </ui:fragment>
                         <!-- /. box -->
                     </div>
                     <!-- /.col -->

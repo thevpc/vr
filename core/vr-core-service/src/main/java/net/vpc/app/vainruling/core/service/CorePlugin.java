@@ -59,6 +59,8 @@ public class CorePlugin {
     public static final String PROFILE_ADMIN = "Admin";
     public static final String PROFILE_HEAD_OF_DEPARTMENT = "HeadOfDepartment";
     public static final String RIGHT_FILESYSTEM_WRITE = "Custom.FileSystem.Write";
+    public static final String RIGHT_FILESYSTEM_ASSIGN_RIGHTS = "Custom.FileSystem.AssignRights";
+    public static final String RIGHT_FILESYSTEM_SHARE_FOLDERS = "Custom.FileSystem.ShareForlders";
     public static final Set<String> ADMIN_ENTITIES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("Trace", "User", "UserProfile", "UserProfileBinding", "UserProfileRight")));
     public static String FOLDER_MY_DOCUMENTS = "Mes Documents";
     public static String FOLDER_ALL_DOCUMENTS = "Tous";
@@ -765,9 +767,9 @@ public class CorePlugin {
 //        if(value==null){
 //            PersistenceUnit pu = UPA.getPersistenceUnit();
 //            Map<String,Integer> ret=new HashMap<>();
-//            for (Record record : pu.createQuery("Select u.id id, u.login login from AppUser u")
-//                    .getRecordList()) {
-//                ret.put(record.getString("login"),record.getInt("id"));
+//            for (Document document : pu.createQuery("Select u.id id, u.login login from AppUser u")
+//                    .getDocumentList()) {
+//                ret.put(document.getString("login"),document.getInt("id"));
 //            }
 //            value=ret;
 //            setGlobalCache(cacheKey,value);
@@ -976,13 +978,6 @@ public class CorePlugin {
         mainConfig.setMainPeriod(new AppPeriod("2015-2016"));
         findOrCreate(mainConfig, "id");
 //        validateRightsDefinitions();
-        createRight("Custom.FileSystem.RootFileSystem", "Root FileSystem Access");
-        createRight("Custom.FileSystem.MyFileSystem", "My FileSystem Access");
-        createRight(RIGHT_FILESYSTEM_WRITE, "Enable Write Access for File System");
-
-
-        createRight("Custom.Article.SendExternalEmail", "Send External Email");
-        createRight("Custom.Article.SendInternalEmail", "Send Internal Email");
         ArticlesDisposition ad;
 
         for (int i = 1; i <= 7; i++) {
@@ -1030,6 +1025,16 @@ public class CorePlugin {
 
     @Start
     private void onStart() {
+        createRight("Custom.FileSystem.RootFileSystem", "Root FileSystem Access");
+        createRight("Custom.FileSystem.MyFileSystem", "My FileSystem Access");
+        createRight(RIGHT_FILESYSTEM_ASSIGN_RIGHTS, "Assign Access Rights for File System");
+        createRight(RIGHT_FILESYSTEM_SHARE_FOLDERS, "Share Folders in File System");
+        createRight(RIGHT_FILESYSTEM_WRITE, "Enable Write Access for File System");
+
+
+        createRight("Custom.Article.SendExternalEmail", "Send External Email");
+        createRight("Custom.Article.SendInternalEmail", "Send Internal Email");
+
         String home = System.getProperty("user.home");
         home = home.replace("\\", "/");
         String path = (String) getOrCreateAppPropertyValue("System.FileSystem", null,
@@ -1138,7 +1143,7 @@ public class CorePlugin {
     public <T> T findOrCreate(T o, String field) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(o.getClass());
-        Object value = e.getBuilder().objectToRecord(o, true).getObject(field);
+        Object value = e.getBuilder().objectToDocument(o, true).getObject(field);
         T t = pu.createQueryBuilder(o.getClass()).byExpression(new Equals(new Var(field), new Literal(value, e.getField(field).getDataType())))
                 .getFirstResultOrNull();
         if (t == null) {
@@ -1948,7 +1953,7 @@ public class CorePlugin {
         new SpringThread(r).start();
     }
 
-    public AppConfig findAppConfig() {
+    public AppConfig getCurrentConfig() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AppConfig c = pu.findById(AppConfig.class, 1);
         //should exist;
@@ -2117,10 +2122,15 @@ public class CorePlugin {
         }
     }
 
+    public AppPeriod getCurrentPeriod() {
+        AppConfig currentConfig = getCurrentConfig();
+        return currentConfig==null?null:currentConfig.getMainPeriod();
+    }
+
     public AppPeriod findPeriodOrMain(int id) {
         AppPeriod p = findPeriod(id);
         if (p == null) {
-            p = findAppConfig().getMainPeriod();
+            p = getCurrentPeriod();
         }
         return p;
     }
@@ -2467,7 +2477,11 @@ public class CorePlugin {
 
     public URL getPluginComponentURL(Class type, String path) {
         try {
-            return new URL("jar:" + type.getProtectionDomain().getCodeSource().getLocation().toString() + "!" + path);
+            String location = type.getProtectionDomain().getCodeSource().getLocation().toString();
+            if(location.endsWith("/")){
+                return new URL(location+path);
+            }
+            return new URL("jar:" + location + "!" + path);
         } catch (MalformedURLException e) {
             return null;
         }
@@ -2506,7 +2520,8 @@ public class CorePlugin {
                     //} else {
                     //bundle = getPluginBundle(bean);
                 }else{
-                    System.out.println("Why");
+                    bundle = getPluginBundle(bean);
+                    System.out.println("Unable to find bundle Instance for "+beanName+"... some thing is wrong...");
                 }
             }
             List<Plugin> plugins = new ArrayList<>(bundles.size());
@@ -2586,7 +2601,7 @@ public class CorePlugin {
                     getFileSystem().mkdirs(path);
                     VirtualFileACL v = getFileSystem().getACL(path);
                     if (!v.isReadOnly()) {
-                        v.chown(login);
+                        v.setOwner(login);
                     }
                     return null;
                 }
@@ -2623,7 +2638,7 @@ public class CorePlugin {
                     getFileSystem().mkdirs(path);
                     VirtualFileACL v = getFileSystem().getACL(path);
                     if (!v.isReadOnly()) {
-                        v.grantListDirectory(profile);
+                        v.setPermissionListDirectory(profile);
                     }
                     return null;
                 }
@@ -2645,7 +2660,7 @@ public class CorePlugin {
                 public Object run() {
                     getFileSystem().mkdirs(path);
 //                    VirtualFileACL v = getFileSystem().getACL(path);
-//                    v.chown(login);
+//                    v.setOwner(login);
                     return null;
                 }
 
@@ -2679,11 +2694,11 @@ public class CorePlugin {
                     mfs.mount("/" + e.getMountPoint(), fileSystem.subfs(e.getLinkPath()));
                 }
                 for (VrFSEntry e : t.getEntriesByType("Profile")) {
-                    if (isComplexProfileExpr(e.getFilterName())) {
+                    //if (isComplexProfileExpr(e.getFilterName())) {
                         if (userMatchesProfileFilter(u.getId(), e.getFilterName())) {
-                            mfs.mount("/" + e.getMountPoint(), fileSystem.subfs(e.getLinkPath()));
+                            mountSubFS(mfs, e);
                         }
-                    }
+                    //}
                 }
             } catch (IOException ex) {
                 log.log(Level.SEVERE, null, ex);
@@ -2691,6 +2706,25 @@ public class CorePlugin {
             return mfs;
         } else {
             return VFS.createEmptyFS();
+        }
+    }
+
+    private void mountSubFS(MountableFS mfs, VrFSEntry e) throws IOException {
+        String linkPath = e.getLinkPath();
+        if(linkPath.contains("*")){
+            VFile[] files=fileSystem.get("/").find(linkPath, new VFileFilter() {
+                @Override
+                public boolean accept(VFile pathname) {
+                    return pathname.isDirectory();
+                }
+            });
+            ListFS lfs= VFS.createListFS(e.getMountPoint());
+            for (VFile file : files) {
+                lfs.addOrRename(file.getName(),file,null);
+            }
+            mfs.mount("/" + e.getMountPoint(), lfs);
+        }else {
+            mfs.mount("/" + e.getMountPoint(), fileSystem.subfs(e.getLinkPath()));
         }
     }
 
@@ -2708,7 +2742,7 @@ public class CorePlugin {
                 public Object run() {
                     getFileSystem().mkdirs(path);
 //                    VrACL v = (VrACL) getFileSystem().getACL(path);
-//                    v.chown(login);
+//                    v.setOwner(login);
                     return null;
                 }
 
@@ -2722,7 +2756,7 @@ public class CorePlugin {
                 mfs = VFS.createMountableFS("profile:" + profileName);
                 mfs.mount("/", pfs);
                 for (VrFSEntry e : t.getEntries(profileName, "Profile")) {
-                    mfs.mount("/" + e.getMountPoint(), fileSystem.subfs(e.getLinkPath()));
+                    mountSubFS(mfs, e);
                 }
             } catch (IOException ex) {
                 log.log(Level.SEVERE, null, ex);
@@ -2816,7 +2850,7 @@ public class CorePlugin {
                     a.setProperty("downloads", String.valueOf(dd + 1));
                 }
 //                    VrACL v = (VrACL) getFileSystem().getACL(path);
-//                    v.chown(login);
+//                    v.setOwner(login);
                 return null;
             }
 
@@ -3367,8 +3401,8 @@ public class CorePlugin {
     public Object resolveId(String entityName, Object t) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
-        if (t instanceof Record) {
-            return entity.getBuilder().recordToId((Record) t);
+        if (t instanceof Document) {
+            return entity.getBuilder().documentToId((Document) t);
         }
         return entity.getBuilder().objectToId(t);
     }
@@ -3424,7 +3458,7 @@ public class CorePlugin {
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
-        Record t = pu.findRecordById(entityName, id);
+        Document t = pu.findDocumentById(entityName, id);
         if (t != null) {
             //check if already soft deleted
             Boolean b = (Boolean) entity.getField("deleted").getValue(t);
@@ -3459,7 +3493,7 @@ public class CorePlugin {
         if (mf == null) {
             return obj.toString();
         }
-        return String.valueOf(entity.getBuilder().objectToRecord(obj, true).getObject(mf.getName()));
+        return String.valueOf(entity.getBuilder().objectToDocument(obj, true).getObject(mf.getName()));
     }
 
     //    public boolean isEntityAction(String type, String action, Object object) {
@@ -3480,7 +3514,7 @@ public class CorePlugin {
 //            Object id = resolveId(object);
 //            Object t = pu.findById(type, id);
 //            if (t != null) {
-//                Record r = entity.getBuilder().objectToRecord(t, true);
+//                Document r = entity.getBuilder().objectToDocument(t, true);
 //                if (entity.containsField("archived")) {
 //                    r.setBoolean("archived", true);
 //                }
@@ -3500,7 +3534,7 @@ public class CorePlugin {
         Object id = resolveId(entityName, object);
         Object t = pu.findById(entityName, id);
         if (t != null) {
-            Record r = entity.getBuilder().objectToRecord(t, true);
+            Document r = entity.getBuilder().objectToDocument(t, true);
             if (entity.containsField("archived")) {
                 r.setBoolean("archived", true);
             }
@@ -3525,9 +3559,9 @@ public class CorePlugin {
         return pu.findById(entityName, id);
     }
 
-    public Record findRecord(String entityName, Object id) {
+    public Document findDocument(String entityName, Object id) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.findRecordById(entityName, id);
+        return pu.findDocumentById(entityName, id);
     }
 
     public boolean isArchivable(String entityName) {
@@ -3700,7 +3734,7 @@ public class CorePlugin {
         return list;
     }
 
-    public List<Record> findRecordsByFilter(String entityName, String criteria, ObjSearch objSearch,String textSearch,Map<String,Object> parameters) {
+    public List<Document> findDocumentsByFilter(String entityName, String criteria, ObjSearch objSearch, String textSearch, Map<String,Object> parameters) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         QueryBuilder q = pu
@@ -3730,7 +3764,7 @@ public class CorePlugin {
                 q.setParameter(pp.getKey(),pp.getValue());
             }
         }
-        List<Record> list = q.getRecordList();
+        List<Document> list = q.getDocumentList();
         if (objSearch != null) {
             list = objSearch.filterList(list, entityName);
         }
@@ -3756,6 +3790,40 @@ public class CorePlugin {
                 .byExpression(new And(new Var(field), new Literal(value, dt)))
                 .orderBy(entity.getListOrder())
                 .getResultList();
+    }
+
+    public void uploadFile(VFile baseFile,UploadedFileHandler event) throws IOException {
+        VFile newFile = baseFile.get(event.getFileName());
+        if (newFile.exists()) {
+            boolean doOverride = false;
+            //check if alreay selected
+            if(event.acceptOverride(newFile)){
+                doOverride = true;
+            }
+            if (!doOverride) {
+                throw new IOException(event.getFileName() + " already exists please select to force override.");
+            }
+        }
+        String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
+                + "-" + UserSession.getCurrentUser().getLogin();
+        CorePlugin fsp = VrApp.getBean(CorePlugin.class);
+        String p = fsp.getNativeFileSystemPath() + tempPath;
+        new File(p).mkdirs();
+        File f = new File(p, event.getFileName());
+        try {
+            event.write(f.getPath());
+            //do work here
+            int count = 1;//
+            if (count > 0) {
+                return ; //addInfoMessage(event.getFileName() + " successfully uploaded.");
+            } else {
+                //addWarnMessage(null, event.getFileName() + " is uploaded but nothing is updated.");
+            }
+        } finally {
+            //should not delete the file!
+            VirtualFileSystem nfs = VFS.createNativeFS();
+            nfs.get(f.getPath()).copyTo(newFile);
+        }
     }
 
 }

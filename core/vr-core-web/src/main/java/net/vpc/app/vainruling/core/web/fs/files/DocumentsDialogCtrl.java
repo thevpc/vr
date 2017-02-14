@@ -11,10 +11,15 @@ import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.web.util.FileUploadEventHandler;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
+import net.vpc.common.vfs.VFileType;
 import net.vpc.common.vfs.VirtualFileSystem;
+import net.vpc.upa.UPA;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.FileUploadEvent;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,6 +55,74 @@ public class DocumentsDialogCtrl {
 
     }
 
+    public void onSave() {
+        String n = getModel().getNewFolderName().trim();
+        VFile f2 = getModel().getCurrent().getFile().get(n);
+        try {
+            if (!f2.mkdirs()) {
+                FacesUtils.addErrorMessage("Directory " + f2.getPath() + " could not be created.");
+            }else{
+                getModel().setEditMode("");
+                onRefresh();
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            FacesUtils.addErrorMessage(f2.getPath() + " could not be created.");
+        }
+    }
+
+    public void onNewFolder() {
+        getModel().setNewFolderName("NewFolder");
+        getModel().setEditMode("NewFolder");
+        onRefresh();
+    }
+
+    public void onUpload() {
+        getModel().setEditMode("Upload");
+    }
+
+    public void onCancel() {
+        getModel().setEditMode("");
+    }
+
+    public boolean isEnabledButton(String buttonId) {
+        if ("Refresh".equals(buttonId)) {
+            return isDefaultMode();
+        }
+        if ("NewFolder".equals(buttonId)) {
+            return isDefaultMode()
+                    && UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePlugin.RIGHT_FILESYSTEM_WRITE)
+                    && getModel().getCurrent().getFile().isAllowedCreateChild(VFileType.DIRECTORY, null);
+        }
+        if ("Upload".equals(buttonId)) {
+            VFile file = getModel().getCurrent().getFile();
+            return isDefaultMode()
+                    && UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePlugin.RIGHT_FILESYSTEM_WRITE)
+                    && (file.isAllowedCreateChild(VFileType.FILE, null)
+                    || file.isAllowedUpdateChild(VFileType.FILE, null));
+        }
+        if ("Remove".equals(buttonId)) {
+            return isDefaultMode()
+                    && UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePlugin.RIGHT_FILESYSTEM_WRITE)
+                    && getModel().getCurrent().getFile().isAllowedRemoveChild(null, null);
+        }
+        if ("Save".equals(buttonId)) {
+            return isNewFolderMode();
+        }
+        if ("Cancel".equals(buttonId)) {
+            return !isDefaultMode();
+        }
+//        if ("SelectFile".equals(buttonId)) {
+//            return getModel().getArea().isEmpty();
+//        }
+        if ("Security".equals(buttonId)) {
+            return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePlugin.RIGHT_FILESYSTEM_ASSIGN_RIGHTS)
+                    &&
+                    !getModel().getCurrent().getFile().getACL().isReadOnly();
+        }
+        return UserSession.get().isAdmin();
+    }
+
     public void fireEventExtraDialogClosed() {
         StringBuilder sb = new StringBuilder();
         for (VFileInfo file : getModel().getFiles()) {
@@ -67,6 +140,7 @@ public class DocumentsDialogCtrl {
     }
 
     public void initContent(Config cmd) {
+        getModel().setEditMode("");
         getModel().setConfig(cmd);
         CorePlugin fsp = VrApp.getBean(CorePlugin.class);
         Config c = getModel().getConfig();
@@ -100,7 +174,7 @@ public class DocumentsDialogCtrl {
             fs = fsp.getUserFileSystem(login);
         }
         getModel().setFileSystem(fs);
-        getModel().setCurrent(DocumentsUtils.createFileInfo("/", getModel().getFileSystem().get("/")));
+        getModel().setCurrent(DocumentsUtils.createFileInfo("/", VFileKind.ROOT, getModel().getFileSystem().get("/")));
         String initialPath = c.getPath();
         if (!(StringUtils.isEmpty(initialPath))) {
             VFile pp = null;//
@@ -131,12 +205,12 @@ public class DocumentsDialogCtrl {
     }
 
     public void selectDirectory(VFile file) {
-        getModel().setCurrent(DocumentsUtils.createFileInfo(file.getName(), file));
+        getModel().setCurrent(DocumentsUtils.createFileInfo(file.getName(), VFileKind.ORDINARY, file));
         onRefresh();
     }
 
     public void selectFile(VFile file) {
-        getModel().setCurrent(DocumentsUtils.createFileInfo(file.getName(), file));
+        getModel().setCurrent(DocumentsUtils.createFileInfo(file));
         RequestContext.getCurrentInstance().closeDialog(
                 new DialogResult(getModel().getCurrent().getFile().getBaseFile("vrfs").getPath(), getModel().getConfig().getUserInfo())
         );
@@ -145,8 +219,8 @@ public class DocumentsDialogCtrl {
     public void onRemove() {
         try {
             for (VFileInfo file : getModel().getFiles()) {
-                if (file.isSelected()) {
-                    file.file.deleteAll();
+                if (file.getKind() == VFileKind.ORDINARY && file.isSelected()) {
+                    file.getFile().deleteAll();
                 }
             }
         } catch (IOException ex) {
@@ -159,6 +233,45 @@ public class DocumentsDialogCtrl {
         getModel().setFiles(DocumentsUtils.loadFiles(getModel().getCurrent().getFile()));
     }
 
+
+    public void handleNewFile(FileUploadEvent event) {
+        try {
+            try {
+                CorePlugin.get().uploadFile(getModel().getCurrent().getFile(), new FileUploadEventHandler(event) {
+
+                    @Override
+                    public boolean acceptOverride(VFile file) {
+//check if alreay selected
+                        for (VFileInfo ex : getModel().getFiles()) {
+                            if (ex.getFile().getName().equals(file.getName()) && ex.isSelected()) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                });
+                FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
+            } catch (Exception ex) {
+                Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                FacesUtils.addErrorMessage(event.getFile().getFileName() + " uploading failed.", ex.getMessage());
+            }
+        } finally {
+            getModel().setEditMode("");
+        }
+        onRefresh();
+    }
+
+    public boolean isDefaultMode() {
+        return "".equals(getModel().getEditMode());
+    }
+
+    public boolean isUploadFileMode() {
+        return "Upload".equals(getModel().getEditMode());
+    }
+
+    public boolean isNewFolderMode() {
+        return "NewFolder".equals(getModel().getEditMode());
+    }
 
     public Model getModel() {
         return model;
@@ -216,10 +329,47 @@ public class DocumentsDialogCtrl {
 
     public static class Model {
 
-        String title;
-        VFileInfo current;
-        VirtualFileSystem fileSystem;
-        Config config;
+        private boolean uploadAllowed;
+        private boolean createFolderAllowed;
+        private String editMode="";
+        private String newFolderName;
+        private String title;
+        private VFileInfo current;
+        private VirtualFileSystem fileSystem;
+        private Config config;
+
+        public boolean isUploadAllowed() {
+            return uploadAllowed;
+        }
+
+        public void setUploadAllowed(boolean uploadAllowed) {
+            this.uploadAllowed = uploadAllowed;
+        }
+
+        public boolean isCreateFolderAllowed() {
+            return createFolderAllowed;
+        }
+
+        public void setCreateFolderAllowed(boolean createFolderAllowed) {
+            this.createFolderAllowed = createFolderAllowed;
+        }
+
+        public String getEditMode() {
+            return editMode;
+        }
+
+        public void setEditMode(String editMode) {
+            this.editMode = editMode;
+        }
+
+        public String getNewFolderName() {
+            return newFolderName;
+        }
+
+        public void setNewFolderName(String newFolderName) {
+            this.newFolderName = newFolderName;
+        }
+
         private List<VFileInfo> files = new ArrayList<>();
 
         public VFileInfo getCurrent() {

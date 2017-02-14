@@ -37,6 +37,16 @@ public class Message {
         return received;
     }
 
+    public boolean isRichText(){
+//        if(true){
+//            return false;
+//        }
+        if (received) {
+            return ((MailboxReceived) msg).getOutboxMessage().isRichText();
+        }
+        return ((MailboxSent) msg).isRichText();
+    }
+
     public boolean isOutbox(){
         return !received;
     }

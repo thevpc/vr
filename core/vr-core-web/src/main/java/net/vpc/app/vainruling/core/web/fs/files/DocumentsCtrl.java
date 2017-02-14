@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.I18n;
+import net.vpc.app.vainruling.core.service.util.UploadedFileHandler;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
@@ -18,13 +19,15 @@ import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDefFactory;
 import net.vpc.app.vainruling.core.web.menu.VRMenuLabel;
+import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.web.util.FileUploadEventHandler;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.vfs.VFS;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VFileType;
 import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.UPA;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -32,9 +35,7 @@ import org.primefaces.model.StreamedContent;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,8 +58,8 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
     @Override
     public List<VRMenuDef> createVRMenuDefList() {
         List<VRMenuDef> m = new ArrayList<>();
-        m.add(new VRMenuDef("Mes Documents", "/FileSystem", "documents", "{type:'me'}", "Custom.FileSystem.MyFileSystem", "",100,new VRMenuLabel[0]));
-        m.add(new VRMenuDef("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", "Custom.FileSystem.RootFileSystem", "",500,new VRMenuLabel[0]));
+        m.add(new VRMenuDef("Mes Documents", "/FileSystem", "documents", "{type:'me'}", "Custom.FileSystem.MyFileSystem", "", 100, new VRMenuLabel[0]));
+        m.add(new VRMenuDef("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", "Custom.FileSystem.RootFileSystem", "", 500, new VRMenuLabel[0]));
         return m;
     }
 
@@ -139,17 +140,17 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         onRefresh();
     }
 
-    public void updatePath(String path){
+    public void updatePath(String path) {
         if (StringUtils.isEmpty(path)) {
-            path="/";
+            path = "/";
         }
         VFile file = getModel().getFileSystem().get(path);
-        if(file.exists() && file.isDirectory()) {
-            getModel().setCurrent(DocumentsUtils.createFileInfo(path, file));
-        }else{
-            getModel().setCurrent(DocumentsUtils.createFileInfo("/", getModel().getFileSystem().get("/")));
+        if (file.exists() && file.isDirectory()) {
+            getModel().setCurrent(DocumentsUtils.createFileInfo(path, VFileKind.ORDINARY, file));
+        } else {
+            getModel().setCurrent(DocumentsUtils.createFileInfo("/", VFileKind.ROOT, getModel().getFileSystem().get("/")));
         }
-        UserSession.get().setLastVisitedPageInfo(getModel().getCurrent().file.getPath());
+        UserSession.get().setLastVisitedPageInfo(getModel().getCurrent().getFile().getPath());
         onRefresh();
     }
 
@@ -161,8 +162,8 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
     }
 
     public void updateCurrent(VFile file) {
-        getModel().setCurrent(DocumentsUtils.createFileInfo(file.getName(), file));
-        UserSession.get().setLastVisitedPageInfo(getModel().getCurrent().file.getPath());
+        getModel().setCurrent(DocumentsUtils.createFileInfo(file));
+        UserSession.get().setLastVisitedPageInfo(getModel().getCurrent().getFile().getPath());
         onRefresh();
     }
 
@@ -200,7 +201,17 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
             //nothing to do!
         } else {
             getModel().setArea("NewFolder");
-            getModel().setNewName("NouveauDossier");
+            int x = 1;
+            VFile file0 = getModel().getCurrent().getFile();
+            while (true) {
+                VFile vFile = file0.get("NouveauDossier" + (x == 1 ? "" : String.valueOf(x)));
+                if (!vFile.exists()) {
+                    file0 = vFile;
+                    break;
+                }
+                x++;
+            }
+            getModel().setNewName(file0.getName());
         }
     }
 
@@ -208,7 +219,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         try {
             for (VFileInfo file : getModel().getFiles()) {
                 if (file.isSelected()) {
-                    file.file.deleteAll();
+                    file.getFile().deleteAll();
                 }
             }
         } catch (IOException ex) {
@@ -242,23 +253,36 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         resetArea();
     }
 
+    public void onSaveSecurity() {
+        VFileInfo current = getModel().getCurrent();
+        VFile file = current.getFile();
+        if (!file.getACL().isReadOnly()) {
+            current.writeACL();
+        }
+        fireEventExtraDialogClosed();
+    }
+
     public void onSave() {
         if (!StringUtils.isEmpty(getModel().getArea())) {
             if ("NewFile".equals(getModel().getArea())) {
                 String n = getModel().getNewName().trim();
-                VFile f2 = getModel().getCurrent().file.get(n);
+                VFile f2 = getModel().getCurrent().getFile().get(n);
                 try {
                     f2.writeBytes(new byte[0]);
                 } catch (IOException ex) {
                     Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                    FacesUtils.addErrorMessage("Empty File " + f2.getPath() + " could not be created.");
                 }
             } else if ("NewFolder".equals(getModel().getArea())) {
                 String n = getModel().getNewName().trim();
-                VFile f2 = getModel().getCurrent().file.get(n);
+                VFile f2 = getModel().getCurrent().getFile().get(n);
                 try {
-                    f2.mkdirs();
+                    if (!f2.mkdirs()) {
+                        FacesUtils.addErrorMessage("Directory " + f2.getPath() + " could not be created.");
+                    }
                 } catch (Exception ex) {
                     Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                    FacesUtils.addErrorMessage(f2.getPath() + " could not be created.");
                 }
             }
         }
@@ -280,9 +304,11 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
             return getModel().getArea().isEmpty();
         }
         if ("NewFile".equals(buttonId)) {
-            return getModel().getArea().isEmpty()
-                    && UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePlugin.RIGHT_FILESYSTEM_WRITE)
-                    && getModel().getCurrent().getFile().isAllowedCreateChild(VFileType.FILE, null);
+            // I think this is useless, will be removed
+            return false;
+//            return getModel().getArea().isEmpty()
+//                    && UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePlugin.RIGHT_FILESYSTEM_WRITE)
+//                    && getModel().getCurrent().getFile().isAllowedCreateChild(VFileType.FILE, null);
         }
         if ("NewFolder".equals(buttonId)) {
             return getModel().getArea().isEmpty()
@@ -310,6 +336,11 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         if ("SelectFile".equals(buttonId)) {
             return getModel().getArea().isEmpty();
         }
+        if ("Security".equals(buttonId)) {
+            return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePlugin.RIGHT_FILESYSTEM_ASSIGN_RIGHTS)
+                    &&
+                    !getModel().getCurrent().getFile().getACL().isReadOnly();
+        }
         return UserSession.get().isAdmin();
     }
 
@@ -323,42 +354,22 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
 
     public void handleNewFile(FileUploadEvent event) {
         try {
+
             try {
-                VFile newFile = getModel().getCurrent().file.get(event.getFile().getFileName());
-                if (newFile.exists()) {
-                    boolean doOverride = false;
-                    //check if alreay selected
-                    for (VFileInfo ex : getModel().getFiles()) {
-                        if (ex.getFile().getName().equals(newFile.getName()) && ex.isSelected()) {
-                            doOverride = true;
-                            break;
+                CorePlugin.get().uploadFile(getModel().getCurrent().getFile(), new FileUploadEventHandler(event) {
+
+                    @Override
+                    public boolean acceptOverride(VFile file) {
+//check if alreay selected
+                        for (VFileInfo ex : getModel().getFiles()) {
+                            if (ex.getFile().getName().equals(file.getName()) && ex.isSelected()) {
+                                return true;
+                            }
                         }
+                        return false;
                     }
-                    if (!doOverride) {
-                        FacesUtils.addErrorMessage(event.getFile().getFileName() + " already exists please select to force override.");
-                        return;
-                    }
-                }
-                String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
-                        + "-" + UserSession.getCurrentUser().getLogin();
-                CorePlugin fsp = VrApp.getBean(CorePlugin.class);
-                String p = fsp.getNativeFileSystemPath() + tempPath;
-                new File(p).mkdirs();
-                File f = new File(p, event.getFile().getFileName());
-                try {
-                    event.getFile().write(f.getPath());
-                    //do work here
-                    int count = 1;//
-                    if (count > 0) {
-                        FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
-                    } else {
-                        FacesUtils.addWarnMessage(null, event.getFile().getFileName() + " is uploaded but nothing is updated.");
-                    }
-                } finally {
-                    //should not delete the file!
-                    VirtualFileSystem nfs = VFS.createNativeFS();
-                    nfs.get(f.getPath()).copyTo(newFile);
-                }
+                });
+                FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
             } catch (Exception ex) {
                 Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
                 FacesUtils.addErrorMessage(event.getFile().getFileName() + " uploading failed.", ex.getMessage());
@@ -371,29 +382,35 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
 
     public void handleUpdatedFile(FileUploadEvent event) {
         try {
-            String p = VrApp.getBean(CorePlugin.class).getNativeFileSystemPath()
-                    + CorePlugin.PATH_TEMP + "/Files/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
-                    + "-" + UserSession.getCurrentUser().getLogin();
-            new File(p).mkdirs();
-            File f = new File(p, event.getFile().getFileName());
-            try {
-                event.getFile().write(f.getPath());
-                //do work here
-                int count = 1;
-                if (count > 0) {
-                    FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
-                } else {
-                    FacesUtils.addWarnMessage(null, event.getFile().getFileName() + " is uploaded but nothing is updated.");
+            CorePlugin.get().uploadFile(getModel().getCurrent().getFile(), new FileUploadEventHandler(event) {
+                @Override
+                public boolean acceptOverride(VFile file) {
+                    return true;
                 }
-            } finally {
-                //should not delete the file!
-            }
+            });
         } catch (Exception ex) {
             Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
             FacesUtils.addErrorMessage(event.getFile().getFileName() + " uploading failed.", ex.getMessage());
         }
 
     }
+
+    public void onShowSecurityDialog() {
+        Map<String, Object> options = new HashMap<String, Object>();
+        options.put("resizable", false);
+        options.put("draggable", false);
+        options.put("modal", true);
+
+        RequestContext.getCurrentInstance().openDialog("/modules/files/documents-security-dialog", options, null);
+        onRefresh();
+
+    }
+
+    public void fireEventExtraDialogClosed() {
+        //Object obj
+        RequestContext.getCurrentInstance().closeDialog(new DialogResult(null, null));
+    }
+
 
     public static class Config {
 

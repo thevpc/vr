@@ -184,7 +184,7 @@
                                             </ui:repeat>
                                         </ul>
                                     </li>
-                                    <li class="footer"><a href="#"><strong>Tout afficher</strong></a></li>
+                                    <!--<li class="footer"><a href="#"><strong>Tout afficher</strong></a></li>-->
                                 </ul>
                             </li>
                             <!-- Tasks: style can be found in dropdown.less -->
@@ -241,7 +241,7 @@
                                             <ui:repeat value="#{vr.getActiveSessionsGroupedByType().entrySet().toArray()}" var="e">
 
                                                 <li>
-                                                    <a href="#">
+                                                    <h:outputLink value="#{vr.context}/p/activeSessions" disabled="#{not vr.allowed('Custom.Admin.ActiveSessions')}">
                                                         <h4>
                                                             #{e.key}
                                                             <small><i
@@ -249,7 +249,7 @@
                                                             </small>
                                                         </h4>
                                                         <p></p>
-                                                    </a>
+                                                    </h:outputLink>
                                                 </li>
                                             </ui:repeat>
                                         </ul>
@@ -1407,8 +1407,8 @@
                 <p:clock styleclass="vr-clock" pattern="HH:mm:ss | dd MMM yyyy"/>
                 <b>Version</b> #{corePlugin.appVersion.version}
             </div>
-            <strong>Copyright (c) 2015-2016 <a
-                    href="http://tahabensalah.net">Taha Ben Salah</a>, ENISo.</strong> All rights
+            <strong>Copyright (c) 2015-2017 <a
+                    href="http://tahabensalah.net">Taha Ben Salah</a>, ENISo.</strong> All rights , <h:commandLink value="https://github.com/thevpc/vr/issues">submit issue</h:commandLink>, <h:commandLink value="https://github.com/thevpc/vr">get-sources</h:commandLink>
             reserved.
         </footer>
 

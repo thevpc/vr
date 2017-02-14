@@ -97,14 +97,14 @@ public class TextSearchFilter {
         List newList = new ArrayList();
         for (Object object : oldList) {
             Map<String, String> m = normalizeMap(this.converter.convert(object));
-            if (acceptStringRecord(m)) {
+            if (acceptStringDocument(m)) {
                 newList.add(object);
             }
         }
         return newList;
     }
 
-    private boolean acceptStringRecord(Map<String, String> rec) {
+    private boolean acceptStringDocument(Map<String, String> rec) {
         if (tokens == null || tokens.isEmpty()) {
             return true;
         }

@@ -22,7 +22,7 @@ public class TeacherGenerationOptions {
     private String oldOutputFolder;
     private String outputNamePattern;
     private CourseAssignmentFilter courseAssignmentFilter;
-    private boolean includeIntents;
+//    private boolean includeIntents;
     private AppPeriod period;
     private String version="v01";
 
@@ -89,14 +89,14 @@ public class TeacherGenerationOptions {
         return this;
     }
 
-    public boolean isIncludeIntents() {
-        return includeIntents;
-    }
-
-    public TeacherGenerationOptions setIncludeIntents(boolean includeIntents) {
-        this.includeIntents = includeIntents;
-        return this;
-    }
+//    public boolean isIncludeIntents() {
+//        return includeIntents;
+//    }
+//
+//    public TeacherGenerationOptions setIncludeIntents(boolean includeIntents) {
+//        this.includeIntents = includeIntents;
+//        return this;
+//    }
 
     public AppPeriod getPeriod() {
         return period;

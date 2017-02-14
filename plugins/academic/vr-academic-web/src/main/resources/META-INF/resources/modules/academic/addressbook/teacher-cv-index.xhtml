@@ -8,13 +8,13 @@
     <meta name="author" content="vpc"/>
     <meta name="description" content="ENISo's people"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0"/>
-    <link rel="stylesheet" type="text/css" href="#{vr.context}/fs/Site/wplugins/magnetic/css/reset.css"/>
-    <link rel="stylesheet" type="text/css" href="#{vr.context}/fs/Site/wplugins/magnetic/css/main.css"/>
+    <link rel="stylesheet" type="text/css" href="#{vr.session}/fs/Site/wplugins/magnetic/css/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="#{vr.session}/fs/Site/wplugins/magnetic/css/main.css"/>
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Tangerine"/>
-    <script type="text/javascript" src="#{vr.context}/fs/Site/wplugins/magnetic/js/jquery.js"></script>
-    <script type="text/javascript" src="#{vr.context}/fs/Site/wplugins/magnetic/js/main.js"></script>
+    <script type="text/javascript" src="#{vr.session}/fs/Site/wplugins/magnetic/js/jquery.js"></script>
+    <script type="text/javascript" src="#{vr.session}/fs/Site/wplugins/magnetic/js/main.js"></script>
     <link rel="shortcut icon" href="#{vr.themeContext}/images/app-icon.png" type="image/png"/>
-    <script src="#{vr.context}/fs/Site/js/analytics.js"></script>
+    <script src="#{vr.session}/fs/Site/js/analytics.js"></script>
 </h:head>
 <h:body>
 
@@ -95,7 +95,7 @@
             <div class="work">
                 <h:commandLink
                         action="#{vr.gotoPage('teacherCurriculumContent', vr.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'teaching\'}'))}">
-                    <img src="#{vr.context}/fs/Site/wplugins/magnetic/img/work2.jpg" class="media" alt=""/>
+                    <img src="#{vr.session}/fs/Site/wplugins/magnetic/img/work2.jpg" class="media" alt=""/>
 
                     <div class="caption">
                         <div class="work_title">
@@ -108,7 +108,7 @@
             <div class="work">
                 <h:commandLink
                         action="#{vr.gotoPage('teacherCurriculumContent', vr.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'research\'}'))}">
-                    <img src="#{vr.context}/fs/Site/wplugins/magnetic/img/work3.jpg" class="media" alt=""/>
+                    <img src="#{vr.session}/fs/Site/wplugins/magnetic/img/work3.jpg" class="media" alt=""/>
 
                     <div class="caption">
                         <div class="work_title">
@@ -121,7 +121,7 @@
             <div class="work">
                 <h:commandLink
                         action="#{vr.gotoPage('teacherCurriculumContent', vr.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'education\'}'))}">
-                    <img src="#{vr.context}/fs/Site/wplugins/magnetic/img/work4.jpg" class="media" alt=""/>
+                    <img src="#{vr.session}/fs/Site/wplugins/magnetic/img/work4.jpg" class="media" alt=""/>
 
                     <div class="caption">
                         <div class="work_title">
@@ -134,7 +134,7 @@
             <div class="work">
                 <h:commandLink
                         action="#{vr.gotoPage('teacherCurriculumContent', vr.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'projects\'}'))}">
-                    <img src="#{vr.context}/fs/Site/wplugins/magnetic/img/work5.jpg" class="media" alt=""/>
+                    <img src="#{vr.session}/fs/Site/wplugins/magnetic/img/work5.jpg" class="media" alt=""/>
 
                     <div class="caption">
                         <div class="work_title">
@@ -147,7 +147,7 @@
             <div class="work">
                 <h:commandLink
                         action="#{vr.gotoPage('teacherCurriculumContent', vr.str('{teacherId:',teacherCurriculumCtrl.model.teacher.id,',contentType:\'extra\'}'))}">
-                    <img src="#{vr.nvl(teacherCurriculumCtrl.model.teacherCV.extraImage,vr.str(vr.context,'/fs/Site/wplugins/magnetic/img/work6.jpg'))}"
+                    <img src="#{vr.nvl(teacherCurriculumCtrl.model.teacherCV.extraImage,vr.str(vr.session,'/fs/Site/wplugins/magnetic/img/work6.jpg'))}"
                          class="media" alt=""/>
 
                     <div class="caption">

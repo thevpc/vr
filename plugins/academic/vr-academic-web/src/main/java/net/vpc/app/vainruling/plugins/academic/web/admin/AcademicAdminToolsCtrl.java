@@ -66,7 +66,7 @@ public class AcademicAdminToolsCtrl {
                 event.getFile().write(f.getPath());
                 AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
                 CorePlugin core = VrApp.getBean(CorePlugin.class);
-                AppConfig appConfig = core.findAppConfig();
+                AppConfig appConfig = core.getCurrentConfig();
                 int count=0;
                 if(appConfig!=null && appConfig.getMainPeriod()!=null) {
                     int periodId = appConfig.getMainPeriod().getId();

@@ -22,6 +22,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudent
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.faces.model.SelectItem;
 import java.io.IOException;

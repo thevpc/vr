@@ -220,7 +220,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                     ActionDialogAdapter e = actionDialogManager.findAction(buttonId);
                     if (e != null) {
-                        return e.isEnabled(getEntity().getEntityType(), getModel().getMode(), getModel().getCurrentRecord());
+                        return e.isEnabled(getEntity().getEntityType(), getModel().getMode(), getModel().getCurrentDocument());
                     }
                     break;
                 }
@@ -247,7 +247,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                     ActionDialogAdapter e = actionDialogManager.findAction(buttonId);
                     if (e != null) {
-                        return e.isEnabled(getEntity().getEntityType(), getModel().getMode(), getModel().getCurrentRecord());
+                        return e.isEnabled(getEntity().getEntityType(), getModel().getMode(), getModel().getCurrentDocument());
                     }
                     break;
                 }
@@ -261,22 +261,22 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public Object getCurrentId() {
-        Record selectedObject = getModel().getCurrentRecord();
+        Document selectedObject = getModel().getCurrentDocument();
         EntityBuilder b = getEntity().getBuilder();
-        return selectedObject == null ? null : b.recordToId(selectedObject);
+        return selectedObject == null ? null : b.documentToId(selectedObject);
     }
 
     public Object getCurrentEntityObject() {
-        Record selectedObject = getModel().getCurrentRecord();
+        Document selectedObject = getModel().getCurrentDocument();
         EntityBuilder b = getEntity().getBuilder();
-        return selectedObject == null ? null : b.recordToObject(selectedObject);
+        return selectedObject == null ? null : b.documentToObject(selectedObject);
     }
 
     public List getSelectedEntityObjects() {
         List list = new ArrayList();
         EntityBuilder b = getEntity().getBuilder();
         for (Object selectedObject : getModel().getSelectedObjects()) {
-            Object o = (selectedObject instanceof Record) ? b.recordToObject((Record) selectedObject) : selectedObject;
+            Object o = (selectedObject instanceof Document) ? b.documentToObject((Document) selectedObject) : selectedObject;
             list.add(o);
         }
         return list;
@@ -342,15 +342,16 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             currentViewToModel();
             switch (getModel().getMode()) {
                 case NEW: {
-                    Object c = getModel().getCurrentRecord();
+                    Object c = getModel().getCurrentDocument();
                     core.save(getEntityName(), c);
                     updateMode(EditCtrlMode.UPDATE);
 //                    onCancelCurrent();
                     break;
                 }
                 case UPDATE: {
-                    Object c = getModel().getCurrentRecord();
+                    Object c = getModel().getCurrentDocument();
                     core.save(getEntityName(), c);
+                    onReloadCurrent();
 //                    onCancelCurrent();
                     break;
                 }
@@ -370,16 +371,16 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             currentViewToModel();
             switch (getModel().getMode()) {
                 case NEW: {
-                    Object c = getModel().getCurrentRecord();
+                    Object c = getModel().getCurrentDocument();
                     core.save(getEntityName(), c);
                     updateMode(EditCtrlMode.UPDATE);
 //                    onCancelCurrent();
                     break;
                 }
                 case UPDATE: {
-                    Record c = getModel().getCurrentRecord();
+                    Document c = getModel().getCurrentDocument();
                     if (getEntity().getPrimaryFields().size() == 1 && getEntity().getPrimaryFields().get(0).isGeneratedId()) {
-                        getEntity().getBuilder().setRecordId(c, null);
+                        getEntity().getBuilder().setDocumentId(c, null);
                         core.save(getEntityName(), c);
                     }
 //                    onCancelCurrent();
@@ -401,13 +402,13 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             currentViewToModel();
             switch (getModel().getMode()) {
                 case NEW: {
-                    Object c = getModel().getCurrentRecord();
+                    Object c = getModel().getCurrentDocument();
                     core.save(getEntityName(), c);
                     onCancelCurrent();
                     break;
                 }
                 case UPDATE: {
-                    Object c = getModel().getCurrentRecord();
+                    Object c = getModel().getCurrentDocument();
                     core.save(getEntityName(), c);
                     onCancelCurrent();
                     break;
@@ -429,14 +430,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             if (getModel().getMode() == EditCtrlMode.LIST) {
                 for (ObjRow row : getModel().getList()) {
                     if (row.isSelected()) {
-                        core.remove(getEntityName(), core.resolveId(getEntityName(), row.getRecord()));
+                        core.remove(getEntityName(), core.resolveId(getEntityName(), row.getDocument()));
                         count++;
                     }
                 }
                 reloadPage(true);
             } else {
                 currentViewToModel();
-                Object c = getModel().getCurrentRecord();
+                Object c = getModel().getCurrentDocument();
                 core.remove(getEntityName(), core.resolveId(getEntityName(), c));
                 count++;
                 loadList();
@@ -463,14 +464,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             if (getModel().getMode() == EditCtrlMode.LIST) {
                 for (ObjRow row : getModel().getList()) {
                     if (row.isSelected()) {
-                        core.archive(getEntityName(), core.resolveId(getEntityName(), row.getRecord()));
+                        core.archive(getEntityName(), core.resolveId(getEntityName(), row.getDocument()));
                         count++;
                     }
                 }
                 reloadPage(true);
             } else {
                 currentViewToModel();
-                Object c = getModel().getCurrentRecord();
+                Object c = getModel().getCurrentDocument();
                 core.archive(getEntityName(), core.resolveId(getEntityName(), c));
                 getModel().setCurrent(delegated_newInstance());
                 updateMode(EditCtrlMode.LIST);
@@ -548,20 +549,20 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 UPASecurityManager sm = entity.getPersistenceUnit().getSecurityManager();
                 EntityBuilder b = entity.getBuilder();
                 Object eid = resolveEntityId(cfg.id);
-                Record curr = core.findRecord(getEntityName(), eid);
+                Document curr = core.findDocument(getEntityName(), eid);
                 if (curr == null) {
                     //should not happen though!
                     updateMode(EditCtrlMode.LIST);
                     getModel().setCurrent(null);
                     return;
                 }
-                ObjRow r = new ObjRow(curr, b.recordToObject(curr));
+                ObjRow r = new ObjRow(curr, b.documentToObject(curr));
                 r.setRead(sm.isAllowedLoad(entity, eid, curr));
                 r.setWrite(sm.isAllowedUpdate(entity, eid, curr));
                 r.setRowPos(-1);
                 //now should try finding row pos
                 for (ObjRow filteredObject : getModel().getList()) {
-                    Object id1 = getEntity().getBuilder().recordToId(filteredObject.getRecord());
+                    Object id1 = getEntity().getBuilder().documentToId(filteredObject.getDocument());
                     if (id1.equals(eid)) {
                         r.setRowPos(filteredObject.getRowPos());
                         break;
@@ -597,15 +598,15 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             }
             autoFilterIndex++;
         }
-        List<Record> found = core.findRecordsByFilter(getEntityName(), _listFilter, getModel().getSearch(), getModel().getSearchText(), parameters);
+        List<Document> found = core.findDocumentsByFilter(getEntityName(), _listFilter, getModel().getSearch(), getModel().getSearchText(), parameters);
         List<ObjRow> filteredObjects = new ArrayList<>();
         Entity entity = getEntity();
         UPASecurityManager sm = entity.getPersistenceUnit().getSecurityManager();
         EntityBuilder b = entity.getBuilder();
-        for (Record rec : found) {
-            Object id = b.recordToId(rec);
+        for (Document rec : found) {
+            Object id = b.documentToId(rec);
             if (sm.isAllowedNavigate(entity, id, rec)) {
-                ObjRow row = new ObjRow(rec, b.recordToObject(rec));
+                ObjRow row = new ObjRow(rec, b.documentToObject(rec));
                 row.setRead(sm.isAllowedLoad(entity, id, rec));
                 row.setWrite(sm.isAllowedUpdate(entity, id, rec));
                 row.setRowPos(filteredObjects.size());
@@ -665,8 +666,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 VrColorTable table = VrApp.getBean(VrColorTable.class);
                 PersistenceUnit pu = UPA.getPersistenceUnit();
                 Map<String, Object> map = new HashMap<>();
-                map.put("this", row == null ? null : row.getRecord());
-                Record r = pu.getFactory().createObject(Record.class);
+                map.put("this", row == null ? null : row.getDocument());
+                Document r = pu.getFactory().createObject(Document.class);
                 r.setObject("pos", row == null ? -1 : row.getRowPos());
                 map.put("ui", r);
                 String expr = v.substring(2, v.length() - 1);
@@ -705,8 +706,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 VrColorTable table = VrApp.getBean(VrColorTable.class);
                 PersistenceUnit pu = UPA.getPersistenceUnit();
                 Map<String, Object> map = new HashMap<>();
-                map.put("this", row == null ? null : row.getRecord());
-                Record r = pu.getFactory().createObject(Record.class);
+                map.put("this", row == null ? null : row.getDocument());
+                Document r = pu.getFactory().createObject(Document.class);
                 r.setObject("pos", row == null ? -1 : row.getRowPos());
                 map.put("ui", r);
                 String expr = v.substring(2, v.length() - 1);
@@ -766,8 +767,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         return core.getObjectName(getEntityName(), obj);
     }
 
-    protected Record createInitializedRecord() {
-        return getEntity().getBuilder().createInitializedRecord();
+    protected Document createInitializedDocument() {
+        return getEntity().getBuilder().createInitializedDocument();
     }
 
     @Override
@@ -776,7 +777,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         try {
             if (getModel().getEntityName() != null) {
                 Entity e = getEntity();
-                Record o = createInitializedRecord();
+                Document o = createInitializedDocument();
                 for (Field field : e.getFields()) {
                     Object v = field.getDefaultValue();
                     if (v != null) {
@@ -785,7 +786,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                 }
                 EntityBuilder b = e.getBuilder();
-                ObjRow r = new ObjRow(o, b.recordToObject(o));
+                ObjRow r = new ObjRow(o, b.documentToObject(o));
                 r.setRead(true);
                 r.setWrite(true);
                 r.setSelected(false);
@@ -793,7 +794,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
                 return r;
             }
-            ObjRow r = new ObjRow(createInitializedRecord(), getEntity().getBuilder().createObject());
+            ObjRow r = new ObjRow(createInitializedDocument(), getEntity().getBuilder().createObject());
             r.setRowPos(-1);
             return r;
         } catch (RuntimeException ex) {
@@ -809,7 +810,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     public void updateModelFromConfig() {
         enabledButtons.clear();
         Config cfg = VrUtils.parseJSONObject(getModel().getCmd(), Config.class);
-        Object o = getModel().getCurrentRecord();
+        Object o = getModel().getCurrentDocument();
         Entity e = getEntity();
         EntityBuilder builder = e.getBuilder();
         if (cfg != null && cfg.values != null && !cfg.values.isEmpty() && o != null && e != null) {
@@ -871,7 +872,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 //        }
         getModel().setActions(act);
         try {
-            Object currentObj = getModel().getCurrentRecord();
+            Object currentObj = getModel().getCurrentDocument();
             for (PropertyView property : properties) {
                 property.loadFrom(currentObj);
                 property.refresh();
@@ -897,9 +898,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     public void currentViewToModel() {
         try {
-            Record record = getModel().getCurrentRecord();
+            Document document = getModel().getCurrentDocument();
             for (PropertyView property : properties) {
-                property.storeTo(record);
+                property.storeTo(document);
             }
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
@@ -1210,7 +1211,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         if (filterType instanceof KeyType) {
             Entity ee = ((KeyType) filterType).getEntity();
             if (ee.getEntityType().equals(AppPeriod.class)) {
-                return core.findAppConfig().getMainPeriod();
+                return core.getCurrentPeriod();
             } else if (ee.getEntityType().equals(AppDepartment.class)) {
                 AppUser u = core.getCurrentUser();
                 return u == null ? null : u.getDepartment();
@@ -1270,17 +1271,17 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             }
             case UPDATE: {
                 Object id = getCurrentId();
-                Record curr = id == null ? null : core.findRecord(getEntityName(), id);
+                Document curr = id == null ? null : core.findDocument(getEntityName(), id);
                 onSelect(createObjRow(curr));
                 break;
             }
         }
     }
 
-    public ObjRow createObjRow(Record o) {
+    public ObjRow createObjRow(Document o) {
         Entity e = getEntity();
         EntityBuilder b = e.getBuilder();
-        ObjRow r = new ObjRow(o, b.recordToObject(o));
+        ObjRow r = new ObjRow(o, b.documentToObject(o));
         r.setRead(true);
         r.setWrite(true);
         r.setSelected(false);
@@ -1302,7 +1303,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         if (getModel().getCurrent() != null) {
             Config cfg = new Config();
             cfg.entity = getEntityName();
-            Object curr = getModel().getCurrent() == null ? null : getEntity().getBuilder().objectToId(getModel().getCurrent().getRecord());
+            Object curr = getModel().getCurrent() == null ? null : getEntity().getBuilder().objectToId(getModel().getCurrent().getDocument());
             cfg.id = curr == null ? null : String.valueOf(curr);
             if (getModel().getFieldSelection() != null) {
                 ArrayList<String> all = new ArrayList<>();
@@ -1397,7 +1398,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         ObjRow current = getModel().getCurrent();
         Config cfg = new Config();
         cfg.entity = getEntityName();
-        cfg.id = current==null?null:String.valueOf(getEntity().getBuilder().objectToId(current.getRecord()));
+        cfg.id = current==null?null:String.valueOf(getEntity().getBuilder().objectToId(current.getDocument()));
         cfg.values = getModel().getConfig().values;
         cfg.listFilter = getModel().getConfig().listFilter;
         cfg.disabledFields = getModel().getConfig().disabledFields;
@@ -1445,7 +1446,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         } else {
             try {
                 currentViewToModel();
-                Object c = getModel().getCurrentRecord();
+                Object c = getModel().getCurrentDocument();
                 ActionDialogResult r = actionDialogManager.findAction(actionKey).invoke(getEntity().getEntityType(), c, getSelectedIdStrings(), args);
                 if (r != null) {
                     switch (r) {
@@ -1495,7 +1496,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         if (getModel().getMode() == EditCtrlMode.LIST) {
             for (ObjRow r : getModel().getList()) {
                 if (r.isSelected()) {
-                    String iid = StringUtils.nonEmpty(core.resolveId(getEntityName(), r.getRecord()));
+                    String iid = StringUtils.nonEmpty(core.resolveId(getEntityName(), r.getDocument()));
                     if (iid != null) {
                         selected.add(iid);
                     } else {
@@ -1503,8 +1504,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                 }
             }
-        } else if (getModel().getCurrentRecord() != null) {
-            String iid = StringUtils.nonEmpty(core.resolveId(getEntityName(), getModel().getCurrentRecord()));
+        } else if (getModel().getCurrentDocument() != null) {
+            String iid = StringUtils.nonEmpty(core.resolveId(getEntityName(), getModel().getCurrentDocument()));
             if (iid != null) {
                 selected.add(iid);
             }
@@ -1525,7 +1526,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 } else {
                     try {
                         currentViewToModel();
-                        Object c = getModel().getCurrentRecord();
+                        Object c = getModel().getCurrentDocument();
                         ActionDialogResult r = ed.invoke(getEntity().getEntityType(), c, getSelectedIdStrings(), null);
                         if (r != null) {
                             switch (r) {
@@ -1549,6 +1550,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                                 }
                             }
                         }
+                        RequestContext ctx = RequestContext.getCurrentInstance();
+                        ctx.closeDialog(null);
                     } catch (RuntimeException ex) {
                         FacesUtils.addInfoMessage("Error : " + ex.getMessage());
                         log.log(Level.SEVERE, "Error", ex);
@@ -1731,13 +1734,13 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             switch (getMode()) {
                 case UPDATE:
                 case NEW: {
-                    return Arrays.asList(getCurrentRecord());
+                    return Arrays.asList(getCurrentDocument());
                 }
                 case LIST: {
                     List all = new ArrayList();
                     for (ObjRow objRow : getList()) {
                         if (objRow.isSelected()) {
-                            all.add(objRow.getRecord());
+                            all.add(objRow.getDocument());
                         }
                     }
                     return all;
@@ -1746,12 +1749,12 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             return Collections.emptyList();
         }
 
-        public Record getCurrentRecord() {
+        public Document getCurrentDocument() {
             ObjRow c = getCurrent();
             if (c == null) {
                 return null;
             }
-            return c.getRecord();
+            return c.getDocument();
         }
 
         public ObjRow getCurrent() {

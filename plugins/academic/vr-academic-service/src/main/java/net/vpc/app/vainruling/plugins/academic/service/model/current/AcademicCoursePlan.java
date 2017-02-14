@@ -24,10 +24,11 @@ import java.sql.Timestamp;
 @Properties(
         {
             @Property(name = "ui.auto-filter.period", value = "{expr='period',order=1}"),
-            @Property(name = "ui.auto-filter.department", value = "{expr='courseLevel.academicClass.program.department',order=1}"),
-            @Property(name = "ui.auto-filter.program", value = "{expr='courseLevel.academicClass.program',order=1}"),
-            @Property(name = "ui.auto-filter.programType", value = "{expr='courseLevel.academicClass.program.programType',order=1}"),
-            @Property(name = "ui.auto-filter.class", value = "{expr='courseLevel.academicClass',order=2}")
+            @Property(name = "ui.auto-filter.department", value = "{expr='courseLevel.academicClass.program.department',order=2}"),
+            @Property(name = "ui.auto-filter.program", value = "{expr='courseLevel.academicClass.program',order=3}"),
+            @Property(name = "ui.auto-filter.programType", value = "{expr='courseLevel.academicClass.program.programType',order=4}"),
+            @Property(name = "ui.auto-filter.semester", value = "{expr='courseLevel.semester',order=5}"),
+            @Property(name = "ui.auto-filter.class", value = "{expr='courseLevel.academicClass',order=6}")
         }
 )
 public class AcademicCoursePlan {
@@ -51,7 +52,7 @@ public class AcademicCoursePlan {
     private String name;
     @Main
     @Formula(
-            value = "concat((select a.name from AcademicCourseLevel a where a.id=this.courseLevelId),'-',Coalesce(this.code,'X'),'-',this.name)",
+            value = "concat((select a.name from AppPeriod a where a.id=this.periodId),'-',(select a.name from AcademicCourseLevel a where a.id=this.courseLevelId),'-',Coalesce(this.code,'X'),'-',this.name)",
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String fullName;

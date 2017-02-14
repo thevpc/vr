@@ -249,7 +249,7 @@ public class TraceService {
 
     private String dump(Object o, Entity e, List<Field> fields) {
         StringBuilder b = new StringBuilder(e.getName()).append("{");
-        Record rec = e.getBuilder().objectToRecord(o, true);
+        Document rec = e.getBuilder().objectToDocument(o, true);
         boolean first = true;
         for (Field field : fields) {
             if (first) {
@@ -329,8 +329,8 @@ public class TraceService {
 
     private String dumpDiff(Object o1, Object o2, Entity e) {
         StringBuilder b = new StringBuilder(e.getName()).append("{");
-        Record rec1 = e.getBuilder().objectToRecord(o1, true);
-        Record rec2 = e.getBuilder().objectToRecord(o2, true);
+        Document rec1 = e.getBuilder().objectToDocument(o1, true);
+        Document rec2 = e.getBuilder().objectToDocument(o2, true);
         boolean first = true;
         for (String fieldName : rec2.keySet()) {
             Field field = e.findField(fieldName);

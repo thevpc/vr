@@ -49,6 +49,14 @@ and open the template in the editor.
                         >
                             <p:ajax event="dialogReturn" update=":listForm"/>
                         </p:commandButton>
+                        <p:commandButton value="Gen. Equipes" styleClass="btn btn-default vr-toolbox-long-button"
+                                         actionListener="#{academicAppProjectsCtrl.onShuffleSession}"
+                                         rendered="#{academicAppProjectsCtrl.isAllowed('Shuffle')}"
+                        />
+                        <p:commandButton value="Degen. Equipes" styleClass="btn btn-default vr-toolbox-long-button"
+                                         actionListener="#{academicAppProjectsCtrl.onUnShuffleSession}"
+                                         rendered="#{academicAppProjectsCtrl.isAllowed('Shuffle')}"
+                        />
                         <p:commandButton value="Rafraichir"
                                          styleClass="btn btn-default vr-toolbox-long-button"
                                          ajax="false"
@@ -83,6 +91,9 @@ and open the template in the editor.
                                 <ui:fragment rendered="#{document.childrenCount3 gt 0}">
                                     <small class="label pull-right bg-green">#{document.childrenCount3}</small>
                                 </ui:fragment>
+                                <ui:fragment rendered="#{document.childrenCount4 gt 0}">
+                                    <small class="label pull-right bg-red">#{document.childrenCount4}</small>
+                                </ui:fragment>
                             </p:column>
                             <p:column headerText="Responsable" style="width:300px">
                                 <h:outputText value="#{document.owner}"/>
@@ -100,7 +111,7 @@ and open the template in the editor.
                                                  actionListener="#{academicAppProjectsCtrl.onJoin(document)}"
                                                  update=":listForm"
                                 />
-                                <p:commandButton value="supprimer" styleClass="btn btn-danger btn-xs"
+                                <p:commandButton value="suppr." styleClass="btn btn-danger btn-xs"
                                                  ajax="true"
                                                  update=":listForm"
                                                  rendered="#{academicAppProjectsCtrl.isLeaveAllowed(document)}"

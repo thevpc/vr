@@ -257,10 +257,12 @@ and open the template in the editor.
                             <ui:repeat value="#{autoFilterList}" var="autoFilter">
                                 <p:column>
                                     <p:outputLabel value="#{autoFilter.data.label}"
-                                                   styleClass="vr-form-field vr-form-fixed-width-short" autofocus="autofocus"/>
+                                                   styleClass="vr-form-field vr-form-fixed-width-short"
+                                                   autofocus="autofocus"/>
                                     <!--valueChangeListener="#_{objCtrl.onAutoFilterChange}"-->
                                     <!--onchange="document.getElementById('listForm:processOnAutoFilterLink').click();"-->
                                     <p:selectOneMenu value="#{autoFilter.selectedString}" styleClass="vr-form-field"
+                                                     filter="true" filterMatchMode="contains"
                                     >
                                         <p:ajax listener="#{objCtrl.onAutoFilterChange}" update=":listForm"/>
                                         <f:selectItems value="#{autoFilter.values}"/>
@@ -276,10 +278,12 @@ and open the template in the editor.
                 <div style="margin-bottom: 10px;">
                     <p:inputText
                             rendered="#{objCtrl.isListMode()}"
-                            value="#{objCtrl.model.searchText}" placeholder="Chercher ..."  styleClass="form-control"
-                                 style="width: 100%" onkeypress="if (event.keyCode == 13) { onSearchByText(); return false; }"
+                            value="#{objCtrl.model.searchText}" placeholder="Chercher ..." styleClass="form-control"
+                            style="width: 100%"
+                            onkeypress="if (event.keyCode == 13) { onSearchByText(); return false; }"
                     />
-                    <p:remoteCommand name="onSearchByText" actionListener="#{objCtrl.onAutoFilterChange}" update=":listForm"/>
+                    <p:remoteCommand name="onSearchByText" actionListener="#{objCtrl.onAutoFilterChange}"
+                                     update=":listForm"/>
                 </div>
                 <p:growl id="growl" showDetail="true" sticky="true"/>
                 <p:outputPanel id="editItemList" rendered="#{objCtrl.isListMode()}">
@@ -350,7 +354,7 @@ and open the template in the editor.
                                                                                filterFunction="# {objCtrl.filterByProperty}"-->
                                 <p:columns value="#{objCtrl.columns}"
                                            var="column" columnIndexVar="colIndex"
-                                           sortBy="#{objCtrl.getSortLayoutPropertyValue(i.record,column.property)}"
+                                           sortBy="#{objCtrl.getSortLayoutPropertyValue(i.document,column.property)}"
                                            style="#{objCtrl.getPropertyColumnStyle(column.property,i)}"
                                            styleClass="#{objCtrl.getPropertyColumnStyleClass(column.property,i)}"
                                 >
@@ -358,9 +362,9 @@ and open the template in the editor.
                                         <h:outputText value="#{column.header}"/>
                                     </f:facet>
                                     <h:outputText rendered="#{column.type eq 'text'}"
-                                                  value="#{objCtrl.getLayoutPropertyValue(i.record,column.property)}"/>
+                                                  value="#{objCtrl.getLayoutPropertyValue(i.document,column.property)}"/>
                                     <h:selectBooleanCheckbox rendered="#{column.type eq 'checkbox'}" disabled="true"
-                                                             value="#{objCtrl.getLayoutPropertyValue(i.record,column.property)}"/>
+                                                             value="#{objCtrl.getLayoutPropertyValue(i.document,column.property)}"/>
                                 </p:columns>
                                 <f:facet name="footer">
                                     <p:outputLabel value="Total #{objCtrl.model.list.size()}"/>
@@ -535,7 +539,8 @@ and open the template in the editor.
 
                                 <pe:dynaFormControl type="textarea" for="tarea">
                                     <p:inputTextarea id="tarea" value="#{data.value}" required="#{data.required}"
-                                                     autoResize="false" disabled="#{data.disabled}" styleClass="form-control"/>
+                                                     autoResize="false" disabled="#{data.disabled}"
+                                                     styleClass="form-control"/>
                                 </pe:dynaFormControl>
                                 <pe:dynaFormControl type="richtextarea" for="trichtextarea">
                                     <p:editor id="trichtextarea" value="#{data.value}" required="#{data.required}"
@@ -558,7 +563,8 @@ and open the template in the editor.
                                             <p:column>
                                                 <p:inputTextarea id="twikiarea"
                                                                  value="#{data.value}" required="#{data.required}"
-                                                                 autoResize="false" disabled="#{data.disabled}" styleClass="form-control"/>
+                                                                 autoResize="false" disabled="#{data.disabled}"
+                                                                 styleClass="form-control"/>
                                             </p:column>
                                         </p:row>
                                         <p:row rendered="#{!('Edit'.equals(data.componentState))}">
@@ -602,29 +608,30 @@ and open the template in the editor.
 
 
                                 <!--<pe:dynaFormControl type="profileExpr" for="tprofileexpr" styleClass="select">-->
-                                    <!--<p:panelGrid columns="2" style="border-style: hidden"-->
-                                                 <!--columnClasses="nopadding,nopadding">-->
+                                <!--<p:panelGrid columns="2" style="border-style: hidden"-->
+                                <!--columnClasses="nopadding,nopadding">-->
 
-                                        <!--<p:inputText id="tprofileexpr" value="#{data.value}" required="#{data.required}"-->
-                                                     <!--disabled="#{data.disabled}" styleClass="form-control"/>-->
-                                        <!--<p:commandButton-->
-                                                <!--style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"-->
-                                                <!--ajax="true" value=""-->
-                                                <!--icon="fa fa-users"-->
-                                                <!--actionListener="#{objCtrl.openPropertyViewDialog(data.componentId)}"-->
-                                        <!--&gt;-->
-                                            <!--<p:ajax event="dialogReturn"-->
-                                                    <!--listener="#{objCtrl.onPropertyViewDialogClosed}"-->
-                                                    <!--update="tprofileexpr"/>-->
+                                <!--<p:inputText id="tprofileexpr" value="#{data.value}" required="#{data.required}"-->
+                                <!--disabled="#{data.disabled}" styleClass="form-control"/>-->
+                                <!--<p:commandButton-->
+                                <!--style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"-->
+                                <!--ajax="true" value=""-->
+                                <!--icon="fa fa-users"-->
+                                <!--actionListener="#{objCtrl.openPropertyViewDialog(data.componentId)}"-->
+                                <!--&gt;-->
+                                <!--<p:ajax event="dialogReturn"-->
+                                <!--listener="#{objCtrl.onPropertyViewDialogClosed}"-->
+                                <!--update="tprofileexpr"/>-->
 
-                                        <!--</p:commandButton>-->
-                                    <!--</p:panelGrid>-->
+                                <!--</p:commandButton>-->
+                                <!--</p:panelGrid>-->
                                 <!--</pe:dynaFormControl>-->
 
                                 <pe:dynaFormControl type="profileExpr" for="tprofileexpr" styleClass="select">
                                     <div class="form-group">
-                                        <p:autoComplete id="tprofileexpr" styleClass="vr-form-control vr-form-control-with-button60"
-                                                        placeholder="A:" value="#{data.value}"
+                                        <p:autoComplete id="tprofileexpr"
+                                                        styleClass="vr-form-control vr-form-control-with-button60"
+                                                        placeholder="" value="#{data.value}"
                                                         completeMethod="#{vr.autoCompleteProfileExpression}"
                                                         queryDelay="1000"
                                                         disabled="#{data.disabled}"
@@ -671,7 +678,8 @@ and open the template in the editor.
                                     <div class="form-group">
 
                                         <p:inputText id="tfile" value="#{data.value}" required="#{data.required}"
-                                                     disabled="#{data.disabled}" styleClass="form-control vr-form-control vr-form-control-with-button60"/>
+                                                     disabled="#{data.disabled}"
+                                                     styleClass="form-control vr-form-control vr-form-control-with-button60"/>
                                         <p:commandButton
                                                 styleClass="vr-form-control-right-button60"
                                                 ajax="true" value=""

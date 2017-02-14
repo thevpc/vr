@@ -8,9 +8,9 @@ package net.vpc.app.vainruling.core.service.obj;
 import net.vpc.app.vainruling.core.service.util.TextSearchFilter;
 import net.vpc.app.vainruling.core.service.util.ObjectToMapConverter;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.upa.Document;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.Record;
 import net.vpc.upa.UPA;
 
 import java.util.HashMap;
@@ -60,7 +60,7 @@ public class ObjSimpleSearch extends ObjSearch {
     private Map<String, Object> toStringRecord(Object o, String entityName) {
         Map<String, Object> words = new HashMap<>();
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        Record r = (o instanceof Record) ? ((Record) o) : pu.getEntity(entityName).getBuilder().objectToRecord(o, true);
+        Document r = (o instanceof Document) ? ((Document) o) : pu.getEntity(entityName).getBuilder().objectToDocument(o, true);
         if (r != null) {
             for (Map.Entry<String, Object> entry : r.entrySet()) {
                 String k = entry.getKey();

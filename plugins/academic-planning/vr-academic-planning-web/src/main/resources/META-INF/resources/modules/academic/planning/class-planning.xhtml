@@ -34,7 +34,9 @@ and open the template in the editor.
             <h:form id="listForm">
 
                 <div >
-                    <p:selectOneMenu value="#{classPlanningCtrl.model.groupName}">
+                    <p:selectOneMenu value="#{classPlanningCtrl.model.groupName}"
+                                     filter="true" filterMatchMode="contains"
+                    >
                         <p:ajax listener="#{classPlanningCtrl.onGroupChanged}" update=":listForm"/>
                         <f:selectItem itemLabel="Selectionner Groupe..." itemValue=""/>
                         <f:selectItems value="#{classPlanningCtrl.model.groups}"/>

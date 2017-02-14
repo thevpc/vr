@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web.obj;
 
-import net.vpc.upa.Record;
+import net.vpc.upa.Document;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -16,12 +16,12 @@ public class ObjRow {
     private boolean write;
     private boolean selected;
     private boolean selectable = true;
-    private Record record;
+    private Document document;
     private Object object;
     private int rowPos;
 
-    public ObjRow(Record value, Object obj) {
-        this.record = value;
+    public ObjRow(Document value, Object obj) {
+        this.document = value;
         this.object = obj;
     }
 
@@ -49,12 +49,12 @@ public class ObjRow {
         this.selected = selected;
     }
 
-    public Record getRecord() {
-        return record;
+    public Document getDocument() {
+        return document;
     }
 
-    public void setRecord(Record record) {
-        this.record = record;
+    public void setDocument(Document document) {
+        this.document = document;
     }
 
     public boolean isSelectable() {

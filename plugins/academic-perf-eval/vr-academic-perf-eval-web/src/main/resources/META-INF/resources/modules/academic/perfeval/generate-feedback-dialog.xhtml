@@ -8,21 +8,29 @@ and open the template in the editor.
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-        >
+      xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://xmlns.jcp.org/jsf/core"
+>
 
 <h:head>
 </h:head>
 
 <h:body>
+    <!--@elvariable id="generateFeedbackActionCtrl" type="net.vpc.app.vainruling.plugins.academic.teachereval.web.actions.GenerateFeedbackActionCtrl"-->
     <ui:composition template="#{vr.themePath}/templates/dialog-template.xhtml">
         <ui:define name="dialog-title">
             <h:outputText value="#{generateFeedbackActionCtrl.model.title}"/>
         </ui:define>
         <ui:define name="dialog-body">
 
-            <h:form id="myform">
+            <h:form id="myform" style="margin-top: 10px;">
+                Etudiants
                 <p:inputText value="#{generateFeedbackActionCtrl.model.filter}" style="width: 97%"/>
+                Semestre
+                <p:selectOneMenu
+                                 value="#{generateFeedbackActionCtrl.model.selectedSemester}">
+                    <f:selectItem itemLabel="Selectionner Semestre..." itemValue=""/>
+                    <f:selectItems value="#{generateFeedbackActionCtrl.model.semesters}"/>
+                </p:selectOneMenu>
                 <p:separator/>
                 <p:commandButton icon="ui-icon-search"
                                  actionListener="#{generateFeedbackActionCtrl.fireEventExtraDialogApply()}"

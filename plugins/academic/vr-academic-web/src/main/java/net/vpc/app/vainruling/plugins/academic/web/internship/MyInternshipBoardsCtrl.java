@@ -63,7 +63,7 @@ import java.util.logging.Logger;
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Mes Comités de Stage",
-        menu = "/Education/Internship",
+        menu = "/Education/Projects/Internships",
         securityKey = "Custom.Education.MyInternshipBoards",
         url = "modules/academic/internship/my-internship-boards"
 )
@@ -480,7 +480,7 @@ public class MyInternshipBoardsCtrl {
             int filterPeriodId = -1;
             int filterTypeId = -1;
             if (getModel().getInternshipBoard() == null) {
-                AppConfig appConfig = VrApp.getBean(CorePlugin.class).findAppConfig();
+                AppConfig appConfig = VrApp.getBean(CorePlugin.class).getCurrentConfig();
                 filterPeriodId = (appConfig == null || appConfig.getMainPeriod() == null) ? -1 : appConfig.getMainPeriod().getId();
                 String d = getModel().getFilterInternshipTypeId();
                 filterTypeId = StringUtils.isEmpty(d) ? -1 : Integer.valueOf(d);

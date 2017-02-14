@@ -16,6 +16,21 @@ public class ValueCountSet {
 
     Map<Object, ValueCount> map = new HashMap<Object, ValueCount>();
 
+    public ValueCountSet() {
+    }
+
+    public void touchAllArr(Object[] o) {
+        for (Object o1 : o) {
+            touch(o1);
+        }
+    }
+
+    public void touchAll(Object... o) {
+        for (Object o1 : o) {
+            touch(o1);
+        }
+    }
+
     public void touch(Object o) {
         ValueCount v = map.get(o);
         if (v == null) {

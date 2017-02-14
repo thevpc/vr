@@ -54,7 +54,7 @@ and open the template in the editor.
                                        styleClass="vr-form-field vr-form-fixed-width-medium vr-form-indented-child"/>
                         <div class="vr-form-sub-rows">
                             <div class="vr-form-sub-row">
-                                <p:selectCheckboxMenu styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedSemesters.isEmpty() ?'':'vr-selected-many-selected'}"
+                                <p:selectCheckboxMenu styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedSemesters.isEmpty() ?'':'vr-from-selected-many-selected'}"
                                                       value="#{myCourseLoadCtrl.courseFilter.model.selectedSemesters}"
                                                       label="Semestres"
                                                       filter="true" filterMatchMode="startsWith"
@@ -62,7 +62,7 @@ and open the template in the editor.
                                     <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm :buttonsForm"/>
                                     <f:selectItems value="#{myCourseLoadCtrl.courseFilter.model.semesterItems}"/>
                                 </p:selectCheckboxMenu>
-                                <p:selectCheckboxMenu styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedProgramTypes.isEmpty() ?'':'vr-selected-many-selected'}"
+                                <p:selectCheckboxMenu styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedProgramTypes.isEmpty() ?'':'vr-from-selected-many-selected'}"
                                                       value="#{myCourseLoadCtrl.courseFilter.model.selectedProgramTypes}"
                                                       label="Type Formation"
                                                       filter="true" filterMatchMode="startsWith"
@@ -70,7 +70,7 @@ and open the template in the editor.
                                     <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm :buttonsForm"/>
                                     <f:selectItems value="#{myCourseLoadCtrl.courseFilter.model.programTypeItems}"/>
                                 </p:selectCheckboxMenu>
-                                <p:selectCheckboxMenu styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedCourseTypes.isEmpty() ?'':'vr-selected-many-selected'}"
+                                <p:selectCheckboxMenu styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedCourseTypes.isEmpty() ?'':'vr-from-selected-many-selected'}"
                                                       value="#{myCourseLoadCtrl.courseFilter.model.selectedCourseTypes}"
                                                       label="Types Modules"
                                                       filter="true" filterMatchMode="startsWith"
@@ -78,7 +78,7 @@ and open the template in the editor.
                                     <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm :buttonsForm"/>
                                     <f:selectItems value="#{myCourseLoadCtrl.courseFilter.model.courseTypeItems}"/>
                                 </p:selectCheckboxMenu>
-                                <p:selectCheckboxMenu styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedClasses.isEmpty() ?'':'vr-selected-many-selected'}"
+                                <p:selectCheckboxMenu styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedClasses.isEmpty() ?'':'vr-from-selected-many-selected'}"
                                                       value="#{myCourseLoadCtrl.courseFilter.model.selectedClasses}"
                                                       label="Classes"
                                                       filter="true" filterMatchMode="startsWith"
@@ -88,7 +88,7 @@ and open the template in the editor.
                                 </p:selectCheckboxMenu>
                             </div>
                             <div class="vr-form-sub-row">
-                                <p:selectCheckboxMenu styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedDepartments.isEmpty() ?'':'vr-selected-many-selected'}"
+                                <p:selectCheckboxMenu styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedDepartments.isEmpty() ?'':'vr-from-selected-many-selected'}"
                                                       value="#{myCourseLoadCtrl.courseFilter.model.selectedDepartments}"
                                                       label="Departement"
                                                       filter="true" filterMatchMode="startsWith"
@@ -98,7 +98,7 @@ and open the template in the editor.
                                     <f:selectItems
                                             value="#{myCourseLoadCtrl.courseFilter.model.departmentItems}"/>
                                 </p:selectCheckboxMenu>
-                                <p:selectCheckboxMenu styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedOwnerDepartments.isEmpty() ?'':'vr-selected-many-selected'}"
+                                <p:selectCheckboxMenu styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedOwnerDepartments.isEmpty() ?'':'vr-from-selected-many-selected'}"
                                                       value="#{myCourseLoadCtrl.courseFilter.model.selectedOwnerDepartments}"
                                                       label="Géré par..."
                                                       filter="true" filterMatchMode="startsWith"
@@ -108,7 +108,7 @@ and open the template in the editor.
                                     <f:selectItems
                                             value="#{myCourseLoadCtrl.courseFilter.model.departmentItems}"/>
                                 </p:selectCheckboxMenu>
-                                <p:selectCheckboxMenu styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedLabels.isEmpty() ?'':'vr-selected-many-selected'}"
+                                <p:selectCheckboxMenu styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedLabels.isEmpty() ?'':'vr-from-selected-many-selected'}"
                                                       value="#{myCourseLoadCtrl.courseFilter.model.selectedLabels}"
                                                       label="Label"
                                                       filter="true" filterMatchMode="startsWith"
@@ -117,7 +117,7 @@ and open the template in the editor.
                                     <f:selectItems value="#{myCourseLoadCtrl.courseFilter.model.labelItems}"/>
                                 </p:selectCheckboxMenu>
                                 <p:selectCheckboxMenu
-                                        styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedDeviationGroups.isEmpty() ?'':'vr-selected-many-selected'}"
+                                        styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedDeviationGroups.isEmpty() ?'':'vr-from-selected-many-selected'}"
                                         value="#{myCourseLoadCtrl.courseFilter.model.selectedDeviationGroups}"
                                         label="Groupe Balance"
                                         filter="true" filterMatchMode="startsWith" panelStyle="width:250px">

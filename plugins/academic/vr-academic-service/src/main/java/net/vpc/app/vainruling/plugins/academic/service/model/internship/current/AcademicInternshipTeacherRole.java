@@ -13,7 +13,7 @@ import net.vpc.upa.config.*;
  * @author taha.bensalah@gmail.com
  */
 @Entity
-@Path("Education/Internship")
+@Path("Education/Projects/Internships")
 public class AcademicInternshipTeacherRole {
 
     @Id

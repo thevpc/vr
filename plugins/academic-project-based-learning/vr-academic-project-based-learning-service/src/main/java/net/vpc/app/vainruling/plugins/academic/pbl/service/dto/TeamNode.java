@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class TeamNode extends ApblNode{
     private ApblTeam team;
+    private int unsatisfiedTeamConstraints;
     private List<MemberNode> members = new ArrayList<>();
     private List<CoachNode> coaches = new ArrayList<>();
 
@@ -35,5 +36,14 @@ public class TeamNode extends ApblNode{
 
     public void setCoaches(List<CoachNode> coaches) {
         this.coaches = coaches;
+    }
+
+    public int getUnsatisfiedTeamConstraints() {
+        return unsatisfiedTeamConstraints;
+    }
+
+    public TeamNode setUnsatisfiedTeamConstraints(int unsatisfiedTeamConstraints) {
+        this.unsatisfiedTeamConstraints = unsatisfiedTeamConstraints;
+        return this;
     }
 }

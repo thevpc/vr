@@ -55,10 +55,10 @@ public class ManyToOneTypePropertyViewValuesProvider implements PropertyViewValu
             return viewContext.getCacheItem("EntityPropertyViewValuesProvider." + me.getName() + ":" + constraints, new Action<List<NamedId>>() {
                 @Override
                 public List<NamedId> run() {
-                    return core.findAllNamedIds(mtype.getRelationship(), constraints, objCtrl.getModel().getCurrentRecord());
+                    return core.findAllNamedIds(mtype.getRelationship(), constraints, objCtrl.getModel().getCurrentDocument());
                 }
             });
         }
-        return core.findAllNamedIds(mtype.getRelationship(), constraints, objCtrl.getModel().getCurrentRecord());
+        return core.findAllNamedIds(mtype.getRelationship(), constraints, objCtrl.getModel().getCurrentDocument());
     }
 }

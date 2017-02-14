@@ -53,7 +53,7 @@ import java.util.logging.Logger;
 //        css = "fa-table",
 //        title = "Projets APP",
         url = "modules/academic/pbl/app-projects",
-        menu = "/Education/Internship",
+        menu = "/Education/Projects/Apbl",
         securityKey = "Custom.Education.Apbl.Projects"
 )
 public class AcademicAppProjectsCtrl {
@@ -73,6 +73,7 @@ public class AcademicAppProjectsCtrl {
     private boolean currentJoinAnyAllowed;
     private boolean currentAddTeamAllowed;
     private boolean currentAddProjectAllowed;
+    private boolean currentLockAllowed;
 
     public Model getModel() {
         return model;
@@ -84,6 +85,10 @@ public class AcademicAppProjectsCtrl {
             return currentAddProjectAllowed;
         } else if ("CreateTeam".equals(action)) {
             return currentAddTeamAllowed;
+        } else if ("Shuffle".equals(action)) {
+            return currentAdmin;
+        } else if ("Lock".equals(action)) {
+            return currentAdmin;
         }
         return false;
     }
@@ -123,6 +128,10 @@ public class AcademicAppProjectsCtrl {
         }
     }
 
+    public boolean isAdmin() {
+        return currentAdmin;
+    }
+
     public void onUpdateSession() {
         onSearchByText();
         ApblSession session = getModel().getSession();
@@ -130,10 +139,12 @@ public class AcademicAppProjectsCtrl {
             currentAddProjectAllowed = true;
             currentAddTeamAllowed = true;
             currentJoinAnyAllowed = true;
+            currentLockAllowed = true;
         } else {
             currentAddProjectAllowed = false;
             currentAddTeamAllowed = false;
             currentJoinAnyAllowed = false;
+            currentLockAllowed = false;
             if (session != null) {
                 currentAddProjectAllowed = core.userMatchesProfileFilter(currentUser.getId(), session.getProjectOwnerProfiles());
                 if(currentAddProjectAllowed) {
@@ -196,6 +207,21 @@ public class AcademicAppProjectsCtrl {
         }
     }
 
+    public void onShuffleSession(){
+        if(getModel().getSession()!=null) {
+            apbl.shuffleSession(getModel().getSession().getId());
+            reloadProjects();
+        }
+    }
+
+    public void onUnShuffleSession(){
+        if(getModel().getSession()!=null) {
+            apbl.removeShuffleSession(getModel().getSession().getId());
+            reloadProjects();
+        }
+    }
+
+
     public boolean isJoinAllowed(NodeItem item) {
         if (item != null) {
             ApblSession session = getModel().getSession();
@@ -238,6 +264,50 @@ public class AcademicAppProjectsCtrl {
         return false;
     }
 
+     public boolean isLockableMembers(NodeItem item) {
+        if (item != null) {
+            String type = item.getType();
+            if ("team".equals(type)) {
+                TeamNode t = (TeamNode) item.getValue();
+                return !t.getTeam().isLockedMembers();
+            }
+        }
+        return false;
+    }
+
+     public boolean isUnlockableMembers(NodeItem item) {
+        if (item != null) {
+            String type = item.getType();
+            if ("team".equals(type)) {
+                TeamNode t = (TeamNode) item.getValue();
+                return t.getTeam().isLockedMembers();
+            }
+        }
+        return false;
+    }
+
+     public boolean isLockableCoaches(NodeItem item) {
+        if (item != null) {
+            String type = item.getType();
+            if ("team".equals(type)) {
+                TeamNode t = (TeamNode) item.getValue();
+                return !t.getTeam().isLockedCoaches();
+            }
+        }
+        return false;
+    }
+
+     public boolean isUnlockableCoaches(NodeItem item) {
+        if (item != null) {
+            String type = item.getType();
+            if ("team".equals(type)) {
+                TeamNode t = (TeamNode) item.getValue();
+                return t.getTeam().isLockedCoaches();
+            }
+        }
+        return false;
+    }
+
     public boolean isLeaveAllowed(NodeItem item) {
         if (item != null) {
             String type = item.getType();
@@ -252,7 +322,8 @@ public class AcademicAppProjectsCtrl {
                 CoachNode t = (CoachNode) item.getValue();
                 if (currentTeacher != null) {
                     if (t.getCoaching().getTeacher().getId() == currentTeacher.getId()) {
-                        return true;
+                        ApblTeam tt = apbl.findTeam(t.getCoaching().getTeam().getId());
+                        return tt!=null && !tt.isLockedCoaches();
                     }
                 }
                 return false;
@@ -266,7 +337,8 @@ public class AcademicAppProjectsCtrl {
                 if (currentStudent != null) {
                     MemberNode t = (MemberNode) item.getValue();
                     if (t.getMember().getStudent().getId() == currentStudent.getId()) {
-                        return true;
+                        ApblTeam tt = apbl.findTeam(t.getMember().getTeam().getId());
+                        return tt!=null && !tt.isLockedMembers();
                     }
                 }
                 return false;
@@ -321,6 +393,9 @@ public class AcademicAppProjectsCtrl {
                     if(!session.getStatus().isAllowAddCoach()){
                         return;
                     }
+                    if(value.getTeam().isLockedCoaches()){
+                        return;
+                    }
                     ApblCoaching apblCoaching = apbl.addTeamCoach(value.getTeam().getId(), currentTeacher.getId());
                     if (apblCoaching != null) {
                         value.getCoaches().add(new CoachNode(apblCoaching));
@@ -332,6 +407,15 @@ public class AcademicAppProjectsCtrl {
                     if(!session.getStatus().isAllowAddMember()){
                         return;
                     }
+                    if(value.getTeam().isLockedMembers()){
+                        return;
+                    }
+                    if(!value.getTeam().isFreeMembers()){
+                        ApblPlugin.TeamConstraintsChecker c=new ApblPlugin.TeamConstraintsChecker(session.getId());
+                        if(!c.isAutoAddableMember(value,currentStudent.getId())){
+                            return;
+                        }
+                    }
                     ApblTeamMember member = apbl.addTeamMember(value.getTeam().getId(), currentStudent.getId());
                     if (member != null) {
                         value.getMembers().add(new MemberNode(member));
@@ -342,6 +426,66 @@ public class AcademicAppProjectsCtrl {
 
     }
 
+    public void onLockMembers(NodeItem item) {
+        if (item != null) {
+            String type = item.getType();
+            try {
+                if ("team".equals(type)) {
+                    TeamNode team = (TeamNode) item.getValue();
+                    team.getTeam().setLockedMembers(true);
+                    apbl.updateTeam(team.getTeam());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                FacesUtils.addErrorMessage(e.getMessage());
+            }
+        }
+    }
+    public void onLockCoaches(NodeItem item) {
+        if (item != null) {
+            String type = item.getType();
+            try {
+                if ("team".equals(type)) {
+                    TeamNode team = (TeamNode) item.getValue();
+                    team.getTeam().setLockedCoaches(true);
+                    apbl.updateTeam(team.getTeam());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                FacesUtils.addErrorMessage(e.getMessage());
+            }
+        }
+    }
+    public void onUnlockMembers(NodeItem item) {
+        if (item != null) {
+            String type = item.getType();
+            try {
+                if ("team".equals(type)) {
+                    TeamNode team = (TeamNode) item.getValue();
+                    team.getTeam().setLockedMembers(false);
+                    apbl.updateTeam(team.getTeam());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                FacesUtils.addErrorMessage(e.getMessage());
+            }
+        }
+    }
+    public void onUnlockCoaches(NodeItem item) {
+        if (item != null) {
+            String type = item.getType();
+            try {
+                if ("team".equals(type)) {
+                    TeamNode team = (TeamNode) item.getValue();
+                    team.getTeam().setLockedCoaches(false);
+                    apbl.updateTeam(team.getTeam());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                FacesUtils.addErrorMessage(e.getMessage());
+            }
+        }
+    }
     public void onRemove(NodeItem item) {
         if (item != null) {
             String type = item.getType();
@@ -526,6 +670,7 @@ public class AcademicAppProjectsCtrl {
         int childrenCount1;
         int childrenCount2;
         int childrenCount3;
+        int childrenCount4;
 
         public NodeItem(String name, int childrenCount1, String type, String owner, Object value) {
             this.name = name;
@@ -565,6 +710,15 @@ public class AcademicAppProjectsCtrl {
 
         public int getChildrenCount3() {
             return childrenCount3;
+        }
+
+        public int getChildrenCount4() {
+            return childrenCount4;
+        }
+
+        public NodeItem setChildrenCount4(int childrenCount4) {
+            this.childrenCount4 = childrenCount4;
+            return this;
         }
 
         public String getName() {
@@ -814,6 +968,7 @@ public class AcademicAppProjectsCtrl {
                     //}
                     team.setChildrenCount2(teachersByTeam.size());
                     team.setChildrenCount3(studentsByTeam.size());
+                    team.setChildrenCount4(teamNode.getUnsatisfiedTeamConstraints());
                 }
                 project.setChildrenCount2(teachersByProject.size());
                 project.setChildrenCount3(studentsByProject.size());

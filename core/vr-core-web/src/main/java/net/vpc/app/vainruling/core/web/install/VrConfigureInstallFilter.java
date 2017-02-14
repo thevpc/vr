@@ -157,7 +157,11 @@ public class VrConfigureInstallFilter implements Filter {
             // we still want to execute our after processing, and then
             // rethrow the problem after that.
             problem = t;
-            t.printStackTrace();
+            if(t instanceof javax.faces.application.ViewExpiredException){
+                //do nothing
+            }else {
+                t.printStackTrace();
+            }
         }
 
 //        doAfterProcessing(request, response);

@@ -41,4 +41,17 @@ public class CourseAssignmentFilterAnd implements CourseAssignmentFilter {
         }
         return true;
     }
+
+    @Override
+    public boolean lookupIntents() {
+        if(all.size()==0){
+            return false;
+        }
+        for (CourseAssignmentFilter teacherFilter : all) {
+            if(!teacherFilter.lookupIntents()){
+                return false;
+            }
+        }
+        return true;
+    }
 }

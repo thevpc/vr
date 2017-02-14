@@ -56,7 +56,7 @@ import java.util.logging.Logger;
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Mes Stages",
-        menu = "/Education/Internship",
+        menu = "/Education/Projects/Internships",
         securityKey = "Custom.Education.MyInternships",
         url = "modules/academic/internship/my-internships"
 )
