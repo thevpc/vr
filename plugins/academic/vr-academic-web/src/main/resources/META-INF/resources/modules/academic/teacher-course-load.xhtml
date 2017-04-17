@@ -26,7 +26,7 @@ and open the template in the editor.
     <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="buttonsForm">
-                <p:confirmDialog message="Are you sure, you want to delete ?" header="Initiating deleting process"
+                <p:confirmDialog message="Etes vous sur de vouloir supprimer la selection ?" header="Suppression"
                                  widgetVar="confirmationDelete">
                     <p:commandButton value="Yes Sure" onclick="PF('confirmationDelete').hide();
                                 processOnDeleteCurrent();"/>
@@ -639,7 +639,7 @@ and open the template in the editor.
                                 <p:commandLink
                                         action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.value.assignment)}"
                                         styleClass="#{i.value.assigned?'vr-assigned-course':''}"
-                                        value="#{i.value.assignment.coursePlan.name} - #{i.value.assignment.courseType.name}"/>
+                                        value="#{i.value.assignment.fullName}"/>
                             </p:column>
                             <p:column headerText="C" width="5%">
                                 <h:outputText

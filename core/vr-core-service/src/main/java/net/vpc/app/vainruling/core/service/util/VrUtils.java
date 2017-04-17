@@ -256,6 +256,22 @@ public class VrUtils {
         return gson.toJson(cmd);
     }
 
+    public static String dformat(Number nbr,String format) {
+        if(nbr==null){
+            return "";
+        }
+        if(nbr instanceof Double){
+            double d=(double) nbr;
+            double di=(long) d;
+            if(di==d){
+                nbr=new Long((long) d);
+                return String.valueOf(nbr);
+            }
+        }
+        DecimalFormat f=new DecimalFormat(format);
+        return f.format(nbr);
+    }
+
     public static <T> T parseJSONObject(String cmd, Class<T> type) {
         Object arg = null;
         if (cmd != null) {
@@ -514,5 +530,12 @@ public class VrUtils {
             }
         }
         return li;
+    }
+
+    public static double divOrZ(double a,double b){
+        if(Double.isNaN(a) || Double.isNaN(b) || b==0){
+            return 0;
+        }
+        return a/b;
     }
 }

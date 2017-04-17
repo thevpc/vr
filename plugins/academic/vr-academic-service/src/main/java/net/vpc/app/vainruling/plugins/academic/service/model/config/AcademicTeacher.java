@@ -29,6 +29,7 @@ import java.sql.Timestamp;
                 @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),
                 @Property(name = "ui.auto-filter.officialDiscipline", value = "{expr='officialDiscipline',order=2}"),
                 @Property(name = "ui.auto-filter.situation", value = "{expr='situation',order=3}"),
+                @Property(name = "ui.main-photo-provider", value = "net.vpc.app.vainruling.plugins.academic.web.photo.AcademicTeacherMainPhotoProvider")
         }
 )
 public class AcademicTeacher {

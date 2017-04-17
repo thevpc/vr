@@ -17,6 +17,8 @@ public final class UIConstants {
         public static final String VISIBLE_ON_CREATE = "ui.form.visibleOnInsert";
         public static final String VISIBLE_ON_UPDATE = "ui.form.visibleOnUpdate";
         public static final String CONTROL = "ui.form.control";
+        public static final String CONTROL_FILE_TYPE = "ui.form.control.file.type";
+        public static final String CONTROL_FILE_PATH = "ui.form.control.file.path";
         /**
          * colspan and rowspan separated with , example : 3,4
          */

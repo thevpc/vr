@@ -81,9 +81,39 @@ and open the template in the editor.
                                                      update="teachersList"/>
                                 </div>
                                 <p:dataTable id="teachersList" var="e"
-                                             value="#{academicAppStatusCtrl.model.filteredTeachers}">
+                                             value="#{academicAppStatusCtrl.model.filteredTeachers}"
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                >
+                                    <f:facet name="{Exporters}">
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png" width="16"/>
+                                            <p:dataExporter type="xls" target="listTable"
+                                                            fileName="proj-innov"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png" width="16"/>
+                                            <p:dataExporter type="pdf" target="listTable"
+                                                            fileName="proj-innov"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png" width="16"/>
+                                            <p:dataExporter type="csv" target="listTable"
+                                                            fileName="proj-innov"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png" width="16"/>
+                                            <p:dataExporter type="xml" target="listTable"
+                                                            fileName="proj-innov"/>
+                                        </h:commandLink>
+                                    </f:facet>
                                     <p:column headerText="Enseignant" sortBy="#{e.teacher.contact.fullTitle}">
                                         <p:outputLabel value="#{e.teacher.contact.fullTitle}"/>
+                                    </p:column>
+                                    <p:column headerText="Departement" sortBy="#{e.teacher.department.name}">
+                                        <p:outputLabel value="#{e.teacher.department.name}"/>
                                     </p:column>
                                     <p:column headerText="Nbr Equipes" sortBy="#{e.teamsCount}">
                                         <p:outputLabel styleClass="vr-center-text" value="#{(e.teamsCount)}"/>
@@ -92,16 +122,20 @@ and open the template in the editor.
                                         <p:outputLabel styleClass="vr-center-text"
                                                        value="#{vr.dblFormat(e.studentsCount)}"/>
                                     </p:column>
-                                    <p:column headerText="Charge" sortBy="#{e.studentsCount}">
+                                    <p:column headerText="% Encadrement" sortBy="#{e.studentsCount}">
                                         <p:outputLabel styleClass="vr-center-text"
                                                        value="#{vr.dblCustomFormat(e.studentsCount * 100 / academicAppStatusCtrl.model.students.size(),'0.00')}"/>
                                     </p:column>
+                                    <p:column headerText="Charge en TP" sortBy="#{e.studentsCount}">
+                                        <p:outputLabel styleClass="vr-center-text"
+                                                       value="#{vr.dblCustomFormat(e.load,'0.00')}"/>
+                                    </p:column>
                                     <f:facet name="footer">
-                                        #{academicAppStatusCtrl.model.filteredTeachers.size()} enseignants
+                                        #{academicAppStatusCtrl.model.filteredTeachers.size()} enseignants, #{academicAppStatusCtrl.model.teamedStudentsCount} / #{academicAppStatusCtrl.model.students.size()} élèves, #{academicAppStatusCtrl.model.teamsCount} équipes
                                     </f:facet>
                                 </p:dataTable>
                             </p:tab>
-                            <p:tab title="Elèves" >
+                            <p:tab title="Elèves">
                                 <div style="width: 100%;margin-top: 10px;margin-bottom: 10px;">
                                     <span style="width: 100px;">#{vr.dblCustomFormat(academicAppStatusCtrl.validStudentsPercent,"0.00")}% valides</span>
                                     <div class="sparkline" data-type="pie" data-offset="90" data-width="32px"
@@ -127,7 +161,34 @@ and open the template in the editor.
                                                      update="studentsList"/>
                                 </div>
                                 <p:dataTable id="studentsList" var="s"
-                                             value="#{academicAppStatusCtrl.model.filteredStudents}">
+                                             value="#{academicAppStatusCtrl.model.filteredStudents}"
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                >
+                                    <f:facet name="{Exporters}">
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png" width="16"/>
+                                            <p:dataExporter type="xls" target="listTable"
+                                                            fileName="proj-innov"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png" width="16"/>
+                                            <p:dataExporter type="pdf" target="listTable"
+                                                            fileName="proj-innov"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png" width="16"/>
+                                            <p:dataExporter type="csv" target="listTable"
+                                                            fileName="proj-innov"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png" width="16"/>
+                                            <p:dataExporter type="xml" target="listTable"
+                                                            fileName="proj-innov"/>
+                                        </h:commandLink>
+                                    </f:facet>
                                     <p:column headerText="Elève" sortBy="#{s.student.contact.fullTitle}">
                                         <p:outputLabel value="#{s.student.contact.fullTitle}"/>
                                     </p:column>
@@ -153,10 +214,26 @@ and open the template in the editor.
                                                 width="32" height="32"
                                         />
                                     </p:column>
-                                    <p:column headerText="Observations" styleClass="#{s.invalid?'vr-label-invalid':''}"
-                                              sortBy="#{s.invalidObservations}">
-                                        <p:outputLabel value="#{s.invalidObservations}"/>
+                                    <p:column headerText="Ss Coach" styleClass="#{s.errNoCoach?'vr-label-invalid':''}"
+                                              sortBy="#{s.errNoCoach}" style="width: 3%;">
+                                        <p:outputLabel value="#{s.errNoCoach?'X':''}"/>
                                     </p:column>
+                                    <p:column headerText="Ss Prj" styleClass="#{s.errNoProject?'vr-label-invalid':''}"
+                                              sortBy="#{s.errNoProject}" style="width: 3%;">
+                                        <p:outputLabel value="#{s.errNoProject?'X':''}"/>
+                                    </p:column>
+                                    <p:column headerText="Ss Eqp" styleClass="#{s.errNoTeam?'vr-label-invalid':''}"
+                                              sortBy="#{s.errNoTeam}" style="width: 3%;">
+                                        <p:outputLabel value="#{s.errNoTeam?'X':''}"/>
+                                    </p:column>
+                                    <p:column headerText="++ Eqps" styleClass="#{s.errTooManyTeams?'vr-label-invalid':''}"
+                                              sortBy="#{s.errTooManyTeams}" style="width: 3%;">
+                                        <p:outputLabel value="#{s.errTooManyTeams?'X':''}"/>
+                                    </p:column>
+                                    <!--<p:column headerText="Observations" styleClass="# {s.invalid?'vr-label-invalid':''}"-->
+                                              <!--sortBy="#     {s.invalidObservations}">-->
+                                        <!--<p:outputLabel value="# {s.invalidObservations}"/>-->
+                                    <!--</p:column>-->
                                     <f:facet name="footer">
                                         #{academicAppStatusCtrl.model.filteredStudents.size()} élèves ; #{vr.dblCustomFormat(academicAppStatusCtrl.getInterDepartmentPercent(false),"0.00")}% inter-départements ; #{vr.dblCustomFormat(academicAppStatusCtrl.getInterClassPercent(false),"0.00")}% inter-classes
                                     </f:facet>

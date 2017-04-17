@@ -39,9 +39,6 @@ public class LoadValue {
         this.equivTD = equivTD;
     }
 
-    public static void main(String[] args) {
-        System.out.println(new LoadValue(15, 6, 15, 42, 66.3, 0, 0, 0).formatString());
-    }
 
     private String formatF(double d) {
         double r = ((int) d);
@@ -237,7 +234,43 @@ public class LoadValue {
 
     @Override
     public String toString() {
-        return "Value{" + "c=" + c + ", td=" + td + ", tp=" + tp + ", pm=" + pm + ", equiv=" + equiv + ", tppm=" + tppm + '}';
+        if(c==0 && td==0 && pm==0 && tp==0 && equiv==0){
+            return "Value{0}";
+        }
+        StringBuilder sb=new StringBuilder();
+        if(c!=0){
+            if(sb.length()>0){
+                sb.append(", ");
+            }
+            sb.append("c=").append(f.format(c));
+        }
+        if(td!=0){
+            if(sb.length()>0){
+                sb.append(", ");
+            }
+            sb.append("td=").append(f.format(td));
+        }
+        if(tp!=0){
+            if(sb.length()>0){
+                sb.append(", ");
+            }
+            sb.append("tp=").append(f.format(tp));
+        }
+        if(tppm!=0){
+            if(sb.length()>0){
+                sb.append(", ");
+            }
+            sb.append("tppm=").append(f.format(tppm));
+        }
+        if(equiv!=0){
+            if(sb.length()>0){
+                sb.append(", ");
+            }
+            sb.append("equiv=").append(f.format(equiv));
+        }
+        sb.insert(0,"Value{");
+        sb.append("}");
+        return sb.toString();
     }
 
 }

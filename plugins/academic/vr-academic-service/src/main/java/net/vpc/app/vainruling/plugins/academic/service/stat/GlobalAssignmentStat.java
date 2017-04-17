@@ -5,11 +5,17 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.stat;
 
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
+import net.vpc.common.util.DefaultMapList;
+import net.vpc.common.util.MapList;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -35,22 +41,32 @@ public class GlobalAssignmentStat {
     private LoadValue avgExtra = new LoadValue();
     private LoadValue avgExtraWeek = new LoadValue();
 
-    private LoadValue targetAssignments = new LoadValue();
-    private LoadValue missingAssignments = new LoadValue();
+    private LoadValue targetAssignmentsLoad = new LoadValue();
+    private LoadValue missingAssignmentsLoad = new LoadValue();
     private double weeks;
     private double maxWeeks;
-    private int teachersCount;
-    private HashMap<Integer, TeacherStat> teachers = new HashMap<Integer, TeacherStat>();
+    private double teachersCount;
+    private Map<Integer, TeacherStat> teachers = new HashMap<Integer, TeacherStat>();
+    private MapList<Integer, AcademicCourseAssignment> targetAssignmentsMap = new DefaultMapList<Integer, AcademicCourseAssignment>(AcademicPlugin.AcademicCourseAssignmentIdConverter);
+    private MapList<Integer, AcademicCourseAssignment> missingAssignmentsMap = new DefaultMapList<Integer, AcademicCourseAssignment>(AcademicPlugin.AcademicCourseAssignmentIdConverter);
 
     public GlobalAssignmentStat() {
     }
 
-    public LoadValue getTargetAssignments() {
-        return targetAssignments;
+    public MapList<Integer, AcademicCourseAssignment> getTargetAssignmentsMap() {
+        return targetAssignmentsMap;
     }
 
-    public LoadValue getMissingAssignments() {
-        return missingAssignments;
+    public MapList<Integer, AcademicCourseAssignment> getMissingAssignmentsMap() {
+        return missingAssignmentsMap;
+    }
+
+    public LoadValue getTargetAssignmentsLoad() {
+        return targetAssignmentsLoad;
+    }
+
+    public LoadValue getMissingAssignmentsLoad() {
+        return missingAssignmentsLoad;
     }
 
     public LoadValue getDue() {
@@ -129,19 +145,19 @@ public class GlobalAssignmentStat {
         this.maxWeeks = maxWeeks;
     }
 
-    public int getTeachersCount() {
+    public double getTeachersCount() {
         return teachersCount;
     }
 
-    public void setTeachersCount(int teachersCount) {
+    public void setTeachersCount(double teachersCount) {
         this.teachersCount = teachersCount;
     }
 
-    public HashMap<Integer, TeacherStat> getTeachers() {
+    public Map<Integer, TeacherStat> getTeachers() {
         return teachers;
     }
 
-    public void setTeachers(HashMap<Integer, TeacherStat> teachers) {
+    public void setTeachers(Map<Integer, TeacherStat> teachers) {
         this.teachers = teachers;
     }
 
@@ -174,4 +190,35 @@ public class GlobalAssignmentStat {
     }
 
 
+    public void addTeacherStat(TeacherBaseStat semLoad){
+        GlobalAssignmentStat y=this;
+        y.getValue().add(semLoad.getValue());
+        y.getExtra().add(semLoad.getExtra());
+        y.getDue().add(semLoad.getDue());
+
+        y.getDueWeek().add(semLoad.getDueWeek());
+        y.getValueWeek().add(semLoad.getValueWeek());
+        y.getExtraWeek().add(semLoad.getExtraWeek());
+
+        y.setMaxWeeks(y.getMaxWeeks() + semLoad.getMaxWeeks());
+        y.setWeeks(y.getWeeks() + semLoad.getWeeks());
+        if (!y.getTeachers().containsKey(semLoad.getTeacher().getId())) {
+            y.getTeachers().put(semLoad.getTeacher().getId(), new TeacherStat(semLoad.getTeacher()));
+            y.setTeachersCount(y.getTeachers().size());
+        }
+        int teachersSize = y.getTeachers().size();
+        y.getAvgValue().set(semLoad.getValue().copy().div(teachersSize));
+        y.getAvgExtra().set(semLoad.getExtraWeek().copy().div(teachersSize));
+        y.getAvgValueWeek().set(semLoad.getValueWeek().copy().div(teachersSize));
+        y.getAvgExtraWeek().set(semLoad.getExtraWeek().copy().div(teachersSize));
+    }
+
+    @Override
+    public String toString() {
+        return "GlobalAssignmentStat{" +
+                "situation=" + situation +
+                ", degree=" + degree +
+                ", semester=" + semester +
+                '}';
+    }
 }

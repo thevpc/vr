@@ -14,6 +14,7 @@ import java.util.Set;
 public class ApblTeacherInfo {
     private AcademicTeacher teacher;
     private double studentsCount;
+    private double load;
     private List<TeamNode> teams=new ArrayList<>();
     private Set<AcademicStudent> students=new HashSet<>();
 
@@ -24,6 +25,14 @@ public class ApblTeacherInfo {
     public ApblTeacherInfo setTeacher(AcademicTeacher teacher) {
         this.teacher = teacher;
         return this;
+    }
+
+    public double getLoad() {
+        return load;
+    }
+
+    public void setLoad(double load) {
+        this.load = load;
     }
 
     public int getTeamsCount() {

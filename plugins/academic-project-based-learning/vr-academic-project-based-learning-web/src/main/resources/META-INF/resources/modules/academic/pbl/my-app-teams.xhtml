@@ -61,6 +61,27 @@ and open the template in the editor.
                 <div>
                     <div class="table-responsive">
                         <p:tabView>
+                            <p:tab title="Membres">
+                                <p:dataTable var="e" value="#{academicAppMyTeamsCtrl.model.selectedTeamMembers}"
+                                             emptyMessage="Aucun membre"
+                                >
+                                    <p:column headerText="Nom">
+                                        <p:outputLabel value="#{e.student.contact.fullName}"/>
+                                    </p:column>
+                                    <p:column headerText="Classes">
+                                        <p:outputLabel value="#{vr.strListifyNoEmpty(',',e.student.lastClass1,e.student.lastClass2,e.student.lastClass3)}"/>
+                                    </p:column>
+                                    <p:column headerText="email interne">
+                                        <p:outputLabel value="#{e.student.user.login}"/>
+                                    </p:column>
+                                    <p:column headerText="email externe">
+                                        <p:outputLabel value="#{e.student.contact.email}"/>
+                                    </p:column>
+                                    <p:column headerText="telephone">
+                                        <p:outputLabel value="#{e.student.contact.phone1}"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
                             <p:tab title="Avancements">
                                 <p:dataTable var="e" value="#{academicAppMyTeamsCtrl.model.progressionLogs}"
                                              emptyMessage="Aucune progression"

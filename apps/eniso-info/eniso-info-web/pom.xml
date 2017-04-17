@@ -56,11 +56,11 @@
             <artifactId>eniso-info-service</artifactId>
             <version>1.0</version>
         </dependency>
-        <dependency>
-            <groupId>net.vpc.app.vain-ruling.apps.eniso-info.plugins.themes</groupId>
-            <artifactId>eniso-info-infusion-theme</artifactId>
-            <version>1.1</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>net.vpc.app.vain-ruling.apps.eniso-info.plugins.themes</groupId>-->
+            <!--<artifactId>eniso-info-infusion-theme</artifactId>-->
+            <!--<version>1.1</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.themes</groupId>
             <artifactId>vr-crew-theme</artifactId>

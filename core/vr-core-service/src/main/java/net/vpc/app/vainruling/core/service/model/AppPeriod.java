@@ -5,6 +5,9 @@
  */
 package net.vpc.app.vainruling.core.service.model;
 
+import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.upa.FormulaType;
+import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 import net.vpc.upa.types.DateTime;
 
@@ -27,6 +30,10 @@ public class AppPeriod {
     private boolean readOnly = false;
     @Summary
     private String snapshotName;
+    @Properties(
+            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
+    @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private DateTime creationTime;
 
     public AppPeriod() {

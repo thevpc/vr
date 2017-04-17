@@ -36,7 +36,7 @@ public class EquipmentStatusLog {
 
     @Summary
     @ToString
-    private EquipmentStatusType type;
+    private EquipmentStatusType type=EquipmentStatusType.AVAILABLE;
 
     /**
      * technician

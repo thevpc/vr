@@ -12,6 +12,7 @@ import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsDialogCtrl;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
@@ -97,7 +98,7 @@ public class AcademicAppProjectsCtrl {
     private void onPageLoad() {
         currentTeacher = academic.getCurrentTeacher();
         currentStudent = academic.getCurrentStudent();
-        currentUser=UserSession.getCurrentUser();
+        currentUser = UserSession.getCurrentUser();
         currentAdmin = core.isSessionAdmin();
         List<ApblSession> sessions = apbl.findAvailableSessions();
         getModel().getSessionsMap().clear();
@@ -110,21 +111,29 @@ public class AcademicAppProjectsCtrl {
         getModel().setProjects(new ArrayList<>());
         if (sessions.size() > 0) {
             getModel().setCurrentSessionId(sessions.get(0).getId());
-            onSearchByText();
+        }else{
+            getModel().setCurrentSessionId(null);
         }
+        onSearchByText();
         onUpdateSession();
     }
 
-    public void onSearchByText(){
+    public void onSearchByText() {
         if (getModel().getSession() == null) {
             getModel().setProjects(new ArrayList<>());
+            getModel().setProjectItems(new ArrayList<>());
 
-        }else {
+        } else {
             List<ProjectNode> projectNodes =
                     StringUtils.isEmpty(getModel().getFilterText()) ?
                             apbl.findProjectNodes(getModel().getSession().getId())
                             : apbl.findProjectNodes(getModel().getSession().getId(), StringComparators.ilikepart(getModel().getFilterText()).apply(StringTransforms.UNIFORM));
             getModel().setProjects(projectNodes);
+            ArrayList<SelectItem> projectItems = new ArrayList<>();
+            for (ApblProject apblProject : apbl.findProjects(getModel().getSession().getId())) {
+                projectItems.add(new SelectItem(apblProject.getId(), Vr.get().strcut(apblProject.getName(),80)));
+            }
+            getModel().setProjectItems(projectItems);
         }
     }
 
@@ -147,23 +156,23 @@ public class AcademicAppProjectsCtrl {
             currentLockAllowed = false;
             if (session != null) {
                 currentAddProjectAllowed = core.userMatchesProfileFilter(currentUser.getId(), session.getProjectOwnerProfiles());
-                if(currentAddProjectAllowed) {
-                    if (session.getStatus()!=null && !session.getStatus().isAllowAddProject()) {
+                if (currentAddProjectAllowed) {
+                    if (session.getStatus() != null && !session.getStatus().isAllowAddProject()) {
                         currentAddProjectAllowed = false;
                     }
                 }
-                if(currentAddProjectAllowed) {
+                if (currentAddProjectAllowed) {
                     if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedPersist(UPA.getPersistenceUnit().getEntity(ApblProject.class))) {
                         currentAddProjectAllowed = false;
                     }
                 }
                 currentAddTeamAllowed = core.userMatchesProfileFilter(currentUser.getId(), session.getTeamOwnerProfiles());
-                if(currentAddTeamAllowed) {
-                    if (session.getStatus()!=null && !session.getStatus().isAllowAddTeam()) {
+                if (currentAddTeamAllowed) {
+                    if (session.getStatus() != null && !session.getStatus().isAllowAddTeam()) {
                         currentAddTeamAllowed = false;
                     }
                 }
-                if(currentAddTeamAllowed) {
+                if (currentAddTeamAllowed) {
                     if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedPersist(UPA.getPersistenceUnit().getEntity(ApblTeam.class))) {
                         currentAddTeamAllowed = false;
                     }
@@ -171,15 +180,15 @@ public class AcademicAppProjectsCtrl {
 
                 if (currentTeacher != null && currentTeacher.getUser() != null) {
                     currentJoinAnyAllowed = core.userMatchesProfileFilter(currentTeacher.getUser().getId(), session.getCoachProfiles());
-                    if(currentJoinAnyAllowed){
-                        if (session.getStatus()!=null && !session.getStatus().isAllowAddCoach()) {
+                    if (currentJoinAnyAllowed) {
+                        if (session.getStatus() != null && !session.getStatus().isAllowAddCoach()) {
                             currentJoinAnyAllowed = false;
                         }
                     }
                 } else if (currentStudent != null && currentStudent.getUser() != null) {
                     currentJoinAnyAllowed = core.userMatchesProfileFilter(currentStudent.getUser().getId(), session.getMemberProfiles());
-                    if(currentJoinAnyAllowed){
-                        if (session.getStatus()!=null && !session.getStatus().isAllowAddMember()) {
+                    if (currentJoinAnyAllowed) {
+                        if (session.getStatus() != null && !session.getStatus().isAllowAddMember()) {
                             currentJoinAnyAllowed = false;
                         }
                     }
@@ -201,21 +210,21 @@ public class AcademicAppProjectsCtrl {
     }
 
     public void reloadProjects() {
-        getModel().setProjects(new ArrayList<>());
-        if (getModel().getSession() != null) {
+//        getModel().setProjects(new ArrayList<>());
+//        if (getModel().getSession() != null) {
             onSearchByText();
-        }
+//        }
     }
 
-    public void onShuffleSession(){
-        if(getModel().getSession()!=null) {
+    public void onShuffleSession() {
+        if (getModel().getSession() != null) {
             apbl.shuffleSession(getModel().getSession().getId());
             reloadProjects();
         }
     }
 
-    public void onUnShuffleSession(){
-        if(getModel().getSession()!=null) {
+    public void onUnShuffleSession() {
+        if (getModel().getSession() != null) {
             apbl.removeShuffleSession(getModel().getSession().getId());
             reloadProjects();
         }
@@ -264,7 +273,7 @@ public class AcademicAppProjectsCtrl {
         return false;
     }
 
-     public boolean isLockableMembers(NodeItem item) {
+    public boolean isLockableMembers(NodeItem item) {
         if (item != null) {
             String type = item.getType();
             if ("team".equals(type)) {
@@ -275,7 +284,7 @@ public class AcademicAppProjectsCtrl {
         return false;
     }
 
-     public boolean isUnlockableMembers(NodeItem item) {
+    public boolean isUnlockableMembers(NodeItem item) {
         if (item != null) {
             String type = item.getType();
             if ("team".equals(type)) {
@@ -286,7 +295,7 @@ public class AcademicAppProjectsCtrl {
         return false;
     }
 
-     public boolean isLockableCoaches(NodeItem item) {
+    public boolean isLockableCoaches(NodeItem item) {
         if (item != null) {
             String type = item.getType();
             if ("team".equals(type)) {
@@ -297,7 +306,7 @@ public class AcademicAppProjectsCtrl {
         return false;
     }
 
-     public boolean isUnlockableCoaches(NodeItem item) {
+    public boolean isUnlockableCoaches(NodeItem item) {
         if (item != null) {
             String type = item.getType();
             if ("team".equals(type)) {
@@ -316,14 +325,14 @@ public class AcademicAppProjectsCtrl {
                 if (currentAdmin) {
                     return true;
                 }
-                if(!session.getStatus().isAllowRemoveCoach()){
+                if (!session.getStatus().isAllowRemoveCoach()) {
                     return false;
                 }
                 CoachNode t = (CoachNode) item.getValue();
                 if (currentTeacher != null) {
                     if (t.getCoaching().getTeacher().getId() == currentTeacher.getId()) {
                         ApblTeam tt = apbl.findTeam(t.getCoaching().getTeam().getId());
-                        return tt!=null && !tt.isLockedCoaches();
+                        return tt != null && !tt.isLockedCoaches();
                     }
                 }
                 return false;
@@ -331,14 +340,14 @@ public class AcademicAppProjectsCtrl {
                 if (currentAdmin) {
                     return true;
                 }
-                if(!session.getStatus().isAllowRemoveMember()){
+                if (!session.getStatus().isAllowRemoveMember()) {
                     return false;
                 }
                 if (currentStudent != null) {
                     MemberNode t = (MemberNode) item.getValue();
                     if (t.getMember().getStudent().getId() == currentStudent.getId()) {
                         ApblTeam tt = apbl.findTeam(t.getMember().getTeam().getId());
-                        return tt!=null && !tt.isLockedMembers();
+                        return tt != null && !tt.isLockedMembers();
                     }
                 }
                 return false;
@@ -347,12 +356,12 @@ public class AcademicAppProjectsCtrl {
                 if (t.getProject() == null) {
                     return false;
                 }
-                if(!session.getStatus().isAllowRemoveProject()){
+                if (!session.getStatus().isAllowRemoveProject()) {
                     return false;
                 }
-                if(currentUser!=null){
-                    if(t.getProject().getOwner()!=null){
-                        if(t.getProject().getOwner().getId()==currentUser.getId()){
+                if (currentUser != null) {
+                    if (t.getProject().getOwner() != null) {
+                        if (t.getProject().getOwner().getId() == currentUser.getId()) {
                             return true;
                         }
                     }
@@ -365,12 +374,12 @@ public class AcademicAppProjectsCtrl {
                 if (currentAdmin) {
                     return true;
                 }
-                if(!session.getStatus().isAllowRemoveTeam()){
+                if (!session.getStatus().isAllowRemoveTeam()) {
                     return false;
                 }
-                if(currentUser!=null){
-                    if(t.getTeam().getOwner()!=null){
-                        if(t.getTeam().getOwner().getId()==currentUser.getId()){
+                if (currentUser != null) {
+                    if (t.getTeam().getOwner() != null) {
+                        if (t.getTeam().getOwner().getId() == currentUser.getId()) {
                             return true;
                         }
                     }
@@ -390,10 +399,10 @@ public class AcademicAppProjectsCtrl {
                     if (!currentJoinAnyAllowed) {
                         return;
                     }
-                    if(!session.getStatus().isAllowAddCoach()){
+                    if (!session.getStatus().isAllowAddCoach()) {
                         return;
                     }
-                    if(value.getTeam().isLockedCoaches()){
+                    if (value.getTeam().isLockedCoaches()) {
                         return;
                     }
                     ApblCoaching apblCoaching = apbl.addTeamCoach(value.getTeam().getId(), currentTeacher.getId());
@@ -404,15 +413,15 @@ public class AcademicAppProjectsCtrl {
                     if (!currentJoinAnyAllowed) {
                         return;
                     }
-                    if(!session.getStatus().isAllowAddMember()){
+                    if (!session.getStatus().isAllowAddMember()) {
                         return;
                     }
-                    if(value.getTeam().isLockedMembers()){
+                    if (value.getTeam().isLockedMembers()) {
                         return;
                     }
-                    if(!value.getTeam().isFreeMembers()){
-                        ApblPlugin.TeamConstraintsChecker c=new ApblPlugin.TeamConstraintsChecker(session.getId());
-                        if(!c.isAutoAddableMember(value,currentStudent.getId())){
+                    if (!value.getTeam().isFreeMembers()) {
+                        ApblPlugin.TeamConstraintsChecker c = new ApblPlugin.TeamConstraintsChecker(session.getId());
+                        if (!c.isAutoAddableMember(value, currentStudent.getId())) {
                             return;
                         }
                     }
@@ -421,6 +430,99 @@ public class AcademicAppProjectsCtrl {
                         value.getMembers().add(new MemberNode(member));
                     }
                 }
+            }
+        }
+
+    }
+
+    public void onJoinTeacher(NodeItem item, int teacherId) {
+        if (item != null && teacherId >= 0) {
+            String type = item.getType();
+            ApblSession session = getModel().getSession();
+            if ("team".equals(type)) {
+                TeamNode value = (TeamNode) item.getValue();
+//                if (currentTeacher != null) {
+//                    if (!currentJoinAnyAllowed) {
+//                        return;
+//                    }
+                if (!session.getStatus().isAllowAddCoach()) {
+                    return;
+                }
+                if (value.getTeam().isLockedCoaches()) {
+                    return;
+                }
+                ApblCoaching apblCoaching = apbl.addTeamCoach(value.getTeam().getId(), teacherId);
+                if (apblCoaching != null) {
+                    value.getCoaches().add(new CoachNode(apblCoaching));
+                }
+//                } else if (currentStudent != null) {
+//                    if (!currentJoinAnyAllowed) {
+//                        return;
+//                    }
+//                    if(!session.getStatus().isAllowAddMember()){
+//                        return;
+//                    }
+//                    if(value.getTeam().isLockedMembers()){
+//                        return;
+//                    }
+//                    if(!value.getTeam().isFreeMembers()){
+//                        ApblPlugin.TeamConstraintsChecker c=new ApblPlugin.TeamConstraintsChecker(session.getId());
+//                        if(!c.isAutoAddableMember(value,currentStudent.getId())){
+//                            return;
+//                        }
+//                    }
+//                    ApblTeamMember member = apbl.addTeamMember(value.getTeam().getId(), currentStudent.getId());
+//                    if (member != null) {
+//                        value.getMembers().add(new MemberNode(member));
+//                    }
+//                }
+            }
+        }
+
+    }
+
+    public void onJoinStudent(NodeItem item, int studentId) {
+        if (item != null && studentId >= 0) {
+            String type = item.getType();
+            ApblSession session = getModel().getSession();
+            if ("team".equals(type)) {
+                TeamNode value = (TeamNode) item.getValue();
+//                if (currentTeacher != null) {
+////                    if (!currentJoinAnyAllowed) {
+////                        return;
+////                    }
+//                    if (!session.getStatus().isAllowAddCoach()) {
+//                        return;
+//                    }
+//                    if (value.getTeam().isLockedCoaches()) {
+//                        return;
+//                    }
+//                    ApblCoaching apblCoaching = apbl.addTeamCoach(value.getTeam().getId(), studentId);
+//                    if (apblCoaching != null) {
+//                        value.getCoaches().add(new CoachNode(apblCoaching));
+//                    }
+//                } else
+//                if (currentStudent != null) {
+//                if (!currentJoinAnyAllowed) {
+//                    return;
+//                }
+                if (!session.getStatus().isAllowAddMember()) {
+                    return;
+                }
+                if (value.getTeam().isLockedMembers()) {
+                    return;
+                }
+                if (!value.getTeam().isFreeMembers()) {
+                    ApblPlugin.TeamConstraintsChecker c = new ApblPlugin.TeamConstraintsChecker(session.getId());
+                    if (!c.isAutoAddableMember(value, studentId)) {
+                        return;
+                    }
+                }
+                ApblTeamMember member = apbl.addTeamMember(value.getTeam().getId(), studentId);
+                if (member != null) {
+                    value.getMembers().add(new MemberNode(member));
+                }
+//                }
             }
         }
 
@@ -441,6 +543,7 @@ public class AcademicAppProjectsCtrl {
             }
         }
     }
+
     public void onLockCoaches(NodeItem item) {
         if (item != null) {
             String type = item.getType();
@@ -456,6 +559,7 @@ public class AcademicAppProjectsCtrl {
             }
         }
     }
+
     public void onUnlockMembers(NodeItem item) {
         if (item != null) {
             String type = item.getType();
@@ -471,6 +575,7 @@ public class AcademicAppProjectsCtrl {
             }
         }
     }
+
     public void onUnlockCoaches(NodeItem item) {
         if (item != null) {
             String type = item.getType();
@@ -486,6 +591,7 @@ public class AcademicAppProjectsCtrl {
             }
         }
     }
+
     public void onRemove(NodeItem item) {
         if (item != null) {
             String type = item.getType();
@@ -551,7 +657,7 @@ public class AcademicAppProjectsCtrl {
             RequestContext.getCurrentInstance().openDialog("/modules/academic/pbl/dialog/project-edit-dialog", options, null);
         } else if (node.getValue() instanceof TeamNode) {
             ApblTeam team = ((TeamNode) node.getValue()).getTeam();
-            getModel().setViewOnly(!(currentAdmin || currentStudent != null && team != null && team.getOwner() != null && currentStudent.getUser()!=null && team.getOwner().getId() == currentStudent.getUser().getId()));
+            getModel().setViewOnly(!(currentAdmin || currentStudent != null && team != null && team.getOwner() != null && currentStudent.getUser() != null && team.getOwner().getId() == currentStudent.getUser().getId()));
             getModel().setSelectedTeam(team);
             getModel().setEditMode(true);
             Map<String, Object> options = new HashMap<String, Object>();
@@ -766,6 +872,8 @@ public class AcademicAppProjectsCtrl {
         Map<Integer, ApblSession> sessionsMap = new HashMap<>();
         List<SelectItem> projectItems = new ArrayList<>();
         List<SelectItem> sessionItems = new ArrayList<>();
+        List<SelectItem> teacherItems = new ArrayList<>();
+        List<SelectItem> sItems = new ArrayList<>();
         Integer currentTeamProject = null;
         Integer currentSessionId = null;
         private TreeNode root;
@@ -915,21 +1023,19 @@ public class AcademicAppProjectsCtrl {
             this.projects = projects;
             root = new DefaultTreeNode(new NodeItem("Root", projects.size(), "root", "", null), null);
             projectsMap = new HashMap<>();
-            projectItems = new ArrayList<>();
-            boolean defaultExpand= !net.vpc.common.strings.StringUtils.isEmpty(getFilterText());
+            boolean defaultExpand = !net.vpc.common.strings.StringUtils.isEmpty(getFilterText());
             for (ProjectNode i : projects) {
                 NodeItem project =
                         i.getProject() == null ?
                                 new NodeItem(
-                                        "<Equipes Sans Projets>" , i.getTeams().size()
+                                        "<Equipes Sans Projets>", i.getTeams().size()
                                         , "project", "", i)
                                 :
                                 new NodeItem(
                                         i.getProject().getName(), i.getTeams().size()
-                                        , "project", core.getUserFullTitle(i.getProject().getOwner()==null?null:i.getProject().getOwner()), i);
+                                        , "project", core.getUserFullTitle(i.getProject().getOwner() == null ? null : i.getProject().getOwner()), i);
                 if (i.getProject() != null) {
                     projectsMap.put(i.getProject().getId(), i.getProject());
-                    projectItems.add(new SelectItem(i.getProject().getId(), i.getProject().getName()));
                 }
                 DefaultTreeNode n = new DefaultTreeNode(project, this.root);
                 n.setExpanded(defaultExpand);

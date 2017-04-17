@@ -115,6 +115,22 @@ public class ApblStudentInfo {
         return false;
     }
 
+    public boolean isErrNoTeam(){
+        return team == null || team.getTeam() == null;
+    }
+
+    public boolean isErrNoProject(){
+        return project == null || project.getProject() == null;
+    }
+
+    public boolean isErrNoCoach(){
+        return (coach==null);
+    }
+
+    public boolean isErrTooManyTeams(){
+        return teams.size()>1;
+    }
+
     public String getInvalidObservations() {
         StringBuilder sb=new StringBuilder();
         if(team==null || team.getTeam()==null){

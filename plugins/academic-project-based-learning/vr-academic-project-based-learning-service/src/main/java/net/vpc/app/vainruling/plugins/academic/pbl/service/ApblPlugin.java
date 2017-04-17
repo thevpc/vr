@@ -297,6 +297,9 @@ public class ApblPlugin {
     public List<ApblTeacherInfo> findTeacherInfos(int[] sessionIds, boolean includeMissingTeachers, ObjectFilter<AcademicTeacher> teacherFilter) {
         Map<Integer, ApblTeacherInfo> rows = new HashMap<>();
         for (Integer sessionId : new HashSet<Integer>(Arrays.asList(Utils.toIntArray(sessionIds)))) {
+            ApblSession currentSession = findSession(sessionId);
+            int nbrStudents=academic.findStudents(currentSession.getMemberProfiles(), null).size();
+            int nbrEffectiveStudents=0;
             for (ProjectNode projectNode : findProjectNodes(sessionId)) {
                 for (TeamNode teamNode : projectNode.getTeams()) {
                     for (CoachNode coachNode : teamNode.getCoaches()) {
@@ -314,6 +317,21 @@ public class ApblPlugin {
                                 }
                                 apblTeacherInfo.setStudentsCount(apblTeacherInfo.getStudentsCount() + teamNode.getMembers().size() / ((double) teamNode.getCoaches().size()));
                                 apblTeacherInfo.getTeams().add(teamNode);
+                            }
+                        }
+                    }
+                    nbrEffectiveStudents+=teamNode.getMembers().size();
+                }
+            }
+
+            for (ProjectNode projectNode : findProjectNodes(sessionId)) {
+                for (TeamNode teamNode : projectNode.getTeams()) {
+                    for (CoachNode coachNode : teamNode.getCoaches()) {
+                        ApblCoaching c = coachNode.getCoaching();
+                        if (c != null) {
+                            if (teacherFilter == null || teacherFilter.accept(c.getTeacher())) {
+                                ApblTeacherInfo apblTeacherInfo = rows.get(c.getTeacher().getId());
+                                apblTeacherInfo.setLoad(apblTeacherInfo.getStudentsCount()*1.0/nbrStudents * currentSession.getLoad());
                             }
                         }
                     }
@@ -903,6 +921,13 @@ public class ApblPlugin {
         return pu.createQuery("Select u from ApblTeam u where u.sessionId=:sessionId and exists (Select 1 from ApblCoaching x where x.teacher.userId=:userId and x.teamId=u.id)")
                 .setParameter("sessionId", sessionId)
                 .setParameter("userId", userId)
+                .getResultList();
+    }
+
+    public List<ApblTeam> findTeamsBySession(int sessionId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select u from ApblTeam u where u.sessionId=:sessionId")
+                .setParameter("sessionId", sessionId)
                 .getResultList();
     }
 

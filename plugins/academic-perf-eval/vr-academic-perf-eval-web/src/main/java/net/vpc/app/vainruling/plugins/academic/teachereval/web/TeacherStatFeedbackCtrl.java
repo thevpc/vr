@@ -79,6 +79,7 @@ public class TeacherStatFeedbackCtrl {
     public void onLoad() {
         getModel().setValidate(false);
         getModel().setTeacherListEnabled(academic.isUserSessionManager());
+        getModel().setFilterTeachersEnabled(academic.isUserSessionManager());
 
         ArrayList<SelectItem> filterTypesList = new ArrayList<>();
         for (GroupCondition condition : conditions) {
@@ -237,11 +238,12 @@ public class TeacherStatFeedbackCtrl {
     }
 
     public String getSearchTitle() {
+        AppPeriod period = core.findPeriod(getSelectedPeriodId());
         GroupCondition c = getSelectedGroupCondition();
         if (c == null) {
-            return "Toutes les evals";
+            return "Toutes les evals"+ (period==null?"":(", "+period.getName()));
         }
-        return c.getSearchTitle();
+        return c.getSearchTitle()+ (period==null?"":(", "+period.getName()));
     }
 
     public void onValidate() {
@@ -312,7 +314,9 @@ public class TeacherStatFeedbackCtrl {
             ArrayList<SelectItem> theList = new ArrayList<>();
             int periodId = getSelectedPeriodId();
             for (AcademicTeacher f : feedback.findTeachersWithFeedbacks(periodId, getModel().getValidatedFilter(), false, true)) {
-                theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getContact().getFullTitle()));
+                if(academic.isManagerOf(f)) {
+                    theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getContact().getFullTitle()));
+                }
             }
             getModel().setFilterList(theList);
             revalidateSelectedFilter();

@@ -551,6 +551,23 @@ public class CorePlugin {
 //        }
 //    }
 
+    public Set<String> findUniformProfileNamesMapByUserId(int userId, boolean includeLogin) {
+        Map<Integer, Set<String>> uniformProfileNamesMapByUserId = findUniformProfileNamesMapByUserId(includeLogin);
+        Set<String> profiles = uniformProfileNamesMapByUserId.get(userId);
+        if(profiles==null){
+            AppUser u=findUser(userId);
+            if(u==null){
+                return null;
+            }
+            profiles=new HashSet<>();
+            uniformProfileNamesMapByUserId.put(userId,profiles);
+            if(includeLogin){
+                profiles.add(u.getLogin().toLowerCase());
+            }
+        }
+        return profiles;
+    }
+
     public Map<Integer, Set<String>> findUniformProfileNamesMapByUserId(final boolean includeLogin) {
         String cacheKey = "findUniformProfileNamesMapByUserId:" + includeLogin;
         final EntityCache entityCache = cacheService.get(AppUserProfileBinding.class);
@@ -1167,7 +1184,7 @@ public class CorePlugin {
     }
 
     private InSetEvaluator createProfilesEvaluator(final Set<String> profiles) {
-        return new InSetEvaluator(profiles);
+        return new SimpleJavaEvaluator(profiles);
     }
 
     public boolean userMatchesProfileFilter(int userId, String profileExpr) {
@@ -1239,14 +1256,14 @@ public class CorePlugin {
 //            usersProfilesByUserId = ;
 //            cache.put("usersProfilesByUserId", usersProfilesByUserId);
 //        }
-        Set<String> foundProfileNames = (userId == null) ? (new HashSet<String>()) : findUniformProfileNamesMapByUserId(true).get(userId);
+        Set<String> foundProfileNames = (userId == null) ? (new HashSet<String>()) : findUniformProfileNamesMapByUserId(userId,true);
         if (foundProfileNames == null) {
             foundProfileNames = new HashSet<>();
         }
         InSetEvaluator evaluator = createProfilesEvaluator(foundProfileNames);
         boolean b = false;
         try {
-            b = evaluator.evaluate(profileExpr.getProfileListExpression());
+            b = evaluator.evaluateExpression(profileExpr.getProfileListExpression());
         }catch(Exception e){
             //error
         }
@@ -3764,6 +3781,11 @@ public class CorePlugin {
                 q.setParameter(pp.getKey(),pp.getValue());
             }
         }
+        Object appPropertyValue = getAppPropertyValue("System.MaxLoadedObjects", null);
+        if(appPropertyValue==null){
+            appPropertyValue=7000;
+        }
+        q.setTop(Convert.toInt(appPropertyValue,IntegerParserConfig.LENIENT_F));
         List<Document> list = q.getDocumentList();
         if (objSearch != null) {
             list = objSearch.filterList(list, entityName);

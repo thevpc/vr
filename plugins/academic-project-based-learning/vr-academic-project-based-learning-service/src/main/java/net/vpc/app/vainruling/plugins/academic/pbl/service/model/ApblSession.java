@@ -63,6 +63,7 @@ public class ApblSession {
     private int teamMemberMax;
     private int teamCoachMin;
     private int teamCoachMax;
+    private double load;
 
     public int getId() {
         return id;
@@ -182,5 +183,13 @@ public class ApblSession {
 
     public void setProjectOwnerProfiles(String projectOwnerProfiles) {
         this.projectOwnerProfiles = projectOwnerProfiles;
+    }
+
+    public double getLoad() {
+        return load;
+    }
+
+    public void setLoad(double load) {
+        this.load = load;
     }
 }

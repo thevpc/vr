@@ -43,6 +43,7 @@ public class DocumentsDialogCtrl {
         openDialog(VrUtils.parseJSONObject(config, Config.class));
     }
 
+
     public void openDialog(Config config) {
         initContent(config);
 
@@ -153,6 +154,10 @@ public class DocumentsDialogCtrl {
         }
         getModel().setTitle(title);
 
+        String fspath = cmd.getFspath();
+        if(StringUtils.isEmpty(fspath)){
+            fspath="";
+        }
         VirtualFileSystem rootfs = fsp.getFileSystem();
         VirtualFileSystem fs = null;
         String login = UserSession.getCurrentUser().getLogin();
@@ -173,6 +178,13 @@ public class DocumentsDialogCtrl {
         } else {
             fs = fsp.getUserFileSystem(login);
         }
+        if(fspath.isEmpty()||fspath.equals("/")){
+            //okkay
+        }else{
+            fs.get(fspath).mkdirs();
+            fs=fs.subfs(fspath);
+        }
+
         getModel().setFileSystem(fs);
         getModel().setCurrent(DocumentsUtils.createFileInfo("/", VFileKind.ROOT, getModel().getFileSystem().get("/")));
         String initialPath = c.getPath();
@@ -284,6 +296,7 @@ public class DocumentsDialogCtrl {
         private String title;
         private String path;
         private String userInfo;
+        private String fspath;
 
         public String getType() {
             return type;
@@ -325,6 +338,13 @@ public class DocumentsDialogCtrl {
             this.userInfo = userInfo;
         }
 
+        public String getFspath() {
+            return fspath;
+        }
+
+        public void setFspath(String fspath) {
+            this.fspath = fspath;
+        }
     }
 
     public static class Model {

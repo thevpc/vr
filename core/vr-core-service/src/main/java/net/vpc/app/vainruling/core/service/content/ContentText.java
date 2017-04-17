@@ -9,40 +9,40 @@ import java.util.List;
  * Created by vpc on 9/5/16.
  */
 public interface ContentText {
-    public int getId();
+    int getId();
 
-    public String getCategory();
+    String getCategory();
 
-    public String getDecoration();
+    String getDecoration();
 
-    public String getSubject();
+    String getSubject();
 
-    public String getSubTitle();
+    String getSubTitle();
 
-    public String getContent();
+    String getContent();
 
-    public String getImageURL();
+    String getImageURL();
 
-    public AppUser getUser();
+    AppUser getUser();
 
-    public List<ContentPath> getAttachments();
+    List<ContentPath> getAttachments();
 
 
-    public List<ContentPath> getImageAttachments();
+    List<ContentPath> getImageAttachments();
 
-    public List<ContentPath> getNonImageAttachments();
+    List<ContentPath> getNonImageAttachments();
 
-    public String getLinkClassStyle();
+    String getLinkClassStyle();
 
-    public boolean isImportant();
+    boolean isImportant();
 
-    public boolean isNoSubject();
+    boolean isNoSubject();
 
-    public String getLinkText();
+    String getLinkText();
 
-    public String getLinkURL();
+    String getLinkURL();
 
-    public Date getPublishTime();
+    Date getPublishTime();
 
-    public int getVisitCount();
+    int getVisitCount();
 }

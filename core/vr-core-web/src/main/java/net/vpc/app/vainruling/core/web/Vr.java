@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.*;
 import net.vpc.app.vainruling.core.service.model.*;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
@@ -35,9 +36,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
@@ -1324,5 +1327,79 @@ public class Vr {
             decimalFormats.put(format,decimalFormat);
         }
         return decimalFormat;
+    }
+
+    public boolean redirect(String path) throws IOException {
+        ExternalContext ec = FacesContext.getCurrentInstance()
+                .getExternalContext();
+        if (ec != null) {
+            if(!path.startsWith("/")){
+                path="/"+path;
+            }
+            if(path.startsWith("/r/")){
+                //check if path is suffixed with xhtml
+                int i = path.indexOf('?');
+                if(i>0){
+                    String substring = path.substring(0, i);
+                    if(!substring.endsWith(".xhtml")){
+                        path= substring +".xhtml"+path.substring(i);
+                    }
+                }else{
+                    if(!path.endsWith(".xhtml")){
+                        path= path +".xhtml";
+                    }
+                }
+            }
+            ec.redirect(ec.getRequestContextPath()+ path);
+        }
+        return false;
+    }
+
+    public String strListifyNoEmpty(String sep,Object ... items){
+        if(isEmpty(sep)){
+            sep=",";
+        }
+        StringBuilder sb=new StringBuilder();
+        int count=0;
+        for (Object item : items) {
+            if(item!=null){
+                if(item.getClass().isArray()){
+                    int max=Array.getLength(item);
+                    for (int i=0;i<max;i++) {
+                        String s=String.valueOf(Array.get(item,i));
+                        if(!isEmpty(s)){
+                            if(count>0){
+                                sb.append(sep);
+                            }
+                            count++;
+                            sb.append(s);
+                        }
+                    }
+                }else if (item instanceof Collection){
+                    for (Object o : ((Collection) item)) {
+                        String s=String.valueOf(o);
+                        if(!isEmpty(s)){
+                            if(count>0){
+                                sb.append(sep);
+                            }
+                            count++;
+                            sb.append(s);
+                        }
+                    }
+                }else{
+                    String s=String.valueOf(item);
+                    if(!isEmpty(s)){
+                        if(count>0){
+                            sb.append(sep);
+                        }
+                        count++;
+                        sb.append(s);
+                    }
+                }
+            }else{
+                //do nothing
+            }
+        }
+        return sb.toString();
     }
 }

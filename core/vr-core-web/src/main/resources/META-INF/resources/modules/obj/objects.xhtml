@@ -29,18 +29,21 @@ and open the template in the editor.
 
     <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
+            <script>
+                var currentPhotoPath="";
+            </script>
             <h:form id="buttonsForm">
-                <p:confirmDialog message="Are you sure, you want to delete ?" header="Initiating deleting process"
+                <p:confirmDialog message="Etes vous sur de vouloir supprimer la selection ?" header="Suppression"
                                  widgetVar="confirmationDelete">
-                    <p:commandButton value="Yes Sure" onclick="PF('confirmationDelete').hide();
+                    <p:commandButton value="Oui En Effet" onclick="PF('confirmationDelete').hide();
                                 processOnDeleteCurrent();"/>
-                    <p:commandButton value="Not Yet" onclick="PF('confirmationDelete').hide()" type="button"/>
+                    <p:commandButton value="Non" onclick="PF('confirmationDelete').hide()" type="button"/>
                 </p:confirmDialog>
-                <p:confirmDialog message="Are you sure, you want to archive ?" header="Initiating archive process"
+                <p:confirmDialog message="Etes vous sur de vouloir archiver la selection ?" header="Archivage"
                                  widgetVar="confirmationArchive">
-                    <p:commandButton value="Yes Sure" onclick="PF('confirmationArchive').hide();
+                    <p:commandButton value="Oui En Effet" onclick="PF('confirmationArchive').hide();
                                 processOnArchiveCurrent();"/>
-                    <p:commandButton value="Not Yet" onclick="PF('confirmationArchive').hide()" type="button"/>
+                    <p:commandButton value="Non" onclick="PF('confirmationArchive').hide()" type="button"/>
                 </p:confirmDialog>
 
                 <!-- /.row -->
@@ -350,6 +353,12 @@ and open the template in the editor.
                                     </p:commandLink>
                                 </p:column>
 
+                                <p:column headerText="" style="width: 65px;" rendered="#{objCtrl.enabledMainPhoto}">
+                                    <img src="#{vr.url(objCtrl.getMainPhoto(i))}"
+                                         style="width: 40px ; height: 40px; margin-right: 10px;"
+                                         alt="Image" onclick="document.getElementById('mainPhotoImg').src='#{vr.url(objCtrl.getMainPhoto(i))}';PF('photodlg').show();"/>
+                                </p:column>
+
                                 <!--                                               filterBy="# {i[column.property]}"
                                                                                filterFunction="# {objCtrl.filterByProperty}"-->
                                 <p:columns value="#{objCtrl.columns}"
@@ -363,6 +372,10 @@ and open the template in the editor.
                                     </f:facet>
                                     <h:outputText rendered="#{column.type eq 'text'}"
                                                   value="#{objCtrl.getLayoutPropertyValue(i.document,column.property)}"/>
+                                    <h:graphicImage  rendered="#{column.type eq 'image'}" name="#{vr.url(objCtrl.getLayoutPropertyValue(i.document,column.property))}"
+                                         style="width: 40px ; height: 40px; margin-right: 10px;"
+                                         alt="Image" onclick="document.getElementById('mainPhotoImg').src='#{vr.url(objCtrl.getMainPhoto(i))}';PF('photodlg').show();"/>
+
                                     <h:selectBooleanCheckbox rendered="#{column.type eq 'checkbox'}" disabled="true"
                                                              value="#{objCtrl.getLayoutPropertyValue(i.document,column.property)}"/>
                                 </p:columns>
@@ -724,6 +737,11 @@ and open the template in the editor.
                 /* ]]> */
             </h:outputScript>
 
+            <p:dialog header="Photo" widgetVar="photodlg" modal="true" height="400">
+                <img id="mainPhotoImg" src=""
+                     style="width: 400px ; height: 400px; margin-right: 10px;"
+                     alt="Image"/>
+            </p:dialog>
         </ui:define>
 
 

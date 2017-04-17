@@ -22,7 +22,7 @@ and open the template in the editor.
     <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
         <ui:define name="content">
             <h:form id="buttonsForm">
-                <p:confirmDialog message="Are you sure, you want to delete ?" header="Initiating deleting process"
+                <p:confirmDialog message="Etes vous sur de vouloir supprimer la selection ?" header="Suppression"
                                  widgetVar="confirmationDelete">
                     <p:commandButton value="Yes Sure" onclick="PF('confirmationDelete').hide();
                                 processOnDeleteCurrent();"/>

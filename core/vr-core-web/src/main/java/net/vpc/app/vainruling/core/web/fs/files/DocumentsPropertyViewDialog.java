@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewDialog;
+import net.vpc.app.vainruling.core.web.obj.defaultimpl.FieldPropertyView;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,6 +28,12 @@ public class DocumentsPropertyViewDialog implements PropertyViewDialog {
         DocumentsDialogCtrl.Config c = new DocumentsDialogCtrl.Config();
         c.setPath((String) propertyView.getValue());
         c.setUserInfo(userInfo);
+        if(propertyView instanceof FieldPropertyView){
+            String type = ((FieldPropertyView) propertyView).getField().getProperties().getString(UIConstants.Form.CONTROL_FILE_TYPE);
+            String fspath = ((FieldPropertyView) propertyView).getField().getProperties().getString(UIConstants.Form.CONTROL_FILE_PATH);
+            c.setType(type);
+            c.setFspath(fspath);
+        }
         VrApp.getBean(DocumentsDialogCtrl.class).openDialog(c);
     }
 

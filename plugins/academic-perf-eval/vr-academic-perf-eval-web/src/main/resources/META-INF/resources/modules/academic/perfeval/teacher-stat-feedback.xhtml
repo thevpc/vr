@@ -136,7 +136,10 @@ and open the template in the editor.
                         </ui:fragment>
                         <div class="table-responsive">
                             <p:dataTable value="#{teacherStatFeedbackCtrl.model.statData.groupedQuestionsList}" var="g"
-                                         style="margin-top: 20px;">
+                                         style="margin-top: 20px;"
+                                         rendered="#{teacherStatFeedbackCtrl.model.statData.groupedQuestionsList.size() gt 0}"
+                                         emptyMessage="Aucune categorie"
+                            >
                                 <p:column headerText="Categorie" width="30%">
                                     <p:outputLabel value="#{g.title}"/>
                                 </p:column>

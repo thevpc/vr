@@ -21,12 +21,16 @@ import java.sql.Timestamp;
 @Path("Equipment")
 @Properties(
         {
+                @Property(name = UIConstants.Grid.ROW_STYLE,
+                        value = "(i.object.deleted or i.object.archived) ?'vr-row-deleted':(i.object.location eq null) ?'vr-row-invalid': ''"),
                 @Property(name = UIConstants.ENTITY_ID_HIERARCHY, value = "brandLine"),
                 @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),
                 @Property(name = "ui.auto-filter.acquisition", value = "{expr='acquisition',order=2}"),
                 @Property(name = "ui.auto-filter.brandLine", value = "{expr='brandLine',order=2}"),
                 @Property(name = "ui.auto-filter.location", value = "{expr='location',order=2}"),
                 @Property(name = "ui.auto-filter.type", value = "{expr='type',order=2}"),
+                @Property(name = "ui.main-photo-property", value = "photo"),
+                @Property(name = "ui.main-photo-property.default", value = "theme-context://images/equipment.png"),
         })
 public class Equipment {
 
@@ -36,6 +40,8 @@ public class Equipment {
     private String serial;
     private String stockSerial;
     private String name;
+    @Summary
+    private double quantity;
     @Main
     @Formula(value = "concat(this.name,'-',this.serial)")
     private String fullName;
@@ -43,8 +49,13 @@ public class Equipment {
             @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
     @Field(max = "400")
     private String description;
-    @Summary
-    private double quantity;
+    @Properties(
+            {
+                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
+                    @Property(name = UIConstants.Form.CONTROL_FILE_TYPE, value = "root"),
+                    @Property(name = UIConstants.Form.CONTROL_FILE_PATH, value = "/Data/Equipment")
+            })
+    private String photo;
 
     @Summary
     @Properties(
@@ -54,7 +65,7 @@ public class Equipment {
 
     @Summary
     @ToString
-    private EquipmentStatusType statusType;
+    private EquipmentStatusType statusType=EquipmentStatusType.AVAILABLE;
 
     @Summary
     private AppArea location;
@@ -251,5 +262,13 @@ public class Equipment {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 }

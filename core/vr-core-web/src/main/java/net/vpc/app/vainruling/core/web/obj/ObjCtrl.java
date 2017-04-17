@@ -77,6 +77,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     @Autowired
     private I18n i18n;
     private DynaFormModel dynModel = new DynaFormModel();
+    private MainPhotoProvider mainPhotoProvider = null;
 
     public ObjCtrl() {
         super(null);
@@ -298,6 +299,19 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             getModel().setEntityName(entityName);
             getModel().setList(new ArrayList<ObjRow>());
             getModel().setCurrent(delegated_newInstance());
+            mainPhotoProvider = null;
+            String p = getEntity().getProperties().getString("ui.main-photo-property");
+            String d = getEntity().getProperties().getString("ui.main-photo-property.default");
+            if (!StringUtils.isEmpty(p)) {
+                mainPhotoProvider = new PropertyMainPhotoProvider(p, d);
+            } else {
+                p = Vr.get().trim(getEntity().getProperties().getString("ui.main-photo-provider"));
+                try {
+                    mainPhotoProvider = (MainPhotoProvider) Class.forName(p).newInstance();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 //            updateMode(EditCtrlMode.LIST);
 //            currentModelToView();
         } catch (RuntimeException ex) {
@@ -577,6 +591,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             FacesUtils.addErrorMessage("Erreur : " + ex.getMessage());
             throw ex;
         }
+    }
+
+    public boolean isEnabledMainPhoto() {
+        return mainPhotoProvider != null;
+    }
+
+    public String getMainPhoto(ObjRow row) {
+        return mainPhotoProvider.getMainPhotoPath(getEntity().getBuilder().documentToId(row.getDocument()), row.getDocument());
     }
 
     public void loadList() {
@@ -1271,8 +1293,13 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             }
             case UPDATE: {
                 Object id = getCurrentId();
+                ObjRow c = getModel().getCurrent();
                 Document curr = id == null ? null : core.findDocument(getEntityName(), id);
-                onSelect(createObjRow(curr));
+                ObjRow objRow = createObjRow(curr);
+                if (c != null) {
+                    objRow.setRowPos(c.getRowPos());
+                }
+                onSelect(objRow);
                 break;
             }
         }
@@ -1398,7 +1425,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         ObjRow current = getModel().getCurrent();
         Config cfg = new Config();
         cfg.entity = getEntityName();
-        cfg.id = current==null?null:String.valueOf(getEntity().getBuilder().objectToId(current.getDocument()));
+        cfg.id = current == null ? null : String.valueOf(getEntity().getBuilder().objectToId(current.getDocument()));
         cfg.values = getModel().getConfig().values;
         cfg.listFilter = getModel().getConfig().listFilter;
         cfg.disabledFields = getModel().getConfig().disabledFields;

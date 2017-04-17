@@ -39,11 +39,12 @@ and open the template in the editor.
                                                         </h:panelGrid>
                                                     </p:fieldset>-->
 
-                            <p:tabView>
-                                <p:tab title="Principale">
+                            <p:tabView id="welcomeTabView">
+                                <p:tab title="Principale" id="mainPanel">
                                     #{vr.cmsTextService.loadContentTexts('Welcome')}
 
                                     <p:dataGrid var="page"
+                                                id="welcomeMessagesGrid"
                                                 value="#{vr.groupListBy(8,vr.cmsTextService.getContentTextList('Welcome'))}"
                                                 columns="1"
                                                 layout="grid"
@@ -85,6 +86,34 @@ and open the template in the editor.
                                                                             <span class="badge label-#{lab.kind}">#{lab.value}</span>
                                                                         </ui:fragment>
                                                                     </ui:repeat>
+                                                                    <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('delete',a.articlesItem.id)}">
+                                                                        <p:commandLink action="#{vr.cmsTextService.onAction('delete',a.articlesItem.id)}" update=":itemForm">
+                                                                        <button type="button" class="btn btn-box-tool">
+                                                                            <i class="fa fa-trash"></i>
+                                                                        </button>
+                                                                        </p:commandLink>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('archive',a.articlesItem.id)}">
+                                                                        <p:commandLink action="#{vr.cmsTextService.onAction('archive',a.articlesItem.id)}" update=":itemForm">
+                                                                        <button type="button" class="btn btn-box-tool">
+                                                                            <i class="fa fa-archive"></i>
+                                                                        </button>
+                                                                        </p:commandLink>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('edit',a.articlesItem.id)}">
+                                                                        <p:commandLink action="#{vr.cmsTextService.onAction('edit',a.articlesItem.id)}" update=":itemForm">
+                                                                        <button type="button" class="btn btn-box-tool">
+                                                                            <i class="fa fa-wrench"></i>
+                                                                        </button>
+                                                                        </p:commandLink>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('important',a.articlesItem.id)}">
+                                                                        <p:commandLink action="#{vr.cmsTextService.onAction('important',a.articlesItem.id)}" update=":itemForm">
+                                                                        <button type="button" class="btn btn-box-tool">
+                                                                            <i class="fa #{a.articlesItem.important ? 'fa-bookmark':'fa-bookmark-o'}"></i>
+                                                                        </button>
+                                                                        </p:commandLink>
+                                                                    </ui:fragment>
                                                                 </div>
                                                             </div>
                                                             <!-- /.box-header -->
@@ -255,7 +284,7 @@ and open the template in the editor.
 
                                 <p>
                                     <ui:repeat value="#{vr.userSession.profiles}" var="prName">
-                                        <span class="label label-#{vr.hashToArr(prName,'danger','success','info','warning','primary','default')}">#{prName}</span>
+                                        <span class="label label-#{vr.hashToArr(prName.name,'danger','success','info','warning','primary','default')}">#{prName.name}</span>
                                     </ui:repeat>
                                 </p>
                                 <!--

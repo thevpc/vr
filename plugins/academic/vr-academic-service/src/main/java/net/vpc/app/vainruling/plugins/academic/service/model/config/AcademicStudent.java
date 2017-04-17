@@ -31,6 +31,7 @@ import java.util.Objects;
                 @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),
                 @Property(name = "ui.auto-filter.lastClass1", value = "{expr='lastClass1',order=2}"),
                 @Property(name = "ui.auto-filter.stage", value = "{expr='stage',order=3}"),
+                @Property(name = "ui.main-photo-provider", value = "net.vpc.app.vainruling.plugins.academic.web.photo.AcademicStudentMainPhotoProvider")
         }
 )
 public class AcademicStudent {

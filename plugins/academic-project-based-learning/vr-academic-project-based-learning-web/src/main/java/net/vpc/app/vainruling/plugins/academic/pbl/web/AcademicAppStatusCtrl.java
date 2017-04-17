@@ -14,6 +14,7 @@ import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPlugin;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblStudentInfo;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblTeacherInfo;
+import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.TeamNode;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
@@ -22,6 +23,8 @@ import net.vpc.common.strings.StringComparator;
 import net.vpc.common.strings.StringComparators;
 import net.vpc.common.strings.StringTransforms;
 import net.vpc.common.util.Convert;
+import net.vpc.common.util.DefaultMapList;
+import net.vpc.common.util.MapList;
 import net.vpc.upa.filters.ObjectFilter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,13 +163,13 @@ public class AcademicAppStatusCtrl {
         String[] selectedSessions = getModel().getSelectedSessions();
         int[] selectedSessionsInts = Convert.toPrimitiveIntArray(selectedSessions, null);
         if (selectedSessionsInts.length == 0) {
-            List<ApblSession> availableSessions = apbl.findAvailableSessions();
-            selectedSessionsInts = new int[availableSessions.size()];
-            int i = 0;
-            for (ApblSession availableSession : availableSessions) {
-                selectedSessionsInts[i] = availableSession.getId();
-                i++;
-            }
+//            List<ApblSession> availableSessions = apbl.findAvailableSessions();
+//            selectedSessionsInts = new int[availableSessions.size()];
+//            int i = 0;
+//            for (ApblSession availableSession : availableSessions) {
+//                selectedSessionsInts[i] = availableSession.getId();
+//                i++;
+//            }
         }
         getModel().setTeachers(apbl.findTeacherInfos(selectedSessionsInts, false, new ObjectFilter<AcademicTeacher>() {
             @Override
@@ -190,6 +193,19 @@ public class AcademicAppStatusCtrl {
                 return true;
             }
         }));
+        Set<Integer> visitedTeams=new HashSet<>();
+        Set<Integer> visitedStudents=new HashSet<>();
+        for (ApblTeacherInfo apblTeacherInfo : getModel().getTeachers()) {
+            for (TeamNode teamNode : apblTeacherInfo.getTeams()) {
+                visitedTeams.add(teamNode.getTeam().getId());
+            }
+            for (AcademicStudent student : apblTeacherInfo.getStudents()) {
+                visitedStudents.add(student.getId());
+            }
+        }
+        getModel().setTeamedStudentsCount(visitedStudents.size());
+        getModel().setTeamsCount(visitedTeams.size());
+
         onSearchTeachersByText();
         onSearchStudentsByText();
     }
@@ -251,6 +267,24 @@ public class AcademicAppStatusCtrl {
         private String studentsFilterText = null;
         private String teachersFilterText = null;
         private int activeTabIndex = 0;
+        private int teamedStudentsCount = 0;
+        private int teamsCount = 0;
+
+        public int getTeamedStudentsCount() {
+            return teamedStudentsCount;
+        }
+
+        public void setTeamedStudentsCount(int teamedStudentsCount) {
+            this.teamedStudentsCount = teamedStudentsCount;
+        }
+
+        public int getTeamsCount() {
+            return teamsCount;
+        }
+
+        public void setTeamsCount(int teamsCount) {
+            this.teamsCount = teamsCount;
+        }
 
         public List<ApblTeacherInfo> getTeachers() {
             return teachers;

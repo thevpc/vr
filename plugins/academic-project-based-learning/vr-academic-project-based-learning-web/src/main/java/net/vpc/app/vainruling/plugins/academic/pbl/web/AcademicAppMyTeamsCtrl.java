@@ -143,6 +143,7 @@ public class AcademicAppMyTeamsCtrl {
             try {
                 apbl.updateTeam(getModel().getSelectedTeam());
                 getModel().setSelectedTeam(null);
+                getModel().setSelectedTeamMembers(new ArrayList<>());
                 reloadTeams();
                 fireEventExtraDialogClosed();
             } catch (Exception ex) {
@@ -153,6 +154,7 @@ public class AcademicAppMyTeamsCtrl {
             try {
                 apbl.addTeam(getModel().getSelectedTeam());
                 getModel().setSelectedTeam(null);
+                getModel().setSelectedTeamMembers(new ArrayList<>());
                 reloadTeams();
                 fireEventExtraDialogClosed();
             } catch (Exception ex) {
@@ -185,11 +187,13 @@ public class AcademicAppMyTeamsCtrl {
         Set<Integer> members = new HashSet<>();
         if (i == null) {
             getModel().setSelectedTeam(null);
+            getModel().setSelectedTeamMembers(new ArrayList<>());
             getModel().setCoachingLogs(new ArrayList<>());
             getModel().setProgressionLogs(new ArrayList<>());
         } else {
             team = apbl.findTeam(i);
             getModel().setSelectedTeam(team);
+            getModel().setSelectedTeamMembers(team==null?new ArrayList<ApblTeamMember>() : apbl.findTeamMembers(team.getId()));
             getModel().setCoachingLogs(apbl.findTeamCoachingLog(i));
             getModel().setProgressionLogs(apbl.findTeamProgressionLog(i));
             for (ApblCoaching apblCoaching : apbl.findTeamCoaches(i)) {
@@ -228,10 +232,11 @@ public class AcademicAppMyTeamsCtrl {
     }
 
     public class Model {
-        List<ApblTeam> teams = new ArrayList<>();
-        List<SelectItem> teamItems = new ArrayList<>();
-        List<ApblProgressionLog> progressionLogs = new ArrayList<>();
-        List<ApblCoachingLog> coachingLogs = new ArrayList<>();
+        private List<ApblTeam> teams = new ArrayList<>();
+        private List<SelectItem> teamItems = new ArrayList<>();
+        private List<ApblProgressionLog> progressionLogs = new ArrayList<>();
+        private List<ApblCoachingLog> coachingLogs = new ArrayList<>();
+        private List<ApblTeamMember> selectedTeamMembers = new ArrayList<>();
         private Integer selectedTeamId;
         private ApblTeam selectedTeam;
         private ApblCoachingLog selectedCoachingLog;
@@ -335,6 +340,14 @@ public class AcademicAppMyTeamsCtrl {
 
         public void setSelectedPathBeforeUpload(String selectedPathBeforeUpload) {
             this.selectedPathBeforeUpload = selectedPathBeforeUpload;
+        }
+
+        public List<ApblTeamMember> getSelectedTeamMembers() {
+            return selectedTeamMembers;
+        }
+
+        public void setSelectedTeamMembers(List<ApblTeamMember> selectedTeamMembers) {
+            this.selectedTeamMembers = selectedTeamMembers;
         }
     }
 }

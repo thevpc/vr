@@ -1,11 +1,14 @@
 package net.vpc.app.vainruling.plugins.academic.service.helper;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
+import net.vpc.app.vainruling.core.service.model.AppTrace;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Converter;
 import net.vpc.common.util.DefaultMapList;
 import net.vpc.common.util.MapList;
@@ -16,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -144,20 +148,23 @@ public class CopyAcademicDataHelper {
         if (fromList.size() != courseAssignments.size()) {
             HashMap<String, AcademicCourseAssignment> visited = new HashMap<>();
             HashSet<String> reported = new HashSet<>();
-            log.severe("Some Course Assignments have similar names. Here are the problems");
+            StringBuilder error=new StringBuilder();
+            error.append("Some Course Assignments have similar names. Here are the problems").append("\n");
             for (AcademicCourseAssignment assignment : courseAssignments) {
                 String item = converter.convert(assignment);
                 if (visited.containsKey(item)) {
                     if (!reported.contains(item)) {
                         reported.add(item);
                         AcademicCourseAssignment a0 = visited.get(item);
-                        log.severe("\t " + a0.getId() + " : " + item);
+                        error.append("\t " + a0.getId() + " : " + item).append("\n");
                     }
-                    log.severe("\t " + assignment.getId() + " : " + item);
+                    error.append("\t " + assignment.getId() + " : " + item).append("\n");
                 } else {
                     visited.put(item, assignment);
                 }
             }
+            TraceService.get().trace("CopyAcademicData", "Some Course Assignments have similar names",StringUtils.substring(error.toString(),0,4096),"Academic", Level.SEVERE);
+            log.severe(error.toString());
             throw new IllegalArgumentException("Some Course Assignments have similar names. Check log for details");
         }
         for (AcademicCourseAssignment v : fromList) {

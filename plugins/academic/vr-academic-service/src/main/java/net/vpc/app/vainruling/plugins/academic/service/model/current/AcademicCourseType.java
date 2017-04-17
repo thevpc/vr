@@ -29,6 +29,8 @@ public class AcademicCourseType {
     private String name;
     @Summary
     private int weeks;
+    @Summary
+    private boolean schedulable;
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
@@ -91,4 +93,11 @@ public class AcademicCourseType {
         this.updateDate = updateDate;
     }
 
+    public boolean isSchedulable() {
+        return schedulable;
+    }
+
+    public void setSchedulable(boolean schedulable) {
+        this.schedulable = schedulable;
+    }
 }

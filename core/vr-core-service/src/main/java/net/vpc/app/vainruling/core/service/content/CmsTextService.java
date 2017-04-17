@@ -7,19 +7,30 @@ import java.util.List;
  */
 public interface CmsTextService extends ContentTextService {
 
-    public void setSelectedContentTextById(int id);
+    void setSelectedContentTextById(int id);
 
-    public ContentText getSelectedContentText();
+    ContentText getSelectedContentText();
 
-    public String getProperty(String name);
+    String getProperty(String name);
 
-    public String getProperty(String name, String defaultValue);
+    String getProperty(String name, String defaultValue);
 
-    public void setContentDisposition(String name);
+    void setContentDisposition(String name);
 
-    public CmsTextDisposition getContentDispositionByName(String name);
+    CmsTextDisposition getContentDispositionByName(String name);
 
-    public String getContentDispositionName();
+    String getContentDispositionName();
 
-    public CmsTextDisposition getContentDisposition();
+    CmsTextDisposition getContentDisposition();
+
+    boolean isEnabledAction(String action,int id);
+
+    /**
+     * exectues action and return true if the action wa
+     * @param action
+     * @param id
+     * @return
+     */
+    boolean onAction(String action, int id);
+
 }

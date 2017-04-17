@@ -8,6 +8,8 @@ package net.vpc.app.vainruling.plugins.academic.service.stat;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
+import net.vpc.common.util.VMap;
+import net.vpc.common.util.VMapValueFactory;
 
 import java.util.*;
 
@@ -16,16 +18,43 @@ import java.util.*;
  */
 public class GlobalStat {
 
-    private int teachersCount;
-    private int teachersLeaveCount;
-    private int teachersPermanentCount;
-    private int teachersTemporaryCount;
-    private int teachersContractualCount;
-    private int teachersOtherCount;
-    private int teachersAssistantTotalNeedCount;
-    private int teachersAssistantRequestNeedCount;
+    public static final VMapValueFactory<String, DisciplineStat> V_MAP_VALUE_FACTORY_LOAD_VALUE = new VMapValueFactory<String, DisciplineStat>() {
+        @Override
+        public DisciplineStat create(String key) {
+            return new DisciplineStat(key);
+        }
+    };
+    private double teachersCount;
+    private SituationTypeStat teachersLeaveStat = new SituationTypeStat();
+    private SituationTypeStat teachersPermanentStat = new SituationTypeStat();
+    private SituationTypeStat teachersTemporaryStat = new SituationTypeStat();
+    private SituationTypeStat teachersContractualStat = new SituationTypeStat();
+    private SituationTypeStat teachersOtherStat = new SituationTypeStat();
+    private SituationTypeStat unassignedStat = new SituationTypeStat();
+    //    private int teachersLeaveCount;
+//    private int teachersPermanentCount;
+//    private int teachersTemporaryCount;
+//    private int teachersContractualCount;
+//    private int teachersOtherCount;
+
+    private double nonPermanentLoad;
+    private double nonPermanentLoadTeacherCount;
+    private double overload;
+    private double overloadTeacherCount;
+    private double permanentOverload;
+    private double referenceTeacherDueLoad;
+    private double permanentOverloadTeacherCount;
+    private double relativeOverload;
+    private double relativeOverloadTeacherCount;
+    private double unassignedLoadTeacherCount;
+
+
     private int courseAssignmentCount;
     private int coursePlanCount;
+    private VMap<String,DisciplineStat> nonPermanentLoadValueByNonOfficialDiscipline =new VMap<String, DisciplineStat>(V_MAP_VALUE_FACTORY_LOAD_VALUE);
+    private VMap<String,DisciplineStat> nonPermanentLoadValueByOfficialDiscipline=new VMap<String, DisciplineStat>(V_MAP_VALUE_FACTORY_LOAD_VALUE);
+    private VMap<String,DisciplineStat> permanentLoadValueByNonOfficialDiscipline =new VMap<String, DisciplineStat>(V_MAP_VALUE_FACTORY_LOAD_VALUE);
+    private VMap<String,DisciplineStat> permanentLoadValueByOfficialDiscipline=new VMap<String, DisciplineStat>(V_MAP_VALUE_FACTORY_LOAD_VALUE);
     /**
      * les charge manquante independament des vacataire et contractuel basee sur
      * la charge dun assistant
@@ -40,14 +69,30 @@ public class GlobalStat {
     private List<GlobalAssignmentStat> details = new ArrayList<>();
     private Map<String, GlobalAssignmentStat> detailsMap = new HashMap<>();
 
+    public double getNonPermanentLoad() {
+        return nonPermanentLoad;
+    }
+
+    public void setNonPermanentLoad(double nonPermanentLoad) {
+        this.nonPermanentLoad = nonPermanentLoad;
+    }
+
+    public double getNonPermanentLoadTeacherCount() {
+        return nonPermanentLoadTeacherCount;
+    }
+
+    public void setNonPermanentLoadTeacherCount(double nonPermanentLoadTeacherCount) {
+        this.nonPermanentLoadTeacherCount = nonPermanentLoadTeacherCount;
+    }
+
     public List<GlobalAssignmentStat> getAssignments() {
         return details;
     }
 
     public List<GlobalAssignmentStat> getSituationDetails(AcademicSemester semester, AcademicTeacherDegree degree) {
-        List<GlobalAssignmentStat> all=new ArrayList<>();
+        List<GlobalAssignmentStat> all = new ArrayList<>();
         for (GlobalAssignmentStat detail : details) {
-            if(detail.getSituation()!=null && Objects.equals(detail.getDegree(),degree) && Objects.equals(detail.getSemester(),semester)){
+            if (detail.getSituation() != null && Objects.equals(detail.getDegree(), degree) && Objects.equals(detail.getSemester(), semester)) {
                 all.add(detail);
             }
         }
@@ -59,24 +104,25 @@ public class GlobalStat {
     }
 
     public LoadValue getAssignmentSumValue(AcademicSemester semester, List<AcademicTeacherSituation> situations, AcademicTeacherDegree degree) {
-        LoadValue v=new LoadValue();
+        LoadValue v = new LoadValue();
         for (AcademicTeacherSituation situation : situations) {
-            v.add(getAssignment(semester,situation,degree).getValue());
+            v.add(getAssignment(semester, situation, degree).getValue());
         }
         return v;
     }
+
     public LoadValue getAssignmentSumDue(AcademicSemester semester, List<AcademicTeacherSituation> situations, AcademicTeacherDegree degree) {
-        LoadValue v=new LoadValue();
+        LoadValue v = new LoadValue();
         for (AcademicTeacherSituation situation : situations) {
-            v.add(getAssignment(semester,situation,degree).getDue());
+            v.add(getAssignment(semester, situation, degree).getDue());
         }
         return v;
     }
 
     public int getAssignmentTeacherCount(AcademicSemester semester, List<AcademicTeacherSituation> situations, AcademicTeacherDegree degree) {
-        int count=0;
+        int count = 0;
         for (AcademicTeacherSituation situation : situations) {
-            count+=getAssignment(semester,situation,degree).getTeachersCount();
+            count += getAssignment(semester, situation, degree).getTeachersCount();
         }
         return count;
     }
@@ -113,52 +159,69 @@ public class GlobalStat {
         this.coursePlanCount = coursePlanCount;
     }
 
-    public int getTeachersCount() {
+    public double getTeachersCount() {
         return teachersCount;
     }
 
-    public void setTeachersCount(int teachersCount) {
+    public void setTeachersCount(double teachersCount) {
         this.teachersCount = teachersCount;
     }
 
-    public int getTeachersPermanentCount() {
-        return teachersPermanentCount;
+
+    public double getOverload() {
+        return overload;
     }
 
-    public void setTeachersPermanentCount(int teachersPermanentCount) {
-        this.teachersPermanentCount = teachersPermanentCount;
+    public void setOverload(double overload) {
+        this.overload = overload;
     }
 
-    public int getTeachersTemporaryCount() {
-        return teachersTemporaryCount;
+    public double getOverloadTeacherCount() {
+        return overloadTeacherCount;
     }
 
-    public void setTeachersTemporaryCount(int teachersTemporaryCount) {
-        this.teachersTemporaryCount = teachersTemporaryCount;
+    public void setOverloadTeacherCount(double overloadTeacherCount) {
+        this.overloadTeacherCount = overloadTeacherCount;
     }
 
-    public int getTeachersContractualCount() {
-        return teachersContractualCount;
+    public double getPermanentOverload() {
+        return permanentOverload;
     }
 
-    public void setTeachersContractualCount(int teachersContractualCount) {
-        this.teachersContractualCount = teachersContractualCount;
+    public void setPermanentOverload(double permanentOverload) {
+        this.permanentOverload = permanentOverload;
     }
 
-    public int getTeachersAssistantTotalNeedCount() {
-        return teachersAssistantTotalNeedCount;
+    public double getPermanentOverloadTeacherCount() {
+        return permanentOverloadTeacherCount;
     }
 
-    public void setTeachersAssistantTotalNeedCount(int teachersAssistantTotalNeedCount) {
-        this.teachersAssistantTotalNeedCount = teachersAssistantTotalNeedCount;
+    public void setPermanentOverloadTeacherCount(double permanentOverloadTeacherCount) {
+        this.permanentOverloadTeacherCount = permanentOverloadTeacherCount;
     }
 
-    public int getTeachersAssistantRequestNeedCount() {
-        return teachersAssistantRequestNeedCount;
+    public double getUnassignedLoadTeacherCount() {
+        return unassignedLoadTeacherCount;
     }
 
-    public void setTeachersAssistantRequestNeedCount(int teachersAssistantRequestNeedCount) {
-        this.teachersAssistantRequestNeedCount = teachersAssistantRequestNeedCount;
+    public void setUnassignedLoadTeacherCount(double unassignedLoadTeacherCount) {
+        this.unassignedLoadTeacherCount = unassignedLoadTeacherCount;
+    }
+
+    public double getRelativeOverload() {
+        return relativeOverload;
+    }
+
+    public void setRelativeOverload(double relativeOverload) {
+        this.relativeOverload = relativeOverload;
+    }
+
+    public double getRelativeOverloadTeacherCount() {
+        return relativeOverloadTeacherCount;
+    }
+
+    public void setRelativeOverloadTeacherCount(double relativeOverloadTeacherCount) {
+        this.relativeOverloadTeacherCount = relativeOverloadTeacherCount;
     }
 
     /**
@@ -184,24 +247,57 @@ public class GlobalStat {
         this.neededRelative = neededRelative;
     }
 
-    public int getTeachersOtherCount() {
-        return teachersOtherCount;
-    }
-
-    public void setTeachersOtherCount(int teachersOtherCount) {
-        this.teachersOtherCount = teachersOtherCount;
-    }
 
     public GlobalAssignmentStat getMissing() {
         return missing;
     }
 
 
-    public int getTeachersLeaveCount() {
-        return teachersLeaveCount;
+    public SituationTypeStat getTeachersLeaveStat() {
+        return teachersLeaveStat;
     }
 
-    public void setTeachersLeaveCount(int teachersLeaveCount) {
-        this.teachersLeaveCount = teachersLeaveCount;
+    public SituationTypeStat getTeachersPermanentStat() {
+        return teachersPermanentStat;
+    }
+
+    public SituationTypeStat getTeachersTemporaryStat() {
+        return teachersTemporaryStat;
+    }
+
+    public SituationTypeStat getTeachersContractualStat() {
+        return teachersContractualStat;
+    }
+
+    public SituationTypeStat getTeachersOtherStat() {
+        return teachersOtherStat;
+    }
+
+    public SituationTypeStat getUnassignedStat() {
+        return unassignedStat;
+    }
+
+    public double getReferenceTeacherDueLoad() {
+        return referenceTeacherDueLoad;
+    }
+
+    public void setReferenceTeacherDueLoad(double referenceTeacherDueLoad) {
+        this.referenceTeacherDueLoad = referenceTeacherDueLoad;
+    }
+
+    public VMap<String,DisciplineStat> getNonPermanentLoadValueByNonOfficialDiscipline() {
+        return nonPermanentLoadValueByNonOfficialDiscipline;
+    }
+
+    public VMap<String, DisciplineStat> getNonPermanentLoadValueByOfficialDiscipline() {
+        return nonPermanentLoadValueByOfficialDiscipline;
+    }
+
+    public VMap<String, DisciplineStat> getPermanentLoadValueByNonOfficialDiscipline() {
+        return permanentLoadValueByNonOfficialDiscipline;
+    }
+
+    public VMap<String, DisciplineStat> getPermanentLoadValueByOfficialDiscipline() {
+        return permanentLoadValueByOfficialDiscipline;
     }
 }

@@ -7,9 +7,12 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
@@ -22,7 +25,7 @@ import java.net.URISyntaxException;
  * Created by vpc on 9/16/16.
  */
 public class TestRestWS {
-    DefaultHttpClient httpClient = new DefaultHttpClient();
+    CloseableHttpClient httpClient ;
     CookieStore cookieStore = new BasicCookieStore();
     HttpContext httpContext = new BasicHttpContext();
 
@@ -47,11 +50,17 @@ public class TestRestWS {
     }
 
     public void start() {
-        httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+        HttpClientBuilder b=HttpClientBuilder.create();
+        httpClient = b.build();
+        httpContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
     }
 
     public void shutdown() {
-        httpClient.getConnectionManager().shutdown();
+        try {
+            httpClient.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public String exec(String path, Object ... args) {

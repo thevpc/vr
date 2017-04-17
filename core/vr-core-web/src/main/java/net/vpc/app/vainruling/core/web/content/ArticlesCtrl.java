@@ -16,6 +16,7 @@ import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionGrou
 import net.vpc.app.vainruling.core.service.model.content.ArticlesFile;
 import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
 import net.vpc.app.vainruling.core.service.model.content.FullArticle;
+import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.upa.*;
 import net.vpc.upa.expressions.UserExpression;
 import org.apache.commons.lang.StringUtils;
@@ -23,6 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -202,5 +206,68 @@ public class ArticlesCtrl implements CmsTextService {
     @Override
     public ContentText getSelectedContentText() {
         return getModel().getCurrent();
+    }
+
+    @Override
+    public boolean isEnabledAction(String action,int id) {
+        AppUser currentUser = UserSession.getCurrentUser();
+        if(currentUser!=null){
+            CorePlugin core = CorePlugin.get();
+            ArticlesItem a = core.findArticle(id);
+            if(a!=null){
+                if(a.getSender()!=null && currentUser.getId()==a.getSender().getId()){
+                    return true;
+                }
+                if(core.isSessionAdmin()){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onAction(String action, int id) {
+        ExternalContext ec = FacesContext.getCurrentInstance()
+                .getExternalContext();
+        try {
+            if("edit".equals(action)) {
+                if (ec != null) {
+                    Vr.get().redirect(Vr.get().gotoPageObjItem(ArticlesItem.class.getSimpleName(), String.valueOf(id)));
+                    return true;
+                }
+            }else if("delete".equals(action)){
+                CorePlugin core = CorePlugin.get();
+                ArticlesItem a = core.findArticle(id);
+                if(a!=null && !a.isDeleted()){
+                    a.setDeleted(true);
+                    PersistenceUnit pu = UPA.getPersistenceUnit();
+                    pu.merge(a);
+                    return true;
+                }
+            }else if("archive".equals(action)){
+                CorePlugin core = CorePlugin.get();
+                ArticlesItem a = core.findArticle(id);
+                if(a!=null && !a.isArchived()){
+                    a.setArchived(true);
+                    PersistenceUnit pu = UPA.getPersistenceUnit();
+                    pu.merge(a);
+                    return true;
+                }
+            }else if("important".equals(action)){
+                CorePlugin core = CorePlugin.get();
+                ArticlesItem a = core.findArticle(id);
+                if(a!=null){
+                    a.setImportant(!a.isImportant());
+                    PersistenceUnit pu = UPA.getPersistenceUnit();
+                    pu.merge(a);
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
     }
 }

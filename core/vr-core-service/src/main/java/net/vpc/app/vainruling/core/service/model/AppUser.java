@@ -27,7 +27,8 @@ import java.sql.Timestamp;
                 @Property(name = "ui.auto-filter.type", value = "{expr='type',order=2}"),
                 @Property(name = "ui.auto-filter.company", value = "{expr='contact.company',order=3}"),
                 @Property(name = "ui.auto-filter.positionTitle1", value = "{expr='contact.positionTitle1',order=4}"),
-                @Property(name = "ui.auto-filter.company", value = "{expr='contact.company',order=5}")
+                @Property(name = "ui.auto-filter.company", value = "{expr='contact.company',order=5}"),
+                @Property(name = "ui.main-photo-provider", value = "net.vpc.app.vainruling.core.web.obj.photo.AppUserMainPhotoProvider")
         })
 public class AppUser {
 
