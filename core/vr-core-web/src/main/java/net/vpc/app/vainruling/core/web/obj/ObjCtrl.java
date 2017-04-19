@@ -570,7 +570,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     getModel().setCurrent(null);
                     return;
                 }
-                ObjRow r = new ObjRow(curr, b.documentToObject(curr));
+                ObjRow r = new ObjRow(idToString(eid), curr, b.documentToObject(curr));
                 r.setRead(sm.isAllowedLoad(entity, eid, curr));
                 r.setWrite(sm.isAllowedUpdate(entity, eid, curr));
                 r.setRowPos(-1);
@@ -628,7 +628,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         for (Document rec : found) {
             Object id = b.documentToId(rec);
             if (sm.isAllowedNavigate(entity, id, rec)) {
-                ObjRow row = new ObjRow(rec, b.documentToObject(rec));
+                ObjRow row = new ObjRow(idToString(id), rec, b.documentToObject(rec));
                 row.setRead(sm.isAllowedLoad(entity, id, rec));
                 row.setWrite(sm.isAllowedUpdate(entity, id, rec));
                 row.setRowPos(filteredObjects.size());
@@ -808,7 +808,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                 }
                 EntityBuilder b = e.getBuilder();
-                ObjRow r = new ObjRow(o, b.documentToObject(o));
+                ObjRow r = new ObjRow(null,o, b.documentToObject(o));
                 r.setRead(true);
                 r.setWrite(true);
                 r.setSelected(false);
@@ -816,7 +816,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
                 return r;
             }
-            ObjRow r = new ObjRow(createInitializedDocument(), getEntity().getBuilder().createObject());
+            ObjRow r = new ObjRow(null,createInitializedDocument(), getEntity().getBuilder().createObject());
             r.setRowPos(-1);
             return r;
         } catch (RuntimeException ex) {
@@ -1230,6 +1230,10 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public Object getDefaultFilterSelectedObject(AutoFilterData autoFilterData, DataType filterType) {
+        Config config = getModel().getConfig();
+        if(config!=null && config.ignoreAutoFilter){
+            return null;
+        }
         if (filterType instanceof KeyType) {
             Entity ee = ((KeyType) filterType).getEntity();
             if (ee.getEntityType().equals(AppPeriod.class)) {
@@ -1305,10 +1309,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
+    public String idToString(Object id) {
+        return id==null?null:String.valueOf(id);
+    }
     public ObjRow createObjRow(Document o) {
         Entity e = getEntity();
         EntityBuilder b = e.getBuilder();
-        ObjRow r = new ObjRow(o, b.documentToObject(o));
+        Object id = b.documentToId(o);
+        ObjRow r = new ObjRow(idToString(id), o, b.documentToObject(o));
         r.setRead(true);
         r.setWrite(true);
         r.setSelected(false);
@@ -1717,6 +1725,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         public String[] disabledFields;
         public String[] selectedFields;
         public String searchExpr;
+        public boolean ignoreAutoFilter;
     }
 
     public class PModel extends Model<ObjRow> {

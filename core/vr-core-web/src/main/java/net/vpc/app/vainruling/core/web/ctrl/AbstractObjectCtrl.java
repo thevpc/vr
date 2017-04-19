@@ -165,6 +165,7 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
         private ObjSearch search;
         private ObjFieldSelection fieldSelection;
         private List<T> list = new ArrayList<>();
+        private List<T> selectedRows = new ArrayList<>();
 
         public ObjSearch getSearch() {
             return search;
@@ -208,6 +209,14 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
 
         public List<T> getList() {
             return list;
+        }
+
+        public List<T> getSelectedRows() {
+            return selectedRows;
+        }
+
+        public void setSelectedRows(List<T> selectedRows) {
+            this.selectedRows = selectedRows;
         }
 
         public void setList(List<T> list) {

@@ -3213,9 +3213,15 @@ public class CorePlugin {
         String acss = a.getLinkClassStyle();
         List<ArticlesFile> att = new ArrayList<>();
         if (!StringUtils.isEmpty(aname) || !StringUtils.isEmpty(aurl)) {
+            if(StringUtils.isEmpty(aname)){
+                aname=VrUtils.getURLName(aurl);
+            }
+            if(StringUtils.isEmpty(aname)){
+                aname="NoName";
+            }
             ArticlesFile baseArt = new ArticlesFile();
             baseArt.setId(-1);
-            baseArt.setName(StringUtils.isEmpty(aname) ? "NoName" : aname);
+            baseArt.setName(aname);
             baseArt.setPath(aurl);
             baseArt.setStyle(acss);
             att.add(baseArt);
@@ -3249,9 +3255,15 @@ public class CorePlugin {
                     String acss = a.getLinkClassStyle();
                     List<ArticlesFile> att = new ArrayList<>();
                     if (!StringUtils.isEmpty(aname) || !StringUtils.isEmpty(aurl)) {
+                        if(StringUtils.isEmpty(aname)){
+                            aname=VrUtils.getURLName(aurl);
+                        }
+                        if(StringUtils.isEmpty(aname)){
+                            aname="NoName";
+                        }
                         ArticlesFile baseArt = new ArticlesFile();
                         baseArt.setId(-1);
-                        baseArt.setName(StringUtils.isEmpty(aname) ? "NoName" : aname);
+                        baseArt.setName(aname);
                         baseArt.setPath(aurl);
                         baseArt.setStyle(acss);
                         att.add(baseArt);

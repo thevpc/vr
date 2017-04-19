@@ -45,8 +45,9 @@ public class EntityDetailPropertyView extends PropertyView {
         String argListFilter = "listFilter:\"" + idExpr + "=${ID}\"";
         String argValues = "values:{" + f.getName() + ":${ID}}";
         String argDisabledFields = "disabledFields:[\"" + f.getName() + "\"]";
+        String argIgnoreAutoFilter = "ignoreAutoFilter:true";
 
-        setActionCommand("{" + argEntity + "," + argListFilter + "," + argValues + "," + argDisabledFields + "}");
+        setActionCommand("{" + argEntity + "," + argListFilter + "," + argValues + "," + argDisabledFields+ "," + argIgnoreAutoFilter + "}");
     }
 
     private static String resolveLabel(RelationshipRole rols) {

@@ -19,10 +19,16 @@ public class ObjRow {
     private Document document;
     private Object object;
     private int rowPos;
+    private String strId;
 
-    public ObjRow(Document value, Object obj) {
+    public ObjRow(String strId,Document value, Object obj) {
+        this.strId = strId;
         this.document = value;
         this.object = obj;
+    }
+
+    public String getStrId() {
+        return strId;
     }
 
     public boolean isRead() {
