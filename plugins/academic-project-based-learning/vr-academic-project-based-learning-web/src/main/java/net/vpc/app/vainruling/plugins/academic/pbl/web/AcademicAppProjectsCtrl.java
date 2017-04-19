@@ -130,10 +130,13 @@ public class AcademicAppProjectsCtrl {
                             : apbl.findProjectNodes(getModel().getSession().getId(), StringComparators.ilikepart(getModel().getFilterText()).apply(StringTransforms.UNIFORM));
             getModel().setProjects(projectNodes);
             ArrayList<SelectItem> projectItems = new ArrayList<>();
+            HashMap<Integer,ApblProject> projectsMap = new HashMap<>();
             for (ApblProject apblProject : apbl.findProjects(getModel().getSession().getId())) {
                 projectItems.add(new SelectItem(apblProject.getId(), Vr.get().strcut(apblProject.getName(),80)));
+                projectsMap.put(apblProject.getId(), apblProject);
             }
             getModel().setProjectItems(projectItems);
+            getModel().setProjectsMap(projectsMap);
         }
     }
 
@@ -1022,7 +1025,6 @@ public class AcademicAppProjectsCtrl {
         public void setProjects(List<ProjectNode> projects) {
             this.projects = projects;
             root = new DefaultTreeNode(new NodeItem("Root", projects.size(), "root", "", null), null);
-            projectsMap = new HashMap<>();
             boolean defaultExpand = !net.vpc.common.strings.StringUtils.isEmpty(getFilterText());
             for (ProjectNode i : projects) {
                 NodeItem project =
@@ -1034,9 +1036,6 @@ public class AcademicAppProjectsCtrl {
                                 new NodeItem(
                                         i.getProject().getName(), i.getTeams().size()
                                         , "project", core.getUserFullTitle(i.getProject().getOwner() == null ? null : i.getProject().getOwner()), i);
-                if (i.getProject() != null) {
-                    projectsMap.put(i.getProject().getId(), i.getProject());
-                }
                 DefaultTreeNode n = new DefaultTreeNode(project, this.root);
                 n.setExpanded(defaultExpand);
                 HashSet<Integer> teachersByProject = new HashSet<>();
