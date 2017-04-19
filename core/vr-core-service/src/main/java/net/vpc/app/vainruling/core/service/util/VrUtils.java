@@ -538,4 +538,19 @@ public class VrUtils {
         }
         return a/b;
     }
+
+    public static String getURLName(String url){
+        if(url==null){
+            url="";
+        }
+        int i = url.lastIndexOf('/');
+        if(i>=0){
+            url=url.substring(i+1);
+        }
+        i = url.lastIndexOf('?');
+        if(i>=0){
+            url=url.substring(0,i);
+        }
+        return url;
+    }
 }
