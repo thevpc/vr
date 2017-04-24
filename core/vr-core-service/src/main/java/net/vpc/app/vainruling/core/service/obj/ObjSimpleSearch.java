@@ -27,6 +27,15 @@ public class ObjSimpleSearch extends ObjSearch {
 
     public ObjSimpleSearch() {
         super("expr");
+        this.textSearch=new TextSearchFilter(
+                null,
+                new ObjectToMapConverter() {
+                    @Override
+                    public Map<String, Object> convert(Object o) {
+                        return ObjSimpleSearch.this.toStringRecord(o,entityName);
+                    }
+                }
+        );
     }
 
     public ObjSimpleSearch(String expression) {
