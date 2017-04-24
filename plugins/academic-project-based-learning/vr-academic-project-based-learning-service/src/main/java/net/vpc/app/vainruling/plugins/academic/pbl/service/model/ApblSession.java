@@ -2,6 +2,7 @@ package net.vpc.app.vainruling.plugins.academic.pbl.service.model;
 
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblSessionLoadStrategy;
 import net.vpc.upa.config.*;
 
 import java.util.Date;
@@ -22,7 +23,8 @@ public class ApblSession {
     @Sequence
 
     private int id;
-    @Main @Unique
+    @Main
+    @Unique
     private String name;
     private AppPeriod period;
     private ApblSessionStatus status;
@@ -63,7 +65,18 @@ public class ApblSession {
     private int teamMemberMax;
     private int teamCoachMin;
     private int teamCoachMax;
-    private double load;
+    /**
+     * if teamsBasedLoad only students in teams are considered otherwise all students in memberProfiles are
+     */
+    private ApblSessionLoadStrategy loadStrategy;
+
+    public ApblSessionLoadStrategy getLoadStrategy() {
+        return loadStrategy;
+    }
+
+    public void setLoadStrategy(ApblSessionLoadStrategy loadStrategy) {
+        this.loadStrategy = loadStrategy;
+    }
 
     public int getId() {
         return id;
@@ -185,11 +198,4 @@ public class ApblSession {
         this.projectOwnerProfiles = projectOwnerProfiles;
     }
 
-    public double getLoad() {
-        return load;
-    }
-
-    public void setLoad(double load) {
-        this.load = load;
-    }
 }

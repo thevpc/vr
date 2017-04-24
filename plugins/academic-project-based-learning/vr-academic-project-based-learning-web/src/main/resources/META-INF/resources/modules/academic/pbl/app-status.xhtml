@@ -21,7 +21,7 @@ and open the template in the editor.
 
     <!--@elvariable id="academicAppStatusCtrl" type="net.vpc.app.vainruling.plugins.academic.pbl.web.AcademicAppStatusCtrl"-->
     <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
-    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
             <h:form id="messagesForm">
                 <p:messages id="messages"/>
@@ -30,13 +30,26 @@ and open the template in the editor.
 
                 <div>
                     <div class="table-responsive vr-toolbox-container">
-                        <p:selectCheckboxMenu styleClass="vr-toolbox-select-one"
+                        <p:selectBooleanCheckbox value="#{academicAppStatusCtrl.model.multipleSessionSelection}">
+                            <p:ajax event="change" listener="#{academicAppStatusCtrl.onChangeSelectedSession}"
+                                    update="@form"/>
+                        </p:selectBooleanCheckbox>
+                        <p:outputLabel value="Selection Multiple"></p:outputLabel>
+                        <p:selectCheckboxMenu rendered="#{academicAppStatusCtrl.model.multipleSessionSelection}"
+                                              styleClass="vr-toolbox-select-one"
                                               filter="true" filterMatchMode="startsWith" panelStyle="width:250px"
                                               label="Sessions"
                                               value="#{academicAppStatusCtrl.model.selectedSessions}">
                             <p:ajax listener="#{academicAppStatusCtrl.onChangeSelectedSession}" update=":listForm"/>
                             <f:selectItems value="#{academicAppStatusCtrl.model.sessions}"/>
                         </p:selectCheckboxMenu>
+                        <p:selectOneMenu styleClass="vr-toolbox-select-one"
+                                         rendered="#{not academicAppStatusCtrl.model.multipleSessionSelection}"
+                                         value="#{academicAppStatusCtrl.model.currentSessionId}">
+                            <p:ajax listener="#{academicAppStatusCtrl.onChangeSelectedSession}" update=":listForm"/>
+                            <f:selectItem itemLabel="Choisir Session..." itemValue=""/>
+                            <f:selectItems value="#{academicAppStatusCtrl.model.sessions}"/>
+                        </p:selectOneMenu>
 
                         <p:selectOneMenu styleClass="vr-toolbox-select-one"
                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px"
@@ -69,6 +82,66 @@ and open the template in the editor.
 
                         >
                             <p:tab title="Enseignants">
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                            <span class="info-box-icon bg-aqua"><i class="fa fa-university"></i></span>
+
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Enseignants</span>
+                                                <span class="info-box-number">#{academicAppStatusCtrl.model.filteredTeachers.size()}</span>
+                                            </div>
+                                            <!-- /.info-box-content -->
+                                        </div>
+                                        <!-- /.info-box -->
+                                    </div>
+                                    <!-- /.col -->
+
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box bg-green">
+                                            <span class="info-box-icon"><i class="fa fa-graduation-cap"></i></span>
+
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Elèves</span>
+                                                <span class="info-box-number">#{vr.dblCustomFormat(academicAppStatusCtrl.model.teachers.baseStudentCount,'0.00')}/#{vr.dblCustomFormat(academicAppStatusCtrl.model.teachers.maxStudentCount,'0.00')}</span>
+
+                                                <div class="progress">
+                                                    <div class="progress-bar" style="width: #{academicAppStatusCtrl.model.teachers.maxStudentCount eq 0? 0:(100*academicAppStatusCtrl.model.teachers.coachedStudentCount/academicAppStatusCtrl.model.teachers.maxStudentCount)}%"></div>
+                                                </div>
+                                                <span class="progress-description">#{vr.dblCustomFormat(academicAppStatusCtrl.model.teachers.coachedStudentCount,'0.00')} encadrés, #{vr.dblCustomFormat(academicAppStatusCtrl.model.teachers.teamedStudentCount,'0.00')} en équipe</span>
+                                            </div>
+                                            <!-- /.info-box-content -->
+                                        </div>
+                                        <!-- /.info-box -->
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                            <span class="info-box-icon bg-yellow"><i class="fa fa-group"></i></span>
+
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Equipes</span>
+                                                <span class="info-box-number">#{academicAppStatusCtrl.model.teachers.teamsCount}</span>
+                                            </div>
+                                            <!-- /.info-box-content -->
+                                        </div>
+                                        <!-- /.info-box -->
+                                    </div>
+                                    <!-- /.col -->
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                            <span class="info-box-icon bg-red"><i class="fa fa-money"></i></span>
+
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Charge Unitaire</span>
+                                                <span class="info-box-number">#{vr.dblCustomFormat(academicAppStatusCtrl.model.teachers.unitLoad,'0.00')}</span>
+                                            </div>
+                                            <!-- /.info-box-content -->
+                                        </div>
+                                        <!-- /.info-box -->
+                                    </div>
+                                </div>
+
                                 <div style="margin-bottom: 10px;">
                                     <p:inputText value="#{academicAppStatusCtrl.model.teachersFilterText}"
                                                  placeholder="Chercher ..."
@@ -82,31 +155,38 @@ and open the template in the editor.
                                 </div>
                                 <p:dataTable id="teachersList" var="e"
                                              value="#{academicAppStatusCtrl.model.filteredTeachers}"
+                                             paginator="true"
+                                             paginatorPosition="bottom"
                                              paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                                 >
                                     <f:facet name="{Exporters}">
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png" width="16"/>
-                                            <p:dataExporter type="xls" target="listTable"
-                                                            fileName="proj-innov"/>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xls" target="teachersList"
+                                                            fileName="proj-innov-enseignants-#{academicAppStatusCtrl.preferredFileName}"
+                                                            postProcessor="#{vr.postProcessDataExporterXLS}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png" width="16"/>
-                                            <p:dataExporter type="pdf" target="listTable"
-                                                            fileName="proj-innov"/>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="pdf" target="teachersList"
+                                                            fileName="proj-innov-enseignants-#{academicAppStatusCtrl.preferredFileName}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png" width="16"/>
-                                            <p:dataExporter type="csv" target="listTable"
-                                                            fileName="proj-innov"/>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="csv" target="teachersList"
+                                                            fileName="proj-innov-enseignants-#{academicAppStatusCtrl.preferredFileName}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png" width="16"/>
-                                            <p:dataExporter type="xml" target="listTable"
-                                                            fileName="proj-innov"/>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xml" target="teachersList"
+                                                            fileName="proj-innov-enseignants-#{academicAppStatusCtrl.preferredFileName}"/>
                                         </h:commandLink>
                                     </f:facet>
                                     <p:column headerText="Enseignant" sortBy="#{e.teacher.contact.fullTitle}">
@@ -120,22 +200,76 @@ and open the template in the editor.
                                     </p:column>
                                     <p:column headerText="Nbr Elèves" sortBy="#{e.studentsCount}">
                                         <p:outputLabel styleClass="vr-center-text"
-                                                       value="#{vr.dblFormat(e.studentsCount)}"/>
+                                                       value="#{vr.dblCustomFormat(e.studentsCount,'0.00')}"/>
                                     </p:column>
-                                    <p:column headerText="% Encadrement" sortBy="#{e.studentsCount}">
+                                    <p:column headerText="Elèves IA">
                                         <p:outputLabel styleClass="vr-center-text"
-                                                       value="#{vr.dblCustomFormat(e.studentsCount * 100 / academicAppStatusCtrl.model.students.size(),'0.00')}"/>
+                                                       value="#{vr.dblCustomFormat(e.getStudentsCountByProgram('IA'),'0.00')}"/>
                                     </p:column>
-                                    <p:column headerText="Charge en TP" sortBy="#{e.studentsCount}">
+                                    <p:column headerText="Elèves EI">
                                         <p:outputLabel styleClass="vr-center-text"
-                                                       value="#{vr.dblCustomFormat(e.load,'0.00')}"/>
+                                                       value="#{vr.dblCustomFormat(e.getStudentsCountByProgram('EI'),'0.00')}"/>
                                     </p:column>
+                                    <p:column headerText="Elèves Méca">
+                                        <p:outputLabel styleClass="vr-center-text"
+                                                       value="#{vr.dblCustomFormat(e.getStudentsCountByProgram('MC'),'0.00')}"/>
+                                    </p:column>
+                                    <p:column headerText="Charge IA"
+                                              rendered="#{academicAppStatusCtrl.model.teachers.sessions.size() eq 1}">
+                                        <p:outputLabel styleClass="vr-center-text"
+                                                       value="#{(vr.dblCustomFormat(e.programsLoadByName.get('IA'),'0.00'))}"/>
+                                    </p:column>
+                                    <p:column headerText="Charge EI"
+                                              rendered="#{academicAppStatusCtrl.model.teachers.sessions.size() eq 1}">
+                                        <p:outputLabel styleClass="vr-center-text"
+                                                       value="#{(vr.dblCustomFormat(e.programsLoadByName.get('EI') ,'0.00'))}"/>
+                                    </p:column>
+                                    <p:column headerText="Charge Méca"
+                                              rendered="#{academicAppStatusCtrl.model.teachers.sessions.size() eq 1}">
+                                        <p:outputLabel styleClass="vr-center-text"
+                                                       value="#{(vr.dblCustomFormat(e.programsLoadByName.get('MC'),'0.00'))}"/>
+                                    </p:column>
+                                    <p:column headerText="Charge Tot">
+                                        <p:outputLabel styleClass="vr-center-text"
+                                                       value="#{(vr.dblCustomFormat(e.load,'0.00'))}"/>
+                                    </p:column>
+                                    <!--<p:column headerText="Charge en TP" sortBy="#{e.studentsCount}">-->
+                                    <!--<p:outputLabel styleClass="vr-center-text"-->
+                                    <!--value="#{vr.dblCustomFormat(e.load,'0.00')}"/>-->
+                                    <!--</p:column>-->
                                     <f:facet name="footer">
-                                        #{academicAppStatusCtrl.model.filteredTeachers.size()} enseignants, #{academicAppStatusCtrl.model.teamedStudentsCount} / #{academicAppStatusCtrl.model.students.size()} élèves, #{academicAppStatusCtrl.model.teamsCount} équipes
+                                        #{academicAppStatusCtrl.model.filteredTeachers.size()} enseignants, #{vr.dblCustomFormat(academicAppStatusCtrl.model.teachers.coachedStudentCount,'0.00')} / #{vr.dblCustomFormat(academicAppStatusCtrl.model.teachers.teamedStudentCount,'0.00')} / #{vr.dblCustomFormat(academicAppStatusCtrl.model.teachers.maxStudentCount,'0.00')} élèves, #{academicAppStatusCtrl.model.teachers.teamsCount} équipes, #{vr.dblCustomFormat(academicAppStatusCtrl.model.teachers.unitLoad,'0.00')} charge unitaire
                                     </f:facet>
                                 </p:dataTable>
                             </p:tab>
                             <p:tab title="Elèves">
+                                <div>
+                                    <div class="table-responsive vr-toolbox-container">
+                                        <p:outputLabel value="Sans equipe"/>
+                                        <p:selectBooleanCheckbox styleClass="vr-toolbox-select-one"  style="margin-left: 5px;"
+                                                                 value="#{academicAppStatusCtrl.model.filterStudentsNoTeam}">
+                                            <p:ajax listener="#{academicAppStatusCtrl.reloadTeacherAndStudentInfos}" update="studentsList"/>
+                                        </p:selectBooleanCheckbox>
+
+                                        <p:outputLabel value="Plusieurs Equipes" style="margin-left: 10px;"/>
+                                        <p:selectBooleanCheckbox styleClass="vr-toolbox-select-one"   style="margin-left: 5px;"
+                                                                 value="#{academicAppStatusCtrl.model.filterStudentsMultiTeam}">
+                                            <p:ajax listener="#{academicAppStatusCtrl.reloadTeacherAndStudentInfos}" update="studentsList"/>
+                                        </p:selectBooleanCheckbox>
+
+                                        <p:outputLabel value="Sans projet" style="margin-left: 10px;"/>
+                                        <p:selectBooleanCheckbox styleClass="vr-toolbox-select-one"   style="margin-left: 5px;"
+                                                                 value="#{academicAppStatusCtrl.model.filterStudentsNoProject}">
+                                            <p:ajax listener="#{academicAppStatusCtrl.reloadTeacherAndStudentInfos}" update="studentsList"/>
+                                        </p:selectBooleanCheckbox>
+
+                                        <p:outputLabel value="Sans coach" style="margin-left: 10px;"/>
+                                        <p:selectBooleanCheckbox styleClass="vr-toolbox-select-one"   style="margin-left: 5px;"
+                                                                 value="#{academicAppStatusCtrl.model.filterStudentsNoCoach}">
+                                            <p:ajax listener="#{academicAppStatusCtrl.reloadTeacherAndStudentInfos}" update="studentsList"/>
+                                        </p:selectBooleanCheckbox>
+                                    </div>
+                                </div>
                                 <div style="width: 100%;margin-top: 10px;margin-bottom: 10px;">
                                     <span style="width: 100px;">#{vr.dblCustomFormat(academicAppStatusCtrl.validStudentsPercent,"0.00")}% valides</span>
                                     <div class="sparkline" data-type="pie" data-offset="90" data-width="32px"
@@ -162,31 +296,38 @@ and open the template in the editor.
                                 </div>
                                 <p:dataTable id="studentsList" var="s"
                                              value="#{academicAppStatusCtrl.model.filteredStudents}"
+                                             paginator="true"
+                                             paginatorPosition="bottom"
                                              paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
                                 >
                                     <f:facet name="{Exporters}">
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png" width="16"/>
-                                            <p:dataExporter type="xls" target="listTable"
-                                                            fileName="proj-innov"/>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xls" target="studentsList"
+                                                            fileName="proj-innov-eleves-#{academicAppStatusCtrl.preferredFileName}"
+                                                            postProcessor="#{vr.postProcessDataExporterXLS}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png" width="16"/>
-                                            <p:dataExporter type="pdf" target="listTable"
-                                                            fileName="proj-innov"/>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="pdf" target="studentsList"
+                                                            fileName="proj-innov-eleves-#{academicAppStatusCtrl.preferredFileName}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png" width="16"/>
-                                            <p:dataExporter type="csv" target="listTable"
-                                                            fileName="proj-innov"/>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="csv" target="studentsList"
+                                                            fileName="proj-innov-eleves-#{academicAppStatusCtrl.preferredFileName}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png" width="16"/>
-                                            <p:dataExporter type="xml" target="listTable"
-                                                            fileName="proj-innov"/>
+                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xml" target="studentsList"
+                                                            fileName="proj-innov-eleves-#{academicAppStatusCtrl.preferredFileName}"/>
                                         </h:commandLink>
                                     </f:facet>
                                     <p:column headerText="Elève" sortBy="#{s.student.contact.fullTitle}">
@@ -212,7 +353,17 @@ and open the template in the editor.
                                                 value="#{s.interDepartments ? '/public/academic/images/multi-dept.png': '/public/academic/images/multi-cls.png'}"
                                                 rendered="#{s.interDepartments or s.interClasses}"
                                                 width="32" height="32"
+                                                alt="#{s.interDepartments ? 'inter departements': 'inter classes'}"
                                         />
+                                    </p:column>
+                                    <p:column headerText="++ dept"
+                                              styleClass="#{s.interDepartments?'vr-label-valid':''}"
+                                              sortBy="#{s.interDepartments}" style="width: 3%;">
+                                        <p:outputLabel value="#{s.interDepartments?'X':''}"/>
+                                    </p:column>
+                                    <p:column headerText="++ cls" styleClass="#{s.interClasses?'vr-label-valid':''}"
+                                              sortBy="#{s.interClasses}" style="width: 3%;">
+                                        <p:outputLabel value="#{s.interClasses?'X':''}"/>
                                     </p:column>
                                     <p:column headerText="Ss Coach" styleClass="#{s.errNoCoach?'vr-label-invalid':''}"
                                               sortBy="#{s.errNoCoach}" style="width: 3%;">
@@ -226,13 +377,14 @@ and open the template in the editor.
                                               sortBy="#{s.errNoTeam}" style="width: 3%;">
                                         <p:outputLabel value="#{s.errNoTeam?'X':''}"/>
                                     </p:column>
-                                    <p:column headerText="++ Eqps" styleClass="#{s.errTooManyTeams?'vr-label-invalid':''}"
+                                    <p:column headerText="++ Eqps"
+                                              styleClass="#{s.errTooManyTeams?'vr-label-invalid':''}"
                                               sortBy="#{s.errTooManyTeams}" style="width: 3%;">
                                         <p:outputLabel value="#{s.errTooManyTeams?'X':''}"/>
                                     </p:column>
                                     <!--<p:column headerText="Observations" styleClass="# {s.invalid?'vr-label-invalid':''}"-->
-                                              <!--sortBy="#     {s.invalidObservations}">-->
-                                        <!--<p:outputLabel value="# {s.invalidObservations}"/>-->
+                                    <!--sortBy="#     {s.invalidObservations}">-->
+                                    <!--<p:outputLabel value="# {s.invalidObservations}"/>-->
                                     <!--</p:column>-->
                                     <f:facet name="footer">
                                         #{academicAppStatusCtrl.model.filteredStudents.size()} élèves ; #{vr.dblCustomFormat(academicAppStatusCtrl.getInterDepartmentPercent(false),"0.00")}% inter-départements ; #{vr.dblCustomFormat(academicAppStatusCtrl.getInterClassPercent(false),"0.00")}% inter-classes

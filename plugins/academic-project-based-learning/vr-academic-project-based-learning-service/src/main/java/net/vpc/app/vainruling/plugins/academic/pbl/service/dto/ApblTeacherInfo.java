@@ -3,10 +3,7 @@ package net.vpc.app.vainruling.plugins.academic.pbl.service.dto;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by vpc on 11/13/16.
@@ -17,6 +14,8 @@ public class ApblTeacherInfo {
     private double load;
     private List<TeamNode> teams=new ArrayList<>();
     private Set<AcademicStudent> students=new HashSet<>();
+    private Map<Integer,Double> programsLoadById=new HashMap<>();
+    private Map<String,Double> programsLoadByName=new HashMap<>();
 
     public AcademicTeacher getTeacher() {
         return teacher;
@@ -41,6 +40,36 @@ public class ApblTeacherInfo {
 
     public double getStudentsCount() {
         return studentsCount;
+    }
+
+    public double getStudentsCountByProgram(String programName) {
+        int x=0;
+        for (AcademicStudent student : students) {
+            if(
+                    (student.getLastClass1()!=null && student.getLastClass1().getProgram()!=null && student.getLastClass1().getProgram().getName().equals(programName))
+                    ||(student.getLastClass2()!=null && student.getLastClass2().getProgram()!=null && student.getLastClass2().getProgram().getName().equals(programName))
+                            ||(student.getLastClass3()!=null && student.getLastClass3().getProgram()!=null && student.getLastClass3().getProgram().getName().equals(programName))
+                    ){
+                x++;
+            }
+        }
+        return x;
+    }
+
+    public Map<Integer, Double> getProgramsLoadById() {
+        return programsLoadById;
+    }
+
+    public void setProgramsLoadById(Map<Integer, Double> programsLoadById) {
+        this.programsLoadById = programsLoadById;
+    }
+
+    public Map<String, Double> getProgramsLoadByName() {
+        return programsLoadByName;
+    }
+
+    public void setProgramsLoadByName(Map<String, Double> programsLoadByName) {
+        this.programsLoadByName = programsLoadByName;
     }
 
     public void setStudentsCount(double studentsCount) {

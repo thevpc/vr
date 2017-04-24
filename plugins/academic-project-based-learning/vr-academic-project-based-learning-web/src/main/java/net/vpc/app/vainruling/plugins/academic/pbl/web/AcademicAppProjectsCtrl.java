@@ -17,10 +17,7 @@ import net.vpc.app.vainruling.core.web.fs.files.DocumentsDialogCtrl;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPlugin;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.CoachNode;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.MemberNode;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ProjectNode;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.TeamNode;
+import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.*;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
@@ -30,6 +27,7 @@ import net.vpc.common.strings.StringComparators;
 import net.vpc.common.strings.StringTransforms;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.UPA;
+import net.vpc.upa.filters.ObjectFilter;
 import org.apache.commons.lang.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
@@ -125,9 +123,24 @@ public class AcademicAppProjectsCtrl {
 
         } else {
             List<ProjectNode> projectNodes =
-                    StringUtils.isEmpty(getModel().getFilterText()) ?
-                            apbl.findProjectNodes(getModel().getSession().getId())
-                            : apbl.findProjectNodes(getModel().getSession().getId(), StringComparators.ilikepart(getModel().getFilterText()).apply(StringTransforms.UNIFORM));
+                    apbl.findProjectNodes(getModel().getSession().getId(),
+                            StringUtils.isEmpty(getModel().getFilterText()) ? null : StringComparators.ilikepart(getModel().getFilterText()).apply(StringTransforms.UNIFORM),
+                            new ObjectFilter<ApblNode>() {
+                                @Override
+                                public boolean accept(ApblNode value) {
+                                    if(value instanceof TeamNode){
+                                        if(!((TeamNode) value).getCoaches().isEmpty() && getModel().isFilterNoCoach()){
+                                            return false;
+                                        }
+                                        if(!((TeamNode) value).getMembers().isEmpty() && getModel().isFilterNoMember()){
+                                            return false;
+                                        }
+                                        return true;
+                                    }
+                                    return true;
+                                }
+                            }
+                    );
             getModel().setProjects(projectNodes);
             ArrayList<SelectItem> projectItems = new ArrayList<>();
             HashMap<Integer,ApblProject> projectsMap = new HashMap<>();
@@ -244,6 +257,9 @@ public class AcademicAppProjectsCtrl {
                         return false;
                     }
                     TeamNode t = (TeamNode) item.getValue();
+                    if(t.getTeam().isLockedCoaches()) {
+                        return false;
+                    }
                     int teamCoachMax = session.getTeamCoachMax();
                     if (teamCoachMax > 0 && t.getCoaches().size() >= teamCoachMax) {
                         return false;
@@ -260,13 +276,18 @@ public class AcademicAppProjectsCtrl {
                         return false;
                     }
                     TeamNode t = (TeamNode) item.getValue();
-                    int teamCoachMax = session.getTeamMemberMax();
-                    if (teamCoachMax > 0 && t.getMembers().size() >= teamCoachMax) {
+                    if(t.getTeam().isLockedMembers()) {
                         return false;
                     }
-                    for (MemberNode node : t.getMembers()) {
-                        if (node.getMember().getStudent().getId() == currentStudent.getId()) {
+                    if(!t.getTeam().isFreeMembers()) {
+                        int teamCoachMax = session.getTeamMemberMax();
+                        if (teamCoachMax > 0 && t.getMembers().size() >= teamCoachMax) {
                             return false;
+                        }
+                        for (MemberNode node : t.getMembers()) {
+                            if (node.getMember().getStudent().getId() == currentStudent.getId()) {
+                                return false;
+                            }
                         }
                     }
                     return true;
@@ -887,6 +908,24 @@ public class AcademicAppProjectsCtrl {
         private String selectedPathUploaded;
         private String selectedPathBeforeUpload;
         private String filterText;
+        private boolean filterNoCoach;
+        private boolean filterNoMember;
+
+        public boolean isFilterNoMember() {
+            return filterNoMember;
+        }
+
+        public void setFilterNoMember(boolean filterNoMember) {
+            this.filterNoMember = filterNoMember;
+        }
+
+        public boolean isFilterNoCoach() {
+            return filterNoCoach;
+        }
+
+        public void setFilterNoCoach(boolean filterNoCoach) {
+            this.filterNoCoach = filterNoCoach;
+        }
 
         public Map<Integer, ApblSession> getSessionsMap() {
             return sessionsMap;
@@ -1025,7 +1064,7 @@ public class AcademicAppProjectsCtrl {
         public void setProjects(List<ProjectNode> projects) {
             this.projects = projects;
             root = new DefaultTreeNode(new NodeItem("Root", projects.size(), "root", "", null), null);
-            boolean defaultExpand = !net.vpc.common.strings.StringUtils.isEmpty(getFilterText());
+            boolean defaultExpand =true;// !net.vpc.common.strings.StringUtils.isEmpty(getFilterText());
             for (ProjectNode i : projects) {
                 NodeItem project =
                         i.getProject() == null ?

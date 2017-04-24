@@ -21,7 +21,7 @@ and open the template in the editor.
 
     <!--@elvariable id="academicAppProjectsCtrl" type="net.vpc.app.vainruling.plugins.academic.pbl.web.AcademicAppProjectsCtrl"-->
     <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
-    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
             <h:form id="messagesForm">
                 <p:messages id="messages"/>
@@ -62,6 +62,20 @@ and open the template in the editor.
                                          ajax="false"
                                          actionListener="#{academicAppProjectsCtrl.reloadProjects}"
                         />
+                    </div>
+                </div>
+ <div>
+                    <div class="table-responsive vr-toolbox-container">
+                        <p:outputLabel value="Sans coachs"/>
+                        <p:selectBooleanCheckbox styleClass="vr-toolbox-select-one"   style="margin-left: 5px;"
+                                         value="#{academicAppProjectsCtrl.model.filterNoCoach}">
+                            <p:ajax listener="#{academicAppProjectsCtrl.onSearchByText}" update=":listForm"/>
+                        </p:selectBooleanCheckbox>
+                        <p:outputLabel value="Sans Membres"   style="margin-left: 10px;"/>
+                        <p:selectBooleanCheckbox styleClass="vr-toolbox-select-one"   style="margin-left: 5px;"
+                                         value="#{academicAppProjectsCtrl.model.filterNoMember}">
+                            <p:ajax listener="#{academicAppProjectsCtrl.onSearchByText}" update=":listForm"/>
+                        </p:selectBooleanCheckbox>
                     </div>
                 </div>
 

@@ -33,12 +33,12 @@ public class DupAcademicCourseAssignmentAction implements ActionDialog {
     }
 
     @Override
-    public boolean isEnabled(Class entityType, EditCtrlMode mode, Object value) {
+    public boolean isEnabled(String actionId, Class entityType, EditCtrlMode mode, Object value) {
         return mode!=EditCtrlMode.NEW;
     }
 
     @Override
-    public ActionDialogResult invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         for (String id : selectedIdStrings) {
             academic.dupCourseAssignment(Integer.parseInt(id));
         }

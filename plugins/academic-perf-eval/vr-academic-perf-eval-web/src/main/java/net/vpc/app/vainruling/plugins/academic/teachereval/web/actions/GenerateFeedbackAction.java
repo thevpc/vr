@@ -8,7 +8,6 @@ package net.vpc.app.vainruling.plugins.academic.teachereval.web.actions;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
-import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
@@ -37,12 +36,12 @@ public class GenerateFeedbackAction implements ActionDialog {
     }
 
     @Override
-    public boolean isEnabled(Class entityType, EditCtrlMode mode, Object value) {
+    public boolean isEnabled(String actionId, Class entityType, EditCtrlMode mode, Object value) {
         return value != null;
     }
 
     @Override
-    public ActionDialogResult invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         VrApp.getBean(AcademicPerfEvalPlugin.class).generateStudentsFeedbackForm(
                 ((AcademicFeedbackModel) obj).getId(),
                 Convert.toInt(args[1], IntegerParserConfig.LENIENT_F),

@@ -60,7 +60,7 @@ public class CorePlugin {
     public static final String PROFILE_HEAD_OF_DEPARTMENT = "HeadOfDepartment";
     public static final String RIGHT_FILESYSTEM_WRITE = "Custom.FileSystem.Write";
     public static final String RIGHT_FILESYSTEM_ASSIGN_RIGHTS = "Custom.FileSystem.AssignRights";
-    public static final String RIGHT_FILESYSTEM_SHARE_FOLDERS = "Custom.FileSystem.ShareForlders";
+    public static final String RIGHT_FILESYSTEM_SHARE_FOLDERS = "Custom.FileSystem.ShareFolders";
     public static final Set<String> ADMIN_ENTITIES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("Trace", "User", "UserProfile", "UserProfileBinding", "UserProfileRight")));
     public static String FOLDER_MY_DOCUMENTS = "Mes Documents";
     public static String FOLDER_ALL_DOCUMENTS = "Tous";

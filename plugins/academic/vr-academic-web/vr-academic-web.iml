@@ -31,13 +31,6 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm:5.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant:1.9.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant-launcher:1.9.6" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.poi:poi:3.9" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.poi:poi-ooxml:3.9" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: dom4j:dom4j:1.6.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: xml-apis:xml-apis:1.0.b2" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.poi:poi-ooxml-schemas:3.9" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.xmlbeans:xmlbeans:2.3.0" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: stax:stax-api:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.jexcelapi:jxl:2.6.10" level="project" />
     <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-strings:1.2.7" level="project" />
     <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-utils:1.6" level="project" />
@@ -103,11 +96,18 @@
     <orderEntry type="library" name="Maven: javax.servlet:jstl:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jersey.containers:jersey-container-servlet:2.14" level="project" />
     <orderEntry type="library" name="Maven: javax.ws.rs:javax.ws.rs-api:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.poi:poi:3.9" level="project" />
+    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.5" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.poi:poi-ooxml:3.9" level="project" />
+    <orderEntry type="library" name="Maven: dom4j:dom4j:1.6.1" level="project" />
+    <orderEntry type="library" name="Maven: xml-apis:xml-apis:1.0.b2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.poi:poi-ooxml-schemas:3.9" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.xmlbeans:xmlbeans:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: stax:stax-api:1.0.1" level="project" />
     <orderEntry type="module" module-name="vr-academic-service" />
     <orderEntry type="library" name="Maven: net.sf.jgap:jgap:3.4.4" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.3" level="project" />
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.9" level="project" />
-    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.3" level="project" />
     <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: com.thoughtworks.xstream:xstream:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: xpp3:xpp3_min:1.1.3.4.O" level="project" />

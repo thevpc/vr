@@ -12,5 +12,6 @@ public enum AcademicStudentStage {
     ATTENDING,
     ELIMINATED,
     GRADUATED,
-    GAP_YEAR
+    GAP_YEAR,
+    WITHDRAWAL,
 }

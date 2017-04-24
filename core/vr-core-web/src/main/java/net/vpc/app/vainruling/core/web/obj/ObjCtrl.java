@@ -157,6 +157,10 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         return newTitleString;
     }
 
+    public boolean isCustomCheckboxSelection() {
+        return false;
+    }
+
     @Override
     public boolean isEnabledButton(String buttonId) {
         Boolean v = enabledButtons.get(buttonId);
@@ -442,11 +446,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         int count = 0;
         try {
             if (getModel().getMode() == EditCtrlMode.LIST) {
-                for (ObjRow row : getModel().getList()) {
-                    if (row.isSelected()) {
+                for (ObjRow row : getSelectedRows()) {
                         core.remove(getEntityName(), core.resolveId(getEntityName(), row.getDocument()));
                         count++;
-                    }
                 }
                 reloadPage(true);
             } else {
@@ -476,11 +478,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         int count = 0;
         try {
             if (getModel().getMode() == EditCtrlMode.LIST) {
-                for (ObjRow row : getModel().getList()) {
-                    if (row.isSelected()) {
-                        core.archive(getEntityName(), core.resolveId(getEntityName(), row.getDocument()));
-                        count++;
-                    }
+                for (ObjRow row : getSelectedRows()) {
+                    core.archive(getEntityName(), core.resolveId(getEntityName(), row.getDocument()));
+                    count++;
                 }
                 reloadPage(true);
             } else {
@@ -595,6 +595,17 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     public boolean isEnabledMainPhoto() {
         return mainPhotoProvider != null;
+    }
+
+    public String getMainName(ObjRow row) {
+        Field mainField = getEntity().getMainField();
+        if(mainField!=null) {
+            String string = row.getDocument().getString(mainField.getName());
+            if (!StringUtils.isEmpty(string)) {
+                return string;
+            }
+        }
+        return "NoName";
     }
 
     public String getMainPhoto(ObjRow row) {
@@ -1526,17 +1537,29 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         return null;
     }
 
+    public List<ObjRow> getSelectedRows() {
+        List<ObjRow> selected=new ArrayList<>();
+        if(isCustomCheckboxSelection()) {
+            for (ObjRow r : getModel().getList()) {
+                if (r.isSelected()) {
+                    selected.add(r);
+                }
+            }
+        }else{
+            selected.addAll(getModel().getSelectedRows());
+        }
+        return selected;
+    }
+
     public List<String> getSelectedIdStrings() {
         List<String> selected = new ArrayList<>();
         if (getModel().getMode() == EditCtrlMode.LIST) {
-            for (ObjRow r : getModel().getList()) {
-                if (r.isSelected()) {
-                    String iid = StringUtils.nonEmpty(core.resolveId(getEntityName(), r.getDocument()));
-                    if (iid != null) {
-                        selected.add(iid);
-                    } else {
-                        System.out.println("Why?");
-                    }
+            for (ObjRow r : getSelectedRows()) {
+                String iid = StringUtils.nonEmpty(core.resolveId(getEntityName(), r.getDocument()));
+                if (iid != null) {
+                    selected.add(iid);
+                } else {
+                    System.out.println("Why?");
                 }
             }
         } else if (getModel().getCurrentDocument() != null) {
@@ -1556,7 +1579,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 if (ed.isDialog()) {
 
                     currentViewToModel();
-                    ed.openDialog(actionId, getSelectedIdStrings());
+                    ed.openDialog(getSelectedIdStrings());
                     return;
                 } else {
                     try {
@@ -1774,10 +1797,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 }
                 case LIST: {
                     List all = new ArrayList();
-                    for (ObjRow objRow : getList()) {
-                        if (objRow.isSelected()) {
-                            all.add(objRow.getDocument());
-                        }
+                    for (ObjRow objRow : getSelectedRows()) {
+                        all.add(objRow.getDocument());
                     }
                     return all;
                 }

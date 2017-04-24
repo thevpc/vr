@@ -21,7 +21,7 @@ and open the template in the editor.
     <!--@elvariable id="globalStatCtrl" type="net.vpc.app.vainruling.plugins.academic.web.load.GlobalStatCtrl"-->
     <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
 
-    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
             <h:form id="buttonsForm">
 
@@ -191,7 +191,7 @@ and open the template in the editor.
                                             <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png"
                                                             width="16"/>
                                             <p:dataExporter type="xls" target="tbl1"
-                                                            fileName="eniso-info-teaches-count-a"/>
+                                                            fileName="eniso-info-teaches-count-a" postProcessor="#{vr.postProcessDataExporterXLS}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
@@ -260,7 +260,7 @@ and open the template in the editor.
                                             <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png"
                                                             width="16"/>
                                             <p:dataExporter type="xls" target="tbl2"
-                                                            fileName="eniso-info-teaches-count-b"/>
+                                                            fileName="eniso-info-teaches-count-b" postProcessor="#{vr.postProcessDataExporterXLS}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
@@ -792,7 +792,7 @@ and open the template in the editor.
                                             <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png"
                                                             width="16"/>
                                             <p:dataExporter type="xls" target="tabstat"
-                                                            fileName="eniso-info-load-matrix"/>
+                                                            fileName="eniso-info-load-matrix" postProcessor="#{vr.postProcessDataExporterXLS}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>

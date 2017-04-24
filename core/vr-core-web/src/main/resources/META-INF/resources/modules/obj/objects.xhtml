@@ -27,11 +27,8 @@ and open the template in the editor.
     <!--@elvariable id="objCtrl" type="net.vpc.app.vainruling.core.web.obj.ObjCtrl"-->
 
 
-    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
-            <script>
-                var currentPhotoPath="";
-            </script>
             <h:form id="buttonsForm">
                 <p:confirmDialog message="Etes vous sur de vouloir supprimer la selection ?" header="Suppression"
                                  widgetVar="confirmationDelete">
@@ -306,6 +303,7 @@ and open the template in the editor.
                                          rowStyleClass="#{objCtrl.rowStyle}"
                                          selection="#{objCtrl.model.selectedRows}"
                                          rowKey="#{i.strId}"
+                                         selectionMode="multiple"
                             >
 
                                 <!--                                    <f:facet name="header">
@@ -317,7 +315,7 @@ and open the template in the editor.
                                     <h:commandLink>
                                         <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png" width="16"/>
                                         <p:dataExporter type="xls" target="listTable"
-                                                        fileName="eniso-info-#{objCtrl.model.entityName}"/>
+                                                        fileName="eniso-info-#{objCtrl.model.entityName}" postProcessor="#{vr.postProcessDataExporterXLS}"/>
                                     </h:commandLink>
 
                                     <h:commandLink>
@@ -339,9 +337,9 @@ and open the template in the editor.
                                     </h:commandLink>
                                 </f:facet>
 
-                                <p:column headerText="" style="width: 60px;">
+                                <p:column exportable="false" headerText="" style="width: #{objCtrl.customCheckboxSelection?'60':'30'}px;">
                                     <p:selectBooleanCheckbox
-                                            rendered="#{objCtrl.isEnabledButton('Select')}"
+                                            rendered="#{objCtrl.customCheckboxSelection and objCtrl.isEnabledButton('Select')}"
                                             disabled="#{!(i.selectable)}" value="#{i.selected}">
                                     </p:selectBooleanCheckbox>
                                     <p:commandLink
@@ -355,10 +353,10 @@ and open the template in the editor.
                                     </p:commandLink>
                                 </p:column>
 
-                                <p:column headerText="" style="width: 65px;" rendered="#{objCtrl.enabledMainPhoto}">
+                                <p:column exportable="false" headerText="" style="width: 65px;" rendered="#{objCtrl.enabledMainPhoto}">
                                     <img src="#{vr.url(objCtrl.getMainPhoto(i))}"
                                          style="width: 40px ; height: 40px; margin-right: 10px;"
-                                         alt="Image" onclick="document.getElementById('mainPhotoImg').src='#{vr.url(objCtrl.getMainPhoto(i))}';PF('photodlg').show();"/>
+                                         alt="Image" onclick="document.getElementById('mainPhotoImg').src='#{vr.url(objCtrl.getMainPhoto(i))}';$('#'+PF('photodlg').id).find('.ui-dialog-title')[0].textContent='#{vr.url(objCtrl.getMainName(i))}';PF('photodlg').show();"/>
                                 </p:column>
 
                                 <!--                                               filterBy="# {i[column.property]}"
@@ -385,7 +383,7 @@ and open the template in the editor.
                                     <p:outputLabel value="Total #{objCtrl.model.list.size()}"/>
                                 </f:facet>
                             </p:dataTable>
-                            <p:contextMenu id="contextMenu4ListTable" for="listTable">
+                            <p:contextMenu id="contextMenu4ListTable" for=":listForm:listTable">
                                 <p:menuitem value="View" icon="ui-icon-search" oncomplete="PF('carDialog').show()"/>
                                 <p:menuitem value="Delete" icon="ui-icon-close" oncomplete="PF('carDialog').show()"/>
                             </p:contextMenu>

@@ -22,7 +22,7 @@ and open the template in the editor.
     <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
     <!--@elvariable id="allTeachersCourseLoadCtrl" type="net.vpc.app.vainruling.plugins.academic.web.load.AllTeachersCourseLoadCtrl"-->
     <!--@elvariable id="vrColorTable" type="net.vpc.app.vainruling.core.web.VrColorTable"-->
-    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
             <h:form id="buttonsForm">
                 <p:confirmDialog message="Etes vous sur de vouloir supprimer la selection ?" header="Suppression"
@@ -251,7 +251,7 @@ and open the template in the editor.
                                 <f:facet name="{Exporters}">
                                     <h:commandLink>
                                         <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png" width="16"/>
-                                        <p:dataExporter type="xls" target="tbl" fileName="eniso-info-#{tab.title}"/>
+                                        <p:dataExporter type="xls" target="tbl" fileName="eniso-info-#{tab.title}" postProcessor="#{vr.postProcessDataExporterXLS}"/>
                                     </h:commandLink>
 
                                     <h:commandLink>

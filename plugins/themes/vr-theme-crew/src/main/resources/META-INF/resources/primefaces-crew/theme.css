@@ -115,7 +115,7 @@
 .ui-widget-content .ui-state-highlight,
 .ui-widget-header .ui-state-highlight {
     border: 1px solid #dad55e;
-    background: #47a7df;
+    background: #47a7df !important;
     color: #692077;
 }
 

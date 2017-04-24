@@ -23,9 +23,11 @@ import net.vpc.upa.Package;
 import net.vpc.upa.exceptions.UPAException;
 import net.vpc.upa.filters.DefaultEntityFilter;
 import net.vpc.upa.filters.EntityFilter;
+import net.vpc.upa.filters.ObjectFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -72,6 +74,14 @@ public class VrMenuManager {
     }
 
     public String buildMenu() {
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        String searchText = params.get("searchTextInput");
+//        if(!StringUtils.isEmpty(searchText)){
+//            getModel().setSearchText(searchText);
+            getModel().setSearchText("");
+//        }else{
+//            searchText=getModel().getSearchText();
+        //}
 //        MenuTree v = new MenuTree();
 //        TreeTraversal.preOrderTreeTraversal(v, new TreeVisitor<VRMenuDef>() {
 //
@@ -80,7 +90,22 @@ public class VrMenuManager {
 //
 //            }
 //        });
-        getModel().setRoot(new MenuTree().root);
+        String finalSearchText = searchText;
+        ObjectFilter<String> menuFilter=StringUtils.isEmpty(searchText)?new ObjectFilter<String>() {
+            @Override
+            public boolean accept(String value) {
+                return true;
+            }
+        } : new ObjectFilter<String>() {
+            @Override
+            public boolean accept(String value) {
+                if(value==null){
+                    value="";
+                }
+                return value.toLowerCase().contains(finalSearchText.toLowerCase());
+            }
+        };
+        getModel().setRoot(new MenuTree(menuFilter).root);
         return "ignore-me";
     }
 
@@ -492,6 +517,17 @@ public class VrMenuManager {
         private List<VRMenuDef> menuCtrl = null;
         private String currentPageId;
         private VRMenuDef root;
+        private String searchText;
+
+        public String getSearchText() {
+            return searchText;
+        }
+
+        public void setSearchText(String searchText) {
+            this.searchText = searchText;
+        }
+
+
 
         public VRMenuDef getRoot() {
             return root;
@@ -547,6 +583,11 @@ public class VrMenuManager {
 //        return getModel().getMenuCtrl();
 //    }
     private static class MenuTreeVisitor implements TreeVisitor<VRMenuDef> {
+        private ObjectFilter<String> filter;
+
+        public MenuTreeVisitor(ObjectFilter<String> filter) {
+            this.filter = filter;
+        }
 
         @Override
         public void visit(VRMenuDef t, TreeDefinition<VRMenuDef> tree) {
@@ -555,6 +596,12 @@ public class VrMenuManager {
                 VRMenuDef el = children.get(i);
                 if (el.getType().equals("package") && el.getChildren().isEmpty()) {
                     children.remove(i);
+                }else {
+                    if(el.getChildren().size()==0){
+                        if(!filter.accept(el.getName())){
+                            children.remove(i);
+                        }
+                    }
                 }
             }
         }
@@ -567,8 +614,8 @@ public class VrMenuManager {
         final HashSet<VRMenuDef> nonVisitedCustomMenus = new HashSet<>(autowiredCustomMenusByCtrl);
         final HashSet<VRMenuDef> visitedCustomMenus = new HashSet<>();
 
-        public MenuTree() {
-            TreeTraversal.postOrderTreeTraversal(this, new MenuTreeVisitor());
+        public MenuTree(ObjectFilter<String> filter) {
+            TreeTraversal.postOrderTreeTraversal(this, new MenuTreeVisitor(filter));
         }
 
         @Override

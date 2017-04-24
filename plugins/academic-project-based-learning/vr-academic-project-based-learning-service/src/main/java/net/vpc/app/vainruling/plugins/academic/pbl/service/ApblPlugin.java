@@ -13,9 +13,12 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
 import net.vpc.common.strings.StringComparator;
+import net.vpc.common.strings.StringComparators;
 import net.vpc.common.util.Filter;
 import net.vpc.common.util.Utils;
+import net.vpc.common.util.VMap;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.QueryHints;
 import net.vpc.upa.UPA;
@@ -31,6 +34,14 @@ import java.util.*;
  */
 @AppPlugin
 public class ApblPlugin {
+    public static final Comparator<ApblTeacherInfo> APBL_TEACHER_INFO_COMPARATOR = new Comparator<ApblTeacherInfo>() {
+        @Override
+        public int compare(ApblTeacherInfo o1, ApblTeacherInfo o2) {
+            String s1 = o1.getTeacher().getContact() != null ? o1.getTeacher().getContact().getFullTitle() : "";
+            String s2 = o2.getTeacher().getContact() != null ? o2.getTeacher().getContact().getFullTitle() : "";
+            return s1.compareTo(s2);
+        }
+    };
     @Autowired
     private CorePlugin core;
     @Autowired
@@ -294,77 +305,184 @@ public class ApblPlugin {
         return pu.findById(ApblProject.class, projectId);
     }
 
-    public List<ApblTeacherInfo> findTeacherInfos(int[] sessionIds, boolean includeMissingTeachers, ObjectFilter<AcademicTeacher> teacherFilter) {
-        Map<Integer, ApblTeacherInfo> rows = new HashMap<>();
+    public ApblSessionListInfo findTeacherInfos(int[] sessionIds, boolean includeMissingTeachers, ObjectFilter<AcademicTeacher> teacherFilter) {
+        ApblSessionListInfo apblSessionListInfo = new ApblSessionListInfo();
         for (Integer sessionId : new HashSet<Integer>(Arrays.asList(Utils.toIntArray(sessionIds)))) {
+            Map<Integer, ApblTeacherInfo> rows = new HashMap<>();
             ApblSession currentSession = findSession(sessionId);
-            int nbrStudents=academic.findStudents(currentSession.getMemberProfiles(), null).size();
-            int nbrEffectiveStudents=0;
-            for (ProjectNode projectNode : findProjectNodes(sessionId)) {
-                for (TeamNode teamNode : projectNode.getTeams()) {
-                    for (CoachNode coachNode : teamNode.getCoaches()) {
-                        ApblCoaching c = coachNode.getCoaching();
-                        if (c != null) {
-                            if (teacherFilter == null || teacherFilter.accept(c.getTeacher())) {
-                                ApblTeacherInfo apblTeacherInfo = rows.get(c.getTeacher().getId());
-                                if (apblTeacherInfo == null) {
-                                    apblTeacherInfo = new ApblTeacherInfo();
-                                    apblTeacherInfo.setTeacher(c.getTeacher());
-                                    rows.put(c.getTeacher().getId(), apblTeacherInfo);
-                                }
-                                for (MemberNode memberNode : teamNode.getMembers()) {
-                                    apblTeacherInfo.getStudents().add(memberNode.getMember().getStudent());
-                                }
-                                apblTeacherInfo.setStudentsCount(apblTeacherInfo.getStudentsCount() + teamNode.getMembers().size() / ((double) teamNode.getCoaches().size()));
-                                apblTeacherInfo.getTeams().add(teamNode);
-                            }
-                        }
-                    }
-                    nbrEffectiveStudents+=teamNode.getMembers().size();
-                }
+            if(currentSession==null){
+                continue;
+            }
+            ApblSessionInfo sessionInfo = new ApblSessionInfo();
+            apblSessionListInfo.getSessions().add(sessionInfo);
+            sessionInfo.setSession(currentSession);
+            ApblSessionLoadStrategy teamsBasedLoad = currentSession.getLoadStrategy();
+            if (teamsBasedLoad == null) {
+                teamsBasedLoad = ApblSessionLoadStrategy.ALL_STUDENTS;
+            }
+
+            int maxStudents = academic.findStudents(currentSession.getMemberProfiles(), null).size();
+            int teamsCount = 0; // may include duplicates
+            int teamedStudents = 0; // may include duplicates
+            int coachedStudents = 0; // may include duplicates
+            Map<Integer,ApblProgramSession> programs=new HashMap<>();
+            VMap<Integer,Integer> studentsCountByProgram=new VMap<>(key -> 0);
+            double totLoad=0;
+            //totLoad=currentSession.getLoad();
+            for (ApblProgramSession p : findSessionPrograms(sessionId)) {
+                programs.put(p.getProgram().getId(),p);
+                totLoad+=p.getLoad();
             }
 
             for (ProjectNode projectNode : findProjectNodes(sessionId)) {
                 for (TeamNode teamNode : projectNode.getTeams()) {
-                    for (CoachNode coachNode : teamNode.getCoaches()) {
-                        ApblCoaching c = coachNode.getCoaching();
-                        if (c != null) {
-                            if (teacherFilter == null || teacherFilter.accept(c.getTeacher())) {
-                                ApblTeacherInfo apblTeacherInfo = rows.get(c.getTeacher().getId());
-                                apblTeacherInfo.setLoad(apblTeacherInfo.getStudentsCount()*1.0/nbrStudents * currentSession.getLoad());
+                    if (!teamNode.getTeam().isExcludeFromLoad()) {
+                        teamsCount++;
+                        for (CoachNode coachNode : teamNode.getCoaches()) {
+                            ApblCoaching c = coachNode.getCoaching();
+                            if (c != null) {
+                                if (teacherFilter == null || teacherFilter.accept(c.getTeacher())) {
+                                    ApblTeacherInfo apblTeacherInfo = rows.get(c.getTeacher().getId());
+                                    if (apblTeacherInfo == null) {
+                                        apblTeacherInfo = new ApblTeacherInfo();
+                                        apblTeacherInfo.setTeacher(c.getTeacher());
+                                        rows.put(c.getTeacher().getId(), apblTeacherInfo);
+                                    }
+                                    for (MemberNode memberNode : teamNode.getMembers()) {
+
+                                        AcademicStudent student = memberNode.getMember().getStudent();
+                                        for (AcademicClass cls : new AcademicClass[]{student.getLastClass1(), student.getLastClass2(), student.getLastClass3()}) {
+                                            if(cls!=null && cls.getProgram()!=null){
+                                                studentsCountByProgram.plus(cls.getProgram().getId(),1);
+                                            }
+                                        }
+                                        apblTeacherInfo.getStudents().add(student);
+                                    }
+                                    apblTeacherInfo.setStudentsCount(apblTeacherInfo.getStudentsCount() + teamNode.getMembers().size() / ((double) teamNode.getCoaches().size()));
+                                    apblTeacherInfo.getTeams().add(teamNode);
+                                }
+                            }
+                        }
+                        teamedStudents += teamNode.getMembers().size();
+                        if (!teamNode.getCoaches().isEmpty()) {
+                            coachedStudents += teamNode.getMembers().size();
+                        }
+                    }
+                }
+            }
+            Set<Integer> visitedTeachers = new HashSet<>();
+            for (ProjectNode projectNode : findProjectNodes(sessionId)) {
+                for (TeamNode teamNode : projectNode.getTeams()) {
+                    if (!teamNode.getTeam().isExcludeFromLoad()) {
+                        for (CoachNode coachNode : teamNode.getCoaches()) {
+                            ApblCoaching c = coachNode.getCoaching();
+                            if (c != null) {
+                                if (teacherFilter == null || teacherFilter.accept(c.getTeacher())) {
+                                    visitedTeachers.add(c.getTeacher().getId());
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-        if (includeMissingTeachers) {
-            for (Integer sessionId : new HashSet<Integer>(Arrays.asList(Utils.toIntArray(sessionIds)))) {
-                ApblSession s = findSession(sessionId);
-                if (s != null) {
-                    for (AcademicTeacher ss : academic.findTeachers(s.getMemberProfiles())) {
-                        ApblTeacherInfo r = rows.get(ss.getId());
-                        if (r == null) {
-                            if (teacherFilter == null || teacherFilter.accept(ss)) {
-                                r = new ApblTeacherInfo();
-                                r.setTeacher(ss);
-                                rows.put(ss.getId(), r);
-                            }
+            sessionInfo.setMaxStudentCount(maxStudents);
+            sessionInfo.setTeamedStudentCount(teamedStudents);
+            sessionInfo.setCoachedStudentCount(coachedStudents);
+            sessionInfo.setTeamsCount(teamsCount);
+            switch (teamsBasedLoad) {
+                case ALL_STUDENTS: {
+                    sessionInfo.setBaseStudentCount(maxStudents);
+                    if(sessionInfo.getBaseStudentCount()!=0) {
+                        sessionInfo.setUnitLoad(totLoad/sessionInfo.getBaseStudentCount());
+                    }
+                    break;
+                }
+                case TEAMED_STUDENTS: {
+                    sessionInfo.setBaseStudentCount(teamedStudents);
+                    if(sessionInfo.getBaseStudentCount()!=0) {
+                        sessionInfo.setUnitLoad(totLoad/sessionInfo.getBaseStudentCount());
+                    }
+                    break;
+                }
+                case COACHED_STUDENTS: {
+                    sessionInfo.setBaseStudentCount(coachedStudents);
+                    if(sessionInfo.getBaseStudentCount()!=0) {
+                        sessionInfo.setUnitLoad(totLoad/sessionInfo.getBaseStudentCount());
+                    }
+                    break;
+                }
+            }
+            for (Integer visitedTeacher : visitedTeachers) {
+                ApblTeacherInfo r = rows.get(visitedTeacher);
+                if (r != null) {
+                    r.setLoad(r.getStudentsCount() * sessionInfo.getUnitLoad());
+                    for (ApblProgramSession apblProgramSession : programs.values()) {
+                        AcademicProgram p = apblProgramSession.getProgram();
+                        r.getProgramsLoadById().put(p.getId(), r.getLoad() * apblProgramSession.getLoad() / totLoad);
+                        r.getProgramsLoadByName().put(p.getName(), r.getLoad() * apblProgramSession.getLoad() / totLoad);
+                    }
+                }
+            }
+            if (includeMissingTeachers) {
+                for (AcademicTeacher ss : academic.findTeachers(currentSession.getMemberProfiles())) {
+                    ApblTeacherInfo r = rows.get(ss.getId());
+                    if (r == null) {
+                        if (teacherFilter == null || teacherFilter.accept(ss)) {
+                            r = new ApblTeacherInfo();
+                            r.setTeacher(ss);
+                            rows.put(ss.getId(), r);
                         }
                     }
                 }
             }
+            ArrayList<ApblTeacherInfo> apblTeacherInfos = new ArrayList<>(rows.values());
+            apblTeacherInfos.sort(APBL_TEACHER_INFO_COMPARATOR);
+            sessionInfo.setTeachers(apblTeacherInfos);
         }
-        ArrayList<ApblTeacherInfo> apblTeacherInfos = new ArrayList<>(rows.values());
-        Collections.sort(apblTeacherInfos, new Comparator<ApblTeacherInfo>() {
-            @Override
-            public int compare(ApblTeacherInfo o1, ApblTeacherInfo o2) {
-                String s1 = o1.getTeacher().getContact() != null ? o1.getTeacher().getContact().getFullTitle() : "";
-                String s2 = o2.getTeacher().getContact() != null ? o2.getTeacher().getContact().getFullTitle() : "";
-                return s1.compareTo(s2);
+        Map<Integer, ApblTeacherInfo> allRows = new HashMap<>();
+        for (ApblSessionInfo sessionInfo : apblSessionListInfo.getSessions()) {
+            for (ApblTeacherInfo a : sessionInfo.getTeachers()) {
+                ApblTeacherInfo t = allRows.get(a.getTeacher().getId());
+                if (t == null) {
+                    t = new ApblTeacherInfo();
+                    allRows.put(a.getTeacher().getId(), t);
+                    t.setTeacher(a.getTeacher());
+                }
+                t.getStudents().addAll(a.getStudents());
+                t.getTeams().addAll(a.getTeams());
+                t.setStudentsCount(t.getStudentsCount() + a.getStudentsCount());
+                t.setLoad(t.getLoad() + a.getLoad());
+                for (Map.Entry<Integer, Double> z : a.getProgramsLoadById().entrySet()) {
+                    Double v = t.getProgramsLoadById().get(z.getKey());
+                    if(v==null){
+                        v=0.0;
+                    }
+                    v+=z.getValue();
+                    t.getProgramsLoadById().put(z.getKey(),v);
+                }
+                for (Map.Entry<String, Double> z : a.getProgramsLoadByName().entrySet()) {
+                    Double v = t.getProgramsLoadByName().get(z.getKey());
+                    if(v==null){
+                        v=0.0;
+                    }
+                    v+=z.getValue();
+                    t.getProgramsLoadByName().put(z.getKey(),v);
+                }
             }
-        });
-        return apblTeacherInfos;
+            apblSessionListInfo.setMaxStudentCount(apblSessionListInfo.getMaxStudentCount() + sessionInfo.getMaxStudentCount());
+            apblSessionListInfo.setTeamedStudentCount(apblSessionListInfo.getTeamedStudentCount() + sessionInfo.getTeamedStudentCount());
+            apblSessionListInfo.setCoachedStudentCount(apblSessionListInfo.getCoachedStudentCount() + sessionInfo.getCoachedStudentCount());
+            apblSessionListInfo.setBaseStudentCount(apblSessionListInfo.getBaseStudentCount() + sessionInfo.getBaseStudentCount());
+            apblSessionListInfo.setTeamsCount(apblSessionListInfo.getTeamsCount() + sessionInfo.getTeamsCount());
+            apblSessionListInfo.setUnitLoad(apblSessionListInfo.getUnitLoad() + sessionInfo.getUnitLoad());
+        }
+        if(apblSessionListInfo.getSessions().size()>0) {
+            apblSessionListInfo.setUnitLoad(apblSessionListInfo.getUnitLoad() / apblSessionListInfo.getSessions().size());
+        }
+        ArrayList<ApblTeacherInfo> apblTeacherInfos = new ArrayList<>(allRows.values());
+        apblTeacherInfos.sort(APBL_TEACHER_INFO_COMPARATOR);
+        apblSessionListInfo.setTeachers(apblTeacherInfos);
+        return apblSessionListInfo;
     }
 
     public List<ApblStudentInfo> findStudentInfos(int[] sessionIds, boolean includeMissingStudents, ObjectFilter<AcademicStudent> studentFilter) {
@@ -724,7 +842,13 @@ public class ApblPlugin {
         }
     }
 
-    public List<ProjectNode> findProjectNodes(int sessionId, StringComparator comparator) {
+    public List<ProjectNode> findProjectNodes(int sessionId, StringComparator comparator,ObjectFilter<ApblNode> nodeFilter) {
+        if(comparator==null){
+            comparator= StringComparators.any();
+        }
+        if(nodeFilter==null){
+            nodeFilter=value -> true;
+        }
         List<ProjectNode> allProjectNodes = findProjectNodes(sessionId);
         List<TeamNode> teams = new ArrayList<>();
 
@@ -733,45 +857,64 @@ public class ApblPlugin {
         for (ProjectNode project : allProjectNodes) {
             ProjectNode pnode = new ProjectNode();
             pnode.setProject(project.getProject());
-            pnode.setSelectionMatch(project.getProject() != null &&
+            boolean projectDownAccept=nodeFilter.accept(project);
+            pnode.setSelectionMatch(
+                    projectDownAccept && (
+                    project.getProject() != null &&
 
                     (
                             comparator.matches(project.getProject().getName())
                                     || (project.getProject().getOwner() != null && comparator.matches(project.getProject().getOwner().getContact().getFullTitle()))
                     )
+                    )
             );
             boolean someTeam = false;
-            for (TeamNode team : project.getTeams()) {
-                TeamNode tnode = new TeamNode();
-                teams.add(tnode);
-                tnode.setTeam(team.getTeam());
-                tnode.setSelectionMatch(
-                        comparator.matches(team.getTeam().getName())
-                                || (team.getTeam().getOwner() != null && comparator.matches(team.getTeam().getOwner().getContact().getFullTitle()))
-                );
-                boolean someCoach = false;
-                for (CoachNode teacher : team.getCoaches()) {
-                    CoachNode cnode = new CoachNode();
-                    cnode.setCoaching(teacher.getCoaching());
-                    cnode.setSelectionMatch(comparator.matches(teacher.getCoaching().getTeacher().getContact().getFullTitle()));
-                    someCoach |= cnode.isSelectionMatch();
-                    //if(cnode.isSelectionMatch() || tnode.isSelectionMatch() || pnode.isSelectionMatch()) {
-                    tnode.getCoaches().add(cnode);
-                    //}
-                }
-                boolean someMember = false;
-                for (MemberNode student : team.getMembers()) {
-                    MemberNode mnode = new MemberNode();
-                    mnode.setMember(student.getMember());
-                    mnode.setSelectionMatch(comparator.matches(student.getMember().getStudent().getContact().getFullTitle()));
-                    someMember |= mnode.isSelectionMatch();
-                    //if(mnode.isSelectionMatch() || tnode.isSelectionMatch() || pnode.isSelectionMatch()) {
-                    tnode.getMembers().add(mnode);
-                    //}
-                }
-                if (someMember || someCoach || tnode.isSelectionMatch() || pnode.isSelectionMatch()) {
-                    pnode.getTeams().add(tnode);
-                    someTeam |= true;
+            if(projectDownAccept) {
+                for (TeamNode team : project.getTeams()) {
+                    TeamNode tnode = new TeamNode();
+                    boolean teamDownAccept = nodeFilter.accept(team);
+                    if(teamDownAccept) {
+                        teams.add(tnode);
+                        tnode.setTeam(team.getTeam());
+                        tnode.setSelectionMatch(
+                                (
+                                        comparator.matches(team.getTeam().getName())
+                                                || (team.getTeam().getOwner() != null && comparator.matches(team.getTeam().getOwner().getContact().getFullTitle()))
+                                )
+                        );
+                        boolean someCoach = false;
+                        boolean someMember = false;
+                        for (CoachNode teacher : team.getCoaches()) {
+                            CoachNode cnode = new CoachNode();
+                            cnode.setCoaching(teacher.getCoaching());
+                            cnode.setSelectionMatch(comparator.matches(teacher.getCoaching().getTeacher().getContact().getFullTitle()));
+                            if (!nodeFilter.accept(teacher)) {
+                                cnode.setSelectionMatch(false);
+                            } else {
+                                someCoach |= cnode.isSelectionMatch();
+                                //if(cnode.isSelectionMatch() || tnode.isSelectionMatch() || pnode.isSelectionMatch()) {
+                                tnode.getCoaches().add(cnode);
+                            }
+                            //}
+                        }
+                        for (MemberNode student : team.getMembers()) {
+                            MemberNode mnode = new MemberNode();
+                            mnode.setMember(student.getMember());
+                            mnode.setSelectionMatch(comparator.matches(student.getMember().getStudent().getContact().getFullTitle()));
+                            if (!nodeFilter.accept(student)) {
+                                mnode.setSelectionMatch(false);
+                            } else {
+                                someMember |= mnode.isSelectionMatch();
+                                //if(mnode.isSelectionMatch() || tnode.isSelectionMatch() || pnode.isSelectionMatch()) {
+                                tnode.getMembers().add(mnode);
+                            }
+                            //}
+                        }
+                        if (someMember || someCoach || tnode.isSelectionMatch() || pnode.isSelectionMatch()) {
+                            pnode.getTeams().add(tnode);
+                            someTeam |= true;
+                        }
+                    }
                 }
             }
             if (project.getProject() != null || pnode.getTeams().size() > 0) {
@@ -951,6 +1094,11 @@ public class ApblPlugin {
         return pu.createQuery("Select u.teacher from ApblCoaching u where u.teamId=:teamId")
                 .setParameter("teamId", teamId)
                 .getResultList();
+    }
+
+    public List<ApblProgramSession> findSessionPrograms(int sessionId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQueryBuilder(ApblProgramSession.class).byField("sessionId",sessionId).getResultList();
     }
 
     public ApblSession findSession(int sessionId) {

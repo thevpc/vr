@@ -26,9 +26,10 @@ import java.sql.Timestamp;
                 @Property(name = UIConstants.ENTITY_ID_HIERARCHY, value = "brandLine"),
                 @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),
                 @Property(name = "ui.auto-filter.acquisition", value = "{expr='acquisition',order=2}"),
-                @Property(name = "ui.auto-filter.brandLine", value = "{expr='brandLine',order=2}"),
-                @Property(name = "ui.auto-filter.location", value = "{expr='location',order=2}"),
-                @Property(name = "ui.auto-filter.type", value = "{expr='type',order=2}"),
+                @Property(name = "ui.auto-filter.brandLine", value = "{expr='brandLine',order=3}"),
+                @Property(name = "ui.auto-filter.location", value = "{expr='location',order=4}"),
+                @Property(name = "ui.auto-filter.type", value = "{expr='type',order=5}"),
+                @Property(name = "ui.auto-filter.statusType", value = "{expr='statusType',order=6}"),
                 @Property(name = "ui.main-photo-property", value = "photo"),
                 @Property(name = "ui.main-photo-property.default", value = "theme-context://images/equipment.png"),
         })

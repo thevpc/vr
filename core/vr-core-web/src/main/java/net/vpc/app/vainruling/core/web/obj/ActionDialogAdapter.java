@@ -75,7 +75,7 @@ public class ActionDialogAdapter {
     }
 
     public boolean isEnabled(Class entityType, EditCtrlMode mode, Object value) {
-        boolean b = instance.isEnabled(entityType, mode, value);
+        boolean b = instance.isEnabled(getId(), entityType, mode, value);
         if (b) {
             PersistenceUnit e = UPA.getPersistenceUnit();
 //            return e.getSecurityManager().isAllowedKey(e.getEntity(entityType), getId());
@@ -84,12 +84,12 @@ public class ActionDialogAdapter {
         return b;
     }
 
-    public void openDialog(String actionId, List<String> itemIds) {
-        instance.openDialog(actionId, itemIds);
+    public void openDialog(List<String> itemIds) {
+        instance.openDialog(getId(), itemIds);
     }
 
-    public ActionDialogResult invoke(Class entityType, Object obj, List<String> selectedIdStrings,Object[] args) {
-        return instance.invoke(entityType, obj, selectedIdStrings, args);
+    public ActionDialogResult invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+        return instance.invoke(getId(), entityType, obj, selectedIdStrings, args);
     }
 
 }

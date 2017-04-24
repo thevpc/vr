@@ -5,9 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.equipments.web;
 
-import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppTrace;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
@@ -15,11 +13,8 @@ import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
 import net.vpc.app.vainruling.plugins.equipments.service.EquipmentPlugin;
 import net.vpc.app.vainruling.plugins.equipments.service.model.Equipment;
 import net.vpc.common.jsf.FacesUtils;
-import net.vpc.common.util.Utils;
 import net.vpc.upa.*;
-import org.apache.commons.lang.StringUtils;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -37,12 +32,12 @@ public class SplitEquipmentQtyAction implements ActionDialog {
     }
 
     @Override
-    public boolean isEnabled(Class entityType, EditCtrlMode mode, Object value) {
+    public boolean isEnabled(String actionId, Class entityType, EditCtrlMode mode, Object value) {
         return value != null;//value != null;
     }
 
     @Override
-    public ActionDialogResult invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         EquipmentPlugin equipmentPlugin = VrApp.getBean(EquipmentPlugin.class);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityType);

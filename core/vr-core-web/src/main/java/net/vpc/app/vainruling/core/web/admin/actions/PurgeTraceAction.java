@@ -6,9 +6,7 @@
 package net.vpc.app.vainruling.core.web.admin.actions;
 
 import net.vpc.app.vainruling.core.service.TraceService;
-import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
-import net.vpc.app.vainruling.core.service.model.AppTrace;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
@@ -32,12 +30,12 @@ public class PurgeTraceAction implements ActionDialog {
     }
 
     @Override
-    public boolean isEnabled(Class entityType, EditCtrlMode mode, Object value) {
+    public boolean isEnabled(String actionId, Class entityType, EditCtrlMode mode, Object value) {
         return true;//value != null;
     }
 
     @Override
-    public ActionDialogResult invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         TraceService.get().archiveLogs(30);
         FacesUtils.addInfoMessage("Archivage réussi");
         return ActionDialogResult.VOID;

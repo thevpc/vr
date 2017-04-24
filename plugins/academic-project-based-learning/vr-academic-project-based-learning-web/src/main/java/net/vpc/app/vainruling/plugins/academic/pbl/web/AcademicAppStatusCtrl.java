@@ -12,9 +12,9 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPlugin;
+import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblSessionListInfo;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblStudentInfo;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblTeacherInfo;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.TeamNode;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
@@ -23,8 +23,6 @@ import net.vpc.common.strings.StringComparator;
 import net.vpc.common.strings.StringComparators;
 import net.vpc.common.strings.StringTransforms;
 import net.vpc.common.util.Convert;
-import net.vpc.common.util.DefaultMapList;
-import net.vpc.common.util.MapList;
 import net.vpc.upa.filters.ObjectFilter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +58,39 @@ public class AcademicAppStatusCtrl {
         int max = getModel().getFilteredStudents().size();
         double i = getValidStudentsCount()* 100.0;
         return max==0?0:i/max;
+    }
+
+    public String[] getSelectedSessions(){
+        if(getModel().isMultipleSessionSelection()){
+            return getModel().getSelectedSessions();
+        }
+        String currentSessionId = getModel().getCurrentSessionId();
+        return net.vpc.common.strings.StringUtils.isEmpty(currentSessionId)?new String[0] : new String[]{currentSessionId};
+    }
+    public String getPreferredFileName(){
+        String[] selectedSessions = getSelectedSessions();
+        int[] selectedSessionsInts = Convert.toPrimitiveIntArray(selectedSessions, null);
+        if (selectedSessionsInts.length == 0) {
+//            List<ApblSession> availableSessions = apbl.findAvailableSessions();
+//            selectedSessionsInts = new int[availableSessions.size()];
+//            int i = 0;
+//            for (ApblSession availableSession : availableSessions) {
+//                selectedSessionsInts[i] = availableSession.getId();
+//                i++;
+//            }
+            return "empty-session";
+        }
+        StringBuilder sb=new StringBuilder();
+        for (int selectedSessionsInt : selectedSessionsInts) {
+            ApblSession session0 = apbl.findSession(selectedSessionsInt);
+            if(session0!=null){
+                if(sb.length()>0){
+                    sb.append("__");
+                }
+                sb.append(session0.getName());
+            }
+        }
+        return sb.toString();
     }
 
     public int getInterDepartmentCount(boolean validOnly) {
@@ -160,7 +191,7 @@ public class AcademicAppStatusCtrl {
     }
 
     public void reloadTeacherAndStudentInfos() {
-        String[] selectedSessions = getModel().getSelectedSessions();
+        String[] selectedSessions = getSelectedSessions();
         int[] selectedSessionsInts = Convert.toPrimitiveIntArray(selectedSessions, null);
         if (selectedSessionsInts.length == 0) {
 //            List<ApblSession> availableSessions = apbl.findAvailableSessions();
@@ -170,7 +201,9 @@ public class AcademicAppStatusCtrl {
 //                selectedSessionsInts[i] = availableSession.getId();
 //                i++;
 //            }
+
         }
+
         getModel().setTeachers(apbl.findTeacherInfos(selectedSessionsInts, false, new ObjectFilter<AcademicTeacher>() {
             @Override
             public boolean accept(AcademicTeacher value) {
@@ -182,7 +215,7 @@ public class AcademicAppStatusCtrl {
                 return true;
             }
         }));
-        getModel().setStudents(apbl.findStudentInfos(selectedSessionsInts, true, new ObjectFilter<AcademicStudent>() {
+        List<ApblStudentInfo> studentInfos = apbl.findStudentInfos(selectedSessionsInts, true, new ObjectFilter<AcademicStudent>() {
             @Override
             public boolean accept(AcademicStudent value) {
                 AppDepartment d = value.getDepartment();
@@ -192,19 +225,14 @@ public class AcademicAppStatusCtrl {
                 }
                 return true;
             }
-        }));
-        Set<Integer> visitedTeams=new HashSet<>();
-        Set<Integer> visitedStudents=new HashSet<>();
-        for (ApblTeacherInfo apblTeacherInfo : getModel().getTeachers()) {
-            for (TeamNode teamNode : apblTeacherInfo.getTeams()) {
-                visitedTeams.add(teamNode.getTeam().getId());
-            }
-            for (AcademicStudent student : apblTeacherInfo.getStudents()) {
-                visitedStudents.add(student.getId());
-            }
-        }
-        getModel().setTeamedStudentsCount(visitedStudents.size());
-        getModel().setTeamsCount(visitedTeams.size());
+        });
+        studentInfos.removeIf(a->
+                (getModel().isFilterStudentsNoCoach() && ! a.isErrNoCoach())
+                || (getModel().isFilterStudentsNoProject() && ! a.isErrNoProject())
+                || (getModel().isFilterStudentsNoTeam() && ! a.isErrNoTeam())
+                || (getModel().isFilterStudentsMultiTeam() && ! a.isErrTooManyTeams())
+        );
+        getModel().setStudents(studentInfos);
 
         onSearchTeachersByText();
         onSearchStudentsByText();
@@ -215,7 +243,7 @@ public class AcademicAppStatusCtrl {
         StringComparator filter = StringComparators.ilikepart(getModel().getTeachersFilterText()).apply(StringTransforms.UNIFORM);
         getModel().setFilteredTeachers(
                 VrUtils.filterList(
-                        getModel().getTeachers(),
+                        getModel().getTeachers().getTeachers(),
                         new ObjectFilter<ApblTeacherInfo>() {
                             @Override
                             public boolean accept(ApblTeacherInfo value) {
@@ -256,41 +284,69 @@ public class AcademicAppStatusCtrl {
     }
 
     public class Model {
-        private List<ApblTeacherInfo> teachers = new ArrayList<>();
+        private ApblSessionListInfo teachers = new ApblSessionListInfo();
         private List<ApblStudentInfo> students = new ArrayList<>();
         private List<ApblTeacherInfo> filteredTeachers = new ArrayList<>();
         private List<ApblStudentInfo> filteredStudents = new ArrayList<>();
         private List<SelectItem> sessions = new ArrayList<>();
         private List<SelectItem> departments = new ArrayList<>();
         private String[] selectedSessions = new String[0];
+        private String currentSessionId = null;
         private String selectedDepartment = null;
         private String studentsFilterText = null;
         private String teachersFilterText = null;
         private int activeTabIndex = 0;
-        private int teamedStudentsCount = 0;
-        private int teamsCount = 0;
+        private boolean multipleSessionSelection = false;
+        private boolean filterStudentsNoCoach = false;
+        private boolean filterStudentsNoTeam = false;
+        private boolean filterStudentsMultiTeam = false;
+        private boolean filterStudentsNoProject = false;
 
-        public int getTeamedStudentsCount() {
-            return teamedStudentsCount;
+        public boolean isFilterStudentsNoCoach() {
+            return filterStudentsNoCoach;
         }
 
-        public void setTeamedStudentsCount(int teamedStudentsCount) {
-            this.teamedStudentsCount = teamedStudentsCount;
+        public void setFilterStudentsNoCoach(boolean filterStudentsNoCoach) {
+            this.filterStudentsNoCoach = filterStudentsNoCoach;
         }
 
-        public int getTeamsCount() {
-            return teamsCount;
+        public boolean isFilterStudentsNoTeam() {
+            return filterStudentsNoTeam;
         }
 
-        public void setTeamsCount(int teamsCount) {
-            this.teamsCount = teamsCount;
+        public void setFilterStudentsNoTeam(boolean filterStudentsNoTeam) {
+            this.filterStudentsNoTeam = filterStudentsNoTeam;
         }
 
-        public List<ApblTeacherInfo> getTeachers() {
+        public boolean isFilterStudentsMultiTeam() {
+            return filterStudentsMultiTeam;
+        }
+
+        public void setFilterStudentsMultiTeam(boolean filterStudentsMultiTeam) {
+            this.filterStudentsMultiTeam = filterStudentsMultiTeam;
+        }
+
+        public boolean isFilterStudentsNoProject() {
+            return filterStudentsNoProject;
+        }
+
+        public void setFilterStudentsNoProject(boolean filterStudentsNoProject) {
+            this.filterStudentsNoProject = filterStudentsNoProject;
+        }
+
+        public boolean isMultipleSessionSelection() {
+            return multipleSessionSelection;
+        }
+
+        public void setMultipleSessionSelection(boolean multipleSessionSelection) {
+            this.multipleSessionSelection = multipleSessionSelection;
+        }
+
+        public ApblSessionListInfo getTeachers() {
             return teachers;
         }
 
-        public void setTeachers(List<ApblTeacherInfo> teachers) {
+        public void setTeachers(ApblSessionListInfo teachers) {
             this.teachers = teachers;
         }
 
@@ -372,6 +428,14 @@ public class AcademicAppStatusCtrl {
 
         public void setActiveTabIndex(int activeTabIndex) {
             this.activeTabIndex = activeTabIndex;
+        }
+
+        public String getCurrentSessionId() {
+            return currentSessionId;
+        }
+
+        public void setCurrentSessionId(String currentSessionId) {
+            this.currentSessionId = currentSessionId;
         }
     }
 }

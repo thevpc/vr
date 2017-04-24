@@ -19,7 +19,7 @@ and open the template in the editor.
 
     <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
     <!--@elvariable id="articlesCtrl" type="net.vpc.app.vainruling.plugins.articles.web.ArticlesCtrl"-->
-    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
             <h:form id="itemForm" enctype="multipart/form-data">
                 <div class="row">

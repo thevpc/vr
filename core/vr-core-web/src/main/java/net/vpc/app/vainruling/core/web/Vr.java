@@ -25,12 +25,17 @@ import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.common.io.PathInfo;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.util.Utils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VFileFilter;
 import net.vpc.common.vfs.VFileVisitor;
 import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.primefaces.model.StreamedContent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -44,6 +49,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -64,7 +70,7 @@ public class Vr {
     private CmsTextService cmsTextService;
     @Autowired
     private CorePlugin core;
-    private WeakHashMap<String,DecimalFormat> decimalFormats=new WeakHashMap<>();
+    private WeakHashMap<String, DecimalFormat> decimalFormats = new WeakHashMap<>();
 
     public static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.00");
 
@@ -256,7 +262,7 @@ public class Vr {
     }
 
     public String trim(Object obj) {
-        if(obj==null){
+        if (obj == null) {
             return "";
         }
         return obj.toString().trim();
@@ -803,11 +809,44 @@ public class Vr {
         return req.getContextPath();
     }
 
+    public String getCurrentRequestURI() {
+        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        return req.getRequestURI();
+    }
+    public String getCurrentPrintableRequestURI() {
+        String u = getCurrentRequestURI();
+        if(u.contains("?")){
+            u+="&";
+        }else{
+            u+="?";
+        }
+        u+="vr-layout=printable";
+        return u;
+    }
     public String getThemeContext() {
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String contextPath = req.getContextPath();
         return contextPath + "/themes/" + getTheme().getId();
 //        return contextPath+"/META-INF/resources/themes/"+getTheme().getId();
+    }
+
+    public boolean isPrintableLayout() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        if(fc!=null){
+            Map<String, String> parameterMap = (Map<String, String>) fc.getExternalContext().getRequestParameterMap();
+            String paramValue = parameterMap.get("vr-layout");
+            if("printable".equals(paramValue)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getPrivateTemplatePath() {
+        if(isPrintableLayout()){
+            return getThemePath()+"/templates/private-template-printable.xhtml";
+        }
+        return getThemePath()+"/templates/private-template.xhtml";
     }
 
     public String getThemePath() {
@@ -1149,7 +1188,7 @@ public class Vr {
     }
 
     public List<StrLabel> extractLabels(String expr) {
-        List<StrLabel> labels=new ArrayList<>();
+        List<StrLabel> labels = new ArrayList<>();
         Pattern pattern = Pattern.compile("(?<labelName>\\w+)[:]((?<kindName>\\w+)[:])?(([\"](?<labelVal1>[^\"])[\"])|(?<labelVal2>[^ ]+))");
         Matcher m = pattern.matcher(expr);
         while (m.find()) {
@@ -1157,19 +1196,19 @@ public class Vr {
             String kindName = m.group("kindName");
             String labelVal1 = m.group("labelVal1");
             String labelVal2 = m.group("labelVal2");
-            if(labelVal1==null){
-                labelVal1=labelVal2;
+            if (labelVal1 == null) {
+                labelVal1 = labelVal2;
             }
-            labels.add(new StrLabel(labelName,kindName==null?"":kindName,labelVal1));
+            labels.add(new StrLabel(labelName, kindName == null ? "" : kindName, labelVal1));
         }
         return labels;
     }
 
     public String mapToken(String var, String defaultVal, String... fromTo) {
-        var=trim(var);
+        var = trim(var);
         for (String s : var.split(" +")) {
-            String v=mapValue(s, null, fromTo);
-            if(v!=null){
+            String v = mapValue(s, null, fromTo);
+            if (v != null) {
                 return v;
             }
         }
@@ -1177,7 +1216,7 @@ public class Vr {
     }
 
     public String mapValue(String var, String defaultVal, String... fromTo) {
-        var=trim(var);
+        var = trim(var);
         for (int i = 0; i < fromTo.length; i += 2) {
             if (var.equals(fromTo[i])) {
                 return fromTo[i + 1];
@@ -1312,7 +1351,7 @@ public class Vr {
         }
     }
 
-    public String dblCustomFormat(double d,String format) {
+    public String dblCustomFormat(double d, String format) {
         if (d == (long) d) {
             return String.format("%d", (long) d);
         } else {
@@ -1320,11 +1359,11 @@ public class Vr {
         }
     }
 
-    public DecimalFormat getDecimalFormat(String format){
+    public DecimalFormat getDecimalFormat(String format) {
         DecimalFormat decimalFormat = decimalFormats.get(format);
-        if(decimalFormat==null){
-            decimalFormat=new DecimalFormat(format);
-            decimalFormats.put(format,decimalFormat);
+        if (decimalFormat == null) {
+            decimalFormat = new DecimalFormat(format);
+            decimalFormats.put(format, decimalFormat);
         }
         return decimalFormat;
     }
@@ -1333,73 +1372,166 @@ public class Vr {
         ExternalContext ec = FacesContext.getCurrentInstance()
                 .getExternalContext();
         if (ec != null) {
-            if(!path.startsWith("/")){
-                path="/"+path;
+            if (!path.startsWith("/")) {
+                path = "/" + path;
             }
-            if(path.startsWith("/r/")){
+            if (path.startsWith("/r/")) {
                 //check if path is suffixed with xhtml
                 int i = path.indexOf('?');
-                if(i>0){
+                if (i > 0) {
                     String substring = path.substring(0, i);
-                    if(!substring.endsWith(".xhtml")){
-                        path= substring +".xhtml"+path.substring(i);
+                    if (!substring.endsWith(".xhtml")) {
+                        path = substring + ".xhtml" + path.substring(i);
                     }
-                }else{
-                    if(!path.endsWith(".xhtml")){
-                        path= path +".xhtml";
+                } else {
+                    if (!path.endsWith(".xhtml")) {
+                        path = path + ".xhtml";
                     }
                 }
             }
-            ec.redirect(ec.getRequestContextPath()+ path);
+            ec.redirect(ec.getRequestContextPath() + path);
         }
         return false;
     }
 
-    public String strListifyNoEmpty(String sep,Object ... items){
-        if(isEmpty(sep)){
-            sep=",";
+    public String strListifyNoEmpty(String sep, Object... items) {
+        if (isEmpty(sep)) {
+            sep = ",";
         }
-        StringBuilder sb=new StringBuilder();
-        int count=0;
+        StringBuilder sb = new StringBuilder();
+        int count = 0;
         for (Object item : items) {
-            if(item!=null){
-                if(item.getClass().isArray()){
-                    int max=Array.getLength(item);
-                    for (int i=0;i<max;i++) {
-                        String s=String.valueOf(Array.get(item,i));
-                        if(!isEmpty(s)){
-                            if(count>0){
+            if (item != null) {
+                if (item.getClass().isArray()) {
+                    int max = Array.getLength(item);
+                    for (int i = 0; i < max; i++) {
+                        String s = String.valueOf(Array.get(item, i));
+                        if (!isEmpty(s)) {
+                            if (count > 0) {
                                 sb.append(sep);
                             }
                             count++;
                             sb.append(s);
                         }
                     }
-                }else if (item instanceof Collection){
+                } else if (item instanceof Collection) {
                     for (Object o : ((Collection) item)) {
-                        String s=String.valueOf(o);
-                        if(!isEmpty(s)){
-                            if(count>0){
+                        String s = String.valueOf(o);
+                        if (!isEmpty(s)) {
+                            if (count > 0) {
                                 sb.append(sep);
                             }
                             count++;
                             sb.append(s);
                         }
                     }
-                }else{
-                    String s=String.valueOf(item);
-                    if(!isEmpty(s)){
-                        if(count>0){
+                } else {
+                    String s = String.valueOf(item);
+                    if (!isEmpty(s)) {
+                        if (count > 0) {
                             sb.append(sep);
                         }
                         count++;
                         sb.append(s);
                     }
                 }
-            }else{
+            } else {
                 //do nothing
             }
         }
         return sb.toString();
     }
+
+    public void postProcessDataExporterXLS(Object document) {
+        HSSFWorkbook book = (HSSFWorkbook) document;
+        HSSFSheet sheet = book.getSheetAt(0);
+        HSSFRow header = sheet.getRow(0);
+        int rowCount = sheet.getPhysicalNumberOfRows();
+        HSSFCellStyle headerCellStyle = book.createCellStyle();
+        headerCellStyle.setFillForegroundColor(HSSFColor.AQUA.index);
+        headerCellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        headerCellStyle.setAlignment(CellStyle.ALIGN_CENTER);
+        HSSFCreationHelper creationHelper = book.getCreationHelper();
+
+        for (int i = 0; i < header.getPhysicalNumberOfCells(); i++) {
+            HSSFCell cell = header.getCell(i);
+
+            cell.setCellStyle(headerCellStyle);
+        }
+
+
+        HSSFCellStyle intStyle = book.createCellStyle();
+        intStyle.setDataFormat((short) 1);
+
+        HSSFCellStyle decStyle = book.createCellStyle();
+        decStyle.setDataFormat((short) 2);
+
+        HSSFCellStyle dollarStyle = book.createCellStyle();
+        dollarStyle.setDataFormat((short) 5);
+
+
+        int maxColumn = -1;
+        Map<String,HSSFCellStyle> datFormats=new HashMap<>();
+        for (int rowInd = 1; rowInd < rowCount; rowInd++) {
+            HSSFRow row = sheet.getRow(rowInd);
+            int colCount = row.getPhysicalNumberOfCells();
+            if (maxColumn < colCount) {
+                maxColumn = colCount;
+            }
+            for (int cellInd = 0; cellInd < colCount; cellInd++) {
+                HSSFCell cell = row.getCell(cellInd);
+
+                String strVal = cell.getStringCellValue();
+
+                if (strVal.startsWith("$")) {
+                    //do nothing
+                } else {
+                    if (strVal.startsWith("'")) {
+                        strVal = strVal.substring(1);
+                    }
+                    if (Utils.isDouble(strVal)) {
+                        cell.setCellType(HSSFCell.CELL_TYPE_BLANK);
+                        cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
+                        if (Utils.isInteger(strVal)) {
+                            int intVal = Integer.valueOf(strVal.trim());
+                            cell.setCellStyle(intStyle);
+                            cell.setCellValue(intVal);
+                        } else if (Utils.isDouble(strVal)) {
+                            double dblVal = Double.valueOf(strVal.trim());
+                            cell.setCellStyle(decStyle);
+                            cell.setCellValue(dblVal);
+                        }
+                    }else {
+                        boolean isDate=false;
+                        for (String dteFormat : new String[]{"yyyy-MM-dd HH:mm:ss.SSS","yyyy-MM-dd HH:mm:ss","yyyy-MM-dd HH:mm","yyyy-MM-dd","HH:mm"}) {
+                            if(Utils.isDate(strVal,dteFormat)) {
+                                HSSFCellStyle dateStyle = datFormats.get(dteFormat.trim());
+                                if (dateStyle == null) {
+                                    dateStyle = book.createCellStyle();
+                                    dateStyle.setDataFormat(creationHelper.createDataFormat().getFormat(dteFormat));
+                                    datFormats.put(dteFormat, dateStyle);
+                                }
+                                cell.setCellStyle(dateStyle);
+                                try {
+                                    cell.setCellValue(new SimpleDateFormat(dteFormat).parse(strVal));
+                                } catch (ParseException e) {
+                                    //
+                                }
+                                isDate=true;
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+        if (maxColumn >= 0) {
+            for (int cellInd = 0; cellInd < maxColumn; cellInd++) {
+                sheet.autoSizeColumn(cellInd);
+            }
+        }
+
+    }
+
 }

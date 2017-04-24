@@ -20,7 +20,7 @@ and open the template in the editor.
     <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
     <!--@elvariable id="mailboxCtrl" type="net.vpc.app.vainruling.plugins.mailbox.web.MailboxCtrl"-->
 
-    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
             <h:form id="mainForm" enctype="multipart/form-data">
                 <p:messages id="msgs"/>

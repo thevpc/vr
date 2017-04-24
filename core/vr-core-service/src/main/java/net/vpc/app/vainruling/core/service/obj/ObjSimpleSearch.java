@@ -42,7 +42,7 @@ public class ObjSimpleSearch extends ObjSearch {
         );
     }
     public String getExpression() {
-        return textSearch.getExpression();
+        return textSearch==null?null:textSearch.getExpression();
     }
 
     public void setExpression(String expression) {
@@ -53,7 +53,7 @@ public class ObjSimpleSearch extends ObjSearch {
     public List filterList(List list, String entityName) {
         this.entityName=entityName;
         List oldList = super.filterList(list, entityName);
-        return textSearch.filterList(oldList);
+        return textSearch==null?oldList:textSearch.filterList(oldList);
     }
 
 

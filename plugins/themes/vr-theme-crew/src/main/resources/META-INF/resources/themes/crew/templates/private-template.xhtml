@@ -4,10 +4,12 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
       xmlns:c="http://java.sun.com/jstl/core" xmlns:f="http://xmlns.jcp.org/jsf/core"
 >
 <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
 <!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
+<!--@elvariable id="vrMenuManager" type="net.vpc.app.vainruling.core.web.menu.VrMenuManager"-->
 <h:head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -27,7 +29,8 @@
     <!-- AdminLTE Skins. Choose a skin from the css/skins
          folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="#{vr.themeContext}/wplugins/adminlte/dist/css/skins/_all-skins.min.css"/>
-    <link rel="stylesheet" href="#{vr.themeContext}/wplugins/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css"/>
+    <link rel="stylesheet"
+          href="#{vr.themeContext}/wplugins/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css"/>
     <link href='https://fonts.googleapis.com/css?family=Stalemate' rel='stylesheet' type='text/css'/>
     <link href='https://fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css'/>
 
@@ -80,43 +83,43 @@
                     <div class="navbar-custom-menu">
                         <ul class="nav navbar-nav">
                             <!--<li>-->
-                                <!--<div class="pull-right hidden-xs">-->
-                                    <!--<p:ajaxStatus style="vertical-align: middle;  height:48px">-->
-                                        <!--<f:facet name="default">-->
+                            <!--<div class="pull-right hidden-xs">-->
+                            <!--<p:ajaxStatus style="vertical-align: middle;  height:48px">-->
+                            <!--<f:facet name="default">-->
 
-                                        <!--</f:facet>-->
+                            <!--</f:facet>-->
 
-                                        <!--<f:facet name="start">-->
-                                            <!--<div>-->
-                                            <!--&lt;!&ndash;<p:graphicImage name="/themes/crew/images/loading.gif" width="48" height="48"/>&ndash;&gt;-->
-                                            <!--&lt;!&ndash;<img src="# {vr.url('/Site/loading.gif')}"/>&ndash;&gt;-->
+                            <!--<f:facet name="start">-->
+                            <!--<div>-->
+                            <!--&lt;!&ndash;<p:graphicImage name="/themes/crew/images/loading.gif" width="48" height="48"/>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<img src="# {vr.url('/Site/loading.gif')}"/>&ndash;&gt;-->
 
-                                                <!--<div class="vr-loader-container">-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                    <!--<div class="vr-loader-block"></div>-->
-                                                <!--</div>-->
-                                            <!--</div>-->
-                                        <!--</f:facet>-->
+                            <!--<div class="vr-loader-container">-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--<div class="vr-loader-block"></div>-->
+                            <!--</div>-->
+                            <!--</div>-->
+                            <!--</f:facet>-->
 
-                                        <!--<f:facet name="complete">-->
+                            <!--<f:facet name="complete">-->
 
-                                        <!--</f:facet>-->
-                                    <!--</p:ajaxStatus>-->
-                                <!--</div>-->
+                            <!--</f:facet>-->
+                            <!--</p:ajaxStatus>-->
+                            <!--</div>-->
                             <!--</li>-->
                             <!-- Messages: style can be found in dropdown.less-->
                             <li class="dropdown messages-menu">
@@ -134,7 +137,7 @@
                                                        var="i">
                                                 <li><!-- start message -->
                                                     <h:outputLink value="#{vr.context}/p/mailbox"
-                                                                  >
+                                                    >
                                                         <div class="pull-left">
                                                             <img src="#{vr.url(vr.getUserPhoto(i.user.id))}"
                                                                  class="img-circle" alt="User Image"/>
@@ -238,10 +241,13 @@
                                     <li>
                                         <!-- inner menu: contains the actual data -->
                                         <ul class="menu">
-                                            <ui:repeat value="#{vr.getActiveSessionsGroupedByType().entrySet().toArray()}" var="e">
+                                            <ui:repeat
+                                                    value="#{vr.getActiveSessionsGroupedByType().entrySet().toArray()}"
+                                                    var="e">
 
                                                 <li>
-                                                    <h:outputLink value="#{vr.context}/p/activeSessions" disabled="#{not vr.allowed('Custom.Admin.ActiveSessions')}">
+                                                    <h:outputLink value="#{vr.context}/p/activeSessions"
+                                                                  disabled="#{not vr.allowed('Custom.Admin.ActiveSessions')}">
                                                         <h4>
                                                             #{e.key}
                                                             <small><i
@@ -261,6 +267,35 @@
                                             <strong>Tout afficher</strong>
                                         </h:outputLink>
 
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="extra-menu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-life-saver"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <!--<li class="header">outils de la page en cours...</li>-->
+                                    <li>
+                                        <!-- inner menu: contains the actual data -->
+                                        <ul class="menu">
+                                            <li>
+                                                <h:outputLink value="#{vr.currentRequestURI}" target="_blank">
+                                                    <h4>
+                                                        Dupliquer Page
+                                                    </h4>
+                                                    <p></p>
+                                                </h:outputLink>
+                                            </li>
+                                            <li>
+                                                <h:outputLink value="#{vr.currentPrintableRequestURI}" target="_blank">
+                                                    <h4>
+                                                        Imprimer Page
+                                                    </h4>
+                                                    <p></p>
+                                                </h:outputLink>
+                                            </li>
+                                        </ul>
                                     </li>
                                 </ul>
                             </li>
@@ -343,11 +378,13 @@
                     </div>
                 </div>
                 <!-- search form -->
-                <h:form action="#" method="get" class="sidebar-form">
+                <h:form id="searchMenuForm" styleClass="sidebar-form">
+                    <p:remoteCommand name="rc" update=":searchMenuForm" actionListener="#{vrMenuManager.buildMenu()}"/>
                     <div class="input-group">
-                        <input type="text" name="q" class="form-control" placeholder="Chercher..."/>
+                        <h:inputText id="searchTextInput" a:name="searchTextInput" styleClass="form-control" value="#{vrMenuManager.model.searchText}" a:placeholder="Chercher..."/>
                         <span class="input-group-btn">
-                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+                <button type="submit" onclick="rc({searchText:document.getElementById('searchTextInput').value})" name="search" id="search-btn" class="btn btn-flat">
+                    <i class="fa fa-search"></i>
                 </button>
               </span>
                     </div>
@@ -1408,7 +1445,9 @@
                 <b>Version</b> #{corePlugin.appVersion.version}
             </div>
             <strong>Copyright (c) 2015-2017 <a
-                    href="http://tahabensalah.net">Taha Ben Salah</a>, ENISo.</strong> All rights , reserved. <a href="https://github.com/thevpc/vr/issues" target="_blank">submit issue</a>, <a href="https://github.com/thevpc/vr" target="_blank">get sources</a>
+                    href="http://tahabensalah.net">Taha Ben Salah</a>, ENISo.</strong> All rights , reserved. <a
+                href="https://github.com/thevpc/vr/issues" target="_blank">submit issue</a>, <a
+                href="https://github.com/thevpc/vr" target="_blank">get sources</a>
 
         </footer>
 
@@ -1633,7 +1672,7 @@
     <script src="#{vr.themeContext}/wplugins/adminlte/dist/js/demo.js"></script>
 
     <script>
-        $( document ).ready(function () {
+        $(document).ready(function () {
             $(".sparkline").each(function () {
                 var $this = $(this);
                 $this.sparkline('html', $this.data());

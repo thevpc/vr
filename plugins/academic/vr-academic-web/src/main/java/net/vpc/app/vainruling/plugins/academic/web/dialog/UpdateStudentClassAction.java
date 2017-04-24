@@ -29,12 +29,12 @@ public class UpdateStudentClassAction implements ActionDialog {
     }
 
     @Override
-    public boolean isEnabled(Class entityType, EditCtrlMode mode, Object value) {
-        return value == null;
+    public boolean isEnabled(String actionId, Class entityType, EditCtrlMode mode, Object value) {
+        return true;
     }
 
     @Override
-    public ActionDialogResult invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         //do nothing!
         return ActionDialogResult.VOID;
     }

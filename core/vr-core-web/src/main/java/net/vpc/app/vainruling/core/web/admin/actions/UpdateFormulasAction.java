@@ -30,12 +30,12 @@ public class UpdateFormulasAction implements ActionDialog {
     }
 
     @Override
-    public boolean isEnabled(Class entityType, EditCtrlMode mode, Object value) {
+    public boolean isEnabled(String actionId, Class entityType, EditCtrlMode mode, Object value) {
         return true;//value != null;
     }
 
     @Override
-    public ActionDialogResult invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         UPA.getPersistenceUnit().updateFormulas();
         FacesUtils.addInfoMessage("Mise à jour réussie");
         return ActionDialogResult.RELOAD_ALL;

@@ -144,6 +144,7 @@ public class UpdateStudentClassActionCtrl {
                             ap.update(st);
                             AcademicFormerStudent formerStudent = ap.findFormerStudent(studentId);
                             formerStudent.setEliminationReason(getModel().getEliminationReason());
+                            ap.update(formerStudent);
                         }
                     } catch (Exception ex) {
                         log.log(Level.SEVERE, "Error", ex);

@@ -47,6 +47,7 @@ public class ApblTeam {
     private boolean lockedMembers;
     private boolean freeMembers;
     private boolean lockedCoaches;
+    private boolean excludeFromLoad;
 
     public boolean isFreeMembers() {
         return freeMembers;
@@ -126,5 +127,13 @@ public class ApblTeam {
 
     public void setLockedCoaches(boolean lockedCoaches) {
         this.lockedCoaches = lockedCoaches;
+    }
+
+    public boolean isExcludeFromLoad() {
+        return excludeFromLoad;
+    }
+
+    public void setExcludeFromLoad(boolean excludeFromLoad) {
+        this.excludeFromLoad = excludeFromLoad;
     }
 }

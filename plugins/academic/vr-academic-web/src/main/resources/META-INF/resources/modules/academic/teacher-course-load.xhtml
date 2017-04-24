@@ -23,7 +23,7 @@ and open the template in the editor.
     <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
     <!--@elvariable id="teacherCourseLoadCtrl" type="net.vpc.app.vainruling.plugins.academic.web.load.TeacherCourseLoadCtrl"-->
 
-    <ui:composition template="#{vr.themePath}/templates/private-template.xhtml">
+    <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
             <h:form id="buttonsForm">
                 <p:confirmDialog message="Etes vous sur de vouloir supprimer la selection ?" header="Suppression"
