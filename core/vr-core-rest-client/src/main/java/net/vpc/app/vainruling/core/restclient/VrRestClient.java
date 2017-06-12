@@ -124,7 +124,7 @@ public class VrRestClient {
         StringBuilder ret = new StringBuilder();
         try {
 //            org.apache.http.client.utils.URIBuilder
-            URIBuilder builder = new URIBuilder("http://localhost:8080/vr/ws" + path);
+            URIBuilder builder = new URIBuilder("http://localhost:8080/ws" + path);
             for (int i = 0; i < args.length; i += 2) {
                 builder.setParameter((String) args[i], toJson(args[i + 1]));
             }

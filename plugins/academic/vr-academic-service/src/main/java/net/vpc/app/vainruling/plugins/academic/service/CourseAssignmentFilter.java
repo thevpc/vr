@@ -11,4 +11,26 @@ import java.util.Set;
 public interface CourseAssignmentFilter {
     boolean acceptAssignment(AcademicCourseAssignment academicCourseAssignment) ;
     boolean lookupIntents() ;
+    CourseAssignmentFilter ALL=new CourseAssignmentFilter() {
+        @Override
+        public boolean acceptAssignment(AcademicCourseAssignment academicCourseAssignment) {
+            return true;
+        }
+
+        @Override
+        public boolean lookupIntents() {
+            return true;
+        }
+    };
+    CourseAssignmentFilter NO_INTENTS=new CourseAssignmentFilter() {
+        @Override
+        public boolean acceptAssignment(AcademicCourseAssignment academicCourseAssignment) {
+            return true;
+        }
+
+        @Override
+        public boolean lookupIntents() {
+            return false;
+        }
+    };
 }

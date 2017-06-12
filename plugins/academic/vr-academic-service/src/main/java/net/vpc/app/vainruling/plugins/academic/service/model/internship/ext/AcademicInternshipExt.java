@@ -44,4 +44,10 @@ public class AcademicInternshipExt {
         this.supervisorIntents = supervisorIntents;
     }
 
+    @Override
+    public String toString() {
+        return "AcademicInternshipExt{" +
+                "internship=" + internship +
+                '}';
+    }
 }

@@ -361,7 +361,7 @@ h5, h6 {
     display: block;
     position: relative;
     /*background: url('../img/hero_image.jpg') no-repeat;*/
-    background: url('/vr/fs/Site/images/banners/01.jpg') no-repeat;
+    background: url('/fs/Site/images/banners/01.jpg') no-repeat;
     background-size: cover;
     -webkit-background-size: cover;
     -moz-background-size: cover;

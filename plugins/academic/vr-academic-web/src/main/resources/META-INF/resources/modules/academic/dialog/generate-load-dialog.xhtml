@@ -28,7 +28,7 @@ and open the template in the editor.
         <ui:define name="dialog-body">
 
             <h:form id="myform">
-                <div class="row">
+                <div class="row" style="margin-top: 10px;">
                     <p:outputLabel value="Periode"  styleClass="vr-form-field vr-form-fixed-width-short" />
                     <p:selectOneMenu value="#{generateLoadDialogCtrl.model.period}" required="false"
                                      styleClass="vr-form-field" >
@@ -44,8 +44,12 @@ and open the template in the editor.
                     <p:inputText value="#{generateLoadDialogCtrl.model.oldVersion}" styleClass="vr-form-field" />
                 </div>
                 <div class="row">
-                    <p:commandButton icon="ui-icon-search" actionListener="#{generateLoadDialogCtrl.onGenerate()}"
-                                     value="Accepter" styleClass="btn btn-primary" style="position: absolute;right: 100px; margin-top: 20px;"/>
+                    <p:progressBar ajax="true" widgetVar="progress" value="#{generateLoadDialogCtrl.model.generationProgress}"
+                                   labelTemplate="{value}%" styleClass="animated" global="false" />
+                </div>
+                <div class="row">
+                    <p:commandButton icon="ui-icon-search" action="#{generateLoadDialogCtrl.onGenerate()}" async="true"  process="@form" onclick="PF('progress').start()"
+                                     value="Accepter" styleClass="btn btn-primary" style="position: absolute;right: 130px; margin-top: 20px;"/>
                     <p:commandButton actionListener="#{generateLoadDialogCtrl.fireEventExtraDialogClosed()}"
                                      value="Annuler" styleClass="btn btn-default" style="position: absolute;right: 10px; margin-top: 20px;"/>
                 </div>

@@ -62,6 +62,11 @@ public class AcademicPerfEvalPlugin {
         return pu.findById(AcademicFeedback.class, feedbackId);
     }
 
+    public AcademicFeedbackModel findFeedbackModel(int feedbackId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.findById(AcademicFeedbackModel.class, feedbackId);
+    }
+
     public FeedbacksStats findFeedbacksStats(
             Integer teacherId,
             Integer periodId,
@@ -199,6 +204,8 @@ public class AcademicPerfEvalPlugin {
 
     public List<AcademicFeedback> findFeedbacks(
             int periodId,
+            Integer departmentId,
+            Integer ownerDepartmentId,
             Integer coursePlanId,
             Integer teacherId,
             Integer courseTypeId,
@@ -213,6 +220,14 @@ public class AcademicPerfEvalPlugin {
         q.byExpression("f.course.coursePlan.periodId=:periodId");
         q.setParameter("periodId", periodId);
 
+        if (departmentId != null) {
+            q.byExpression("f.course.coursePlan.courseLevel.academicClass.program.department=:departmentId");
+            q.setParameter("departmentId", departmentId);
+        }
+        if (ownerDepartmentId != null) {
+            q.byExpression("f.course.ownerDepartmentId=:ownerDepartmentId");
+            q.setParameter("ownerDepartmentId", ownerDepartmentId);
+        }
         if (teacherId != null) {
             q.byExpression("f.course.teacherId=:teacherId");
             q.setParameter("teacherId", teacherId);
@@ -255,6 +270,10 @@ public class AcademicPerfEvalPlugin {
         return q.getResultList();
     }
 
+    public List<AcademicFeedbackModel> findAcademicFeedbackModels() {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select f from AcademicFeedbackModel f").getResultList();
+    }
     public List<AcademicFeedback> findStudentFeedbacks(int periodId,int studentId, Boolean validated, Boolean archived, Boolean enabled) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (!checkEnableStudentFeedbacks(enabled)) return Collections.EMPTY_LIST;

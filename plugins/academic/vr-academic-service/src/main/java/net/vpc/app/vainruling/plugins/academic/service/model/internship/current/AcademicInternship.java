@@ -660,4 +660,71 @@ import java.sql.Timestamp;
     public void setRecordedSecondSupervisor(AcademicTeacher recordedSecondSupervisor) {
         this.recordedSecondSupervisor = recordedSecondSupervisor;
     }
+
+    @Override
+    public String toString() {
+        return "AcademicInternship{" +
+                "id=" + id +
+                ", mainGroup=" + mainGroup +
+                ", board=" + board +
+                ", code='" + code + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", mainDiscipline='" + mainDiscipline + '\'' +
+                ", internshipStatus=" + internshipStatus +
+                ", technologies='" + technologies + '\'' +
+                ", internshipVariant=" + internshipVariant +
+                ", student=" + student +
+                ", secondStudent=" + secondStudent +
+                ", supervisor=" + supervisor +
+                ", secondSupervisor=" + secondSupervisor +
+                ", recordedSupervisor=" + recordedSupervisor +
+                ", recordedSecondSupervisor=" + recordedSecondSupervisor +
+                ", company=" + company +
+                ", companyOther='" + companyOther + '\'' +
+                ", companyMentor=" + companyMentor +
+                ", companyMentorOther='" + companyMentorOther + '\'' +
+                ", companyMentorOtherEmail='" + companyMentorOtherEmail + '\'' +
+                ", companyMentorOtherPhone='" + companyMentorOtherPhone + '\'' +
+                ", duration=" + duration +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", specFilePath='" + specFilePath + '\'' +
+                ", midTermReportFilePath='" + midTermReportFilePath + '\'' +
+                ", midTermStudentIntMentoringOpinion=" + midTermStudentIntMentoringOpinion +
+                ", midTermStudentExtMentoringOpinion=" + midTermStudentExtMentoringOpinion +
+                ", midTermStudentMeetingOpinion=" + midTermStudentMeetingOpinion +
+                ", midTermStudentExtMeetingOpinion=" + midTermStudentExtMeetingOpinion +
+                ", midTermStudentPhysMeetingCount=" + midTermStudentPhysMeetingCount +
+                ", midTermStudentVoiceMeetingCount=" + midTermStudentVoiceMeetingCount +
+                ", midTermStudentTextMeetingCount=" + midTermStudentTextMeetingCount +
+                ", midTermStudentPhysMeetingExtCount=" + midTermStudentPhysMeetingExtCount +
+                ", midTermStudentVoiceMeetingExtCount=" + midTermStudentVoiceMeetingExtCount +
+                ", midTermStudentTextMeetingExtCount=" + midTermStudentTextMeetingExtCount +
+                ", midTermStudentProgress=" + midTermStudentProgress +
+                ", midTermStudentObs='" + midTermStudentObs + '\'' +
+                ", midTermTeacherExtMentoringOpinion=" + midTermTeacherExtMentoringOpinion +
+                ", midTermTeacherMeetingOpinion=" + midTermTeacherMeetingOpinion +
+                ", midTermTeacherTechWorkOpinion=" + midTermTeacherTechWorkOpinion +
+                ", midTermTeacherSciWorkOpinion=" + midTermTeacherSciWorkOpinion +
+                ", midTermTeacherCommWorkOpinion=" + midTermTeacherCommWorkOpinion +
+                ", midTermTeacherAutonomyOpinion=" + midTermTeacherAutonomyOpinion +
+                ", midTermTeacherProgress=" + midTermTeacherProgress +
+                ", midTermTeacherObs='" + midTermTeacherObs + '\'' +
+                ", reportFilePath='" + reportFilePath + '\'' +
+                ", firstExaminer=" + firstExaminer +
+                ", secondExaminer=" + secondExaminer +
+                ", chairExaminer=" + chairExaminer +
+                ", examDate=" + examDate +
+                ", examLocation='" + examLocation + '\'' +
+                ", sessionType=" + sessionType +
+                ", preEmployment=" + preEmployment +
+                ", lastStudentUpdateTime=" + lastStudentUpdateTime +
+                ", lastTeacherUpdateTime=" + lastTeacherUpdateTime +
+                ", lastUpdateTime=" + lastUpdateTime +
+                ", studentObservations='" + studentObservations + '\'' +
+                ", validationObservations='" + validationObservations + '\'' +
+                ", evaluationObservations='" + evaluationObservations + '\'' +
+                '}';
+    }
 }

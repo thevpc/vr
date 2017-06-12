@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+>
+
+<h:head>
+</h:head>
+
+<h:body>
+
+
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <!--@elvariable id="studentFeedbackExampleCtrl" type="net.vpc.app.vainruling.plugins.academic.teachereval.web.StudentFeedbackExampleCtrl"-->
+    <ui:composition template="#{vr.privateTemplatePath}">
+        <ui:define name="content">
+            <!--                <h:form id="buttonsForm">
+
+                                 /.row
+                                <div class="row">
+                                    <p:outputLabel id="buttons">
+                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                    </p:outputLabel>
+                                </div>
+
+                            </h:form>-->
+            <h:form id="listForm">
+                <p:messages id="pageMessages"/>
+
+                <div>
+                    <p:selectOneMenu value="#{studentFeedbackExampleCtrl.model.selectedFeedback}">
+                        <p:ajax listener="#{studentFeedbackExampleCtrl.onFeedbackChange}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner..." itemValue=""/>
+                        <f:selectItems value="#{studentFeedbackExampleCtrl.model.feedbacks}"/>
+                    </p:selectOneMenu>
+                </div>
+                <p:outputLabel value="Aucune fiche"
+                               rendered="#{empty studentFeedbackExampleCtrl.model.rows}"/>
+                <ui:repeat var="r" value="#{studentFeedbackExampleCtrl.model.rows}">
+                    <div>
+                        <div class="table-responsive">
+                            <p:dataTable value="#{r.questions}" var="i" style="margin-top: 20px;">
+                                <p:column headerText="#{r.title}">
+                                    <p:outputLabel value="#{i.response.question.name}"/>
+                                </p:column>
+                                <p:column headerText="" width="30%">
+                                    <h:inputHidden id="txt2" value="#{i.response.response}"/>
+                                    <h:inputHidden id="responseId" value="#{i.response.id}"/>
+                                    <p:slider for="txt2" style="width: 100%" step="1" minValue="0" maxValue="4">
+                                        <p:ajax event="slideEnd" listener="#{studentFeedbackExampleCtrl.onSlideEnd}"
+                                                update="label2"/>
+                                    </p:slider>
+                                    <!--<p:selectOneRadio id="customRadio" value="# {i.response.response}"-->
+                                    <!--style="font-size: xx-small">-->
+                                    <!--<f:selectItem itemLabel="Tout à fait en désaccord" itemValue="1"/>-->
+                                    <!--<f:selectItem itemLabel="Plutot en désaccord" itemValue="2"/>-->
+                                    <!--<f:selectItem itemLabel="Plutot d'accord" itemValue="3"/>-->
+                                    <!--<f:selectItem itemLabel="Tout à fait en accord" itemValue="4"/>-->
+                                    <!--</p:selectOneRadio>-->
+                                </p:column>
+                                <p:column headerText="" width="20%">
+                                    <p:outputLabel id="label2"
+                                                   value="#{vr.mapValue(i.response.response,'Je ne sais pas','1','Tout à fait en désaccord','2','Plutot en désaccord','3','Plutot en accord','4','Tout à fait en accord')}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+                </ui:repeat>
+                <ui:fragment rendered="#{studentFeedbackExampleCtrl.model.rows.size() gt 0}">
+                    <div class="row" style="margin-left: 0px;margin-top: 20px;">
+                        <p:commandButton value="Enregistrer Brouillon"
+                                         class="btn btn-default"
+                                         disabled="true"
+                                         action="#{studentFeedbackExampleCtrl.onSave}" update=":listForm"/>
+                        <p:commandButton style="margin-left: 10px;" value="Enregistrer et Valider"
+                                         class="btn btn-primary"
+                                         disabled="true"
+                                         action="#{studentFeedbackExampleCtrl.onSaveAndValidate}" update="listForm"/>
+                    </div>
+                </ui:fragment>
+            </h:form>
+            <style>
+                .ui-slider-handle{
+                    background:var(--vr-color-main12)  !important;
+                }
+            </style>
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>

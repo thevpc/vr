@@ -34,10 +34,11 @@ and open the template in the editor.
                 </p:confirmDialog>
 
                 <!-- /.row -->
-                <div >
+                <div>
                     <p:outputLabel id="buttons">
                         <p:commandButton value="Rafr."
-                                         styleClass="btn btn-default vr-form-field vr-form-fixed-width-medium ui-ribbon-bigbutton vr-icon-aws" ajax="true"
+                                         styleClass="btn btn-default vr-form-field vr-form-fixed-width-medium ui-ribbon-bigbutton vr-icon-aws"
+                                         ajax="true"
                                          actionListener="#{teacherCourseLoadCtrl.onRefresh}" update=":listForm"/>
 
                         <p:menuButton value="Actions..." style="margin-left: 10px;"
@@ -274,7 +275,7 @@ and open the template in the editor.
             </h:form>
             <h:form id="listForm">
 
-                <div >
+                <div>
                     <div class="table-responsive">
                         <h1>
                             <p:commandLink
@@ -300,56 +301,107 @@ and open the template in the editor.
                                 <p:column styleClass="ui-widget-header"><p:outputLabel
                                         value="Total Charge / Sem"/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel
-                                        value="H.Supp. / Sem"/></p:column>
+                                        value="Total Charge C / Sem"/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel
-                                        value="Balance"/></p:column>
+                                        value="Total Charge TD / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Total Charge TPPM / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"
+                                          rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="H.Supp. abs / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"
+                                          rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="H.Supp. abs C / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"
+                                          rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="H.Supp. abs TD / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"
+                                          rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="H.Supp. abs Tp / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="H.Supp. C / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="H.Supp. TD / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="H.Supp. TP / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Balance"/></p:column>
                                 <p:column styleClass="ui-widget-header" style="width: 60px;"><p:outputLabel
                                         value=""/></p:column>
                             </p:row>
 
                             <p:row>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel
-                                        value="Charge Annuelle"/></p:column>
-                                <p:column><p:outputLabel value=""/></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.val.value.c}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.val.value.td}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.val.value.tp}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.val.value.pm}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.val.value.tppm}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.val.due.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.val.value.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.val.extra.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.val.dueWeek.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.val.valueWeek.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{teacherCourseLoadCtrl.model.stat.val.extraWeek.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column>
-                                    <p:outputLabel
-                                            value="#{teacherCourseLoadCtrl.model.stat.val.deviation}"><f:convertNumber
-                                            pattern="#0.00%"/></p:outputLabel>
-                                    <h:outputText value=" / #{teacherCourseLoadCtrl.model.stat.val.population.size}"/>
-                                </p:column>
+                                <!--  --> <p:column styleClass="ui-widget-header"><p:outputLabel
+                                    value="Charge Annuelle"/></p:column>
+                                <!-- Semaines --> <p:column><p:outputLabel value=""/></p:column>
+                                <!-- C --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.value.c}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- TD --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.value.td}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- TP --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.value.tp}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- PM --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.value.pm}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- TP+PM --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.value.tppm}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Total Du --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.due.equiv}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Total Charge --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.value.equiv}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Total H.Supp. --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extra.equiv}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Du / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.dueWeek.equiv}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Total Charge / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.valueWeek.equiv}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Total Charge C / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.valueWeek.c}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Total Charge TD / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.valueWeek.td}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Total Charge TPPM / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.valueWeek.tppm}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- H.Supp. abs / Sem --> <p:column
+                                    rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extraWeek.equiv}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- H.Supp. abs C / Sem --> <p:column
+                                    rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extraWeek.c}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- H.Supp. abs TD / Sem --> <p:column
+                                    rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extraWeek.td}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- H.Supp. abs Tp / Sem --> <p:column
+                                    rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extraWeek.tppm}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- H.Supp. C / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extraWeekEff.c}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- H.Supp. TD / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extraWeekEff.td}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- H.Supp. TP / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extraWeekEff.tppm}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Balance --> <p:column>
+                                <p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.val.deviation}"><f:convertNumber
+                                        pattern="#0.00%"/></p:outputLabel>
+                                <h:outputText value=" / #{teacherCourseLoadCtrl.model.stat.val.population.size}"/>
+                            </p:column>
                                 <p:column>
                                     <div class="vr-progress-container" style="width: 100%;">
                                         <div class="#{teacherCourseLoadCtrl.model.stat.val.deviationLabel}"
@@ -361,51 +413,75 @@ and open the template in the editor.
                             </p:row>
                             <c:forEach items="#{teacherCourseLoadCtrl.model.stat.semesters}" var="sem">
                                 <p:row>
-                                    <p:column styleClass="ui-widget-header"><p:outputLabel
-                                            value="Charge #{sem.val.semester.name}"/></p:column>
-                                    <p:column><p:outputLabel
-                                            value="#{sem.val.weeks}"><f:convertNumber
-                                            pattern="#0.#"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel
-                                            value="#{sem.val.value.c}"><f:convertNumber
-                                            pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel
-                                            value="#{sem.val.value.td}"><f:convertNumber
-                                            pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel
-                                            value="#{sem.val.value.tp}"><f:convertNumber
-                                            pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel
-                                            value="#{sem.val.value.pm}"><f:convertNumber
-                                            pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel
-                                            value="#{sem.val.value.tppm}"><f:convertNumber
-                                            pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel
-                                            value="#{sem.val.due.equiv}"><f:convertNumber
-                                            pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel
-                                            value="#{sem.val.value.equiv}"><f:convertNumber
-                                            pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel
-                                            value="#{sem.val.extra.equiv}"><f:convertNumber
-                                            pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel
-                                            value="#{sem.val.dueWeek.equiv}"><f:convertNumber
-                                            pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel
-                                            value="#{sem.val.valueWeek.equiv}"><f:convertNumber
-                                            pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel
-                                            value="#{sem.val.extraWeek.equiv}"><f:convertNumber
-                                            pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column>
-                                        <p:outputLabel
-                                                value="#{sem.val.deviation}"><f:convertNumber
-                                                pattern="#0.00%"/></p:outputLabel>
-                                        <h:outputText
-                                                value=" / #{sem.val.population.size}"/>
-                                    </p:column>
+                                    <!--  --><p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="Charge #{sem.val.semester.name}"/></p:column>
+                                    <!-- Semaines --><p:column><p:outputLabel value="#{sem.val.weeks}"><f:convertNumber
+                                        pattern="#0.#"/></p:outputLabel></p:column>
+                                    <!-- C --><p:column><p:outputLabel value="#{sem.val.value.c}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- TD --><p:column><p:outputLabel value="#{sem.val.value.td}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- TP --><p:column><p:outputLabel value="#{sem.val.value.tp}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- PM --><p:column><p:outputLabel value="#{sem.val.value.pm}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- TP+PM --><p:column><p:outputLabel
+                                        value="#{sem.val.value.tppm}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Total Du --><p:column><p:outputLabel
+                                        value="#{sem.val.due.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Total Charge --><p:column><p:outputLabel
+                                        value="#{sem.val.value.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Total H.Supp. --><p:column><p:outputLabel
+                                        value="#{sem.val.extra.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Du / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.dueWeek.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Total Charge / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.valueWeek.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Total Charge C / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.valueWeek.c}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Total Charge TD / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.valueWeek.td}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Total Charge TPPM / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.valueWeek.tppm}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- H.Supp. abs / Sem --><p:column
+                                        rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="#{sem.val.extraWeek.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- H.Supp. abs C / Sem --><p:column
+                                        rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="#{sem.val.extraWeek.c}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- H.Supp. abs TD / Sem --><p:column
+                                        rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="#{sem.val.extraWeek.td}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- H.Supp. abs Tp / Sem --><p:column
+                                        rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="#{sem.val.extraWeek.tppm}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- H.Supp. C / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.extraWeekEff.c}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- H.Supp. TD / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.extraWeekEff.td}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- H.Supp. TP / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.extraWeekEff.tppm}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Balance --><p:column>
+                                    <p:outputLabel
+                                            value="#{sem.val.deviation}"><f:convertNumber
+                                            pattern="#0.00%"/></p:outputLabel>
+                                    <h:outputText
+                                            value=" / #{sem.val.population.size}"/>
+                                </p:column>
                                     <p:column>
                                         <div class="vr-progress-container" style="width: 100%;">
                                             <div class="#{sem.val.deviationLabel}"
@@ -421,7 +497,7 @@ and open the template in the editor.
                 </div>
 
                 <ui:repeat value="#{teacherCourseLoadCtrl.model.stat.semesters}" var="sem">
-                    <div >
+                    <div>
                         <div class="table-responsive">
                             <h1>Semestre #{sem.val.semester.name}</h1>
                             <p:dataTable var="i" value="#{sem.assignments}"
@@ -492,6 +568,12 @@ and open the template in the editor.
                                             action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.value.assignment)}"
                                             value="#{i.value.assignment.coursePlan.name} - #{i.value.assignment.courseType.name}"
                                             styleClass="#{i.value.assigned?'vr-assigned-course':''}"/>
+                                    <ui:repeat value="#{vr.splitLabels(i.value.assignment.labels)}" var="prName">
+                                        <span class="label label-#{vr.hashToArr(prName,'danger','success','info','warning','primary','default')}">#{prName}</span>
+                                    </ui:repeat>
+                                    <ui:repeat value="#{vr.splitLabels(i.value.assignment.coursePlan.labels)}" var="prName">
+                                        <span class="label label-#{vr.hashToArr(prName,'danger','success','info','warning','primary','default')}">#{prName}</span>
+                                    </ui:repeat>
                                 </p:column>
                                 <p:column headerText="C" width="5%">
                                     <h:outputText
@@ -525,12 +607,14 @@ and open the template in the editor.
                                     />
                                 </p:column>
                                 <p:column headerText="Collaborateurs" width="10%">
-                                    <h:outputText value="#{i.courseIntents}" rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('collaborators')}"
+                                    <h:outputText value="#{i.courseIntents}"
+                                                  rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('collaborators')}"
                                                   styleClass="#{i.value.assigned?'vr-label-valid':'vr-label-invalid'}"
                                     />
                                 </p:column>
 
-                                <p:column headerText="Salles" width="5%" rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('rooms')}">
+                                <p:column headerText="Salles" width="5%"
+                                          rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('rooms')}">
                                     <h:outputText value="#{i.rooms}"
                                     />
                                 </p:column>
@@ -542,18 +626,24 @@ and open the template in the editor.
 
                 <p:separator/>
 
-                <div >
+                <div>
                     <div class="table-responsive">
-                        <h1>Autres modules <p:commandButton value="Afficher/Cacher" action="#{teacherCourseLoadCtrl.onSwitchDisplayOtherModules}"
-                                                           style="margin-left:10px; width:130px" update=":listForm" /></h1>
+                        <h1>Autres modules <p:commandButton value="Afficher/Cacher"
+                                                            action="#{teacherCourseLoadCtrl.onSwitchDisplayOtherModules}"
+                                                            style="margin-left:10px; width:130px" update=":listForm"/>
+                        </h1>
 
                         <div style="margin-bottom: 10px;">
                             <p:inputText
                                     rendered="#{teacherCourseLoadCtrl.model.displayOtherModules}"
-                                    value="#{teacherCourseLoadCtrl.model.othersTextFilter}" placeholder="Chercher ..."  styleClass="form-control"
-                                    style="width: 100%" onkeypress="if (event.keyCode == 13) { onSearchByText(); return false; }"
+                                    value="#{teacherCourseLoadCtrl.model.othersTextFilter}" placeholder="Chercher ..."
+                                    styleClass="form-control"
+                                    style="width: 100%"
+                                    onkeypress="if (event.keyCode == 13) { onSearchByText(); return false; }"
                             />
-                            <p:remoteCommand name="onSearchByText" actionListener="#{teacherCourseLoadCtrl.applyOthersTextFilter}" update=":listForm"/>
+                            <p:remoteCommand name="onSearchByText"
+                                             actionListener="#{teacherCourseLoadCtrl.applyOthersTextFilter}"
+                                             update=":listForm"/>
                         </div>
 
                         <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.others}"
@@ -635,7 +725,7 @@ and open the template in the editor.
                             <p:column headerText="" width="8%">
                                 <h:outputText value="#{i.academicClass.name}"/>
                             </p:column>
-                            <p:column headerText="Module" >
+                            <p:column headerText="Module">
                                 <p:commandLink
                                         action="#{teacherCourseLoadCtrl.gotoCourseAssignment(i.value.assignment)}"
                                         styleClass="#{i.value.assigned?'vr-assigned-course':''}"
@@ -667,14 +757,17 @@ and open the template in the editor.
                             </p:column>
 
                             <p:column headerText="Voeux" width="20%">
-                                <h:outputText value="#{i.intents}" styleClass="#{i.currentAssigned?'vr-label-valid':i.otherAssigned?'vr-label-warn':'vr-label-invalid'}"/>
+                                <h:outputText value="#{i.intents}"
+                                              styleClass="#{i.currentAssigned?'vr-label-valid':i.otherAssigned?'vr-label-warn':'vr-label-invalid'}"/>
                             </p:column>
 
-                            <p:column headerText="Collaborateurs" width="10%" rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('collaborators')}">
+                            <p:column headerText="Collaborateurs" width="10%"
+                                      rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('collaborators')}">
                                 <h:outputText value="#{i.courseIntents}"/>
                             </p:column>
 
-                            <p:column headerText="Salles" width="5%" rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('rooms')}">
+                            <p:column headerText="Salles" width="5%"
+                                      rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('rooms')}">
                                 <h:outputText value="#{i.rooms}"/>
                             </p:column>
 

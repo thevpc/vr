@@ -11,14 +11,15 @@ import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.upa.*;
 import net.vpc.upa.Entity;
-import net.vpc.upa.EntityModifier;
+import net.vpc.upa.callbacks.EntityEvent;
 import net.vpc.upa.callbacks.PersistEvent;
 import net.vpc.upa.callbacks.UpdateEvent;
+import net.vpc.upa.config.*;
 import net.vpc.upa.config.Callback;
-import net.vpc.upa.config.OnPersist;
-import net.vpc.upa.config.OnPreUpdate;
-import net.vpc.upa.config.OnUpdate;
+import net.vpc.upa.exceptions.UPAException;
+import net.vpc.upa.types.TypesFactory;
 
 import java.util.List;
 
@@ -28,6 +29,34 @@ import java.util.List;
 @Callback
 public class AcademicTeacherCallback {
 
+
+    @OnPrepare
+    public void OnPrepareEntity(EntityEvent event) throws UPAException {
+        Entity entity = event.getEntity();
+        if(entity.getEntityType().equals(AcademicTeacher.class)){
+            if(!entity.containsField("contactEmail")) {
+                entity.addField(
+                        new DefaultFieldBuilder().setName("contactEmail")
+                                .addModifier(UserFieldModifier.SUMMARY)
+                                .setDataType(TypesFactory.STRING)
+                                .setAccessLevel(AccessLevel.PROTECTED)
+                                .setIndex(3)
+                                .setLiveSelectFormula("this.contact.email")
+                );
+            }
+            if(!entity.containsField("phone1")) {
+                entity.addField(
+                        new DefaultFieldBuilder()
+                                .setName("contactPhone1")
+                                .addModifier(UserFieldModifier.SUMMARY)
+                                .setAccessLevel(AccessLevel.PROTECTED)
+                                .setDataType(TypesFactory.STRING)
+                                .setIndex(4)
+                                .setLiveSelectFormula("this.contact.phone1")
+                );
+            }
+        }
+    }
 
     protected boolean isEntity(Entity entity, Class entityType) {
         return !entity.getModifiers().contains(EntityModifier.SYSTEM)

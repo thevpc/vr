@@ -50,7 +50,7 @@ public class BiPU {
                         path="/"+path;
                     }
                     path=path.replace('\'','_');//fix injection issues
-                    processed=("http://eniso.info/vr/p/documents?a={path='"+path+"'}");
+                    processed=("http://eniso.info/p/documents?a={path='"+path+"'}");
                 }
             }
             if(processed!=null) {

@@ -34,6 +34,16 @@ and open the template in the editor.
                                         value="#{updateStudentClassActionCtrl.model.message}"/></p:column>
                         </p:row>
                         <p:row>
+                            <p:column><p:outputLabel value="Période (*)"/></p:column>
+                            <p:column colspan="3">
+
+                                <p:selectOneMenu value="#{updateStudentClassActionCtrl.model.selectedPeriod}">
+                                    <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
+                                    <f:selectItems value="#{updateStudentClassActionCtrl.model.periods}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                        <p:row>
                             <p:column><p:outputLabel value="Filtrer par Classe"/></p:column>
                             <p:column >
                                 <p:selectOneMenu value="#{updateStudentClassActionCtrl.model.selectedClassFrom}">
@@ -41,20 +51,10 @@ and open the template in the editor.
                                     <f:selectItems value="#{updateStudentClassActionCtrl.model.classes}"/>
                                 </p:selectOneMenu>
                             </p:column>
-                            <p:column><p:outputLabel value="Appliquer aux lignes selectionnées"/></p:column>
+                            <p:column><p:outputLabel value="Appliquer aux lignes selectionnées" style="margin-left: 10px;"/></p:column>
                             <p:column colspan="3">
                                 <p:selectBooleanCheckbox
                                         value="#{updateStudentClassActionCtrl.model.userSelectedOnly}"/>
-                            </p:column>
-                        </p:row>
-                        <p:row>
-                            <p:column><p:outputLabel value="Période ..."/></p:column>
-                            <p:column colspan="3">
-
-                                <p:selectOneMenu value="#{updateStudentClassActionCtrl.model.selectedPeriod}">
-                                    <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
-                                    <f:selectItems value="#{updateStudentClassActionCtrl.model.periods}"/>
-                                </p:selectOneMenu>
                             </p:column>
                         </p:row>
 
@@ -78,7 +78,7 @@ and open the template in the editor.
                                 </div>
                             </p:column>
                         </p:row>
-                        <p:row>
+                        <p:row style="margin-top: 10px">
                             <p:column>
                                 <p:commandButton value="Changer de classe"
                                                  styleClass="btn btn-primary"
@@ -99,7 +99,7 @@ and open the template in the editor.
                                 <p:commandButton value="Eliminer"
                                                  styleClass="btn btn-danger"
                                                  actionListener="#{updateStudentClassActionCtrl.onEliminated}"
-                                                 style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"
+                                                 style="margin-left: 20px;margin-right: 20px;"
                                                  disabled="#{updateStudentClassActionCtrl.model.disabled}"
                                                  update="msg"
                                 />

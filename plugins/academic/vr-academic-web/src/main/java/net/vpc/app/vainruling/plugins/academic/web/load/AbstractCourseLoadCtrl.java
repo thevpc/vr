@@ -178,7 +178,7 @@ public abstract class AbstractCourseLoadCtrl {
         HashSet<Integer> visited = new HashSet<Integer>();
         if (t != null) {
             DefaultCourseAssignmentFilter courseAssignmentFilter = getCourseFilter().getCourseAssignmentFilter();
-            TeacherPeriodStat stat = a.evalTeacherStat(periodId, id, courseAssignmentFilter, deviationConfig);
+            TeacherPeriodStat stat = a.evalTeacherStat(periodId, id, courseAssignmentFilter, deviationConfig,null);
             for (TeacherSemesterStat teacherSemesterStat : stat.getSemesters()) {
                 for (AcademicCourseAssignmentInfo m : teacherSemesterStat.getAssignments()) {
                     visited.add(m.getAssignment().getId());
@@ -678,7 +678,11 @@ public abstract class AbstractCourseLoadCtrl {
             this.courseIntents = value.getCourseChunck().toStringByTeacher(visitor);
             academicClass=value.getAssignment().getSubClass();
             if(academicClass==null){
-                academicClass=value.getAssignment().getCoursePlan().getCourseLevel().getAcademicClass();
+                try {
+                    academicClass = value.getAssignment().getCoursePlan().getCourseLevel().getAcademicClass();
+                }catch (NullPointerException e){
+                    //
+                }
             }
             AcademicCourseType courseType = value.getAssignment().getCourseType();
             if(courseType!=null && courseType.getName().equalsIgnoreCase("C")) {

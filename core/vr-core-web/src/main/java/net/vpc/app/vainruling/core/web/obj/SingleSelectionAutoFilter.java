@@ -50,7 +50,12 @@ public class SingleSelectionAutoFilter extends AutoFilter{
                 Entity entity = ((KeyType) dataType).getEntity();
                 Object entityInstance = entity.findById(id);
                 parameters.put(paramPrefix,entityInstance);
-                return getData().getExpr()+"=:"+ paramPrefix;
+                //IsHierarchyDescendant(:p,a,Node)
+                if(entity.isHierarchical()){
+                    return  "IsHierarchyDescendant(:"+paramPrefix+" , "+ getData().getExpr() + "," +entity.getName()+")" ;
+                }else {
+                    return getData().getExpr() + "=:" + paramPrefix;
+                }
             }else if(dataType instanceof EnumType) {
                 parameters.put(paramPrefix,((Enum)((EnumType)dataType).parse(selectedString)));
                 return getData().getExpr()+"=:"+paramPrefix;

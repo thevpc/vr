@@ -553,4 +553,34 @@ public class VrUtils {
         }
         return url;
     }
+
+    public static <T> List<T> sortPreserveIndex(List<T> list,Comparator<T> comp){
+        class IndexedItem<T>{
+            T item;
+            int index;
+
+            public IndexedItem(T item, int index) {
+                this.item = item;
+                this.index = index;
+            }
+        }
+        IndexedItem<T>[] items=new IndexedItem[list.size()];
+        for (int i = 0; i < items.length; i++) {
+            items[i]=new IndexedItem<>(list.get(i),i);
+        }
+        Arrays.sort(items, new Comparator<IndexedItem<T>>() {
+            @Override
+            public int compare(IndexedItem<T> o1, IndexedItem<T> o2) {
+                int i = comp.compare(o1.item, o2.item);
+                if(i==0){
+                    i=o1.index-o2.index;
+                }
+                return i;
+            }
+        });
+        for (int i = 0; i < items.length; i++) {
+            list.set(i,items[i].item);
+        }
+        return list;
+    }
 }

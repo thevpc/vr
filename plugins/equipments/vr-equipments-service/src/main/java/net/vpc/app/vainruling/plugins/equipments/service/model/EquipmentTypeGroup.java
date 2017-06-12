@@ -18,6 +18,8 @@ public class EquipmentTypeGroup {
     private int id;
     @Main
     private String name;
+    @Hierarchy @Summary
+    private EquipmentTypeGroup parent;
 
     public int getId() {
         return id;
@@ -33,6 +35,14 @@ public class EquipmentTypeGroup {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public EquipmentTypeGroup getParent() {
+        return parent;
+    }
+
+    public void setParent(EquipmentTypeGroup parent) {
+        this.parent = parent;
     }
 
     @Override

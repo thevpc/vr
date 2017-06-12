@@ -24,7 +24,7 @@ and open the template in the editor.
     <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
             <h:form id="messagesForm">
-                <p:messages id="messages"/>
+                <p:growl id="growl" showDetail="true" sticky="true"/>
             </h:form>
             <h:form id="listForm">
 
@@ -64,6 +64,12 @@ and open the template in the editor.
                                          styleClass="btn btn-default vr-toolbox-long-button"
                                          ajax="false"
                                          actionListener="#{academicAppStatusCtrl.reloadTeacherAndStudentInfos}"
+                        />
+                        <p:commandButton rendered="#{academicAppStatusCtrl.isEnabledButton('ApplyLoad')}" value="Appliquer Charge"
+                                         styleClass="btn btn-default vr-toolbox-long-button"
+                                         ajax="false"
+                                         actionListener="#{academicAppStatusCtrl.onApplyLoadAll}"
+                                         update=":messagesForm"
                         />
                     </div>
                 </div>
@@ -214,24 +220,16 @@ and open the template in the editor.
                                         <p:outputLabel styleClass="vr-center-text"
                                                        value="#{vr.dblCustomFormat(e.getStudentsCountByProgram('MC'),'0.00')}"/>
                                     </p:column>
-                                    <p:column headerText="Charge IA"
-                                              rendered="#{academicAppStatusCtrl.model.teachers.sessions.size() eq 1}">
+                                    <p:columns var="cc" value="#{academicAppStatusCtrl.model.teachers.programs.values()}" headerText="#{cc.name}">
                                         <p:outputLabel styleClass="vr-center-text"
-                                                       value="#{(vr.dblCustomFormat(e.programsLoadByName.get('IA'),'0.00'))}"/>
-                                    </p:column>
-                                    <p:column headerText="Charge EI"
-                                              rendered="#{academicAppStatusCtrl.model.teachers.sessions.size() eq 1}">
-                                        <p:outputLabel styleClass="vr-center-text"
-                                                       value="#{(vr.dblCustomFormat(e.programsLoadByName.get('EI') ,'0.00'))}"/>
-                                    </p:column>
-                                    <p:column headerText="Charge Méca"
-                                              rendered="#{academicAppStatusCtrl.model.teachers.sessions.size() eq 1}">
-                                        <p:outputLabel styleClass="vr-center-text"
-                                                       value="#{(vr.dblCustomFormat(e.programsLoadByName.get('MC'),'0.00'))}"/>
-                                    </p:column>
+                                                       value="#{(vr.dblCustomFormat(e.getProgramSessionLoadById(cc.id),'0.00'))}"/>
+                                    </p:columns>
                                     <p:column headerText="Charge Tot">
                                         <p:outputLabel styleClass="vr-center-text"
                                                        value="#{(vr.dblCustomFormat(e.load,'0.00'))}"/>
+                                    </p:column>
+                                    <p:column headerText="" rendered="#{(academicAppStatusCtrl.model.teachers.sessions.size() eq 1) and academicAppStatusCtrl.isEnabledButton('ApplyLoad')}">
+                                        <p:commandButton  value="Appl. Charge" action="#{academicAppStatusCtrl.onApplyLoad(e.teacher.id)}" update=":messagesForm"/>
                                     </p:column>
                                     <!--<p:column headerText="Charge en TP" sortBy="#{e.studentsCount}">-->
                                     <!--<p:outputLabel styleClass="vr-center-text"-->

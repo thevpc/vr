@@ -86,6 +86,8 @@ public class AcademicCourseAssignment {
      */
     private String discriminator;
 
+    private String labels;
+
 
     @Summary
     @Properties(
@@ -330,5 +332,13 @@ public class AcademicCourseAssignment {
 
     public void setConfirmedTeacher(boolean confirmedTeacher) {
         this.confirmedTeacher = confirmedTeacher;
+    }
+
+    public String getLabels() {
+        return labels;
+    }
+
+    public void setLabels(String labels) {
+        this.labels = labels;
     }
 }

@@ -2610,7 +2610,7 @@ public class CorePlugin {
         if (u != null) {
             AppUserType t = u.getType();
             String typeName = t == null ? "NoType" : AppUserType.getCodeOrName(t);
-            final String path = "/Documents/ByUser/" + typeName + "/" + login;
+            final String path = "/Documents/ByUser/" + normalizeFilePath(typeName) + "/" + normalizeFilePath(login);
             UPA.getContext().invokePrivileged(new Action<Object>() {
 
                 @Override
@@ -2646,7 +2646,7 @@ public class CorePlugin {
     public VFile getProfileFolder(final String profile) {
         AppProfile u = findProfileByName(profile);
         if (u != null) {
-            final String path = "/Documents/ByProfile/" + profile;
+            final String path = "/Documents/ByProfile/" + normalizeFilePath(profile);
 
             UPA.getContext().invokePrivileged(new Action<Object>() {
 
@@ -2670,7 +2670,7 @@ public class CorePlugin {
     public VFile getUserTypeFolder(int userTypeId) {
         AppUserType u = findUserType(userTypeId);
         if (u != null) {
-            final String path = "/Documents/ByUserType/" + AppUserType.getCodeOrName(u);
+            final String path = "/Documents/ByUserType/" + normalizeFilePath(AppUserType.getCodeOrName(u));
             UPA.getContext().invokePrivileged(new Action<Object>() {
 
                 @Override
@@ -2685,6 +2685,11 @@ public class CorePlugin {
             return fileSystem.get(path);
         }
         return null;
+    }
+
+    public VirtualFileSystem getUserHomeFileSystem(final String login) {
+        VFile home = getUserFolder(login);
+        return fileSystem.subfs(home.getPath());
     }
 
     public VirtualFileSystem getUserFileSystem(final String login) {
@@ -2704,7 +2709,7 @@ public class CorePlugin {
                 }
                 VrFSTable t = getVrFSTable();
                 for (AppProfile p : profiles) {
-                    String profileMountPoint = "/" + p.getName() + " Documents";
+                    String profileMountPoint = "/" + normalizeFilePath(p.getName()) + " Documents";
                     mfs.mount(profileMountPoint, getProfileFileSystem(p.getName(), t));
                 }
                 for (VrFSEntry e : t.getEntries(login, "User")) {
@@ -2752,7 +2757,7 @@ public class CorePlugin {
     public VirtualFileSystem getProfileFileSystem(String profileName, VrFSTable t) {
         AppProfile u = findProfileByName(profileName);
         if (u != null) {
-            final String path = "/Documents/ByProfile/" + profileName;
+            final String path = "/Documents/ByProfile/" + normalizeFilePath(profileName);
             UPA.getContext().invokePrivileged(new Action<Object>() {
 
                 @Override
@@ -3827,7 +3832,8 @@ public class CorePlugin {
     }
 
     public void uploadFile(VFile baseFile,UploadedFileHandler event) throws IOException {
-        VFile newFile = baseFile.get(event.getFileName());
+        String fileName = normalizeFilePath(event.getFileName());
+        VFile newFile = baseFile.get(fileName);
         if (newFile.exists()) {
             boolean doOverride = false;
             //check if alreay selected
@@ -3835,7 +3841,7 @@ public class CorePlugin {
                 doOverride = true;
             }
             if (!doOverride) {
-                throw new IOException(event.getFileName() + " already exists please select to force override.");
+                throw new IOException(fileName + " already exists please select to force override.");
             }
         }
         String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
@@ -3843,7 +3849,7 @@ public class CorePlugin {
         CorePlugin fsp = VrApp.getBean(CorePlugin.class);
         String p = fsp.getNativeFileSystemPath() + tempPath;
         new File(p).mkdirs();
-        File f = new File(p, event.getFileName());
+        File f = new File(p, fileName);
         try {
             event.write(f.getPath());
             //do work here
@@ -3860,4 +3866,23 @@ public class CorePlugin {
         }
     }
 
+    public String normalizeFilePath(String path){
+        char[] chars = StringUtils.normalize(path).toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            switch (chars[i]){
+                case '°':{chars[i]='o';break;}
+                case '"':
+                case '\'':
+                case '?':
+                case '*':
+                case ':':
+                case '%':
+                case '|':
+                case '<':
+                case '>':
+                    {chars[i]=' ';break;}
+            }
+        }
+        return new String(chars);
+    }
 }

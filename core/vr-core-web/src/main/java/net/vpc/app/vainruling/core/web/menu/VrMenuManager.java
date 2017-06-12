@@ -15,7 +15,6 @@ import net.vpc.app.vainruling.core.web.fs.FSServlet;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogAdapter;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogManager;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
-import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.*;
@@ -78,7 +77,7 @@ public class VrMenuManager {
         String searchText = params.get("searchTextInput");
 //        if(!StringUtils.isEmpty(searchText)){
 //            getModel().setSearchText(searchText);
-            getModel().setSearchText("");
+        getModel().setSearchText("");
 //        }else{
 //            searchText=getModel().getSearchText();
         //}
@@ -91,7 +90,7 @@ public class VrMenuManager {
 //            }
 //        });
         String finalSearchText = searchText;
-        ObjectFilter<String> menuFilter=StringUtils.isEmpty(searchText)?new ObjectFilter<String>() {
+        ObjectFilter<String> menuFilter = StringUtils.isEmpty(searchText) ? new ObjectFilter<String>() {
             @Override
             public boolean accept(String value) {
                 return true;
@@ -99,8 +98,8 @@ public class VrMenuManager {
         } : new ObjectFilter<String>() {
             @Override
             public boolean accept(String value) {
-                if(value==null){
-                    value="";
+                if (value == null) {
+                    value = "";
                 }
                 return value.toLowerCase().contains(finalSearchText.toLowerCase());
             }
@@ -182,12 +181,12 @@ public class VrMenuManager {
         return out;
     }
 
-    public UCtrlData getUCtrlDataByObj(Object obj,String typeName){
+    public UCtrlData getUCtrlDataByObj(Object obj, String typeName) {
         Class targetClass = PlatformReflector.getTargetClass(obj);
-        if(StringUtils.isEmpty(typeName)){
+        if (StringUtils.isEmpty(typeName)) {
             char[] chars = targetClass.getSimpleName().toCharArray();
-            chars[0]=Character.toLowerCase(chars[0]);
-            typeName= new String(chars);
+            chars[0] = Character.toLowerCase(chars[0]);
+            typeName = new String(chars);
 
         }
         UCtrl c2Ann = (UCtrl) targetClass.getAnnotation(UCtrl.class);
@@ -197,11 +196,11 @@ public class VrMenuManager {
         return null;
     }
 
-    public UCtrlData getUCtrlDataByAnnotation(UCtrl c2Ann,String typeName){
+    public UCtrlData getUCtrlDataByAnnotation(UCtrl c2Ann, String typeName) {
         if (c2Ann != null) {
-            String uniformCtrlName=typeName;
-            if(uniformCtrlName.endsWith("Ctrl") && uniformCtrlName.length()>"Ctrl".length()){
-                uniformCtrlName=uniformCtrlName.substring(0,uniformCtrlName.length()-"Ctrl".length());
+            String uniformCtrlName = typeName;
+            if (uniformCtrlName.endsWith("Ctrl") && uniformCtrlName.length() > "Ctrl".length()) {
+                uniformCtrlName = uniformCtrlName.substring(0, uniformCtrlName.length() - "Ctrl".length());
             }
             UCtrlData d = new UCtrlData();
 
@@ -214,15 +213,15 @@ public class VrMenuManager {
             }
             d.setTitle(title);
 
-            String subTitle = I18n.get().getOrNull("Controller." + uniformCtrlName+".subTitle");
+            String subTitle = I18n.get().getOrNull("Controller." + uniformCtrlName + ".subTitle");
             if (StringUtils.isEmpty(subTitle)) {
                 subTitle = c2Ann.subTitle();
             }
             d.setSubTitle(subTitle);
 
-            String css = I18n.get().getOrNull("Controller." + uniformCtrlName+".css");
+            String css = I18n.get().getOrNull("Controller." + uniformCtrlName + ".css");
             if (StringUtils.isEmpty(css)) {
-                css= c2Ann.css();
+                css = c2Ann.css();
             }
             d.setCss(css);
 
@@ -264,7 +263,7 @@ public class VrMenuManager {
             UCtrlProvider up = (UCtrlProvider) ccc;
             return up.getUCtrl(cmd);
         }
-        return getUCtrlDataByObj(ccc,null);
+        return getUCtrlDataByObj(ccc, null);
     }
 
     private String resolveGoodBeanName(Object o) {
@@ -312,11 +311,11 @@ public class VrMenuManager {
             url = d.getUrl();
             if (!StringUtils.isEmpty(d.getSecurityKey())) {
                 if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey(d.getSecurityKey())) {
-                    if("publicIndex".equals(command)) {
+                    if ("publicIndex".equals(command)) {
                         throw new SecurityException("Page is Inaccessible");
-                    }else{
-                        log.warning("Illegal Access to "+command+" by "+UserSession.getCurrentUser());
-                        return gotoPage("publicIndex","");
+                    } else {
+                        log.warning("Illegal Access to " + command + " by " + UserSession.getCurrentUser());
+                        return gotoPage("publicIndex", "");
                     }
                 }
             }
@@ -431,14 +430,21 @@ public class VrMenuManager {
                     UCtrl c = (UCtrl) PlatformReflector.getTargetClass(b).getAnnotation(UCtrl.class);
                     if (c != null) {
                         final String securityKey = c.securityKey();
-                        if (!StringUtils.isEmpty(securityKey)) {
-                            UPA.getContext().invokePrivileged(new VoidAction() {
-                                @Override
-                                public void run() {
+                        final String[] securityKeys = c.declareSecurityKeys();
+                        UPA.getContext().invokePrivileged(new VoidAction() {
+                            @Override
+                            public void run() {
+                                if (!StringUtils.isEmpty(securityKey)) {
                                     core.createRight(securityKey, securityKey);
                                 }
-                            });
-                        }
+                                for (String key : securityKeys) {
+                                    if (!StringUtils.isEmpty(key)) {
+                                        core.createRight(key, key);
+                                    }
+                                }
+                            }
+                        });
+
                     }
 
                     if (b instanceof VRMenuDefFactory) {
@@ -510,6 +516,10 @@ public class VrMenuManager {
         return menuCtrl;
     }
 
+    public List<PageInfo> getPageHistory() {
+        return pageHistory;
+    }
+
     public static class Model {
 
         private List<BreadcrumbItem> breadcrumb = new ArrayList<BreadcrumbItem>();
@@ -528,7 +538,6 @@ public class VrMenuManager {
         }
 
 
-
         public VRMenuDef getRoot() {
             return root;
         }
@@ -542,10 +551,6 @@ public class VrMenuManager {
             return breadcrumb;
         }
 
-        public void setBreadcrumb(BreadcrumbItem... breadcrumb) {
-            setBreadcrumb(Arrays.asList(breadcrumb));
-        }
-
         public void setBreadcrumb(List<BreadcrumbItem> breadcrumb) {
             this.breadcrumb = breadcrumb;
             for (int i = 0; i < breadcrumb.size(); i++) {
@@ -557,6 +562,10 @@ public class VrMenuManager {
             } else {
                 titleCrumb = breadcrumb.get(breadcrumb.size() - 1);
             }
+        }
+
+        public void setBreadcrumb(BreadcrumbItem... breadcrumb) {
+            setBreadcrumb(Arrays.asList(breadcrumb));
         }
 
         public String getCurrentPageId() {
@@ -596,9 +605,9 @@ public class VrMenuManager {
                 VRMenuDef el = children.get(i);
                 if (el.getType().equals("package") && el.getChildren().isEmpty()) {
                     children.remove(i);
-                }else {
-                    if(el.getChildren().size()==0){
-                        if(!filter.accept(el.getName())){
+                } else {
+                    if (el.getChildren().size() == 0) {
+                        if (!filter.accept(el.getName())) {
                             children.remove(i);
                         }
                     }
@@ -738,9 +747,5 @@ public class VrMenuManager {
             return t.getChildren();
         }
 
-    }
-
-    public List<PageInfo> getPageHistory() {
-        return pageHistory;
     }
 }

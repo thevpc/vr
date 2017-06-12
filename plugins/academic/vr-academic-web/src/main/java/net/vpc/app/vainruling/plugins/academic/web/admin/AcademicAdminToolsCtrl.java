@@ -13,6 +13,7 @@ import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.UCtrl;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.vfs.VFS;
 import net.vpc.upa.UPA;
@@ -46,7 +47,7 @@ public class AcademicAdminToolsCtrl {
     public void generateTeachingLoad(int periodId, String version, String oldVersion) {
         try {
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-            p.generateTeachingLoad(periodId, null, version,oldVersion);
+            p.generateTeachingLoad(periodId, CourseAssignmentFilter.NO_INTENTS, version,oldVersion,null);
             FacesUtils.addInfoMessage("Successful Operation");
         } catch (Exception ex) {
             Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);

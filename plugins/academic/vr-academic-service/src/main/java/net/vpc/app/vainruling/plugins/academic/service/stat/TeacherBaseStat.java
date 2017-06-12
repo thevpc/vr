@@ -18,7 +18,20 @@ public abstract class TeacherBaseStat {
     private LoadValue value = new LoadValue();
     private LoadValue valueWeek = new LoadValue();
     private LoadValue extraWeek = new LoadValue();
+    /**
+     * heures supp en absolu, pour un MA la charge en heure supp TD
+     * pourrait rester negative (par exemple toute sa charge est en cours)
+     */
     private LoadValue extra = new LoadValue();
+    /**
+     * heures supp pares balance des charges
+     * par exemple pour un MA si l'heure supp TD est négative
+     * et que l'heure supp C est positive, balancer une partie
+     * des heures supp C vers le cours pour combler la charge
+     */
+    private LoadValue extraEff = new LoadValue();
+
+    private LoadValue extraWeekEff = new LoadValue();
     private LoadValue due = new LoadValue();
     private LoadValue dueWeek = new LoadValue();
     private List<AcademicCourseAssignmentInfo> assignments=new ArrayList<>();
@@ -27,6 +40,13 @@ public abstract class TeacherBaseStat {
     private DeviationConfig config=new DeviationConfig();
     private TeacherValuePopulation population;
 
+    public LoadValue getExtraWeekEff() {
+        return extraWeekEff;
+    }
+
+    public LoadValue getExtraEff() {
+        return extraEff;
+    }
 
     public LoadValue getExtra() {
         return extra;

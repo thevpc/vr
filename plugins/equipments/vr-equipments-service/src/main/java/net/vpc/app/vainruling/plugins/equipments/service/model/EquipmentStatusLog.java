@@ -35,6 +35,9 @@ public class EquipmentStatusLog {
     private Equipment equipment;
 
     @Summary
+    private double quantity;
+
+    @Summary
     @ToString
     private EquipmentStatusType type=EquipmentStatusType.AVAILABLE;
 
@@ -143,5 +146,13 @@ public class EquipmentStatusLog {
 
     public void setActor(AppUser actor) {
         this.actor = actor;
+    }
+
+    public double getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(double quantity) {
+        this.quantity = quantity;
     }
 }

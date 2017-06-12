@@ -29,7 +29,6 @@ public class AppUserTeacherCallback {
 
     @OnPersist
     public void onPersist(PersistEvent event) {
-        PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
         if (!accept(entity)) {
             return;

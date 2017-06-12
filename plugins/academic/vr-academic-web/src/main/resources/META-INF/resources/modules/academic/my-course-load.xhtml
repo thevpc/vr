@@ -166,12 +166,10 @@ and open the template in the editor.
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="TD"/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="TP+PM"/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="Total Charge"/></p:column>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel
-                                        value="Total Charge / Sem"/></p:column>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel
-                                        value="Bilan H.Supp."/></p:column>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel
-                                        value="Balance"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Total Charge / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Bilan H.Supp. C"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Bilan H.Supp. TD"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Balance"/></p:column>
                                 <p:column styleClass="ui-widget-header" style="width: 100px"><p:outputLabel
                                         value=""/></p:column>
                             </p:row>
@@ -194,9 +192,9 @@ and open the template in the editor.
                                 <p:column><p:outputLabel
                                         value="#{myCourseLoadCtrl.model.stat.val.valueWeek.equiv}"><f:convertNumber
                                         pattern="#0.00"/></p:outputLabel></p:column>
-                                <p:column><p:outputLabel
-                                        value="#{myCourseLoadCtrl.model.stat.val.extraWeek.equiv}"><f:convertNumber
-                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel value="#{myCourseLoadCtrl.model.stat.val.extraWeekEff.c}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel value="#{myCourseLoadCtrl.model.stat.val.extraWeekEff.td}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
+                                <p:column><p:outputLabel value="#{myCourseLoadCtrl.model.stat.val.extraWeekEff.tppm}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
                                 <p:column>
                                     <p:outputLabel
                                             value="#{myCourseLoadCtrl.model.stat.val.deviation}"><f:convertNumber

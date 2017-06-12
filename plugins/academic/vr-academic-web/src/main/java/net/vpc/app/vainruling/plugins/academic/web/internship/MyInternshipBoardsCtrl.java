@@ -379,20 +379,35 @@ public class MyInternshipBoardsCtrl {
             }
         }
 
+
         for (AcademicInternshipBoard t : internshipBoards) {
             String n = t.getName();
             getModel().getBoards().add(new SelectItem(String.valueOf(t.getId()), n));
         }
 
         AcademicPlugin pp = VrApp.getBean(AcademicPlugin.class);
+        List<AcademicInternshipInfo> internshipInfosToAddTo = getModel().getInternshipInfos();
+        List<SelectItem> internshipItemsToAddTo = getModel().getInternshipItems();
         for (AcademicInternshipExt t : internships.getInternshipExts()) {
             String n = null;
             AcademicStudent s = t.getInternship().getStudent();
             String sname = pp.getValidName(s);
             n = (t.getInternship().getBoard() == null ? "?" : t.getInternship().getBoard().getName()) + "-" + t.getInternship().getCode() + "-" + sname + "-" + t.getInternship().getName();
-            getModel().getInternshipItems().add(new SelectItem(String.valueOf(t.getInternship().getId()), n));
-            getModel().getInternshipInfos().add(wrap(t));
+            internshipItemsToAddTo.add(new SelectItem(String.valueOf(t.getInternship().getId()), n));
+            internshipInfosToAddTo.add(wrap(t));
+//            System.out.println(t);
         }
+//        int min=5;
+//        int max=9;
+//        min=min;
+//        for (int i = max; i >=min; i--) {
+//            if(i>=0 && i<internshipItemsToAddTo.size()) {
+//                internshipItemsToAddTo.remove(i);
+//            }
+//            if(i>=0 && i<internshipInfosToAddTo.size()) {
+//                internshipInfosToAddTo.remove(i);
+//            }
+//        }
 
         getModel().setInternships(internships.getInternships());
         getModel().setInternshipExtList(internships);

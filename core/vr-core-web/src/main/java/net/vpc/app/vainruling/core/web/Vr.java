@@ -1534,4 +1534,16 @@ public class Vr {
 
     }
 
+    public String[] splitLabels(String string) {
+        HashSet<String> labels = new HashSet<>();
+        if (string != null) {
+            for (String s : string.split("[,; :]")) {
+                if (s.length() > 0) {
+                    labels.add(s);
+                }
+            }
+        }
+        return labels.toArray(new String[labels.size()]);
+    }
+
 }

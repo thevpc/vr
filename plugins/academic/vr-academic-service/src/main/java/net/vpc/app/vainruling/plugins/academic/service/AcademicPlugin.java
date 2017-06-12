@@ -41,6 +41,7 @@ import net.vpc.common.strings.MapStringConverter;
 import net.vpc.common.strings.StringComparator;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.*;
+import net.vpc.common.util.mon.*;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.*;
 import net.vpc.upa.types.DateTime;
@@ -198,7 +199,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             int periodId,
             int teacherId,
             CourseAssignmentFilter courseAssignmentFilter,
-            DeviationConfig deviationConfig
+            DeviationConfig deviationConfig,
+            ProgressMonitor mon
     ) {
 //        TeacherPeriodStat teacherPeriodStat = evalTeacherStat0(periodId,
 //                teacherId,
@@ -209,7 +211,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //                includeIntents,
 //                deviationConfig,
 //                cache);
-        MapList<Integer, TeacherPeriodStat> all = evalTeacherStatList(periodId, null, courseAssignmentFilter, deviationConfig);
+        EnhancedProgressMonitor monitor=ProgressMonitorFactory.enhance(mon);
+
+        MapList<Integer, TeacherPeriodStat> all = evalTeacherStatList(periodId, null, courseAssignmentFilter, deviationConfig,monitor);
         TeacherPeriodStat teacherPeriodStat = all.getByKey(teacherId);
         if (teacherPeriodStat != null) {
             return teacherPeriodStat;
@@ -313,6 +317,19 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         LoadValue teacher_extra = teacher_stat.getExtra();
         int maxWeeks = getSemesterMaxWeeks();
         AcademicConversionTableHelper conversionTable = findConversionTableByPeriodId(periodId);
+        AcademicTeacherDegree td = teacher_stat.getTeacherPeriod().getDegree();
+        if (td == null) {
+            td = new AcademicTeacherDegree();
+        }
+        AcademicLoadConversionRow r = conversionTable.get(td.getConversionRule().getId());
+        if(r==null) {
+            r=new AcademicLoadConversionRow();
+            r.setValueC(0);
+            r.setValueTD(0);
+            r.setValueTP(0);
+            r.setValuePM(0);
+        }
+
         for (int i = 0; i < sems.length; i++) {
             AcademicSemester ss = semesters.get(i);
             TeacherSemesterStat sem = new TeacherSemesterStat();
@@ -347,6 +364,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     }
                 }
             }
+            reevalLoadValueFormulas(sem_value,r);
+            double ruleValueTD = r.getValueTD();
+            double tpToTd = ruleValueTD==0?0:r.getValueTP() / ruleValueTD;
+            double pmToTd = ruleValueTD==0?0:r.getValuePM() / ruleValueTD;
             sem.setAssignments(semesterAssignments);
             if (semesterWeeks == 0) {
                 LoadValue zeros = new LoadValue();
@@ -357,22 +378,48 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 sem_due.setEquiv(0);
             } else {
                 sem_valueWeek.set(sem_value.copy().div(semesterWeeks));
-                AcademicTeacherDegree td = teacher_stat.getTeacherPeriod().getDegree();
-                if (td == null) {
-                    td = new AcademicTeacherDegree();
-                }
-                sem_extraWeek.setEquiv(sem_valueWeek.getEquiv() - td.getValueDU() * (semesterWeeks / sem.getMaxWeeks()));
-                sem_extra.setEquiv(sem_value.getEquiv() - td.getValueDU() * semesterWeeks);
-                AcademicTeacherDegree dd = td;
-                AcademicLoadConversionRow r = conversionTable.get(dd.getConversionRule().getId());
-                sem_value.setTppm(sem_value.getTp() + sem_value.getPm() * (r.getValuePM() / r.getValueTP()));
                 sem_valueWeek.setTppm(sem_value.getTppm() / semesterWeeks);
+                sem_valueWeek.setTdtppm(sem_value.getTdtppm() / semesterWeeks);
+
+                if (r.getValueC() == 1) {
+                    sem_dueWeek.setC(td.getValueDU());
+                    sem_due.setC(td.getValueDU() * semesterWeeks);
+                } else if (ruleValueTD == 1) {
+                    sem_dueWeek.setTd(td.getValueDU());
+                    sem_due.setTd(td.getValueDU() * semesterWeeks);
+                } else if (r.getValueTP() == 1) {
+                    sem_dueWeek.setTp(td.getValueDU());
+                    sem_due.setTp(td.getValueDU() * semesterWeeks);
+                } else if (r.getValuePM() == 1) {
+                    sem_dueWeek.setPm(td.getValueDU());
+                    sem_due.setPm(td.getValueDU() * semesterWeeks);
+                }
+                if(hasDU) {
+                    sem_extra.setEquiv(sem_value.getEquiv() - td.getValueDU() * semesterWeeks);
+                    sem_extra.setC(sem_value.getC() - sem_due.getC());
+                    sem_extra.setTd(sem_value.getTd() - sem_due.getTd());
+                    sem_extra.setTp(sem_value.getTp() - sem_due.getTp());
+                    sem_extra.setPm(sem_value.getPm() - sem_due.getPm());
+
+                    sem_extraWeek.setEquiv(sem_valueWeek.getEquiv() - td.getValueDU() * (semesterWeeks / sem.getMaxWeeks()));
+                    sem_extraWeek.setC(sem_valueWeek.getC() - sem_dueWeek.getC());
+                    sem_extraWeek.setTd(sem_valueWeek.getTd() - sem_dueWeek.getTd());
+                    sem_extraWeek.setTp(sem_valueWeek.getTp() - sem_dueWeek.getTp());
+                    sem_extraWeek.setPm(sem_valueWeek.getPm() - sem_dueWeek.getPm());
+                }
+//                sem_value.setTppm(sem_value.getTp() + sem_value.getPm() * (r.getValuePM() / r.getValueTP()));
 
                 teacher_stat.getValue().add(sem_value);
                 sem_dueWeek.setEquiv(td.getValueDU());
                 sem_due.setEquiv(td.getValueDU() * semesterWeeks);
 
                 if (hasDU) {
+                    sem.getExtraEff().set(evalHeureSupp(sem_extra,r));
+
+                    LoadValue sem_extraWeekEff = sem.getExtraWeekEff();
+                    sem_extraWeekEff.set(sem.getExtraEff().copy().div(semesterWeeks));
+                    teacher_stat.getExtraWeekEff().add(sem_extraWeekEff);
+
                     teacher_extra.add(sem_extraWeek.copy().mul(semesterWeeks));
                 }
             }
@@ -392,6 +439,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             if (hasDU) {
                 teacher_stat.getDue().set(teacher_stat.getDueWeek().copy().mul(sum_semester_weeks));
                 teacher_extraWeek.set(teacher_extra.copy().div(sum_semester_weeks));
+                teacher_stat.getExtraEff().set(teacher_stat.getExtraEff().copy().div(sum_semester_weeks));
+                teacher_stat.getExtraWeekEff().set(teacher_stat.getExtraWeekEff().copy().div(sum_semester_weeks));
             }
         }
         if (hasDU) {
@@ -399,35 +448,37 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //            teacher_extra.setEquiv(teacher_stat.getValue().getEquiv() - teacher_stat.getDueWeek().getEquiv() * sum_semester_weeks);
             AcademicLoadConversionRow cr = conversionTable.get(degree.getConversionRule().getId());
             if (cr.getValueC() == 1) {
-                teacher_extraWeek.setC(teacher_extraWeek.getEquiv());
-                teacher_extra.setC(teacher_extra.getEquiv());
+                //teacher_extraWeek.setC(teacher_extraWeek.getEquiv());
+                //teacher_extra.setC(teacher_extra.getEquiv());
                 teacher_stat.getDueWeek().setC(teacher_stat.getDueWeek().getEquiv());
                 teacher_stat.getDue().setC(teacher_stat.getDue().getEquiv());
                 for (TeacherSemesterStat sem : sems) {
-                    sem.getExtraWeek().setC(sem.getExtraWeek().getEquiv());
+                    //sem.getExtraWeek().setC(sem.getExtraWeek().getEquiv());
                 }
             } else if (cr.getValueTD() == 1) {
-                teacher_extraWeek.setTd(teacher_extraWeek.getEquiv());
-                teacher_extra.setTd(teacher_extra.getEquiv());
+                //teacher_extraWeek.setTd(teacher_extraWeek.getEquiv());
+                //teacher_extra.setTd(teacher_extra.getEquiv());
                 teacher_stat.getDueWeek().setTd(teacher_stat.getDueWeek().getEquiv());
                 teacher_stat.getDue().setTd(teacher_stat.getDue().getEquiv());
                 for (TeacherSemesterStat sem : sems) {
-                    sem.getExtraWeek().setTd(sem.getExtraWeek().getEquiv());
+                    //sem.getExtraWeek().setTd(sem.getExtraWeek().getEquiv());
                 }
             } else if (cr.getValueTP() == 1) {
-                teacher_extraWeek.setTp(teacher_extraWeek.getEquiv());
-                teacher_extra.setTp(teacher_extra.getEquiv());
+                //teacher_extraWeek.setTp(teacher_extraWeek.getEquiv());
+                //teacher_extra.setTp(teacher_extra.getEquiv());
                 teacher_stat.getDueWeek().setTp(teacher_stat.getDueWeek().getEquiv());
                 teacher_stat.getDue().setTp(teacher_stat.getDue().getEquiv());
                 for (TeacherSemesterStat sem : sems) {
-                    sem.getExtraWeek().setTp(sem.getExtraWeek().getEquiv());
+                    //sem.getExtraWeek().setTp(sem.getExtraWeek().getEquiv());
                 }
             } else {
-                teacher_extraWeek.setTd(teacher_extraWeek.getEquiv());
-                teacher_extra.setTd(teacher_extra.getEquiv());
+                //teacher_extraWeek.setTd(teacher_extraWeek.getEquiv());
+                //teacher_extra.setTd(teacher_extra.getEquiv());
                 teacher_stat.getDueWeek().setTd(teacher_stat.getDueWeek().getEquiv());
                 teacher_stat.getDue().setTd(teacher_stat.getDue().getEquiv());
             }
+            teacher_stat.getExtraEff().set(evalHeureSupp(teacher_stat.getExtra(),r));
+            teacher_stat.getExtraWeekEff().set(evalHeureSupp(teacher_stat.getExtraWeek(),r));
         } else {
             teacher_extraWeek.set(new LoadValue());
             teacher_extra.set(new LoadValue());
@@ -439,8 +490,129 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return teacher_stat;
     }
 
+    public static void main(String[] args) {
+
+        AcademicLoadConversionRow R_MA=new AcademicLoadConversionRow();
+        R_MA.setValueC(1.83);
+        R_MA.setValueTD(1);
+        R_MA.setValueTP(0.73);
+        R_MA.setValuePM(0.49);
+        AcademicLoadConversionRow R_PR=new AcademicLoadConversionRow();
+        R_PR.setValueC(1);
+        R_PR.setValueTD(0.75);
+        R_PR.setValueTP(0.50);
+        R_PR.setValuePM(0.33);
+
+        LoadValue extra=new LoadValue().setC(0.1).setTd(-3   ).setTp(5).setPm(1);
+        System.out.println(extra);
+        System.out.println("eff="+evalHeureSupp(extra,R_MA));
+
+//        LoadValue extra2=new LoadValue().setC(-3).setTd(3   ).setTp(2).setPm(1);
+        LoadValue extra2=new LoadValue().setC(-3).setTd(3   ).setTp(0).setPm(0);
+        System.out.println(extra2);
+        System.out.println("eff2="+evalHeureSupp(extra2,R_PR));
+    }
+
+    private static LoadValue reevalLoadValueFormulas(LoadValue sem_value,AcademicLoadConversionRow r){
+        sem_value.setTdtppm(sem_value.getTd()+sem_value.getTp()*(r.getValueTP() / r.getValueTD()) + sem_value.getPm() * (r.getValuePM() / r.getValueTD()));
+        sem_value.setTppm(sem_value.getTp() + sem_value.getPm() * (r.getValuePM() / r.getValueTP()));
+        return sem_value;
+    }
+
+    private static LoadValue evalHeureSupp(LoadValue sem_extra,AcademicLoadConversionRow r){
+        LoadValue sem_extraEff = new LoadValue();
+        double ruleValueTD = r.getValueTD();
+        sem_extraEff.setC(sem_extra.getC());
+        sem_extraEff.setTd(sem_extra.getTd());
+        sem_extraEff.setTp(sem_extra.getTp());
+        sem_extraEff.setPm(sem_extra.getPm());
+        if (r.getValueC() == 1) {
+            if(sem_extraEff.getC()<0 && sem_extraEff.getTd()>0){
+                double d=sem_extraEff.getTd()*r.getValueTD();
+                if(d>=-sem_extraEff.getC()){
+                    sem_extraEff.setTd((d+sem_extraEff.getC())/r.getValueTD());
+                    sem_extraEff.setC(0);
+                }else {
+                    sem_extraEff.setTd(0);
+                    sem_extraEff.setC(d+sem_extraEff.getC());
+                }
+            }
+            if(sem_extraEff.getC()<0 && sem_extraEff.getTp()>0){
+                double d=sem_extraEff.getTp()*r.getValueTP();
+                if(d>=-sem_extraEff.getC()){
+                    sem_extraEff.setTp((d+sem_extraEff.getC())/r.getValueTP());
+                    sem_extraEff.setC(0);
+                }else {
+                    sem_extraEff.setTp(0);
+                    sem_extraEff.setC(d+sem_extraEff.getC());
+                }
+            }
+            if(sem_extraEff.getC()<0 && sem_extraEff.getPm()>0){
+                double d=sem_extraEff.getPm()*r.getValuePM();
+                if(d>=-sem_extraEff.getC()){
+                    sem_extraEff.setTp((d+sem_extraEff.getC())/r.getValuePM());
+                    sem_extraEff.setC(0);
+                }else {
+                    sem_extraEff.setTp(0);
+                    sem_extraEff.setC(d+sem_extraEff.getC());
+                }
+            }
+        } else if (ruleValueTD == 1) {
+            if(sem_extraEff.getTd()<0 && sem_extraEff.getC()>0){
+                double d=sem_extraEff.getC()*r.getValueC();
+                if(d>=-sem_extraEff.getTd()){
+                    sem_extraEff.setC((d+sem_extraEff.getTd())/r.getValueC());
+                    sem_extraEff.setTd(0);
+                }else {
+                    sem_extraEff.setC(0);
+                    sem_extraEff.setTd(d+sem_extraEff.getTd());
+                }
+            }
+            if(sem_extraEff.getTd()<0 && sem_extraEff.getTp()>0){
+                double d=sem_extraEff.getTp()*r.getValueTP();
+                if(d>=-sem_extraEff.getTd()){
+                    sem_extraEff.setTp((d+sem_extraEff.getTd())/r.getValueTP());
+                    sem_extraEff.setTd(0);
+                }else {
+                    sem_extraEff.setTp(0);
+                    sem_extraEff.setTd(d+sem_extraEff.getTd());
+                }
+            }
+            if(sem_extraEff.getTd()<0 && sem_extraEff.getPm()>0){
+                double d=sem_extraEff.getPm()*r.getValuePM();
+                if(d>=-sem_extraEff.getTd()){
+                    sem_extraEff.setPm((d+sem_extraEff.getTd())/r.getValuePM());
+                    sem_extraEff.setTd(0);
+                }else {
+                    sem_extraEff.setPm(0);
+                    sem_extraEff.setTd(d+sem_extraEff.getTd());
+                }
+            }
+//            //exemple hsup C  =1
+//            //exemple hsup td =-1
+//            if(sem_extraEff.getTdAndCo()<0){
+//                //exemple td0 = 1 (manque à combler)
+//                double td0 = -sem_extraEff.getTdAndCo();
+//                //exemple td2 = 1.83 = 1* 1.83/1 (manque à combler)
+//                double td2 = sem_extraEff.getC()*r.getValueC();
+//                if(td2>=td0){
+//                    //exemple 1.83 >1
+//                    //donc prendre 1 de 1.83 la rajouter au TD et le reste le retransformer en cours
+//                    //soit td=-1+1=0  et c= ancien c - manque td vu en C c=1- (1/1.83)
+//                    sem_extraEff.setC((td2-td0)/r.getValueC());
+//                    sem_extraEff.setTdAndCo(0);
+//                }else if(sem_extraEff.getC()>0){
+//                    sem_extraEff.setTdAndCo(td2-td0);
+//                    sem_extraEff.setC(0);
+//                }
+//            }
+        }
+        reevalLoadValueFormulas(sem_extraEff,r);
+        return sem_extraEff;
+    }
+
     public LoadValue getAssignmentLoadValue(AcademicCourseAssignment assignment, AcademicTeacherDegree degree, AcademicConversionTableHelper conversionTable) {
-        LoadValue loadValue = new LoadValue(assignment.getValueC(), assignment.getValueTD(), assignment.getValueTP(), assignment.getValuePM(), 0, 0, 0, 0);
+        LoadValue loadValue = new LoadValue(assignment.getValueC(), assignment.getValueTD(), assignment.getValueTP(), assignment.getValuePM());
         double equiv = evalValueEquiv(loadValue, degree, conversionTable);
         loadValue = loadValue.setEquiv(equiv);
         AcademicLoadConversionRow r = conversionTable.get(degree.getConversionRule().getId());
@@ -459,7 +631,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //        StatCache.PeriodCache periodCache = cache.forPeriod(periodId);
         MapList<Integer, AcademicCourseAssignment> courseAssignments = findCourseAssignments(periodId);
         AcademicCourseAssignment module = courseAssignments.getByKey(courseAssignmentId);
-        LoadValue mod_val = new LoadValue(module.getValueC(), module.getValueTD(), module.getValueTP(), module.getValuePM(), 0, 0, 0, 0);
+        LoadValue mod_val = new LoadValue(module.getValueC(), module.getValueTD(), module.getValueTP(), module.getValuePM());
         ModuleStat ms = new ModuleStat();
         ms.setModule(module);
         List<AcademicSemester> semesters = findSemesters();
@@ -535,12 +707,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 r.getValueC() * v,
                 r.getValueTD() * v,
                 r.getValueTP() * v,
-                r.getValuePM() * v,
-                v,
-                0,
-                0,
-                0
-        );
+                r.getValuePM() * v
+        ).setEquiv(v);
         if (r.getValueC() == 1) {
             loadValue.setEquivC(loadValue.getEquiv());
         } else if (r.getValueTD() == 1) {
@@ -674,6 +842,16 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             a.setDiscriminator(d+"SH2");
             pu.persist(a);
         }
+    }
+
+    public void addCourseAssignment(AcademicCourseAssignment assignment) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        pu.persist(assignment);
+    }
+
+    public void updateCourseAssignment(AcademicCourseAssignment assignment) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        pu.merge(assignment);
     }
 
     public void addCourseAssignment(int teacherId, int assignementId) {
@@ -869,7 +1047,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public List<AcademicCourseAssignmentInfo> findCourseAssignmentsAndIntents(int periodId, Integer teacher, CourseAssignmentFilter filter) {
-        if (!filter.lookupIntents()) {
+        if (filter!=null && !filter.lookupIntents()) {
             List<AcademicCourseAssignmentInfo> m = new ArrayList<>();
             if (teacher == null) {
                 for (AcademicCourseAssignment value : findAcademicCourseAssignments(periodId)) {
@@ -974,7 +1152,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 }
             }
 
-            List<AcademicCourseAssignment> other = findCourseAssignmentsByPlan(a.getAssignment().getCoursePlan().getId());
+            AcademicCoursePlan coursePlan = a.getAssignment().getCoursePlan();
+            List<AcademicCourseAssignment> other = coursePlan==null?Collections.EMPTY_LIST:findCourseAssignmentsByPlan(coursePlan.getId());
             for (AcademicCourseAssignment academicCourseAssignment : other) {
                 AcademicTeacher teacher1 = academicCourseAssignment.getTeacher();
                 if (teacher1 != null) {
@@ -995,7 +1174,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     }
                 }
             }
-            List<AcademicCourseIntent> otherIntents = findCourseIntentsByCoursePlan(a.getAssignment().getCoursePlan().getId());
+            List<AcademicCourseIntent> otherIntents = coursePlan==null?Collections.EMPTY_LIST:findCourseIntentsByCoursePlan(coursePlan.getId());
             for (AcademicCourseIntent academicCourseAssignment : otherIntents) {
                 AcademicTeacher teacher1 = academicCourseAssignment.getTeacher();
                 if (teacher1 != null) {
@@ -1080,14 +1259,18 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
     }
 
-    private void evalTeacherSemesterStatListDeviation(List<TeacherSemesterStat> list, DeviationConfig deviationConfig) {
+    private void evalTeacherSemesterStatListDeviation(List<TeacherSemesterStat> list, DeviationConfig deviationConfig, ProgressMonitor mon) {
+        EnhancedProgressMonitor monitor= ProgressMonitorFactory.enhance(mon);
         Map<String, TeacherValuePopulation> lists = new HashMap<String, TeacherValuePopulation>();
         Set<DeviationGroup> groups = deviationConfig.getGroups();
         if (groups.size() == 0) {
             groups = DEFAULT_DEVIATION_GROUPS;
         }
         TeacherValuePopulation emptyPopulation = new TeacherValuePopulation(null, null, null);
+        int i=0;
+        int max=list.size();
         for (TeacherSemesterStat stat : list) {
+            monitor.setProgress(i++,max);
             if (stat.getValue().getEquiv() == 0) {
                 stat.setPopulation(emptyPopulation);
                 emptyPopulation.addValue(stat.getTeacher(), 0);
@@ -1128,11 +1311,18 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
     }
 
-    public List<TeacherSemesterStat> evalTeacherSemesterStatList(int periodId, Integer semesterId, TeacherFilter teacherFilter, CourseAssignmentFilter filter, DeviationConfig deviationConfig) {
+    public List<TeacherSemesterStat> evalTeacherSemesterStatList(int periodId, Integer semesterId, TeacherFilter teacherFilter, CourseAssignmentFilter filter, DeviationConfig deviationConfig, ProgressMonitor mon) {
         List<TeacherSemesterStat> all = new ArrayList<>();
-        for (TeacherPeriodStat s : evalTeacherStatList(periodId, teacherFilter
+        EnhancedProgressMonitor monitor= ProgressMonitorFactory.enhance(mon);
+        EnhancedProgressMonitor[] mons = monitor.split(new double[]{4, 1,2});
+        MapList<Integer, TeacherPeriodStat> teacherPeriodStats = evalTeacherStatList(periodId, teacherFilter
                 , new CourseAssignmentFilterAnd().and(filter).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId))
-                , deviationConfig)) {
+                , deviationConfig, mons[0]);
+
+        int i=0;
+        int max=teacherPeriodStats.size();
+        for (TeacherPeriodStat s : teacherPeriodStats) {
+            mons[1].setProgress(i++,max);
             if (semesterId == null) {
                 all.addAll(Arrays.asList(s.getSemesters()));
             } else {
@@ -1143,11 +1333,12 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 }
             }
         }
-        evalTeacherSemesterStatListDeviation(all, deviationConfig);
+        evalTeacherSemesterStatListDeviation(all, deviationConfig,mons[2]);
         return all;
     }
 
-    public MapList<Integer, TeacherPeriodStat> evalTeacherStatList(final int periodId, TeacherFilter teacherFilter, CourseAssignmentFilter courseAssignmentFilter, DeviationConfig deviationConfig) {
+    public MapList<Integer, TeacherPeriodStat> evalTeacherStatList(final int periodId, TeacherFilter teacherFilter, CourseAssignmentFilter courseAssignmentFilter, DeviationConfig deviationConfig, ProgressMonitor mon) {
+        EnhancedProgressMonitor monitor= ProgressMonitorFactory.enhance(mon);
         Chronometer ch = new Chronometer();
 
         TeacherIdByTeacherPeriodComparator teacherIdByTeacherPeriodComparator = new TeacherIdByTeacherPeriodComparator(periodId);
@@ -1171,9 +1362,13 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (groups.size() == 0) {
             groups = DEFAULT_DEVIATION_GROUPS;
         }
+        EnhancedProgressMonitor[] mons = monitor.split(3);
+
         TeacherValuePopulation emptyPopulation = new TeacherValuePopulation(null, null, null);
         Map<String, TeacherValuePopulation> lists = new HashMap<String, TeacherValuePopulation>();
-        for (TeacherPeriodStat stat : stats) {
+        for (int i = 0; i < stats.size(); i++) {
+            TeacherPeriodStat stat = stats.get(i);
+            mons[0].setProgress(i,stats.size());
             if (stat.getValue().getEquiv() == 0) {
                 stat.setPopulation(emptyPopulation);
                 emptyPopulation.addValue(stat.getTeacher(), 0);
@@ -1216,22 +1411,32 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 p.addValue(stat.getTeacher(), stat.getDeviationBaseValue());
             }
         }
+        int i=0;
+        int max=lists.size();
         for (TeacherValuePopulation p : lists.values()) {
+            mons[1].setProgress(i++,max);
             p.build();
         }
+        i=0;
+        max=semestersLists.size();
         for (List<TeacherSemesterStat> ll : semestersLists.values()) {
-            evalTeacherSemesterStatListDeviation(ll, deviationConfig);
+            mons[1].setProgress(i++,max);
+            evalTeacherSemesterStatListDeviation(ll, deviationConfig,mons[2]);
         }
 
         log.log(Level.FINE, "evalTeachersStat {0} teachers in {1}", new Object[]{teachersList.size(), ch.stop()});
         return stats;//.toArray(new TeacherStat[stats.size()]);
     }
 
-    public GlobalStat evalGlobalStat(int periodId, TeacherFilter teacherFilter, CourseAssignmentFilter filter, DeviationConfig deviationConfig) {
+    public GlobalStat evalGlobalStat(int periodId, TeacherFilter teacherFilter, CourseAssignmentFilter filter, DeviationConfig deviationConfig, ProgressMonitor mon) {
+        EnhancedProgressMonitor monitor= ProgressMonitorFactory.enhance(mon);
         GlobalStat s = new GlobalStat();
-
-        MapList<Integer, TeacherPeriodStat> ts = evalTeacherStatList(periodId, teacherFilter, filter, deviationConfig);
+        EnhancedProgressMonitor[] mons = monitor.split(new double[]{3, 1, 1});
+        MapList<Integer, TeacherPeriodStat> ts = evalTeacherStatList(periodId, teacherFilter, filter, deviationConfig,mons[0]);
+        int i=0;
+        int max=ts.size();
         for (TeacherPeriodStat t : ts) {
+            mons[1].setProgress(i++,max);
             AcademicTeacherPeriod trs = findAcademicTeacherPeriod(periodId, t.getTeacher());
             AcademicTeacherSituation situation = trs.getSituation();
             AcademicTeacherDegree degree = trs.getDegree();
@@ -1286,7 +1491,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         s.setCoursePlanCount(coursePlans.size());
         s.setCourseAssignmentCount(courseAssignments.size());
         HashSet<Integer> semestersIds=new HashSet<>();
+        i=0;
+        max=courseAssignments.size();
         for (AcademicCourseAssignment value : courseAssignments) {
+            mons[1].setProgress(i++,max);
             AcademicSemester semester = value.getCoursePlan().getCourseLevel().getSemester();
             semestersIds.add(semester.getId());
             double grp = value.getGroupCount();
@@ -1295,8 +1503,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     value.getValueC() * grp * shr,
                     value.getValueTD() * grp * shr,
                     value.getValueTP() * grp * shr,
-                    value.getValuePM() * grp * shr,
-                    0, 0, 0, 0
+                    value.getValuePM() * grp * shr
             );
             double g = evalValueEquiv(loadValue, assistant, conversionTableByPeriodId);
             loadValue.setEquiv(g);
@@ -1569,6 +1776,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             s.setUnassignedLoadTeacherCount(/*(int) Math.ceil*/(s.getUnassignedStat().getValue().getEquiv()/ s.getReferenceTeacherDueLoad()));
         }
 
+        mons[2].setProgress(1.0);
         return s;
     }
 
@@ -3859,8 +4067,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
     }
 
-    public void generateTeachingLoad(int periodId, CourseAssignmentFilter courseAssignmentFilter, String version0, String oldVersion) throws IOException {
-        teacherGenerationHelper.generateTeachingLoad(periodId, courseAssignmentFilter, version0, oldVersion);
+    public void generateTeachingLoad(int periodId, CourseAssignmentFilter courseAssignmentFilter, String version0, String oldVersion,ProgressMonitor monitor) throws IOException {
+        teacherGenerationHelper.generateTeachingLoad(periodId, courseAssignmentFilter, version0, oldVersion,monitor);
     }
 
     public Document getAppDepartmentPeriodRecord(int periodId, int departmentId) {

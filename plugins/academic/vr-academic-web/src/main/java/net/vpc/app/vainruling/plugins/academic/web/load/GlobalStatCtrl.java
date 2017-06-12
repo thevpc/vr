@@ -91,7 +91,7 @@ public class GlobalStatCtrl {
         CourseAssignmentFilter courseAssignmentFilter = getCourseFilter().getCourseAssignmentFilter();
         GlobalStat allTeachers = p.evalGlobalStat(periodId <= 0 ? -100 : periodId,
                 teacherFilter, courseAssignmentFilter,
-                deviationConfig);
+                deviationConfig,null);
         getModel().setStat(allTeachers);
         List<GlobalStatByDiscipline> globalStatByDisciplines = new ArrayList<>();
         globalStatByDisciplines.add(new GlobalStatByDiscipline(null, allTeachers));
@@ -102,7 +102,7 @@ public class GlobalStatCtrl {
                                     TeacherFilterFactory.custom().addAcceptedOfficialDisciplines(_discipline.getId()),
                                     teacherFilter
                             ), courseAssignmentFilter,
-                            deviationConfig)
+                            deviationConfig,null)
             ));
         }
         getModel().setGlobalStatByDisciplines(globalStatByDisciplines);

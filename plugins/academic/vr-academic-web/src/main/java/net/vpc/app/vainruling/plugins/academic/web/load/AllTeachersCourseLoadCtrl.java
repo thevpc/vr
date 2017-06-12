@@ -120,7 +120,7 @@ public class AllTeachersCourseLoadCtrl {
             List<String> semesterNames=new ArrayList<>();
             List<TeacherBaseStatTable> all=new ArrayList<>();
             Map<Integer,List<TeacherBaseStat>> semesters=new HashMap<>();
-            MapList<Integer, TeacherPeriodStat> year = a.evalTeacherStatList(periodId, customTeacherFilter, filter, deviationConfig);
+            MapList<Integer, TeacherPeriodStat> year = a.evalTeacherStatList(periodId, customTeacherFilter, filter, deviationConfig,null);
             for (TeacherPeriodStat teacherPeriodStat : year) {
                 if(semesterIds.isEmpty()){
                     for (TeacherSemesterStat teacherSemesterStat : teacherPeriodStat.getSemesters()) {

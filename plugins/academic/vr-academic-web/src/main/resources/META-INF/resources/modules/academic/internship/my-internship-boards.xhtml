@@ -18,7 +18,8 @@ and open the template in the editor.
 
 <h:body>
 
-
+    <!--@elvariable id="myInternshipBoardsCtrl" type="net.vpc.app.vainruling.plugins.academic.web.internship.MyInternshipBoardsCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
     <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
             <h:form id="listForm">
@@ -39,7 +40,6 @@ and open the template in the editor.
                             <f:selectItems value="#{myInternshipBoardsCtrl.model.internshipTypes}"/>
                         </p:selectOneMenu>
                     </div>
-
                     <p:tabView>
                         <p:tab title="Stages">
                             <div class="row">

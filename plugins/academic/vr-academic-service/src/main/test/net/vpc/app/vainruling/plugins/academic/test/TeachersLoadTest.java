@@ -8,7 +8,9 @@ package net.vpc.app.vainruling.plugins.academic.test;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.helper.XlsxLoadImporter;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import org.springframework.stereotype.Service;
@@ -76,7 +78,7 @@ public class TeachersLoadTest {
 //        s.resetTeachers();
             s.resetModuleTeaching();
             s.importTeachingLoad(-1);
-            s.generateTeachingLoad(-1, null, null,null);
+            s.generateTeachingLoad(-1, CourseAssignmentFilter.NO_INTENTS, null, null, null);
         } catch (IOException ex) {
             Logger.getLogger(TeachersLoadTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -96,7 +98,7 @@ public class TeachersLoadTest {
             core.setAppProperty("AcademicPlugin.import.outputFolder", null, outputFolder);
 
             AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
-            s.generateTeachingLoad(-1, null, null,null);
+            s.generateTeachingLoad(-1, CourseAssignmentFilter.NO_INTENTS, null,null,null);
 //            net.vpc.vfs.VirtualFileSystem fs = core.getFileSystem();
 //            fs = new NativeVFS();
 //            VFS.copy(fs.get(dataFolder), fs.get(outputFolder), new VFileFilter() {

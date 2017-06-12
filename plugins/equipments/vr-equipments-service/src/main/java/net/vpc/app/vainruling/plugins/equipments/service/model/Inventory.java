@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.equipments.service.model;
 
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.upa.config.*;
 
 import java.util.Date;
@@ -24,8 +25,17 @@ public class Inventory {
     private String name;
     private Date startDate;
     private Date endDate;
+    private AppDepartment department;
     @ToString
     private InventoryStatus status = InventoryStatus.CONFIG;
+
+    public AppDepartment getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(AppDepartment department) {
+        this.department = department;
+    }
 
     public int getId() {
         return id;

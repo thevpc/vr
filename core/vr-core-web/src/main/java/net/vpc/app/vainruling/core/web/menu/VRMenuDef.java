@@ -80,7 +80,7 @@ public class VRMenuDef {
     public String getPrettyURL() {
         Vr c = Vr.get();
         String context = c.getContext();
-        if (!context.endsWith("/")) {
+        if (context.length()>0 && !context.endsWith("/")) {
             context = context + "/";
         }
         String p = context + "/p/" + type;

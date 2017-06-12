@@ -15,7 +15,7 @@ import net.vpc.upa.config.*;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity()
+@Entity(listOrder = "period.name desc")
 @Path("Contact")
 @Properties(
         @Property(name = "cache.navigationDepth", type = "int", value = "1")
@@ -30,7 +30,7 @@ public class AcademicTeacherPeriod {
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AppPeriod period;
 
-    @Summary
+    @Summary @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicTeacher teacher;
 
     @Summary

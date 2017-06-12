@@ -289,7 +289,9 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
     }
 
     public DefaultCourseAssignmentFilter addAcceptedSemester(Integer id) {
-        acceptedSemesters.add(id);
+        if(id!=null) {
+            acceptedSemesters.add(id);
+        }
         return this;
     }
 
@@ -429,7 +431,13 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
             }
         }
 
-        if (!acceptDepartment(a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment())) {
+        AppDepartment department = null;
+        try{
+            department=a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment();
+        }catch (NullPointerException ex){
+            //
+        }
+        if (!acceptDepartment(department)) {
             return false;
         }
         if (!acceptOwnerDepartment(a.getOwnerDepartment())) {

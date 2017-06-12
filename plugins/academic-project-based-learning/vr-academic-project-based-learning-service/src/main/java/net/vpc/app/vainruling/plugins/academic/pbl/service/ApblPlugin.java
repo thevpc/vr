@@ -10,15 +10,13 @@ import net.vpc.app.vainruling.core.service.util.NameGenerator;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.*;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.common.strings.StringComparator;
 import net.vpc.common.strings.StringComparators;
-import net.vpc.common.util.Filter;
-import net.vpc.common.util.Utils;
-import net.vpc.common.util.VMap;
+import net.vpc.common.util.*;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.QueryHints;
 import net.vpc.upa.UPA;
@@ -304,6 +302,76 @@ public class ApblPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.findById(ApblProject.class, projectId);
     }
+    
+    public void applyTeacherLoad(int sessionId, ObjectFilter<AcademicTeacher> teacherFilter){
+        ApblSessionListInfo teacherInfos = findTeacherInfos(new int[]{sessionId}, true,teacherFilter);
+        ApblSessionInfo sessionInfo = teacherInfos.getSessions().get(0);
+        ApblSession session = sessionInfo.getSession();
+        List<ApblProgramSession> sessionPrograms = findSessionPrograms(session.getId());
+        MapList<Integer,ApblProgramSession> list=new DefaultMapList<Integer, ApblProgramSession>(sessionPrograms,ApblProgramSession::getId);
+        AcademicCourseType tp = academic.findCourseType("TP");
+        for (ApblTeacherInfo t : teacherInfos.getTeachers()) {
+            if(teacherFilter.accept(t.getTeacher())) {
+                for (ApblProgramSession sessionProgram : sessionPrograms) {
+                    AcademicProgram program = sessionProgram.getProgram();
+                    double val = t.getProgramSessionLoadById(sessionProgram.getId());
+                    AcademicCoursePlan coursePlan = sessionProgram.getCourse();
+                    if(coursePlan!=null) {
+                        List<AcademicCourseAssignment> assignments = academic.findCourseAssignments(session.getPeriod().getId(), t.getTeacher().getId(), new CourseAssignmentFilter() {
+                            @Override
+                            public boolean acceptAssignment(AcademicCourseAssignment academicCourseAssignment) {
+                                AcademicCoursePlan p = academicCourseAssignment.getCoursePlan();
+                                return (p != null && p.getId() == coursePlan.getId()
+                                        && String.valueOf(t.getTeacher().getId()).equals(academicCourseAssignment.getDiscriminator())
+                                        && academic.buildCoursePlanLabelsFromString(academicCourseAssignment.getLabels()).contains("Pbl"));
+                            }
+
+                            @Override
+                            public boolean lookupIntents() {
+                                return false;
+                            }
+                        });
+                        for (int i = 1; i < assignments.size(); i++) {
+                            academic.removeCourseAssignment(assignments.get(i).getId());
+                        }
+                        if (assignments.size() > 0) {
+                            AcademicCourseAssignment a = assignments.get(0);
+                            if(val==0){
+                                academic.removeCourseAssignment(a.getId());
+                            }else {
+                                a.setShareCount(1);
+                                a.setGroupCount(1);
+                                a.setValueC(0);
+                                a.setValueTD(0);
+                                a.setValueTP(Math.round(val * 100.0) / 100.0);
+                                a.setValuePM(0);
+                                academic.updateCourseAssignment(a);
+                                a.setSubClass(null);
+                            }
+                        } else {
+                            if(val!=0) {
+                                AcademicCourseAssignment a = new AcademicCourseAssignment();
+                                a.setShareCount(1);
+                                a.setGroupCount(1);
+                                a.setValueC(0);
+                                a.setValueTD(0);
+                                a.setValueTP(Math.round(val * 100.0) / 100.0);
+                                a.setValuePM(0);
+                                a.setDiscriminator(String.valueOf(t.getTeacher().getId()));
+                                a.setLabels("Pbl");
+                                a.setTeacher(t.getTeacher());
+                                a.setCoursePlan(coursePlan);
+                                a.setCourseType(tp);
+                                a.setOwnerDepartment(program.getDepartment());
+                                a.setSubClass(null);
+                                academic.addCourseAssignment(a);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     public ApblSessionListInfo findTeacherInfos(int[] sessionIds, boolean includeMissingTeachers, ObjectFilter<AcademicTeacher> teacherFilter) {
         ApblSessionListInfo apblSessionListInfo = new ApblSessionListInfo();
@@ -325,7 +393,7 @@ public class ApblPlugin {
             int teamsCount = 0; // may include duplicates
             int teamedStudents = 0; // may include duplicates
             int coachedStudents = 0; // may include duplicates
-            Map<Integer,ApblProgramSession> programs=new HashMap<>();
+            Map<Integer,ApblProgramSession> programs=apblSessionListInfo.getPrograms();
             VMap<Integer,Integer> studentsCountByProgram=new VMap<>(key -> 0);
             double totLoad=0;
             //totLoad=currentSession.getLoad();
@@ -418,8 +486,8 @@ public class ApblPlugin {
                     r.setLoad(r.getStudentsCount() * sessionInfo.getUnitLoad());
                     for (ApblProgramSession apblProgramSession : programs.values()) {
                         AcademicProgram p = apblProgramSession.getProgram();
-                        r.getProgramsLoadById().put(p.getId(), r.getLoad() * apblProgramSession.getLoad() / totLoad);
-                        r.getProgramsLoadByName().put(p.getName(), r.getLoad() * apblProgramSession.getLoad() / totLoad);
+                        r.setProgramSessionLoadById(apblProgramSession.getId(), r.getLoad() * apblProgramSession.getLoad() / totLoad);
+                        r.addProgramLoadByName(p.getName(), r.getLoad() * apblProgramSession.getLoad() / totLoad);
                     }
                 }
             }
@@ -452,21 +520,11 @@ public class ApblPlugin {
                 t.getTeams().addAll(a.getTeams());
                 t.setStudentsCount(t.getStudentsCount() + a.getStudentsCount());
                 t.setLoad(t.getLoad() + a.getLoad());
-                for (Map.Entry<Integer, Double> z : a.getProgramsLoadById().entrySet()) {
-                    Double v = t.getProgramsLoadById().get(z.getKey());
-                    if(v==null){
-                        v=0.0;
-                    }
-                    v+=z.getValue();
-                    t.getProgramsLoadById().put(z.getKey(),v);
+                for (Map.Entry<Integer, Double> z : a.getProgramSessionsLoadById().entrySet()) {
+                    t.addProgramSessionLoadByName(z.getKey(),z.getValue());
                 }
                 for (Map.Entry<String, Double> z : a.getProgramsLoadByName().entrySet()) {
-                    Double v = t.getProgramsLoadByName().get(z.getKey());
-                    if(v==null){
-                        v=0.0;
-                    }
-                    v+=z.getValue();
-                    t.getProgramsLoadByName().put(z.getKey(),v);
+                    t.addProgramLoadByName(z.getKey(),z.getValue());
                 }
             }
             apblSessionListInfo.setMaxStudentCount(apblSessionListInfo.getMaxStudentCount() + sessionInfo.getMaxStudentCount());

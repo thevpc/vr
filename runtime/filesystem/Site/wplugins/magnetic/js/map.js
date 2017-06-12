@@ -24,7 +24,7 @@ jQuery(function ($) {
         var marker = new google.maps.Marker({
             position: myLatlng,
             map: map,
-            icon: "/vr/fs/Site/wplugins/magnetic/img/point.png"
+            icon: "/fs/Site/wplugins/magnetic/img/point.png"
         });
         var styles = [
             {

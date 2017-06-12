@@ -65,8 +65,9 @@ and open the template in the editor.
                     <p:outputLabel rendered="#{teacherStatFeedbackCtrl.model.filterTeachersEnabled and not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
                                    value="Enseignant"
                                    style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"/>
+                    <!--rendered="# {teacherStatFeedbackCtrl.model.filterTeachersEnabled and not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"-->
                     <p:selectOneMenu id="teachersList"
-                                     rendered="#{teacherStatFeedbackCtrl.model.filterTeachersEnabled and not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
+
                                      value="#{teacherStatFeedbackCtrl.model.selectedTeacher}"
                                      filter="true" filterMatchMode="contains"
                     >

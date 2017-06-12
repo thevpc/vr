@@ -188,7 +188,7 @@ and open the template in the editor.
 
         ul.deplist li a:hover {
             /*color: #FFFFFF !important;*/
-            /*background-image: url(/vr/themes/crew/images/deplist-hover.png);*/
+            /*background-image: url(/themes/crew/images/deplist-hover.png);*/
             /*background-repeat: repeat-x;*/
             border-radius: 5px;
             background: rgb(242, 246, 248);
@@ -354,7 +354,7 @@ and open the template in the editor.
                                     <div class="col-md-7 col-sm-7">
                                         <div class="fh5co-owl-text-wrap">
                                             <div class="fh5co-owl-text">
-                                                <h1 class="fh5co-lead to-animate">#{vr.strcut(vr.html2txt(listItem.subject),500)}</h1>
+                                                <h1 class="fh5co-lead to-animate">#{vr.strcut(vr.html2txt(listItem.noSubject?'':listItem.subject),500)}</h1>
                                                 <p style="color: rgba(255, 255, 255, 0.5);">#{vr.strcut(vr.html2txt(listItem.content),500)}</p>
                                                 <p:outputPanel rendered="#{listItem.attachments.size() ne 0}">
                                                     <ui:repeat
@@ -396,7 +396,7 @@ and open the template in the editor.
                                     <div class="col-md-7 col-sm-7  col-md-push-1 col-md-push-5 col-sm-push-1 col-sm-push-5">
                                         <div class="fh5co-owl-text-wrap">
                                             <div class="fh5co-owl-text">
-                                                <h1 class="fh5co-lead to-animate">#{vr.strcut(vr.html2txt(listItem.subject),500)}</h1>
+                                                <h1 class="fh5co-lead to-animate">#{vr.strcut(vr.html2txt(listItem.noSubject?'':listItem.subject),500)}</h1>
                                                 <p style="color: rgba(255, 255, 255, 0.5);">#{vr.strcut(vr.html2txt(listItem.content),500)}</p>
                                                 <p:outputPanel rendered="#{listItem.attachments.size() ne 0}">
                                                     <ui:repeat
@@ -439,7 +439,7 @@ and open the template in the editor.
                                     <div class="col-md-8 col-md-offset-2 text-center">
                                         <div class="fh5co-owl-text-wrap">
                                             <div class="fh5co-owl-text">
-                                                <h1 class="fh5co-lead to-animate">#{vr.strcut(vr.html2txt(listItem.subject),500)}</h1>
+                                                <h1 class="fh5co-lead to-animate">#{vr.strcut(vr.html2txt(listItem.noSubject?'':listItem.subject),500)}</h1>
                                                 <p style="color: rgba(255, 255, 255, 0.5);">#{vr.strcut(vr.html2txt(listItem.content),500)}</p>
                                                 <p:outputPanel rendered="#{listItem.attachments.size() ne 0}">
                                                     <ui:repeat
@@ -496,7 +496,7 @@ and open the template in the editor.
                                                                       alt="#{listItem.subject}"/></a>
                             </div>
                             <div class="col-md-4 to-animate">
-                                <h2>#{listItem.subject}</h2>
+                                <h2>#{listItem.noSubject?'':listItem.subject}</h2>
                                 <p style="text-align: justify">#{vr.strcut(vr.html2txt(listItem.content),600)}</p>
                                 <h:panelGroup layout="bloc">
                                     <p>
@@ -525,7 +525,7 @@ and open the template in the editor.
                     <ui:repeat value="#{vr.cmsTextService.getContentTextListHead('People.Heading.Header',1)}"
                                var="listItem">
                         <div class="col-md-12 section-heading text-center to-animate">
-                            <h2>#{listItem.subject}</h2>
+                            <h2>#{listItem.noSubject?'':listItem.subject}</h2>
                             <div class="row">
                                 <div class="col-md-8 col-md-offset-2 to-animate">
                                     <h3>#{listItem.subTitle}</h3>
@@ -547,7 +547,7 @@ and open the template in the editor.
                                                data-fancybox-group="gallery"><img
                                                     src="#{vr.articleImageOrRand(listItem.imageURL)}"
                                                     class="img-responsive img-rounded" alt="Missing Image"/></a>
-                                            <h3 class="name">#{listItem.subject}</h3>
+                                            <h3 class="name">#{listItem.noSubject?'':listItem.subject}</h3>
                                             <div class="position">#{listItem.decoration}</div>
                                             <p style="text-align: justify;">#{vr.strcut(vr.html2txt(listItem.content),200)}</p>
                                             <ul class="social social-circle">
@@ -571,7 +571,7 @@ and open the template in the editor.
                 <ui:repeat value="#{vr.cmsTextService.getContentTextListHead('Activities.Header',1)}" var="listItem">
                     <div class="row row-bottom-padded-sm">
                         <div class="col-md-12 section-heading text-center">
-                            <h2 class="to-animate">#{listItem.subject}</h2>
+                            <h2 class="to-animate">#{listItem.noSubject?'':listItem.subject}</h2>
                             <div class="row">
                                 <div class="col-md-8 col-md-offset-2 to-animate">
                                     <h3>#{listItem.subTitle}</h3>
@@ -593,7 +593,7 @@ and open the template in the editor.
                                     <div class="icon colored-#{vr.randomize(6)+1}"><span><i
                                             class="#{vr.randomize('icon-mustache','icon-heart','icon-screen-desktop','icon-rocket','icon-eye','icon-user')}"></i></span>
                                     </div>
-                                    <h3>#{listItem.subject}</h3>
+                                    <h3>#{listItem.noSubject?'':listItem.subject}</h3>
                                     <p style="text-align: justify;">#{vr.strcut(vr.html2txt(listItem.content),200)}</p>
                                     <div class="row">
                                         <div class="col-md-4 col-md-offset-4 animate-features-3">
@@ -617,7 +617,7 @@ and open the template in the editor.
                 <ui:repeat value="#{vr.cmsTextService.getContentTextListHead('Featured.Header',1)}" var="listItem">
                     <div class="row">
                         <div class="col-md-12 section-heading text-center">
-                            <h2 class="single-animate animate-features-1">#{listItem.subject}</h2>
+                            <h2 class="single-animate animate-features-1">#{listItem.noSubject?'':listItem.subject}</h2>
                             <div class="row">
                                 <div class="col-md-8 col-md-offset-2 single-animate animate-features-2">
                                     <h3>#{listItem.subTitle}</h3>
@@ -638,7 +638,7 @@ and open the template in the editor.
                                         class="#{vr.randomize('icon-eye','icon-crop','icon-speedometer','icon-heart','icon-umbrella','icon-present')}"></i>
                                 </div>
                                 <div class="fh5co-desc">
-                                    <h3>#{listItem.subject}</h3>
+                                    <h3>#{listItem.noSubject?'':listItem.subject}</h3>
                                     <p style="text-align: justify;">#{vr.strcut(vr.html2txt(listItem.content),200)}</p>
                                 </div>
                                 <div class="row">
@@ -665,7 +665,7 @@ and open the template in the editor.
                 <ui:repeat value="#{vr.cmsTextService.getContentTextListHead('Testimonials.Header',1)}" var="listItem">
                     <div class="row">
                         <div class="col-md-12 section-heading text-center">
-                            <h2 class="to-animate">#{listItem.subject}</h2>
+                            <h2 class="to-animate">#{listItem.noSubject?'':listItem.subject}</h2>
                             <div class="row">
                                 <div class="col-md-8 col-md-offset-2 subtext to-animate">
                                     <h3>#{listItem.subTitle}</h3>
@@ -688,7 +688,7 @@ and open the template in the editor.
                                         <p>#{vr.strcut(vr.html2txt(listItem.content),200)}</p>
                                     </blockquote>
                                     <p class="author">#{listItem.user.contact.fullName}<span
-                                            class="subtext">#{listItem.subject}</span></p>
+                                            class="subtext">#{listItem.noSubject?'':listItem.subject}</span></p>
                                     <div class="row">
                                         <div class="col-md-4 col-md-offset-4 single-animate animate-features-3">
                                             <h:outputLink
@@ -711,7 +711,7 @@ and open the template in the editor.
                 <ui:repeat value="#{vr.cmsTextService.getContentTextListHead('Education.Header',1)}" var="listItem">
                     <div class="row">
                         <div class="col-md-12 section-heading text-center">
-                            <h2 class="single-animate animate-pricing-1">#{listItem.subject}</h2>
+                            <h2 class="single-animate animate-pricing-1">#{listItem.noSubject?'':listItem.subject}</h2>
                             <div class="row">
                                 <div class="col-md-8 col-md-offset-2 subtext single-animate animate-pricing-2">
                                     <h3>#{listItem.subTitle}</h3>
@@ -730,7 +730,7 @@ and open the template in the editor.
                             <ui:repeat value="#{list}" var="listItem">
                                 <div class="price-box #{listItem.important ?'popular':''}">
                                     <div class="popular-text">#{listItem.decoration}</div>
-                                    <h2 class="pricing-plan" style="text-align: center">#{listItem.subject}</h2>
+                                    <h2 class="pricing-plan" style="text-align: center">#{listItem.noSubject?'':listItem.subject}</h2>
                                     <p style="height: 250px;max-height: 250px;text-align: justify">#{vr.strcut(vr.html2txt(listItem.content),200)}</p>
                                     <hr/>
                                     <h:outputLink
@@ -751,7 +751,7 @@ and open the template in the editor.
                 <ui:repeat value="#{vr.cmsTextService.getContentTextListHead('News.Header',1)}" var="listItem">
                     <div class="row">
                         <div class="col-md-12 section-heading text-center">
-                            <h2 class="single-animate animate-press-1">#{listItem.subject}</h2>
+                            <h2 class="single-animate animate-press-1">#{listItem.noSubject?'':listItem.subject}</h2>
                             <div class="row">
                                 <div class="col-md-8 col-md-offset-2 subtext single-animate animate-press-2">
                                     <h3>#{listItem.subTitle}</h3>
@@ -774,7 +774,7 @@ and open the template in the editor.
                                 </div>
                                 <div class="fh5co-press-text">
                                     <h3 class="h2 fh5co-press-title"
-                                        title="#{listItem.subject}">#{vr.strcut(listItem.subject,25)}
+                                        title="#{listItem.noSubject?'':listItem.subject}">#{vr.strcut(listItem.noSubject?'':listItem.subject,25)}
                                         <span class="fh5co-border"></span>
                                     </h3>
                                     <p>#{vr.strcut(vr.html2txt(listItem.content),60)}</p>
@@ -797,7 +797,7 @@ and open the template in the editor.
             <ui:repeat value="#{vr.cmsTextService.getContentTextListHead('Partners.Header',1)}" var="listItem">
                 <div class="row">
                     <div class="col-md-12 section-heading text-center" style="margin-bottom: 0px;padding-bottom: 0px;">
-                        <h2 class="single-animate animate-press-1">#{listItem.subject}</h2>
+                        <h2 class="single-animate animate-press-1">#{listItem.noSubject?'':listItem.subject}</h2>
                         <div class="row">
                             <div class="col-md-8 col-md-offset-2 subtext single-animate animate-press-2">
                                 <h3>#{listItem.subTitle}</h3>

@@ -6,7 +6,10 @@
 package net.vpc.app.vainruling.plugins.academic.teachereval.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.ValueCountSet;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UCtrl;
@@ -138,7 +141,9 @@ public class TeacherStatFeedbackCtrl {
         if (getModel().isFilterTeachersEnabled()) {
             List<AcademicTeacher> teachersWithFeedbacks = feedback.findTeachersWithFeedbacks(getSelectedPeriodId(), getModel().getValidatedFilter(), false, true);
             for (AcademicTeacher f : teachersWithFeedbacks) {
-                academicTeachers.add(new SelectItem(String.valueOf(f.getId()), f.getContact().getFullTitle()));
+                if (academic.isManagerOf(f)) {
+                    academicTeachers.add(new SelectItem(String.valueOf(f.getId()), f.getContact().getFullTitle()));
+                }
             }
         }
         getModel().setTeachersList(academicTeachers);
@@ -215,6 +220,18 @@ public class TeacherStatFeedbackCtrl {
         return bmodel;
     }
 
+    public int getSelectedOwnerDepartmentId() {
+        UserSession sm = core.getUserSession();
+        if (core.isSessionAdmin()) {
+            return -1;
+        }
+        AppUser user = (sm == null) ? null : sm.getUser();
+        if (user == null || user.getDepartment() == null) {
+            return 99999;
+        }
+        return user.getDepartment().getId();
+    }
+
     public int getSelectedPeriodId() {
         int periodId = -1;
         String selectedPeriodString = getModel().getSelectedPeriod();
@@ -241,9 +258,9 @@ public class TeacherStatFeedbackCtrl {
         AppPeriod period = core.findPeriod(getSelectedPeriodId());
         GroupCondition c = getSelectedGroupCondition();
         if (c == null) {
-            return "Toutes les evals"+ (period==null?"":(", "+period.getName()));
+            return "Toutes les evals" + (period == null ? "" : (", " + period.getName()));
         }
-        return c.getSearchTitle()+ (period==null?"":(", "+period.getName()));
+        return c.getSearchTitle() + (period == null ? "" : (", " + period.getName()));
     }
 
     public void onValidate() {
@@ -252,318 +269,6 @@ public class TeacherStatFeedbackCtrl {
 
     public Model getModel() {
         return model;
-    }
-
-    public interface GroupCondition {
-        String getId();
-
-        String getLabel();
-
-        void onSelected();
-
-        void onPrepareModel();
-
-        String getSearchTitle();
-
-        List<AcademicFeedback> findFeedbacks();
-    }
-
-    public abstract class AbstractGroupCondition implements GroupCondition {
-        private String id;
-        private String label;
-
-        public AbstractGroupCondition(String id, String label) {
-            this.id = id;
-            this.label = label;
-        }
-
-        @Override
-        public String getId() {
-            return id;
-        }
-
-        @Override
-        public String getLabel() {
-            return label;
-        }
-    }
-
-    public class TeacheGroupCondition extends AbstractGroupCondition {
-        public TeacheGroupCondition() {
-            super("teacher", "Enseignent");
-        }
-
-        @Override
-        public String getSearchTitle() {
-            int teacherId = getSelectedFilterIntId();
-            if (teacherId < 0) {
-                return "Tous les Enseignants";
-            }
-            AcademicTeacher teacher = academic.findTeacher(teacherId);
-            String validName = academic.getValidName(teacher);
-            return teacher == null ? "Enseignant Inconnu" : validName;
-        }
-
-        @Override
-        public void onSelected() {
-            getModel().setFilterTeachersEnabled(false);
-        }
-
-        @Override
-        public void onPrepareModel() {
-            ArrayList<SelectItem> theList = new ArrayList<>();
-            int periodId = getSelectedPeriodId();
-            for (AcademicTeacher f : feedback.findTeachersWithFeedbacks(periodId, getModel().getValidatedFilter(), false, true)) {
-                if(academic.isManagerOf(f)) {
-                    theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getContact().getFullTitle()));
-                }
-            }
-            getModel().setFilterList(theList);
-            revalidateSelectedFilter();
-        }
-
-        @Override
-        public List<AcademicFeedback> findFeedbacks() {
-            int teacherId = getSelectedFilterIntId();
-            return feedback.findFeedbacks(
-                    getSelectedPeriodId(),
-                    null,
-                    teacherId < 0 ? null : teacherId,
-                    null,
-                    null,
-                    getModel().getValidatedFilter(),
-                    false
-            );
-        }
-    }
-
-    public class ClassGroupCondition extends AbstractGroupCondition {
-        public ClassGroupCondition() {
-            super("class", "Classe");
-        }
-
-        @Override
-        public void onSelected() {
-            getModel().setFilterTeachersEnabled(getModel().isTeacherListEnabled());
-            reloadTeachersList();
-        }
-
-        @Override
-        public String getSearchTitle() {
-            StringBuilder sb = new StringBuilder();
-            int teacherId = getSelectedTeacherId();
-            if (teacherId < 0) {
-                sb.append("Tous les Enseignants");
-            } else {
-                AcademicTeacher teacher = academic.findTeacher(teacherId);
-                String validName = academic.getValidName(teacher);
-                sb.append(teacher == null ? "Enseignant Inconnu" : validName);
-            }
-            sb.append(", ");
-            int classId = getSelectedFilterIntId();
-            if (classId < 0) {
-                sb.append("Toutes les classes");
-            } else {
-                AcademicClass className = academic.findAcademicClass(classId);
-                sb.append(className == null ? "Classe Inconnue" : className.getName());
-            }
-            return sb.toString();
-        }
-
-        @Override
-        public void onPrepareModel() {
-            ArrayList<SelectItem> theList = new ArrayList<>();
-            int periodId = getSelectedPeriodId();
-            for (AcademicClass f : feedback.findClassesWithFeedbacks(periodId, getModel().getValidatedFilter(), false, true)) {
-                theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getName()));
-            }
-            getModel().setFilterList(theList);
-            revalidateSelectedFilter();
-        }
-
-        @Override
-        public List<AcademicFeedback> findFeedbacks() {
-            int classId = getSelectedFilterIntId();
-            return feedback.findFeedbacks(
-                    getSelectedPeriodId(),
-                    null,
-                    getSelectedTeacherId(),
-                    null,
-                    classId < 0 ? null : classId,
-                    getModel().getValidatedFilter(),
-                    false
-            );
-        }
-    }
-
-    public class AssignmentGroupCondition extends AbstractGroupCondition {
-        public AssignmentGroupCondition() {
-            super("assignment", "Enseignement");
-        }
-
-        @Override
-        public void onSelected() {
-            getModel().setFilterTeachersEnabled(getModel().isTeacherListEnabled());
-            reloadTeachersList();
-        }
-
-        @Override
-        public void onPrepareModel() {
-            ArrayList<SelectItem> theList = new ArrayList<>();
-            int periodId = getSelectedPeriodId();
-            int teacherId = getSelectedTeacherId();
-            for (AcademicCourseAssignment f : feedback.findAssignmentsWithFeedbacks(periodId, teacherId, getModel().getValidatedFilter(), false, true)) {
-                theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getFullName()));
-            }
-            getModel().setFilterList(theList);
-            revalidateSelectedFilter();
-        }
-
-        @Override
-        public List<AcademicFeedback> findFeedbacks() {
-            String selectedFilter = getModel().getSelectedFilter();
-            int pos = selectedFilter.indexOf(":");
-//            String filterType = selectedFilter.substring(0, pos);
-            String idString = selectedFilter.substring(pos + 1);
-            int id = Integer.parseInt(idString);
-            return feedback.findAssignmentFeedbacks(id, getModel().getValidatedFilter(), false);
-        }
-
-        @Override
-        public String getSearchTitle() {
-            StringBuilder sb = new StringBuilder();
-            int assignementId = getSelectedTeacherId();
-            if (assignementId < 0) {
-                sb.append("Tous les Enseignements");
-            } else {
-                AcademicCourseAssignment assignement = academic.findCourseAssignment(assignementId);
-                sb.append(assignement == null ? "Enseignement Inconnu" : assignement.getFullName());
-            }
-            return sb.toString();
-        }
-    }
-
-    public class CourseGroupCondition extends AbstractGroupCondition {
-        public CourseGroupCondition() {
-            super("course", "Cours");
-        }
-
-
-        @Override
-        public void onSelected() {
-            getModel().setFilterTeachersEnabled(getModel().isTeacherListEnabled());
-            reloadTeachersList();
-        }
-
-        @Override
-        public void onPrepareModel() {
-            ArrayList<SelectItem> theList = new ArrayList<>();
-            int periodId = getSelectedPeriodId();
-            int teacherId = getSelectedTeacherId();
-            for (AcademicCoursePlan f : feedback.findAcademicCoursePlansWithFeedbacks(periodId, teacherId, getModel().getValidatedFilter(), false, true)) {
-                theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getFullName()));
-            }
-            getModel().setFilterList(theList);
-            revalidateSelectedFilter();
-        }
-
-        @Override
-        public List<AcademicFeedback> findFeedbacks() {
-            int teacherId = getSelectedTeacherId();
-            int courseId = getSelectedFilterIntId();
-            return feedback.findFeedbacks(
-                    getSelectedPeriodId(),
-                    courseId <= 0 ? null : courseId,
-                    teacherId < 0 ? null : teacherId,
-                    null,
-                    null,
-                    getModel().getValidatedFilter(),
-                    false
-            );
-        }
-
-        @Override
-        public String getSearchTitle() {
-            StringBuilder sb = new StringBuilder();
-            int teacherId = getSelectedTeacherId();
-            if (teacherId < 0) {
-                sb.append("Tous les Enseignants");
-            } else {
-                AcademicTeacher teacher = academic.findTeacher(teacherId);
-                String validName = academic.getValidName(teacher);
-                sb.append(teacher == null ? "Enseignant Inconnu" : validName);
-            }
-            sb.append(", ");
-            int classId = getSelectedFilterIntId();
-            if (classId < 0) {
-                sb.append("Tous les cours");
-            } else {
-                AcademicCoursePlan className = academic.findCoursePlan(classId);
-                sb.append(className == null ? "Cours Inconnu" : className.getName());
-            }
-            return sb.toString();
-        }
-    }
-
-    public class CourseTypeGroupCondition extends AbstractGroupCondition {
-        public CourseTypeGroupCondition() {
-            super("courseType", "Type Enseignement");
-        }
-
-        @Override
-        public void onSelected() {
-            getModel().setFilterTeachersEnabled(getModel().isTeacherListEnabled());
-            reloadTeachersList();
-        }
-
-        @Override
-        public void onPrepareModel() {
-            ArrayList<SelectItem> theList = new ArrayList<>();
-            int periodId = getSelectedPeriodId();
-            int teacherId = getSelectedTeacherId();
-            for (AcademicCourseType f : feedback.findAcademicCourseTypesWithFeedbacks(periodId, teacherId, getModel().getValidatedFilter(), false, true)) {
-                theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getName()));
-            }
-            getModel().setFilterList(theList);
-            revalidateSelectedFilter();
-        }
-
-        @Override
-        public List<AcademicFeedback> findFeedbacks() {
-            int teacherId = getSelectedTeacherId();
-            int courseTypeId = (getSelectedFilterIntId());
-            return feedback.findFeedbacks(
-                    getSelectedPeriodId(),
-                    null,
-                    teacherId < 0 ? null : teacherId,
-                    courseTypeId < 0 ? null : courseTypeId,
-                    null,
-                    getModel().getValidatedFilter(),
-                    false
-            );
-        }
-
-        @Override
-        public String getSearchTitle() {
-            StringBuilder sb = new StringBuilder();
-            int teacherId = getSelectedTeacherId();
-            if (teacherId < 0) {
-                sb.append("Tous les Enseignants");
-            } else {
-                AcademicTeacher teacher = academic.findTeacher(teacherId);
-                String validName = academic.getValidName(teacher);
-                sb.append(teacher == null ? "Enseignant Inconnu" : validName);
-            }
-            sb.append(", ");
-            int classId = getSelectedFilterIntId();
-            if (classId < 0) {
-                sb.append("Tous les types");
-            } else {
-                AcademicCourseType className = academic.findCourseType(classId);
-                sb.append(className == null ? "Type Cours Inconnu" : className.getName());
-            }
-            return sb.toString();
-        }
     }
 
     private void revalidateSelectedFilter() {
@@ -582,6 +287,20 @@ public class TeacherStatFeedbackCtrl {
                 break;
             }
         }
+    }
+
+    public interface GroupCondition {
+        String getId();
+
+        String getLabel();
+
+        void onSelected();
+
+        void onPrepareModel();
+
+        String getSearchTitle();
+
+        List<AcademicFeedback> findFeedbacks();
     }
 
     public static class Model {
@@ -743,6 +462,351 @@ public class TeacherStatFeedbackCtrl {
             this.filterTypesList = filterTypesList;
         }
 
+    }
+
+    public abstract class AbstractGroupCondition implements GroupCondition {
+        private String id;
+        private String label;
+
+        public AbstractGroupCondition(String id, String label) {
+            this.id = id;
+            this.label = label;
+        }
+
+        @Override
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public class TeacheGroupCondition extends AbstractGroupCondition {
+        public TeacheGroupCondition() {
+            super("teacher", "Enseignent");
+        }
+
+        @Override
+        public String getSearchTitle() {
+            int teacherId = getSelectedFilterIntId();
+            if (teacherId < 0) {
+                return "Tous les Enseignants";
+            }
+            AcademicTeacher teacher = academic.findTeacher(teacherId);
+            String validName = academic.getValidName(teacher);
+            return teacher == null ? "Enseignant Inconnu" : validName;
+        }
+
+        @Override
+        public void onSelected() {
+            getModel().setFilterTeachersEnabled(false);
+        }
+
+        @Override
+        public void onPrepareModel() {
+            ArrayList<SelectItem> theList = new ArrayList<>();
+            int periodId = getSelectedPeriodId();
+            for (AcademicTeacher f : feedback.findTeachersWithFeedbacks(periodId, getModel().getValidatedFilter(), false, true)) {
+                if (academic.isManagerOf(f)) {
+                    theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getContact().getFullTitle()));
+                }
+            }
+            getModel().setFilterList(theList);
+            revalidateSelectedFilter();
+        }
+
+        @Override
+        public List<AcademicFeedback> findFeedbacks() {
+            int teacherId = getSelectedFilterIntId();
+            int selectedOwnerDepartmentId = getSelectedOwnerDepartmentId();
+            return feedback.findFeedbacks(
+                    getSelectedPeriodId(),
+                    null,
+                    selectedOwnerDepartmentId < 0 ? null : selectedOwnerDepartmentId,
+                    null,
+                    teacherId < 0 ? null : teacherId,
+                    null,
+                    null,
+                    getModel().getValidatedFilter(),
+                    false
+            );
+        }
+    }
+
+    public class ClassGroupCondition extends AbstractGroupCondition {
+        public ClassGroupCondition() {
+            super("class", "Classe");
+        }
+
+        @Override
+        public void onSelected() {
+            getModel().setFilterTeachersEnabled(getModel().isTeacherListEnabled());
+            reloadTeachersList();
+        }
+
+        @Override
+        public String getSearchTitle() {
+            StringBuilder sb = new StringBuilder();
+            int teacherId = getSelectedTeacherId();
+            if (teacherId < 0) {
+                sb.append("Tous les Enseignants");
+            } else {
+                AcademicTeacher teacher = academic.findTeacher(teacherId);
+                String validName = academic.getValidName(teacher);
+                sb.append(teacher == null ? "Enseignant Inconnu" : validName);
+            }
+            sb.append(", ");
+            int classId = getSelectedFilterIntId();
+            if (classId < 0) {
+                sb.append("Toutes les classes");
+            } else {
+                AcademicClass className = academic.findAcademicClass(classId);
+                sb.append(className == null ? "Classe Inconnue" : className.getName());
+            }
+            return sb.toString();
+        }
+
+        @Override
+        public void onPrepareModel() {
+            ArrayList<SelectItem> theList = new ArrayList<>();
+            int periodId = getSelectedPeriodId();
+            for (AcademicClass f : feedback.findClassesWithFeedbacks(periodId, getModel().getValidatedFilter(), false, true)) {
+//                boolean admin=core.isSessionAdmin();
+//                if(!admin)
+//                try{
+//                    f.getProgram().getDepartment().getId()==core.getUserSession().getUser().getDepartment().getId()
+//
+//                }catch (NullPointerException ex){
+//
+//                }
+                theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getName()));
+            }
+            getModel().setFilterList(theList);
+            revalidateSelectedFilter();
+        }
+
+        @Override
+        public List<AcademicFeedback> findFeedbacks() {
+            int classId = getSelectedFilterIntId();
+            int selectedOwnerDepartmentId = getSelectedOwnerDepartmentId();
+            return feedback.findFeedbacks(
+                    getSelectedPeriodId(),
+                    null,
+                    selectedOwnerDepartmentId < 0 ? null : selectedOwnerDepartmentId,
+                    null,
+                    getSelectedTeacherId(),
+                    null,
+                    classId < 0 ? null : classId,
+                    getModel().getValidatedFilter(),
+                    false
+            );
+        }
+    }
+
+    public class AssignmentGroupCondition extends AbstractGroupCondition {
+        public AssignmentGroupCondition() {
+            super("assignment", "Enseignement");
+        }
+
+        @Override
+        public void onSelected() {
+            getModel().setFilterTeachersEnabled(getModel().isTeacherListEnabled());
+            reloadTeachersList();
+        }
+
+        @Override
+        public void onPrepareModel() {
+            ArrayList<SelectItem> theList = new ArrayList<>();
+            int periodId = getSelectedPeriodId();
+            int teacherId = getSelectedTeacherId();
+            for (AcademicCourseAssignment f : feedback.findAssignmentsWithFeedbacks(periodId, teacherId, getModel().getValidatedFilter(), false, true)) {
+                if (f.getTeacher() != null && academic.isManagerOf(f.getTeacher())) {
+                    theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getFullName()));
+                }
+            }
+            getModel().setFilterList(theList);
+            revalidateSelectedFilter();
+        }
+
+        @Override
+        public List<AcademicFeedback> findFeedbacks() {
+            String selectedFilter = getModel().getSelectedFilter();
+            if (selectedFilter == null) {
+                return Collections.EMPTY_LIST;
+            }
+            int pos = selectedFilter.indexOf(":");
+//            String filterType = selectedFilter.substring(0, pos);
+            String idString = selectedFilter.substring(pos + 1);
+            int id = Integer.parseInt(idString);
+            return feedback.findAssignmentFeedbacks(id, getModel().getValidatedFilter(), false);
+        }
+
+        @Override
+        public String getSearchTitle() {
+            StringBuilder sb = new StringBuilder();
+            int assignementId = getSelectedTeacherId();
+            if (assignementId < 0) {
+                sb.append("Tous les Enseignements");
+            } else {
+                AcademicCourseAssignment assignement = academic.findCourseAssignment(assignementId);
+                sb.append(assignement == null ? "Enseignement Inconnu" : assignement.getFullName());
+            }
+            return sb.toString();
+        }
+    }
+
+    public class CourseGroupCondition extends AbstractGroupCondition {
+        public CourseGroupCondition() {
+            super("course", "Cours");
+        }
+
+
+        @Override
+        public void onSelected() {
+            getModel().setFilterTeachersEnabled(getModel().isTeacherListEnabled());
+            reloadTeachersList();
+        }
+
+        @Override
+        public void onPrepareModel() {
+            ArrayList<SelectItem> theList = new ArrayList<>();
+            int periodId = getSelectedPeriodId();
+            int teacherId = getSelectedTeacherId();
+            for (AcademicCoursePlan f : feedback.findAcademicCoursePlansWithFeedbacks(periodId, teacherId, getModel().getValidatedFilter(), false, true)) {
+                boolean accept=core.isSessionAdmin();
+                if(!accept) {
+                    AppDepartment deptId = null;
+                    try {
+                        deptId = f.getCourseLevel().getAcademicClass().getProgram().getDepartment();
+                    } catch (NullPointerException ex) {
+                        //
+                    }
+                    accept=academic.isManagerOf(deptId);
+                }
+                if(!accept) {
+                    for (AcademicCourseAssignment ca : academic.findCourseAssignmentsByPlan(f.getId())) {
+                        if(ca.getOwnerDepartment()!=null){
+                            accept=academic.isManagerOf(ca.getOwnerDepartment());
+                            if(accept){
+                                break;
+                            }
+                        }
+                    }
+                }
+                if(accept) {
+                    theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getFullName()));
+                }
+            }
+            getModel().setFilterList(theList);
+            revalidateSelectedFilter();
+        }
+
+        @Override
+        public List<AcademicFeedback> findFeedbacks() {
+            int teacherId = getSelectedTeacherId();
+            int courseId = getSelectedFilterIntId();
+            int selectedOwnerDepartmentId = getSelectedOwnerDepartmentId();
+            return feedback.findFeedbacks(
+                    getSelectedPeriodId(),
+                    null,
+                    selectedOwnerDepartmentId < 0 ? null : selectedOwnerDepartmentId,
+                    courseId <= 0 ? null : courseId,
+                    teacherId < 0 ? null : teacherId,
+                    null,
+                    null,
+                    getModel().getValidatedFilter(),
+                    false
+            );
+        }
+
+        @Override
+        public String getSearchTitle() {
+            StringBuilder sb = new StringBuilder();
+            int teacherId = getSelectedTeacherId();
+            if (teacherId < 0) {
+                sb.append("Tous les Enseignants");
+            } else {
+                AcademicTeacher teacher = academic.findTeacher(teacherId);
+                String validName = academic.getValidName(teacher);
+                sb.append(teacher == null ? "Enseignant Inconnu" : validName);
+            }
+            sb.append(", ");
+            int classId = getSelectedFilterIntId();
+            if (classId < 0) {
+                sb.append("Tous les cours");
+            } else {
+                AcademicCoursePlan className = academic.findCoursePlan(classId);
+                sb.append(className == null ? "Cours Inconnu" : className.getName());
+            }
+            return sb.toString();
+        }
+    }
+
+    public class CourseTypeGroupCondition extends AbstractGroupCondition {
+        public CourseTypeGroupCondition() {
+            super("courseType", "Type Enseignement");
+        }
+
+        @Override
+        public void onSelected() {
+            getModel().setFilterTeachersEnabled(getModel().isTeacherListEnabled());
+            reloadTeachersList();
+        }
+
+        @Override
+        public void onPrepareModel() {
+            ArrayList<SelectItem> theList = new ArrayList<>();
+            int periodId = getSelectedPeriodId();
+            int teacherId = getSelectedTeacherId();
+            for (AcademicCourseType f : feedback.findAcademicCourseTypesWithFeedbacks(periodId, teacherId, getModel().getValidatedFilter(), false, true)) {
+                theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getName()));
+            }
+            getModel().setFilterList(theList);
+            revalidateSelectedFilter();
+        }
+
+        @Override
+        public List<AcademicFeedback> findFeedbacks() {
+            int teacherId = getSelectedTeacherId();
+            int courseTypeId = (getSelectedFilterIntId());
+            int selectedOwnerDepartmentId = getSelectedOwnerDepartmentId();
+            return feedback.findFeedbacks(
+                    getSelectedPeriodId(),
+                    null,
+                    selectedOwnerDepartmentId < 0 ? null : selectedOwnerDepartmentId,
+                    null,
+                    teacherId < 0 ? null : teacherId,
+                    courseTypeId < 0 ? null : courseTypeId,
+                    null,
+                    getModel().getValidatedFilter(),
+                    false
+            );
+        }
+
+        @Override
+        public String getSearchTitle() {
+            StringBuilder sb = new StringBuilder();
+            int teacherId = getSelectedTeacherId();
+            if (teacherId < 0) {
+                sb.append("Tous les Enseignants");
+            } else {
+                AcademicTeacher teacher = academic.findTeacher(teacherId);
+                String validName = academic.getValidName(teacher);
+                sb.append(teacher == null ? "Enseignant Inconnu" : validName);
+            }
+            sb.append(", ");
+            int classId = getSelectedFilterIntId();
+            if (classId < 0) {
+                sb.append("Tous les types");
+            } else {
+                AcademicCourseType className = academic.findCourseType(classId);
+                sb.append(className == null ? "Type Cours Inconnu" : className.getName());
+            }
+            return sb.toString();
+        }
     }
 
 }

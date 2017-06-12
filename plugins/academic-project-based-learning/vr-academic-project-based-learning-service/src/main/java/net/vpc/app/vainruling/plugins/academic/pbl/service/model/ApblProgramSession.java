@@ -2,6 +2,7 @@ package net.vpc.app.vainruling.plugins.academic.pbl.service.model;
 
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
 import net.vpc.upa.RelationshipType;
 import net.vpc.upa.config.*;
@@ -31,9 +32,22 @@ public class ApblProgramSession {
     @Summary
     private AcademicProgram program;
     @Summary
+    @ManyToOne(filter = "(this.session.semester=null or that.courseLevel.semester.id=this.session.semester.id) and that.courseLevel.academicClass.program.id=this.program.id and that.period.id=this.session.period.id")
+    private AcademicCoursePlan course;
+    @Summary
     private double load;
+    @Summary
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
+    private String observations;
 
 
+    public AcademicCoursePlan getCourse() {
+        return course;
+    }
+
+    public void setCourse(AcademicCoursePlan course) {
+        this.course = course;
+    }
 
     public double getLoad() {
         return load;
@@ -73,5 +87,13 @@ public class ApblProgramSession {
 
     public void setProgram(AcademicProgram program) {
         this.program = program;
+    }
+
+    public String getObservations() {
+        return observations;
+    }
+
+    public void setObservations(String observations) {
+        this.observations = observations;
     }
 }

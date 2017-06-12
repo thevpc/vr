@@ -3,6 +3,7 @@ package net.vpc.app.vainruling.plugins.academic.pbl.service.model;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblSessionLoadStrategy;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.upa.config.*;
 
 import java.util.Date;
@@ -26,9 +27,15 @@ public class ApblSession {
     @Main
     @Unique
     private String name;
+    @Summary
     private AppPeriod period;
+    @Summary
+    private AcademicSemester semester;
+    @Summary
     private ApblSessionStatus status;
+    @Summary
     private java.util.Date startDate;
+    @Summary
     private java.util.Date endDate;
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     @Field(max = "4000")
@@ -198,4 +205,11 @@ public class ApblSession {
         this.projectOwnerProfiles = projectOwnerProfiles;
     }
 
+    public AcademicSemester getSemester() {
+        return semester;
+    }
+
+    public void setSemester(AcademicSemester semester) {
+        this.semester = semester;
+    }
 }

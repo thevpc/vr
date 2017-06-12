@@ -37,5 +37,7 @@ public @interface UCtrl {
 
     String securityKey() default "";
 
+    String[] declareSecurityKeys() default {};
+
     int order() default 100;
 }

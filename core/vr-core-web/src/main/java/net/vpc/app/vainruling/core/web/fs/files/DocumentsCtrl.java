@@ -31,6 +31,7 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,6 +51,8 @@ import java.util.logging.Logger;
 public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
 
     private static final Logger log = Logger.getLogger(DocumentsCtrl.class.getName());
+    @Autowired
+    private CorePlugin core;
 
 
     private Model model = new Model();
@@ -58,7 +61,8 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
     @Override
     public List<VRMenuDef> createVRMenuDefList() {
         List<VRMenuDef> m = new ArrayList<>();
-        m.add(new VRMenuDef("Mes Documents", "/FileSystem", "documents", "{type:'me'}", "Custom.FileSystem.MyFileSystem", "", 100, new VRMenuLabel[0]));
+        m.add(new VRMenuDef("Documents Privés", "/FileSystem", "documents", "{type:'home'}", "Custom.FileSystem.MyFileSystem", "", 100, new VRMenuLabel[0]));
+        m.add(new VRMenuDef("Mes Documents", "/FileSystem", "documents", "{type:'all'}", "Custom.FileSystem.MyFileSystem", "", 100, new VRMenuLabel[0]));
         m.add(new VRMenuDef("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", "Custom.FileSystem.RootFileSystem", "", 500, new VRMenuLabel[0]));
         return m;
     }
@@ -77,7 +81,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
 
             String login = UserSession.getCurrentUser().getLogin();
             if ("root".equals(c.getType())) {
-                d.setTitle("Tous les Documents");
+                d.setTitle("Documents Racine");
                 d.setSecurityKey("Custom.FileSystem.RootFileSystem");
             } else if ("user".equals(c.getType())) {
                 d.setSecurityKey("Custom.FileSystem.MyFileSystem");
@@ -86,6 +90,9 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
                     v = login;
                 }
                 d.setTitle("Documents de " + v);
+            } else if ("home".equals(c.getType())) {
+                d.setSecurityKey("Custom.FileSystem.MyFileSystem");
+                d.setTitle("Mes Documents");
             } else if ("profile".equals(c.getType())) {
                 d.setSecurityKey("Custom.FileSystem.MyFileSystem");
                 String v = c.getValue();
@@ -95,7 +102,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
                 d.setTitle("Documents de " + v);
             } else {
                 d.setSecurityKey("Custom.FileSystem.MyFileSystem");
-                d.setTitle(CorePlugin.FOLDER_MY_DOCUMENTS);
+                d.setTitle("Tous les documents");
             }
             List<BreadcrumbItem> items = new ArrayList<>();
             items.add(new BreadcrumbItem(I18n.get().getOrNull("Controller.Documents"), I18n.get().getOrNull("Controller.Documents.subTitle"), "fa-dashboard", "", ""));
@@ -120,12 +127,14 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         String login = UserSession.getCurrentUser().getLogin();
         if ("root".equals(c.getType())) {
             fs = rootfs;
+        } else if ("home".equals(c.getType())) {
+            fs = fsp.getUserHomeFileSystem(login);
         } else if ("user".equals(c.getType())) {
             String v = c.getValue();
             if (StringUtils.isEmpty(v)) {
                 v = login;
             }
-            fs = fsp.getUserFileSystem(v);
+            fs = fsp.getUserHomeFileSystem(v);
         } else if ("profile".equals(c.getType())) {
             String v = c.getValue();
             if (StringUtils.isEmpty(v)) {
@@ -265,7 +274,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
     public void onSave() {
         if (!StringUtils.isEmpty(getModel().getArea())) {
             if ("NewFile".equals(getModel().getArea())) {
-                String n = getModel().getNewName().trim();
+                String n = core.normalizeFilePath(getModel().getNewName().trim());
                 VFile f2 = getModel().getCurrent().getFile().get(n);
                 try {
                     f2.writeBytes(new byte[0]);
@@ -274,7 +283,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
                     FacesUtils.addErrorMessage("Empty File " + f2.getPath() + " could not be created.");
                 }
             } else if ("NewFolder".equals(getModel().getArea())) {
-                String n = getModel().getNewName().trim();
+                String n = core.normalizeFilePath(getModel().getNewName().trim());
                 VFile f2 = getModel().getCurrent().getFile().get(n);
                 try {
                     if (!f2.mkdirs()) {

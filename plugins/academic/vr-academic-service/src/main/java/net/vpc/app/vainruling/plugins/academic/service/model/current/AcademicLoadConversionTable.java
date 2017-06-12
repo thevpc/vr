@@ -35,6 +35,7 @@ public class AcademicLoadConversionTable {
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
+    private String evaluator;
 
     public AcademicLoadConversionTable() {
     }
@@ -42,6 +43,14 @@ public class AcademicLoadConversionTable {
     public AcademicLoadConversionTable(int id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public String getEvaluator() {
+        return evaluator;
+    }
+
+    public void setEvaluator(String evaluator) {
+        this.evaluator = evaluator;
     }
 
     public int getId() {

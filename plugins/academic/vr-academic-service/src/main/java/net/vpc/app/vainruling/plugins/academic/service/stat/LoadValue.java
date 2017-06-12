@@ -17,26 +17,26 @@ public class LoadValue {
     private double td;
     private double tp;
     private double pm;
+
+
     private double equiv;
     /**
      * TP and PM in TP equivalent
      */
-    private double tppm;
     private double equivC;
     private double equivTD;
+
+    private double tdtppm;
+    private double tppm;
 
     public LoadValue() {
     }
 
-    public LoadValue(double c, double td, double tp, double pm, double equiv, double tppm, double equivC, double equivTD) {
+    public LoadValue(double c, double td, double tp, double pm) {
         this.c = c;
         this.td = td;
         this.tp = tp;
         this.pm = pm;
-        this.equiv = equiv;
-        this.tppm = tppm;
-        this.equivC = equivC;
-        this.equivTD = equivTD;
     }
 
 
@@ -157,7 +157,16 @@ public class LoadValue {
     }
 
     public LoadValue copy() {
-        return new LoadValue(c, td, tp, pm, equiv, tppm, equivC, equivTD);
+
+
+        LoadValue loadValue = new LoadValue(c, td, tp, pm);
+        loadValue.equiv=equiv;
+        loadValue.equivC=equivC;
+        loadValue.equivTD=equivTD;
+        loadValue.tdtppm=tdtppm;
+        loadValue.tppm=tppm;
+                //double tdtppm
+        return loadValue;
     }
 
     public double getC() {
@@ -232,6 +241,15 @@ public class LoadValue {
         return this;
     }
 
+    public double getTdtppm() {
+        return tdtppm;
+    }
+
+    public LoadValue setTdtppm(double tdtppm) {
+        this.tdtppm = tdtppm;
+        return this;
+    }
+
     @Override
     public String toString() {
         if(c==0 && td==0 && pm==0 && tp==0 && equiv==0){
@@ -256,11 +274,23 @@ public class LoadValue {
             }
             sb.append("tp=").append(f.format(tp));
         }
+        if(pm!=0){
+            if(sb.length()>0){
+                sb.append(", ");
+            }
+            sb.append("pm=").append(f.format(pm));
+        }
         if(tppm!=0){
             if(sb.length()>0){
                 sb.append(", ");
             }
             sb.append("tppm=").append(f.format(tppm));
+        }
+        if(tdtppm!=0){
+            if(sb.length()>0){
+                sb.append(", ");
+            }
+            sb.append("tdtppm=").append(f.format(tdtppm));
         }
         if(equiv!=0){
             if(sb.length()>0){

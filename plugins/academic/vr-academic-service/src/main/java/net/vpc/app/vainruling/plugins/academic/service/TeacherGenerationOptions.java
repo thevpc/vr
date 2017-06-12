@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.service;
 
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
+import net.vpc.common.util.mon.ProgressMonitor;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -25,6 +26,17 @@ public class TeacherGenerationOptions {
 //    private boolean includeIntents;
     private AppPeriod period;
     private String version="v01";
+    private ProgressMonitor progressMonitor;
+
+
+    public ProgressMonitor getProgressMonitor() {
+        return progressMonitor;
+    }
+
+    public TeacherGenerationOptions setProgressMonitor(ProgressMonitor progressMonitor) {
+        this.progressMonitor = progressMonitor;
+        return this;
+    }
 
     public Integer[] getTeacherIds() {
         return teacherIds;

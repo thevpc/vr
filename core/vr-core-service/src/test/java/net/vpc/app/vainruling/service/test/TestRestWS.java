@@ -67,7 +67,7 @@ public class TestRestWS {
         StringBuilder ret=new StringBuilder();
         try {
 //            org.apache.http.client.utils.URIBuilder
-            URIBuilder builder = new URIBuilder("http://localhost:8080/vr/ws" + path);
+            URIBuilder builder = new URIBuilder("http://localhost:8080/ws" + path);
             for (int i = 0; i < args.length; i+=2) {
                 Object arg = args[i + 1];
                 String sarg=null;

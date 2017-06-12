@@ -29,21 +29,21 @@ import net.vpc.upa.types.ManyToOneType;
 @Callback
 public class AcademicPersistenceUnitCallback {
 
-    @OnPreInitialize
+    @OnPreInit
     public void onPreInitEntity(EntityEvent event) {
         net.vpc.upa.Entity entity = event.getEntity();
         String entityName = entity.getName();
         if (entityName.equals(AppDepartmentPeriod.class.getSimpleName())) {
             if (entity.findField("enableLoadEditing") == null) {
                 Section tracking = entity.getSection("Load", MissingStrategy.CREATE);
-                tracking.addField("enableLoadEditing", FlagSets.of(UserFieldModifier.SUMMARY), true, BooleanType.BOOLEAN);
+                tracking.addField(new DefaultFieldBuilder().setName("enableLoadEditing").addModifier(UserFieldModifier.SUMMARY).setDefaultObject(true).setDataType(BooleanType.BOOLEAN));
             }
         }
         if (entityName.equals(AppPeriod.class.getSimpleName())) {
             if (entity.findField("loadConversionTable") == null) {
                 Section tracking = entity.getSection("Load", MissingStrategy.CREATE);
-                tracking.addField("loadConversionTable", FlagSets.of(UserFieldModifier.SUMMARY), null,
-                        new ManyToOneType(AcademicLoadConversionTable.class, true)
+                tracking.addField(new DefaultFieldBuilder().setName("loadConversionTable").addModifier(UserFieldModifier.SUMMARY)
+                        .setDataType(new ManyToOneType(AcademicLoadConversionTable.class, true))
                 );
             }
         }

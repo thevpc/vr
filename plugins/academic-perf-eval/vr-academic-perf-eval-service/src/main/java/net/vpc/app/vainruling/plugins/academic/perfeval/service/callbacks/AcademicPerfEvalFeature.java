@@ -8,12 +8,13 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStud
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
+import net.vpc.upa.DefaultFieldBuilder;
 import net.vpc.upa.Entity;
 import net.vpc.upa.MissingStrategy;
 import net.vpc.upa.Section;
 import net.vpc.upa.callbacks.EntityEvent;
 import net.vpc.upa.config.Callback;
-import net.vpc.upa.config.OnPreInitialize;
+import net.vpc.upa.config.OnPreInit;
 import net.vpc.upa.types.BooleanType;
 
 /**
@@ -22,7 +23,7 @@ import net.vpc.upa.types.BooleanType;
 @Callback
 public class AcademicPerfEvalFeature {
 
-    @OnPreInitialize
+    @OnPreInit
     public void onPreInitEntity(EntityEvent event) {
         Entity entity = event.getEntity();
         String entityName = entity.getName();
@@ -31,14 +32,19 @@ public class AcademicPerfEvalFeature {
                 || entityName.equals(AcademicStudent.class.getSimpleName())) {
             if (entity.findField("allowCourseFeedback") == null) {
                 Section tracking = entity.getSection("Eval", MissingStrategy.CREATE);
-                tracking.addField("allowCourseFeedback", null, null, BooleanType.BOOLEAN)
-                        .setDefaultObject(!entityName.equals(AcademicTeacher.class.getSimpleName()));
+                tracking.addField(
+                        new DefaultFieldBuilder().setName("allowCourseFeedback")
+                                .setDataType(BooleanType.BOOLEAN)
+                                .setDefaultObject(!entityName.equals(AcademicTeacher.class.getSimpleName()))
+                );
             }
         } else if (entityName.equals(AcademicCourseAssignment.class.getSimpleName())) {
             if (entity.findField("enableCourseFeedback") == null) {
                 Section tracking = entity.getSection("Eval", MissingStrategy.CREATE);
-                tracking.addField("enableCourseFeedback", null, null, BooleanType.BOOLEAN)
-                        .setDefaultObject(true);
+                tracking.addField(new DefaultFieldBuilder().setName("enableCourseFeedback")
+                        .setDataType(BooleanType.BOOLEAN)
+                        .setDefaultObject(true)
+                );
             }
         }
     }

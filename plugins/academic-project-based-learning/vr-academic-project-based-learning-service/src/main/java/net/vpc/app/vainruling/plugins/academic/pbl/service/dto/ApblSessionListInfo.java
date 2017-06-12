@@ -1,7 +1,8 @@
 package net.vpc.app.vainruling.plugins.academic.pbl.service.dto;
 
-import java.util.ArrayList;
-import java.util.List;
+import net.vpc.app.vainruling.plugins.academic.pbl.service.model.ApblProgramSession;
+
+import java.util.*;
 
 /**
  * Created by vpc on 4/20/17.
@@ -9,6 +10,7 @@ import java.util.List;
 public class ApblSessionListInfo {
     private List<ApblTeacherInfo> teachers=new ArrayList<>();
     private List<ApblSessionInfo> sessions=new ArrayList<>();
+    private Map<Integer,ApblProgramSession> programs=new LinkedHashMap<>();
     private int teamsCount;
     private double unitLoad;
     private double maxStudentCount;
@@ -26,6 +28,14 @@ public class ApblSessionListInfo {
 
     public List<ApblSessionInfo> getSessions() {
         return sessions;
+    }
+
+    public Map<Integer, ApblProgramSession> getPrograms() {
+        return programs;
+    }
+
+    public void setPrograms(Map<Integer, ApblProgramSession> programs) {
+        this.programs = programs;
     }
 
     public void setSessions(List<ApblSessionInfo> sessions) {

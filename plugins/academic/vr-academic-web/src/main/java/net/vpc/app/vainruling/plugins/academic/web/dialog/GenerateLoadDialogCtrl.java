@@ -12,9 +12,14 @@ import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.web.admin.AcademicAdminToolsCtrl;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.util.mon.AbstractProgressMonitor;
+import net.vpc.common.util.mon.DefaultProgressMonitor;
+import net.vpc.common.util.mon.ProgressMessage;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
@@ -83,6 +88,7 @@ public class GenerateLoadDialogCtrl {
     }
 
     private void initContent() {
+        getModel().setGenerationProgress(0);
         Config c = getModel().getConfig();
         if (c == null) {
             c = new Config();
@@ -131,7 +137,13 @@ public class GenerateLoadDialogCtrl {
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
             int periodId = getPeriodId();
             setVersion(periodId, getModel().getVersion());
-            p.generateTeachingLoad(periodId, null, getModel().getVersion(), getModel().getOldVersion());
+            getModel().setGenerationProgress(0);
+            p.generateTeachingLoad(periodId, CourseAssignmentFilter.NO_INTENTS, getModel().getVersion(), getModel().getOldVersion(), new AbstractProgressMonitor() {
+                @Override
+                protected void onProgress(double progress, ProgressMessage message) {
+                    getModel().setGenerationProgress(progress*100);
+                }
+            });
             FacesUtils.addInfoMessage("Successful Operation");
         } catch (Exception ex) {
             Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);
@@ -171,6 +183,15 @@ public class GenerateLoadDialogCtrl {
         private String oldVersion = "";
         private List<SelectItem> periodItems = new ArrayList<>();
         private String period;
+        private double generationProgress;
+
+        public double getGenerationProgress() {
+            return generationProgress;
+        }
+
+        public void setGenerationProgress(double generationProgress) {
+            this.generationProgress = generationProgress;
+        }
 
         public Config getConfig() {
             return config;

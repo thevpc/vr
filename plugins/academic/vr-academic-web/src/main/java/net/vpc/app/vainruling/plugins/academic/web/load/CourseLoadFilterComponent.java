@@ -118,6 +118,7 @@ public class CourseLoadFilterComponent {
         refreshableFilters.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
         refreshableFilters.add(FacesUtils.createSelectItem("deviation-week", "Balance/Sem", "vr-checkbox"));
         refreshableFilters.add(FacesUtils.createSelectItem("deviation-extra", "Balance/Supp", "vr-checkbox"));
+        refreshableFilters.add(FacesUtils.createSelectItem("extra-abs", "Supp ABS", "vr-checkbox"));
         getModel().setRefreshFilterItems(refreshableFilters);
 
 
@@ -186,6 +187,9 @@ public class CourseLoadFilterComponent {
     }
 
     public boolean containsRefreshFilter(String s) {
+//        if("extra-abs".equals(s)){
+//            return true;
+//        }
         String[] f = getModel().getRefreshFilter();
         return Arrays.asList(f).indexOf(s) >= 0;
     }

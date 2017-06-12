@@ -19,10 +19,12 @@ import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringComparator;
 import net.vpc.common.strings.StringComparators;
 import net.vpc.common.strings.StringTransforms;
 import net.vpc.common.util.Convert;
+import net.vpc.upa.UPA;
 import net.vpc.upa.filters.ObjectFilter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +43,11 @@ import java.util.logging.Logger;
         },
         url = "modules/academic/pbl/app-status",
         menu = "/Education/Projects/Apbl",
-        securityKey = "Custom.Education.Apbl.AppStatus"
+        securityKey = "Custom.Education.Apbl.AppStatus",
+        declareSecurityKeys = "Custom.Education.Apbl.ApplyLoad"
 )
 public class AcademicAppStatusCtrl {
+    public static final String RIGHT_FILESYSTEM_WRITE = "Custom.FileSystem.Write";
     public static final Logger log = Logger.getLogger(AcademicAppProjectsCtrl.class.getName());
     @Autowired
     private ApblPlugin apbl;
@@ -244,14 +248,9 @@ public class AcademicAppStatusCtrl {
         getModel().setFilteredTeachers(
                 VrUtils.filterList(
                         getModel().getTeachers().getTeachers(),
-                        new ObjectFilter<ApblTeacherInfo>() {
-                            @Override
-                            public boolean accept(ApblTeacherInfo value) {
-                                return filter.matches(
-                                        value.getTeacher().getContact().getFullTitle()
-                                );
-                            }
-                        }
+                        value -> filter.matches(
+                                value.getTeacher().getContact().getFullTitle()
+                        )
                 )
         );
     }
@@ -281,6 +280,46 @@ public class AcademicAppStatusCtrl {
                         }
                 )
         );
+    }
+
+    public void onApplyLoadAll() {
+        String[] selectedSessions = getSelectedSessions();
+        if (selectedSessions.length == 1) {
+            HashSet<Integer> accepted=new HashSet<>();
+            for (ApblTeacherInfo t : getModel().getTeachers().getTeachers()) {
+                if(t.getTeacher()!=null) {
+                    accepted.add(t.getTeacher().getId());
+                }
+            }
+            apbl.applyTeacherLoad(Integer.parseInt(selectedSessions[0]), new ObjectFilter<AcademicTeacher>() {
+                @Override
+                public boolean accept(AcademicTeacher value) {
+                    return accepted.contains(value.getId());
+                }
+            });
+            FacesUtils.addInfoMessage("Application reussie");
+        }
+    }
+    public void onApplyLoad(int teacherId){
+        String[] selectedSessions = getSelectedSessions();
+        if (selectedSessions.length==1) {
+            apbl.applyTeacherLoad(Integer.parseInt(selectedSessions[0]), new ObjectFilter<AcademicTeacher>() {
+                @Override
+                public boolean accept(AcademicTeacher value) {
+                    return value.getId()==teacherId;
+                }
+            });
+            FacesUtils.addInfoMessage("Application reussie");
+        }
+    }
+
+    public boolean isEnabledButton(String id) {
+        switch (StringUtils.trim(id)){
+            case "ApplyLoad":{
+                return UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Custom.Education.Apbl.ApplyLoad");
+            }
+        }
+        return false;
     }
 
     public class Model {

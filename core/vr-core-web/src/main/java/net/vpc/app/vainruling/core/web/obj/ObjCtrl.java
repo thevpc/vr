@@ -163,11 +163,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     @Override
     public boolean isEnabledButton(String buttonId) {
-        Boolean v = enabledButtons.get(buttonId);
-        if (v == null) {
-            v = isEnabledButtonImpl(buttonId);
-            enabledButtons.put(buttonId, v);
-        }
+        Boolean v = enabledButtons.computeIfAbsent(buttonId, this::isEnabledButtonImpl);
         return v.booleanValue();
     }
 
@@ -231,7 +227,13 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 }
                 case UPDATE: {
                     if ("Save".equals(buttonId)) {
-                        return UPA.getPersistenceUnit().getSecurityManager().isAllowedUpdate(getEntity());
+                        UPASecurityManager sm = UPA.getPersistenceUnit().getSecurityManager();
+                        boolean allowedUpdate = sm.isAllowedUpdate(getEntity());
+                        if(!allowedUpdate){
+                            return false;
+                        }
+
+                        return sm.isAllowedUpdate(getEntity(),getCurrentId(),getCurrentEntityObject());
                     }
                     if ("New".equals(buttonId)) {
                         return UPA.getPersistenceUnit().getSecurityManager().isAllowedPersist(getEntity());
@@ -310,10 +312,12 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 mainPhotoProvider = new PropertyMainPhotoProvider(p, d);
             } else {
                 p = Vr.get().trim(getEntity().getProperties().getString("ui.main-photo-provider"));
-                try {
-                    mainPhotoProvider = (MainPhotoProvider) Class.forName(p).newInstance();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if(!StringUtils.isEmpty(p)) {
+                    try {
+                        mainPhotoProvider = (MainPhotoProvider) Class.forName(p).newInstance();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 //            updateMode(EditCtrlMode.LIST);
@@ -598,14 +602,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public String getMainName(ObjRow row) {
-        Field mainField = getEntity().getMainField();
-        if(mainField!=null) {
-            String string = row.getDocument().getString(mainField.getName());
-            if (!StringUtils.isEmpty(string)) {
-                return string;
-            }
+        String t = getEntity().getMainFieldValue(row.getDocument());
+        if (StringUtils.isEmpty(t)) {
+            t="NoName";
         }
-        return "NoName";
+        return t;
     }
 
     public String getMainPhoto(ObjRow row) {
@@ -976,10 +977,18 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
             List<Field> fields = new ArrayList<Field>();
             if (getModel().getFieldSelection() == null) {
-                fields = ot.getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY));
+                fields = new ArrayList<>(ot.getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY)));
             } else {
                 fields = getModel().getFieldSelection().getVisibleFields();
             }
+            VrUtils.sortPreserveIndex(fields, new Comparator<Field>() {
+                @Override
+                public int compare(Field o1, Field o2) {
+//                    return Integer.compare(o1.getPreferredIndex(),o2.getPreferredIndex());
+                    return 0;
+                }
+            });
+
             for (Field field : fields) {
                 AccessLevel ral = field.getReadAccessLevel();
                 if (ral == AccessLevel.PRIVATE) {
@@ -1006,20 +1015,80 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
             ViewContext viewContext = new ViewContext();
             List<OrderedPropertyView> propertyViews = new ArrayList<OrderedPropertyView>();
-            for (Field field : ot.getFields(FieldFilters.byModifiersNoneOf(FieldModifier.SYSTEM))) {
-                Map<String, Object> config = new HashMap<>();
-                if (getModel().getDisabledFields().contains(field.getName())) {
-                    config.put("disabled", true);
+            List<EntityPart> entityParts = VrUtils.sortPreserveIndex(ot.getParts(), new Comparator<EntityPart>() {
+                @Override
+                public int compare(EntityPart o1, EntityPart o2) {
+//                    if (o1 instanceof Section && o2 instanceof Section) {
+//                        return 0;
+//                    }
+//                    if (o1 instanceof Section && o2 instanceof Field) {
+//                        return 1;
+//                    }
+//                    if (o1 instanceof Field && o2 instanceof Section) {
+//                        return -1;
+//                    }
+//                    if (o1 instanceof Field && o2 instanceof Field) {
+//                        return Integer.compare(((Field) o1).getPreferredIndex(), ((Field) o2).getPreferredIndex());
+//                    }
+                    return 0;
                 }
-                PropertyView[] ctrls = propertyViewManager.createPropertyViews(field.getName(), field, config, viewContext);
-                if (ctrls != null) {
-                    for (PropertyView ctrl : ctrls) {
-                        if (ctrl != null) {
-                            propertyViews.add(new OrderedPropertyView(propertyViews.size(), ctrl));
+            });
+            for (EntityPart entityPart : entityParts) {
+                if(entityPart instanceof  Section){
+                    List<Field> sectionFields = ((Section) entityPart).getFields(FieldFilters.byModifiersNoneOf(FieldModifier.SYSTEM));
+                    List<Field> sectionSortedFields = VrUtils.sortPreserveIndex(sectionFields, new Comparator<Field>() {
+                        @Override
+                        public int compare(Field o1, Field o2) {
+//                    return Integer.compare(o1.getPreferredIndex(),o2.getPreferredIndex());
+                            return 0;
+                        }
+                    });
+
+                    for (Field field : sectionSortedFields) {
+                        Map<String, Object> config = new HashMap<>();
+                        if (getModel().getDisabledFields().contains(field.getName())) {
+                            config.put("disabled", true);
+                        }
+                        PropertyView[] ctrls = propertyViewManager.createPropertyViews(field.getName(), field, config, viewContext);
+                        if (ctrls != null) {
+                            for (PropertyView ctrl : ctrls) {
+                                if (ctrl != null) {
+                                    propertyViews.add(new OrderedPropertyView(propertyViews.size(), ctrl));
+                                }
+                            }
+                        }
+                    }
+
+                }else{
+                    Field field=(Field) entityPart;
+                    Map<String, Object> config = new HashMap<>();
+                    if (getModel().getDisabledFields().contains(field.getName())) {
+                        config.put("disabled", true);
+                    }
+                    PropertyView[] ctrls = propertyViewManager.createPropertyViews(field.getName(), field, config, viewContext);
+                    if (ctrls != null) {
+                        for (PropertyView ctrl : ctrls) {
+                            if (ctrl != null) {
+                                propertyViews.add(new OrderedPropertyView(propertyViews.size(), ctrl));
+                            }
                         }
                     }
                 }
             }
+//            for (Field field : VrUtils.sortPreserveIndex(new ArrayList<>(ot.getFields(FieldFilters.byModifiersNoneOf(FieldModifier.SYSTEM))), Comparator.comparingInt(Field::getPreferredIndex))) {
+//                Map<String, Object> config = new HashMap<>();
+//                if (getModel().getDisabledFields().contains(field.getName())) {
+//                    config.put("disabled", true);
+//                }
+//                PropertyView[] ctrls = propertyViewManager.createPropertyViews(field.getName(), field, config, viewContext);
+//                if (ctrls != null) {
+//                    for (PropertyView ctrl : ctrls) {
+//                        if (ctrl != null) {
+//                            propertyViews.add(new OrderedPropertyView(propertyViews.size(), ctrl));
+//                        }
+//                    }
+//                }
+//            }
             if (getModel().getMode() == EditCtrlMode.UPDATE) {
                 boolean firstDetailRelation = true;
                 int counter = 0;
@@ -1144,7 +1213,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                             Field field = ((KeyType) curr).getEntity().getField(s);
                             evalLabel = i18n.get(field);
                             if (field.getDataType() instanceof ManyToOneType) {
-                                curr = (KeyType) ((ManyToOneType) field.getDataType()).getTargetEntity().getDataType();
+                                Entity targetEntity = ((ManyToOneType) field.getDataType()).getTargetEntity();
+                                if(targetEntity.isHierarchical()){
+                                    //TODO process hierarchical search
+                                }
+                                curr = (KeyType) targetEntity.getDataType();
                             } else if (field.getDataType() instanceof EnumType) {
                                 curr = field.getDataType();
                             } else {
