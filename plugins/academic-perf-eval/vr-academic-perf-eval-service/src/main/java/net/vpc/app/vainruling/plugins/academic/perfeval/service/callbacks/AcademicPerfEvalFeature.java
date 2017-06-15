@@ -15,6 +15,7 @@ import net.vpc.upa.Section;
 import net.vpc.upa.callbacks.EntityEvent;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.config.OnPreInit;
+import net.vpc.upa.config.OnPrepare;
 import net.vpc.upa.types.BooleanType;
 
 /**
@@ -23,7 +24,7 @@ import net.vpc.upa.types.BooleanType;
 @Callback
 public class AcademicPerfEvalFeature {
 
-    @OnPreInit
+    @OnPrepare
     public void onPreInitEntity(EntityEvent event) {
         Entity entity = event.getEntity();
         String entityName = entity.getName();
