@@ -29,7 +29,7 @@ import net.vpc.upa.types.ManyToOneType;
 @Callback
 public class AcademicPersistenceUnitCallback {
 
-    @OnPrepare
+    @OnPrePrepare
     public void onPreInitEntity(EntityEvent event) {
         net.vpc.upa.Entity entity = event.getEntity();
         String entityName = entity.getName();

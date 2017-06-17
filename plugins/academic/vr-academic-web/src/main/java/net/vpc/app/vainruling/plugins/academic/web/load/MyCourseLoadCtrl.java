@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.plugins.academic.web.load;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
@@ -14,7 +14,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",

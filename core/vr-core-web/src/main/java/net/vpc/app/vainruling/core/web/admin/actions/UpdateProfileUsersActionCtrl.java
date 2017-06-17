@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.core.web.admin.actions;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.common.strings.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.DualListModel;
@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl
+@VrController
 public class UpdateProfileUsersActionCtrl {
 
     private static final Logger log = Logger.getLogger(UpdateProfileUsersActionCtrl.class.getName());

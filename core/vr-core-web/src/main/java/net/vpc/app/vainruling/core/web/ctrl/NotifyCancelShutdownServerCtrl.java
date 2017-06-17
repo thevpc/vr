@@ -6,15 +6,13 @@
 package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.Vr;
-
-import java.util.logging.Logger;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
         menu = "/Admin",
         securityKey = "Custom.Admin"
 )

@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.devtoolbox.web;
 
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Document;
 import net.vpc.upa.MultiDocument;
@@ -19,7 +19,7 @@ import java.util.*;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
         //title = "Developer Tools", css = "fa-dashboard",
         url = "modules/devtoolbox/dev-ql", menu = "/Admin", securityKey = "Custom.DevTools"
 )

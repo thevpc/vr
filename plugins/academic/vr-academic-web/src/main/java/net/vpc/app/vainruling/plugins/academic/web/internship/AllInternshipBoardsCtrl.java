@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.web.internship;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
@@ -44,7 +44,7 @@ public class AllInternshipBoardsCtrl extends MyInternshipBoardsCtrl {
         AcademicPlugin pi = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = p.findTeacher(teacherId);
         if (t != null && t.getDepartment() != null) {
-            return pi.findEnabledInternshipBoardsByDepartment(t.getDepartment().getId());
+            return pi.findEnabledInternshipBoardsByDepartment(-1,t.getDepartment().getId(),true);
         }
         return new ArrayList<>();
     }
@@ -53,9 +53,8 @@ public class AllInternshipBoardsCtrl extends MyInternshipBoardsCtrl {
     public AcademicInternshipExtList findActualInternshipsByTeacherAndBoard(int teacherId, int boardId, int internshipTypeId) {
         AcademicPlugin pi = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = getCurrentTeacher();
-        return pi.findInternshipsByTeacherExt(-1, boardId,
-                (t != null && t.getDepartment() != null) ? t.getDepartment().getId() : -1,
-                internshipTypeId, true);
+        return pi.findInternshipsByTeacherExt(-1, (t != null && t.getDepartment() != null) ? t.getDepartment().getId() : -1, -1, internshipTypeId, boardId,
+                true);
     }
 
     public void addToMine(AcademicInternshipInfo ii) {
@@ -63,7 +62,7 @@ public class AllInternshipBoardsCtrl extends MyInternshipBoardsCtrl {
         if (c != null) {
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
             p.addSupervisorIntent(ii.getInternship().getId(), c.getId());
-            rewrap(ii);
+            ii.rewrap(getCurrentTeacher());
         }
     }
 
@@ -72,7 +71,7 @@ public class AllInternshipBoardsCtrl extends MyInternshipBoardsCtrl {
         if (c != null) {
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
             p.removeSupervisorIntent(ii.getInternship().getId(), c.getId());
-            rewrap(ii);
+            ii.rewrap(getCurrentTeacher());
         }
     }
 

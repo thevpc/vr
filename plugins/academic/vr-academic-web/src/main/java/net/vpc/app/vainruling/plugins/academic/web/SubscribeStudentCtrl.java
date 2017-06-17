@@ -12,7 +12,7 @@ import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppGender;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicBac;
@@ -22,7 +22,6 @@ import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudent
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.faces.model.SelectItem;
 import java.io.IOException;
@@ -32,7 +31,7 @@ import java.util.List;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",

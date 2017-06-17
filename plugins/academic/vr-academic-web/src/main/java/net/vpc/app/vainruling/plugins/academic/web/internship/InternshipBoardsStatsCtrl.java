@@ -7,21 +7,28 @@ package net.vpc.app.vainruling.plugins.academic.web.internship;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppCompany;
+import net.vpc.app.vainruling.core.service.model.AppConfig;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
+import net.vpc.app.vainruling.core.service.util.NamedValueCount;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.util.ChartUtils;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipDuration;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipStatus;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipVariant;
+import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipType;
+import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipBoard;
+import net.vpc.app.vainruling.plugins.academic.service.model.internship.ext.AcademicInternshipExt;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.ext.AcademicInternshipExtList;
-import org.primefaces.model.chart.DonutChartModel;
-import org.primefaces.model.chart.PieChartModel;
+import net.vpc.common.strings.StringUtils;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
+import org.primefaces.model.chart.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.faces.model.SelectItem;
 import java.util.*;
 
 /**
@@ -29,7 +36,7 @@ import java.util.*;
  *
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
@@ -38,47 +45,252 @@ import java.util.*;
         securityKey = "Custom.Education.InternshipBoardsStat",
         url = "modules/academic/internship/internship-boards-stats"
 )
-public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
+public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
+    private Model model = new Model();
+    @Autowired
+    private CorePlugin core;
+    AcademicPlugin academic = VrApp.getBean(AcademicPlugin.class);
+
+    public Model getModel() {
+        return model;
+    }
 
     @OnPageLoad
     public void onPageLoad() {
-        super.onPageLoad();
+        onUpdatePeriod();
     }
 
-    @Override
-    public List<AcademicInternshipBoard> findEnabledInternshipBoardsByTeacherAndBoard(int teacherId, int boardId) {
-        AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = p.findTeacher(teacherId);
-        if (t != null && t.getDepartment() != null) {
-            return p.findEnabledInternshipBoardsByDepartment(t.getDepartment().getId());
+    public void onUpdateBoard() {
+        getModel().setInternshipBoard(getSelectedInternshipBoard());
+        onRefresh();
+    }
+
+    public void onUpdatePeriod() {
+        onRefresh();
+    }
+
+    public AcademicInternshipBoard getSelectedInternshipBoard() {
+        String ii = getModel().getBoardId();
+        if (ii != null && ii.length() > 0) {
+            AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
+            AcademicInternshipBoard tt = p.findInternshipBoard(Integer.parseInt(ii));
+            if (tt != null) {
+                return tt;
+            }
         }
-        return new ArrayList<>();
+        return null;
     }
 
-    @Override
-    public AcademicInternshipExtList findActualInternshipsByTeacherAndBoard(int teacherId, int boardId, int internshipTypeId) {
-        AcademicPlugin pi = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getCurrentTeacher();
-        return pi.findInternshipsByTeacherExt(
-                -1,
-                boardId,
-                (t != null && t.getDepartment() != null) ? t.getDepartment().getId() : -1,
-                internshipTypeId,
-                true
-        );
+    public void onRefresh() {
+        onRefreshListMode();
+    }
+
+    public void onRefreshListMode() {
+        getModel().getStatCharts().clear();
+        getModel().getStatTables().clear();
+        getModel().setInternshipInfos(new ArrayList<AcademicInternshipInfo>());
+        getModel().setInternshipItems(new ArrayList<SelectItem>());
+        getModel().setInternships(new ArrayList<AcademicInternship>());
+        getModel().setBoards(new ArrayList<SelectItem>());
+        getModel().setTeachers(new ArrayList<SelectItem>());
+        getModel().setInternshipTypes(new ArrayList<SelectItem>());
+        getModel().getPeriods().clear();
+        AcademicTeacher currentTeacher = getCurrentTeacher();
+        AcademicInternshipExtList internships = new AcademicInternshipExtList();
+        List<AcademicInternshipBoard> internshipBoards = new ArrayList<>();
+        for (AppPeriod period : core.findNavigatablePeriods()) {
+            getModel().getPeriods().add(new SelectItem(String.valueOf(period.getId()), period.getName()));
+        }
+
+        int periodId= Convert.toInt(getModel().getPeriodId(), IntegerParserConfig.LENIENT_F);
+        int departmentId=currentTeacher==null || currentTeacher.getDepartment()==null?-1:currentTeacher.getDepartment().getId();
+
+        if (currentTeacher != null) {
+            int boardId = getModel().getInternshipBoard() == null ? -1 : getModel().getInternshipBoard().getId();
+            int internshipTypeId = -1;
+            if (boardId == -1) {
+                internshipTypeId = StringUtils.isEmpty(getModel().getFilterInternshipTypeId()) ? -1 : Integer.valueOf(getModel().getFilterInternshipTypeId());
+            }
+            internshipBoards = academic.findEnabledInternshipBoardsByDepartment(periodId,departmentId,null);
+            if (boardId == -1 && internshipTypeId == -1) {
+                internships = new AcademicInternshipExtList();
+            } else {
+                internships =academic.findInternshipsByTeacherExt(
+                        periodId, departmentId, -1,
+                        internshipTypeId, boardId,
+                        false
+                );
+            }
+        }
+
+        for (AcademicInternshipBoard t : internshipBoards) {
+            String n = t.getName();
+            getModel().getBoards().add(new SelectItem(String.valueOf(t.getId()), n));
+        }
+
+        AcademicPlugin pp = VrApp.getBean(AcademicPlugin.class);
+        List<AcademicInternshipInfo> internshipInfosToAddTo = getModel().getInternshipInfos();
+        List<SelectItem> internshipItemsToAddTo = getModel().getInternshipItems();
+        for (AcademicInternshipExt t : internships.getInternshipExts()) {
+            String n = null;
+            AcademicStudent s = t.getInternship().getStudent();
+            String sname = pp.getValidName(s);
+            n = (t.getInternship().getBoard() == null ? "?" : t.getInternship().getBoard().getName()) + "-" + t.getInternship().getCode() + "-" + sname + "-" + t.getInternship().getName();
+            internshipItemsToAddTo.add(new SelectItem(String.valueOf(t.getInternship().getId()), n));
+            internshipInfosToAddTo.add(new AcademicInternshipInfo(t, getCurrentTeacher()));
+        }
+
+        getModel().setInternships(internships.getInternships());
+
+        getModel().setBoardManager(false);
+
+
+        for (AcademicInternshipType t : academic.findInternshipTypes()) {
+            getModel().getInternshipTypes().add(new SelectItem(String.valueOf(t.getId()), t.getName()));
+        }
+        getModel().setFilterInternshipTypeVisible(StringUtils.isEmpty(getModel().getBoardId()));
+
+        getModel().setAcademicInternshipCounts(new ArrayList<AcademicInternshipCount>());
+        {
+            BarChartModel d1 = new BarChartModel();
+            d1.setTitle("Encadrements");
+            d1.setLegendPosition("e");
+            d1.setShadow(true);
+
+            ChartSeries boys = new ChartSeries();
+            boys.setLabel("Encadrements");
+            d1.addSeries(boys);
+
+            Map<String, Number> data = new LinkedHashMap<String, Number>();
+            Map<Integer, Number> localIntershipSupersorsMap = new LinkedHashMap<Integer, Number>();
+
+            for (AcademicInternshipInfo ii : getModel().getInternshipInfos()) {
+                AcademicTeacher s1 = ii.getInternship().getSupervisor();
+                AcademicTeacher s2 = ii.getInternship().getSecondSupervisor();
+                if (s1 == null && s2 == null) {
+                    //do nothing
+                    String s0 = "<< Stages Sans Encadrement >>";
+                    Number y = data.get(s0);
+                    if (y == null) {
+                        y = 1;
+                    } else {
+                        y = y.doubleValue() + 1;
+                    }
+                    data.put(s0, y);
+                } else if (s1 != null && s2 == null) {
+                    String s0 = s1.getContact().getFullName();
+                    Number y = localIntershipSupersorsMap.get(s1.getId());
+                    if (y == null) {
+                        y = 1;
+                    } else {
+                        y = y.doubleValue() + 1;
+                    }
+                    data.put(s0, y);
+                    localIntershipSupersorsMap.put(s1.getId(), y);
+                } else if (s2 != null && s1 == null) {
+                    String s0 = s2.getContact().getFullName();
+                    Number y = localIntershipSupersorsMap.get(s2.getId());
+                    if (y == null) {
+                        y = 1;
+                    } else {
+                        y = y.doubleValue() + 1;
+                    }
+                    data.put(s0, y);
+                    localIntershipSupersorsMap.put(s2.getId(), y);
+                } else {
+                    String s0 = s1.getContact().getFullName();
+                    Number y = localIntershipSupersorsMap.get(s1.getId());
+                    if (y == null) {
+                        y = 1;
+                    } else {
+                        y = y.doubleValue() + 0.5;
+                    }
+                    data.put(s0, y);
+                    localIntershipSupersorsMap.put(s1.getId(), y);
+
+                    s0 = s2.getContact().getFullName();
+                    y = localIntershipSupersorsMap.get(s2.getId());
+                    if (y == null) {
+                        y = 1;
+                    } else {
+                        y = y.doubleValue() + 0.5;
+                    }
+                    data.put(s0, y);
+                    localIntershipSupersorsMap.put(s2.getId(), y);
+                }
+            }
+            int filterPeriodId = -1;
+            int filterTypeId = -1;
+            if (getModel().getInternshipBoard() == null) {
+                AppConfig appConfig = VrApp.getBean(CorePlugin.class).getCurrentConfig();
+                filterPeriodId = (appConfig == null || appConfig.getMainPeriod() == null) ? -1 : appConfig.getMainPeriod().getId();
+                String d = getModel().getFilterInternshipTypeId();
+                filterTypeId = StringUtils.isEmpty(d) ? -1 : Integer.valueOf(d);
+            } else {
+                filterPeriodId = getModel().getInternshipBoard().getPeriod().getId();
+                filterTypeId = getModel().getInternshipBoard().getInternshipType().getId();
+            }
+            Map<Integer, Number> internshipTeachersInternshipsCounts = academic.findInternshipTeachersInternshipsCounts(
+                    filterPeriodId,
+                    filterTypeId
+            );
+            for (AcademicTeacher t : academic.findTeachers()) {
+                String n = academic.getValidName(t);
+                double count = 0;
+                double localCount = 0;
+                if (getModel().getInternshipBoard() != null) {
+                    Number cc = internshipTeachersInternshipsCounts.get(t.getId());
+                    count = cc == null ? 0 : cc.doubleValue();
+                }
+                Number cc = localIntershipSupersorsMap.get(t.getId());
+                localCount = cc == null ? 0 : cc.doubleValue();
+
+                String countSuffix = "";
+                if (count > 0) {
+                    if (localCount == count) {
+                        //all internships are visible here
+                        if (count == ((int) count)) {
+                            countSuffix += " (" + ((int) count) + ")";
+                        } else {
+                            countSuffix += " (" + (count) + ")";
+                        }
+                    } else {
+                        String s2 = (count == ((int) count)) ? String.valueOf(((int) count)) : String.valueOf(count);
+                        String s1 = (localCount == ((int) localCount)) ? String.valueOf(((int) localCount)) : String.valueOf(localCount);
+                        countSuffix += " (" + s1 + "<" + s2 + ")";
+                    }
+                }
+                getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), n + countSuffix));
+            }
+
+            data = VrUtils.reverseSortCount(data);
+            boys.setData(new LinkedHashMap<Object, Number>(data));
+
+//                getModel().setBar1(d1);
+            List<AcademicInternshipCount> list = new ArrayList<>();
+            for (Map.Entry<String, Number> entry : data.entrySet()) {
+                AcademicInternshipCount a = new AcademicInternshipCount();
+                a.setTeacherName(entry.getKey());
+                a.setCount(entry.getValue().doubleValue());
+                list.add(a);
+            }
+            getModel().setAcademicInternshipCounts(list);
+        }
+        onRefreshStats();
+
+    }
+
+     public AcademicTeacher getCurrentTeacher() {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        return a.getCurrentTeacher();
     }
 
     protected void onRefreshStats() {
-        getModel().setDonut1(null);
-        getModel().setDonut2(null);
-        getModel().setDonut3(null);
-        getModel().setDonut4(null);
-        getModel().setDonut5(null);
-        getModel().setBar1(null);
-        getModel().setPie1(null);
-        getModel().setPie2(null);
+        getModel().getStatCharts().clear();
+        AcademicPlugin aca = AcademicPlugin.get();
 
         if (!getModel().getInternshipInfos().isEmpty()) {
+            List<AcademicInternship> internships = getModel().getInternships();
             {
                 //Etats stages
                 DonutChartModel d1 = new DonutChartModel();
@@ -89,357 +301,77 @@ public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
                 d1.setDataFormat("value");
                 d1.setShadow(true);
 
-                getModel().setDonut1(d1);
-
-                Map<String, Number> circle1 = new LinkedHashMap<String, Number>();
-                Map<String, Number> circle2 = new LinkedHashMap<String, Number>();
-
-                circle1.put("Encad Affectés", 0);
-                circle1.put("Encad Non Affectés", 0);
-                circle2.put("Encad Affectés", 0);
-                circle2.put("Encad Non Affectés", 0);
-
-                for (AcademicInternshipInfo ii : getModel().getInternshipInfos()) {
-                    String nn = ii.getInternship().getInternshipStatus().getName();
-                    if (!circle1.containsKey(nn)) {
-                        circle1.put(nn, 0);
-                        circle2.put(nn, 0);
-                    }
-                }
-//            for (AcademicInternshipStatus ast : allStatuses) {
-//                circle1.put(ast.getName(), 0);
-//                circle2.put(ast.getName(), 0);
-//            }
-                for (AcademicInternshipInfo ii : getModel().getInternshipInfos()) {
-                    AcademicInternshipStatus s = ii.getInternship().getInternshipStatus();
-                    String ss = s == null ? "?" : s.getName();
-                    Number v = circle1.get(ss);
-                    if (v == null) {
-                        v = 1;
-                    } else {
-                        v = v.intValue() + 1;
-                    }
-                    circle1.put(ss, v);
-
-                    ss = (ii.getInternship().getSupervisor() != null) ? "Encad Affectés" : "Encad Non Affectés";
-                    v = circle2.get(ss);
-                    if (v == null) {
-                        v = 1;
-                    } else {
-                        v = v.intValue() + 1;
-                    }
-                    circle2.put(ss, v);
-                }
-
-                for (Map.Entry<String, Number> entry : circle1.entrySet()) {
-                    if (!circle2.containsKey(entry.getKey())) {
-                        circle2.put(entry.getKey(), 0);
-                    }
-                }
-
+                Map<String, Number> circle1 = aca.statEvalInternshipStatus(internships);
+                Map<String, Number> circle2 = aca.statEvalInternshipAssignmentCount(internships);
+                VrUtils.mergeMapKeys(circle1, circle2);
                 d1.addCircle(circle1);
                 d1.addCircle(circle2);
+                getModel().getStatCharts().put("InternshipStatus", d1);
             }
             {
+
+                Map<String, Number> circle3 = aca.statEvalInternshipJuryExaminerCount(internships);
+                Map<String, Number> circle4 = aca.statEvalInternshipJuryChairCount(internships);
+                VrUtils.mergeMapKeys(circle3, circle4);
+
                 //Etat Soutenance
                 DonutChartModel d2 = new DonutChartModel();
                 d2.setTitle("Préparation Soutenance");
-                getModel().setDonut2(d2);
 
                 d2.setLegendPosition("e");
                 d2.setSliceMargin(2);
                 d2.setShowDataLabels(true);
                 d2.setDataFormat("value");
                 d2.setShadow(true);
-
-                Map<String, Number> circle3 = new LinkedHashMap<String, Number>();
-                Map<String, Number> circle4 = new LinkedHashMap<String, Number>();
-                circle3.put("Rapporteur Affectés", 0);
-                circle3.put("Rapporteur Non Affectés", 0);
-                circle3.put("Président Affectés", 0);
-                circle3.put("Président Non Affectés", 0);
-                circle4.put("Rapporteur Affectés", 0);
-                circle4.put("Rapporteur Non Affectés", 0);
-                circle4.put("Président Affectés", 0);
-                circle4.put("Président Non Affectés", 0);
-
-                for (Map.Entry<String, Number> entry : circle3.entrySet()) {
-                    if (!circle4.containsKey(entry.getKey())) {
-                        circle4.put(entry.getKey(), 0);
-                    }
-                }
-
-                for (AcademicInternshipInfo ii : getModel().getInternshipInfos()) {
-                    String ss;
-                    Number v;
-
-                    ss = (ii.getInternship().getChairExaminer() != null) ? "Président Affectés" : "Président Non Affectés";
-                    v = circle3.get(ss);
-                    if (v == null) {
-                        v = 1;
-                    } else {
-                        v = v.intValue() + 1;
-                    }
-                    circle3.put(ss, v);
-
-                    ss = (ii.getInternship().getFirstExaminer() != null) ? "Rapporteur Affectés" : "Rapporteur Non Affectés";
-                    v = circle4.get(ss);
-                    if (v == null) {
-                        v = 1;
-                    } else {
-                        v = v.intValue() + 1;
-                    }
-                    circle4.put(ss, v);
-                }
-
                 d2.addCircle(circle3);
                 d2.addCircle(circle4);
+                getModel().getStatCharts().put("InternshipJury", d2);
             }
 
             {
+
+                List<NamedValueCount> circle1_table = aca.statEvalInternshipRegion(internships);
+                Map<String, Number> circle1 = VrUtils.namedValueCountToMap(circle1_table);
+
                 DonutChartModel d1 = new DonutChartModel();
-                d1.setTitle("Répartition Géographique");
+                d1.setTitle("Régions");
                 d1.setLegendPosition("e");
                 d1.setSliceMargin(2);
                 d1.setShowDataLabels(true);
                 d1.setDataFormat("value");
                 d1.setShadow(true);
-
-                getModel().setDonut3(d1);
-
-                Map<String, Number> circle1 = new LinkedHashMap<String, Number>();
-                Map<String, Number> circle2 = new LinkedHashMap<String, Number>();
-
-                CorePlugin cp = VrApp.getBean(CorePlugin.class);
-                AppCompany currentCompany = cp.getCurrentConfig().getMainCompany();
-                MyInternshipBoardsCtrl.LocationInfo currentLocation = resolveLocation(currentCompany);
-                String id_company = currentLocation.companyName;
-                String id_governorate = currentLocation.governorateName + " Sauf " + currentLocation.companyName;
-                String id_region = currentLocation.regionName + " Sauf " + currentLocation.governorateName;
-                String id_country = currentLocation.countryName + " Sauf " + currentLocation.regionName;
-                String id_International = "Intenational";
-                String id_Unknown = "Inconnu";
-                circle1.put(id_company, 0);
-                circle1.put(id_governorate, 0);
-                circle1.put(id_region, 0);
-                circle1.put(id_country, 0);
-                circle1.put(id_International, 0);
-                circle1.put(id_Unknown, 0);
-//                circle2.put(id_company, 0);
-//                circle2.put(id_governorate, 0);
-//                circle2.put(id_region, 0);
-//                circle2.put(id_country, 0);
-//                circle2.put(id_International, 0);
-//                circle2.put(id_Unknown, 0);
-
-                for (AcademicInternshipInfo ii : getModel().getInternshipInfos()) {
-                    AppCompany c = ii.getInternship().getCompany();
-                    MyInternshipBoardsCtrl.LocationInfo lc = resolveLocation(c);
-                    String gouvernorateName = lc.governorate == null ? "Gouvernorat inconnu" : lc.governorate.getName();
-                    Number v2 = circle2.get(gouvernorateName);
-                    if (v2 == null) {
-                        v2 = 1;
-//                        circle1.put(gouvernorateName, 0);
-                        circle2.put(gouvernorateName, v2);
-                    } else {
-                        circle2.put(gouvernorateName, v2.intValue() + 1);
-                    }
-
-                    Boolean same_company = null;
-                    Boolean same_governorate = null;
-                    Boolean same_region = null;
-                    Boolean same_country = null;
-                    String best_id = null;
-                    String first_diff = null;
-
-                    if (lc.country != null && currentLocation.country != null) {
-                        same_country = lc.country.getId() == currentLocation.country.getId();
-                    }
-                    if (lc.region != null && currentLocation.region != null) {
-                        same_region = lc.region.getId() == currentLocation.region.getId();
-                    }
-                    if (lc.governorate != null && currentLocation.governorate != null) {
-                        same_governorate = lc.governorate.getId() == currentLocation.governorate.getId();
-                    }
-                    if (lc.company != null && currentLocation.company != null) {
-                        same_company = lc.company.getId() == currentLocation.company.getId();
-                    }
-
-                    if (same_company != null) {
-                        if (same_company) {
-                            best_id = id_company;
-                        } else {
-                            first_diff = id_company;
-                        }
-                    }
-
-                    if (best_id == null) {
-                        if (same_governorate != null) {
-                            if (same_governorate) {
-                                best_id = id_governorate;
-                            } else {
-                                first_diff = id_governorate;
-                            }
-                        }
-                    }
-
-                    if (best_id == null) {
-                        if (same_region != null) {
-                            if (same_region) {
-                                best_id = id_region;
-                            } else {
-                                first_diff = id_region;
-                            }
-                        }
-                    }
-
-                    if (best_id == null) {
-                        if (same_country != null) {
-                            if (same_country) {
-                                best_id = id_country;
-                            } else {
-                                first_diff = id_country;
-                            }
-                        }
-                    }
-                    if (best_id != null) {
-                        //good found it
-                    } else if (first_diff == null) {
-                        best_id = id_Unknown;
-                    } else if (first_diff.equals(id_country)) {
-                        best_id = id_International;
-                    } else if (first_diff.equals(id_region)) {
-                        best_id = id_country;
-                    } else if (first_diff.equals(id_governorate)) {
-                        if (currentLocation.region != null) {
-                            best_id = id_region;
-                        } else {
-                            best_id = id_country;
-                        }
-                    } else if (first_diff.equals(id_company)) {
-                        best_id = id_governorate;
-                    }
-                    if (best_id == null) {
-                        if (same_country != null) {
-                            if (same_country) {
-                                if (same_region != null) {
-                                    if (same_region) {
-                                        if (same_region != null) {
-                                            if (same_region) {
-
-                                            }
-                                        } else {
-                                            best_id = id_country;
-                                        }
-
-                                    }
-                                } else {
-                                    best_id = id_country;
-                                }
-                            } else {
-                                best_id = id_International;
-                            }
-                        }
-                    }
-                    if (best_id != null) {
-                        Integer old = ((Integer) circle1.get(best_id));
-                        if (old == null) {
-                            old = 0;
-                        }
-                        circle1.put(best_id, old + 1);
-                    }
-//                    if (same_company != null && same_company) {
-//                        circle2.put(id_company, ((Integer) circle1.get(id_company)) + 1);
-//                    }
-//                    if (same_governorate != null && same_governorate) {
-//                        circle2.put(id_governorate, ((Integer) circle1.get(id_governorate)) + 1);
-//                    }
-//                    if (same_governorate != null && same_governorate) {
-//                        circle2.put(id_governorate, ((Integer) circle1.get(id_governorate)) + 1);
-//                    }
-//                    if (lc.country != null && currentLocation.country != null && lc.country.getId() == currentLocation.country.getId()) {
-//                    } else if (lc.country != null) {
-//                        circle1.put(id_International, ((Integer) circle1.get(id_International)) + 1);
-//                    } else if (lc.region != null && currentLocation.region != null && lc.region.getId() == currentLocation.region.getId()) {
-//                        circle1.put(id_region, ((Integer) circle1.get(id_region)) + 1);
-//                    } else if (lc.company != null && currentLocation.company != null && lc.company.getId() == currentLocation.company.getId()) {
-//                        circle1.put(id_company, ((Integer) circle1.get(id_company)) + 1);
-//                    } else if (lc.governorate != null && currentLocation.governorate != null && lc.governorate.getId() == currentLocation.governorate.getId()) {
-//                        circle1.put(id_governorate, ((Integer) circle1.get(id_governorate)) + 1);
-//                    } else {
-//                        circle1.put(id_Unknown, ((Integer) circle1.get(id_Unknown)) + 1);
-//                    }
-                }
-
-//                for (Map.Entry<String, Number> entry : circle1.entrySet()) {
-//                    if (!circle2.containsKey(entry.getKey())) {
-//                        circle2.put(entry.getKey(), 0);
-//                    }
-//                }
-                ChartUtils.mergeMapKeys(circle1, circle2);
                 d1.addCircle(circle1);
+                getModel().getStatCharts().put("Regions", d1);
+                getModel().getStatTables().put("Regions", circle1_table);
+            }
+            {
+
+                List<NamedValueCount> circle2_table = aca.statEvalInternshipGovernorate(internships);
+                Map<String, Number> circle2 = VrUtils.namedValueCountToMap(circle2_table);
+
+                DonutChartModel d1 = new DonutChartModel();
+                d1.setTitle("Gouvernorats");
+                d1.setLegendPosition("e");
+                d1.setSliceMargin(2);
+                d1.setShowDataLabels(true);
+                d1.setDataFormat("value");
+                d1.setShadow(true);
                 d1.addCircle(circle2);
+                getModel().getStatCharts().put("Governorates", d1);
+                getModel().getStatTables().put("Governorates", circle2_table);
             }
             // disciplines & technologies
-//            {
-//                DonutChartModel d1 = new DonutChartModel();
-//                d1.setLegendPosition("e");
-//                d1.setSliceMargin(2);
-//                d1.setShowDataLabels(true);
-//                d1.setDataFormat("value");
-//                d1.setShadow(true);
-//
-//                getModel().setDonut4(d1);
-//
-//                Map<String, Number> circle1_ = new LinkedHashMap<String, Number>();
-//                Map<String, Number> circle2_ = new LinkedHashMap<String, Number>();
-//
-//                AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
-//                for (AcademicInternshipInfo ii : getModel().getInternshipInfos()) {
-//
-//                    HashSet<String> set = new HashSet<String>(academicPlugin.parseDisciplinesNames(ii.getInternship().getMainDiscipline(), false));
-//                    for (String s0 : set) {
-//                        Number y = circle1_.get(s0);
-//                        if (y == null) {
-//                            y = 1;
-//                        } else {
-//                            y = y.intValue() + 1;
-//                        }
-//                        circle1_.put(s0, y);
-//                    }
-//                    set = new HashSet<String>(academicPlugin.parseWords(ii.getInternship().getTechnologies()));
-//                    for (String s0 : set) {
-//                        Number y = circle2_.get(s0);
-//                        if (y == null) {
-//                            y = 1;
-//                        } else {
-//                            y = y.intValue() + 1;
-//                        }
-//                        circle2_.put(s0, y);
-//                    }
-//                }
-//                circle1_ = reverseSort(circle1_, 5, "Autres Disc.");
-//                circle2_ = reverseSort(circle2_, 5, "Autres Technos");
-//
-//                Map<String, Number> circle1 = new LinkedHashMap<String, Number>();
-//                Map<String, Number> circle2 = new LinkedHashMap<String, Number>();
-//
-//                circle1.putAll(circle1_);
-//                for (String k : circle2_.keySet()) {
-//                    circle1.put(k, 0);
-//                }
-//
-//                for (String k : circle1_.keySet()) {
-//                    circle2.put(k, 0);
-//                }
-//                circle2.putAll(circle2_);
-//                d1.addCircle(circle1);
-//                d1.addCircle(circle2);
-//            }
-
-
-            // disciplines & technologies
             {
+
+
+                List<NamedValueCount> circle1_table = aca.statEvalInternshipDiscipline(internships);
+                List<NamedValueCount> circle2_table = aca.statEvalInternshipTechnologies(internships);
+                Map<String, Number> circle1 = VrUtils.namedValueCountToMap(circle1_table);
+                Map<String, Number> circle2 = VrUtils.namedValueCountToMap(circle2_table);
+
+                circle1 = VrUtils.reverseSortCount(circle1, 10, "Autres Disc.");
+                circle2 = VrUtils.reverseSortCount(circle2, 10, "Autres Technos");
+
                 PieChartModel d1 = new PieChartModel();
                 d1.setTitle("Disciplines");
                 d1.setLegendPosition("e");
@@ -457,83 +389,84 @@ public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
                 d2.setDataFormat("value");
                 d2.setShadow(true);
                 d2.setFill(true);
-
-                getModel().setPie1(d1);
-                getModel().setPie2(d2);
-
-                Map<String, Number> circle1 = new LinkedHashMap<String, Number>();
-                Map<String, Number> circle2 = new LinkedHashMap<String, Number>();
-
-                AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
-                for (AcademicInternshipInfo ii : getModel().getInternshipInfos()) {
-
-                    HashSet<String> set = new HashSet<String>(academicPlugin.parseDisciplinesNames(ii.getInternship().getMainDiscipline(), false));
-                    for (String s0 : set) {
-                        Number y = circle1.get(s0);
-                        if (y == null) {
-                            y = 1;
-                        } else {
-                            y = y.intValue() + 1;
-                        }
-                        circle1.put(s0, y);
-                    }
-                    set = new HashSet<String>(academicPlugin.parseWords(ii.getInternship().getTechnologies()));
-                    for (String s0 : set) {
-                        Number y = circle2.get(s0);
-                        if (y == null) {
-                            y = 1;
-                        } else {
-                            y = y.intValue() + 1;
-                        }
-                        circle2.put(s0, y);
-                    }
-                }
-                circle1 = ChartUtils.reverseSortCount(circle1, 10, "Autres Disc.");
-                circle2 = ChartUtils.reverseSortCount(circle2, 13, "Autres Technos");
-
                 d1.setData(circle1);
                 d2.setData(circle2);
+                getModel().getStatCharts().put("Disciplines", d1);
+                getModel().getStatCharts().put("Technologies", d2);
+                getModel().getStatTables().put("Disciplines", circle1_table);
+                getModel().getStatTables().put("Technologies", circle2_table);
+
             }
 
-            //periods
+            //variant
             {
+
+                List<NamedValueCount> circle1_table = aca.statEvalInternshipVariant(internships);
+                Map<String, Number> circle1 = VrUtils.namedValueCountToMap(circle1_table);
+
                 DonutChartModel d1 = new DonutChartModel();
-                d1.setTitle("Périodes/Variantes");
+                d1.setTitle("Variantes");
                 d1.setLegendPosition("e");
                 d1.setSliceMargin(2);
                 d1.setShowDataLabels(true);
                 d1.setDataFormat("value");
                 d1.setShadow(true);
-
-                getModel().setDonut5(d1);
-
-                Map<String, Number> circle1 = new LinkedHashMap<String, Number>();
-                Map<String, Number> circle2 = new LinkedHashMap<String, Number>();
-
-                for (AcademicInternshipInfo ii : getModel().getInternshipInfos()) {
-                    AcademicInternshipVariant v = ii.getInternship().getInternshipVariant();
-                    String s0 = v == null ? "Autre Variante" : v.getName();
-                    Number y = circle1.get(s0);
-                    if (y == null) {
-                        y = 1;
-                    } else {
-                        y = y.intValue() + 1;
-                    }
-                    circle1.put(s0, y);
-
-                    AcademicInternshipDuration v2 = ii.getInternship().getDuration();
-                    s0 = v2 == null ? "Autre Durée" : v2.getName();
-                    y = circle2.get(s0);
-                    if (y == null) {
-                        y = 1;
-                    } else {
-                        y = y.intValue() + 1;
-                    }
-                    circle2.put(s0, y);
-                }
-                ChartUtils.mergeMapKeys(circle1, circle2);
                 d1.addCircle(circle1);
+                getModel().getStatCharts().put("InternshipVariant", d1);
+                getModel().getStatTables().put("InternshipVariant", circle1_table);
+            }
+
+            //periods
+            {
+
+                List<NamedValueCount> circle2_table = aca.statEvalInternshipPeriod(internships);
+                Map<String, Number> circle2 = VrUtils.namedValueCountToMap(circle2_table);
+
+                DonutChartModel d1 = new DonutChartModel();
+                d1.setTitle("Périodes");
+                d1.setLegendPosition("e");
+                d1.setSliceMargin(2);
+                d1.setShowDataLabels(true);
+                d1.setDataFormat("value");
+                d1.setShadow(true);
                 d1.addCircle(circle2);
+                getModel().getStatCharts().put("InternshipPeriod", d1);
+                getModel().getStatTables().put("InternshipPeriod", circle2_table);
+            }
+
+            //periods
+            {
+
+//                List<NamedValueCount> circle2_table=aca.statEvalInternshipPeriod(internships);
+                Map<String, Number> circle2 = new LinkedHashMap<>();
+                for (AcademicInternshipCount c : getModel().getAcademicInternshipCounts()) {
+                    circle2.put(c.getTeacherName(), c.getCount());
+                }
+                Map<String, Number> circle_part = VrUtils.reverseSortCount(circle2, 10, "Autres");
+
+                PieChartModel d1 = new PieChartModel();
+                d1.setTitle("Enseignants");
+                d1.setLegendPosition("e");
+                d1.setSliceMargin(2);
+                d1.setShowDataLabels(true);
+                d1.setDataFormat("value");
+                d1.setShadow(true);
+                d1.setData(circle_part);
+                getModel().getStatCharts().put("SupervisorsPie", d1);
+
+                BarChartModel d2 = new BarChartModel();
+                d2.setTitle("Enseignants");
+                d2.setLegendPosition("e");
+                d2.setShadow(true);
+                d2.setZoom(true);
+                ChartSeries serie = new ChartSeries();
+                serie.setLabel("Enseignants");
+                serie.setData((Map) circle2);
+                d2.addSeries(serie);
+                d2.getAxis(AxisType.X).setTickAngle(-50);
+                getModel().getStatCharts().put("SupervisorsBar", d2);
+
+                //                getModel().getStatTables().put("InternshipPeriod", circle2_table);
             }
 
             //Teachers
@@ -541,11 +474,167 @@ public class InternshipBoardsStatsCtrl extends MyInternshipBoardsCtrl {
 
         }
     }
+//
+//    protected void addStatTable(String name, Map<String, Number> circle1, ListValueMap<String, AcademicInternship> circle1_internships) {
+//        List<ValueCount> circle1_values = VrUtils.reverseSortCountValueCountList(circle1);
+//        for (ValueCount circle1_value : circle1_values) {
+//            circle1_value.setUserValue(circle1_internships.get((String) circle1_value.getValue()));
+//        }
+//        for (int i = circle1_values.size() - 1; i >= 0; i--) {
+//            if (circle1_values.get(i).getCount() == 0) {
+//                circle1_values.remove(i);
+//            }
+//        }
+//        getModel().getStatTables().put(name, circle1_values);
+//    }
 
-    @Override
-    public void onRefreshListMode() {
-        super.onRefreshListMode();
-        onRefreshStats();
+
+    public class Model {
+
+        private boolean boardManager;
+        private String boardId;
+        private String periodId;
+        private String filterInternshipTypeId;
+        private AcademicInternshipBoard internshipBoard;
+        private List<AcademicInternshipCount> academicInternshipCounts = new ArrayList<AcademicInternshipCount>();
+        private List<SelectItem> periods = new ArrayList<SelectItem>();
+        private List<SelectItem> boards = new ArrayList<SelectItem>();
+        private List<SelectItem> internshipItems = new ArrayList<SelectItem>();
+        private List<SelectItem> internshipTypes = new ArrayList<SelectItem>();
+        private List<AcademicInternship> internships = new ArrayList<AcademicInternship>();
+        private List<AcademicInternshipInfo> internshipInfos = new ArrayList<AcademicInternshipInfo>();
+        private List<SelectItem> teachers = new ArrayList<SelectItem>();
+        private Map<String, List<NamedValueCount>> statTables = new HashMap<>();
+        private Map<String, ChartModel> statCharts = new HashMap<>();
+        private boolean filterInternshipTypeVisible = true;
+
+        public String getPeriodId() {
+            return periodId;
+        }
+
+        public void setPeriodId(String periodId) {
+            this.periodId = periodId;
+        }
+
+        public Map<String, List<NamedValueCount>> getStatTables() {
+            return statTables;
+        }
+
+        public void setStatTables(Map<String, List<NamedValueCount>> statTables) {
+            this.statTables = statTables;
+        }
+
+
+        public boolean isBoardManager() {
+            return boardManager;
+        }
+
+        public void setBoardManager(boolean boardManager) {
+            this.boardManager = boardManager;
+        }
+
+
+        public List<SelectItem> getInternshipItems() {
+            return internshipItems;
+        }
+
+        public void setInternshipItems(List<SelectItem> internships) {
+            this.internshipItems = internships;
+        }
+
+        public List<SelectItem> getInternshipTypes() {
+            return internshipTypes;
+        }
+
+        public void setInternshipTypes(List<SelectItem> internshipTypes) {
+            this.internshipTypes = internshipTypes;
+        }
+
+        public String getFilterInternshipTypeId() {
+            return filterInternshipTypeId;
+        }
+
+        public void setFilterInternshipTypeId(String filterInternshipTypeId) {
+            this.filterInternshipTypeId = filterInternshipTypeId;
+        }
+
+        public List<AcademicInternship> getInternships() {
+            return internships;
+        }
+
+        public void setInternships(List<AcademicInternship> internships) {
+            this.internships = internships;
+        }
+
+
+        public List<SelectItem> getTeachers() {
+            return teachers;
+        }
+
+        public void setTeachers(List<SelectItem> teachers) {
+            this.teachers = teachers;
+        }
+
+
+        public String getBoardId() {
+            return boardId;
+        }
+
+        public void setBoardId(String boardId) {
+            this.boardId = boardId;
+        }
+
+        public List<SelectItem> getBoards() {
+            return boards;
+        }
+
+        public void setBoards(List<SelectItem> boards) {
+            this.boards = boards;
+        }
+
+        public AcademicInternshipBoard getInternshipBoard() {
+            return internshipBoard;
+        }
+
+        public void setInternshipBoard(AcademicInternshipBoard internshipBoard) {
+            this.internshipBoard = internshipBoard;
+        }
+
+        public List<SelectItem> getPeriods() {
+            return periods;
+        }
+
+
+        public List<AcademicInternshipInfo> getInternshipInfos() {
+            return internshipInfos;
+        }
+
+        public void setInternshipInfos(List<AcademicInternshipInfo> internshipInfos) {
+            this.internshipInfos = internshipInfos;
+        }
+
+        public List<AcademicInternshipCount> getAcademicInternshipCounts() {
+            return academicInternshipCounts;
+        }
+
+        public void setAcademicInternshipCounts(List<AcademicInternshipCount> academicInternshipCounts) {
+            this.academicInternshipCounts = academicInternshipCounts;
+        }
+        public boolean isFilterInternshipTypeVisible() {
+            return filterInternshipTypeVisible;
+        }
+
+        public void setFilterInternshipTypeVisible(boolean filterInternshipTypeVisible) {
+            this.filterInternshipTypeVisible = filterInternshipTypeVisible;
+        }
+
+        public Map<String, ChartModel> getStatCharts() {
+            return statCharts;
+        }
+
+        public void setStatCharts(Map<String, ChartModel> statCharts) {
+            this.statCharts = statCharts;
+        }
     }
 
 

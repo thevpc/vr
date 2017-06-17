@@ -9,7 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.common.jsf.FacesUtils;
@@ -22,7 +22,7 @@ import javax.faces.context.FacesContext;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
 //        title = "Login",
         url = "login"
 )

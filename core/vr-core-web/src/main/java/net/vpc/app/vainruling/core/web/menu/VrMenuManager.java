@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl
+@VrController
 public class VrMenuManager {
     private static final Logger log = Logger.getLogger(FSServlet.class.getName());
 
@@ -189,14 +189,14 @@ public class VrMenuManager {
             typeName = new String(chars);
 
         }
-        UCtrl c2Ann = (UCtrl) targetClass.getAnnotation(UCtrl.class);
+        VrController c2Ann = (VrController) targetClass.getAnnotation(VrController.class);
         if (c2Ann != null) {
             return getUCtrlDataByAnnotation(c2Ann, typeName);
         }
         return null;
     }
 
-    public UCtrlData getUCtrlDataByAnnotation(UCtrl c2Ann, String typeName) {
+    public UCtrlData getUCtrlDataByAnnotation(VrController c2Ann, String typeName) {
         if (c2Ann != null) {
             String uniformCtrlName = typeName;
             if (uniformCtrlName.endsWith("Ctrl") && uniformCtrlName.length() > "Ctrl".length()) {
@@ -422,12 +422,12 @@ public class VrMenuManager {
         UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
             @Override
             public void run() {
-                for (String beanName : VrApp.getContext().getBeanNamesForAnnotation(UCtrl.class)) {
+                for (String beanName : VrApp.getContext().getBeanNamesForAnnotation(VrController.class)) {
                     if ("vrMenuManager".equals(beanName)) {
                         continue; //unless we have unresolvable circular reference
                     }
                     Object b = VrApp.getContext().getBean(beanName);
-                    UCtrl c = (UCtrl) PlatformReflector.getTargetClass(b).getAnnotation(UCtrl.class);
+                    VrController c = (VrController) PlatformReflector.getTargetClass(b).getAnnotation(VrController.class);
                     if (c != null) {
                         final String securityKey = c.securityKey();
                         final String[] securityKeys = c.declareSecurityKeys();
@@ -476,9 +476,9 @@ public class VrMenuManager {
 
     public List<VRMenuDef> resolveAutowiredCustomMenusByCtrl() {
         List<VRMenuDef> menuCtrl = new ArrayList<>();
-        for (String beanName : VrApp.getContext().getBeanNamesForAnnotation(UCtrl.class)) {
+        for (String beanName : VrApp.getContext().getBeanNamesForAnnotation(VrController.class)) {
             Object b = VrApp.getContext().getBean(beanName);
-            UCtrl c = (UCtrl) PlatformReflector.getTargetClass(b).getAnnotation(UCtrl.class);
+            VrController c = (VrController) PlatformReflector.getTargetClass(b).getAnnotation(VrController.class);
             if (c != null && c.menu().length() > 0) {
                 String menu = c.menu();
                 if (!menu.startsWith("/")) {

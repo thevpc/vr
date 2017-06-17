@@ -11,7 +11,7 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 
-        >
+>
 
 <h:head>
 </h:head>
@@ -19,6 +19,8 @@ and open the template in the editor.
 <h:body>
 
 
+    <!--@elvariable id="internshipBoardsStatsCtrl" type="net.vpc.app.vainruling.plugins.academic.web.internship.InternshipBoardsStatsCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
     <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
             <!--                <h:form id="buttonsForm">
@@ -34,8 +36,13 @@ and open the template in the editor.
             <h:form id="listForm">
                 <p:messages id="currentMessages"/>
 
-                <div >
-                    <p:selectOneMenu value="#{internshipBoardsStatsCtrl.model.boardId}" style="margin-bottom: 20px;">
+                <div>
+                    <p:selectOneMenu value="#{internshipBoardsStatsCtrl.model.periodId}" style="margin-bottom: 20px;">
+                        <p:ajax listener="#{internshipBoardsStatsCtrl.onUpdatePeriod}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
+                        <f:selectItems value="#{internshipBoardsStatsCtrl.model.periods}"/>
+                    </p:selectOneMenu>
+                    <p:selectOneMenu value="#{internshipBoardsStatsCtrl.model.boardId}" style="margin-bottom: 20px;margin-left: 20px;">
                         <p:ajax listener="#{internshipBoardsStatsCtrl.onUpdateBoard}" update=":listForm"/>
                         <f:selectItem itemLabel="Selectionner Comité..." itemValue=""/>
                         <f:selectItems value="#{internshipBoardsStatsCtrl.model.boards}"/>
@@ -60,58 +67,276 @@ and open the template in the editor.
                                         <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>
                                     </div>-->
                 <p:tabView>
-                    <p:tab title="Stats">
-                        <div >
-                            <div class="col-lg-6">
-                                <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut1 ne null}" type="donut"
-                                         model="#{internshipBoardsStatsCtrl.model.donut1}"
+                    <p:tab title="Etat">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <p:chart rendered="#{internshipBoardsStatsCtrl.model.statCharts.get('InternshipStatus') ne null}" type="donut"
+                                         model="#{internshipBoardsStatsCtrl.model.statCharts.get('InternshipStatus')}"
                                          style="width:400px;height:300px"/>
                             </div>
-                            <div class="col-lg-6">
-                                <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut3 ne null}" type="donut"
-                                         model="#{internshipBoardsStatsCtrl.model.donut3}"
+                            <div class="col-lg-4">
+                                <p:chart rendered="#{internshipBoardsStatsCtrl.model.statCharts.get('InternshipJury') ne null}" type="donut"
+                                         model="#{internshipBoardsStatsCtrl.model.statCharts.get('InternshipJury')}"
                                          style="width:400px;height:300px"/>
                             </div>
-                        </div>
-                        <div >
-                            <div class="col-lg-6">
-                                <p:chart rendered="#{internshipBoardsStatsCtrl.model.pie1 ne null}" type="pie"
-                                         model="#{internshipBoardsStatsCtrl.model.pie1}"
-                                         style="width:400px;height:300px"/>
-                            </div>
-                            <div class="col-lg-6">
-                                <p:chart rendered="#{internshipBoardsStatsCtrl.model.pie2 ne null}" type="pie"
-                                         model="#{internshipBoardsStatsCtrl.model.pie2}"
-                                         style="width:400px;height:300px"/>
-                            </div>
-                        </div>
-                        <div >
-                            <div class="col-lg-6">
-                                <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut5 ne null}" type="donut"
-                                         model="#{internshipBoardsStatsCtrl.model.donut5}"
-                                         style="width:400px;height:300px"/>
-                            </div>
-                            <div class="col-lg-6">
-                                <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut2 ne null}" type="donut"
-                                         model="#{internshipBoardsStatsCtrl.model.donut2}"
-                                         style="width:400px;height:300px"/>
-                            </div>
-                        </div>
-                        <div >
-                            <div class="col-lg-6">
-                                <p:chart rendered="#{internshipBoardsStatsCtrl.model.bar1 ne null}" type="bar"
-                                         model="#{internshipBoardsStatsCtrl.model.bar1}"
-                                         style="width:800px;height:300px"/>
-                            </div>
-                            <div class="col-lg-6">
-                                <p:chart rendered="#{internshipBoardsStatsCtrl.model.donut4 ne null}" type="donut"
-                                         model="#{internshipBoardsStatsCtrl.model.donut4}"
+                            <div class="col-lg-4">
+                                <p:chart rendered="#{internshipBoardsStatsCtrl.model.statCharts.get('InternshipPeriod') ne null}" type="donut"
+                                         model="#{internshipBoardsStatsCtrl.model.statCharts.get('InternshipPeriod')}"
                                          style="width:400px;height:300px"/>
                             </div>
                         </div>
                     </p:tab>
+                    <p:tab title="Emplacement">
+                        <div class="row">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <p:chart rendered="#{internshipBoardsStatsCtrl.model.statCharts.get('Regions') ne null}" type="donut"
+                                             model="#{internshipBoardsStatsCtrl.model.statCharts.get('Regions')}"
+                                             style="width:400px;height:300px"/>
+                                </div>
+                                <div class="col-lg-6">
+                                    <p:chart rendered="#{internshipBoardsStatsCtrl.model.statCharts.get('Governorates') ne null}" type="donut"
+                                             model="#{internshipBoardsStatsCtrl.model.statCharts.get('Governorates')}"
+                                             style="width:400px;height:300px"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div>
+                                <div class="col-lg-6">
+                                    <p:dataTable var="di"
+                                                 value="#{internshipBoardsStatsCtrl.model.statTables.get('Regions')}"
+                                                 class="table table-bordered table-hover"
+                                                 paginatorAlwaysVisible="false"
+                                                 paginator="true"
+                                                 paginatorPosition="bottom"
+                                                 emptyMessage="Aucune entree"
+                                                 rows="20"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 rowsPerPageTemplate="20,50,100,200,1000"
+
+                                    >
+
+                                        <!--                                    <f:facet name="header">
+                                                                                List
+                                                                                <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                                                                                <p:columnToggler datasource="cars" trigger="toggler" />
+                                                                            </f:facet>-->
+                                        <f:facet name="header">
+                                            Regions
+                                        </f:facet>
+                                        <p:column headerText="Libelle"
+                                                  style="width: 80%;">
+                                            <p:outputLabel value="#{di.name}"/>
+                                        </p:column>
+                                        <p:column headerText="Nombre">
+                                            <p:outputLabel value="#{di.count}"/>
+                                        </p:column>
+                                        <p:column headerText="">
+                                            <p:commandLink id="go1"
+                                                           action="#{vr.gotoPageObjItem('AcademicInternship',di.userValue.get(0).id)}"
+                                                           value="#{di.userValue.get(0).code}"
+                                            />
+                                            <p:tooltip for="go1"
+                                                       value="#{di.userValue.get(0).student.contact.fullName}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                                <div class="col-lg-6">
+                                    <p:dataTable var="di"
+                                                 value="#{internshipBoardsStatsCtrl.model.statTables.get('Governorates')}"
+                                                 class="table table-bordered table-hover"
+                                                 paginatorAlwaysVisible="false"
+                                                 paginator="true"
+                                                 paginatorPosition="bottom"
+                                                 emptyMessage="Aucune entree"
+                                                 rows="20"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 rowsPerPageTemplate="20,50,100,200,1000"
+
+                                    >
+
+                                        <!--                                    <f:facet name="header">
+                                                                                List
+                                                                                <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                                                                                <p:columnToggler datasource="cars" trigger="toggler" />
+                                                                            </f:facet>-->
+                                        <f:facet name="header">
+                                            Gouvernorats
+                                        </f:facet>
+                                        <p:column headerText="Libelle"
+                                                  style="width: 80%;">
+                                            <p:outputLabel value="#{di.name}"/>
+                                        </p:column>
+                                        <p:column headerText="Nombre">
+                                            <p:outputLabel value="#{di.count}"/>
+                                        </p:column>
+                                        <p:column headerText="">
+                                            <p:commandLink id="go2"
+                                                           action="#{vr.gotoPageObjItem('AcademicInternship',di.userValue.get(0).id)}"
+                                                           value="#{di.userValue.get(0).code}"
+                                            />
+                                            <p:tooltip for="go2"
+                                                       value="#{di.userValue.get(0).student.contact.fullName}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                        </div>
+
+                    </p:tab>
+                    <p:tab title="Contenu">
+                        <div class="row">
+                            <div>
+                                <div class="col-lg-4">
+                                    <p:chart rendered="#{internshipBoardsStatsCtrl.model.statCharts.get('Disciplines') ne null}" type="pie"
+                                             model="#{internshipBoardsStatsCtrl.model.statCharts.get('Disciplines')}"
+                                             style="width:400px;height:300px"/>
+                                </div>
+                                <div class="col-lg-4">
+                                    <p:chart rendered="#{internshipBoardsStatsCtrl.model.statCharts.get('Technologies') ne null}" type="pie"
+                                             model="#{internshipBoardsStatsCtrl.model.statCharts.get('Technologies')}"
+                                             style="width:400px;height:300px"/>
+                                </div>
+                                <div class="col-lg-4">
+                                    <p:chart rendered="#{internshipBoardsStatsCtrl.model.statCharts.get('InternshipVariant') ne null}" type="donut"
+                                             model="#{internshipBoardsStatsCtrl.model.statCharts.get('InternshipVariant')}"
+                                             style="width:400px;height:300px"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div>
+                                <div class="col-lg-4">
+                                    <p:dataTable var="di"
+                                                 value="#{internshipBoardsStatsCtrl.model.statTables.get('Disciplines')}"
+                                                 class="table table-bordered table-hover"
+                                                 paginatorAlwaysVisible="false"
+                                                 paginator="true"
+                                                 paginatorPosition="bottom"
+                                                 emptyMessage="Aucune entree"
+                                                 rows="20"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 rowsPerPageTemplate="20,50,100,200,1000"
+
+                                    >
+
+                                        <!--                                    <f:facet name="header">
+                                                                                List
+                                                                                <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                                                                                <p:columnToggler datasource="cars" trigger="toggler" />
+                                                                            </f:facet>-->
+                                        <f:facet name="header">
+                                            Disciplines
+                                        </f:facet>
+                                        <p:column headerText="Libelle"
+                                                  style="width: 80%;">
+                                            <p:outputLabel value="#{di.name}"/>
+                                        </p:column>
+                                        <p:column headerText="Nombre">
+                                            <p:outputLabel value="#{di.count}"/>
+                                        </p:column>
+                                        <p:column headerText="">
+                                            <p:commandLink id="go3"
+                                                           action="#{vr.gotoPageObjItem('AcademicInternship',di.userValue.get(0).id)}"
+                                                           value="#{di.userValue.get(0).code}"
+                                            />
+                                            <p:tooltip for="go3"
+                                                       value="#{di.userValue.get(0).student.contact.fullName}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                                <div class="col-lg-4">
+                                    <p:dataTable var="di"
+                                                 value="#{internshipBoardsStatsCtrl.model.statTables.get('Technologies')}"
+                                                 class="table table-bordered table-hover"
+                                                 paginatorAlwaysVisible="false"
+                                                 paginator="true"
+                                                 paginatorPosition="bottom"
+                                                 emptyMessage="Aucune entree"
+                                                 rows="20"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 rowsPerPageTemplate="20,50,100,200,1000"
+
+                                    >
+
+                                        <!--                                    <f:facet name="header">
+                                                                                List
+                                                                                <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                                                                                <p:columnToggler datasource="cars" trigger="toggler" />
+                                                                            </f:facet>-->
+                                        <f:facet name="header">
+                                            Technologies
+                                        </f:facet>
+                                        <p:column headerText="Libelle"
+                                                  style="width: 80%;">
+                                            <p:outputLabel value="#{di.name}"/>
+                                        </p:column>
+                                        <p:column headerText="Nombre">
+                                            <p:outputLabel value="#{di.count}"/>
+                                        </p:column>
+                                        <p:column headerText="">
+                                            <p:commandLink id="go"
+                                                           action="#{vr.gotoPageObjItem('AcademicInternship',di.userValue.get(0).id)}"
+                                                           value="#{di.userValue.get(0).code}"
+                                            />
+                                            <p:tooltip for="go"
+                                                       value="#{di.userValue.get(0).student.contact.fullName}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                                <div class="col-lg-4">
+                                    <p:dataTable var="di"
+                                                 value="#{internshipBoardsStatsCtrl.model.statTables.get('InternshipVariant')}"
+                                                 class="table table-bordered table-hover"
+                                                 paginatorAlwaysVisible="false"
+                                                 paginator="true"
+                                                 paginatorPosition="bottom"
+                                                 emptyMessage="Aucune entree"
+                                                 rows="20"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 rowsPerPageTemplate="20,50,100,200,1000"
+
+                                    >
+                                        <f:facet name="header">
+                                            Variantes
+                                        </f:facet>
+                                        <p:column headerText="Libelle"
+                                                  style="width: 80%;">
+                                            <p:outputLabel value="#{di.name}"/>
+                                        </p:column>
+                                        <p:column headerText="Nombre">
+                                            <p:outputLabel value="#{di.count}"/>
+                                        </p:column>
+                                        <p:column headerText="">
+                                            <p:commandLink id="go4"
+                                                           action="#{vr.gotoPageObjItem('AcademicInternship',di.userValue.get(0).id)}"
+                                                           value="#{di.userValue.get(0).code}"
+                                            />
+                                            <p:tooltip for="go4"
+                                                       value="#{di.userValue.get(0).student.contact.fullName}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                        </div>
+                    </p:tab>
                     <p:tab title="Encadrements">
-                        <div >
+                        <div class="row">
+                            <div>
+                                <div class="col-lg-4">
+                                    <p:chart rendered="#{internshipBoardsStatsCtrl.model.statCharts.get('SupervisorsPie') ne null}" type="pie"
+                                             model="#{internshipBoardsStatsCtrl.model.statCharts.get('SupervisorsPie')}"
+                                             style="width:400px;height:300px"/>
+                                </div>
+                                <div class="col-lg-8">
+                                    <p:chart rendered="#{internshipBoardsStatsCtrl.model.statCharts.get('SupervisorsBar') ne null}" type="bar"
+                                             model="#{internshipBoardsStatsCtrl.model.statCharts.get('SupervisorsBar')}"
+                                             style="width:800px;height:300px"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
                             <p:dataTable id="internTable" var="i"
                                          value="#{internshipBoardsStatsCtrl.model.academicInternshipCounts}"
                                          class="table table-bordered table-hover"
@@ -123,7 +348,7 @@ and open the template in the editor.
                                          paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                          rowsPerPageTemplate="20,50,100,200,1000"
 
-                                    >
+                            >
 
                                 <!--                                    <f:facet name="header">
                                                                         List

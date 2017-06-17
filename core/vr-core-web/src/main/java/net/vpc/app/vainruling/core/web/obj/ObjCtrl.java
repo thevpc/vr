@@ -54,7 +54,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
         breadcrumb = {
                 @UPathItem(title = "Entité", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
@@ -1466,7 +1466,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         getModel().setSearch(newSearch);
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
-        options.put("draggable", false);
+        options.put("draggable", true);
         options.put("modal", true);
         RequestContext.getCurrentInstance().openDialog("/modules/obj/obj-simple-search-dialog", options, null);
     }
@@ -1480,7 +1480,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         oldSearch.prepare(getEntity());
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
-        options.put("draggable", false);
+        options.put("draggable", true);
         options.put("modal", true);
         RequestContext.getCurrentInstance().openDialog("/modules/obj/obj-simple-field-sel-dialog", options, null);
     }
@@ -1705,7 +1705,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     getModel().setConfirmMessage("Etes vous sur de vouloir continuer?");
                     Map<String, Object> options = new HashMap<String, Object>();
                     options.put("resizable", false);
-                    options.put("draggable", false);
+                    options.put("draggable", true);
                     options.put("modal", true);
 
                     RequestContext.getCurrentInstance().openDialog("/modules/obj/profile-open-action-dialog", options, null);

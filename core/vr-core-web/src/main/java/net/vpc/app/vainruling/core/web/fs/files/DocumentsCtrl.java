@@ -9,10 +9,9 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.I18n;
-import net.vpc.app.vainruling.core.service.util.UploadedFileHandler;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UCtrlData;
 import net.vpc.app.vainruling.core.web.UCtrlProvider;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
@@ -33,7 +32,6 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -43,7 +41,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
 //        title = "Documents", css = "fa-dashboard",
         url = "modules/files/documents"
 //        ,menu = "/FileSystem", securityKey = "Custom.FileSystem.Documents"
@@ -407,7 +405,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
     public void onShowSecurityDialog() {
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
-        options.put("draggable", false);
+        options.put("draggable", true);
         options.put("modal", true);
 
         RequestContext.getCurrentInstance().openDialog("/modules/files/documents-security-dialog", options, null);

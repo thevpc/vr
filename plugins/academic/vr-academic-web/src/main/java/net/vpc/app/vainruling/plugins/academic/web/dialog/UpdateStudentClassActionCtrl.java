@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.web.dialog;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl
+@VrController
 public class UpdateStudentClassActionCtrl {
 
     public static final Logger log = Logger.getLogger(UpdateStudentClassActionCtrl.class.getName());
@@ -46,7 +46,7 @@ public class UpdateStudentClassActionCtrl {
         getModel().setUserSelectedOnly(!getModel().getSelectionIdList().isEmpty());
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
-        options.put("draggable", false);
+        options.put("draggable", true);
         options.put("modal", true);
         RequestContext.getCurrentInstance().openDialog("/modules/academic/dialog/update-student-class-dialog", options, null);
 

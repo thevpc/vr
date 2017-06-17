@@ -12,7 +12,7 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.common.jsf.FacesUtils;
@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl
+@VrController
 public class SendWelcomeMailActionCtrl {
 
     private static final Logger log = Logger.getLogger(SendWelcomeMailActionCtrl.class.getName());
@@ -50,7 +50,7 @@ public class SendWelcomeMailActionCtrl {
 
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
-        options.put("draggable", false);
+        options.put("draggable", true);
         options.put("modal", true);
 
         RequestContext.getCurrentInstance().openDialog("/modules/mailbox/send-welcome-mail-dialog", options, null);

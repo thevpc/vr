@@ -7,22 +7,22 @@ package net.vpc.app.vainruling.plugins.academic.web.internship;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.*;
+import net.vpc.app.vainruling.core.service.model.AppCompany;
+import net.vpc.app.vainruling.core.service.model.AppConfig;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
-import net.vpc.app.vainruling.core.web.util.ChartUtils;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipBoard;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipSupervisorIntent;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.ext.AcademicInternshipExt;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.ext.AcademicInternshipExtList;
 import net.vpc.app.vainruling.plugins.academic.web.dialog.DisciplineDialogCtrl;
@@ -40,8 +40,6 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.chart.ChartSeries;
-import org.primefaces.model.chart.DonutChartModel;
-import org.primefaces.model.chart.PieChartModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.faces.model.SelectItem;
@@ -58,7 +56,7 @@ import java.util.logging.Logger;
  *
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
@@ -335,9 +333,8 @@ public class MyInternshipBoardsCtrl {
     public AcademicInternshipExtList findActualInternshipsByTeacherAndBoard(int teacherId, int boardId, int internshipTypeId) {
         AcademicPlugin pi = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = getCurrentTeacher();
-        return pi.findInternshipsByTeacherExt(teacherId, boardId,
-                (t != null && t.getDepartment() != null) ? t.getDepartment().getId() : -1,
-                internshipTypeId, true);
+        return pi.findInternshipsByTeacherExt(-1, (t != null && t.getDepartment() != null) ? t.getDepartment().getId() : -1, teacherId, internshipTypeId, boardId,
+                true);
     }
 
     public void onRefreshListMode() {
@@ -347,6 +344,7 @@ public class MyInternshipBoardsCtrl {
         getModel().setInternshipInfos(new ArrayList<AcademicInternshipInfo>());
         getModel().setInternshipItems(new ArrayList<SelectItem>());
         getModel().setInternships(new ArrayList<AcademicInternship>());
+        getModel().setPeriods(new ArrayList<SelectItem>());
         getModel().setBoards(new ArrayList<SelectItem>());
         getModel().setTeachers(new ArrayList<SelectItem>());
         getModel().setTypeVariants(new ArrayList<SelectItem>());
@@ -354,10 +352,14 @@ public class MyInternshipBoardsCtrl {
         getModel().setCompanies(new ArrayList<SelectItem>());
         getModel().setInternshipStatuses(new ArrayList<SelectItem>());
         getModel().setInternshipTypes(new ArrayList<SelectItem>());
+        getModel().getPeriods().clear();
 
         AcademicTeacher currentTeacher = getCurrentTeacher();
         AcademicInternshipExtList internships = new AcademicInternshipExtList();
         List<AcademicInternshipBoard> internshipBoards = new ArrayList<>();
+        for (AppPeriod period : core.findNavigatablePeriods()) {
+            getModel().getPeriods().add(new SelectItem(String.valueOf(period.getId()), period.getName()));
+        }
 
         if (currentTeacher != null) {
             int boardId = getModel().getInternshipBoard() == null ? -1 : getModel().getInternshipBoard().getId();
@@ -394,7 +396,7 @@ public class MyInternshipBoardsCtrl {
             String sname = pp.getValidName(s);
             n = (t.getInternship().getBoard() == null ? "?" : t.getInternship().getBoard().getName()) + "-" + t.getInternship().getCode() + "-" + sname + "-" + t.getInternship().getName();
             internshipItemsToAddTo.add(new SelectItem(String.valueOf(t.getInternship().getId()), n));
-            internshipInfosToAddTo.add(wrap(t));
+            internshipInfosToAddTo.add(new AcademicInternshipInfo(t, getCurrentTeacher()));
 //            System.out.println(t);
         }
 //        int min=5;
@@ -438,8 +440,8 @@ public class MyInternshipBoardsCtrl {
             Map<Integer, Number> localIntershipSupersorsMap = new LinkedHashMap<Integer, Number>();
 
             for (AcademicInternshipInfo ii : getModel().getInternshipInfos()) {
-                AcademicTeacher s1 = ii.internship.getSupervisor();
-                AcademicTeacher s2 = ii.internship.getSecondSupervisor();
+                AcademicTeacher s1 = ii.getInternship().getSupervisor();
+                AcademicTeacher s2 = ii.getInternship().getSecondSupervisor();
                 if (s1 == null && s2 == null) {
                     //do nothing
                     String s0 = "<< Stages Sans Encadrement >>";
@@ -536,7 +538,7 @@ public class MyInternshipBoardsCtrl {
                 getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), n + countSuffix));
             }
 
-            data = ChartUtils.reverseSortCount(data);
+            data = VrUtils.reverseSortCount(data);
             boys.setData(new LinkedHashMap<Object, Number>(data));
 
 //                getModel().setBar1(d1);
@@ -654,114 +656,19 @@ public class MyInternshipBoardsCtrl {
 
     }
 
-    LocationInfo resolveLocation(AppCompany c) {
-        c = c == null ? null : VrApp.getBean(CorePlugin.class).findCompany(c.getId());
-        LocationInfo info = new LocationInfo();
-        info.company = c;
-        info.governorate = info.company == null ? null : info.company.getGovernorate();
-        info.region = info.governorate == null ? null : info.governorate.getRegion();
-        info.country = info.region == null ? null : info.region.getCountry();
-        if (info.country == null) {
-            info.country = info.company == null ? null : info.company.getCountry();
-        }
-        info.companyName = info.company == null ? "?" : info.company.getName();
-        info.governorateName = info.governorate == null ? "?" : info.governorate.getName();
-        info.regionName = info.region == null ? "?" : info.region.getName();
-        info.countryName = info.country == null ? "?" : info.country.getName();
-        return info;
-    }
 
-    protected AcademicInternshipInfo wrap(AcademicInternshipExt internship) {
-        AcademicInternshipInfo i = new AcademicInternshipInfo();
-        i.internship = internship.getInternship();
-        i.internshipExt = internship;
-        rewrap(i);
-        return i;
-    }
-
-    protected AcademicInternshipInfo rewrap(AcademicInternshipInfo i) {
-        i.flags = new ArrayList<>();
-        i.assigned = false;
-        i.assignedToMe = false;
-        i.demanded = false;
-        i.demandedByMe = false;
-        i.demandedOrAssigned = false;
-        i.selectable = true;
-
-        AcademicTeacher tt = getCurrentTeacher();
-
-        AcademicInternshipStatus status = i.internship.getInternshipStatus();
-
-        i.selectable = status.isSupervisorRequestable();
-        TreeSet<String> supervisorInfo = new TreeSet<>();
-        if (i.internship.getSupervisor() != null || i.internship.getSecondSupervisor() != null) {
-            i.assigned = true;
-            if (tt != null && i.internship.getSupervisor().getId() == tt.getId()) {
-                i.assignedToMe = true;
-            }
-            if (i.internship.getSupervisor() != null) {
-                supervisorInfo.add(i.internship.getSupervisor().getContact().getFullName() + "*");
-            }
-            if (i.internship.getSupervisor() != null) {
-                supervisorInfo.add(i.internship.getSupervisor().getContact().getFullName() + "*");
-            }
-        }
-        List<AcademicInternshipSupervisorIntent> allIntents = i.internshipExt.getSupervisorIntents();
-        if (allIntents.size() > 0) {
-            i.demanded = true;
-            for (AcademicInternshipSupervisorIntent aa : allIntents) {
-                AcademicTeacher a = aa.getTeacher();
-                if (tt != null && a.getId() == tt.getId()) {
-                    i.demandedByMe = true;
-                }
-                String n = a.getContact().getFullName();
-                if (!supervisorInfo.contains(n + "*")) {
-                    supervisorInfo.add(n);
-                }
-            }
-        }
-        StringBuilder supervisorInfoStr = new StringBuilder();
-        for (String s : supervisorInfo) {
-            if (supervisorInfoStr.length() > 0) {
-                supervisorInfoStr.append(", ");
-            }
-            supervisorInfoStr.append(s);
-        }
-        i.supervisorInfo = supervisorInfoStr.toString();
-        List<Integer> row1 = new ArrayList<>();
-        List<Integer> row2 = new ArrayList<>();
-        List<Integer> row3 = new ArrayList<>();
-        i.flags.add(row1);
-        i.flags.add(row2);
-        i.flags.add(row3);
-
-        row1.add(StringUtils.isEmpty(i.internship.getName()) ? 2 : i.internship.getName().length() < 10 ? 1 : 0);
-        row1.add(StringUtils.isEmpty(i.internship.getDescription()) ? 2 : (i.internship.getDescription().length() < 50) ? 1 : 0);
-        row1.add(i.internship.getInternshipVariant() == null ? 2 : 0);
-        row1.add((i.internship.getCompany() == null && StringUtils.isEmpty(i.internship.getCompanyOther())) ? 2 : (i.internship.getCompany() == null) ? 1 : 0);
-        row1.add(
-                (i.internship.getCompanyMentor() == null && StringUtils.isEmpty(i.internship.getCompanyMentorOther())) ? 2 : 0
-        );
-        row1.add(2 - ((!StringUtils.isEmpty(i.internship.getCompanyMentorOtherEmail())) ? 1 : 0)
-                - ((!StringUtils.isEmpty(i.internship.getCompanyMentorOtherPhone())) ? 1 : 0));
-
-        row2.add(2 - (StringUtils.isEmpty(i.internship.getMainDiscipline()) ? 0 : 1) - (StringUtils.isEmpty(i.internship.getTechnologies()) ? 0 : 1));
-        row2.add((i.internship.getStartDate() == null || i.internship.getEndDate() == null) ? 2 : i.internship.getEndDate().before(i.internship.getStartDate()) ? 1 : 0);
-        row2.add((i.internship.getSpecFilePath() == null) ? 2 : 0);
-        row2.add((i.internship.getMidTermReportFilePath() == null) ? 2 : 0);
-        row2.add((i.internship.getReportFilePath() == null) ? 2 : 0);
-        row2.add(-1);
-
-        row3.add((i.internship.getSupervisor() == null) ? 2 : 0);
-        boolean boardUpdatesEvaluators = i.internship.getInternshipStatus().isBoardUpdatesEvaluators();
-        row3.add(boardUpdatesEvaluators ? ((i.internship.getChairExaminer() == null) ? 2 : 0) : -1);
-        row3.add(boardUpdatesEvaluators ? ((i.internship.getFirstExaminer() == null) ? 2 : 0) : -1);
-        row3.add(boardUpdatesEvaluators ? ((i.internship.getExamDate() == null) ? 2 : 0) : -1);
-        row3.add(boardUpdatesEvaluators ? ((i.internship.getExamLocation() == null) ? 2 : 0) : -1);
-        row3.add(-1);
-
-        return i;
-    }
+//    protected AcademicInternshipInfo wrap(AcademicInternshipExt internship) {
+//        AcademicInternshipInfo i = new AcademicInternshipInfo();
+//        i.setInternship(internship.getInternship());
+//        i.setInternshipExt(internship);
+//        rewrap(i);
+//        return i;
+//    }
+//
+//    protected AcademicInternshipInfo rewrap(AcademicInternshipInfo i) {
+//        i.rewrap(getCurrentTeacher());
+//        return i;
+//    }
 
     public void onRequestUpload(String report) {
         getModel().setRequestUploadType(report);
@@ -867,145 +774,6 @@ public class MyInternshipBoardsCtrl {
         getModel().setBoardMessages(p.findInternshipMessagesByInternship(getModel().getInternship().getId()));
     }
 
-    public static class LocationInfo {
-
-        AppCompany company;
-        AppGovernorate governorate;
-        AppCountryRegion region;
-        AppCountry country;
-        String companyName;
-        String governorateName;
-        String regionName;
-        String countryName;
-    }
-
-    public static class AcademicInternshipCount {
-
-        private String teacherName;
-        private double count;
-
-        public String getTeacherName() {
-            return teacherName;
-        }
-
-        public void setTeacherName(String teacherName) {
-            this.teacherName = teacherName;
-        }
-
-        public double getCount() {
-            return count;
-        }
-
-        public void setCount(double count) {
-            this.count = count;
-        }
-
-    }
-
-    public static class AcademicInternshipInfo {
-
-        private AcademicInternshipExt internshipExt;
-        private AcademicInternship internship;
-        private List<List<Integer>> flags;
-        private List<AcademicTeacher> intentTeachers;
-        private boolean selectable;
-        private boolean demanded;
-        private boolean demandedOrAssigned;
-        private boolean demandedByMe;
-        private boolean assigned;
-        private boolean assignedToMe;
-        private String supervisorInfo;
-
-        public AcademicInternship getInternship() {
-            return internship;
-        }
-
-        public void setInternship(AcademicInternship internship) {
-            this.internship = internship;
-        }
-
-        public List<List<Integer>> getFlags() {
-            return flags;
-        }
-
-        public void setFlags(List<List<Integer>> flags) {
-            this.flags = flags;
-        }
-
-        public boolean isDemanded() {
-            return demanded;
-        }
-
-        public void setDemanded(boolean demanded) {
-            this.demanded = demanded;
-        }
-
-        public boolean isAssignedToMe() {
-            return assignedToMe;
-        }
-
-        public void setAssignedToMe(boolean assignedToMe) {
-            this.assignedToMe = assignedToMe;
-        }
-
-        public String getSupervisorInfo() {
-            return supervisorInfo;
-        }
-
-        public void setSupervisorInfo(String supervisorInfo) {
-            this.supervisorInfo = supervisorInfo;
-        }
-
-        public List<AcademicTeacher> getIntentTeachers() {
-            return intentTeachers;
-        }
-
-        public void setIntentTeachers(List<AcademicTeacher> intentTeachers) {
-            this.intentTeachers = intentTeachers;
-        }
-
-        public boolean isDemandedOrAssigned() {
-            return demandedOrAssigned;
-        }
-
-        public void setDemandedOrAssigned(boolean demandedOrAssigned) {
-            this.demandedOrAssigned = demandedOrAssigned;
-        }
-
-        public boolean isDemandedByMe() {
-            return demandedByMe;
-        }
-
-        public void setDemandedByMe(boolean demandedByMe) {
-            this.demandedByMe = demandedByMe;
-        }
-
-        public boolean isAssigned() {
-            return assigned;
-        }
-
-        public void setAssigned(boolean assigned) {
-            this.assigned = assigned;
-        }
-
-        public boolean isSelectable() {
-            return selectable;
-        }
-
-        public void setSelectable(boolean selectable) {
-            this.selectable = selectable;
-        }
-
-        public AcademicInternshipExt getInternshipExt() {
-            return internshipExt;
-        }
-
-        public void setInternshipExt(AcademicInternshipExt internshipExt) {
-            this.internshipExt = internshipExt;
-        }
-
-    }
-
     public class Model {
 
         private EditCtrlMode mode = EditCtrlMode.LIST;
@@ -1014,6 +782,7 @@ public class MyInternshipBoardsCtrl {
         private boolean boardManager;
         private String internshipId;
         private String boardId;
+        private String periodId;
         private String companyId;
         private String internshipStatusId;
         private String chairExaminerId;
@@ -1028,6 +797,7 @@ public class MyInternshipBoardsCtrl {
         private AcademicInternship internship;
         private AcademicInternshipBoard internshipBoard;
         private List<AcademicInternshipCount> academicInternshipCounts = new ArrayList<AcademicInternshipCount>();
+        private List<SelectItem> periods = new ArrayList<SelectItem>();
         private List<SelectItem> boards = new ArrayList<SelectItem>();
         private List<SelectItem> internshipItems = new ArrayList<SelectItem>();
         private List<SelectItem> internshipTypes = new ArrayList<SelectItem>();
@@ -1041,30 +811,14 @@ public class MyInternshipBoardsCtrl {
         private List<SelectItem> internshipStatuses = new ArrayList<SelectItem>();
         private List<AcademicInternshipBoardTeacher> boardTeachers = new ArrayList<AcademicInternshipBoardTeacher>();
         private List<AcademicInternshipBoardMessage> boardMessages = new ArrayList<AcademicInternshipBoardMessage>();
-        private DonutChartModel donut1;
-        private DonutChartModel donut2;
-        private DonutChartModel donut3;
-        private DonutChartModel donut4;
-        private DonutChartModel donut5;
-        private BarChartModel bar1;
-        private PieChartModel pie1;
-        private PieChartModel pie2;
         private boolean filterInternshipTypeVisible = true;
 
-        public DonutChartModel getDonut1() {
-            return donut1;
+        public String getPeriodId() {
+            return periodId;
         }
 
-        public void setDonut1(DonutChartModel donut1) {
-            this.donut1 = donut1;
-        }
-
-        public DonutChartModel getDonut2() {
-            return donut2;
-        }
-
-        public void setDonut2(DonutChartModel donut2) {
-            this.donut2 = donut2;
+        public void setPeriodId(String periodId) {
+            this.periodId = periodId;
         }
 
         public boolean isBoardManager() {
@@ -1227,6 +981,14 @@ public class MyInternshipBoardsCtrl {
             this.internshipBoard = internshipBoard;
         }
 
+        public List<SelectItem> getPeriods() {
+            return periods;
+        }
+
+        public void setPeriods(List<SelectItem> periods) {
+            this.periods = periods;
+        }
+
         public String getDurationId() {
             return durationId;
         }
@@ -1299,6 +1061,14 @@ public class MyInternshipBoardsCtrl {
             this.newMessage = newMessage;
         }
 
+        public List<AcademicInternship> getInternships2() {
+            List<AcademicInternship> all = new ArrayList<>();
+            for (AcademicInternshipInfo academicInternshipInfo : getInternshipInfos()) {
+                all.add(academicInternshipInfo.getInternship());
+            }
+            return all;
+        }
+
         public List<AcademicInternshipInfo> getInternshipInfos() {
             return internshipInfos;
         }
@@ -1317,54 +1087,6 @@ public class MyInternshipBoardsCtrl {
 
         public boolean isList() {
             return getMode() == EditCtrlMode.LIST;
-        }
-
-        public DonutChartModel getDonut3() {
-            return donut3;
-        }
-
-        public void setDonut3(DonutChartModel donut3) {
-            this.donut3 = donut3;
-        }
-
-        public DonutChartModel getDonut4() {
-            return donut4;
-        }
-
-        public void setDonut4(DonutChartModel donut4) {
-            this.donut4 = donut4;
-        }
-
-        public DonutChartModel getDonut5() {
-            return donut5;
-        }
-
-        public void setDonut5(DonutChartModel donut5) {
-            this.donut5 = donut5;
-        }
-
-        public PieChartModel getPie1() {
-            return pie1;
-        }
-
-        public void setPie1(PieChartModel pie1) {
-            this.pie1 = pie1;
-        }
-
-        public PieChartModel getPie2() {
-            return pie2;
-        }
-
-        public void setPie2(PieChartModel pie2) {
-            this.pie2 = pie2;
-        }
-
-        public BarChartModel getBar1() {
-            return bar1;
-        }
-
-        public void setBar1(BarChartModel bar1) {
-            this.bar1 = bar1;
         }
 
         public List<AcademicInternshipCount> getAcademicInternshipCounts() {
@@ -1390,6 +1112,5 @@ public class MyInternshipBoardsCtrl {
         public void setFilterInternshipTypeVisible(boolean filterInternshipTypeVisible) {
             this.filterInternshipTypeVisible = filterInternshipTypeVisible;
         }
-
     }
 }

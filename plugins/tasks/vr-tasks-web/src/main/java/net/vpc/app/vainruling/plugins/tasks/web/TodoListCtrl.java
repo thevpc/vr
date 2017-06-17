@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.plugins.tasks.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
         breadcrumb = {
                 @UPathItem(ctrl = "dashboard")},
         url = "modules/todo/config-todo-list"

@@ -20,7 +20,7 @@ public class Ex2 {
         aca.findInternships(1, -1, 1, 1, 1, true);
         aca.findInternshipsByDepartment(1, true);
         aca.findInternshipsByDepartmentExt(1, true);
-        aca.findInternshipsByTeacherExt(1, 1, 1, 1, true);
+        aca.findInternshipsByTeacherExt(1, 1, 1, 1, 1, true);
         aca.findInternshipTeacherInternshipsCount(1, 1, 1);
         aca.findInternshipTeachersInternshipsCounts(1, 1);
         aca.generateInternships(3, "IA3.1");

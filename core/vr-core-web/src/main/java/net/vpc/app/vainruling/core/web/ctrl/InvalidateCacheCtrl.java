@@ -6,20 +6,13 @@
 package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
-import net.vpc.common.jsf.FacesUtils;
-import net.vpc.upa.UPA;
-import net.vpc.upa.VoidAction;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.web.VrController;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
         menu = "/Admin",
         securityKey = "Custom.Admin.InvalidateCache"
 )

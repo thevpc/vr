@@ -9,7 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.common.strings.StringUtils;
 import org.primefaces.context.RequestContext;
@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl
+@VrController
 public class ProfileExprDialogCtrl {
 
     @Autowired
@@ -43,7 +43,7 @@ public class ProfileExprDialogCtrl {
 
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
-        options.put("draggable", false);
+        options.put("draggable", true);
         options.put("modal", true);
 
         RequestContext.getCurrentInstance().openDialog("/modules/obj/profile-expr-dialog", options, null);

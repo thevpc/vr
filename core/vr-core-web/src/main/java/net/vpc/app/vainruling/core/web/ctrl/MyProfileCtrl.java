@@ -7,15 +7,11 @@ package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
 import net.vpc.common.jsf.FacesUtils;
-import net.vpc.upa.UPA;
-import net.vpc.upa.VoidAction;
 
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
@@ -26,7 +22,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
 //        title = "Mon Profil", css = "fa-dashboard",
         url = "modules/config/my-profile",
         menu = "/Config",

@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
         breadcrumb = {
                 @UPathItem(title = "Todo", css = "fa-dashboard", ctrl = "")
         }, url = "modules/todo/todos"

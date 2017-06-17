@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.NotificationText;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.common.util.Chronometer;
 import org.springframework.context.annotation.Scope;
@@ -18,7 +18,7 @@ import java.util.Date;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl
+@VrController
 @Scope("singleton")
 public class AppGlobalCtrl extends BasePageCtrl {
 

@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Controller
 @Scope(value = "session")
-public @interface UCtrl {
+public @interface VrController {
 
     UPathItem[] breadcrumb() default {};
 

@@ -7,14 +7,14 @@ package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import org.springframework.context.annotation.Scope;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
 //        title = "Contacts",
         url = "#{vr.themePath}/contacts"
 )

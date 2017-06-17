@@ -12,7 +12,7 @@ import net.vpc.app.vainruling.core.service.obj.AppFile;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UCtrlData;
 import net.vpc.app.vainruling.core.web.UCtrlProvider;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl
+@VrController
 public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     private static final Logger log = Logger.getLogger(MailboxCtrl.class.getName());

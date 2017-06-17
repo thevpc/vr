@@ -43,7 +43,7 @@ public class DisciplineDialogCtrl {
 
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
-        options.put("draggable", false);
+        options.put("draggable", true);
         options.put("modal", true);
 
         RequestContext.getCurrentInstance().openDialog("/modules/academic/dialog/discipline-dialog", options, null);

@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.tasks.web;
 
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.ctrl.AbstractNameCtrl;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
         breadcrumb = {
                 @UPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = ""),
         }

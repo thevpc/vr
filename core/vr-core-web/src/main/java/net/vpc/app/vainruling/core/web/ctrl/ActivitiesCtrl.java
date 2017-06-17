@@ -7,13 +7,13 @@ package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
 //        title = "Activités",
         url = "activities"
 )

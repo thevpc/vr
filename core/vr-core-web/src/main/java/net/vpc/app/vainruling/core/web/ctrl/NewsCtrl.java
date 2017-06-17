@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.core.web.ctrl;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.common.strings.StringUtils;
@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Scope;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
 //        title = "News",
         url = "#{vr.themeRelativePath}/news"
 )

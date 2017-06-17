@@ -7,16 +7,14 @@ package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.agent.ActiveSessionsTracker;
-import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.AppUserType;
 import net.vpc.app.vainruling.core.service.notification.PollAware;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
-import net.vpc.app.vainruling.core.web.util.ChartUtils;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
 import org.primefaces.model.chart.DonutChartModel;
@@ -29,7 +27,7 @@ import java.util.*;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
 //        title = "Utilisateurs Connectés",
         url = "modules/admin/active-sessions",
         menu = "/Social",
@@ -160,13 +158,13 @@ public class ActiveSessionsCtrl implements PollAware {
                         if (i != null && i.getUser() != null && i.getUser().getDepartment() != null) {
                             AppDepartment c = i.getUser().getDepartment();
                             if (c!=null && !StringUtils.isEmpty(c.getName())) {
-                                ChartUtils.incKey(circle2, c.getName());
+                                VrUtils.incKey(circle2, c.getName());
                             }
                         }
                     }
-                    ChartUtils.reverseSortCount(circle1);
-                    ChartUtils.reverseSortCount(circle2);
-                    ChartUtils.mergeMapKeys(circle1, circle2);
+                    VrUtils.reverseSortCount(circle1);
+                    VrUtils.reverseSortCount(circle2);
+                    VrUtils.mergeMapKeys(circle1, circle2);
                     d.addCircle(circle1);
                     d.addCircle(circle2);
                 }
@@ -185,16 +183,16 @@ public class ActiveSessionsCtrl implements PollAware {
                     for (UserSession i : list) {
                         if (i.getLocale() != null) {
                             if (!StringUtils.isEmpty(i.getLocale().getLanguage())) {
-                                ChartUtils.incKey(circle1, i.getLocale().getLanguage());
+                                VrUtils.incKey(circle1, i.getLocale().getLanguage());
                             }
                         }
                         if (!StringUtils.isEmpty(i.getLastVisitedPage())) {
-                            ChartUtils.incKey(circle2, i.getLastVisitedPage());
+                            VrUtils.incKey(circle2, i.getLastVisitedPage());
                         }
                     }
-                    ChartUtils.reverseSortCount(circle1);
-                    ChartUtils.reverseSortCount(circle2, 12, null);
-                    ChartUtils.mergeMapKeys(circle1, circle2);
+                    VrUtils.reverseSortCount(circle1);
+                    VrUtils.reverseSortCount(circle2, 12, null);
+                    VrUtils.mergeMapKeys(circle1, circle2);
                     d.addCircle(circle1);
                     d.addCircle(circle2);
                 }

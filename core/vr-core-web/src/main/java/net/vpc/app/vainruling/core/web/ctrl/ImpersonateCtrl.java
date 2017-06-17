@@ -5,13 +5,13 @@
  */
 package net.vpc.app.vainruling.core.web.ctrl;
 
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import org.springframework.context.annotation.Scope;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
         url = "modules/admin/impersonate",
         menu = "/Admin/Security",
         securityKey = "Custom.Admin.Impersonate"

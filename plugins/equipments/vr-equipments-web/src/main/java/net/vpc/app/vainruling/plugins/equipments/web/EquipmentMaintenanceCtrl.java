@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.plugins.equipments.web;
 
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 
 import javax.annotation.PostConstruct;
@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl(
+@VrController(
         breadcrumb = {
                 @UPathItem(title = "Site", css = "fa-dashboard", ctrl = "")},
         url = "modules/equipments/maintenance",

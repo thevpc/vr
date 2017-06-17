@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.plugins.academic.web.internship.actions;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.web.UCtrl;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipStatus;
@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@UCtrl
+@VrController
 public class UpdateStatusInternshipsActionCtrl {
 
     private static final Logger log = Logger.getLogger(UpdateStatusInternshipsActionCtrl.class.getName());
@@ -45,7 +45,7 @@ public class UpdateStatusInternshipsActionCtrl {
         getModel().setSelectionIdList(itemIds == null ? new ArrayList<String>() : itemIds);
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
-        options.put("draggable", false);
+        options.put("draggable", true);
         options.put("modal", true);
         RequestContext.getCurrentInstance().openDialog("/modules/academic/internship/update-status-interships-dialog", options, null);
 
@@ -55,7 +55,7 @@ public class UpdateStatusInternshipsActionCtrl {
         List<SelectItem> internshipBoardsItems = new ArrayList<>();
         AcademicTeacher tt = ap.getCurrentTeacher();
 
-        List<AcademicInternshipBoard> internshipBoards = pi.findEnabledInternshipBoardsByDepartment(tt.getDepartment().getId());
+        List<AcademicInternshipBoard> internshipBoards = pi.findEnabledInternshipBoardsByDepartment(-1,tt.getDepartment().getId(),true);
         for (AcademicInternshipBoard t : internshipBoards) {
             String n = t.getName();
             internshipBoardsItems.add(new SelectItem(String.valueOf(t.getId()), n));

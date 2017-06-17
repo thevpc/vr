@@ -8,26 +8,26 @@ package net.vpc.app.vainruling.core.service.util;
 /**
  * @author taha.bensalah@gmail.com
  */
-public class ValueCount {
-    private Object value;
+public class NamedValueCount {
+    private String name;
     private Object userValue;
     private int count;
 
-    public ValueCount() {
+    public NamedValueCount() {
     }
 
-    public ValueCount(Object value, Object userValue, int count) {
-        this.value = value;
+    public NamedValueCount(String name, Object userValue, int count) {
+        this.name = name;
         this.userValue = userValue;
         this.count = count;
     }
 
-    public Object getValue() {
-        return value;
+    public String getName() {
+        return name;
     }
 
-    public void setValue(Object value) {
-        this.value = value;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Object getUserValue() {
