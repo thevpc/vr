@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.equipments.service.model;
 
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.upa.AccessLevel;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
@@ -34,6 +35,13 @@ public class EquipmentStatusLog {
     @Summary
     private Equipment equipment;
 
+    /**
+     * technician
+     */
+    @Summary
+    @Field(updateAccessLevel = AccessLevel.PROTECTED,persistAccessLevel = AccessLevel.PROTECTED)
+    private AppUser actor;
+
     @Summary
     private double quantity;
 
@@ -41,17 +49,7 @@ public class EquipmentStatusLog {
     @ToString
     private EquipmentStatusType type=EquipmentStatusType.AVAILABLE;
 
-    /**
-     * technician
-     */
-    @Summary
-    private AppUser actor;
 
-    /**
-     * may be borrower if status=borrowed
-     */
-    @Summary
-    private AppUser responsible;
 
 
     @Summary
@@ -63,6 +61,12 @@ public class EquipmentStatusLog {
     @Summary
     private Timestamp endDate;
 
+
+    /**
+     * may be borrower if status=borrowed
+     */
+    @Summary
+    private AppUser responsible;
 
     /**
      * description of the status, for instance when borrowed tell why

@@ -42,9 +42,8 @@ public class Equipment {
     private String stockSerial;
     private String name;
     @Summary
-    @Formula(value = "this.quantity+Coalesce((Select sum(a.quantity) from EquipmentStatusLog a where a.equipmentId=this.id))",formulaOrder = 2)
+    @Formula(value = "this.quantity+Coalesce((Select sum(a.quantity) from EquipmentStatusLog a where a.equipmentId=this.id),0)",formulaOrder = 2)
     private double actualQuantity;
-    @Summary
     private double quantity;
     @Main
     @Formula(value = "concat(this.name,'-',this.serial)")

@@ -3,18 +3,18 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.equipments.service;
+package net.vpc.app.vainruling.plugins.equipments.service.callbacks;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.equipments.service.model.*;
+import net.vpc.upa.CustomDefaultObject;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
+import net.vpc.upa.callbacks.FieldEvent;
 import net.vpc.upa.callbacks.PersistEvent;
 import net.vpc.upa.callbacks.UpdateEvent;
-import net.vpc.upa.config.Callback;
-import net.vpc.upa.config.OnPersist;
-import net.vpc.upa.config.OnPreUpdate;
-import net.vpc.upa.config.OnUpdate;
+import net.vpc.upa.config.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,35 @@ import java.util.List;
  */
 @Callback
 public class InventoryPluginCallback {
+    @OnPreCreate
+    public void onPreCreate(FieldEvent event) {
+        if(event.getField().getAbsoluteName().equals("ArticlesItem.disposition")){
+            event.getField().setDefaultObject((CustomDefaultObject) () -> CorePlugin.get().findArticleDisposition("Welcome"));
+        }
+    }
 
+    @OnPrePersist
+    public void onPrePersist(PersistEvent event) {
+        Entity entity = event.getEntity();
+        if (entity.getName().equals("EquipmentStatusLog")) {
+            EquipmentStatusLog eq = (EquipmentStatusLog) event.getPersistedObject();
+            EquipmentStatusType type = eq.getType();
+            eq.setActor(CorePlugin.get().getCurrentUser());
+            if(type!=null){
+                if(type.getSign()==0){
+                    eq.setQuantity(0);
+                }else if(type.getSign()>0){
+                    if(eq.getQuantity()<0){
+                        eq.setQuantity(-eq.getQuantity());
+                    }
+                }else if(type.getSign()<0){
+                    if(eq.getQuantity()>0){
+                        eq.setQuantity(-eq.getQuantity());
+                    }
+                }
+            }
+        }
+    }
     @OnPersist
     public void onPersist(PersistEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
@@ -79,8 +107,20 @@ public class InventoryPluginCallback {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
         if (entity.getName().equals("EquipmentStatusLog")) {
-            EquipmentStatusLog e = (EquipmentStatusLog) event.getUpdatesObject();
-            if(e!=null && e.getEquipment()!=null){
+            EquipmentStatusLog eq = (EquipmentStatusLog) event.getUpdatesObject();
+            if(eq!=null) {
+                EquipmentStatusType type = eq.getType();
+                if (type != null) {
+                    if (type.getSign() == 0) {
+                        eq.setQuantity(0);
+                    } else if (type.getSign() * eq.getQuantity() < 0) {
+                        double quantity = -eq.getQuantity();
+                        eq.setQuantity(quantity);
+                        event.getUpdatesDocument().setDouble("quantity",quantity);
+                    }
+                }
+            }
+            if(eq!=null && eq.getEquipment()!=null){
                 event.getContext().setObject("EquipmentStatusLog.Updated",pu.createQueryBuilder("EquipmentStatusLog").byExpression(event.getFilterExpression()).getIdList());
             }else{
                 event.getContext().setObject("EquipmentStatusLog.Updated",new ArrayList<>());

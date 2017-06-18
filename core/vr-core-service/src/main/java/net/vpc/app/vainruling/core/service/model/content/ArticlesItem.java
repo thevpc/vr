@@ -55,15 +55,20 @@ public class ArticlesItem {
     )
     private ArticlesDisposition disposition;
 
+    @Field(readAccessLevel = AccessLevel.PROTECTED)
     private boolean includeSender=true;
+    @Field(readAccessLevel = AccessLevel.PROTECTED)
     private boolean noSubject;
 
     @Summary
+    @Field(readAccessLevel = AccessLevel.PROTECTED)
     private ArticlesDispositionGroup dispositionGroup;
+    @Field(readAccessLevel = AccessLevel.PROTECTED)
     private String decoration;
 
     @Main
     private String subject;
+    @Field(readAccessLevel = AccessLevel.PROTECTED)
     private String subTitle;
 
 
@@ -81,8 +86,10 @@ public class ArticlesItem {
     @Field(max = "1024")
     private String linkURL;
 
+    @Field(readAccessLevel = AccessLevel.PROTECTED)
     private String linkText;
 
+    @Field(readAccessLevel = AccessLevel.PROTECTED)
     private String linkClassStyle;
 
     @Properties({
@@ -90,10 +97,12 @@ public class ArticlesItem {
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
     )
+    @Field(readAccessLevel = AccessLevel.PROTECTED)
     private String imageURL;
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Flags"))
+    @Field(readAccessLevel = AccessLevel.PROTECTED)
     private int position;
 
     private boolean important;
@@ -108,7 +117,8 @@ public class ArticlesItem {
 
     @Summary
     @Field(persistAccessLevel = AccessLevel.PROTECTED,
-            updateAccessLevel = AccessLevel.PROTECTED
+            updateAccessLevel = AccessLevel.PROTECTED,
+            readAccessLevel = AccessLevel.PROTECTED
     )
     @Properties(
             {
@@ -123,16 +133,20 @@ public class ArticlesItem {
     private String filterExpression;
 
     @Summary
+    @Field(readAccessLevel = AccessLevel.PROTECTED)
     private DateTime sendTime;
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     private boolean archived;
 
+    @Field(readAccessLevel = AccessLevel.PROTECTED)
     private boolean deleted;
 
+    @Field(readAccessLevel = AccessLevel.PROTECTED)
     private String deletedBy;
 
+    @Field(readAccessLevel = AccessLevel.PROTECTED)
     private Timestamp deletedOn;
 
     public int getPosition() {

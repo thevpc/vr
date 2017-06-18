@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.vpc.app.vain-ruling.core</groupId>
+    <artifactId>vr-core-rest-client</artifactId>
+    <version>1.11</version>
+    <packaging>jar</packaging>
+    <url>https://github.com/thevpc/vr/wiki</url>
+    <parent>
+        <groupId>net.vpc.app.vain-ruling</groupId>
+        <artifactId>vr-plugin</artifactId>
+        <version>1.0</version>
+    </parent>
+    <properties>
+        <vr-plugin.name>VR Core</vr-plugin.name>
+        <vr-plugin.description>Core of VR Platform</vr-plugin.description>
+        <vr-plugin.component-type>service</vr-plugin.component-type>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.2</version>
+        </dependency>
+    </dependencies>
+</project>
