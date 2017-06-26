@@ -1,12 +1,12 @@
 package net.vpc.app.vainruling.core.web.obj;
 
+import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Entity;
 import net.vpc.upa.KeyType;
 import net.vpc.upa.UPA;
 import net.vpc.upa.types.DataType;
 import net.vpc.upa.types.EnumType;
 import net.vpc.upa.types.StringType;
-import org.apache.commons.lang.StringUtils;
 
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;

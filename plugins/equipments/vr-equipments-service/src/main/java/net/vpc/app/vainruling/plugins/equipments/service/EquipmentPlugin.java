@@ -11,12 +11,12 @@ import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.InstallDemo;
 import net.vpc.app.vainruling.plugins.equipments.service.model.*;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Utils;
 import net.vpc.upa.Entity;
 import net.vpc.upa.EntityBuilder;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Timestamp;

@@ -453,27 +453,27 @@ and open the template in the editor.
                     <h:panelGroup id="dynaFormGroup">
                         <div class="panel-body">
                             <pe:dynaForm id="dynaForm" value="#{objCtrl.dynModel}" var="data">
-                                <pe:dynaFormControl type="text" for="txt">
+                                <pe:dynaFormControl type="text" for="txt" >
                                     <p:inputText id="txt" value="#{data.value}" required="#{data.required}"
                                                  disabled="#{data.disabled}" styleClass="form-control"/>
                                 </pe:dynaFormControl>
-                                <pe:dynaFormControl type="integer" for="tinteger">
+                                <pe:dynaFormControl type="integer" for="tinteger" >
                                     <p:inputText id="tinteger" value="#{data.valueInteger}" required="#{data.required}"
                                                  disabled="#{data.disabled}" styleClass="form-control"/>
                                 </pe:dynaFormControl>
-                                <pe:dynaFormControl type="long" for="tlong">
+                                <pe:dynaFormControl type="long" for="tlong" >
                                     <p:inputText id="tlong" value="#{data.valueLong}" required="#{data.required}"
                                                  disabled="#{data.disabled}" styleClass="form-control"/>
                                 </pe:dynaFormControl>
-                                <pe:dynaFormControl type="double" for="tdouble">
+                                <pe:dynaFormControl type="double" for="tdouble" >
                                     <p:inputText id="tdouble" value="#{data.valueDouble}" required="#{data.required}"
                                                  disabled="#{data.disabled}" styleClass="form-control"/>
                                 </pe:dynaFormControl>
-                                <pe:dynaFormControl type="float" for="tfloat">
+                                <pe:dynaFormControl type="float" for="tfloat" >
                                     <p:inputText id="tfloat" value="#{data.valueFloat}" required="#{data.required}"
                                                  disabled="#{data.disabled}" styleClass="form-control"/>
                                 </pe:dynaFormControl>
-                                <pe:dynaFormControl type="datetime" for="tdatetime" styleClass="calendar">
+                                <pe:dynaFormControl type="datetime" for="tdatetime" styleClass="calendar" >
                                     <p:calendar id="tdatetime" value="#{data.value}"
                                                 required="#{data.required}"
                                                 showOn="button"
@@ -483,7 +483,7 @@ and open the template in the editor.
                                     />
                                 </pe:dynaFormControl>
 
-                                <pe:dynaFormControl type="date" for="tdate" styleClass="calendar">
+                                <pe:dynaFormControl type="date" for="tdate" styleClass="calendar" >
                                     <p:calendar id="tdate" value="#{data.value}"
                                                 required="#{data.required}"
                                                 showOn="button"
@@ -493,7 +493,7 @@ and open the template in the editor.
                                     />
                                 </pe:dynaFormControl>
 
-                                <pe:dynaFormControl type="time" for="ttime" styleClass="calendar">
+                                <pe:dynaFormControl type="time" for="ttime" styleClass="calendar" >
                                     <p:calendar id="ttime" value="#{data.value}"
                                                 required="#{data.required}"
                                                 showOn="button"
@@ -504,7 +504,7 @@ and open the template in the editor.
                                     />
                                 </pe:dynaFormControl>
 
-                                <pe:dynaFormControl type="select" for="tselect" styleClass="select">
+                                <pe:dynaFormControl type="select" for="tselect" styleClass="select" >
                                     <p:selectOneMenu id="tselect" value="#{data.selectedItem}"
                                                      required="#{data.required}"
                                                      disabled="#{data.disabled}"
@@ -514,19 +514,20 @@ and open the template in the editor.
                                     </p:selectOneMenu>
                                 </pe:dynaFormControl>
 
-                                <pe:dynaFormControl type="select_onchange" for="tselect_onchange" styleClass="select">
+                                <pe:dynaFormControl type="select_onchange" for="tselect_onchange" styleClass="select" >
                                     <p:selectOneMenu id="tselect_onchange" value="#{data.selectedItem}"
                                                      required="#{data.required}"
                                                      disabled="#{data.disabled}"
                                                      valueChangeListener="#{data.onChange}"
-                                                     onchange="submit();"
                                                      filter="true" filterMatchMode="contains"
+
                                     >
                                         <f:selectItems value="#{data.items}"/>
+                                        <f:ajax process="@this"  render="editItemDialog" />
                                     </p:selectOneMenu>
                                 </pe:dynaFormControl>
 
-                                <pe:dynaFormControl type="entity" for="tentity" styleClass="select">
+                                <pe:dynaFormControl type="entity" for="tentity" styleClass="select" >
                                     <p:panelGrid columns="2" style="border-style: hidden;width: 100%;"
                                                  columnClasses="multi-component-main,multi-component-action">
                                         <p:selectOneMenu id="tentity" value="#{data.selectedItem}"
@@ -545,7 +546,7 @@ and open the template in the editor.
                                                 action="#{vr.gotoPage('obj', data.buildActionCommand())}"/>
                                     </p:panelGrid>
                                 </pe:dynaFormControl>
-                                <pe:dynaFormControl type="entity_onchange" for="tentity_onchange" styleClass="select">
+                                <pe:dynaFormControl type="entity_onchange" for="tentity_onchange" styleClass="select" >
                                     <p:panelGrid columns="2" style="border-style: hidden"
                                                  columnClasses="multi-component-main,multi-component-action">
                                         <p:selectOneMenu id="tentity_onchange" value="#{data.selectedItem}"
@@ -566,17 +567,17 @@ and open the template in the editor.
                                     </p:panelGrid>
                                 </pe:dynaFormControl>
 
-                                <pe:dynaFormControl type="textarea" for="tarea">
+                                <pe:dynaFormControl type="textarea" for="tarea" >
                                     <p:inputTextarea id="tarea" value="#{data.value}" required="#{data.required}"
                                                      autoResize="false" disabled="#{data.disabled}"
                                                      styleClass="form-control"/>
                                 </pe:dynaFormControl>
-                                <pe:dynaFormControl type="richtextarea" for="trichtextarea">
+                                <pe:dynaFormControl type="richtextarea" for="trichtextarea" >
                                     <p:editor id="trichtextarea" value="#{data.value}" required="#{data.required}"
                                               disabled="#{data.disabled}"/>
                                 </pe:dynaFormControl>
 
-                                <pe:dynaFormControl type="wikitextarea" for="twikiarea">
+                                <pe:dynaFormControl type="wikitextarea" for="twikiarea" >
                                     <p:panelGrid style="border-style: hidden;width: 100%"
                                                  columnClasses="nopadding,nopadding">
                                         <p:row>
@@ -613,19 +614,19 @@ and open the template in the editor.
 
                                 </pe:dynaFormControl>
 
-                                <pe:dynaFormControl type="checkbox" for="tcheckbox">
+                                <pe:dynaFormControl type="checkbox" for="tcheckbox" >
                                     <p:selectBooleanCheckbox id="tcheckbox" value="#{data.value}"
                                                              required="#{data.required}" disabled="#{data.disabled}"/>
                                 </pe:dynaFormControl>
 
-                                <pe:dynaFormControl type="rating" for="rat">
+                                <pe:dynaFormControl type="rating" for="rat" >
                                     <p:rating id="rat" value="#{data.value}" required="#{data.required}"
                                               disabled="#{data.disabled}"/>
                                 </pe:dynaFormControl>
 
-                                <pe:dynaFormControl type="separator" styleClass="separator ui-state-disabled">
+                                <pe:dynaFormControl type="separator" styleClass="separator ui-state-disabled" >
                                     <h:panelGrid columns="2" style="width:100%;" columnClasses="separatorText">
-                                        <h:outputText value="#{data}"/>
+                                        <h:outputText value="#{data.value}"/>
                                         <p:separator/>
                                     </h:panelGrid>
                                 </pe:dynaFormControl>
@@ -646,7 +647,7 @@ and open the template in the editor.
                                 <!--style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"-->
                                 <!--ajax="true" value=""-->
                                 <!--icon="fa fa-users"-->
-                                <!--actionListener="#{objCtrl.openPropertyViewDialog(data.componentId)}"-->
+                                <!--actionListener="#{objCtrl.openPropertyViewDialog(data.componentId,'')}"-->
                                 <!--&gt;-->
                                 <!--<p:ajax event="dialogReturn"-->
                                 <!--listener="#{objCtrl.onPropertyViewDialogClosed}"-->
@@ -656,7 +657,7 @@ and open the template in the editor.
                                 <!--</p:panelGrid>-->
                                 <!--</pe:dynaFormControl>-->
 
-                                <pe:dynaFormControl type="profileExpr" for="tprofileexpr" styleClass="select">
+                                <pe:dynaFormControl type="profileExpr" for="tprofileexpr" styleClass="select" >
                                     <div class="form-group">
                                         <p:autoComplete id="tprofileexpr"
                                                         styleClass="vr-form-control vr-form-control-with-button60"
@@ -674,7 +675,7 @@ and open the template in the editor.
                                                 styleClass="vr-form-control-right-button60"
                                                 ajax="true" value="#{data.hint}"
                                                 icon="fa fa-users"
-                                                actionListener="#{objCtrl.openPropertyViewDialog(data.componentId)}"
+                                                actionListener="#{objCtrl.openPropertyViewDialog(data.componentId,'')}"
                                         >
                                             <p:ajax event="dialogReturn"
                                                     listener="#{objCtrl.onPropertyViewDialogClosed}"
@@ -683,7 +684,7 @@ and open the template in the editor.
                                     </div>
                                 </pe:dynaFormControl>
 
-                                <pe:dynaFormControl type="discipline" for="tdiscipline" styleClass="select">
+                                <pe:dynaFormControl type="discipline" for="tdiscipline" styleClass="select" >
                                     <p:panelGrid columns="2" style="border-style: hidden"
                                                  columnClasses="nopadding,nopadding">
 
@@ -693,7 +694,7 @@ and open the template in the editor.
                                                 style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
                                                 ajax="true" value=""
                                                 icon="fa fa-tags"
-                                                actionListener="#{objCtrl.openPropertyViewDialog(data.componentId)}"
+                                                actionListener="#{objCtrl.openPropertyViewDialog(data.componentId,'')}"
                                         >
                                             <p:ajax event="dialogReturn"
                                                     listener="#{objCtrl.onPropertyViewDialogClosed}"
@@ -703,17 +704,27 @@ and open the template in the editor.
                                     </p:panelGrid>
                                 </pe:dynaFormControl>
 
-                                <pe:dynaFormControl type="file" for="tfile" styleClass="select">
+                                <pe:dynaFormControl type="file" for="tfile" styleClass="select" >
                                     <div class="form-group">
 
                                         <p:inputText id="tfile" value="#{data.value}" required="#{data.required}"
                                                      disabled="#{data.disabled}"
                                                      styleClass="form-control vr-form-control vr-form-control-with-button60"/>
                                         <p:commandButton
-                                                styleClass="vr-form-control-right-button60"
+                                                styleClass="vr-form-control-right-button30"
+                                                ajax="true" value=""
+                                                icon="fa fa-upload"
+                                                actionListener="#{objCtrl.openPropertyViewDialog(data.componentId,'upload')}"
+                                        >
+                                            <p:ajax event="dialogReturn"
+                                                    listener="#{objCtrl.onPropertyViewDialogClosed}" update="tfile"/>
+
+                                        </p:commandButton>
+                                        <p:commandButton
+                                                styleClass="vr-form-control-right-button30"
                                                 ajax="true" value=""
                                                 icon="fa fa-folder-open-o"
-                                                actionListener="#{objCtrl.openPropertyViewDialog(data.componentId)}"
+                                                actionListener="#{objCtrl.openPropertyViewDialog(data.componentId,'folder')}"
                                         >
                                             <p:ajax event="dialogReturn"
                                                     listener="#{objCtrl.onPropertyViewDialogClosed}" update="tfile"/>

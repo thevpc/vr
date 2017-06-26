@@ -56,6 +56,7 @@ public class PropertyView implements Serializable {
     private boolean labelNewLine = false;
     private boolean noLabel = false;
     private boolean submitOnChange = false;
+    private boolean visible = true;
     private PropertyViewManager propertyViewManager;
     private ValueChangeListener changeListener;
     private List<PropertyView> updatablePropertyViews = new ArrayList<PropertyView>();
@@ -425,4 +426,18 @@ public class PropertyView implements Serializable {
     public void setHint(String hint) {
         this.hint = hint;
     }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[" + getCtrlType() + "]" + "(" + getComponentId() + ')';
+    }
+
 }

@@ -10,12 +10,14 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackModel;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackSession;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
+import net.vpc.upa.UPA;
 import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -52,15 +54,14 @@ public class GenerateFeedbackActionCtrl {
         String t = config.getTitle();
 
         getModel().setPeriodName(core.getCurrentPeriod().getName());
-        getModel().setTitle((StringUtils.isEmpty(t) ? "Générer Feedbacks" : t)+" - "+getModel().getPeriodName());
-        getModel().setModelId(config.getModelId());
+        getModel().setTitle((StringUtils.isEmpty(t) ? "Générer Feedbacks" : t) + " - " + getModel().getPeriodName());
+        getModel().setSelectedSession(String.valueOf(config.getSessionId()));
+        getModel().setSelectedModel(String.valueOf(config.getModelId()));
 
-        getModel().setSemesters(new ArrayList<>());
-//        getModel().getSemesters().clear();
-        for (AcademicSemester item : academic.findSemesters()) {
-            getModel().getSemesters().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(),null));
+        getModel().setModels(new ArrayList<>());
+        for (AcademicFeedbackModel item : UPA.getPersistenceUnit().<AcademicFeedbackModel>findAll(AcademicFeedbackModel.class)) {
+            getModel().getModels().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), null));
         }
-        getModel().setSelectedSemester(null);
 
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
@@ -80,11 +81,11 @@ public class GenerateFeedbackActionCtrl {
     }
 
     public void fireEventExtraDialogApply() {
-        int semesterId= Convert.toInt(getModel().getSelectedSemester(), IntegerParserConfig.LENIENT_F);
+        int sessionId = Convert.toInt(getModel().getSelectedSession(), IntegerParserConfig.LENIENT_F);
+        int modelId = Convert.toInt(getModel().getSelectedModel(), IntegerParserConfig.LENIENT_F);
         VrApp.getBean(AcademicPerfEvalPlugin.class).generateStudentsFeedbackForm(
-                getModel().getModelId(),
-                VrApp.getBean(CorePlugin.class).getCurrentPeriod().getId(),
-                semesterId,
+                modelId,
+                sessionId,
                 getModel().getFilter()
         );
         RequestContext.getCurrentInstance().closeDialog(null);
@@ -101,6 +102,7 @@ public class GenerateFeedbackActionCtrl {
     public static class Config {
 
         private String type;
+        private int sessionId;
         private int modelId;
         private String title;
 
@@ -120,6 +122,14 @@ public class GenerateFeedbackActionCtrl {
             this.title = title;
         }
 
+          public int getSessionId() {
+            return sessionId;
+        }
+
+        public void setSessionId(int sessionId) {
+            this.sessionId = sessionId;
+        }
+
         public int getModelId() {
             return modelId;
         }
@@ -127,17 +137,16 @@ public class GenerateFeedbackActionCtrl {
         public void setModelId(int modelId) {
             this.modelId = modelId;
         }
-
     }
 
     public static class Model {
 
         private String title;
         private String filter;
-        private int modelId;
         private String periodName;
-        private String selectedSemester;
-        private List<SelectItem> semesters=new ArrayList<>();
+        private String selectedSession;
+        private String selectedModel;
+        private List<SelectItem> models = new ArrayList<>();
 
         public String getTitle() {
             return title;
@@ -155,14 +164,6 @@ public class GenerateFeedbackActionCtrl {
             this.filter = filter;
         }
 
-        public int getModelId() {
-            return modelId;
-        }
-
-        public void setModelId(int modelId) {
-            this.modelId = modelId;
-        }
-
         public String getPeriodName() {
             return periodName;
         }
@@ -171,20 +172,28 @@ public class GenerateFeedbackActionCtrl {
             this.periodName = periodName;
         }
 
-        public String getSelectedSemester() {
-            return selectedSemester;
+        public String getSelectedSession() {
+            return selectedSession;
         }
 
-        public void setSelectedSemester(String selectedSemester) {
-            this.selectedSemester = selectedSemester;
+        public void setSelectedSession(String selectedSemester) {
+            this.selectedSession = selectedSemester;
         }
 
-        public List<SelectItem> getSemesters() {
-            return semesters;
+         public String getSelectedModel() {
+            return selectedModel;
         }
 
-        public void setSemesters(List<SelectItem> semesters) {
-            this.semesters = semesters;
+        public void setSelectedModel(String selectedModel) {
+            this.selectedModel = selectedModel;
+        }
+
+        public List<SelectItem> getModels() {
+            return models;
+        }
+
+        public void setModels(List<SelectItem> models) {
+            this.models = models;
         }
     }
 

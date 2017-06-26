@@ -5,7 +5,8 @@
  */
 package net.vpc.app.vainruling.core.service.fs;
 
-import org.apache.commons.lang.StringUtils;
+
+import net.vpc.common.strings.StringUtils;
 
 import java.io.*;
 import java.util.*;

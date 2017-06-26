@@ -20,9 +20,13 @@ public class ProfileExprPropertyViewDialog implements PropertyViewDialog {
     public String getControlType() {
         return UIConstants.Control.PROFILE_EXPRESSION;
     }
+    @Override
+    public boolean acceptAction(String action) {
+        return true;
+    }
 
     @Override
-    public void openDialog(PropertyView propertyView, String userInfo) {
+    public void openDialog(PropertyView propertyView, String action, String userInfo) {
         ProfileExprDialogCtrl.Config c = new ProfileExprDialogCtrl.Config();
         c.setExpression((String) propertyView.getValue());
         c.setSourceId(propertyView.getComponentId());

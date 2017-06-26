@@ -23,10 +23,10 @@ import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringComparator;
 import net.vpc.common.strings.StringComparators;
 import net.vpc.common.strings.StringTransforms;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.upa.UPA;
 import net.vpc.upa.filters.ObjectFilter;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.faces.model.SelectItem;

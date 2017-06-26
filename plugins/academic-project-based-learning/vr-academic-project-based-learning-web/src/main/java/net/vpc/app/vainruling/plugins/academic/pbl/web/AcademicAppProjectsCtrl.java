@@ -25,10 +25,10 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringComparators;
 import net.vpc.common.strings.StringTransforms;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.UPA;
 import net.vpc.upa.filters.ObjectFilter;
-import org.apache.commons.lang.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;

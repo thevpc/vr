@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PropertyViewDialogManager {
-    public PropertyViewDialog getPropertyViewDialog(String controlType) {
+    public PropertyViewDialog getPropertyViewDialog(String controlType,String action) {
         ApplicationContext c = VrApp.getContext();
         for (String n : c.getBeanNamesForType(PropertyViewDialog.class)) {
             PropertyViewDialog t = (PropertyViewDialog) c.getBean(n);

@@ -11,11 +11,15 @@ package net.vpc.app.vainruling.core.service.util;
 public final class UIConstants {
 
 
+    public static final String ENTITY_TEXT_SEARCH_FACTORY = "ui.text-search-factory";
     public static final String ENTITY_ID_HIERARCHY = "ui.id-hierarchy";
 
     public static final class Form {
         public static final String VISIBLE_ON_CREATE = "ui.form.visibleOnInsert";
         public static final String VISIBLE_ON_UPDATE = "ui.form.visibleOnUpdate";
+        public static final String SUBMIT_ON_CHANGE = "ui.form.submitOnChange";
+        public static final String VISIBLE_CONDITION = "ui.visible-condition";
+        public static final String ENABLED_CONDITION = "ui.enabled-condition";
         public static final String CONTROL = "ui.form.control";
         public static final String CONTROL_FILE_TYPE = "ui.form.control.file.type";
         public static final String CONTROL_FILE_PATH = "ui.form.control.file.path";

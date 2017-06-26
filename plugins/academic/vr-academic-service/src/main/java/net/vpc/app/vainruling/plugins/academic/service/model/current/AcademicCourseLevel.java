@@ -28,7 +28,7 @@ public class AcademicCourseLevel {
     @Sequence
 
     private int id;
-    @Formula("concat(this.academicClass.name,'-',this.semester.code)")
+    @Formula(value = "concat(this.academicClass.name,'-',this.semester.code)",formulaOrder = 1)
     @Main
     private String name;
     @Summary

@@ -71,7 +71,7 @@ public class StudentFeedbackListCtrl {
         AcademicStudent s = studentId<=0?null:academic.findStudent(studentId);
         getModel().setFeedbacks(new ArrayList<AcademicFeedback>());
         if (s != null) {
-            for (AcademicFeedback f : feedback.findStudentFeedbacks(core.getCurrentPeriod().getId(),s.getId(), false, false, true)) {
+            for (AcademicFeedback f : feedback.findStudentFeedbacks(core.getCurrentPeriod().getId(),s.getId(), false, false, true,true,null)) {
                 getModel().getFeedbacks().add(f);
             }
         }

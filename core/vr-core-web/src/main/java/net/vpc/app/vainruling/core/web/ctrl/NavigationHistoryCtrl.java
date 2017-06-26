@@ -23,7 +23,7 @@ import java.util.*;
 @VrController(
 //        title = "Historique de Navigation",
         url = "modules/util/navigation-history",
-        menu = "/",
+        menu = "/Desktop",
         securityKey = "Custom.Util.NavigationHistory"
 )
 @Scope(value = "session")

@@ -22,7 +22,7 @@ public class DisciplinePropertyViewDialog implements PropertyViewDialog {
     }
 
     @Override
-    public void openDialog(PropertyView propertyView, String userInfo) {
+    public void openDialog(PropertyView propertyView, String action, String userInfo) {
         DisciplineDialogCtrl.Config c = new DisciplineDialogCtrl.Config();
         c.setExpression((String) propertyView.getValue());
         c.setSourceId(propertyView.getComponentId());
@@ -30,4 +30,8 @@ public class DisciplinePropertyViewDialog implements PropertyViewDialog {
         VrApp.getBean(DisciplineDialogCtrl.class).openDialog(c);
     }
 
+    @Override
+    public boolean acceptAction(String action) {
+        return true;
+    }
 }

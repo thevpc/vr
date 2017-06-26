@@ -60,7 +60,7 @@ public class AcademicAdminToolsCtrl {
         try {
             String p = VrApp.getBean(CorePlugin.class).getNativeFileSystemPath()
                     + CorePlugin.PATH_TEMP + "/Import/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
-                    + "-" + UserSession.getCurrentUser().getLogin();
+                    + "-" + UserSession.getCurrentLogin();
             new File(p).mkdirs();
             File f = new File(p, event.getFile().getFileName());
             try {

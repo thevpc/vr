@@ -61,7 +61,6 @@ import java.util.regex.Pattern;
 public class Vr {
 
     public static final Map<String, String> extensionsToCss = new HashMap<String, String>();
-    public static final Map<String, String> extensionsToPath = new HashMap<String, String>();
     private MessageTextService messageTextService;
     private TaskTextService taskTextService;
     private NotificationTextService notificationTextService;

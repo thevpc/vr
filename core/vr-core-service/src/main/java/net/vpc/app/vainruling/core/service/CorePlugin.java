@@ -17,12 +17,15 @@ import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.model.content.*;
 import net.vpc.app.vainruling.core.service.notification.PollAware;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
+import net.vpc.app.vainruling.core.service.obj.EntityObjSearchFactory;
 import net.vpc.app.vainruling.core.service.obj.ObjSearch;
 import net.vpc.app.vainruling.core.service.obj.ObjSimpleSearch;
 import net.vpc.app.vainruling.core.service.plugins.*;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.AppVersion;
 import net.vpc.app.vainruling.core.service.util.*;
+import net.vpc.common.io.FileUtils;
+import net.vpc.common.io.IOUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.*;
 import net.vpc.common.vfs.*;
@@ -1214,48 +1217,6 @@ public class CorePlugin {
         if (userId == null) {
             userId = findUserIdByLogin(login);
         }
-//        AppUser u = null;
-//        if (userId != null) {
-//            Map<Integer, AppUser> usersById = (Map<Integer, AppUser>) cache.get("usersById");
-//            if (usersById == null) {
-//                usersById = new HashMap<>();
-//                cache.put("usersById", usersById);
-//            }
-//            u = usersById.get(userId);
-//            if (u == null) {
-//                u = findUser(userId);
-//                if (u != null) {
-//                    usersById.put(userId, u);
-//                }
-//            }
-//        }
-//        if (!StringUtils.isEmpty(login)) {
-//            Map<String, AppUser> usersByLogin = (Map<String, AppUser>) cache.get("usersByLogin");
-//            if (usersByLogin == null) {
-//                usersByLogin = new HashMap<>();
-//                cache.put("usersByLogin", usersByLogin);
-//            }
-//
-//            AppUser u1 = null;
-//            u1 = usersByLogin.get(login);
-//            if (u1 == null) {
-//                u1 = findUser(login);
-//                if (u1 != null) {
-//                    usersByLogin.put(login, u1);
-//                }
-//            }
-//            if (u != null && u1 != null && u.getId() != u1.getId()) {
-//                u = null;
-//            } else if (u == null) {
-//                u = u1;
-//            }
-//        }
-
-//        Map<Integer, Set<String>> usersProfilesByUserId = (Map<Integer, Set<String>>) cache.get("usersProfilesByUserId");
-//        if (usersProfilesByUserId == null) {
-//            usersProfilesByUserId = ;
-//            cache.put("usersProfilesByUserId", usersProfilesByUserId);
-//        }
         Set<String> foundProfileNames = (userId == null) ? (new HashSet<String>()) : findUniformProfileNamesMapByUserId(userId,true);
         if (foundProfileNames == null) {
             foundProfileNames = new HashSet<>();
@@ -1357,14 +1318,13 @@ public class CorePlugin {
         }
     }
 
-    public List<AppUser> findUsersByProfileFilter(String profilePattern, Integer userType) {
+    public List<AppUser> filterUsersByProfileFilter(List<AppUser> users,String profilePattern, Integer userType) {
         //check if pattern contains where clause!
         ProfileFilterExpression ee = new ProfileFilterExpression(profilePattern);
         ProfileFilterExpression profilesOnlyExpr = new ProfileFilterExpression(ee.getProfileListExpression(), null);
 
         List<AppUser> all = new ArrayList<>();
         final HashMap<String, Object> cache = new HashMap<String, Object>();
-        List<AppUser> users = findEnabledUsers();
         HashMap<Integer, AppUser> usersById = new HashMap<Integer, AppUser>();
         HashMap<String, AppUser> usersByLogin = new HashMap<String, AppUser>();
         for (AppUser user : users) {
@@ -1382,6 +1342,46 @@ public class CorePlugin {
             }
         }
         return filterUsersByExpression(all, ee.getFilterExpression());
+    }
+
+    public List<AppUser> filterUsersBysContacts(List<AppContact> users) {
+        Set<Integer> visited=new HashSet<>();
+        List<AppUser> ret=new ArrayList<>();
+        StringBuilder q=new StringBuilder("-1");
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        for (int i = 0; i < users.size(); i++) {
+            AppContact contact = users.get(i);
+            q.append(",").append(contact.getId());
+            if(i%50==(50-1) || i==users.size()-1){
+                for (AppUser o : pu.createQuery("Select u from AppUser u where u.contactId in (" + q + ")")
+                        .<AppUser>getResultList()) {
+                    if(visited.contains(o.getId())){
+                        visited.add(o.getId());
+                        ret.add(o);
+                    }
+                }
+                q.delete(0,q.length());
+                q.append("-1");
+            }
+        }
+        return ret;
+    }
+
+    public List<AppContact> filterContactsByProfileFilter(List<AppContact> contacts,String profilePattern) {
+        List<AppContact> ret=new ArrayList<>();
+        Set<Integer> visited=new HashSet<>();
+        for (AppUser user : filterUsersByProfileFilter(filterUsersBysContacts(contacts), profilePattern, null)) {
+            AppContact c = user.getContact();
+            if(c!=null && !visited.contains(c.getId())){
+                visited.add(c.getId());
+                ret.add(c);
+            }
+        }
+        return ret;
+    }
+
+    public List<AppUser> findUsersByProfileFilter(String profilePattern, Integer userType) {
+        return filterUsersByProfileFilter(findEnabledUsers(),profilePattern,userType);
     }
 
     private List<AppUser> filterUsersByExpression(List<AppUser> all, String expression) {
@@ -2529,18 +2529,34 @@ public class CorePlugin {
             buildPluginInfos();
             String[] appPluginBeans = VrApp.getContext().getBeanNamesForAnnotation(AppPlugin.class);
             ListValueMap<String, Object> instances = new ListValueMap<>();
+            List<String> errors=new ArrayList<>();
             for (String beanName : appPluginBeans) {
                 Object bean = VrApp.getContext().getBean(beanName);
                 PluginBundle bundle = getPluginBundle(bean);
                 if (bundle != null) {
                     instances.put(bundle.getId(), bean);
-                    //} else {
-                    //bundle = getPluginBundle(bean);
                 }else{
-                    bundle = getPluginBundle(bean);
-                    System.out.println("Unable to find bundle Instance for "+beanName+"... some thing is wrong...");
+                    errors.add(beanName);
+                    log.log(Level.SEVERE, "Unable to find bundle Instance for "+beanName+"... some thing is wrong...");
                 }
             }
+
+            if(errors.size()>0){
+                Enumeration<URL> resources = null;
+                try {
+                    resources = Thread.currentThread().getContextClassLoader().getResources("/META-INF/vr-plugin.properties");
+                    for (URL url : Collections.list(resources)) {
+                        log.log(Level.SEVERE, "\t resolved plugin url : "+url);
+                    }
+//                    String beanName=errors.get(0);
+//                    Object bean=VrApp.getContext().getBean(beanName);
+//                    PluginBundle bundle = getPluginBundle(bean);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
             List<Plugin> plugins = new ArrayList<>(bundles.size());
             for (PluginBundle pluginInfo : bundles.values()) {
                 List<Object> objects = instances.get(pluginInfo.getId());
@@ -3807,10 +3823,32 @@ public class CorePlugin {
         if (objSearch != null) {
             list = objSearch.filterList(list, entityName);
         }
-        if (!org.apache.commons.lang.StringUtils.isEmpty(textSearch)) {
-            list = new ObjSimpleSearch(textSearch).filterList(list, entityName);
+        if (!StringUtils.isEmpty(textSearch)) {
+
+            list = createSearch(null,entity,textSearch).filterList(list, entityName);
         }
         return list;
+    }
+
+    public ObjSearch createSearch(String name,Entity entity,String expression){
+        if(StringUtils.isEmpty(expression)){
+            return new ObjSimpleSearch(null);
+        }
+        String f = entity.getProperties().getString(UIConstants.ENTITY_TEXT_SEARCH_FACTORY);
+        if(StringUtils.isEmpty(f)){
+            return new ObjSimpleSearch(expression);
+        }
+        EntityObjSearchFactory g= null;
+        try {
+            g = (EntityObjSearchFactory) Class.forName(f).newInstance();
+            ObjSearch objSearch = g.create(name, entity, expression);
+            if(objSearch==null){
+                return new ObjSimpleSearch(expression);
+            }
+            return objSearch;
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     public List<Object> findAll(String type) {
@@ -3831,10 +3869,26 @@ public class CorePlugin {
                 .getResultList();
     }
 
-    public void uploadFile(VFile baseFile,UploadedFileHandler event) throws IOException {
+    public VFile uploadFile(VFile baseFile,UploadedFileHandler event) throws IOException {
         String fileName = normalizeFilePath(event.getFileName());
         VFile newFile = baseFile.get(fileName);
-        if (newFile.exists()) {
+        VFile baseFolder = null;
+        if(newFile.exists() && newFile.isDirectory()){
+            baseFolder=newFile;
+            int pos=0;
+            while(true){
+                String n=fileName;
+                if(pos>0) {
+                    n = FileUtils.changeFileSuffix(new File(fileName), "-" + n).getPath();
+                }
+                VFile vFile = newFile.get(n);
+                if(!vFile.exists()){
+                    newFile=vFile;
+                    break;
+                }
+                pos++;
+            }
+        }else if (newFile.exists()) {
             boolean doOverride = false;
             //check if alreay selected
             if(event.acceptOverride(newFile)){
@@ -3845,7 +3899,7 @@ public class CorePlugin {
             }
         }
         String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
-                + "-" + UserSession.getCurrentUser().getLogin();
+                + "-" + UserSession.getCurrentLogin();
         CorePlugin fsp = VrApp.getBean(CorePlugin.class);
         String p = fsp.getNativeFileSystemPath() + tempPath;
         new File(p).mkdirs();
@@ -3855,8 +3909,9 @@ public class CorePlugin {
             //do work here
             int count = 1;//
             if (count > 0) {
-                return ; //addInfoMessage(event.getFileName() + " successfully uploaded.");
+                return newFile; //addInfoMessage(event.getFileName() + " successfully uploaded.");
             } else {
+                return newFile;
                 //addWarnMessage(null, event.getFileName() + " is uploaded but nothing is updated.");
             }
         } finally {

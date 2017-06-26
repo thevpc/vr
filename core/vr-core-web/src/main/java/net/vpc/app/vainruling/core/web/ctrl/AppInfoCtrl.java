@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Scope;
  * @author taha.bensalah@gmail.com
  */
 @VrController(
-        menu = "/Misc",
+        menu = "/Desktop",
 //        title = "Informations Systeme", css = "fa-dashboard",
         url = "modules/app-info"
 )

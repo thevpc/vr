@@ -708,7 +708,7 @@ public class MyInternshipBoardsCtrl {
             public void run() {
                 try {
                     String report = getModel().getRequestUploadType();
-                    String login = UserSession.getCurrentUser().getLogin();
+                    String login = UserSession.getCurrentLogin();
                     String tempPath = CorePlugin.PATH_TEMP + "/Import/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
                             + "-" + login;
                     String p = core.getNativeFileSystemPath() + tempPath;

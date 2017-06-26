@@ -41,13 +41,13 @@ public class Equipment {
     private String serial;
     private String stockSerial;
     private String name;
+    @Main
+    @Formula(value = "concat(this.name,'-',this.serial)",formulaOrder = 1)
+    private String fullName;
     @Summary
-    @Formula(value = "this.quantity+Coalesce((Select sum(a.quantity) from EquipmentStatusLog a where a.equipmentId=this.id),0)",formulaOrder = 2)
+    @Formula(value = "this.quantity+Coalesce((Select sum(a.quantity) from EquipmentStatusLog a where a.equipmentId=this.id),0)",formulaOrder = 1)
     private double actualQuantity;
     private double quantity;
-    @Main
-    @Formula(value = "concat(this.name,'-',this.serial)")
-    private String fullName;
     @Properties(
             @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
     @Field(max = "400")
@@ -62,7 +62,10 @@ public class Equipment {
 
     @Summary
     @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Category"))
+            {@Property(name = UIConstants.Form.SEPARATOR, value = "Category"),
+
+            }
+    )
     private EquipmentType type;
     private AppDepartment department;
 
@@ -72,10 +75,6 @@ public class Equipment {
 
     @Summary
     private AppArea location;
-
-//    @Summary
-//    @Formula(value = "this.brandLine.brand", type = FormulaType.LIVE)
-//    private EquipmentBrand brand;
 
     private EquipmentAcquisition acquisition;
 

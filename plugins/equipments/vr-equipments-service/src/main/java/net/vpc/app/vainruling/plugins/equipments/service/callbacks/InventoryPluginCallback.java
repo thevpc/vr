@@ -98,6 +98,9 @@ public class InventoryPluginCallback {
             EquipmentStatusLog eq = (EquipmentStatusLog) event.getPersistedObject();
             if(eq.getEquipment()!=null){
                 eq.getEquipment().setStatusType(eq.getType());
+                if(eq.getAcquisition()!=null && eq.getType()==EquipmentStatusType.ACQUISITION) {
+                    eq.getEquipment().setAcquisition(eq.getAcquisition());
+                }
                 pu.merge(eq.getEquipment());
             }
         }

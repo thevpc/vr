@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 
+import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.core.web.obj.*;
 import net.vpc.common.strings.StringUtils;
@@ -12,6 +13,9 @@ import net.vpc.upa.Field;
 import net.vpc.upa.NamedId;
 import net.vpc.upa.types.DataType;
 
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.ValueChangeEvent;
+import javax.faces.event.ValueChangeListener;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,24 +45,25 @@ public class EnumTypePropertyViewFactory implements PropertyViewFactory {
         String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.SELECT);
         PropertyView propView = new FieldPropertyView(componentId, field, datatype, controlType, manager);
         propView.setValues(manager.getPropertyViewValuesProvider(field, nfo.dataType).resolveValues(propView, field, nfo.dataType, viewContext));
-//        EnumType t = (EnumType) dataType;
-//        boolean main = field.getModifiers().contains(FieldModifier.MAIN);
-//        boolean id = field.getModifiers().contains(FieldModifier.ID);
-//        boolean insert = field.getModifiers().contains(FieldModifier.PERSIST_DEFAULT);
-//        boolean update = !id && field.getModifiers().contains(FieldModifier.UPDATE_DEFAULT);
-//        boolean nullable = dataType.isNullable();
-//        ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
-//        boolean listMode = objCtrl.getModel().getMode() == EditCtrlMode.LIST;
-//        boolean insertMode = objCtrl.getModel().getMode() == EditCtrlMode.NEW;
-//        boolean updateMode = objCtrl.getModel().getMode() == EditCtrlMode.UPDATE;
-//        boolean forceDisabled = configuration != null && (configuration.get("disabled") != null && Boolean.TRUE.equals(configuration.get("disabled")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("disabled"))));
-//        boolean forceInvisible = configuration != null && (configuration.get("invisible") != null && Boolean.TRUE.equals(configuration.get("invisible")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("invisible"))));
-//        boolean visible
-//                = insertMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.Form.VISIBLE_ON_CREATE, null, true)
-//                        : updateMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.Form.VISIBLE_ON_UPDATE, null, true)
-//                                : true;
+
         if (!nfo.visible) {
             return null;
+        }
+        if (nfo.submitOnChange) {
+            propView.setSubmitOnChange(true);
+            propView.setCtrlType(controlType+"_onchange");
+            propView.setChangeListener(new ValueChangeListener() {
+                @Override
+                public void processValueChange(ValueChangeEvent event) throws AbortProcessingException {
+                    if(event!=null){
+                        propView.setSelectedItem(event.getNewValue());
+                        ObjCtrl obj = VrApp.getBean(ObjCtrl.class);
+                        obj.currentViewToModel();
+                        obj.updatePropertyViews();
+                    }
+
+                }
+            });
         }
         List<SelectItem> items = new ArrayList<>();
         if (nfo.dataType.isNullable()) {

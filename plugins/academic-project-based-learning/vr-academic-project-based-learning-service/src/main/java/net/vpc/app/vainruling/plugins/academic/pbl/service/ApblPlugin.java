@@ -16,13 +16,13 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.common.strings.StringComparator;
 import net.vpc.common.strings.StringComparators;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.*;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.QueryHints;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 import net.vpc.upa.filters.ObjectFilter;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;

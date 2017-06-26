@@ -35,6 +35,7 @@ public class FieldPropertyViewInfo {
     public boolean updateMode;
     public boolean visible;
     public boolean disabled;
+    public boolean submitOnChange;
     public DataType dataType;
 
     private FieldPropertyViewInfo(Field field, DataType dataType, Map<String, Object> configuration) {
@@ -66,9 +67,10 @@ public class FieldPropertyViewInfo {
         } else {
             visible = true;
         }
-        boolean forceDisabled = configuration != null && configuration.get("disabled") != null && (Boolean.TRUE.equals(configuration.get("disabled")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("disabled"))));
-        boolean forceInvisible = configuration != null && configuration.get("invisible") != null && (Boolean.TRUE.equals(configuration.get("disabled")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("invisible"))));
+        boolean forceDisabled = configuration != null && configuration.get("enabled") != null && (Boolean.FALSE.equals(configuration.get("enabled")) || "false".equalsIgnoreCase(String.valueOf(configuration.get("enabled"))));
+        boolean forceInvisible = configuration != null && configuration.get("visible") != null && (Boolean.FALSE.equals(configuration.get("visible")) || "false".equalsIgnoreCase(String.valueOf(configuration.get("visible"))));
         disabled = forceDisabled;
+        submitOnChange = configuration != null && configuration.get("submitOnChange") != null && (Boolean.TRUE.equals(configuration.get("submitOnChange")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("submitOnChange"))));;
 
         if (!disabled) {
             if (insertMode) {

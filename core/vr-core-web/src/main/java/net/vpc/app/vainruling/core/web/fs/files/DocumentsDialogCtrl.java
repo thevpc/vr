@@ -160,7 +160,7 @@ public class DocumentsDialogCtrl {
         }
         VirtualFileSystem rootfs = fsp.getFileSystem();
         VirtualFileSystem fs = null;
-        String login = UserSession.getCurrentUser().getLogin();
+        String login = UserSession.getCurrentLogin();
         if ("root".equals(c.getType())) {
             fs = rootfs;
         } else if ("user".equals(c.getType())) {

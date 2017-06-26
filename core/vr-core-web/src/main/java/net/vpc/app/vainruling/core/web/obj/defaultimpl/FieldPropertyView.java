@@ -103,10 +103,6 @@ public class FieldPropertyView extends PropertyView {
         }
     }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + getComponentId() + ')';
-    }
 
     protected static class SelectValue {
 

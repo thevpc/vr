@@ -22,19 +22,36 @@ public class DocumentsPropertyViewDialog implements PropertyViewDialog {
     public String getControlType() {
         return UIConstants.Control.FILE;
     }
+    @Override
+    public boolean acceptAction(String action) {
+        return true;
+    }
 
     @Override
-    public void openDialog(PropertyView propertyView, String userInfo) {
-        DocumentsDialogCtrl.Config c = new DocumentsDialogCtrl.Config();
-        c.setPath((String) propertyView.getValue());
-        c.setUserInfo(userInfo);
-        if(propertyView instanceof FieldPropertyView){
-            String type = ((FieldPropertyView) propertyView).getField().getProperties().getString(UIConstants.Form.CONTROL_FILE_TYPE);
-            String fspath = ((FieldPropertyView) propertyView).getField().getProperties().getString(UIConstants.Form.CONTROL_FILE_PATH);
-            c.setType(type);
-            c.setFspath(fspath);
+    public void openDialog(PropertyView propertyView, String action, String userInfo) {
+        if("upload".equals(action)){
+            DocumentsUploadDialogCtrl.Config c = new DocumentsUploadDialogCtrl.Config();
+            c.setPath((String) propertyView.getValue());
+            c.setUserInfo(userInfo);
+            if (propertyView instanceof FieldPropertyView) {
+                String type = ((FieldPropertyView) propertyView).getField().getProperties().getString(UIConstants.Form.CONTROL_FILE_TYPE);
+                String fspath = ((FieldPropertyView) propertyView).getField().getProperties().getString(UIConstants.Form.CONTROL_FILE_PATH);
+                c.setType(type);
+                c.setFspath(fspath);
+            }
+            VrApp.getBean(DocumentsUploadDialogCtrl.class).openDialog(c);
+        }else {
+            DocumentsDialogCtrl.Config c = new DocumentsDialogCtrl.Config();
+            c.setPath((String) propertyView.getValue());
+            c.setUserInfo(userInfo);
+            if (propertyView instanceof FieldPropertyView) {
+                String type = ((FieldPropertyView) propertyView).getField().getProperties().getString(UIConstants.Form.CONTROL_FILE_TYPE);
+                String fspath = ((FieldPropertyView) propertyView).getField().getProperties().getString(UIConstants.Form.CONTROL_FILE_PATH);
+                c.setType(type);
+                c.setFspath(fspath);
+            }
+            VrApp.getBean(DocumentsDialogCtrl.class).openDialog(c);
         }
-        VrApp.getBean(DocumentsDialogCtrl.class).openDialog(c);
     }
 
 }

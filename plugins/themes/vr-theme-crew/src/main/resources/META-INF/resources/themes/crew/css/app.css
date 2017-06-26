@@ -1155,6 +1155,12 @@ td.vr-mailbox-name label {
     float: right;
 }
 
+.vr-form-control-right-button30 {
+    width: 30px;
+    height: 34px;
+    float: right;
+}
+
 
 span.ui-autocomplete.vr-form-control{
     width: 100%;

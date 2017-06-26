@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Scope;
 @VrController(
 //        title = "Accueil",
         url = "modules/welcome",
-        menu = "/"
+        menu = "/Desktop"
 )
 @Scope(value = "singleton")
 public class WelcomeCtrl {

@@ -41,13 +41,13 @@ public class AcademicCourseAssignment {
     @Summary
     @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
     @Formula(
-            value = "(this.coursePlan.period.name)",
+            value = "(this.coursePlan.period.name)",formulaOrder = 1,
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String periodLabel;
 
     @Formula(
-            value = "concat(coalesce((select a.name from AcademicCoursePlan a where a.id=this.coursePlanId),'?'),'-',coalesce((select a.name from AcademicCourseType a where a.id=this.courseTypeId),'?'))",
+            value = "concat(coalesce((select a.name from AcademicCoursePlan a where a.id=this.coursePlanId),'?'),'-',coalesce((select a.name from AcademicCourseType a where a.id=this.courseTypeId),'?'))",formulaOrder = 1,
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String name;
@@ -59,7 +59,7 @@ public class AcademicCourseAssignment {
                     ",'-',Coalesce((select a.Name from AcademicClass a where a.id=this.subClassId),'?')" +
                     ",Coalesce(concat('-',this.discriminator),'')" +
                     ",'-',coalesce((select a.name from AcademicCourseType a where a.id=this.courseTypeId),'?')" +
-                    ")",
+                    ")",formulaOrder = 1,
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String fullName;

@@ -31,7 +31,7 @@ public class AcademicLoadConversionRow {
     private int id;
 
     @Main
-    @Formula(value = "concat(coalesce(this.conversionTable.name),'-',coalesce(this.rule.name))")
+    @Formula(value = "concat(coalesce(this.conversionTable.name),'-',coalesce(this.rule.name))",formulaOrder = 1)
     private String name;
 
     @Summary

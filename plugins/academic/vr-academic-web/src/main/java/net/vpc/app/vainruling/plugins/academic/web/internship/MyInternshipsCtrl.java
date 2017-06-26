@@ -407,7 +407,7 @@ public class MyInternshipsCtrl {
                 try {
                     String report = getModel().getRequestUploadType();
                     CorePlugin fs = VrApp.getBean(CorePlugin.class);
-                    String login = UserSession.getCurrentUser().getLogin();
+                    String login = UserSession.getCurrentLogin();
                     String tempPath = CorePlugin.PATH_TEMP + "/Import/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
                             + "-" + login;
                     String p = fs.getNativeFileSystemPath() + tempPath;

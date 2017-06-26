@@ -10,9 +10,9 @@ import net.vpc.app.vainruling.core.service.plugins.Plugin;
 import net.vpc.app.vainruling.core.service.plugins.PluginComponent;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UPAObject;
 import net.vpc.upa.types.I18NString;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import sun.util.ResourceBundleEnumeration;
 

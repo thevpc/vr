@@ -8,12 +8,14 @@ package net.vpc.app.vainruling.plugins.academic.perfeval.service;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.*;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.servicemodel.FeedbacksStats;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
@@ -55,6 +57,41 @@ public class AcademicPerfEvalPlugin {
     private void onStart() {
         VrApp.getBean(CorePlugin.class).createRight("Custom.Academic.StudentFeedback", "Custom.Academic.StudentFeedback");
         VrApp.getBean(CorePlugin.class).createRight("Custom.Academic.TeacherStatFeedback", "Custom.Academic.TeacherStatFeedback");
+        Map<String,AcademicFeedbackSession> sessions=new HashMap<>();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        for (AcademicFeedbackSession session : pu.<AcademicFeedbackSession>findAll(AcademicFeedbackSession.class)) {
+            int periodId = session.getPeriod().getId();
+            int semesterId = session.getSemester().getId();
+            String key = periodId + ";" + semesterId;
+            sessions.put(key,session);
+        }
+        for (AcademicFeedback academicFeedback : findFeedbacks(null, null, null, null, null, null, null, null, null, null, null)) {
+            if(academicFeedback.getSession()==null){
+                AcademicCoursePlan coursePlan = academicFeedback.getCourse().getCoursePlan();
+                //reload it
+                coursePlan=pu.findById(AcademicCoursePlan.class,coursePlan.getId());
+                AppPeriod period = coursePlan.getPeriod();
+                AcademicSemester semester = coursePlan.getCourseLevel().getSemester();
+                if(period!=null && semester!=null) {
+                    int periodId = period.getId();
+                    int semesterId = semester.getId();
+                    String key = periodId + ";" + semesterId;
+                    AcademicFeedbackSession session = sessions.get(key);
+                    if (session == null) {
+                        session = new AcademicFeedbackSession();
+                        session.setName(period.getName() + "-" + semester.getCode());
+                        session.setPeriod(period);
+                        session.setSemester(semester);
+                        pu.persist(session);
+                        sessions.put(key, session);
+                    }
+                    academicFeedback.setSession(session);
+                    pu.merge(academicFeedback);
+                }else{
+                    System.out.println("Why : "+academicFeedback.getCourse());
+                }
+            }
+        }
     }
 
     public AcademicFeedback findFeedback(int feedbackId) {
@@ -86,7 +123,7 @@ public class AcademicPerfEvalPlugin {
 
     public List<AcademicTeacher> findTeachersWithFeedbacks(int periodId, Boolean validated, Boolean archived, Boolean enabled) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        if (!checkEnableTeacherFeedbacks(enabled)) return Collections.EMPTY_LIST;
+//        if (!checkEnableTeacherFeedbacks(enabled)) return Collections.EMPTY_LIST;
 //        return pu.createQuery("Select u from AcademicCourseAssignment u where u.teacherId=:teacherId and exists(Select f from AcademicFeedback f where f.courseId= u.id) "
         return pu.createQuery("Select distinct u.teacher from AcademicCourseAssignment u where u.coursePlan.periodId=:periodId and u.id in (Select f.courseId from AcademicFeedback f where u.teacherId != null and 1=1 "
                 + (validated != null ? (" and f.validated=" + validated) : "")
@@ -101,7 +138,7 @@ public class AcademicPerfEvalPlugin {
 
     public List<AcademicClass> findClassesWithFeedbacks(int periodId, Boolean validated, Boolean archived, Boolean enabled) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        if (!checkEnableTeacherFeedbacks(enabled)) return Collections.EMPTY_LIST;
+//        if (!checkEnableTeacherFeedbacks(enabled)) return Collections.EMPTY_LIST;
 //        return pu.createQuery("Select distinct u.coursePlan.courseLevel.academicClass from AcademicCourseAssignment u where u.coursePlan.periodId=:periodId and u.id in (Select f.courseId from AcademicFeedback f where u.teacherId != null and 1=1 "
         return pu.createQuery("Select distinct u.coursePlan.courseLevel.academicClass from AcademicCourseAssignment u where u.coursePlan.periodId=:periodId and u.id in (Select f.courseId from AcademicFeedback f where u.teacherId != null and 1=1 "
                 + (validated != null ? (" and f.validated=" + validated) : "")
@@ -116,7 +153,7 @@ public class AcademicPerfEvalPlugin {
 
     public List<AcademicCourseAssignment> findAssignmentsWithFeedbacks(int periodId, int teacherId, Boolean validated, Boolean archived, Boolean enabled) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        if (!checkEnableTeacherFeedbacks(enabled)) return Collections.EMPTY_LIST;
+//        if (!checkEnableTeacherFeedbacks(enabled)) return Collections.EMPTY_LIST;
 //        return pu.createQuery("Select u from AcademicCourseAssignment u where u.teacherId=:teacherId and exists(Select f from AcademicFeedback f where f.courseId= u.id) "
         Query query = pu.createQuery("Select u from AcademicCourseAssignment u where u.coursePlan.periodId=:periodId " +
                 (teacherId < 0 ? "" : " and u.teacherId=:teacherId ") +
@@ -137,7 +174,7 @@ public class AcademicPerfEvalPlugin {
 
     public List<AcademicCoursePlan> findAcademicCoursePlansWithFeedbacks(int periodId, int teacherId, Boolean validated, Boolean archived, Boolean enabled) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        if (!checkEnableTeacherFeedbacks(enabled)) return Collections.EMPTY_LIST;
+//        if (!checkEnableTeacherFeedbacks(enabled)) return Collections.EMPTY_LIST;
         Query query = pu.createQuery("Select x from AcademicCoursePlan x where x.periodId=:periodId and x.id in (Select u.coursePlanId from AcademicCourseAssignment u " +
                 " where u.coursePlan.periodId=:periodId" +
                 (teacherId < 0 ? "" : " and u.teacherId=:teacherId ") +
@@ -159,7 +196,7 @@ public class AcademicPerfEvalPlugin {
 
     public List<AcademicCourseType> findAcademicCourseTypesWithFeedbacks(int periodId, int teacherId, Boolean validated, Boolean archived, Boolean enabled) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        if (!checkEnableTeacherFeedbacks(enabled)) return Collections.EMPTY_LIST;
+//        if (!checkEnableTeacherFeedbacks(enabled)) return Collections.EMPTY_LIST;
         Query query = pu.createQuery("Select x from AcademicCourseType x where exists((Select u.id from AcademicCourseAssignment u " +
                 " where  u.coursePlan.periodId=:periodId " +
                 (teacherId < 0 ? "" : " and u.teacherId=:teacherId ") +
@@ -180,15 +217,15 @@ public class AcademicPerfEvalPlugin {
                 .getResultList();
     }
 
-    private boolean checkEnableTeacherFeedbacks(Boolean enabled) {
-        if (enabled != null && enabled) {
-            Boolean ok = (Boolean) VrApp.getBean(CorePlugin.class).getOrCreateAppPropertyValue("AcademicPerfEvalPlugin.EnableTeacherFeedbacks", null, true);
-            if (ok != null && !ok.booleanValue()) {
-                return false;
-            }
-        }
-        return true;
-    }
+//    private boolean checkEnableTeacherFeedbacks(Boolean enabled) {
+//        if (enabled != null && enabled) {
+//            Boolean ok = (Boolean) VrApp.getBean(CorePlugin.class).getOrCreateAppPropertyValue("AcademicPerfEvalPlugin.EnableTeacherFeedbacks", null, true);
+//            if (ok != null && !ok.booleanValue()) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
     public List<AcademicFeedback> findAssignmentFeedbacks(int academicCourseAssignmentId, Boolean validated, Boolean archived) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -203,7 +240,7 @@ public class AcademicPerfEvalPlugin {
     }
 
     public List<AcademicFeedback> findFeedbacks(
-            int periodId,
+            Integer periodId,
             Integer departmentId,
             Integer ownerDepartmentId,
             Integer coursePlanId,
@@ -211,15 +248,26 @@ public class AcademicPerfEvalPlugin {
             Integer courseTypeId,
             Integer classId,
             Boolean validated,
-            Boolean archived
+            Boolean archived,
+            Boolean readable,
+            Boolean writable
     ) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         //AcademicCoursePlan coursePlan
         QueryBuilder q = pu.createQueryBuilder("AcademicFeedback");
         q.setEntityAlias("f");
-        q.byExpression("f.course.coursePlan.periodId=:periodId");
-        q.setParameter("periodId", periodId);
-
+        if(periodId!=null) {
+            q.byExpression("f.course.coursePlan.periodId=:periodId");
+            q.setParameter("periodId", periodId);
+        }
+        if(readable!=null) {
+            q.byExpression("f.session.read=:read");
+            q.setParameter("read", readable);
+        }
+        if(writable!=null) {
+            q.byExpression("f.session.write=:write");
+            q.setParameter("write", writable);
+        }
         if (departmentId != null) {
             q.byExpression("f.course.coursePlan.courseLevel.academicClass.program.department=:departmentId");
             q.setParameter("departmentId", departmentId);
@@ -274,10 +322,12 @@ public class AcademicPerfEvalPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select f from AcademicFeedbackModel f").getResultList();
     }
-    public List<AcademicFeedback> findStudentFeedbacks(int periodId,int studentId, Boolean validated, Boolean archived, Boolean enabled) {
+    public List<AcademicFeedback> findStudentFeedbacks(int periodId,int studentId, Boolean validated, Boolean archived, Boolean enabled, Boolean readable, Boolean writable) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        if (!checkEnableStudentFeedbacks(enabled)) return Collections.EMPTY_LIST;
+//        if (!checkEnableStudentFeedbacks(enabled)) return Collections.EMPTY_LIST;
         return pu.createQuery("Select f from AcademicFeedback f where f.studentId= :studentId and f.course.coursePlan.periodId=:periodId"
+                + (readable != null ? (" and f.session.read=" + readable) : "")
+                + (writable != null ? (" and f.session.write=" + writable) : "")
                 + (validated != null ? (" and f.validated=" + validated) : "")
                 + (archived != null ? (" and f.archived=" + archived) : "")
                 + (enabled != null ? (" and f.course.enableCourseFeedback=" + enabled) : "")
@@ -289,21 +339,21 @@ public class AcademicPerfEvalPlugin {
                 .getResultList();
     }
 
-    private boolean checkEnableStudentFeedbacks(Boolean enabled) {
-        if (enabled != null && enabled) {
-            Boolean ok = UPA.getPersistenceUnit().invokePrivileged(new Action<Boolean>() {
-                @Override
-                public Boolean run() {
-                    return (Boolean) VrApp.getBean(CorePlugin.class).getOrCreateAppPropertyValue("AcademicPerfEvalPlugin.EnableStudentFeedbacks", null, true);
-                }
-
-            });
-            if (ok != null && !ok.booleanValue()) {
-                return false;
-            }
-        }
-        return true;
-    }
+//    private boolean checkEnableStudentFeedbacks(Boolean enabled) {
+//        if (enabled != null && enabled) {
+//            Boolean ok = UPA.getPersistenceUnit().invokePrivileged(new Action<Boolean>() {
+//                @Override
+//                public Boolean run() {
+//                    return (Boolean) VrApp.getBean(CorePlugin.class).getOrCreateAppPropertyValue("AcademicPerfEvalPlugin.EnableStudentFeedbacks", null, true);
+//                }
+//
+//            });
+//            if (ok != null && !ok.booleanValue()) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
     public List<AcademicFeedbackResponse> findStudentFeedbackResponses(int feedbackId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -378,10 +428,14 @@ public class AcademicPerfEvalPlugin {
                 .getResultList();
     }
 
-    public void generateStudentsFeedbackForm(final int academicFeedbackModelId, final int periodId,int semesterId,final String studentProfileFilter) {
+    public void generateStudentsFeedbackForm(final int academicFeedbackModelId, int academicFeedbackSessionId,final String studentProfileFilter) {
         final PersistenceUnit pu = UPA.getPersistenceUnit();
         final AcademicFeedbackModel academicFeedbackModel = pu.findById(AcademicFeedbackModel.class, academicFeedbackModelId);
+        final AcademicFeedbackSession academicFeedbackSession = pu.findById(AcademicFeedbackSession.class, academicFeedbackSessionId);
         if (academicFeedbackModel == null) {
+            return;
+        }
+        if (academicFeedbackSession == null) {
             return;
         }
         TraceService traceService = TraceService.get();
@@ -406,9 +460,9 @@ public class AcademicPerfEvalPlugin {
                                                   for (int i = 0; i < classesId.length; i++) {
                                                       classesId[i] = classes.get(i).getId();
                                                   }
-                                                  List<AcademicCourseAssignment> assignements = findEvaluatableAssignments(periodId,semesterId,classesId);
+                                                  List<AcademicCourseAssignment> assignements = findEvaluatableAssignments(academicFeedbackSession.getPeriod().getId(),academicFeedbackSession.getSemester().getId(),classesId);
                                                   Set<Integer> existingAssignementIds = pu.createQuery("Select f.course.id from AcademicFeedback f where f.course.coursePlan.periodId=:periodId and f.studentId=:studentId")
-                                                          .setParameter("periodId", periodId)
+                                                          .setParameter("periodId", academicFeedbackSession.getPeriod().getId())
                                                           .setParameter("studentId", s.getId())
                                                           .getValueSet(0);
                                                   for (AcademicCourseAssignment assignement : assignements) {
@@ -421,6 +475,7 @@ public class AcademicPerfEvalPlugin {
                                                               f.setCourse(assignement);
                                                               f.setStudent(s);
                                                               f.setModel(academicFeedbackModel);
+                                                              f.setSession(academicFeedbackSession);
                                                               pu.persist(f);
 
                                                               for (AcademicFeedbackQuestion q : academicFeedbackQuestions) {

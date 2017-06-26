@@ -22,9 +22,11 @@ import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.core.web.util.FileUploadEventHandler;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.vfs.VFS;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VFileType;
 import net.vpc.common.vfs.VirtualFileSystem;
+import net.vpc.common.vfs.impl.EmptyVFS;
 import net.vpc.upa.UPA;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
@@ -77,7 +79,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
             d.setUrl("modules/files/documents");
             d.setCss("fa-table");
 
-            String login = UserSession.getCurrentUser().getLogin();
+            String login = UserSession.getCurrentLogin();
             if ("root".equals(c.getType())) {
                 d.setTitle("Documents Racine");
                 d.setSecurityKey("Custom.FileSystem.RootFileSystem");
@@ -122,25 +124,29 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
         }
         VirtualFileSystem rootfs = fsp.getFileSystem();
         VirtualFileSystem fs = null;
-        String login = UserSession.getCurrentUser().getLogin();
-        if ("root".equals(c.getType())) {
-            fs = rootfs;
-        } else if ("home".equals(c.getType())) {
-            fs = fsp.getUserHomeFileSystem(login);
-        } else if ("user".equals(c.getType())) {
-            String v = c.getValue();
-            if (StringUtils.isEmpty(v)) {
-                v = login;
+        String login = UserSession.getCurrentLogin();
+        if(StringUtils.isEmpty(login)){
+            fs= VFS.EMPTY_FS;
+        }else {
+            if ("root".equals(c.getType())) {
+                fs = rootfs;
+            } else if ("home".equals(c.getType())) {
+                fs = fsp.getUserHomeFileSystem(login);
+            } else if ("user".equals(c.getType())) {
+                String v = c.getValue();
+                if (StringUtils.isEmpty(v)) {
+                    v = login;
+                }
+                fs = fsp.getUserHomeFileSystem(v);
+            } else if ("profile".equals(c.getType())) {
+                String v = c.getValue();
+                if (StringUtils.isEmpty(v)) {
+                    v = "user";
+                }
+                fs = fsp.getProfileFileSystem(v);
+            } else {
+                fs = fsp.getUserFileSystem(login);
             }
-            fs = fsp.getUserHomeFileSystem(v);
-        } else if ("profile".equals(c.getType())) {
-            String v = c.getValue();
-            if (StringUtils.isEmpty(v)) {
-                v = "user";
-            }
-            fs = fsp.getProfileFileSystem(v);
-        } else {
-            fs = fsp.getUserFileSystem(login);
         }
         getModel().setFileSystem(fs);
         updatePath(c.getPath());

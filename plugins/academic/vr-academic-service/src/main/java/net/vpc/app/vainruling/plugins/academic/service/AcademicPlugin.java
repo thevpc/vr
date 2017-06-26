@@ -2010,6 +2010,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 " x.deleted=false " +
                 ((StringUtils.isEmpty(studentUpqlFilter)) ? "" : (" and " + studentUpqlFilter)) +
                 " order by x.contact.fullName").getResultList();
+        return filterStudents(base,studentProfileFilter);
+    }
+
+    public List<AcademicStudent> filterStudents(List<AcademicStudent> base,String studentProfileFilter) {
         if (!StringUtils.isEmpty(studentProfileFilter)) {
             HashSet<Integer> goodUsers = new HashSet<Integer>();
             AppUserType studentType = core.findUserType("Student");
@@ -2031,7 +2035,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public List<AcademicTeacher> findTeachers(String teacherProfileFilter) {
-        List<AcademicTeacher> base = findTeachers();
+        return filterTeachers(findTeachers(),teacherProfileFilter);
+    }
+
+    public List<AcademicTeacher> filterTeachers(List<AcademicTeacher> base,String teacherProfileFilter) {
         if (!StringUtils.isEmpty(teacherProfileFilter)) {
             List<AcademicTeacher> goodTeachers = new ArrayList<>();
             HashSet<Integer> goodUsers = new HashSet<Integer>();
@@ -4608,7 +4615,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 List<AcademicInternship> internships = pu.createQuery("Select u from AcademicInternship u where " +
                         "(u.boardId==null or (u.board.departmentId=:departmentId "
                         + (periodId >= 0 ? " and u.board.periodId=:periodId " : "")
-                        + (periodId >= 0 ? " and u.board.internshipTypeId=:internshipTypeId " : "")
+                        + (internshipTypeId >= 0 ? " and u.board.internshipTypeId=:internshipTypeId " : "")
                         + ")) "
                         + (openOnly ? " and u.internshipStatus.closed=false" : "")
                 )
@@ -4620,7 +4627,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 List<AcademicInternshipSupervisorIntent> supervisorIntents = pu.createQuery("Select u from AcademicInternshipSupervisorIntent u where " +
                         "(u.internship.boardId==null or (u.internship.board.departmentId=:departmentId"
                         + (periodId >= 0 ? " and u.internship.board.periodId=:periodId " : "")
-                        + (periodId >= 0 ? " and u.internship.board.internshipTypeId=:internshipTypeId " : "")
+                        + (internshipTypeId >= 0 ? " and u.internship.board.internshipTypeId=:internshipTypeId " : "")
                         + " ))"
                         + (openOnly ? " and u.internship.internshipStatus.closed=false" : "")
                 )
@@ -4631,7 +4638,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 List<AcademicInternshipBoardMessage> messages = pu.createQuery("Select u from AcademicInternshipBoardMessage u " +
                         "where (u.internship.boardId==null or (u.internship.board.departmentId=:departmentId "
                         + (periodId >= 0 ? " and u.internship.board.periodId=:periodId " : "")
-                        + (periodId >= 0 ? " and u.internship.board.internshipTypeId=:internshipTypeId " : "")
+                        + (internshipTypeId >= 0 ? " and u.internship.board.internshipTypeId=:internshipTypeId " : "")
                         + " ))"
                         + (openOnly ? " and u.internship.internshipStatus.closed=false" : "")
                 )

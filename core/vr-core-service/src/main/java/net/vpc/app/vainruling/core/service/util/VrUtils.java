@@ -119,7 +119,12 @@ public class VrUtils {
             Document d = Jsoup.parse(html);
             for (Element e : d.select("font")) {
                 if (e.childNodeSize() > 0) {
-                    e.replaceWith(e.child(0));
+                    try {
+                        e.replaceWith(e.childNode(0));
+                    } catch (java.lang.IndexOutOfBoundsException ex) {
+                        //why
+                        System.out.print("");
+                    }
                 } else {
                     e.remove();
                 }
@@ -256,19 +261,19 @@ public class VrUtils {
         return gson.toJson(cmd);
     }
 
-    public static String dformat(Number nbr,String format) {
-        if(nbr==null){
+    public static String dformat(Number nbr, String format) {
+        if (nbr == null) {
             return "";
         }
-        if(nbr instanceof Double){
-            double d=(double) nbr;
-            double di=(long) d;
-            if(di==d){
-                nbr=new Long((long) d);
+        if (nbr instanceof Double) {
+            double d = (double) nbr;
+            double di = (long) d;
+            if (di == d) {
+                nbr = new Long((long) d);
                 return String.valueOf(nbr);
             }
         }
-        DecimalFormat f=new DecimalFormat(format);
+        DecimalFormat f = new DecimalFormat(format);
         return f.format(nbr);
     }
 
@@ -485,77 +490,77 @@ public class VrUtils {
         return diffs;
     }
 
-    public static String getBeanName(Class cls){
+    public static String getBeanName(Class cls) {
         String s = cls.getSimpleName();
-        return Character.toUpperCase(s.charAt(0))+s.substring(1);
+        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 
-    public static String validateContactName(String name){
-        if(name==null){
-            name="";
+    public static String validateContactName(String name) {
+        if (name == null) {
+            name = "";
         }
-        name=name.trim();
+        name = name.trim();
 
-        StringBuilder sb=new StringBuilder();
-        boolean wasSpace=true;
+        StringBuilder sb = new StringBuilder();
+        boolean wasSpace = true;
         for (int i = 0; i < name.length(); i++) {
-             char c=name.charAt(i);
-            if(Character.isWhitespace(c)){
-                if(wasSpace){
+            char c = name.charAt(i);
+            if (Character.isWhitespace(c)) {
+                if (wasSpace) {
                     //do nothing
-                }else{
+                } else {
                     sb.append(c);
                 }
-                wasSpace=true;
-            }else if(Character.isLetter(c)){
-                if(wasSpace){
+                wasSpace = true;
+            } else if (Character.isLetter(c)) {
+                if (wasSpace) {
                     sb.append(Character.toUpperCase(c));
-                }else{
+                } else {
                     sb.append(Character.toLowerCase(c));
                 }
-                wasSpace=false;
-            }else{
+                wasSpace = false;
+            } else {
                 sb.append(Character.toLowerCase(c));
-                wasSpace=false;
+                wasSpace = false;
             }
         }
         return sb.toString();
     }
 
-    public static <T> List<T> filterList(List<T> list,ObjectFilter<T> filter){
-        ArrayList li=new ArrayList();
+    public static <T> List<T> filterList(List<T> list, ObjectFilter<T> filter) {
+        ArrayList li = new ArrayList();
         for (T t : list) {
-            if(filter==null || filter.accept(t)){
+            if (filter == null || filter.accept(t)) {
                 li.add(t);
             }
         }
         return li;
     }
 
-    public static double divOrZ(double a,double b){
-        if(Double.isNaN(a) || Double.isNaN(b) || b==0){
+    public static double divOrZ(double a, double b) {
+        if (Double.isNaN(a) || Double.isNaN(b) || b == 0) {
             return 0;
         }
-        return a/b;
+        return a / b;
     }
 
-    public static String getURLName(String url){
-        if(url==null){
-            url="";
+    public static String getURLName(String url) {
+        if (url == null) {
+            url = "";
         }
         int i = url.lastIndexOf('/');
-        if(i>=0){
-            url=url.substring(i+1);
+        if (i >= 0) {
+            url = url.substring(i + 1);
         }
         i = url.lastIndexOf('?');
-        if(i>=0){
-            url=url.substring(0,i);
+        if (i >= 0) {
+            url = url.substring(0, i);
         }
         return url;
     }
 
-    public static <T> List<T> sortPreserveIndex(List<T> list,Comparator<T> comp){
-        class IndexedItem<T>{
+    public static <T> List<T> sortPreserveIndex(List<T> list, Comparator<T> comp) {
+        class IndexedItem<T> {
             T item;
             int index;
 
@@ -564,22 +569,22 @@ public class VrUtils {
                 this.index = index;
             }
         }
-        IndexedItem<T>[] items=new IndexedItem[list.size()];
+        IndexedItem<T>[] items = new IndexedItem[list.size()];
         for (int i = 0; i < items.length; i++) {
-            items[i]=new IndexedItem<>(list.get(i),i);
+            items[i] = new IndexedItem<>(list.get(i), i);
         }
         Arrays.sort(items, new Comparator<IndexedItem<T>>() {
             @Override
             public int compare(IndexedItem<T> o1, IndexedItem<T> o2) {
                 int i = comp.compare(o1.item, o2.item);
-                if(i==0){
-                    i=o1.index-o2.index;
+                if (i == 0) {
+                    i = o1.index - o2.index;
                 }
                 return i;
             }
         });
         for (int i = 0; i < items.length; i++) {
-            list.set(i,items[i].item);
+            list.set(i, items[i].item);
         }
         return list;
     }
@@ -632,17 +637,17 @@ public class VrUtils {
         List<KeyValStruct> ll = toKeyValStructList(list);
         Collections.sort(ll);
         Collections.reverse(ll);
-        List<ValueCount> ret=new ArrayList<>();
+        List<ValueCount> ret = new ArrayList<>();
         for (KeyValStruct s : ll) {
-            ret.add(new ValueCount(s.n,s.n,s.v.intValue()));
+            ret.add(new ValueCount(s.n, s.n, s.v.intValue()));
         }
         return ret;
     }
 
-    public static  Map<String, Number> namedValueCountToMap(List<NamedValueCount> list) {
-        Map<String, Number> aa=new LinkedHashMap<>();
+    public static Map<String, Number> namedValueCountToMap(List<NamedValueCount> list) {
+        Map<String, Number> aa = new LinkedHashMap<>();
         for (NamedValueCount v : list) {
-            aa.put(v.getName(),v.getCount());
+            aa.put(v.getName(), v.getCount());
         }
         return aa;
     }
@@ -651,9 +656,9 @@ public class VrUtils {
         List<KeyValStruct> ll = toKeyValStructList(list);
         Collections.sort(ll);
         Collections.reverse(ll);
-        List<NamedValueCount> ret=new ArrayList<>();
+        List<NamedValueCount> ret = new ArrayList<>();
         for (KeyValStruct s : ll) {
-            ret.add(new NamedValueCount(s.n,s.n,s.v.intValue()));
+            ret.add(new NamedValueCount(s.n, s.n, s.v.intValue()));
         }
         return ret;
     }
@@ -733,6 +738,59 @@ public class VrUtils {
         return list2;
     }
 
+    /**
+     * *
+     * **
+     *
+     * @param pattern
+     * @return
+     */
+    public static String simpexpToRegexp(String pattern, boolean contains) {
+        if (pattern == null) {
+            pattern = "*";
+        }
+        int i = 0;
+        char[] cc = pattern.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        while (i < cc.length) {
+            char c = cc[i];
+            switch (c) {
+                case '.':
+                case '!':
+                case '$':
+                case '[':
+                case ']':
+                case '(':
+                case ')':
+                case '?':
+                case '^':
+                case '\\': {
+                    sb.append('\\').append(c);
+                    break;
+                }
+                case '*': {
+//                    if (i + 1 < cc.length && cc[i + 1] == '*') {
+//                        i++;
+//                        sb.append("[a-zA-Z_0-9_$.-]*");
+//                    } else {
+//                        sb.append("[a-zA-Z_0-9_$-]*");
+//                    }
+                    sb.append(".*");
+                    break;
+                }
+                default: {
+                    sb.append(c);
+                }
+            }
+            i++;
+        }
+        if (!contains) {
+            sb.insert(0, '^');
+            sb.append('$');
+        }
+        return sb.toString();
+    }
+
     public static class KeyValStruct implements Comparable<KeyValStruct> {
 
         String n;
@@ -762,4 +820,5 @@ public class VrUtils {
         }
 
     }
+
 }

@@ -20,7 +20,8 @@ public enum EquipmentStatusType {
     TEMPORARILY_UNAVAILABLE(-1),
     PLANNED_INTERVENTION(0),
     INTERVENTION_ON_COMPLAINT(0),
-    COMPLAINT(0);
+    COMPLAINT(0),
+    ACQUISITION(1);
 
     private int sign;
 

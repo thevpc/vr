@@ -24,6 +24,7 @@ import java.sql.Timestamp;
                 @Property(name = "ui.auto-filter.company", value = "{expr='company',order=1}"),
                 @Property(name = "ui.auto-filter.positionTitle1", value = "{expr='positionTitle1',order=2}"),
 //                @Property(name = "ui.auto-filter.company", value = "{expr='company',order=3}")
+                @Property(name = UIConstants.ENTITY_TEXT_SEARCH_FACTORY, value = "net.vpc.app.vainruling.core.service.obj.AppContactObjSearchFactory")
         }
 )
 public class AppContact {
@@ -43,7 +44,7 @@ public class AppContact {
     private String firstName;
     private String lastName;
     @Main
-    @Formula(value = "concat(Coalesce(this.fullName,''),' - ',Coalesce(this.positionSuffix,'?'))")
+    @Formula(value = "concat(Coalesce(this.fullName,''),' - ',Coalesce(this.positionSuffix,'?'))",formulaOrder = 1)
     private String fullTitle;
 
     private String positionSuffix;

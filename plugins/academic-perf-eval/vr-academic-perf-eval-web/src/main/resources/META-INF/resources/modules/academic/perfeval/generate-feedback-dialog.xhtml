@@ -25,13 +25,15 @@ and open the template in the editor.
             <h:form id="myform" style="margin-top: 10px;">
                 Etudiants
                 <p:inputText value="#{generateFeedbackActionCtrl.model.filter}" style="width: 97%"/>
-                Semestre
+                <p:separator/>
+                Modele
                 <p:selectOneMenu
-                                 value="#{generateFeedbackActionCtrl.model.selectedSemester}">
-                    <f:selectItem itemLabel="Selectionner Semestre..." itemValue=""/>
-                    <f:selectItems value="#{generateFeedbackActionCtrl.model.semesters}"/>
+                        value="#{generateFeedbackActionCtrl.model.selectedModel}">
+                    <f:selectItem itemLabel="Selectionner Modele..." itemValue=""/>
+                    <f:selectItems value="#{generateFeedbackActionCtrl.model.models}"/>
                 </p:selectOneMenu>
                 <p:separator/>
+
                 <p:commandButton icon="ui-icon-search"
                                  actionListener="#{generateFeedbackActionCtrl.fireEventExtraDialogApply()}"
                                  value="Accepter" styleClass="btn btn-primary"

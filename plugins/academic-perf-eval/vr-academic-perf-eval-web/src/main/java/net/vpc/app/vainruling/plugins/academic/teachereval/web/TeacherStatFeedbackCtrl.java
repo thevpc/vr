@@ -531,7 +531,9 @@ public class TeacherStatFeedbackCtrl {
                     null,
                     null,
                     getModel().getValidatedFilter(),
-                    false
+                    false,
+                    true,
+                    null
             );
         }
     }
@@ -601,7 +603,8 @@ public class TeacherStatFeedbackCtrl {
                     null,
                     classId < 0 ? null : classId,
                     getModel().getValidatedFilter(),
-                    false
+                    false,true,
+                    null
             );
         }
     }
@@ -718,7 +721,8 @@ public class TeacherStatFeedbackCtrl {
                     null,
                     null,
                     getModel().getValidatedFilter(),
-                    false
+                    false,true,
+                    null
             );
         }
 
@@ -782,7 +786,8 @@ public class TeacherStatFeedbackCtrl {
                     courseTypeId < 0 ? null : courseTypeId,
                     null,
                     getModel().getValidatedFilter(),
-                    false
+                    false,true,
+                    null
             );
         }
 

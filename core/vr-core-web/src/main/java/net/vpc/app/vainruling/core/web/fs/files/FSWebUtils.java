@@ -76,7 +76,7 @@
 //
 //    public VFile handleFileUploadEvent(FileUploadEvent event) throws Exception {
 //        String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
-//                + "-" + UserSession.getCurrentUser().getLogin();
+//                + "-" + UserSession.getCurrentLogin();
 //        CorePlugin fsp = VrApp.getBean(CorePlugin.class);
 //        String p = fsp.getNativeFileSystemPath() + tempPath;
 //        new File(p).mkdirs();

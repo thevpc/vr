@@ -21,10 +21,12 @@ public class AppProfileRight {
     private int id;
 
     @Main
+    @Field(nullable = BoolEnum.FALSE)
     private AppRightName right;
 
     @Summary
     @ManyToOne(type = RelationshipType.COMPOSITION)
+    @Field(nullable = BoolEnum.FALSE)
     private AppProfile profile;
 
     @Field(max = "4000")

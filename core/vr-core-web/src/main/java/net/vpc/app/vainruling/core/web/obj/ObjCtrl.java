@@ -12,6 +12,7 @@ import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.obj.*;
 import net.vpc.app.vainruling.core.service.util.I18n;
+import net.vpc.app.vainruling.core.service.util.JavascriptEvaluator;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.*;
@@ -20,6 +21,7 @@ import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.obj.defaultimpl.EntityDetailPropertyView;
+import net.vpc.app.vainruling.core.web.obj.defaultimpl.FieldPropertyView;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
@@ -942,82 +944,88 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
+    private boolean updateViewFlag;
     public void updateView() {
-        enabledButtons.clear();
+        if(updateViewFlag){
+            return;
+        }
+        updateViewFlag=true;
         try {
-            //reset table state
-            FacesContext currentInstance = FacesContext.getCurrentInstance();
+            enabledButtons.clear();
             try {
-                if (currentInstance != null) {
-                    UIComponent table = currentInstance.getViewRoot().findComponent(":listForm:listTable");
-                    if (table != null) {
-                        table.setValueExpression("sortBy", null);
+                //reset table state
+                FacesContext currentInstance = FacesContext.getCurrentInstance();
+                try {
+                    if (currentInstance != null) {
+                        UIComponent table = currentInstance.getViewRoot().findComponent(":listForm:listTable");
+                        if (table != null) {
+                            table.setValueExpression("sortBy", null);
+                        }
                     }
+                } catch (Exception ex) {
+                    //ignore
                 }
-            } catch (Exception ex) {
-                //ignore
-            }
-            Entity entity = getEntity();
-            try {
-                VrApp.getBean(VrMenuManager.class).getModel().getTitleCrumb().setTitle(getPageTitleString(entity, getModel().getMode()));
-                if (currentInstance != null) {
-                    UIComponent table = currentInstance.getViewRoot().findComponent(":listForm:listTable");
-                    if (table != null) {
-                        table.setValueExpression("sortBy", null);
+                Entity entity = getEntity();
+                try {
+                    VrApp.getBean(VrMenuManager.class).getModel().getTitleCrumb().setTitle(getPageTitleString(entity, getModel().getMode()));
+                    if (currentInstance != null) {
+                        UIComponent table = currentInstance.getViewRoot().findComponent(":listForm:listTable");
+                        if (table != null) {
+                            table.setValueExpression("sortBy", null);
+                        }
                     }
+                } catch (Exception ex) {
+                    //ignore
                 }
-            } catch (Exception ex) {
-                //ignore
-            }
-            //update columns
-            Entity ot = UPA.getPersistenceUnit().getEntity(getEntityName());
-            columns.clear();
-            properties.clear();
-            boolean adm = core.isUserSessionAdmin();
+                //update columns
+                Entity ot = UPA.getPersistenceUnit().getEntity(getEntityName());
+                columns.clear();
+                properties.clear();
+                boolean adm = core.isUserSessionAdmin();
 
-            List<Field> fields = new ArrayList<Field>();
-            if (getModel().getFieldSelection() == null) {
-                fields = new ArrayList<>(ot.getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY)));
-            } else {
-                fields = getModel().getFieldSelection().getVisibleFields();
-            }
-            VrUtils.sortPreserveIndex(fields, new Comparator<Field>() {
-                @Override
-                public int compare(Field o1, Field o2) {
+                List<Field> fields = new ArrayList<Field>();
+                if (getModel().getFieldSelection() == null) {
+                    fields = new ArrayList<>(ot.getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY)));
+                } else {
+                    fields = getModel().getFieldSelection().getVisibleFields();
+                }
+                VrUtils.sortPreserveIndex(fields, new Comparator<Field>() {
+                    @Override
+                    public int compare(Field o1, Field o2) {
 //                    return Integer.compare(o1.getPreferredIndex(),o2.getPreferredIndex());
-                    return 0;
-                }
-            });
-
-            for (Field field : fields) {
-                AccessLevel ral = field.getReadAccessLevel();
-                if (ral == AccessLevel.PRIVATE) {
-                    continue;
-                } else if (ral == AccessLevel.PROTECTED) {
-                    if (!adm && !UPA.getPersistenceUnit().getSecurityManager().isAllowedRead(field)) {
-                        continue;
+                        return 0;
                     }
-                }
-                String type = UIConstants.Control.TEXT;
-                if (PlatformTypes.isBooleanType(field.getDataType().getPlatformType())) {
-                    type = UIConstants.Control.CHECKBOX;
-                }
-                String property = field.getName();
-                String propertyExpr = field.getName();
-                if (field.getDataType() instanceof ManyToOneType) {
-                    ManyToOneType e = (ManyToOneType) field.getDataType();
-                    propertyExpr += "." + e.getRelationship().getTargetEntity().getMainField().getName();
-                }
-                columns.add(new ColumnView(i18n.get(field), property, propertyExpr, type));
-            }
-            FormHelper h = new FormHelper();
-            dynModel = h.dynModel;
+                });
 
-            ViewContext viewContext = new ViewContext();
-            List<OrderedPropertyView> propertyViews = new ArrayList<OrderedPropertyView>();
-            List<EntityPart> entityParts = VrUtils.sortPreserveIndex(ot.getParts(), new Comparator<EntityPart>() {
-                @Override
-                public int compare(EntityPart o1, EntityPart o2) {
+                for (Field field : fields) {
+                    AccessLevel ral = field.getReadAccessLevel();
+                    if (ral == AccessLevel.PRIVATE) {
+                        continue;
+                    } else if (ral == AccessLevel.PROTECTED) {
+                        if (!adm && !UPA.getPersistenceUnit().getSecurityManager().isAllowedRead(field)) {
+                            continue;
+                        }
+                    }
+                    String type = UIConstants.Control.TEXT;
+                    if (PlatformTypes.isBooleanType(field.getDataType().getPlatformType())) {
+                        type = UIConstants.Control.CHECKBOX;
+                    }
+                    String property = field.getName();
+                    String propertyExpr = field.getName();
+                    if (field.getDataType() instanceof ManyToOneType) {
+                        ManyToOneType e = (ManyToOneType) field.getDataType();
+                        propertyExpr += "." + e.getRelationship().getTargetEntity().getMainField().getName();
+                    }
+                    columns.add(new ColumnView(i18n.get(field), property, propertyExpr, type));
+                }
+                FormHelper h = new FormHelper();
+                dynModel = h.dynModel;
+
+                ViewContext viewContext = new ViewContext();
+                List<OrderedPropertyView> propertyViews = new ArrayList<OrderedPropertyView>();
+                List<EntityPart> entityParts = VrUtils.sortPreserveIndex(ot.getParts(), new Comparator<EntityPart>() {
+                    @Override
+                    public int compare(EntityPart o1, EntityPart o2) {
 //                    if (o1 instanceof Section && o2 instanceof Section) {
 //                        return 0;
 //                    }
@@ -1030,51 +1038,29 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 //                    if (o1 instanceof Field && o2 instanceof Field) {
 //                        return Integer.compare(((Field) o1).getPreferredIndex(), ((Field) o2).getPreferredIndex());
 //                    }
-                    return 0;
-                }
-            });
-            for (EntityPart entityPart : entityParts) {
-                if(entityPart instanceof  Section){
-                    List<Field> sectionFields = ((Section) entityPart).getFields(FieldFilters.byModifiersNoneOf(FieldModifier.SYSTEM));
-                    List<Field> sectionSortedFields = VrUtils.sortPreserveIndex(sectionFields, new Comparator<Field>() {
-                        @Override
-                        public int compare(Field o1, Field o2) {
+                        return 0;
+                    }
+                });
+                for (EntityPart entityPart : entityParts) {
+                    if (entityPart instanceof Section) {
+                        List<Field> sectionFields = ((Section) entityPart).getFields(FieldFilters.byModifiersNoneOf(FieldModifier.SYSTEM));
+                        List<Field> sectionSortedFields = VrUtils.sortPreserveIndex(sectionFields, new Comparator<Field>() {
+                            @Override
+                            public int compare(Field o1, Field o2) {
 //                    return Integer.compare(o1.getPreferredIndex(),o2.getPreferredIndex());
-                            return 0;
-                        }
-                    });
-
-                    for (Field field : sectionSortedFields) {
-                        Map<String, Object> config = new HashMap<>();
-                        if (getModel().getDisabledFields().contains(field.getName())) {
-                            config.put("disabled", true);
-                        }
-                        PropertyView[] ctrls = propertyViewManager.createPropertyViews(field.getName(), field, config, viewContext);
-                        if (ctrls != null) {
-                            for (PropertyView ctrl : ctrls) {
-                                if (ctrl != null) {
-                                    propertyViews.add(new OrderedPropertyView(propertyViews.size(), ctrl));
-                                }
+                                return 0;
                             }
-                        }
-                    }
+                        });
 
-                }else{
-                    Field field=(Field) entityPart;
-                    Map<String, Object> config = new HashMap<>();
-                    if (getModel().getDisabledFields().contains(field.getName())) {
-                        config.put("disabled", true);
-                    }
-                    PropertyView[] ctrls = propertyViewManager.createPropertyViews(field.getName(), field, config, viewContext);
-                    if (ctrls != null) {
-                        for (PropertyView ctrl : ctrls) {
-                            if (ctrl != null) {
-                                propertyViews.add(new OrderedPropertyView(propertyViews.size(), ctrl));
-                            }
+                        for (Field field : sectionSortedFields) {
+                            updateViewForField(field, viewContext, propertyViews);
                         }
+
+                    } else {
+                        Field field = (Field) entityPart;
+                        updateViewForField(field, viewContext, propertyViews);
                     }
                 }
-            }
 //            for (Field field : VrUtils.sortPreserveIndex(new ArrayList<>(ot.getFields(FieldFilters.byModifiersNoneOf(FieldModifier.SYSTEM))), Comparator.comparingInt(Field::getPreferredIndex))) {
 //                Map<String, Object> config = new HashMap<>();
 //                if (getModel().getDisabledFields().contains(field.getName())) {
@@ -1089,147 +1075,147 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 //                    }
 //                }
 //            }
-            if (getModel().getMode() == EditCtrlMode.UPDATE) {
-                boolean firstDetailRelation = true;
-                int counter = 0;
-                int maxPerLine = 2;
-                for (Relationship relation : ot.getRelationships()) {
-                    if (relation.getTargetEntity().getName().equals(ot.getName())) {
-                        if (relation.getRelationshipType() == RelationshipType.COMPOSITION) {
-                            EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
-                            details.setPrependNewLine((counter % maxPerLine) == 0);
-                            details.setAppendNewLine(false);
-                            details.setColspan(1);
-                            details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
-                            counter++;
-                            if (firstDetailRelation) {
-                                details.setSeparatorText("Details");
-                                firstDetailRelation = false;
+                if (getModel().getMode() == EditCtrlMode.UPDATE) {
+                    boolean firstDetailRelation = true;
+                    int counter = 0;
+                    int maxPerLine = 2;
+                    for (Relationship relation : ot.getRelationships()) {
+                        if (relation.getTargetEntity().getName().equals(ot.getName())) {
+                            if (relation.getRelationshipType() == RelationshipType.COMPOSITION) {
+                                EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
+                                details.setPrependNewLine((counter % maxPerLine) == 0);
+                                details.setAppendNewLine(false);
+                                details.setColspan(1);
+                                details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
+                                counter++;
+                                if (firstDetailRelation) {
+                                    details.setSeparatorText("Details");
+                                    firstDetailRelation = false;
+                                }
+                                propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
                             }
-                            propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
+                        }
+                    }
+                    counter = 0;
+                    for (Relationship relation : ot.getRelationships()) {
+                        if (relation.getTargetEntity().getName().equals(ot.getName())) {
+                            if (relation.getRelationshipType() == RelationshipType.AGGREGATION) {
+                                EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
+                                details.setPrependNewLine((counter % maxPerLine) == 0);
+                                details.setAppendNewLine(false);
+                                details.setColspan(1);
+                                details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
+                                counter++;
+                                if (firstDetailRelation) {
+                                    details.setSeparatorText("Details");
+                                    firstDetailRelation = false;
+                                }
+                                propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
+                            }
+                        }
+                    }
+                    counter = 0;
+                    boolean firstAssoRelation = true;
+                    for (Relationship relation : ot.getRelationships()) {
+                        if (relation.getTargetEntity().getName().equals(ot.getName())) {
+                            final RelationshipType t = relation.getRelationshipType();
+                            if (t != RelationshipType.AGGREGATION && t != RelationshipType.COMPOSITION) {
+                                EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
+                                details.setPrependNewLine((counter % maxPerLine) == 0);
+                                details.setAppendNewLine(false);
+                                details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
+                                details.setColspan(1);
+                                counter++;
+                                if (firstAssoRelation) {
+                                    details.setSeparatorText("References");
+                                    firstAssoRelation = false;
+                                }
+                                propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
+                            }
                         }
                     }
                 }
-                counter = 0;
-                for (Relationship relation : ot.getRelationships()) {
-                    if (relation.getTargetEntity().getName().equals(ot.getName())) {
-                        if (relation.getRelationshipType() == RelationshipType.AGGREGATION) {
-                            EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
-                            details.setPrependNewLine((counter % maxPerLine) == 0);
-                            details.setAppendNewLine(false);
-                            details.setColspan(1);
-                            details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
-                            counter++;
-                            if (firstDetailRelation) {
-                                details.setSeparatorText("Details");
-                                firstDetailRelation = false;
-                            }
-                            propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
-                        }
-                    }
-                }
-                counter = 0;
-                boolean firstAssoRelation = true;
-                for (Relationship relation : ot.getRelationships()) {
-                    if (relation.getTargetEntity().getName().equals(ot.getName())) {
-                        final RelationshipType t = relation.getRelationshipType();
-                        if (t != RelationshipType.AGGREGATION && t != RelationshipType.COMPOSITION) {
-                            EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
-                            details.setPrependNewLine((counter % maxPerLine) == 0);
-                            details.setAppendNewLine(false);
-                            details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
-                            details.setColspan(1);
-                            counter++;
-                            if (firstAssoRelation) {
-                                details.setSeparatorText("References");
-                                firstAssoRelation = false;
-                            }
-                            propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
-                        }
-                    }
-                }
-            }
 
-            Collections.sort(propertyViews);
-            for (OrderedPropertyView ctrlv : propertyViews) {
-                PropertyView ctrl = ctrlv.getValue();
-                properties.add(ctrl);
-                boolean hasSeparator = ctrl.getSeparatorText() != null && ctrl.getSeparatorText().length() > 0;
-                if (hasSeparator || ctrl.isPrependNewLine()) {
-                    h.newLine();
-                }
-                DynaFormLabel label = null;
-                for (int i = 0; i < ctrl.getPrependEmptyCells(); i++) {
-                    h.addLabel("", 1, 1);
-                }
-                if (hasSeparator) {
-                    h.addControl(ctrl.getSeparatorText(), UIConstants.Control.SEPARATOR, Integer.MAX_VALUE, 1);
-                }
-                if (!ctrl.isNoLabel()) {
-                    label = h.addLabel(ctrl.getName(), 1, 1);
-                    if (ctrl.isLabelNewLine()) {
+                Collections.sort(propertyViews);
+                for (OrderedPropertyView ctrlv : propertyViews) {
+                    PropertyView ctrl = ctrlv.getValue();
+                    properties.add(ctrl);
+                    boolean hasSeparator = ctrl.getSeparatorText() != null && ctrl.getSeparatorText().length() > 0;
+                    if (hasSeparator || ctrl.isPrependNewLine()) {
                         h.newLine();
                     }
-                    for (int i = 0; i < ctrl.getAppendEmptyCells(); i++) {
+                    DynaFormLabel label = null;
+                    for (int i = 0; i < ctrl.getPrependEmptyCells(); i++) {
                         h.addLabel("", 1, 1);
                     }
-                }
-
-                DynaFormControl control12 = h.addControl(ctrl, ctrl.getCtrlType(), ctrl.getColspan(), ctrl.getRowpan());
-                if (label != null) {
-                    label.setForControl(control12);
-                }
-                if (ctrl.isAppendNewLine()) {
-                    h.newLine();
-                }
-
-            }
-
-            List<AutoFilterData> autoFilterDatas = new ArrayList<>();
-            List<AutoFilter> newAutoFilters = new ArrayList<>();
-            //autoFilters.clear();
-            for (Map.Entry<String, Object> entry : entity.getProperties().toMap().entrySet()) {
-                if (entry.getKey().startsWith("ui.auto-filter.")) {
-                    String name = entry.getKey().substring("ui.auto-filter.".length());
-                    AutoFilterData d = VrUtils.parseJSONObject((String) entry.getValue(), AutoFilterData.class);
-                    d.setName(name);
-                    d.setBaseEntityName(entity.getName());
-                    autoFilterDatas.add(d);
-                }
-            }
-            Collections.sort(autoFilterDatas);
-            for (AutoFilterData autoFilterData : autoFilterDatas) {
-                String type = autoFilterData.getFilterType();
-                if (StringUtils.isEmpty(type) || type.equals("single-selection")) {
-                    String expr = autoFilterData.getExpr();
-                    if (!expr.matches("[a-zA-Z0-9.]+")) {
-                        throw new IllegalArgumentException("Invalid Auto Filter Expr " + expr);
+                    if (hasSeparator) {
+                        h.addControl(new SeparatorPropertyView(ctrl.getSeparatorText()), UIConstants.Control.SEPARATOR, Integer.MAX_VALUE, 1);
                     }
-                    I18n i18n = VrApp.getBean(I18n.class);
-                    DataType curr = entity.getDataType();
-                    String evalLabel = i18n.get(entity);
-                    for (String s : expr.split("\\.")) {
-                        if (curr instanceof KeyType) {
-                            Field field = ((KeyType) curr).getEntity().getField(s);
-                            evalLabel = i18n.get(field);
-                            if (field.getDataType() instanceof ManyToOneType) {
-                                Entity targetEntity = ((ManyToOneType) field.getDataType()).getTargetEntity();
-                                if(targetEntity.isHierarchical()){
-                                    //TODO process hierarchical search
-                                }
-                                curr = (KeyType) targetEntity.getDataType();
-                            } else if (field.getDataType() instanceof EnumType) {
-                                curr = field.getDataType();
-                            } else {
-                                curr = field.getDataType();
-                            }
-                        } else {
-                            throw new IllegalArgumentException("Unsupported Filter Type " + expr);
+                    if (!ctrl.isNoLabel()) {
+                        label = h.addLabel(ctrl.getName(), 1, 1);
+                        if (ctrl.isLabelNewLine()) {
+                            h.newLine();
+                        }
+                        for (int i = 0; i < ctrl.getAppendEmptyCells(); i++) {
+                            h.addLabel("", 1, 1);
                         }
                     }
-                    if (StringUtils.isEmpty(autoFilterData.getLabel())) {
-                        String label = i18n.getOrNull("UI.Entity." + entity.getName() + ".ui.auto-filter.class");
-                        autoFilterData.setLabel(evalLabel);
+
+                    DynaFormControl control12 = h.addControl(ctrl, ctrl.getCtrlType(), ctrl.getColspan(), ctrl.getRowpan());
+                    if (label != null) {
+                        label.setForControl(control12);
+                    }
+                    if (ctrl.isAppendNewLine()) {
+                        h.newLine();
+                    }
+
+                }
+
+                List<AutoFilterData> autoFilterDatas = new ArrayList<>();
+                List<AutoFilter> newAutoFilters = new ArrayList<>();
+                //autoFilters.clear();
+                for (Map.Entry<String, Object> entry : entity.getProperties().toMap().entrySet()) {
+                    if (entry.getKey().startsWith("ui.auto-filter.")) {
+                        String name = entry.getKey().substring("ui.auto-filter.".length());
+                        AutoFilterData d = VrUtils.parseJSONObject((String) entry.getValue(), AutoFilterData.class);
+                        d.setName(name);
+                        d.setBaseEntityName(entity.getName());
+                        autoFilterDatas.add(d);
+                    }
+                }
+                Collections.sort(autoFilterDatas);
+                for (AutoFilterData autoFilterData : autoFilterDatas) {
+                    String type = autoFilterData.getFilterType();
+                    if (StringUtils.isEmpty(type) || type.equals("single-selection")) {
+                        String expr = autoFilterData.getExpr();
+                        if (!expr.matches("[a-zA-Z0-9.]+")) {
+                            throw new IllegalArgumentException("Invalid Auto Filter Expr " + expr);
+                        }
+                        I18n i18n = VrApp.getBean(I18n.class);
+                        DataType curr = entity.getDataType();
+                        String evalLabel = i18n.get(entity);
+                        for (String s : expr.split("\\.")) {
+                            if (curr instanceof KeyType) {
+                                Field field = ((KeyType) curr).getEntity().getField(s);
+                                evalLabel = i18n.get(field);
+                                if (field.getDataType() instanceof ManyToOneType) {
+                                    Entity targetEntity = ((ManyToOneType) field.getDataType()).getTargetEntity();
+                                    if (targetEntity.isHierarchical()) {
+                                        //TODO process hierarchical search
+                                    }
+                                    curr = (KeyType) targetEntity.getDataType();
+                                } else if (field.getDataType() instanceof EnumType) {
+                                    curr = field.getDataType();
+                                } else {
+                                    curr = field.getDataType();
+                                }
+                            } else {
+                                throw new IllegalArgumentException("Unsupported Filter Type " + expr);
+                            }
+                        }
+                        if (StringUtils.isEmpty(autoFilterData.getLabel())) {
+                            String label = i18n.getOrNull("UI.Entity." + entity.getName() + ".ui.auto-filter.class");
+                            autoFilterData.setLabel(evalLabel);
 //                        if(StringUtils.isEmpty(label)){
 //                            if(curr instanceof KeyType){
 //                                autoFilterData.setLabel(i18n.get(((KeyType) curr).getEntity()));
@@ -1237,80 +1223,154 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 //                                autoFilterData.setLabel(autoFilterData.getName());
 //                            }
 //                        }
-                    }
-                    PropertyViewManager manager = VrApp.getBean(PropertyViewManager.class);
-                    AutoFilter autoFilter0 = null;
-                    for (AutoFilter autoFilter : autoFilters) {
-                        if (autoFilter.getData().equals(autoFilterData)) {
-                            autoFilter0 = autoFilter;
-                            break;
                         }
-                    }
-                    if (autoFilter0 != null) {
-                        newAutoFilters.add(autoFilter0);
-                    } else {
-                        SingleSelectionAutoFilter f = new SingleSelectionAutoFilter(curr, autoFilterData);
-                        f.getValues().add(FacesUtils.createSelectItem(String.valueOf(""), "-------", ""));
-                        if ((curr instanceof KeyType) || (curr instanceof EnumType)) {
-                            List<NamedId> namedIds = manager.getPropertyViewValuesProvider(null, curr).resolveValues(null, null, curr, viewContext);
-                            for (NamedId namedId : namedIds) {
-                                f.getValues().add(FacesUtils.createSelectItem(String.valueOf(namedId.getId()), StringUtils.nonNull(namedId.getName()), ""));
+                        PropertyViewManager manager = VrApp.getBean(PropertyViewManager.class);
+                        AutoFilter autoFilter0 = null;
+                        for (AutoFilter autoFilter : autoFilters) {
+                            if (autoFilter.getData().equals(autoFilterData)) {
+                                autoFilter0 = autoFilter;
+                                break;
                             }
-                            newAutoFilters.add(f);
-                            if (curr instanceof KeyType) {
-                                Entity ee = ((KeyType) curr).getEntity();
-                                Object defaultSelection = getDefaultFilterSelectedObject(autoFilterData, curr);
-                                if (defaultSelection != null) {
-                                    Object theId = ee.getBuilder().objectToId(defaultSelection);
-                                    f.setSelectedString(String.valueOf(theId));
+                        }
+                        if (autoFilter0 != null) {
+                            newAutoFilters.add(autoFilter0);
+                        } else {
+                            SingleSelectionAutoFilter f = new SingleSelectionAutoFilter(curr, autoFilterData);
+                            f.getValues().add(FacesUtils.createSelectItem(String.valueOf(""), "-------", ""));
+                            if ((curr instanceof KeyType) || (curr instanceof EnumType)) {
+                                List<NamedId> namedIds = manager.getPropertyViewValuesProvider(null, curr).resolveValues(null, null, curr, viewContext);
+                                for (NamedId namedId : namedIds) {
+                                    f.getValues().add(FacesUtils.createSelectItem(String.valueOf(namedId.getId()), StringUtils.nonNull(namedId.getName()), ""));
                                 }
-                            } else if (curr instanceof EnumType) {
+                                newAutoFilters.add(f);
+                                if (curr instanceof KeyType) {
+                                    Entity ee = ((KeyType) curr).getEntity();
+                                    Object defaultSelection = getDefaultFilterSelectedObject(autoFilterData, curr);
+                                    if (defaultSelection != null) {
+                                        Object theId = ee.getBuilder().objectToId(defaultSelection);
+                                        f.setSelectedString(String.valueOf(theId));
+                                    }
+                                } else if (curr instanceof EnumType) {
+                                    Object defaultSelection = getDefaultFilterSelectedObject(autoFilterData, curr);
+                                    if (defaultSelection != null) {
+                                        f.setSelectedString(String.valueOf(defaultSelection));
+                                    }
+                                }
+                            } else if (curr instanceof StringType) {
+                                List<String> values = UPA.getPersistenceUnit().createQuery("Select distinct " + autoFilterData.getExpr() + " from " + getEntityName())
+                                        .getResultList();
+                                Collections.sort(values, new Comparator<String>() {
+                                    @Override
+                                    public int compare(String o1, String o2) {
+                                        if (o1 == null) {
+                                            o1 = "";
+                                        }
+                                        if (o2 == null) {
+                                            o2 = "";
+                                        }
+                                        return o1.compareTo(o2);
+                                    }
+                                });
+                                for (String value : values) {
+                                    if (value != null) {
+                                        f.getValues().add(FacesUtils.createSelectItem(value, value, ""));
+                                    }
+                                }
+                                newAutoFilters.add(f);
                                 Object defaultSelection = getDefaultFilterSelectedObject(autoFilterData, curr);
                                 if (defaultSelection != null) {
                                     f.setSelectedString(String.valueOf(defaultSelection));
                                 }
+                            } else {
+                                throw new IllegalArgumentException("Unsupported");
                             }
-                        } else if (curr instanceof StringType) {
-                            List<String> values = UPA.getPersistenceUnit().createQuery("Select distinct " + autoFilterData.getExpr() + " from " + getEntityName())
-                                    .getResultList();
-                            Collections.sort(values, new Comparator<String>() {
-                                @Override
-                                public int compare(String o1, String o2) {
-                                    if (o1 == null) {
-                                        o1 = "";
-                                    }
-                                    if (o2 == null) {
-                                        o2 = "";
-                                    }
-                                    return o1.compareTo(o2);
-                                }
-                            });
-                            for (String value : values) {
-                                if (value != null) {
-                                    f.getValues().add(FacesUtils.createSelectItem(value, value, ""));
-                                }
-                            }
-                            newAutoFilters.add(f);
-                            Object defaultSelection = getDefaultFilterSelectedObject(autoFilterData, curr);
-                            if (defaultSelection != null) {
-                                f.setSelectedString(String.valueOf(defaultSelection));
-                            }
-                        } else {
-                            throw new IllegalArgumentException("Unsupported");
                         }
+                    } else {
+                        throw new IllegalArgumentException("Unsupported Auto Filter Type " + type);
                     }
-                } else {
-                    throw new IllegalArgumentException("Unsupported Auto Filter Type " + type);
+                }
+                autoFilters.clear();
+                autoFilters.addAll(newAutoFilters);
+
+                currentModelToView();
+            } catch (RuntimeException ex) {
+                log.log(Level.SEVERE, "Error", ex);
+                throw ex;
+            }
+        }finally {
+            updateViewFlag=false;
+        }
+    }
+
+    private void updateViewForField(Field field, ViewContext viewContext, List<OrderedPropertyView> propertyViews) {
+        Document currentDocument = getModel().getCurrentDocument();
+        Map<String, Object> config = new HashMap<>();
+        if (getModel().getDisabledFields().contains(field.getName())) {
+            config.put("enabled", false);
+        }else{
+            String cond = UPAObjectHelper.findStringProperty(field, UIConstants.Form.ENABLED_CONDITION, null, null);
+            if(!StringUtils.isEmpty(cond)){
+                JavascriptEvaluator jse=new JavascriptEvaluator(cond);
+                boolean enabled=(boolean) jse.eval(currentDocument);
+                config.put("enabled", enabled);
+            }
+        }
+        {
+            String cond = UPAObjectHelper.findStringProperty(field, UIConstants.Form.VISIBLE_CONDITION, null, null);
+            if(!StringUtils.isEmpty(cond)){
+                JavascriptEvaluator jse=new JavascriptEvaluator(cond);
+                boolean visible=(boolean) jse.eval(currentDocument);
+                config.put("visible", visible);
+            }
+        }
+        {
+            String cond = UPAObjectHelper.findStringProperty(field, UIConstants.Form.SUBMIT_ON_CHANGE, null, null);
+            if(!StringUtils.isEmpty(cond)){
+                JavascriptEvaluator jse=new JavascriptEvaluator(cond);
+                boolean submitOnChange=(boolean) jse.eval(currentDocument);
+                config.put("submitOnChange", submitOnChange);
+            }
+        }
+        PropertyView[] ctrls = propertyViewManager.createPropertyViews(field.getName(), field, config, viewContext);
+        if (ctrls != null) {
+            for (PropertyView ctrl : ctrls) {
+                if (ctrl != null) {
+                    propertyViews.add(new OrderedPropertyView(propertyViews.size(), ctrl));
                 }
             }
-            autoFilters.clear();
-            autoFilters.addAll(newAutoFilters);
-
-            currentModelToView();
-        } catch (RuntimeException ex) {
-            log.log(Level.SEVERE, "Error", ex);
-            throw ex;
         }
+    }
+
+    public void updatePropertyViews(){
+        for (PropertyView propertyView : getProperties()) {
+            updatePropertyView(propertyView);
+        }
+    }
+
+    private void updatePropertyView(PropertyView p){
+        Document currentDocument = getModel().getCurrentDocument();
+        if(p instanceof FieldPropertyView){
+            Field field = ((FieldPropertyView) p).getField();
+            if (getModel().getDisabledFields().contains(field.getName())) {
+                p.setDisabled(true);
+            }else{
+                String cond = UPAObjectHelper.findStringProperty(field, UIConstants.Form.ENABLED_CONDITION, null, null);
+                if(!StringUtils.isEmpty(cond)){
+                    JavascriptEvaluator jse=new JavascriptEvaluator(cond);
+                    boolean enabled=(boolean) jse.eval(currentDocument);
+                    p.setDisabled(!enabled);
+                }
+            }
+            {
+                String cond = UPAObjectHelper.findStringProperty(field, UIConstants.Form.VISIBLE_CONDITION, null, null);
+                if(!StringUtils.isEmpty(cond)){
+                    JavascriptEvaluator jse=new JavascriptEvaluator(cond);
+                    boolean visible=(boolean) jse.eval(currentDocument);
+                    p.setVisible(visible);
+                }
+            }
+        }
+
     }
 
     public Object getDefaultFilterSelectedObject(AutoFilterData autoFilterData, DataType filterType) {
@@ -1724,12 +1784,12 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         }
     }
 
-    public void openPropertyViewDialog(String property) {
+    public void openPropertyViewDialog(String property,String action) {
         PropertyView p = findPropertyView(property);
         if (p != null) {
-            PropertyViewDialog ed = VrApp.getBean(PropertyViewDialogManager.class).getPropertyViewDialog(p.getCtrlType());
+            PropertyViewDialog ed = VrApp.getBean(PropertyViewDialogManager.class).getPropertyViewDialog(p.getCtrlType(),action);
             if (ed != null) {
-                ed.openDialog(p, p.getComponentId());
+                ed.openDialog(p, action, p.getComponentId());
             }
         }
     }

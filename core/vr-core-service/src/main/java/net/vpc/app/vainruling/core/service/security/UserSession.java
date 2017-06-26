@@ -62,6 +62,10 @@ public class UserSession implements Serializable {
         }
     }
 
+    public static String getCurrentLogin() {
+        AppUser u = getCurrentUser();
+        return u == null ? null : u.getLogin();
+    }
     public static AppUser getCurrentUser() {
         UserSession s = get();
         return s == null ? null : s.getUser();

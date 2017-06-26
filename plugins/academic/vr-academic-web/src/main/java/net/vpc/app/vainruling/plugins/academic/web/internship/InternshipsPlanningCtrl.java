@@ -108,12 +108,12 @@ public class InternshipsPlanningCtrl {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
             TextCSVFormatter formatter = UPA.getPersistenceUnit().getImportExportManager().createTextCSVFormatter(byteArrayOutputStream);
-            formatter.getColumns().add((TextCSVColumn) new TextCSVColumn().updateName("Code"));
-            formatter.getColumns().add((TextCSVColumn) new TextCSVColumn().updateName("Intitule"));
-            formatter.getColumns().add((TextCSVColumn) new TextCSVColumn().updateName("Etudiant"));
-            formatter.getColumns().add((TextCSVColumn) new TextCSVColumn().updateName("Encadrant"));
-            formatter.getColumns().add((TextCSVColumn) new TextCSVColumn().updateName("President"));
-            formatter.getColumns().add((TextCSVColumn) new TextCSVColumn().updateName("Rapporteur"));
+            formatter.addColumn("Code");
+            formatter.addColumn("Intitule");
+            formatter.addColumn("Etudiant");
+            formatter.addColumn("Encadrant");
+            formatter.addColumn("President");
+            formatter.addColumn("Rapporteur");
             formatter.setWriteHeader(true);
             DataWriter writer = formatter.createWriter();
 

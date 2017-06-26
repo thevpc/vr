@@ -42,15 +42,18 @@ public class EquipmentStatusLog {
     @Field(updateAccessLevel = AccessLevel.PROTECTED,persistAccessLevel = AccessLevel.PROTECTED)
     private AppUser actor;
 
-    @Summary
-    private double quantity;
 
     @Summary
     @ToString
+    //@Properties({@Property(name = UIConstants.Form.SUBMIT_ON_CHANGE, value = "true")})
     private EquipmentStatusType type=EquipmentStatusType.AVAILABLE;
 
 
+    @Summary
+    private double quantity;
 
+    //@Properties(@Property(name = UIConstants.Form.VISIBLE_CONDITION, value = "x!=null && vr.same(x.get('type'),'ACQUISITION')"))
+    private EquipmentAcquisition acquisition;
 
     @Summary
     private Timestamp startDate;
@@ -58,13 +61,12 @@ public class EquipmentStatusLog {
     /**
      * may be borrow return date if status=borrowed
      */
+    //@Properties(@Property(name = UIConstants.Form.VISIBLE_CONDITION, value = "x!=null && (vr.same(x.get('type'),'BORROWED') || vr.same(x.get('type'),'TEMPORARILY_UNAVAILABLE'))"))
     @Summary
     private Timestamp endDate;
 
 
-    /**
-     * may be borrower if status=borrowed
-     */
+    //@Properties(@Property(name = UIConstants.Form.VISIBLE_CONDITION, value = "x!=null && !vr.same(x.get('type'),'ACQUISITION') && !vr.same(x.get('type'),'AVAILABLE') && !vr.same(x.get('type'),'TEMPORARILY_UNAVAILABLE')"))
     @Summary
     private AppUser responsible;
 
@@ -158,5 +160,13 @@ public class EquipmentStatusLog {
 
     public void setQuantity(double quantity) {
         this.quantity = quantity;
+    }
+
+    public EquipmentAcquisition getAcquisition() {
+        return acquisition;
+    }
+
+    public void setAcquisition(EquipmentAcquisition acquisition) {
+        this.acquisition = acquisition;
     }
 }

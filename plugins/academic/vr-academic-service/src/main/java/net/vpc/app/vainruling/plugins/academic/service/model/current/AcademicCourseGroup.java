@@ -32,7 +32,7 @@ public class AcademicCourseGroup {
 
     @Main
     @Formula(
-            value = "Concat(Coalesce((select a.name from AcademicClass a where a.id=this.academicClassId),'?'),'-',Coalesce(this.name,'X'))",
+            value = "Concat(Coalesce((select a.name from AcademicClass a where a.id=this.academicClassId),'?'),'-',Coalesce(this.name,'X'))",formulaOrder = 1,
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String fullName;

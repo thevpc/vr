@@ -19,15 +19,17 @@ public class AcademicFeedback {
     @Id
     @Sequence
     private int id;
+    @Summary
+    private AcademicFeedbackSession session;
+    @Summary
+    private AcademicFeedbackModel model;
     @Main
-    @Formula("concat(this.course.fullName,' - ',Coalesce(this.student.contact.fullTitle,''))")
+    @Formula(value = "concat(coalesce(this.session.name),' - ',this.course.fullName,' - ',Coalesce(this.student.contact.fullTitle,''))",formulaOrder = 1)
     private String name;
     @Summary
     private AcademicCourseAssignment course;
     @Summary
     private AcademicStudent student;
-    @Summary
-    private AcademicFeedbackModel model;
     @Field(defaultValue = "true")
     private boolean validated;
     private boolean archived;
@@ -86,6 +88,14 @@ public class AcademicFeedback {
 
     public void setModel(AcademicFeedbackModel model) {
         this.model = model;
+    }
+
+    public AcademicFeedbackSession getSession() {
+        return session;
+    }
+
+    public void setSession(AcademicFeedbackSession session) {
+        this.session = session;
     }
 
     @Override

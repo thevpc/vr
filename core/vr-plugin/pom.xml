@@ -92,7 +92,7 @@
             <plugin>
                 <groupId>net.vpc.common.maven</groupId>
                 <artifactId>writer-maven-plugin</artifactId>
-                <version>1.0.2</version>
+                <version>1.0.3</version>
                 <configuration>
                     <outputFile>${project.build.outputDirectory}/META-INF/vr-plugin.properties</outputFile>
                     <text>

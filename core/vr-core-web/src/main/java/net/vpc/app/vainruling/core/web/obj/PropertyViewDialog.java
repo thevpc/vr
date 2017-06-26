@@ -12,6 +12,8 @@ public interface PropertyViewDialog {
 
     String getControlType();
 
-    void openDialog(PropertyView propertyView, String userInfo);
+    boolean acceptAction(String action);
+
+    void openDialog(PropertyView propertyView, String action, String userInfo);
 
 }
