@@ -39,7 +39,7 @@ public class EntityDetailPropertyView extends PropertyView {
         if (f == null) {
             f = relation.getSourceRole().getFields().get(0);
         }
-        String idExpr = "o.`" + f.getName() + "`.`" + relation.getTargetEntity().getPrimaryFields().get(0).getName() + "`";
+        String idExpr = "o.`" + f.getName() + "`.`" + relation.getTargetEntity().getIdFields().get(0).getName() + "`";
 
         String argEntity = "entity:\"" + relation.getSourceEntity().getName() + "\"";
         String argListFilter = "listFilter:\"" + idExpr + "=${ID}\"";
@@ -71,7 +71,7 @@ public class EntityDetailPropertyView extends PropertyView {
             f = relation.getSourceRole().getFields().get(0);
         }
         ObjCtrl ctrl = VrApp.getBean(ObjCtrl.class);
-        String idExpr = "o.`" + f.getName() + "`.`" + relation.getTargetEntity().getPrimaryFields().get(0).getName() + "`";
+        String idExpr = "o.`" + f.getName() + "`.`" + relation.getTargetEntity().getIdFields().get(0).getName() + "`";
         Object idVal = getRelationship().getTargetEntity().getBuilder().documentToId(ctrl.getModel().getCurrentDocument());
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("idval", idVal);

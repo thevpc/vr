@@ -329,7 +329,7 @@ and open the template in the editor.
                                     (vr.httpRequest.getAttribute('currArticleBackground')=='rand-image')
                                             ?vr.url(listItem.imageURL)
                                             :(vr.httpRequest.getAttribute('currArticleBackground')=='image') ?
-                                            (vr.randomizeList(vr.fsurlList(vr.findImageAttachments(listItem.imageAttachments))))
+                                            (vr.randomizeList(vr.contentPathToFSUrlList(vr.findImageAttachments(listItem.imageAttachments))))
                                             :vr.url(listItem.imageURL)
                                     )
                             }
@@ -360,11 +360,12 @@ and open the template in the editor.
                                                     <ui:repeat
                                                             value="#{vr.findNonImageAttachments(listItem.attachments)}"
                                                             var="att">
-                                                        <p class="to-animate-2">
+                                                        <p class="to-animate-2" style="display: inline">
                                                             <h:outputLink
                                                                     value="#{vr.url(att.path)}"
                                                                     target="_blank"
                                                                     class="#{(att.style eq null or att.style eq '')?'btn btn-primary btn-lg':att.style}"><h:outputText
+                                                                    style="margin: 5px"
                                                                     value="#{att.name}"/></h:outputLink>
                                                         </p>
                                                     </ui:repeat>
@@ -402,11 +403,12 @@ and open the template in the editor.
                                                     <ui:repeat
                                                             value="#{vr.findNonImageAttachments(listItem.attachments)}"
                                                             var="att">
-                                                        <p class="to-animate-2">
+                                                        <p class="to-animate-2" style="display: inline">
                                                             <h:outputLink
                                                                     value="#{vr.url(att.path)}"
                                                                     target="_blank"
                                                                     class="#{(att.style eq null or att.style eq '')?'btn btn-primary btn-lg':att.style}"><h:outputText
+                                                                    style="margin: 5px"
                                                                     value="#{att.name}"/></h:outputLink>
                                                         </p>
                                                     </ui:repeat>
@@ -445,11 +447,13 @@ and open the template in the editor.
                                                     <ui:repeat
                                                             value="#{vr.findNonImageAttachments(listItem.attachments)}"
                                                             var="att">
-                                                        <p class="to-animate-2">
+                                                        <p class="to-animate-2" style="display: inline">
                                                             <h:outputLink
                                                                     value="#{vr.url(att.path)}"
                                                                     target="_blank"
-                                                                    class="#{(att.style eq null or att.style eq '')?'btn btn-primary btn-lg':att.style}"><h:outputText
+                                                                    class="#{(att.style eq null or att.style eq '')?'btn btn-primary btn-lg':att.style}"
+                                                                    style="margin: 5px"
+                                                            ><h:outputText
                                                                     value="#{att.name}"/></h:outputLink>
                                                         </p>
                                                     </ui:repeat>

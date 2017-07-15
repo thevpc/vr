@@ -66,7 +66,7 @@ public class DevToolsCtrl {
                     }
                 } else {
                     try {
-                        int r = UPA.getPersistenceUnit().getConnection().executeNonQuery(q, new ArrayList<Parameter>(), new ArrayList<Parameter>());
+                        int r = UPA.getPersistenceUnit().getConnection().executeNonQuery(q, null, null);
                         List<Object> row = Arrays.asList((Object) r);
                         getModel().getRows().add(row);
                         getModel().getRowNames().add(new ColDef("<Result>", 0));

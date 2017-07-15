@@ -24,7 +24,7 @@ public class ActiveSessionsTracker {
 
     public void onCreate(UserSession s) {
         if (s.getSessionId() == null) {
-            throw new IllegalArgumentException("Why");
+            throw new IllegalArgumentException("ActiveSessionsTracker bug, please fix me");
         }
         activeSessions.put(s.getSessionId(), s);
     }

@@ -47,7 +47,7 @@ public class EntityCache {
                     UPA.getPersistenceUnit()
                             .createQueryBuilder(entity.getName())
                             .orderBy(entity.getListOrder())
-                            .setHint(QueryHints.NAVIGATION_DEPTH, this.navigationDepth)
+                            .setHint(QueryHints.MAX_NAVIGATION_DEPTH, this.navigationDepth)
                             .getResultList(),
                     entity
             ));

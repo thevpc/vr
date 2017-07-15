@@ -53,7 +53,7 @@ package net.vpc.app.vainruling.core.service.obj;
 //                } else if (argTypes[i].equals(Object[].class)) {
 //                    vals[i] = args;
 //                } else {
-//                    throw new IllegalArgumentException("Unsupported Action method " + p);
+//                    throw new UPAIllegalArgumentException("Unsupported Action method " + p);
 //                }
 //            }
 //        }

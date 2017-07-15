@@ -88,27 +88,37 @@ public class AppSecurityFilter implements Filter {
                 if (e instanceof ServletException) {
                     Throwable rootCause = ((ServletException) e).getRootCause();
                     if (rootCause instanceof ViewExpiredException) {
-                        webresponse.sendRedirect(contextPath+"/r/index.xhtml?faces-redirect=true");
+                        if(!webresponse.isCommitted()) {
+                            webresponse.sendRedirect(contextPath + "/r/index.xhtml?faces-redirect=true");
+                        }
                         return;
                     }
                 }
                 if (e instanceof ViewExpiredException) {
-                    webresponse.sendRedirect(contextPath+"/r/index.xhtml?faces-redirect=true");
+                    if(!webresponse.isCommitted()) {
+                        webresponse.sendRedirect(contextPath + "/r/index.xhtml?faces-redirect=true");
+                    }
                     return;
                 }
                 if(e.getClass().getName().endsWith(".ClientAbortException")){
                     //this is a tomcat 'Broken pipe' handling i suppose
                     log.log(Level.SEVERE, "ClientAbortException");
-                    webresponse.sendRedirect(contextPath+"/r/index.xhtml?faces-redirect=true");
+                    if(!webresponse.isCommitted()) {
+                        webresponse.sendRedirect(contextPath + "/r/index.xhtml?faces-redirect=true");
+                    }
                 }
                 log.log(Level.SEVERE, "Unhandled Error", e);
-                webresponse.sendRedirect(contextPath+"/r/index.xhtml?faces-redirect=true");
+                if(!webresponse.isCommitted()) {
+                    webresponse.sendRedirect(contextPath + "/r/index.xhtml?faces-redirect=true");
+                }
 //                HttpServletResponse res = (HttpServletResponse) response;
 //                res.sendError(500);
             }
         } else {
             HttpServletResponse res = (HttpServletResponse) response;
-            res.sendRedirect(req.getContextPath());
+            if(!res.isCommitted()) {
+                res.sendRedirect(req.getContextPath());
+            }
         }
     }
 

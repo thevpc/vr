@@ -35,7 +35,7 @@
 //                t = requiredType.newInstance();
 //                s.setAttribute(requiredType.getSimpleName(), t);
 //            } catch (Exception ex) {
-//                throw new IllegalArgumentException(ex);
+//                throw new UPAIllegalArgumentException(ex);
 //            }
 //        }
 //        return t;

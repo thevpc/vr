@@ -52,6 +52,8 @@ public class AppCompany {
     private String mainContact;
     private String mainContactAddress;
     private String mainWebSite;
+    @Field(max = "4000")
+    private String about;
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
@@ -60,6 +62,14 @@ public class AppCompany {
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
+
+    public String getAbout() {
+        return about;
+    }
+
+    public void setAbout(String about) {
+        this.about = about;
+    }
 
     public int getId() {
         return id;

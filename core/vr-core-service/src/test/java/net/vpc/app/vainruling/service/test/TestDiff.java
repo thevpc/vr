@@ -383,7 +383,7 @@
 //        try {
 //            dmp.diff_fromDelta(text1 + "x", delta);
 //            Assert.fail("diff_fromDelta: Too long.");
-//        } catch (IllegalArgumentException ex) {
+//        } catch (UPAIllegalArgumentException ex) {
 //            // Exception expected.
 //        }
 //
@@ -391,7 +391,7 @@
 //        try {
 //            dmp.diff_fromDelta(text1.substring(1), delta);
 //            Assert.fail("diff_fromDelta: Too short.");
-//        } catch (IllegalArgumentException ex) {
+//        } catch (UPAIllegalArgumentException ex) {
 //            // Exception expected.
 //        }
 //
@@ -399,7 +399,7 @@
 //        try {
 //            dmp.diff_fromDelta("", "+%c3%xy");
 //            Assert.fail("diff_fromDelta: Invalid character.");
-//        } catch (IllegalArgumentException ex) {
+//        } catch (UPAIllegalArgumentException ex) {
 //            // Exception expected.
 //        }
 //
@@ -546,7 +546,7 @@
 //        try {
 //            dmp.diff_main(null, null);
 //            Assert.fail("diff_main: Null inputs.");
-//        } catch (IllegalArgumentException ex) {
+//        } catch (UPAIllegalArgumentException ex) {
 //            // Error expected.
 //        }
 //    }
@@ -635,7 +635,7 @@
 //        try {
 //            dmp.match_main(null, null, 0);
 //            Assert.fail("match_main: Null inputs.");
-//        } catch (IllegalArgumentException ex) {
+//        } catch (UPAIllegalArgumentException ex) {
 //            // Error expected.
 //        }
 //    }
@@ -674,7 +674,7 @@
 //        try {
 //            dmp.patch_fromText("Bad\nPatch\n");
 //            Assert.fail("patch_fromText: #5.");
-//        } catch (IllegalArgumentException ex) {
+//        } catch (UPAIllegalArgumentException ex) {
 //            // Exception expected.
 //        }
 //    }
@@ -758,7 +758,7 @@
 //        try {
 //            dmp.patch_make(null);
 //            Assert.fail("patch_make: Null inputs.");
-//        } catch (IllegalArgumentException ex) {
+//        } catch (UPAIllegalArgumentException ex) {
 //            // Error expected.
 //        }
 //    }

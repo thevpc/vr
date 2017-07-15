@@ -22,6 +22,7 @@ import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
+import net.vpc.common.io.IOUtils;
 import net.vpc.common.io.PathInfo;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Utils;
@@ -60,15 +61,8 @@ import java.util.regex.Pattern;
 @Scope(value = "singleton")
 public class Vr {
 
-    public static final Map<String, String> extensionsToCss = new HashMap<String, String>();
-    private MessageTextService messageTextService;
-    private TaskTextService taskTextService;
-    private NotificationTextService notificationTextService;
-    private CmsTextService cmsTextService;
-    @Autowired
-    private CorePlugin core;
-    private WeakHashMap<String, DecimalFormat> decimalFormats = new WeakHashMap<>();
 
+    public static final Map<String, String> extensionsToCss = new HashMap<String, String>();
     public static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.00");
 
     static {
@@ -101,6 +95,14 @@ public class Vr {
         extensionsToCss.put("jpg", "file-img");
         extensionsToCss.put("jpeg", "file-img");
     }
+
+    private MessageTextService messageTextService;
+    private TaskTextService taskTextService;
+    private NotificationTextService notificationTextService;
+    private CmsTextService cmsTextService;
+    @Autowired
+    private CorePlugin core;
+    private WeakHashMap<String, DecimalFormat> decimalFormats = new WeakHashMap<>();
 
     public Vr() {
     }
@@ -293,9 +295,10 @@ public class Vr {
         return any;
     }
 
-    public List<String> findImageAttachments(List<ContentPath> paths) {
-        LinkedHashSet<String> all = new LinkedHashSet<>();
+    public List<ContentPath> findImageAttachments(List<ContentPath> paths) {
+        List<ContentPath> filtered=new ArrayList<>();
         if (paths != null) {
+            LinkedHashSet<String> all = new LinkedHashSet<>();
             for (ContentPath path : paths) {
                 if (path != null && !StringUtils.isEmpty(path.getPath())) {
                     if (!all.contains(path.getPath())) {
@@ -303,13 +306,20 @@ public class Vr {
                     }
                 }
             }
+            HashSet<String> ok=new HashSet<>(findValidImages(all.toArray(new String[all.size()])));
+            for (ContentPath path : paths) {
+                if (path != null && ok.contains(path.getPath())){
+                    filtered.add(path);
+                }
+            }
         }
-        return findValidImages(all.toArray(new String[all.size()]));
+        return filtered;
     }
 
-    public List<String> findNonImageAttachments(List<ContentPath> paths) {
-        LinkedHashSet<String> all = new LinkedHashSet<>();
+    public List<ContentPath> findNonImageAttachments(List<ContentPath> paths) {
+        List<ContentPath> filtered=new ArrayList<>();
         if (paths != null) {
+            LinkedHashSet<String> all = new LinkedHashSet<>();
             for (ContentPath path : paths) {
                 if (path != null && !StringUtils.isEmpty(path.getPath())) {
                     if (!all.contains(path.getPath())) {
@@ -317,34 +327,48 @@ public class Vr {
                     }
                 }
             }
+            HashSet<String> ok=new HashSet<>(findNonImages(all.toArray(new String[all.size()])));
+            for (ContentPath path : paths) {
+                if (path != null && ok.contains(path.getPath())){
+                    filtered.add(path);
+                }
+            }
         }
-        return findNonImages(all.toArray(new String[all.size()]));
+        return filtered;
     }
 
     public List<String> findValidImages(String... paths) {
-        return findValidFiles("**.(png|jpg|jpeg|gif)", paths);
+        return findValidFiles("**.(png|jpg|jpeg|gif)", true,paths);
     }
 
     public List<String> findNonImages(String... paths) {
-        return findValidFiles("!(**.(png|jpg|jpeg|gif))", paths);
+        return findValidFiles("**.(png|jpg|jpeg|gif)", false,paths);
     }
 
-    public List<String> findValidFiles(String expression, String... paths) {
+    public List<String> findValidFiles(String expression,boolean positive, String... paths) {
         VirtualFileSystem fs = core.getFileSystem();
         LinkedHashSet<String> all = new LinkedHashSet<>();
         Pattern patternObj = Pattern.compile(StringUtils.wildcardToRegex(expression, '/'), Pattern.CASE_INSENSITIVE);
         VFileFilter filter = new VFileFilter() {
             @Override
             public boolean accept(VFile pathname) {
-                return pathname.isDirectory() || (patternObj.matcher(pathname.getPath()).matches());
+                return pathname.isDirectory() || (positive==patternObj.matcher(pathname.getPath()).matches());
             }
         };
         for (String path : paths) {
-            if ((patternObj.matcher(path).matches())) {
+            if (positive==(patternObj.matcher(path).matches())) {
                 if (!all.contains(path)) {
                     all.add(path);
                 }
             } else {
+                String urlProtocol = IOUtils.getUrlProtocol(path);
+                if (urlProtocol == null) {
+                    //ok;
+                } else if (urlProtocol.equals("file")) {
+                    path = IOUtils.getUrlFile(path);
+                }else{
+                    continue;
+                }
                 VFile vFile = fs.get(path);
                 if (vFile != null) {
                     if (vFile.isFile()) {
@@ -396,7 +420,6 @@ public class Vr {
     public double min(double a, double b) {
         return Math.min(a, b);
     }
-
 
     public int rand(int a) {
         return (int) (Math.random() * a);
@@ -479,6 +502,13 @@ public class Vr {
         )));
     }
 
+    public List<String> contentPathToFSUrlList(List<ContentPath> paths) {
+        List<String> ret = new ArrayList<>(paths.size());
+        for (ContentPath path : paths) {
+            ret.add(url(path.getPath()));
+        }
+        return ret;
+    }
     public List<String> fsurlList(List<String> paths) {
         List<String> ret = new ArrayList<>(paths.size());
         for (String path : paths) {
@@ -496,6 +526,20 @@ public class Vr {
         }
         if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("ftp://")) {
             return path;
+        }
+        if (path.startsWith("site://")) {
+            String s = path.substring("site://".length());
+            if (!s.startsWith("/")) {
+                s = "/" + s;
+            }
+            return getContext() + s;
+        }
+        if (path.startsWith("article://")) {
+            String s = path.substring("article://".length());
+            if (!s.startsWith("/")) {
+                s = "/p/news?a={id="+s+"}";
+            }
+            return getContext() + s;
         }
         if (path.startsWith("context://")) {
             String s = path.substring("context://".length());
@@ -810,16 +854,18 @@ public class Vr {
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         return req.getRequestURI();
     }
+
     public String getCurrentPrintableRequestURI() {
         String u = getCurrentRequestURI();
-        if(u.contains("?")){
-            u+="&";
-        }else{
-            u+="?";
+        if (u.contains("?")) {
+            u += "&";
+        } else {
+            u += "?";
         }
-        u+="vr-layout=printable";
+        u += "vr-layout=printable";
         return u;
     }
+
     public String getThemeContext() {
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String contextPath = req.getContextPath();
@@ -829,10 +875,10 @@ public class Vr {
 
     public boolean isPrintableLayout() {
         FacesContext fc = FacesContext.getCurrentInstance();
-        if(fc!=null){
+        if (fc != null) {
             Map<String, String> parameterMap = (Map<String, String>) fc.getExternalContext().getRequestParameterMap();
             String paramValue = parameterMap.get("vr-layout");
-            if("printable".equals(paramValue)){
+            if ("printable".equals(paramValue)) {
                 return true;
             }
         }
@@ -840,10 +886,10 @@ public class Vr {
     }
 
     public String getPrivateTemplatePath() {
-        if(isPrintableLayout()){
-            return getThemePath()+"/templates/private-template-printable.xhtml";
+        if (isPrintableLayout()) {
+            return getThemePath() + "/templates/private-template-printable.xhtml";
         }
-        return getThemePath()+"/templates/private-template.xhtml";
+        return getThemePath() + "/templates/private-template.xhtml";
     }
 
     public String getThemePath() {
@@ -851,6 +897,8 @@ public class Vr {
 //        String contextPath = req.getContextPath();
         return "/themes/" + getTheme().getId();
     }
+
+    // Session Aware
 
     public Locale getLocale(String preferred) {
         Locale loc = StringUtils.isEmpty(preferred) ? null : new Locale(preferred);
@@ -870,9 +918,6 @@ public class Vr {
         }
         return loc;
     }
-
-    // Session Aware
-
 
     public String goBack() {
         return VrApp.getBean(VrMenuManager.class).goBack();
@@ -909,7 +954,6 @@ public class Vr {
     public String logout() {
         return VrApp.getBean(LoginCtrl.class).dologout();
     }
-
 
     public void notifyShutdown() {
         VrApp.getBean(AppGlobalCtrl.class).doNotifyShutdown();
@@ -1139,7 +1183,6 @@ public class Vr {
         return Vr.get().getContext() + "/fs/" + virtualAbsolutePath;
     }
 
-
     public VFile getUserAbsoluteFile(int id, String... path) {
         VFile[] p = getUserAbsoluteFiles(id, path);
         if (p.length == 0) {
@@ -1177,11 +1220,6 @@ public class Vr {
             }
         }
         return files.toArray(new VFile[files.size()]);
-    }
-
-    public static void main(String[] args) {
-        Vr vr = new Vr();
-        System.out.println(vr.extractLabels(" r r:t r:\"f\""));
     }
 
     public List<StrLabel> extractLabels(String expr) {
@@ -1468,7 +1506,7 @@ public class Vr {
 
 
         int maxColumn = -1;
-        Map<String,HSSFCellStyle> datFormats=new HashMap<>();
+        Map<String, HSSFCellStyle> datFormats = new HashMap<>();
         for (int rowInd = 1; rowInd < rowCount; rowInd++) {
             HSSFRow row = sheet.getRow(rowInd);
             int colCount = row.getPhysicalNumberOfCells();
@@ -1498,10 +1536,10 @@ public class Vr {
                             cell.setCellStyle(decStyle);
                             cell.setCellValue(dblVal);
                         }
-                    }else {
-                        boolean isDate=false;
-                        for (String dteFormat : new String[]{"yyyy-MM-dd HH:mm:ss.SSS","yyyy-MM-dd HH:mm:ss","yyyy-MM-dd HH:mm","yyyy-MM-dd","HH:mm"}) {
-                            if(Utils.isDate(strVal,dteFormat)) {
+                    } else {
+                        boolean isDate = false;
+                        for (String dteFormat : new String[]{"yyyy-MM-dd HH:mm:ss.SSS", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd", "HH:mm"}) {
+                            if (Utils.isDate(strVal, dteFormat)) {
                                 HSSFCellStyle dateStyle = datFormats.get(dteFormat.trim());
                                 if (dateStyle == null) {
                                     dateStyle = book.createCellStyle();
@@ -1514,7 +1552,7 @@ public class Vr {
                                 } catch (ParseException e) {
                                     //
                                 }
-                                isDate=true;
+                                isDate = true;
                                 break;
                             }
                         }

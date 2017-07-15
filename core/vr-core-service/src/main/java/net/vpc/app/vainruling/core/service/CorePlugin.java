@@ -25,7 +25,6 @@ import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.AppVersion;
 import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.common.io.FileUtils;
-import net.vpc.common.io.IOUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.*;
 import net.vpc.common.vfs.*;
@@ -877,7 +876,7 @@ public class CorePlugin {
     public AppCompany findCompany(int id) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return (AppCompany) pu.createQuery("Select u from AppCompany u where u.id=:id").setParameter("id", id)
-                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
+                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getFirstResultOrNull();
 //        return (AppCompany) pu.findById(AppCompany.class, id);
     }
@@ -885,7 +884,7 @@ public class CorePlugin {
     public AppCompany findCompany(String name) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return (AppCompany) pu.createQuery("Select u from AppCompany u where u.name=:name").setParameter("name", name)
-                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
+                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getFirstResultOrNull();
 //
 //        return (AppCompany) UPA.getPersistenceUnit().findByMainField(AppCompany.class, name);
@@ -3461,7 +3460,7 @@ public class CorePlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         Object id = resolveId(entityName, t);
-        List<Field> pf = entity.getPrimaryFields();
+        List<Field> pf = entity.getIdFields();
         boolean persist = false;
         if (id == null) {
             persist = true;
@@ -3646,7 +3645,7 @@ public class CorePlugin {
         Entity entity = pu.getEntity(entityName);
         Select q = new Select();
 
-        Field primaryField = entity.getPrimaryFields().get(0);
+        Field primaryField = entity.getIdFields().get(0);
         q.field(" o." + primaryField.getName(), "id");
         Field mainField = entity.getMainField();
         if (mainField == null) {
@@ -3686,7 +3685,7 @@ public class CorePlugin {
         Entity entity = pu.getEntity(entityName);
         Select q = new Select();
 
-        Field primaryField = entity.getPrimaryFields().get(0);
+        Field primaryField = entity.getIdFields().get(0);
         q.field(" o." + primaryField.getName(), "id");
         Field mainField = entity.getMainField();
         if (mainField == null) {
@@ -3871,7 +3870,7 @@ public class CorePlugin {
 
     public VFile uploadFile(VFile baseFile,UploadedFileHandler event) throws IOException {
         String fileName = normalizeFilePath(event.getFileName());
-        VFile newFile = baseFile.get(fileName);
+        VFile newFile = baseFile;//.get(fileName);
         VFile baseFolder = null;
         if(newFile.exists() && newFile.isDirectory()){
             baseFolder=newFile;
@@ -3879,7 +3878,7 @@ public class CorePlugin {
             while(true){
                 String n=fileName;
                 if(pos>0) {
-                    n = FileUtils.changeFileSuffix(new File(fileName), "-" + n).getPath();
+                    n = FileUtils.changeFileSuffix(new File(fileName), "-" + pos).getPath();
                 }
                 VFile vFile = newFile.get(n);
                 if(!vFile.exists()){

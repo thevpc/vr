@@ -240,7 +240,7 @@ public class TraceService {
         Field main = e.getMainField();
         List<Field> names = null;
         if (main == null) {
-            names = e.getPrimaryFields();
+            names = e.getIdFields();
         } else {
             names = Arrays.asList(main);
         }

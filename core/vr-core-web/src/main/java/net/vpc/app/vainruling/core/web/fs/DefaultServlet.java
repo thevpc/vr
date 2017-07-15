@@ -1237,7 +1237,7 @@
 //            long headerValueTime = (-1L);
 //            try {
 //                headerValueTime = request.getDateHeader("If-Range");
-//            } catch (IllegalArgumentException e) {
+//            } catch (UPAIllegalArgumentException e) {
 //                // Ignore
 //            }
 //
@@ -1968,7 +1968,7 @@
 //                    return false;
 //                }
 //            }
-//        } catch (IllegalArgumentException illegalArgument) {
+//        } catch (UPAIllegalArgumentException illegalArgument) {
 //            return true;
 //        }
 //        return true;
@@ -2056,7 +2056,7 @@
 //                    return false;
 //                }
 //            }
-//        } catch(IllegalArgumentException illegalArgument) {
+//        } catch(UPAIllegalArgumentException illegalArgument) {
 //            return true;
 //        }
 //        return true;

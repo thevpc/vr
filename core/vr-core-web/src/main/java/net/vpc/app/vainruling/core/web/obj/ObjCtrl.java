@@ -403,7 +403,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 }
                 case UPDATE: {
                     Document c = getModel().getCurrentDocument();
-                    if (getEntity().getPrimaryFields().size() == 1 && getEntity().getPrimaryFields().get(0).isGeneratedId()) {
+                    if (getEntity().getIdFields().size() == 1 && getEntity().getIdFields().get(0).isGeneratedId()) {
                         getEntity().getBuilder().setDocumentId(c, null);
                         core.save(getEntityName(), c);
                     }
@@ -883,7 +883,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     } else if (t instanceof ManyToOneType) {
                         ManyToOneType et = (ManyToOneType) t;
                         Entity re = UPA.getPersistenceUnit().getEntity(et.getTargetEntityName());
-                        List<Field> rpp = re.getPrimaryFields();
+                        List<Field> rpp = re.getIdFields();
                         if (rpp.size() == 1 && PlatformTypes.isInteger(fieldValueString)) {
                             Object v = re.findById(Integer.parseInt(fieldValueString));
                             builder.setProperty(o, fieldName, v);

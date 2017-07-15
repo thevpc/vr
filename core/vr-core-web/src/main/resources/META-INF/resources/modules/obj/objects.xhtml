@@ -713,8 +713,9 @@ and open the template in the editor.
                                         <p:commandButton
                                                 styleClass="vr-form-control-right-button30"
                                                 ajax="true" value=""
-                                                icon="fa fa-upload"
-                                                actionListener="#{objCtrl.openPropertyViewDialog(data.componentId,'upload')}"
+                                                icon="fa fa-folder-open-o"
+                                                title="Mes Documents"
+                                                actionListener="#{objCtrl.openPropertyViewDialog(data.componentId,'folder')}"
                                         >
                                             <p:ajax event="dialogReturn"
                                                     listener="#{objCtrl.onPropertyViewDialogClosed}" update="tfile"/>
@@ -723,8 +724,9 @@ and open the template in the editor.
                                         <p:commandButton
                                                 styleClass="vr-form-control-right-button30"
                                                 ajax="true" value=""
-                                                icon="fa fa-folder-open-o"
-                                                actionListener="#{objCtrl.openPropertyViewDialog(data.componentId,'folder')}"
+                                                icon="fa fa-cloud-upload"
+                                                title="Téléverser"
+                                                actionListener="#{objCtrl.openPropertyViewDialog(data.componentId,'upload')}"
                                         >
                                             <p:ajax event="dialogReturn"
                                                     listener="#{objCtrl.onPropertyViewDialogClosed}" update="tfile"/>

@@ -989,7 +989,7 @@ public class ApblPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from ApblProject u where u.sessionId=:sessionId")
                 .setParameter("sessionId", sessionId)
-                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
+                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getResultList();
     }
 
@@ -997,7 +997,7 @@ public class ApblPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from ApblTeam u where u.projectId=:projectId")
                 .setParameter("projectId", projectId)
-                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
+                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getResultList();
     }
 
@@ -1037,7 +1037,7 @@ public class ApblPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from ApblProgressionLog u where u.teamId = :teamId order by u.progressionDate desc")
                 .setParameter("teamId", teamId)
-                .setHint(QueryHints.NAVIGATION_DEPTH, 4)
+                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 4)
                 .getResultList();
     }
 
@@ -1045,7 +1045,7 @@ public class ApblPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from ApblCoachingLog u where u.coaching.teamId = :teamId order by u.appointmentDate desc")
                 .setParameter("teamId", teamId)
-                .setHint(QueryHints.NAVIGATION_DEPTH, 4)
+                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 4)
                 .getResultList();
     }
 
@@ -1053,7 +1053,7 @@ public class ApblPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from ApblTeam u where u.session.status.closed = false and exists (Select m from ApblTeamMember m where m.teamId=u.id and m.studentId=:studentId)")
                 .setParameter("studentId", studentId)
-                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
+                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getResultList();
     }
 
@@ -1062,7 +1062,7 @@ public class ApblPlugin {
         ApblTeam t = new ApblTeam();
         return pu.createQuery("Select u from ApblTeam u where u.session.status.closed = false and exists (Select m from ApblCoaching m where m.teamId=u.id and m.teacherId=:teacherId)")
                 .setParameter("teacherId", teacherId)
-                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
+                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getResultList();
     }
 
@@ -1082,7 +1082,7 @@ public class ApblPlugin {
                 ")"
         )
                 .setParameter("userId", userId)
-                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
+                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getResultList();
     }
 
@@ -1098,7 +1098,7 @@ public class ApblPlugin {
         return pu.createQuery("Select u from ApblTeamMember u where u.teamId=:teamId and u.studentId=:studentId")
                 .setParameter("teamId", teamId)
                 .setParameter("studentId", studentId)
-                .setHint(QueryHints.NAVIGATION_DEPTH, 4)
+                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 4)
                 .getFirstResultOrNull();
     }
 
@@ -1106,7 +1106,7 @@ public class ApblPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from ApblTeamMember u where u.teamId=:teamId")
                 .setParameter("teamId", teamId)
-                .setHint(QueryHints.NAVIGATION_DEPTH, 3)
+                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getResultList();
     }
 

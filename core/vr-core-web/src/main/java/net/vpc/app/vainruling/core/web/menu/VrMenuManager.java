@@ -693,7 +693,7 @@ public class VrMenuManager {
                         children.add(p);
                     }
                     if (t.getPath().equals("/")) {
-                        List<Entity> entities = filterEntities(UPA.getPersistenceUnit().getDefaulPackage().getEntities(), new DefaultEntityFilter().setAcceptSystem(false));
+                        List<Entity> entities = filterEntities(UPA.getPersistenceUnit().getDefaultPackage().getEntities(), new DefaultEntityFilter().setAcceptSystem(false));
                         for (Entity ee : entities) {
                             if (ee.getCompositionRelation() == null) {
                                 try {

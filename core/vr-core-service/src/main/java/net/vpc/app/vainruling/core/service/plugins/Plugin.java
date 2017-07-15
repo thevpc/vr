@@ -146,11 +146,11 @@ public class Plugin implements Comparable<Plugin> {
 //            boolean unspecifiedEntityType = r.entityType().equals(Void.class);
 //            boolean unspecifiedActionName = r.actionName().isEmpty();
 //            if (!rt.equals(Boolean.class) && !rt.equals(Boolean.TYPE)) {
-//                throw new IllegalArgumentException("Unvalid isEnabledEntityAction method " + p);
+//                throw new UPAIllegalArgumentException("Unvalid isEnabledEntityAction method " + p);
 //            }
 //            if (unspecifiedActionName || unspecifiedEntityType) {
 //                if (!rt.equals(Boolean.TYPE)) {
-//                    throw new IllegalArgumentException("Unvalid bulk isEnabledEntityAction method " + p + " : expected boolean return type");
+//                    throw new UPAIllegalArgumentException("Unvalid bulk isEnabledEntityAction method " + p + " : expected boolean return type");
 //                }
 //            }
 //            Object[] vals = new Object[argTypes.length];
@@ -166,7 +166,7 @@ public class Plugin implements Comparable<Plugin> {
 //                } else if (argTypes[i].equals(String.class)) {
 //                    vals[i] = actionName;
 //                } else {
-//                    throw new IllegalArgumentException("Unsupported isEnabledEntityAction method " + p);
+//                    throw new UPAIllegalArgumentException("Unsupported isEnabledEntityAction method " + p);
 //                }
 //            }
 //            if ((unspecifiedEntityType
@@ -198,7 +198,7 @@ public class Plugin implements Comparable<Plugin> {
 //            Class rt = p.getReturnType();
 //            boolean unspecifiedEntityType = r.entityType().equals(Void.class);
 //            if (!rt.equals(String[].class)) {
-//                throw new IllegalArgumentException("Unvalid getEntityActionList method " + p);
+//                throw new UPAIllegalArgumentException("Unvalid getEntityActionList method " + p);
 //            }
 //            Object[] vals = new Object[argTypes.length];
 //            for (int i = 0; i < vals.length; i++) {
@@ -211,7 +211,7 @@ public class Plugin implements Comparable<Plugin> {
 //                } else if (argTypes[i].equals(entity.getEntityType())) {
 //                    vals[i] = obj;
 //                } else {
-//                    throw new IllegalArgumentException("Unsupported isEnabledEntityAction method " + p);
+//                    throw new UPAIllegalArgumentException("Unsupported isEnabledEntityAction method " + p);
 //                }
 //            }
 //            if ((unspecifiedEntityType

@@ -1,5 +1,6 @@
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 
 import java.util.List;
@@ -12,9 +13,13 @@ public class IssueTester {
         VrApp.runStandalone();
 
         AcademicPerfEvalPlugin a=VrApp.getBean(AcademicPerfEvalPlugin.class);
-        List<AcademicClass> classesWithFeedbacks = a.findClassesWithFeedbacks(11, null, false, true);
-        for (AcademicClass classesWithFeedback : classesWithFeedbacks) {
-            System.out.println(classesWithFeedback);
+        List<AcademicFeedback> feedbacks = a.findFeedbacks(null, null, null, null, null, null, null, null, null, null, null);
+        for (AcademicFeedback feedback : feedbacks) {
+            System.out.println(feedback);
         }
+//        List<AcademicClass> classesWithFeedbacks = a.findClassesWithFeedbacks(11, null, false, true);
+//        for (AcademicClass classesWithFeedback : classesWithFeedbacks) {
+//            System.out.println(classesWithFeedback);
+//        }
     }
 }

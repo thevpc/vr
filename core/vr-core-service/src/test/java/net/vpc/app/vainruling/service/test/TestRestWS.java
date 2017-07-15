@@ -1,17 +1,15 @@
 package net.vpc.app.vainruling.service.test;
 
 
-import net.vpc.upa.exceptions.IllegalArgumentException;
+import net.vpc.upa.exceptions.UPAIllegalArgumentException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
@@ -74,7 +72,7 @@ public class TestRestWS {
                 if(arg instanceof String){
                     sarg="{\"String\":\""+arg+"\"}";
                 }else{
-                    throw new IllegalArgumentException("Unhandled");
+                    throw new UPAIllegalArgumentException("Unhandled");
                 }
                 builder.setParameter((String)args[i], sarg);
             }

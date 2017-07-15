@@ -158,7 +158,7 @@ public class StatCache {
 ////                if(a.getL)
 //
 //                if (id == null) {
-//                    throw new IllegalArgumentException("Missing Conversion Table for Period " + periodId + " : " + VrApp.getBean(CorePlugin.class).findPeriod(periodId));
+//                    throw new UPAIllegalArgumentException("Missing Conversion Table for Period " + periodId + " : " + VrApp.getBean(CorePlugin.class).findPeriod(periodId));
 //                }
 //                loadConversionTableId = id;
 //            }

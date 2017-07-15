@@ -375,7 +375,7 @@ public class PlanningService {
 
 //        int activitiesCount = tableExt.getTable().getActivities().size();
 ////        if(conf.size()!=activitiesCount){
-////            throw new IllegalArgumentException("Why");
+////            throw new UPAIllegalArgumentException("Why");
 ////        }
 //
 //        List<String> chairs=new ArrayList<>(conf_chairs);

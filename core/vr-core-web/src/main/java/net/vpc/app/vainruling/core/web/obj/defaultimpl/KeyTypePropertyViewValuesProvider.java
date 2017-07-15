@@ -47,7 +47,7 @@ public class KeyTypePropertyViewValuesProvider implements PropertyViewValuesProv
                 Entity me = etpv.getTargetEntity();
                 Object mid = (v instanceof NamedId) ? ((NamedId) v).getId() : me.getBuilder().objectToId(v);
                 String expr = etpv.getComponentId().substring(componentId.length() + 1);
-                constraints.put(expr + "." + me.getPrimaryFields().get(0).getName(), mid);
+                constraints.put(expr + "." + me.getIdFields().get(0).getName(), mid);
             }
         }
         final KeyType mtype = (KeyType) datatype;

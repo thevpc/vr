@@ -14,7 +14,7 @@ import net.vpc.common.io.FileUtils;
 import net.vpc.common.strings.StringConverter;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
-import net.vpc.upa.exceptions.IllegalArgumentException;
+import net.vpc.upa.exceptions.UPAIllegalArgumentException;
 import org.primefaces.event.FileUploadEvent;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.expression.Expression;
@@ -50,7 +50,7 @@ public class VrWebHelper {
                     e.printStackTrace();
                 }
             }else{
-                throw new IllegalArgumentException("Unsupported");
+                throw new UPAIllegalArgumentException("Unsupported");
             }
         } catch (Exception e) {
             System.err.println("Unexpected Exception " + e);
