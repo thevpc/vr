@@ -19,6 +19,9 @@ and open the template in the editor.
 <h:body>
 
 
+    <!--@elvariable id="myInternshipsCtrl" type="net.vpc.app.vainruling.plugins.academic.web.internship.MyInternshipsCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <!--@elvariable id="i18n" type="net.vpc.app.vainruling.core.service.util.I18n"-->
     <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
             <!--                <h:form id="buttonsForm">
@@ -40,85 +43,77 @@ and open the template in the editor.
                         <f:selectItem itemLabel="Selectionner Stage..." itemValue=""/>
                         <f:selectItems value="#{myInternshipsCtrl.model.internships}"/>
                     </p:selectOneMenu>
+                    <p:commandButton rendered="#{myInternshipsCtrl.model.internship ne null}" value="Enregistrer"
+                                     styleClass="btn btn-primary pull-right"
+                                     action="#{myInternshipsCtrl.onSave}" update="currentMessages"/>
                     <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
                 </div>
-                <ui:fragment id="fileUploadfragment">
-                    <div>
-                        <p:fileUpload id="fileUpload" rendered="#{myInternshipsCtrl.model.uploading}"
-                                      fileUploadListener="#{myInternshipsCtrl.handleFileUpload}" mode="advanced"
-                                      update=":listForm" auto="true" sizeLimit="15000000"
-                                      allowTypes="/(\.|\/)(pdf|zip)$/"
-                                      label="Parcourir ..."
-                        />
-                    </div>
-                </ui:fragment>
 
+                <ui:fragment rendered="#{myInternshipsCtrl.model.internship ne null}">
                 <div style="margin-top: 20px;">
-                    <div class="table-responsive">
-                        <p:tabView rendered="#{myInternshipsCtrl.model.internship ne null}">
-                            <p:tab title="Général">
-                                <div class="row">
-                                    <div class="col-md-6">
+                    <div class="table-responsive" style="overflow-y: visible;">
+                        <div class="row">
+                            <div class="col-md-6">
 
-                                        <div class="box box-success">
-                                            <div class="box-header with-border">
-                                                <h3 class="box-title">Infos</h3>
-                                            </div>
-                                            <!-- /.box-header -->
-                                            <!-- form start -->
-                                            <div class="box-body">
-                                                <div class="form-group">
-                                                    <p:outputLabel value="Comité"/>
-                                                    <h:outputText style="width: 100%;" styleClass="form-control"
-                                                                  value="#{myInternshipsCtrl.model.internship.board.name}"/>
-                                                </div>
-                                                <div class="form-group">
-                                                    <p:outputLabel value="Etape"/>
-                                                    <p:outputLabel style="color: darkseagreen;"
-                                                                   styleClass="form-control"
-                                                                   value="#{myInternshipsCtrl.model.internship.internshipStatus.name}"/>
-                                                </div>
-                                                <div class="form-group">
-                                                    <p:outputLabel value="Code"/>
-                                                    <p:outputLabel styleClass="form-control"
-                                                                   value="#{myInternshipsCtrl.model.internship.code}"/>
-                                                </div>
-                                                <div class="form-group">
-                                                    <p:outputLabel value="Intitulé"/>
-                                                    <p:inputText style="width: 100%"
-                                                                 value="#{myInternshipsCtrl.model.internship.name}"
-                                                                 styleClass="form-control"
-                                                                 disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
-                                                </div>
-                                                <div class="form-group">
-                                                    <p:outputLabel value="Description"/>
-                                                    <p:inputTextarea rows="10" style="width: 100%"
-                                                                     value="#{myInternshipsCtrl.model.internship.description}"
-                                                                     disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
-                                                </div>
-                                            </div>
-                                            <!-- /.box-body -->
-
-                                            <div class="box-footer">
-                                                <!--<button type="submit" class="btn btn-primary">Submit</button>-->
-                                            </div>
+                                <div class="box box-success">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">Infos</h3>
+                                    </div>
+                                    <!-- /.box-header -->
+                                    <!-- form start -->
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                            <p:outputLabel value="Comité"/>
+                                            <h:outputText style="width: 100%;" styleClass="form-control"
+                                                          value="#{myInternshipsCtrl.model.internship.board.name}"/>
                                         </div>
+                                        <div class="form-group">
+                                            <p:outputLabel value="Etape"/>
+                                            <p:outputLabel style="color: darkseagreen;"
+                                                           styleClass="form-control"
+                                                           value="#{myInternshipsCtrl.model.internship.internshipStatus.name}"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <p:outputLabel value="Code"/>
+                                            <p:outputLabel styleClass="form-control"
+                                                           value="#{myInternshipsCtrl.model.internship.code}"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <p:outputLabel value="Intitulé"/>
+                                            <p:inputText style="width: 100%"
+                                                         value="#{myInternshipsCtrl.model.internship.name}"
+                                                         styleClass="form-control"
+                                                         disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <p:outputLabel value="Description"/>
+                                            <p:inputTextarea rows="10" style="width: 100%"
+                                                             value="#{myInternshipsCtrl.model.internship.description}"
+                                                             disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
+                                        </div>
+                                    </div>
+                                    <!-- /.box-body -->
 
-                                        <div class="box box-primary">
-                                            <div class="box-header with-border">
-                                                <h3 class="box-title">Détails</h3>
-                                            </div>
-                                            <!-- /.box-header -->
-                                            <!-- form start -->
-                                            <div class="box-body">
-                                                <div class="form-group">
-                                                    <p:outputLabel value="Discipline"/>
-                                                    <div class="input-group input-group-sm">
-                                                        <p:inputText id="mainDiscipline" style="width: 90%;"
-                                                                     styleClass="form-control"
-                                                                     value="#{myInternshipsCtrl.model.internship.mainDiscipline}"
-                                                                     disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
-                                                        <span class="input-group-btn">
+                                    <div class="box-footer">
+                                        <!--<button type="submit" class="btn btn-primary">Submit</button>-->
+                                    </div>
+                                </div>
+
+                                <div class="box box-primary">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">Détails</h3>
+                                    </div>
+                                    <!-- /.box-header -->
+                                    <!-- form start -->
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                            <p:outputLabel value="Discipline"/>
+                                            <div class="input-group input-group-sm">
+                                                <p:inputText id="mainDiscipline" style="width: 90%;"
+                                                             styleClass="form-control"
+                                                             value="#{myInternshipsCtrl.model.internship.mainDiscipline}"
+                                                             disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
+                                                <span class="input-group-btn">
                                                         <p:commandButton
                                                                 style="width:5%;padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
                                                                 ajax="true" value=""
@@ -131,295 +126,514 @@ and open the template in the editor.
                                                                 update="mainDiscipline"/>
                                                         </p:commandButton>
                                                         </span>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <p:outputLabel value="Technologies"/>
-                                                    <p:inputText style="width: 100%" styleClass="form-control"
-                                                                 value="#{myInternshipsCtrl.model.internship.technologies}"
-                                                                 disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
-                                                </div>
-
-                                            </div>
-                                            <!-- /.box-body -->
-
-                                            <div class="box-footer">
-                                                <!--<button type="submit" class="btn btn-primary">Submit</button>-->
                                             </div>
                                         </div>
-
-                                        <div class="box box-primary">
-                                            <div class="box-header with-border">
-                                                <h3 class="box-title">Cahier des charges</h3>
-                                            </div>
-                                            <!-- /.box-header -->
-                                            <!-- form start -->
-                                            <div class="box-body">
-                                                <ui:fragment
-                                                        rendered="#{myInternshipsCtrl.model.internship.internshipStatus.enabledReport1}">
-                                                    <div class="form-group">
-                                                        <p:outputLabel value="Cahier des charges (pdf)"/>
-                                                        <p:outputLabel
-                                                                rendered="#{vr.isEmpty(myInternshipsCtrl.model.internship.specFilePath)}"
-                                                                value="Non soumis"/>
-                                                        <p:commandLink
-                                                                rendered="#{!vr.isEmpty(myInternshipsCtrl.model.internship.specFilePath)}"
-                                                                value="télécharger"
-                                                                ajax="false"
-                                                        >
-                                                            <p:fileDownload
-                                                                    value="#{myInternshipsCtrl.download('report1')}"/>
-                                                        </p:commandLink>
-                                                        <p:commandButton
-                                                                value="soumettre document (voir haut de la page)"
-                                                                style="margin-left: 10px;"
-                                                                disabled="#{!myInternshipsCtrl.model.student or (myInternshipsCtrl.model.student and !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport1)}"
-                                                                action="#{myInternshipsCtrl.onRequestUpload('report1')}"
-                                                                update=":listForm"/>
-                                                    </div>
-                                                </ui:fragment>
-                                            </div>
-                                            <!-- /.box-body -->
-
-                                            <div class="box-footer">
-                                                <!--<button type="submit" class="btn btn-primary">Submit</button>-->
-                                            </div>
+                                        <div class="form-group">
+                                            <p:outputLabel value="Technologies"/>
+                                            <p:inputText style="width: 100%" styleClass="form-control"
+                                                         value="#{myInternshipsCtrl.model.internship.technologies}"
+                                                         disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
                                         </div>
 
                                     </div>
-                                    <ui:fragment
-                                            rendered="#{(myInternshipsCtrl.model.internship.internshipStatus.studentSeesSupervisors)}">
-                                        <div class="col-md-6">
-                                            <div class="box box-primary">
-                                                <div class="box-header with-border">
-                                                    <h3 class="box-title">Observations</h3>
-                                                </div>
-                                                <!-- /.box-header -->
-                                                <!-- form start -->
-                                                <div class="box-body">
-                                                    <div class="form-group">
-                                                        <p:outputLabel
-                                                                value="#{myInternshipsCtrl.model.student ? 'Mes remarques':'Remarques Etudiant'}"/>
-                                                        <p:inputTextarea rows="10"
-                                                                         style="width: 100%" styleClass="form-control"
-                                                                         value="#{myInternshipsCtrl.model.internship.studentObservations}"
-                                                                         disabled="#{!myInternshipsCtrl.model.student}"/>
-                                                    </div>
+                                    <!-- /.box-body -->
 
-                                                    <div class="form-group">
-                                                        <p:outputLabel
-                                                                value="Remarques Administratives"/>
-                                                        <p:inputTextarea rows="10"
-                                                                         style="width: 100%"
-                                                                         value="#{myInternshipsCtrl.model.internship.validationObservations}"
-                                                                         disabled="#{myInternshipsCtrl.model.student}"/>
-                                                    </div>
-
-
-                                                    <div class="form-group">
-                                                        <p:outputLabel value="Evaluation"/>
-                                                        <p:inputTextarea rows="10"
-                                                                         style="width: 100%"
-                                                                         value="#{myInternshipsCtrl.model.internship.evaluationObservations}"
-                                                                         disabled="#{myInternshipsCtrl.model.student}"/>
-                                                    </div>
-
-
-                                                </div>
-                                                <!-- /.box-body -->
-
-                                                <div class="box-footer">
-                                                    <!--<button type="submit" class="btn btn-primary">Submit</button>-->
-                                                </div>
-                                            </div>
-                                            <div class="box box-primary">
-                                                <div class="box-header with-border">
-                                                    <h3 class="box-title">Encadrement Entreprise</h3>
-                                                </div>
-                                                <!-- /.box-header -->
-                                                <!-- form start -->
-                                                <div class="box-body">
-                                                    <div class="form-group">
-                                                        <p:outputLabel value="Entreprise"/>
-                                                        <p:selectOneMenu styleClass="form-control"
-                                                                         value="#{myInternshipsCtrl.model.companyId}"
-                                                                         disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}">
-                                                            <p:ajax listener="#{myInternshipsCtrl.onUpdateCompany}"/>
-                                                            <f:selectItem itemLabel="Selectionner Entreprise..."
-                                                                          itemValue=""/>
-                                                            <f:selectItems
-                                                                    value="#{myInternshipsCtrl.model.companies}"/>
-                                                        </p:selectOneMenu>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <p:outputLabel value="Autre Entreprise (si non listée)"/>
-                                                        <p:inputText style="width: 100%" styleClass="form-control"
-                                                                     value="#{myInternshipsCtrl.model.internship.companyOther}"
-                                                                     disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <p:outputLabel value="Encadrant Entreprise"/>
-                                                        <p:inputText style="width: 100%" styleClass="form-control"
-                                                                     value="#{myInternshipsCtrl.model.internship.companyMentorOther}"
-                                                                     disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <p:outputLabel value="Autre Encadrant"/>
-                                                        <p:outputLabel styleClass="form-control"
-                                                                       value="#{myInternshipsCtrl.model.internship.companyMentor eq null? '' :myInternshipsCtrl.model.internship.companyMentor.fullName}"/>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <p:outputLabel value="Email"/>
-                                                        <p:inputText style="width: 100%" styleClass="form-control"
-                                                                     value="#{myInternshipsCtrl.model.internship.companyMentorOtherEmail}"
-                                                                     disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <p:outputLabel value="Téléphone"/>
-                                                        <p:inputText style="width: 100%" styleClass="form-control"
-                                                                     value="#{myInternshipsCtrl.model.internship.companyMentorOtherPhone}"
-                                                                     disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
-                                                    </div>
-                                                </div>
-                                                <!-- /.box-body -->
-
-                                                <div class="box-footer">
-                                                    <!--<button type="submit" class="btn btn-primary">Submit</button>-->
-                                                </div>
-                                            </div>
-
-                                            <div class="box box-primary">
-                                                <div class="box-header with-border">
-                                                    <h3 class="box-title">Encadrement Ecole</h3>
-                                                </div>
-                                                <!-- /.box-header -->
-                                                <!-- form start -->
-                                                <div class="box-body">
-                                                    <div class="form-group">
-                                                        <p:outputLabel value="Encadrement Ecole"/>
-                                                        <p:selectOneMenu
-                                                                value="#{myInternshipsCtrl.model.supervisor1Id}"
-                                                                styleClass="form-control"
-                                                                disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesSupervisors}">
-                                                            <p:ajax listener="#{myInternshipsCtrl.onUpdateSupervisor}"/>
-                                                            <f:selectItem itemLabel="Selectionner Encadrement..."
-                                                                          itemValue=""/>
-                                                            <f:selectItems value="#{myInternshipsCtrl.model.teachers}"/>
-                                                        </p:selectOneMenu>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <p:outputLabel value="Autre Encadrant Ecole"
-                                                                       rendered="#{myInternshipsCtrl.model.internship.board.multipleSupervisors}"/>
-                                                        <p:selectOneMenu
-                                                                rendered="#{myInternshipsCtrl.model.internship.board.multipleSupervisors}"
-                                                                value="#{myInternshipsCtrl.model.supervisor2Id}"
-                                                                disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesSupervisors}">
-                                                            <p:ajax listener="#{myInternshipsCtrl.onUpdateSupervisor}"/>
-                                                            <f:selectItem itemLabel="Selectionner Encadrement 2..."
-                                                                          itemValue=""/>
-                                                            <f:selectItems value="#{myInternshipsCtrl.model.teachers}"/>
-                                                        </p:selectOneMenu>
-                                                    </div>
-                                                </div>
-                                                <!-- /.box-body -->
-
-                                                <div class="box-footer">
-                                                    <!--<button type="submit" class="btn btn-primary">Submit</button>-->
-                                                </div>
-                                            </div>
-                                            <div class="box box-primary">
-                                                <div class="box-header with-border">
-                                                    <h3 class="box-title">Type et délais</h3>
-                                                </div>
-                                                <!-- /.box-header -->
-                                                <!-- form start -->
-                                                <div class="box-body">
-                                                    <div class="form-group">
-                                                        <p:outputLabel value="Type"/>
-                                                        <p:selectOneMenu
-                                                                value="#{myInternshipsCtrl.model.typeVariantId}"
-                                                                styleClass="form-control"
-                                                                disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}">
-                                                            <p:ajax listener="#{myInternshipsCtrl.onUpdateVariant}"/>
-                                                            <f:selectItem itemLabel="Selectionner Type..."
-                                                                          itemValue=""/>
-                                                            <f:selectItems
-                                                                    value="#{myInternshipsCtrl.model.typeVariants}"/>
-                                                        </p:selectOneMenu>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <p:outputLabel value="Durée"/>
-                                                        <p:selectOneMenu value="#{myInternshipsCtrl.model.durationId}"
-                                                                         styleClass="form-control"
-                                                                         disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}">
-                                                            <p:ajax listener="#{myInternshipsCtrl.onUpdateDuration}"/>
-                                                            <f:selectItem itemLabel="Selectionner Type..."
-                                                                          itemValue=""/>
-                                                            <f:selectItems
-                                                                    value="#{myInternshipsCtrl.model.durations}"/>
-                                                        </p:selectOneMenu>
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <p:outputLabel value="Le stage commence "/>
-                                                        <p:calendar styleClass="from-control vr-form-calendar-text"
-                                                                value="#{myInternshipsCtrl.model.internship.startDate}"
-
-                                                                disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <p:outputLabel value="Et se termine "/>
-                                                        <p:calendar styleClass="from-control vr-form-calendar-text"
-                                                                value="#{myInternshipsCtrl.model.internship.endDate}"
-
-                                                                disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
-                                                    </div>
-
-                                                </div>
-                                                <!-- /.box-body -->
-
-                                                <div class="box-footer">
-                                                    <!--<button type="submit" class="btn btn-primary">Submit</button>-->
-                                                </div>
-                                            </div>
-
+                                    <div class="box-footer">
+                                        <!--<button type="submit" class="btn btn-primary">Submit</button>-->
+                                    </div>
+                                </div>
+                                <div class="box box-primary">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">Type et délais</h3>
+                                    </div>
+                                    <!-- /.box-header -->
+                                    <!-- form start -->
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                            <p:outputLabel value="Type"/>
+                                            <p:selectOneMenu
+                                                    value="#{myInternshipsCtrl.model.typeVariantId}"
+                                                    styleClass="form-control"
+                                                    disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}">
+                                                <p:ajax listener="#{myInternshipsCtrl.onUpdateVariant}"/>
+                                                <f:selectItem itemLabel="Selectionner Type..."
+                                                              itemValue=""/>
+                                                <f:selectItems
+                                                        value="#{myInternshipsCtrl.model.typeVariants}"/>
+                                            </p:selectOneMenu>
                                         </div>
-                                    </ui:fragment>
+                                        <div class="form-group">
+                                            <p:outputLabel value="Durée"/>
+                                            <p:selectOneMenu value="#{myInternshipsCtrl.model.durationId}"
+                                                             styleClass="form-control"
+                                                             disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}">
+                                                <p:ajax listener="#{myInternshipsCtrl.onUpdateDuration}"/>
+                                                <f:selectItem itemLabel="Selectionner Type..."
+                                                              itemValue=""/>
+                                                <f:selectItems
+                                                        value="#{myInternshipsCtrl.model.durations}"/>
+                                            </p:selectOneMenu>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <p:outputLabel value="Le stage commence "/>
+                                            <p:calendar styleClass="from-control vr-form-calendar-text"
+                                                        value="#{myInternshipsCtrl.model.internship.startDate}"
+
+                                                        disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <p:outputLabel value="Et se termine "/>
+                                            <p:calendar styleClass="from-control vr-form-calendar-text"
+                                                        value="#{myInternshipsCtrl.model.internship.endDate}"
+
+                                                        disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
+                                        </div>
+
+                                    </div>
+                                    <!-- /.box-body -->
+
+                                    <div class="box-footer">
+                                        <!--<button type="submit" class="btn btn-primary">Submit</button>-->
+                                    </div>
+                                </div>
+
+                                <div class="box box-primary">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">Documents et Rapports</h3>
+                                    </div>
+                                    <!-- /.box-header -->
+                                    <!-- form start -->
+                                    <div class="box-body">
+                                        <ui:fragment
+                                                rendered="#{myInternshipsCtrl.model.internship.internshipStatus.enabledReport1}">
+                                            <div class="form-group">
+                                                <p:outputLabel value="Cahier des charges (pdf)"
+                                                               style="margin-right: 10px;"/>
+                                                <p:commandButton
+                                                        rendered="#{vr.isEmpty(myInternshipsCtrl.model.internship.specFilePath)}"
+                                                        styleClass="btn btn-secondary pull-right" disabled="true"
+                                                        style="margin-right: 10px;margin-left: 10px; width: 100px"
+                                                        value="Non soumis"
+                                                />
+                                                <p:commandLink
+                                                        rendered="#{!vr.isEmpty(myInternshipsCtrl.model.internship.specFilePath)}"
+                                                        value="télécharger"
+                                                        ajax="false"
+                                                        styleClass="btn btn-info pull-right"
+                                                        style="margin-right: 10px;margin-left: 10px; width: 100px"
+                                                >
+                                                    <p:fileDownload
+                                                            value="#{myInternshipsCtrl.download('report1')}"/>
+                                                </p:commandLink>
+                                                <p:commandButton
+                                                        value="soumettre document"
+                                                        styleClass="btn  pull-right"
+                                                        style="margin-left: 10px;"
+                                                        disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport1)}"
+                                                        rendered="#{((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport1)}"
+                                                        action="#{myInternshipsCtrl.onRequestUpload('report1')}"
+                                                        update=":listForm"/>
+                                            </div>
+                                        </ui:fragment>
+                                        <ui:fragment
+                                                rendered="#{myInternshipsCtrl.model.internship.internshipStatus.enabledReport2}">
+                                            <div class="form-group">
+                                                <p:outputLabel
+                                                        value="Rapport mi-parcours (zip=sourceslatex+pdf)"
+                                                        style="margin-right: 10px;"/>
+                                                <p:commandButton
+                                                        rendered="#{vr.isEmpty(myInternshipsCtrl.model.internship.midTermReportFilePath)}"
+                                                        styleClass="btn btn-secondary pull-right" disabled="true"
+                                                        style="margin-right: 10px;margin-left: 10px; width: 100px"
+                                                        value="Non soumis" />
+                                                <p:commandLink
+                                                        rendered="#{!vr.isEmpty(myInternshipsCtrl.model.internship.midTermReportFilePath)}"
+                                                        value="télécharger"
+                                                        styleClass="btn btn-info pull-right"
+                                                        ajax="false"
+                                                        style="margin-right: 10px;margin-left: 10px; width: 100px"
+                                                >
+                                                    <p:fileDownload
+                                                            value="#{myInternshipsCtrl.download('report2')}"/>
+                                                </p:commandLink>
+                                                <p:commandButton value="soumettre document"
+                                                                 styleClass="btn pull-right"
+                                                                 style="margin-left: 10px;"
+                                                                 disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"
+                                                                 rendered="#{((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"
+                                                                 action="#{myInternshipsCtrl.onRequestUpload('report2')}"
+                                                                 update=":listForm"/>
+                                            </div>
+                                        </ui:fragment>
+
+                                        <ui:fragment
+                                                rendered="#{myInternshipsCtrl.model.internship.internshipStatus.enabledReport3}">
+                                            <div class="form-group">
+                                                <p:outputLabel
+                                                        value="Rapport final (zip=sourceslatex+pdf)"
+                                                        style="margin-right: 10px;"/>
+                                                <p:commandButton
+                                                        rendered="#{vr.isEmpty(myInternshipsCtrl.model.internship.reportFilePath)}"
+                                                        styleClass="btn btn-secondary pull-right" disabled="true"
+                                                        style="margin-right: 10px;margin-left: 10px; width: 100px"
+                                                        value="Non soumis"/>
+                                                <p:commandLink
+                                                        rendered="#{!vr.isEmpty(myInternshipsCtrl.model.internship.reportFilePath)}"
+                                                        value="télécharger"
+                                                        styleClass="btn btn-info pull-right"
+                                                        ajax="false"
+                                                        style="margin-right: 10px;margin-left: 10px; width: 100px"
+                                                >
+                                                    <p:fileDownload
+                                                            value="#{myInternshipsCtrl.download('report3')}"/>
+                                                </p:commandLink>
+                                                <p:commandButton value="soumettre document"
+                                                                 styleClass="btn pull-right"
+                                                                 style="margin-left: 10px;"
+                                                                 disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport3)}"
+                                                                 rendered="#{((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport3)}"
+                                                                 action="#{myInternshipsCtrl.onRequestUpload('report3')}"
+                                                                 update=":listForm"/>
+                                            </div>
+                                        </ui:fragment>
+                                    </div>
+
+                                    <!-- /.box-body -->
+
+                                    <div class="box-footer">
+                                        <!--<button type="submit" class="btn btn-primary">Submit</button>-->
+                                    </div>
                                 </div>
                                 <ui:fragment
-                                        rendered="#{myInternshipsCtrl.model.internship.internshipStatus.enabledReport2}">
-                                <div class="row">
+                                        rendered="#{myInternshipsCtrl.model.teacher or (myInternshipsCtrl.model.student and myInternshipsCtrl.model.internship.internshipStatus.studentSeesEvaluators)}">
+                                    <div class="box box-primary">
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title">Soutenance</h3>
+                                        </div>
+                                        <!-- /.box-header -->
+                                        <!-- form start -->
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <p:outputLabel value="Date Soutenance"/>
+                                                <p:outputLabel styleClass="form-control"
+                                                               value="#{myInternshipsCtrl.model.internship.examDate eq null ? 'N/A': vr.date(myInternshipsCtrl.model.internship.examDate,'yyyy-MM-dd HH:mm')}"/>
+                                            </div>
+                                            <div class="form-group">
+                                                <p:outputLabel value="Salle Soutenance"/>
+                                                <p:outputLabel styleClass="form-control"
+                                                               value="#{myInternshipsCtrl.model.internship.examLocation}"/>
+                                            </div>
+                                            <div class="form-group">
+                                                <p:outputLabel value="President"/>
+                                                <p:outputLabel styleClass="form-control"
+                                                               value="#{myInternshipsCtrl.model.internship.chairExaminer eq null ? '' : myInternshipsCtrl.model.internship.chairExaminer.contact.fullName}"/>
+                                            </div>
+                                            <div class="form-group">
+                                                <p:outputLabel value="Rapporteur"/>
+                                                <p:outputLabel styleClass="form-control"
+                                                               value="#{myInternshipsCtrl.model.internship.firstExaminer eq null ? '' : myInternshipsCtrl.model.internship.firstExaminer.contact.fullName}"/>
+                                            </div>
+                                            <div class="form-group">
+                                                <p:outputLabel value="Examinateur"/>
+                                                <p:outputLabel styleClass="form-control"
+                                                               value="#{myInternshipsCtrl.model.internship.secondExaminer eq null ? '' : myInternshipsCtrl.model.internship.secondExaminer.contact.fullName}"/>
+                                            </div>
+                                        </div>
 
-                                    <div class="col-md-6">
+                                        <!-- /.box-body -->
 
+                                        <div class="box-footer">
+                                            <!--<button type="submit" class="btn btn-primary">Submit</button>-->
+                                        </div>
+                                    </div>
+                                </ui:fragment>
+                            </div>
+                            <ui:fragment
+                                    rendered="#{(myInternshipsCtrl.model.internship.internshipStatus.studentSeesSupervisors)}">
+                                <div class="col-md-6">
+                                    <div class="box box-primary">
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title">Observations</h3>
+                                        </div>
+                                        <!-- /.box-header -->
+                                        <!-- form start -->
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <p:outputLabel
+                                                        value="#{myInternshipsCtrl.model.student ? 'Mes remarques':'Remarques Etudiant'}"/>
+                                                <p:inputTextarea rows="10"
+                                                                 style="width: 100%" styleClass="form-control"
+                                                                 value="#{myInternshipsCtrl.model.internship.studentObservations}"
+                                                                 disabled="#{!myInternshipsCtrl.model.student}"/>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <p:outputLabel
+                                                        value="Remarques Administratives"/>
+                                                <p:inputTextarea rows="10"
+                                                                 style="width: 100%"
+                                                                 value="#{myInternshipsCtrl.model.internship.validationObservations}"
+                                                                 disabled="#{myInternshipsCtrl.model.student}"/>
+                                            </div>
+
+
+                                            <div class="form-group">
+                                                <p:outputLabel value="Evaluation"/>
+                                                <p:inputTextarea rows="10"
+                                                                 style="width: 100%"
+                                                                 value="#{myInternshipsCtrl.model.internship.evaluationObservations}"
+                                                                 disabled="#{myInternshipsCtrl.model.student}"/>
+                                            </div>
+
+
+                                        </div>
+                                        <!-- /.box-body -->
+
+                                        <div class="box-footer">
+                                            <!--<button type="submit" class="btn btn-primary">Submit</button>-->
+                                        </div>
+                                    </div>
+                                    <div class="box box-primary">
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title">Encadrement Entreprise</h3>
+                                        </div>
+                                        <!-- /.box-header -->
+                                        <!-- form start -->
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <p:outputLabel value="Entreprise"/>
+                                                <p:selectOneMenu styleClass="form-control"
+                                                                 value="#{myInternshipsCtrl.model.companyId}"
+                                                                 disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}">
+                                                    <p:ajax listener="#{myInternshipsCtrl.onUpdateCompany}"/>
+                                                    <f:selectItem itemLabel="Selectionner Entreprise..."
+                                                                  itemValue=""/>
+                                                    <f:selectItems
+                                                            value="#{myInternshipsCtrl.model.companies}"/>
+                                                </p:selectOneMenu>
+                                            </div>
+                                            <div class="form-group">
+                                                <p:outputLabel value="Autre Entreprise (si non listée)"/>
+                                                <p:inputText style="width: 100%" styleClass="form-control"
+                                                             value="#{myInternshipsCtrl.model.internship.companyOther}"
+                                                             disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
+                                            </div>
+                                            <div class="form-group">
+                                                <p:outputLabel value="Encadrant Entreprise"/>
+                                                <p:inputText style="width: 100%" styleClass="form-control"
+                                                             value="#{myInternshipsCtrl.model.internship.companyMentorOther}"
+                                                             disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
+                                            </div>
+                                            <div class="form-group">
+                                                <p:outputLabel value="Autre Encadrant"/>
+                                                <p:outputLabel styleClass="form-control"
+                                                               value="#{myInternshipsCtrl.model.internship.companyMentor eq null? '' :myInternshipsCtrl.model.internship.companyMentor.fullName}"/>
+                                            </div>
+                                            <div class="form-group">
+                                                <p:outputLabel value="Email"/>
+                                                <p:inputText style="width: 100%" styleClass="form-control"
+                                                             value="#{myInternshipsCtrl.model.internship.companyMentorOtherEmail}"
+                                                             disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
+                                            </div>
+                                            <div class="form-group">
+                                                <p:outputLabel value="Téléphone"/>
+                                                <p:inputText style="width: 100%" styleClass="form-control"
+                                                             value="#{myInternshipsCtrl.model.internship.companyMentorOtherPhone}"
+                                                             disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
+                                            </div>
+                                        </div>
+                                        <!-- /.box-body -->
+
+                                        <div class="box-footer">
+                                            <!--<button type="submit" class="btn btn-primary">Submit</button>-->
+                                        </div>
+                                    </div>
+
+                                    <div class="box box-primary">
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title">Encadrement Ecole</h3>
+                                        </div>
+                                        <!-- /.box-header -->
+                                        <!-- form start -->
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <p:outputLabel value="Encadrement Ecole"/>
+                                                <p:selectOneMenu
+                                                        value="#{myInternshipsCtrl.model.supervisor1Id}"
+                                                        styleClass="form-control"
+                                                        disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesSupervisors}">
+                                                    <p:ajax listener="#{myInternshipsCtrl.onUpdateSupervisor}"/>
+                                                    <f:selectItem itemLabel="Selectionner Encadrement..."
+                                                                  itemValue=""/>
+                                                    <f:selectItems value="#{myInternshipsCtrl.model.teachers}"/>
+                                                </p:selectOneMenu>
+                                            </div>
+                                            <div class="form-group">
+                                                <p:outputLabel value="Autre Encadrant Ecole"
+                                                               rendered="#{myInternshipsCtrl.model.internship.board.multipleSupervisors}"/>
+                                                <p:selectOneMenu
+                                                        rendered="#{myInternshipsCtrl.model.internship.board.multipleSupervisors}"
+                                                        value="#{myInternshipsCtrl.model.supervisor2Id}"
+                                                        disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesSupervisors}">
+                                                    <p:ajax listener="#{myInternshipsCtrl.onUpdateSupervisor}"/>
+                                                    <f:selectItem itemLabel="Selectionner Encadrement 2..."
+                                                                  itemValue=""/>
+                                                    <f:selectItems value="#{myInternshipsCtrl.model.teachers}"/>
+                                                </p:selectOneMenu>
+                                            </div>
+                                        </div>
+                                        <!-- /.box-body -->
+
+                                        <div class="box-footer">
+                                            <!--<button type="submit" class="btn btn-primary">Submit</button>-->
+                                        </div>
+                                    </div>
+
+                                    <p:fragment
+                                            rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
                                         <div class="box box-primary">
                                             <div class="box-header with-border">
-                                                <h3 class="box-title">Rapport de mis parcours</h3>
+                                                <h3 class="box-title">Avis Elève Ingénieur</h3>
                                             </div>
                                             <!-- /.box-header -->
                                             <!-- form start -->
                                             <div class="box-body">
-                                                    <div class="form-group">
-                                                        <p:outputLabel
-                                                                value="Rapport mi-parcours (zip=sourceslatex+pdf)"/>
-                                                        <p:outputLabel
-                                                                rendered="#{vr.isEmpty(myInternshipsCtrl.model.internship.midTermReportFilePath)}"
-                                                                value="Non soumis"/>
-                                                        <p:commandLink
-                                                                rendered="#{!vr.isEmpty(myInternshipsCtrl.model.internship.midTermReportFilePath)}"
-                                                                value="télécharger"
-                                                                ajax="false"
-                                                        >
-                                                            <p:fileDownload
-                                                                    value="#{myInternshipsCtrl.download('report2')}"/>
-                                                        </p:commandLink>
-                                                        <p:commandButton value="soumettre document"
-                                                                         style="margin-left: 10px;"
-                                                                         disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"
-                                                                         action="#{myInternshipsCtrl.onRequestUpload('report2')}"
-                                                                         update=":listForm midterm"/>
-                                                    </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentProgress')}"/>
+                                                    <p:selectOneMenu styleClass="form-control"
+                                                                     value="#{myInternshipsCtrl.model.internship.midTermStudentProgress}"
+                                                                     disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
+                                                        <f:selectItem itemLabel="  0 %" itemValue="0"/>
+                                                        <f:selectItem itemLabel=" 10 %" itemValue="1"/>
+                                                        <f:selectItem itemLabel=" 20 %" itemValue="2"/>
+                                                        <f:selectItem itemLabel=" 30 %" itemValue="3"/>
+                                                        <f:selectItem itemLabel=" 40 %" itemValue="4"/>
+                                                        <f:selectItem itemLabel=" 50 %" itemValue="5"/>
+                                                        <f:selectItem itemLabel=" 60 %" itemValue="6"/>
+                                                        <f:selectItem itemLabel=" 70 %" itemValue="7"/>
+                                                        <f:selectItem itemLabel=" 80 %" itemValue="8"/>
+                                                        <f:selectItem itemLabel=" 90 %" itemValue="9"/>
+                                                        <f:selectItem itemLabel="100 %" itemValue="10"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentExtMentoringOpinion')}"/>
+                                                    <p:selectOneMenu styleClass="form-control"
+                                                                     value="#{myInternshipsCtrl.model.internship.midTermStudentExtMentoringOpinion}"
+                                                                     disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"
+                                                    >
+                                                        <f:selectItem itemLabel="Selectionner..." itemValue=""/>
+                                                        <f:selectItems value="#{myInternshipsCtrl.model.opinions}"
+                                                                       var="x"
+                                                                       itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentExtMeetingOpinion')}"/>
+                                                    <p:selectOneMenu styleClass="form-control"
+                                                                     value="#{myInternshipsCtrl.model.internship.midTermStudentExtMeetingOpinion}"
+                                                                     disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
+                                                        <f:selectItem itemLabel="Selectionner..." itemValue=""/>
+                                                        <f:selectItems value="#{myInternshipsCtrl.model.opinions}"
+                                                                       var="x"
+                                                                       itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentExtMeetingOpinion')}"/>
+                                                    <p:spinner
+                                                            styleClass="form-control vr-spinner"
+                                                            min="0" max="20"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermStudentPhysMeetingExtCount}"
+                                                            disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentVoiceMeetingExtCount')}"/>
+                                                    <p:spinner
+                                                            styleClass="form-control vr-spinner"
+                                                            min="0" max="20"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermStudentVoiceMeetingExtCount}"
+                                                            disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentTextMeetingExtCount')}"/>
+                                                    <p:spinner
+                                                            styleClass="form-control vr-spinner"
+                                                            min="0" max="20"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermStudentTextMeetingExtCount}"
+                                                            disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentIntMentoringOpinion')}"/>
+                                                    <p:selectOneMenu
+                                                            styleClass="form-control"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermStudentIntMentoringOpinion}"
+                                                            disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
+                                                        <f:selectItem itemLabel="Selectionner..." itemValue=""/>
+                                                        <f:selectItems value="#{myInternshipsCtrl.model.opinions}"
+                                                                       var="x"
+                                                                       itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentMeetingOpinion')}"/>
+                                                    <p:selectOneMenu
+                                                            styleClass="form-control"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermStudentMeetingOpinion}"
+                                                            disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
+                                                        <f:selectItem itemLabel="Selectionner..." itemValue=""/>
+                                                        <f:selectItems value="#{myInternshipsCtrl.model.opinions}"
+                                                                       var="x"
+                                                                       itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentPhysMeetingCount')}"/>
+                                                    <p:spinner
+                                                            styleClass="form-control vr-spinner"
+                                                            min="0" max="20"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermStudentPhysMeetingCount}"
+                                                            disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentVoiceMeetingCount')}"/>
+                                                    <p:spinner
+                                                            styleClass="form-control vr-spinner"
+                                                            min="0" max="20"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermStudentVoiceMeetingCount}"
+                                                            disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentTextMeetingCount')}"/>
+                                                    <p:spinner
+                                                            styleClass="form-control vr-spinner"
+                                                            min="0" max="20"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermStudentTextMeetingCount}"
+                                                            disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentObs')}"/>
+                                                    <p:inputTextarea
+                                                            styleClass="form-control"
+                                                            rows="10" style="width: 100%"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermStudentObs}"
+                                                            disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"
+                                                    />
+                                                </div>
                                             </div>
                                             <!-- /.box-body -->
 
@@ -427,377 +641,149 @@ and open the template in the editor.
                                                 <!--<button type="submit" class="btn btn-primary">Submit</button>-->
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                    </div>
+                                    </p:fragment>
+                                    <p:fragment
+                                            rendered="#{myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager}">
+                                        <div class="box box-primary">
+                                            <div class="box-header with-border">
+                                                <h3 class="box-title">Avis Encadrant</h3>
+                                            </div>
+                                            <!-- /.box-header -->
+                                            <!-- form start -->
+                                            <div class="box-body">
+
+                                                <!-- Teacher opinion -->
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherProgress')}"/>
+                                                    <p:selectOneMenu
+                                                            styleClass="form-control"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermTeacherProgress}"
+                                                            disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
+                                                        <f:selectItem itemLabel="  0 %" itemValue="0"/>
+                                                        <f:selectItem itemLabel=" 10 %" itemValue="1"/>
+                                                        <f:selectItem itemLabel=" 20 %" itemValue="2"/>
+                                                        <f:selectItem itemLabel=" 30 %" itemValue="3"/>
+                                                        <f:selectItem itemLabel=" 40 %" itemValue="4"/>
+                                                        <f:selectItem itemLabel=" 50 %" itemValue="5"/>
+                                                        <f:selectItem itemLabel=" 60 %" itemValue="6"/>
+                                                        <f:selectItem itemLabel=" 70 %" itemValue="7"/>
+                                                        <f:selectItem itemLabel=" 80 %" itemValue="8"/>
+                                                        <f:selectItem itemLabel=" 90 %" itemValue="9"/>
+                                                        <f:selectItem itemLabel="100 %" itemValue="10"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherAutonomyOpinion')}"/>
+                                                    <p:selectOneMenu
+                                                            styleClass="form-control"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermTeacherAutonomyOpinion}"
+                                                            disabled="#{!((myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
+                                                        <f:selectItem itemLabel="Selectionner..." itemValue=""/>
+                                                        <f:selectItems value="#{myInternshipsCtrl.model.opinions}"
+                                                                       var="x"
+                                                                       itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherCommWorkOpinion')}"/>
+                                                    <p:selectOneMenu
+                                                            styleClass="form-control"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermTeacherCommWorkOpinion}"
+                                                            disabled="#{!((myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
+                                                        <f:selectItem itemLabel="Selectionner..." itemValue=""/>
+                                                        <f:selectItems value="#{myInternshipsCtrl.model.opinions}"
+                                                                       var="x"
+                                                                       itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherTechWorkOpinion')}"/>
+                                                    <p:selectOneMenu
+                                                            styleClass="form-control"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermTeacherTechWorkOpinion}"
+                                                            disabled="#{!((myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
+                                                        <f:selectItem itemLabel="Selectionner..." itemValue=""/>
+                                                        <f:selectItems value="#{myInternshipsCtrl.model.opinions}"
+                                                                       var="x"
+                                                                       itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherSciWorkOpinion')}"/>
+                                                    <p:selectOneMenu
+                                                            styleClass="form-control"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermTeacherSciWorkOpinion}"
+                                                            disabled="#{!((myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
+                                                        <f:selectItem itemLabel="Selectionner..." itemValue=""/>
+                                                        <f:selectItems value="#{myInternshipsCtrl.model.opinions}"
+                                                                       var="x"
+                                                                       itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherMeetingOpinion')}"/>
+                                                    <p:selectOneMenu
+                                                            styleClass="form-control"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermTeacherMeetingOpinion}"
+                                                            disabled="#{!((myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
+                                                        <f:selectItem itemLabel="Selectionner..." itemValue=""/>
+                                                        <f:selectItems value="#{myInternshipsCtrl.model.opinions}"
+                                                                       var="x"
+                                                                       itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherExtMentoringOpinion')}"/>
+                                                    <p:selectOneMenu
+                                                            styleClass="form-control"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermTeacherExtMentoringOpinion}"
+                                                            disabled="#{!((myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
+                                                        <f:selectItem itemLabel="Selectionner..." itemValue=""/>
+                                                        <f:selectItems value="#{myInternshipsCtrl.model.opinions}"
+                                                                       var="x"
+                                                                       itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p:outputLabel
+                                                            value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherObs')}"/>
+                                                    <p:inputTextarea
+                                                            styleClass="form-control"
+                                                            rows="10" style="width: 100%"
+                                                            value="#{myInternshipsCtrl.model.internship.midTermTeacherObs}"
+                                                            disabled="#{!((myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <!-- /.box-body -->
+
+                                            <div class="box-footer">
+                                                <!--<button type="submit" class="btn btn-primary">Submit</button>-->
+                                            </div>
+                                        </div>
+                                    </p:fragment>
                                 </div>
-                                </ui:fragment>
-                            </p:tab>
-                            <p:tab title="Mi-parcours"
-                                   rendered="#{(myInternshipsCtrl.model.internship.internshipStatus.enabledReport2)}">
-                                <p:panelGrid id="midterm" styleClass="vr-no-border-grid"
-                                             style="border-style: none;border-width: 0px;width: 100%;">
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentProgress')}"/></p:column>
-                                        <p:column>
-                                            <p:selectOneMenu
-                                                    value="#{myInternshipsCtrl.model.internship.midTermStudentProgress}"
-                                                    disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
-                                                <f:selectItem itemLabel="  0 %" itemValue="0"/>
-                                                <f:selectItem itemLabel=" 10 %" itemValue="1"/>
-                                                <f:selectItem itemLabel=" 20 %" itemValue="2"/>
-                                                <f:selectItem itemLabel=" 30 %" itemValue="3"/>
-                                                <f:selectItem itemLabel=" 40 %" itemValue="4"/>
-                                                <f:selectItem itemLabel=" 50 %" itemValue="5"/>
-                                                <f:selectItem itemLabel=" 60 %" itemValue="6"/>
-                                                <f:selectItem itemLabel=" 70 %" itemValue="7"/>
-                                                <f:selectItem itemLabel=" 80 %" itemValue="8"/>
-                                                <f:selectItem itemLabel=" 90 %" itemValue="9"/>
-                                                <f:selectItem itemLabel="100 %" itemValue="10"/>
-                                            </p:selectOneMenu>
-                                        </p:column>
-                                    </p:row>
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column colspan="2"><h3>Ecadrement Entreprise</h3></p:column>
-                                    </p:row>
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentExtMentoringOpinion')}"/></p:column>
-                                        <p:column>
-                                            <p:selectOneMenu
-                                                    value="#{myInternshipsCtrl.model.internship.midTermStudentExtMentoringOpinion}"
-                                                    disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"
-                                            >
-                                                <f:selectItem itemLabel="Selectionner..." itemValue=""/>
-                                                <f:selectItems value="#{myInternshipsCtrl.model.opinions}" var="x"
-                                                               itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
-                                            </p:selectOneMenu>
-                                        </p:column>
-                                    </p:row>
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentExtMeetingOpinion')}"/></p:column>
-                                        <p:column>
-                                            <p:selectOneMenu
-                                                    value="#{myInternshipsCtrl.model.internship.midTermStudentExtMeetingOpinion}"
-                                                    disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
-                                                <f:selectItem itemLabel="Selectionner..." itemValue=""/>
-                                                <f:selectItems value="#{myInternshipsCtrl.model.opinions}" var="x"
-                                                               itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
-                                            </p:selectOneMenu>
-                                        </p:column>
-                                    </p:row>
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentPhysMeetingExtCount')}"/></p:column>
-                                        <p:column>
-                                            <p:spinner min="0" max="20"
-                                                       value="#{myInternshipsCtrl.model.internship.midTermStudentPhysMeetingExtCount}"
-                                                       disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"/>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentVoiceMeetingExtCount')}"/></p:column>
-                                        <p:column>
-                                            <p:spinner min="0" max="20"
-                                                       value="#{myInternshipsCtrl.model.internship.midTermStudentVoiceMeetingExtCount}"
-                                                       disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"/>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentTextMeetingExtCount')}"/></p:column>
-                                        <p:column>
-                                            <p:spinner min="0" max="20"
-                                                       value="#{myInternshipsCtrl.model.internship.midTermStudentTextMeetingExtCount}"
-                                                       disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"/>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column colspan="2"><h3>Ecadrement Ecole</h3></p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentIntMentoringOpinion')}"/></p:column>
-                                        <p:column>
-                                            <p:selectOneMenu
-                                                    value="#{myInternshipsCtrl.model.internship.midTermStudentIntMentoringOpinion}"
-                                                    disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
-                                                <f:selectItem itemLabel="Selectionner..." itemValue=""/>
-                                                <f:selectItems value="#{myInternshipsCtrl.model.opinions}" var="x"
-                                                               itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
-                                            </p:selectOneMenu>
-                                        </p:column>
-                                    </p:row>
-
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentMeetingOpinion')}"/></p:column>
-                                        <p:column>
-                                            <p:selectOneMenu
-                                                    value="#{myInternshipsCtrl.model.internship.midTermStudentMeetingOpinion}"
-                                                    disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
-                                                <f:selectItem itemLabel="Selectionner..." itemValue=""/>
-                                                <f:selectItems value="#{myInternshipsCtrl.model.opinions}" var="x"
-                                                               itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
-                                            </p:selectOneMenu>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentPhysMeetingCount')}"/></p:column>
-                                        <p:column>
-                                            <p:spinner min="0" max="20"
-                                                       value="#{myInternshipsCtrl.model.internship.midTermStudentPhysMeetingCount}"
-                                                       disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"/>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentVoiceMeetingCount')}"/></p:column>
-                                        <p:column>
-                                            <p:spinner min="0" max="20"
-                                                       value="#{myInternshipsCtrl.model.internship.midTermStudentVoiceMeetingCount}"
-                                                       disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"/>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentTextMeetingCount')}"/></p:column>
-                                        <p:column>
-                                            <p:spinner min="0" max="20"
-                                                       value="#{myInternshipsCtrl.model.internship.midTermStudentTextMeetingCount}"
-                                                       disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"/>
-                                        </p:column>
-                                    </p:row>
-
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column colspan="2"><h3>Divers</h3></p:column>
-                                    </p:row>
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermStudentObs')}"/></p:column>
-                                        <p:column>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager}">
-                                        <p:column style="width: 100%;" colspan="2">
-                                            <p:inputTextarea rows="10" style="width: 100%"
-                                                             value="#{myInternshipsCtrl.model.internship.midTermStudentObs}"
-                                                             disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"
-                                            />
-                                        </p:column>
-                                    </p:row>
-
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherProgress')}"/></p:column>
-                                        <p:column>
-                                            <p:selectOneMenu
-                                                    value="#{myInternshipsCtrl.model.internship.midTermTeacherProgress}"
-                                                    disabled="#{!((myInternshipsCtrl.model.student or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
-                                                <f:selectItem itemLabel="  0 %" itemValue="0"/>
-                                                <f:selectItem itemLabel=" 10 %" itemValue="1"/>
-                                                <f:selectItem itemLabel=" 20 %" itemValue="2"/>
-                                                <f:selectItem itemLabel=" 30 %" itemValue="3"/>
-                                                <f:selectItem itemLabel=" 40 %" itemValue="4"/>
-                                                <f:selectItem itemLabel=" 50 %" itemValue="5"/>
-                                                <f:selectItem itemLabel=" 60 %" itemValue="6"/>
-                                                <f:selectItem itemLabel=" 70 %" itemValue="7"/>
-                                                <f:selectItem itemLabel=" 80 %" itemValue="8"/>
-                                                <f:selectItem itemLabel=" 90 %" itemValue="9"/>
-                                                <f:selectItem itemLabel="100 %" itemValue="10"/>
-                                            </p:selectOneMenu>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherAutonomyOpinion')}"/></p:column>
-                                        <p:column>
-                                            <p:selectOneMenu
-                                                    value="#{myInternshipsCtrl.model.internship.midTermTeacherAutonomyOpinion}"
-                                                    disabled="#{!((myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
-                                                <f:selectItem itemLabel="Selectionner..." itemValue=""/>
-                                                <f:selectItems value="#{myInternshipsCtrl.model.opinions}" var="x"
-                                                               itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
-                                            </p:selectOneMenu>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherCommWorkOpinion')}"/></p:column>
-                                        <p:column>
-                                            <p:selectOneMenu
-                                                    value="#{myInternshipsCtrl.model.internship.midTermTeacherCommWorkOpinion}"
-                                                    disabled="#{!((myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
-                                                <f:selectItem itemLabel="Selectionner..." itemValue=""/>
-                                                <f:selectItems value="#{myInternshipsCtrl.model.opinions}" var="x"
-                                                               itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
-                                            </p:selectOneMenu>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherTechWorkOpinion')}"/></p:column>
-                                        <p:column>
-                                            <p:selectOneMenu
-                                                    value="#{myInternshipsCtrl.model.internship.midTermTeacherTechWorkOpinion}"
-                                                    disabled="#{!((myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
-                                                <f:selectItem itemLabel="Selectionner..." itemValue=""/>
-                                                <f:selectItems value="#{myInternshipsCtrl.model.opinions}" var="x"
-                                                               itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
-                                            </p:selectOneMenu>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherSciWorkOpinion')}"/></p:column>
-                                        <p:column>
-                                            <p:selectOneMenu
-                                                    value="#{myInternshipsCtrl.model.internship.midTermTeacherSciWorkOpinion}"
-                                                    disabled="#{!((myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
-                                                <f:selectItem itemLabel="Selectionner..." itemValue=""/>
-                                                <f:selectItems value="#{myInternshipsCtrl.model.opinions}" var="x"
-                                                               itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
-                                            </p:selectOneMenu>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherMeetingOpinion')}"/></p:column>
-                                        <p:column>
-                                            <p:selectOneMenu
-                                                    value="#{myInternshipsCtrl.model.internship.midTermTeacherMeetingOpinion}"
-                                                    disabled="#{!((myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
-                                                <f:selectItem itemLabel="Selectionner..." itemValue=""/>
-                                                <f:selectItems value="#{myInternshipsCtrl.model.opinions}" var="x"
-                                                               itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
-                                            </p:selectOneMenu>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherExtMentoringOpinion')}"/></p:column>
-                                        <p:column>
-                                            <p:selectOneMenu
-                                                    value="#{myInternshipsCtrl.model.internship.midTermTeacherExtMentoringOpinion}"
-                                                    disabled="#{!((myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}">
-                                                <f:selectItem itemLabel="Selectionner..." itemValue=""/>
-                                                <f:selectItems value="#{myInternshipsCtrl.model.opinions}" var="x"
-                                                               itemLabel="#{i18n.getEnum(x)}" itemValue="#{x}"/>
-                                            </p:selectOneMenu>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager}">
-                                        <p:column><p:outputLabel
-                                                value="#{i18n.getString('Entity.AcademicInternship.Field.midTermTeacherObs')}"/></p:column>
-                                        <p:column>
-                                        </p:column>
-                                    </p:row>
-
-                                    <p:row rendered="#{myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager}">
-                                        <p:column style="width: 100%;" colspan="2">
-                                            <p:inputTextarea rows="10" style="width: 100%"
-                                                             value="#{myInternshipsCtrl.model.internship.midTermTeacherObs}"
-                                                             disabled="#{!((myInternshipsCtrl.model.teacher or myInternshipsCtrl.model.manager) and myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport2)}"
-                                            />
-                                        </p:column>
-                                    </p:row>
-
-                                </p:panelGrid>
-                            </p:tab>
-                            <p:tab title="Soutenance"
-                                   rendered="#{(myInternshipsCtrl.model.internship.internshipStatus.enabledReport3)}">
-                                <p:panelGrid id="defense" styleClass="vr-no-border-grid"
-                                             style="border-style: none;border-width: 0px;width: 100%;">
-                                    <p:row>
-                                        <p:column><p:outputLabel value="Rapport final"/></p:column>
-                                        <p:column>
-                                            <p:outputLabel
-                                                    rendered="#{vr.isEmpty(myInternshipsCtrl.model.internship.reportFilePath)}"
-                                                    value="Non soumis"/>
-                                            <p:commandLink
-                                                    rendered="#{!vr.isEmpty(myInternshipsCtrl.model.internship.reportFilePath)}"
-                                                    value="télécharger"
-                                                    ajax="false"
-                                            >
-                                                <p:fileDownload value="#{myInternshipsCtrl.download('report3')}"/>
-                                            </p:commandLink>
-                                            <p:commandButton value="soumettre document" style="margin-left: 10px;"
-                                                             disabled="#{!myInternshipsCtrl.model.student or (myInternshipsCtrl.model.student and !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesReport3)}"
-                                                             action="#{myInternshipsCtrl.onRequestUpload('report3')}"
-                                                             update=":listForm defense"/>
-                                        </p:column>
-                                    </p:row>
-                                    <p:row rendered="#{myInternshipsCtrl.model.teacher or (myInternshipsCtrl.model.student and myInternshipsCtrl.model.internship.internshipStatus.studentSeesEvaluators)}">
-                                        <p:column><p:outputLabel value="Date Soutenance"/></p:column>
-                                        <p:column>
-                                            <p:outputLabel
-                                                    value="#{myInternshipsCtrl.model.internship.examDate eq null ? 'N/A': vr.date(myInternshipsCtrl.model.internship.examDate,'yyyy-MM-dd HH:mm')}"/>
-                                        </p:column>
-                                    </p:row>
-                                    <p:row rendered="#{myInternshipsCtrl.model.teacher or (myInternshipsCtrl.model.student and myInternshipsCtrl.model.internship.internshipStatus.studentSeesEvaluators)}">
-                                        <p:column><p:outputLabel value="Salle Soutenance"/></p:column>
-                                        <p:column>
-                                            <p:outputLabel value="#{myInternshipsCtrl.model.internship.examLocation}"/>
-                                        </p:column>
-                                    </p:row>
-                                    <p:row rendered="#{myInternshipsCtrl.model.teacher or (myInternshipsCtrl.model.student and myInternshipsCtrl.model.internship.internshipStatus.studentSeesEvaluators)}">
-                                        <p:column><p:outputLabel value="President"/></p:column>
-                                        <p:column>
-                                            <p:outputLabel
-                                                    value="#{myInternshipsCtrl.model.internship.chairExaminer eq null ? '' : myInternshipsCtrl.model.internship.chairExaminer.contact.fullName}"/>
-                                        </p:column>
-                                    </p:row>
-                                    <p:row rendered="#{myInternshipsCtrl.model.teacher or (myInternshipsCtrl.model.student and myInternshipsCtrl.model.internship.internshipStatus.studentSeesEvaluators)}">
-                                        <p:column><p:outputLabel value="Rapporteur"/></p:column>
-                                        <p:column>
-                                            <p:outputLabel
-                                                    value="#{myInternshipsCtrl.model.internship.firstExaminer eq null ? '' : myInternshipsCtrl.model.internship.firstExaminer.contact.fullName}"/>
-                                        </p:column>
-                                    </p:row>
-                                    <p:row rendered="#{myInternshipsCtrl.model.teacher or (myInternshipsCtrl.model.student and myInternshipsCtrl.model.internship.internshipStatus.studentSeesEvaluators)}">
-                                        <p:column><p:outputLabel value="Examinateur"/></p:column>
-                                        <p:column>
-                                            <p:outputLabel
-                                                    value="#{myInternshipsCtrl.model.internship.secondExaminer eq null ? '' : myInternshipsCtrl.model.internship.secondExaminer.contact.fullName}"/>
-                                        </p:column>
-                                    </p:row>
-                                </p:panelGrid>
-                            </p:tab>
-
-                        </p:tabView>
+                            </ui:fragment>
+                        </div>
                     </div>
                 </div>
 
 
-                <div style="margin-bottom: 20px;margin-top: 20px;margin-left: 20%;">
+                <div style="margin-bottom: 20px;margin-top: 20px;">
                     <div class="table-responsive">
-                        <p:commandButton rendered="#{myInternshipsCtrl.model.internship ne null}" value="Enregistrer" styleClass="btn btn-primary"
+                        <p:commandButton value="Enregistrer"
+                                         styleClass="btn btn-primary pull-right"
                                          action="#{myInternshipsCtrl.onSave}" update="currentMessages"/>
                     </div>
                 </div>
+                </ui:fragment>
             </h:form>
 
 

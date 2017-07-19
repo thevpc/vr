@@ -31,6 +31,8 @@
         <module>plugins/equipments/vr-equipments-web</module>
         <module>plugins/dev-toolbox/vr-dev-toolbox-service</module>
         <module>plugins/dev-toolbox/vr-dev-toolbox-web</module>
+        <module>plugins/academic-profile/vr-academic-profile-service</module>
+        <module>plugins/academic-profile/vr-academic-profile-web</module>
         <module>plugins/themes/vr-theme-crew</module>
     </modules>
 

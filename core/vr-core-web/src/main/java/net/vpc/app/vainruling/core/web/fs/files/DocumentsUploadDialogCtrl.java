@@ -44,7 +44,8 @@ public class DocumentsUploadDialogCtrl {
     }
 
 
-    public void openDialog(Config config) {
+    public void openCustomDialog(Config config,DocumentUploadListener listener) {
+        getModel().setListener(listener);
         initContent(config);
 
         Map<String, Object> options = new HashMap<String, Object>();
@@ -53,7 +54,10 @@ public class DocumentsUploadDialogCtrl {
         options.put("modal", true);
 
         RequestContext.getCurrentInstance().openDialog("/modules/files/documents-upload-dialog", options, null);
+    }
 
+    public void openDialog(Config config) {
+        openCustomDialog(config,null);
     }
 
     public void fireEventExtraDialogClosed() {
@@ -64,7 +68,6 @@ public class DocumentsUploadDialogCtrl {
 
     public void initContent(Config cmd) {
         getModel().setConfig(cmd);
-        CorePlugin fsp = VrApp.getBean(CorePlugin.class);
         Config c = getModel().getConfig();
         if (c == null) {
             c = new Config();
@@ -77,7 +80,21 @@ public class DocumentsUploadDialogCtrl {
     }
 
     public void handleNewFile(FileUploadEvent event) {
+        if(getModel().getListener()!=null){
+            RequestContext.getCurrentInstance().closeDialog(
+                    new DialogResult(null, getModel().getConfig().getUserInfo())
+            );
+            getModel().getListener().onUpload(event);
+            return;
+        }
         try {
+            String fspath = getModel().getConfig().getFspath();
+            if(StringUtils.isEmpty(fspath)){
+                fspath="/Upload/";
+            }
+            if(!fspath.startsWith("/")){
+                fspath=fspath="/"+fspath;
+            }
             CorePlugin fsp = VrApp.getBean(CorePlugin.class);
             VFile ufs = fsp.getUserFolder(fsp.getCurrentUserLogin());
             VFile folder = ufs.get("/Upload");
@@ -161,6 +178,15 @@ public class DocumentsUploadDialogCtrl {
         private String title;
         private String current;
         private Config config;
+        private DocumentUploadListener listener;
+
+        public DocumentUploadListener getListener() {
+            return listener;
+        }
+
+        public void setListener(DocumentUploadListener listener) {
+            this.listener = listener;
+        }
 
         public String getCurrent() {
             return current;

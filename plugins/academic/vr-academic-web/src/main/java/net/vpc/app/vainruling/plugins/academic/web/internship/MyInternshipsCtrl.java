@@ -15,6 +15,8 @@ import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.web.fs.files.DocumentUploadListener;
+import net.vpc.app.vainruling.core.web.fs.files.DocumentsUploadDialogCtrl;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
@@ -60,7 +62,7 @@ import java.util.logging.Logger;
         securityKey = "Custom.Education.MyInternships",
         url = "modules/academic/internship/my-internships"
 )
-public class MyInternshipsCtrl {
+public class MyInternshipsCtrl implements DocumentUploadListener{
 
     private Model model = new Model();
 
@@ -369,7 +371,9 @@ public class MyInternshipsCtrl {
 
     public void onRequestUpload(String report) {
         getModel().setRequestUploadType(report);
-        getModel().setUploading(true);
+//        getModel().setUploading(true);
+        DocumentsUploadDialogCtrl docs = VrApp.getBean(DocumentsUploadDialogCtrl.class);
+        docs.openCustomDialog(new DocumentsUploadDialogCtrl.Config(), this);
     }
 
     public StreamedContent download(final String report) {
@@ -401,6 +405,11 @@ public class MyInternshipsCtrl {
     }
 
     public void handleFileUpload(final FileUploadEvent event) {
+        onUpload(event);
+    }
+
+    @Override
+    public void onUpload(FileUploadEvent event) {
         UPA.getContext().invokePrivileged(new VoidAction() {
             @Override
             public void run() {

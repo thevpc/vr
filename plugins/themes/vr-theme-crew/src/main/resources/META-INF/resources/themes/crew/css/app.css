@@ -1242,3 +1242,12 @@ span.ui-autocomplete.vr-form-control:focus{
     background: white;
     border-style: none;
 }
+
+.vr-spinner{
+    padding: 0px;
+}
+
+.vr-spinner > input{
+    width: 97%;
+    height: 100%;
+}
