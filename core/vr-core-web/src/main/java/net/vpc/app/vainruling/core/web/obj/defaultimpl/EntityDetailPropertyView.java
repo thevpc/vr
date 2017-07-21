@@ -11,12 +11,13 @@ import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
-import net.vpc.upa.Entity;
-import net.vpc.upa.Field;
-import net.vpc.upa.Relationship;
-import net.vpc.upa.RelationshipRole;
+import net.vpc.upa.*;
+import net.vpc.upa.config.ManyToOne;
+import net.vpc.upa.types.DataType;
+import net.vpc.upa.types.ManyToOneType;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -39,15 +40,29 @@ public class EntityDetailPropertyView extends PropertyView {
         if (f == null) {
             f = relation.getSourceRole().getFields().get(0);
         }
-        String idExpr = "o.`" + f.getName() + "`.`" + relation.getTargetEntity().getIdFields().get(0).getName() + "`";
+        Field f2 = relation.getTargetEntity().getIdFields().get(0);
+        if (f2.getDataType() instanceof ManyToOneType) {
+            List<Field> fields2 = ((ManyToOneType) f2.getDataType()).getRelationship().getSourceRole().getFields();
+            if (fields2.size() == 1) {
+                f2 = fields2.get(0);
+            }
+        }
+        String idExpr = "o.`" + f.getName() + "`.`" + f2.getName() + "`";
 
         String argEntity = "entity:\"" + relation.getSourceEntity().getName() + "\"";
         String argListFilter = "listFilter:\"" + idExpr + "=${ID}\"";
-        String argValues = "values:{" + f.getName() + ":${ID}}";
+        Field f3=f;
+        if (f3.getDataType() instanceof ManyToOneType) {
+            List<Field> fields2 = ((ManyToOneType) f3.getDataType()).getRelationship().getSourceRole().getFields();
+            if (fields2.size() == 1) {
+                f3 = fields2.get(0);
+            }
+        }
+        String argValues = "values:{" + f3.getName() + ":${ID}}";
         String argDisabledFields = "disabledFields:[\"" + f.getName() + "\"]";
         String argIgnoreAutoFilter = "ignoreAutoFilter:true";
 
-        setActionCommand("{" + argEntity + "," + argListFilter + "," + argValues + "," + argDisabledFields+ "," + argIgnoreAutoFilter + "}");
+        setActionCommand("{" + argEntity + "," + argListFilter + "," + argValues + "," + argDisabledFields + "," + argIgnoreAutoFilter + "}");
     }
 
     private static String resolveLabel(RelationshipRole rols) {
@@ -70,9 +85,15 @@ public class EntityDetailPropertyView extends PropertyView {
         if (f == null) {
             f = relation.getSourceRole().getFields().get(0);
         }
-        ObjCtrl ctrl = VrApp.getBean(ObjCtrl.class);
-        String idExpr = "o.`" + f.getName() + "`.`" + relation.getTargetEntity().getIdFields().get(0).getName() + "`";
-        Object idVal = getRelationship().getTargetEntity().getBuilder().documentToId(ctrl.getModel().getCurrentDocument());
+        Field f2 = relation.getTargetEntity().getIdFields().get(0);
+        if (f2.getDataType() instanceof ManyToOneType) {
+            List<Field> fields2 = ((ManyToOneType) f2.getDataType()).getRelationship().getSourceRole().getFields();
+            if (fields2.size() == 1) {
+                f2 = fields2.get(0);
+            }
+        }
+        String idExpr = "o.`" + f.getName() + "`.`" + f2.getName() + "`";
+        Object idVal = resolveId();
         HashMap<String, Object> parameters = new HashMap<>();
         parameters.put("idval", idVal);
 
@@ -84,9 +105,49 @@ public class EntityDetailPropertyView extends PropertyView {
         return count;
     }
 
+    public Object resolveId() {
+        Entity targetEntity = getRelationship().getTargetEntity();
+        ObjCtrl ctrl = VrApp.getBean(ObjCtrl.class);
+        Document currentDocument = ctrl.getModel().getCurrentDocument();
+        Object idVal = null;
+        boolean cont = true;
+        while (cont) {
+            cont = false;
+            idVal = targetEntity.getBuilder().documentToId(currentDocument);
+            if (idVal != null) {
+                List<Field> idFields = targetEntity.getIdFields();
+                if (idFields.size() == 1 && idFields.get(0).getDataType() instanceof ManyToOneType) {
+                    if (idVal instanceof Document || targetEntity.getEntityType().isInstance(idVal)) {
+                        targetEntity = ((ManyToOneType) idFields.get(0).getDataType()).getTargetEntity();
+                        if (idVal instanceof Document) {
+                            currentDocument = (Document) idVal;
+                        } else {
+                            currentDocument = targetEntity.getBuilder().objectToDocument(idVal);
+                        }
+                        cont=true;
+                    }
+                }
+            }
+        }
+        return idVal;
+    }
+
+    public static Object resolveId(Object value,DataType type) {
+        if(value==null){
+            return null;
+        }
+        if(type instanceof ManyToOneType){
+            Entity targetEntity = ((ManyToOneType) type).getTargetEntity();
+            if(targetEntity.getIdFields().size()==1) {
+                return resolveId(targetEntity.getBuilder().objectToId(value), targetEntity.getIdFields().get(0).getDataType());
+            }
+        }
+        return value;
+    }
+
     public String buildActionCommand() {
         ObjCtrl ctrl = VrApp.getBean(ObjCtrl.class);
-        Object idVal = getRelationship().getTargetEntity().getBuilder().documentToId(ctrl.getModel().getCurrentDocument());
+        Object idVal = resolveId();
         if (idVal == null) {
             idVal = "null";
         } else if (idVal instanceof Number) {

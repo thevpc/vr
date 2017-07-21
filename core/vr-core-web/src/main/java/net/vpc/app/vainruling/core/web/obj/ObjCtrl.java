@@ -856,7 +856,21 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 Field field = e.findField(fieldName);
                 if (field != null) {
                     DataType t = field.getDataType();
-                    if (t instanceof StringType) {
+                    if(!(t instanceof ManyToOneType) &&
+                            field.getManyToOneRelationships().size()>0 &&
+                            field.getManyToOneRelationships().get(0).getSourceRole().getEntityField()!=null){
+                        Field entityField = field.getManyToOneRelationships().get(0).getSourceRole().getEntityField();
+                        ManyToOneType et = (ManyToOneType) entityField.getDataType();
+                        Entity re = UPA.getPersistenceUnit().getEntity(et.getTargetEntityName());
+                        List<Field> rpp = re.getIdFields();
+                        if (rpp.size() == 1 && PlatformTypes.isInteger(fieldValueString)) {
+                            Object v = re.findById(Integer.parseInt(fieldValueString));
+                            v=re.getBuilder().objectToDocument(v);
+                            builder.setProperty(o, entityField.getName(), v);
+                        } else {
+                            System.err.println("Not supported yet");
+                        }
+                    }else if (t instanceof StringType) {
                         builder.setProperty(o, fieldName, fieldValueString);
                     } else if (t instanceof IntType) {
                         builder.setProperty(o, fieldName, Integer.parseInt(fieldValueString));

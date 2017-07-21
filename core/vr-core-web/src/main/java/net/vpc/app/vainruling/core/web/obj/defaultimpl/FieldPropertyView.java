@@ -80,10 +80,14 @@ public class FieldPropertyView extends PropertyView {
                 Field field = sv.entity.getField(n);
                 DataType dataType = field.getDataType();
                 Object oo = sv.value == null ? null : field.getValue(sv.value);
+                EntityDetailPropertyView.resolveId(oo,dataType);
                 if (dataType instanceof ManyToOneType) {
                     ManyToOneType et = (ManyToOneType) dataType;
                     Entity e2 = et.getRelationship().getTargetRole().getEntity();
                     Object newSelectedItem = e2.getBuilder().objectToId(oo);
+                    if(e2.getIdFields().size()==1){
+                        newSelectedItem=EntityDetailPropertyView.resolveId(newSelectedItem,e2.getIdFields().get(0).getDataType());
+                    }
                     sv = new SelectValue(oo, newSelectedItem, e2);
                 } else {
                     sv = new SelectValue(oo, oo, null);
