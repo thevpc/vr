@@ -53,23 +53,4 @@ public class InventoryRowSecurer extends DefaultEntitySecurityManager {
         }
         return false;
     }
-
-
-    //    @Override
-//    public boolean getAllowedReadPermission(Field field) throws UPAException {
-//        if(field.getAbsoluteName().equals("AcademicTeacherCV.viewsCounter")){
-//           return VrApp.getBean(CorePlugin.class).isUserSessionAdmin();
-//        }
-//        return super.getAllowedReadPermission(field);
-//    }
-//    
-//    @Override
-//    public boolean getAllowedWritePermission(Field field) throws UPAException {
-//        if(field.getAbsoluteName().equals("AcademicTeacherCV.viewsCounter")){
-//           return VrApp.getBean(CorePlugin.class).isUserSessionAdmin();
-//        }
-//        return super.getAllowedReadPermission(field);
-//    }
-
-
 }
