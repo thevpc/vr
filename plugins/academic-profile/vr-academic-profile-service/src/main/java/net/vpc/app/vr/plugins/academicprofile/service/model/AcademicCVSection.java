@@ -1,23 +1,25 @@
-package net.vpc.app.vainruling.plugins.academic.service.model.current;
+package net.vpc.app.vr.plugins.academicprofile.service.model;
 
 import net.vpc.app.vainruling.core.service.model.AppCompany;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Sequence;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.upa.config.*;
 import net.vpc.upa.types.Date;
 
 /**
  * Created by vpc on 7/19/17.
  */
 @Entity
-@Path("Education")
+@Path("Admin/Config")
 public class AcademicCVSection {
 
     @Id
     @Sequence
     private int id;
+    @Main
     private String title;
+
+    @Field(max = "4000")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String details;
 
     public int getId() {

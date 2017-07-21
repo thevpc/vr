@@ -3,10 +3,9 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.academic.service.model.current;
+package net.vpc.app.vr.plugins.academicprofile.service.model;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.config.*;
@@ -15,12 +14,12 @@ import net.vpc.upa.config.*;
  * @author taha.bensalah@gmail.com
  */
 @Entity
-@Path("Education")
-public class AcademicStudentCV {
+@Path("Config")
+public class AcademicTeacherCV {
 
     @Id
     @Main
-    private AcademicStudent student;
+    private AcademicTeacher teacher;
 
     @Summary
     private String title1;
@@ -34,15 +33,35 @@ public class AcademicStudentCV {
 
     @Field(max = "max")
     @Properties(
-            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
     private String aboutText;
+
+    @Field(max = "max")
+    @Properties(
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
+    private String teachingText;
+
+    @Field(max = "max")
+    @Properties(
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
+    private String researchText;
+
+    @Field(max = "max")
+    @Properties(
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
+    private String educationText;
+
+    @Field(max = "max")
+    @Properties(
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
+    private String projectsText;
 
     private String extraImage;
 
     private String extraTitle;
 
     @Properties(
-            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA))
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
     @Field(max = "max")
     private String extraText;
 
@@ -56,6 +75,14 @@ public class AcademicStudentCV {
     @Field(persistAccessLevel = AccessLevel.PROTECTED, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PUBLIC)
     private long viewsCounter;
 
+    public AcademicTeacher getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(AcademicTeacher teacher) {
+        this.teacher = teacher;
+    }
+
     public String getAboutText() {
         return aboutText;
     }
@@ -64,6 +91,37 @@ public class AcademicStudentCV {
         this.aboutText = aboutText;
     }
 
+    public String getTeachingText() {
+        return teachingText;
+    }
+
+    public void setTeachingText(String teachingText) {
+        this.teachingText = teachingText;
+    }
+
+    public String getResearchText() {
+        return researchText;
+    }
+
+    public void setResearchText(String researchText) {
+        this.researchText = researchText;
+    }
+
+    public String getEducationText() {
+        return educationText;
+    }
+
+    public void setEducationText(String educationText) {
+        this.educationText = educationText;
+    }
+
+    public String getProjectsText() {
+        return projectsText;
+    }
+
+    public void setProjectsText(String projectsText) {
+        this.projectsText = projectsText;
+    }
 
     public String getExtraImage() {
         return extraImage;
@@ -193,11 +251,4 @@ public class AcademicStudentCV {
         this.subTitle3 = subTitle3;
     }
 
-    public AcademicStudent getStudent() {
-        return student;
-    }
-
-    public void setStudent(AcademicStudent student) {
-        this.student = student;
-    }
 }

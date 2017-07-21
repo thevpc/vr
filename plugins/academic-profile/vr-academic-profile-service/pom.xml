@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.vpc.app.vain-ruling.plugins.academic-profile</groupId>
+    <artifactId>vr-academic-profile-service</artifactId>
+    <version>1.0</version>
+    <packaging>jar</packaging>
+    <parent>
+        <groupId>net.vpc.app.vain-ruling</groupId>
+        <artifactId>vr-plugin</artifactId>
+        <version>1.0</version>
+    </parent>
+    <developers>
+        <developer>
+            <id>olfa</id>
+            <name>Olfa Dallel</name>
+            <email>olfa.dallel19@gmail.com</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>Africa/Tunis</timezone>
+        </developer>
+    </developers>
+    
+    <dependencies>
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.core</groupId>
+            <artifactId>vr-core-service</artifactId>
+            <version>1.11</version>
+        </dependency>
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
+            <artifactId>vr-academic-service</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+    </dependencies>
+    <properties>
+        <vr-plugin.component-type>service</vr-plugin.component-type>
+        <vr-plugin.name>Academic Profile Plugin</vr-plugin.name>
+        <vr-plugin.description>Profile Pages Plugin</vr-plugin.description>
+    </properties>
+    <repositories>
+        <repository>
+            <id>vpc-public-maven</id>
+            <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+</project>

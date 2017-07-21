@@ -3,7 +3,7 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.academic.service.security;
+package net.vpc.app.vr.plugins.academicprofile.service.security;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
@@ -15,7 +15,7 @@ import net.vpc.upa.expressions.Expression;
 import net.vpc.upa.expressions.UserExpression;
 
 /**
- * @author taha.bensalah@gmail.com
+ * Each Teacher will see only his own CV that's it!
  */
 @SecurityContext(entity = "AcademicTeacherCV")
 public class AcademicTeacherCVSecurer extends DefaultEntitySecurityManager {
@@ -32,22 +32,5 @@ public class AcademicTeacherCVSecurer extends DefaultEntitySecurityManager {
         }
         return new UserExpression("this.teacher.user.login=currentUser()");
     }
-
-//    @Override
-//    public boolean getAllowedReadPermission(Field field) throws UPAException {
-//        if(field.getAbsoluteName().equals("AcademicTeacherCV.viewsCounter")){
-//           return VrApp.getBean(CorePlugin.class).isUserSessionAdmin();
-//        }
-//        return super.getAllowedReadPermission(field);
-//    }
-//    
-//    @Override
-//    public boolean getAllowedWritePermission(Field field) throws UPAException {
-//        if(field.getAbsoluteName().equals("AcademicTeacherCV.viewsCounter")){
-//           return VrApp.getBean(CorePlugin.class).isUserSessionAdmin();
-//        }
-//        return super.getAllowedReadPermission(field);
-//    }
-
 
 }

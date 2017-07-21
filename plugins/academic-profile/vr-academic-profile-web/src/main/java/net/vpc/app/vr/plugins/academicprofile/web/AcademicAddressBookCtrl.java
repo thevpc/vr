@@ -3,7 +3,7 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.academic.web.addressbook;
+package net.vpc.app.vr.plugins.academicprofile.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
@@ -18,9 +18,11 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicForm
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherCV;
+import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
+import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicTeacherCV;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.filters.ObjectFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +38,10 @@ import java.util.List;
 //        , title = "Address Book"
 )
 public class AcademicAddressBookCtrl {
+    @Autowired
+    AcademicPlugin ap;
+    @Autowired
+    AcademicProfilePlugin apr;
 
     private Model model = new Model();
 
@@ -125,7 +131,6 @@ public class AcademicAddressBookCtrl {
                 if (qt.equals("teachers")) {
                     CorePlugin core = VrApp.getBean(CorePlugin.class);
                     AppPeriod mainPeriod = core.getCurrentPeriod();
-                    AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
 
                     for (AcademicTeacher t : ap.findEnabledTeachers(mainPeriod.getId())) {
                         if (query.accept(t)) {
@@ -143,7 +148,7 @@ public class AcademicAddressBookCtrl {
                                 ct.getTitles().add(disc);
                             }
 
-                            AcademicTeacherCV cv = ap.findOrCreateAcademicTeacherCV(t.getId());
+                            AcademicTeacherCV cv = apr.findOrCreateAcademicTeacherCV(t.getId());
                             String t1 = getValidString(cv.getTitle1(), cv.getTitle2(), cv.getTitle3());
                             if (!StringUtils.isEmpty(t1)) {
                                 ct.getTitles().add(t1);

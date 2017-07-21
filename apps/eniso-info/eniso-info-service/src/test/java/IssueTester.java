@@ -1,7 +1,9 @@
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
+import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicTeacherCVItem;
+import net.vpc.upa.PersistenceUnit;
+import net.vpc.upa.UPA;
 
 import java.util.List;
 
@@ -17,6 +19,8 @@ public class IssueTester {
         for (AcademicFeedback feedback : feedbacks) {
             System.out.println(feedback);
         }
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        pu.findAll(AcademicTeacherCVItem.class).size();
 //        List<AcademicClass> classesWithFeedbacks = a.findClassesWithFeedbacks(11, null, false, true);
 //        for (AcademicClass classesWithFeedback : classesWithFeedbacks) {
 //            System.out.println(classesWithFeedback);

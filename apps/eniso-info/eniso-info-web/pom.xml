@@ -131,6 +131,12 @@
         </dependency>
 
         <dependency>
+            <groupId>net.vpc.app.vain-ruling.plugins.academic-profile</groupId>
+            <artifactId>vr-academic-profile-web</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.primefaces.themes</groupId>
             <artifactId>glass-x</artifactId>
             <version>1.0.6</version>

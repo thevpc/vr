@@ -1,8 +1,9 @@
-package net.vpc.app.vainruling.plugins.academic.service.model.current;
+package net.vpc.app.vr.plugins.academicprofile.service.model;
 
 import net.vpc.app.vainruling.core.service.model.AppSkill;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.upa.RelationshipType;
 import net.vpc.upa.config.*;
 
 /**
@@ -16,7 +17,7 @@ public class AcademicTeacherSkill {
     private int id;
     @Summary
     private AcademicTeacher teacher;
-    @Main
+    @Main @ManyToOne(type = RelationshipType.COMPOSITION)
     private AppSkill skill;
     @Summary
     @Properties(

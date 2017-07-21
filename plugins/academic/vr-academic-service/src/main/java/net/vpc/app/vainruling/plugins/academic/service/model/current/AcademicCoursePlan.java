@@ -163,7 +163,7 @@ public class AcademicCoursePlan {
     @Properties(
             {
                     @Property(name = UIConstants.Form.SEPARATOR, value = "Contenu"),
-                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA)
+                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
             }
     )
     @Field(max = "max")
@@ -173,7 +173,7 @@ public class AcademicCoursePlan {
 
     @Properties(
             {
-                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA)
+                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
             }
     )
     @Field(max = "max")
@@ -182,7 +182,7 @@ public class AcademicCoursePlan {
 
     @Properties(
             {
-                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA)
+                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
             }
     )
     @Field(max = "max")
@@ -190,7 +190,7 @@ public class AcademicCoursePlan {
 
     @Properties(
             {
-                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA)
+                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
             }
     )
     @Field(max = "max")
@@ -198,7 +198,7 @@ public class AcademicCoursePlan {
 
     @Properties(
             {
-                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.WIKITEXTAREA)
+                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
             }
     )
     @Field(max = "max")

@@ -3,7 +3,7 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.academic.web.addressbook;
+package net.vpc.app.vr.plugins.academicprofile.web;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
@@ -12,6 +12,7 @@ import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 
@@ -60,13 +61,14 @@ public class TeacherCurriculumContentCtrl extends TeacherCurriculumCtrl {
     public void onLoad(Config config) {
         final int teacherId = config.teacherId;
         final AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
+        final AcademicProfilePlugin apr = VrApp.getBean(AcademicProfilePlugin.class);
         final AcademicTeacher t = ap.findTeacher(teacherId);
         if (t != null) {
             UPA.getContext().invokePrivileged(new Action<Object>() {
 
                 @Override
                 public Object run() {
-                    ap.updateViewsCounterforTeacherCV(teacherId);
+                    apr.updateViewsCounterForTeacherCV(teacherId);
                     return null;
                 }
 

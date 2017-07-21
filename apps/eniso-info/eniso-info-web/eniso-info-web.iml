@@ -97,6 +97,7 @@
     <orderEntry type="module" module-name="vr-academic-planning-service" />
     <orderEntry type="module" module-name="vr-calendars-service" />
     <orderEntry type="module" module-name="vr-dev-toolbox-service" />
+    <orderEntry type="module" module-name="vr-academic-profile-service" />
     <orderEntry type="module" module-name="vr-crew-theme" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax:javaee-web-api:7.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-dbcp2:2.0.1" level="project" />
@@ -165,6 +166,7 @@
     <orderEntry type="module" module-name="vr-academic-project-based-learning-web" />
     <orderEntry type="module" module-name="vr-dev-toolbox-web" />
     <orderEntry type="module" module-name="vr-equipments-web" />
+    <orderEntry type="module" module-name="vr-academic-profile-web" />
     <orderEntry type="library" name="Maven: org.primefaces.themes:glass-x:1.0.6" level="project" />
     <orderEntry type="library" name="Maven: net.bull.javamelody:javamelody-core:1.60.0" level="project" />
     <orderEntry type="library" name="Maven: org.jrobin:jrobin:1.5.9" level="project" />

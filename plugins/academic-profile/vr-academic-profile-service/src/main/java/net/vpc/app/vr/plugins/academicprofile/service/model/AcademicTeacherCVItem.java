@@ -1,10 +1,9 @@
-package net.vpc.app.vainruling.plugins.academic.service.model.current;
+package net.vpc.app.vr.plugins.academicprofile.service.model;
 
 import net.vpc.app.vainruling.core.service.model.AppCompany;
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Sequence;
+import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.upa.RelationshipType;
+import net.vpc.upa.config.*;
 import net.vpc.upa.types.Date;
 
 /**
@@ -12,19 +11,23 @@ import net.vpc.upa.types.Date;
  */
 @Entity
 @Path("Education")
-public class AcademicStudentCVItem {
+public class AcademicTeacherCVItem {
 
     @Id
     @Sequence
     private int id;
-    private AcademicStudentCV studentCV;
+    @ManyToOne(type = RelationshipType.COMPOSITION)
+    private AcademicTeacherCV teacherCV;
+    private AcademicCVSection section;
     private String title;
+    @Field(max = "4000")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String details;
     private Date fromDate;
     private Date toDate;
     private AppCompany company;
+    @Field(max = "1024")
     private String keywords;
-    private AcademicCVSection section;
 
     public int getId() {
         return id;
@@ -34,12 +37,12 @@ public class AcademicStudentCVItem {
         this.id = id;
     }
 
-    public AcademicStudentCV getStudentCV() {
-        return studentCV;
+    public AcademicTeacherCV getTeacherCV() {
+        return teacherCV;
     }
 
-    public void setStudentCV(AcademicStudentCV studentCV) {
-        this.studentCV = studentCV;
+    public void setTeacherCV(AcademicTeacherCV teacherCV) {
+        this.teacherCV = teacherCV;
     }
 
     public String getTitle() {

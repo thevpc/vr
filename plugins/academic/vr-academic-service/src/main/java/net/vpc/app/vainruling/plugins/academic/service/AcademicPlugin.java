@@ -4004,37 +4004,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     }
 
-    public void updateViewsCounterforTeacherCV(int t) {
-        AcademicTeacherCV cv = findOrCreateAcademicTeacherCV(t);
-        if (cv != null) {
-            cv.setViewsCounter(cv.getViewsCounter() + 1);
-            UPA.getPersistenceUnit().merge(cv);
-        }
-    }
 
-    public AcademicTeacherCV findOrCreateAcademicTeacherCV(final int t) {
-        return UPA.getContext().invokePrivileged(new Action<AcademicTeacherCV>() {
-
-            @Override
-            public AcademicTeacherCV run() {
-                PersistenceUnit pu = UPA.getPersistenceUnit();
-                AcademicTeacherCV a = pu.createQuery("Select u from AcademicTeacherCV u where u.teacherId=:id")
-                        .setParameter("id", t).getFirstResultOrNull();
-                if (a != null) {
-                    return a;
-                }
-                //check teacher
-                AcademicTeacher teacher = VrApp.getBean(AcademicPlugin.class).findTeacher(t);
-                if (teacher != null) {
-                    final AcademicTeacherCV cv = new AcademicTeacherCV();
-                    cv.setTeacher(teacher);
-                    UPA.getPersistenceUnit().persist(cv);
-                    return cv;
-                }
-                return null;
-            }
-        }, null);
-    }
 
     public void updateTeacherPeriod(int periodId, int teacherId, int copyFromPeriod) {
 //        AppPeriod p = core.getCurrentPeriod();

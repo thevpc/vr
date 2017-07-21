@@ -3,7 +3,7 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.academic.web.addressbook;
+package net.vpc.app.vr.plugins.academicprofile.web;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
@@ -12,9 +12,11 @@ import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherCV;
 import net.vpc.app.vainruling.plugins.academic.web.AcademicCtrlUtils;
+import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
+import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicTeacherCV;
 import net.vpc.common.strings.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -29,6 +31,9 @@ import net.vpc.common.strings.StringUtils;
 public class TeacherCurriculumCtrl {
 
     private Model model = new Model();
+    @Autowired
+    private AcademicPlugin ap;
+    private AcademicProfilePlugin apr;
 
     @OnPageLoad
     public void onLoad(Config config) {
@@ -37,19 +42,17 @@ public class TeacherCurriculumCtrl {
     }
 
     public String findTeacherPhoto(int id) {
-        AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = ap.findTeacher(id);
         String photo = t == null ? null : AcademicCtrlUtils.getTeacherAbsoluteWebPath(t.getId(), "WebSite/photo.jpg");
         return photo;
     }
 
     public void onRefresh() {
-        AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = ap.findTeacher(getModel().getConfig().teacherId);
         getModel().setTeacher(t);
         String photo = t == null ? null : AcademicCtrlUtils.getTeacherAbsoluteWebPath(t.getId(), "WebSite/photo.jpg");
         getModel().setPhotoUrl(photo);
-        getModel().setTeacherCV(t == null ? null : ap.findOrCreateAcademicTeacherCV(t.getId()));
+        getModel().setTeacherCV(t == null ? null : apr.findOrCreateAcademicTeacherCV(t.getId()));
         if (StringUtils.isEmpty(getModel().getTeacherCV().getExtraImage())) {
             String extraActivity = t == null ? null : AcademicCtrlUtils.getTeacherAbsoluteWebPath(t.getId(), "WebSite/extra-activity.jpg");
             if (!StringUtils.isEmpty(extraActivity)) {

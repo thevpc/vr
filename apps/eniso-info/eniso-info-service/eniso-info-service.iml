@@ -92,6 +92,7 @@
     <orderEntry type="module" module-name="vr-academic-planning-service" />
     <orderEntry type="module" module-name="vr-calendars-service" />
     <orderEntry type="module" module-name="vr-dev-toolbox-service" />
+    <orderEntry type="module" module-name="vr-academic-profile-service" />
     <orderEntry type="library" scope="TEST" name="Maven: mysql:mysql-connector-java:5.1.35" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.derby:derbyclient:10.11.1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.derby:derby:10.12.1.1" level="project" />

@@ -73,6 +73,11 @@
             <artifactId>vr-dev-toolbox-service</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.plugins.academic-profile</groupId>
+            <artifactId>vr-academic-profile-service</artifactId>
+            <version>1.0</version>
+        </dependency>
         <!--        <dependency>
                     <groupId>net.vpc.app.vain-ruling.plugins</groupId>
                     <artifactId>vr-ezp-service</artifactId>
