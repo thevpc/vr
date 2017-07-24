@@ -47,7 +47,11 @@ public class DevToolsCtrl {
                         QueryResult r = UPA.getPersistenceUnit().getConnection().executeQuery(q, null, null, false);
                         final int fieldsCount = r.getColumnsCount();
                         for (int i = 0; i < fieldsCount; i++) {
-                            getModel().getRowNames().add(new ColDef("C" + (i + 1), i));
+                            String columnName = r.getColumnName(i);
+                            if(StringUtils.isEmpty(columnName)){
+                                columnName="C" + (i + 1);
+                            }
+                            getModel().getRowNames().add(new ColDef(columnName, i));
                         }
                         while (r.hasNext()) {
                             List<Object> row = new ArrayList<Object>();
