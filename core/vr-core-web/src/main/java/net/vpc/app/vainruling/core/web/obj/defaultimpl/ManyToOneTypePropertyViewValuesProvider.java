@@ -7,17 +7,16 @@ package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewValuesProvider;
 import net.vpc.app.vainruling.core.web.obj.ViewContext;
-import net.vpc.upa.Action;
-import net.vpc.upa.Entity;
-import net.vpc.upa.Field;
-import net.vpc.upa.NamedId;
+import net.vpc.upa.*;
 import net.vpc.upa.types.DataType;
 import net.vpc.upa.types.ManyToOneType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,12 +51,20 @@ public class ManyToOneTypePropertyViewValuesProvider implements PropertyViewValu
         final Entity me = ev.getTargetEntity();
         final ManyToOneType mtype = (ManyToOneType) datatype;
         if (mtype.getRelationship().getFilter() == null) {
-            return viewContext.getCacheItem("EntityPropertyViewValuesProvider." + me.getName() + ":" + constraints, new Action<List<NamedId>>() {
+            List<NamedId> cacheItem = viewContext.getCacheItem("EntityPropertyViewValuesProvider." + me.getName() + ":" + constraints, new Action<List<NamedId>>() {
                 @Override
                 public List<NamedId> run() {
                     return core.findAllNamedIds(mtype.getRelationship(), constraints, objCtrl.getModel().getCurrentDocument());
                 }
             });
+            List<NamedId> cacheItem2=new ArrayList<>(cacheItem.size());
+            for (NamedId namedId : cacheItem) {
+                Object id = namedId.getId();
+                PrimitiveId primitiveId = me.getBuilder().idToPrimitiveId(id);
+                String id2 = VrUPAUtils.idToString(primitiveId==null? null:primitiveId.getValue(), me);
+                cacheItem2.add(new NamedId(id2,namedId.getName()));
+            }
+            return cacheItem2;
         }
         return core.findAllNamedIds(mtype.getRelationship(), constraints, objCtrl.getModel().getCurrentDocument());
     }

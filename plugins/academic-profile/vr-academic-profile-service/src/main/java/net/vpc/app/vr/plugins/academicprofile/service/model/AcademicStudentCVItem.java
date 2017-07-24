@@ -17,14 +17,20 @@ public class AcademicStudentCVItem {
     @Sequence
     private int id;
     @ManyToOne(type = RelationshipType.COMPOSITION)
+    @Summary
     private AcademicStudentCV studentCV;
+    @Summary
     private AcademicCVSection section;
+    @Summary
     private String title;
     @Field(max = "4000")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String details;
+    @Summary
     private Date fromDate;
+    @Summary
     private Date toDate;
+    @Summary
     private AppCompany company;
     @Field(max = "1024")
     private String keywords;

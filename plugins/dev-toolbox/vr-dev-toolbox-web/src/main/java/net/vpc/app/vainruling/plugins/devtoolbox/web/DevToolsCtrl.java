@@ -10,7 +10,6 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Document;
 import net.vpc.upa.MultiDocument;
 import net.vpc.upa.UPA;
-import net.vpc.upa.persistence.Parameter;
 import net.vpc.upa.persistence.QueryResult;
 import org.springframework.context.annotation.Scope;
 
@@ -46,7 +45,7 @@ public class DevToolsCtrl {
                 if (q.toLowerCase().startsWith("select")) {
                     try {
                         QueryResult r = UPA.getPersistenceUnit().getConnection().executeQuery(q, null, null, false);
-                        final int fieldsCount = r.getFieldsCount();
+                        final int fieldsCount = r.getColumnsCount();
                         for (int i = 0; i < fieldsCount; i++) {
                             getModel().getRowNames().add(new ColDef("C" + (i + 1), i));
                         }

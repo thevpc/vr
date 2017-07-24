@@ -11,10 +11,7 @@ import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.obj.*;
-import net.vpc.app.vainruling.core.service.util.I18n;
-import net.vpc.app.vainruling.core.service.util.JavascriptEvaluator;
-import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.app.vainruling.core.service.util.VrUtils;
+import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
@@ -856,20 +853,15 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 Field field = e.findField(fieldName);
                 if (field != null) {
                     DataType t = field.getDataType();
-                    if(!(t instanceof ManyToOneType) &&
-                            field.getManyToOneRelationships().size()>0 &&
-                            field.getManyToOneRelationships().get(0).getSourceRole().getEntityField()!=null){
-                        Field entityField = field.getManyToOneRelationships().get(0).getSourceRole().getEntityField();
-                        ManyToOneType et = (ManyToOneType) entityField.getDataType();
-                        Entity re = UPA.getPersistenceUnit().getEntity(et.getTargetEntityName());
-                        List<Field> rpp = re.getIdFields();
-                        if (rpp.size() == 1 && PlatformTypes.isInteger(fieldValueString)) {
-                            Object v = re.findById(Integer.parseInt(fieldValueString));
-                            v=re.getBuilder().objectToDocument(v);
-                            builder.setProperty(o, entityField.getName(), v);
-                        } else {
-                            System.err.println("Not supported yet");
-                        }
+                    Relationship manyToOnePrimitiveRelationShip = VrUPAUtils.getManyToOnePrimitiveRelationShip(field);
+                    if(manyToOnePrimitiveRelationShip!=null){
+                        Field entityField = manyToOnePrimitiveRelationShip.getSourceRole().getEntityField();
+                        Entity re = manyToOnePrimitiveRelationShip.getTargetEntity();
+                        Object rid = VrUPAUtils.stringToId(fieldValueString, re);
+                        rid=re.getBuilder().primitiveIdToId(rid);
+                        Object v = re.findById(rid);
+//                        v=re.getBuilder().objectToDocument(v);
+                        builder.setProperty(o, entityField.getName(), v);
                     }else if (t instanceof StringType) {
                         builder.setProperty(o, fieldName, fieldValueString);
                     } else if (t instanceof IntType) {
@@ -897,13 +889,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     } else if (t instanceof ManyToOneType) {
                         ManyToOneType et = (ManyToOneType) t;
                         Entity re = UPA.getPersistenceUnit().getEntity(et.getTargetEntityName());
-                        List<Field> rpp = re.getIdFields();
-                        if (rpp.size() == 1 && PlatformTypes.isInteger(fieldValueString)) {
-                            Object v = re.findById(Integer.parseInt(fieldValueString));
-                            builder.setProperty(o, fieldName, v);
-                        } else {
-                            System.err.println("Not supported yet");
-                        }
+                        Object rid = VrUPAUtils.stringToId(fieldValueString, re);
+                        Object v = re.findById(rid);
+                        builder.setProperty(o, fieldName, v);
                     } else {
                         System.err.println("Not supported yet");
                     }
@@ -1212,8 +1200,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                             if (curr instanceof KeyType) {
                                 Field field = ((KeyType) curr).getEntity().getField(s);
                                 evalLabel = i18n.get(field);
-                                if (field.getDataType() instanceof ManyToOneType) {
-                                    Entity targetEntity = ((ManyToOneType) field.getDataType()).getTargetEntity();
+                                if (field.isManyToOne()) {
+                                    Entity targetEntity = field.getManyToOneRelationship().getTargetEntity();
                                     if (targetEntity.isHierarchical()) {
                                         //TODO process hierarchical search
                                     }
@@ -2049,4 +2037,5 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             return a;
         }
     };
+
 }

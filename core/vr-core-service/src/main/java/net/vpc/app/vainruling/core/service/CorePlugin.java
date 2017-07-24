@@ -3639,10 +3639,16 @@ public class CorePlugin {
     }
 
     public List<NamedId> findAllNamedIds(Relationship r, Map<String, Object> criteria, Object currentInstance) {
-        String entityName = r.getTargetEntity().getName();
         final String aliasName = "o";
+        Expression relationExpression = r.createTargetListExpression(currentInstance, aliasName);
+        return findAllNamedIds(r.getTargetEntity(),criteria,relationExpression);
+    }
+
+    public List<NamedId> findAllNamedIds(Entity entity, Map<String, Object> criteria, Expression condition) {
+        final String aliasName = "o";
+
+
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(entityName);
         Select q = new Select();
 
         Field primaryField = entity.getIdFields().get(0);
@@ -3660,7 +3666,7 @@ public class CorePlugin {
         }
         q.field(sb.toString(), "name");
 
-        q.from(entityName, aliasName);
+        q.from(entity.getName(), aliasName);
         q.orderBy(entity.getListOrder());
         Expression where = null;
         if (criteria != null) {
@@ -3668,7 +3674,7 @@ public class CorePlugin {
                 where = And.create(where, new Equals(new UserExpression(aliasName + "." + entrySet.getKey()), new Literal(entrySet.getValue(), null)));
             }
         }
-        q.where(r.createTargetListExpression(currentInstance, aliasName));
+        q.where(condition);
         q.where(where);
         Chronometer c = new Chronometer();
         List<NamedId> entityList = pu.createQuery(q)

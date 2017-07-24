@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.web.obj;
 
 import jersey.repackaged.com.google.common.base.Objects;
+import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.upa.Entity;
 import net.vpc.upa.EntityBuilder;
@@ -226,10 +227,10 @@ public class PropertyView implements Serializable {
                 if (dataType instanceof ManyToOneType) {
                     ManyToOneType et = (ManyToOneType) dataType;
                     Entity masterEntity = et.getRelationship().getTargetRole().getEntity();
-                    EntityBuilder mconverter = masterEntity.getBuilder();
+                    Object entityId= VrUPAUtils.stringToId(Convert.toString(selectedItem),masterEntity);
                     for (NamedId v : values) {
                         Object id = v.getId();
-                        if (Objects.equal(Convert.toString(selectedItem), Convert.toString(id))) {
+                        if (VrUPAUtils.sameId(entityId, id)) {
                             someUpdates |= !Objects.equal(value, v);
                             value = v;
                             break;
@@ -239,9 +240,10 @@ public class PropertyView implements Serializable {
                     KeyType et = (KeyType) dataType;
                     Entity masterEntity = et.getEntity();
                     EntityBuilder mbuilder = masterEntity.getBuilder();
+                    Object entityId= VrUPAUtils.stringToId(Convert.toString(selectedItem),masterEntity);
                     for (Object v : values) {
                         Object id = (v instanceof NamedId) ? ((NamedId) v).getId() : mbuilder.objectToId(v);
-                        if (Objects.equal(Convert.toString(selectedItem), Convert.toString(id))) {
+                        if (VrUPAUtils.sameId(entityId, id)) {
                             someUpdates |= !Objects.equal(value, v);
                             value = v;
                             break;

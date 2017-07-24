@@ -40,25 +40,35 @@ public class EntityDetailPropertyView extends PropertyView {
         if (f == null) {
             f = relation.getSourceRole().getFields().get(0);
         }
-        Field f2 = relation.getTargetEntity().getIdFields().get(0);
-        if (f2.getDataType() instanceof ManyToOneType) {
-            List<Field> fields2 = ((ManyToOneType) f2.getDataType()).getRelationship().getSourceRole().getFields();
-            if (fields2.size() == 1) {
-                f2 = fields2.get(0);
+        List<Field> sfields = ((ManyToOneType) f.getDataType()).getRelationship().getSourceRole().getFields();
+//        Field f3=f;
+//        if (f3.getDataType() instanceof ManyToOneType) {
+//            List<Field> fields2 = ((ManyToOneType) f3.getDataType()).getRelationship().getSourceRole().getFields();
+//            if (fields2.size() == 1) {
+//                f3 = fields2.get(0);
+//            }
+//        }
+
+
+        List<PrimitiveField> idPrimitiveFields = relation.getSourceRole().getEntity().getIdPrimitiveFields();
+        StringBuilder idValues=new StringBuilder();
+        StringBuilder idExpr=new StringBuilder("(");
+        for (int i = 0; i < idPrimitiveFields.size(); i++) {
+            if(i>0){
+                idExpr.append(" AND ");
             }
+            idExpr.append("o.`").append(sfields.get(i).getName()).append("`=${ID").append(i).append("}");
+//            idExpr.append("o.`").append(f.getName()).append("`.`").append(idPrimitiveFields.get(i).getName()).append("`=${ID").append(i).append("}");
+            if(i>0){
+                idValues.append(",");
+            }
+            idValues.append(sfields.get(i).getName()).append(":${ID").append(i).append("}");
         }
-        String idExpr = "o.`" + f.getName() + "`.`" + f2.getName() + "`";
+        idExpr.append(")");
 
         String argEntity = "entity:\"" + relation.getSourceEntity().getName() + "\"";
-        String argListFilter = "listFilter:\"" + idExpr + "=${ID}\"";
-        Field f3=f;
-        if (f3.getDataType() instanceof ManyToOneType) {
-            List<Field> fields2 = ((ManyToOneType) f3.getDataType()).getRelationship().getSourceRole().getFields();
-            if (fields2.size() == 1) {
-                f3 = fields2.get(0);
-            }
-        }
-        String argValues = "values:{" + f3.getName() + ":${ID}}";
+        String argListFilter = "listFilter:\"" + idExpr + "\"";
+        String argValues = "values:{" + idValues + "}";
         String argDisabledFields = "disabledFields:[\"" + f.getName() + "\"]";
         String argIgnoreAutoFilter = "ignoreAutoFilter:true";
 
@@ -85,77 +95,57 @@ public class EntityDetailPropertyView extends PropertyView {
         if (f == null) {
             f = relation.getSourceRole().getFields().get(0);
         }
-        Field f2 = relation.getTargetEntity().getIdFields().get(0);
-        if (f2.getDataType() instanceof ManyToOneType) {
-            List<Field> fields2 = ((ManyToOneType) f2.getDataType()).getRelationship().getSourceRole().getFields();
-            if (fields2.size() == 1) {
-                f2 = fields2.get(0);
-            }
-        }
-        String idExpr = "o.`" + f.getName() + "`.`" + f2.getName() + "`";
-        Object idVal = resolveId();
+        PrimitiveId primitiveId = (PrimitiveId) resolveId();
         HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("idval", idVal);
-
-        CorePlugin core = VrApp.getBean(CorePlugin.class);
-        count = core.findCountByFilter(relation.getSourceEntity().getName(), idExpr + "=:idval", null, parameters);
+        if(primitiveId!=null) {
+            StringBuilder idExpr=new StringBuilder("(");
+            for (int i = 0; i < primitiveId.size(); i++) {
+                if(i>0){
+                    idExpr.append(" AND ");
+                }
+                idExpr.append("o.`").append(f.getName()).append("`.`").append(primitiveId.getField(i).getName()).append("`=:idval").append(i);
+                parameters.put("idval"+i, primitiveId.getValue(0));
+            }
+            idExpr.append(")");
+            CorePlugin core = VrApp.getBean(CorePlugin.class);
+            count = core.findCountByFilter(relation.getSourceEntity().getName(), idExpr.toString(), null, parameters);
+        }else{
+            count=0;
+        }
     }
 
     public long getCount() {
         return count;
     }
 
-    public Object resolveId() {
+    public PrimitiveId resolveId() {
         Entity targetEntity = getRelationship().getTargetEntity();
         ObjCtrl ctrl = VrApp.getBean(ObjCtrl.class);
         Document currentDocument = ctrl.getModel().getCurrentDocument();
-        Object idVal = null;
-        boolean cont = true;
-        while (cont) {
-            cont = false;
-            idVal = targetEntity.getBuilder().documentToId(currentDocument);
-            if (idVal != null) {
-                List<Field> idFields = targetEntity.getIdFields();
-                if (idFields.size() == 1 && idFields.get(0).getDataType() instanceof ManyToOneType) {
-                    if (idVal instanceof Document || targetEntity.getEntityType().isInstance(idVal)) {
-                        targetEntity = ((ManyToOneType) idFields.get(0).getDataType()).getTargetEntity();
-                        if (idVal instanceof Document) {
-                            currentDocument = (Document) idVal;
-                        } else {
-                            currentDocument = targetEntity.getBuilder().objectToDocument(idVal);
-                        }
-                        cont=true;
-                    }
-                }
-            }
-        }
-        return idVal;
-    }
-
-    public static Object resolveId(Object value,DataType type) {
-        if(value==null){
-            return null;
-        }
-        if(type instanceof ManyToOneType){
-            Entity targetEntity = ((ManyToOneType) type).getTargetEntity();
-            if(targetEntity.getIdFields().size()==1) {
-                return resolveId(targetEntity.getBuilder().objectToId(value), targetEntity.getIdFields().get(0).getDataType());
-            }
-        }
-        return value;
+        return targetEntity.getBuilder().objectToPrimitiveId(currentDocument);
     }
 
     public String buildActionCommand() {
-        ObjCtrl ctrl = VrApp.getBean(ObjCtrl.class);
-        Object idVal = resolveId();
-        if (idVal == null) {
-            idVal = "null";
-        } else if (idVal instanceof Number) {
-            idVal = idVal.toString();
-        } else {
-            idVal = "'" + idVal.toString().replace("'", "''") + "'";
+//        ObjCtrl ctrl = VrApp.getBean(ObjCtrl.class);
+        PrimitiveId idVal2 = resolveId();
+        String cmd=getActionCommand();
+        List<PrimitiveField> idPrimitiveFields = relation.getSourceRole().getEntity().getIdPrimitiveFields();
+        for (int i = 0; i < idPrimitiveFields.size(); i++) {
+//            PrimitiveField o = idPrimitiveFields.get(i);
+            Object idVal=idVal2==null?null:idVal2.getValue(i);
+            if (idVal == null) {
+                idVal = "null";
+            } else if (idVal instanceof Number) {
+                idVal = idVal.toString();
+            } else if (idVal instanceof String){
+                idVal = "'" + idVal.toString().replace("'", "''") + "'";
+            }else{
+                throw new IllegalArgumentException("Not Supported yet");
+            }
+
+            cmd = cmd.replace("${ID"+i+"}", idVal == null ? "" : idVal.toString());
         }
-        return getActionCommand().replace("${ID}", idVal == null ? "" : idVal.toString());
+        return cmd;
     }
 
     public String getActionCommand() {

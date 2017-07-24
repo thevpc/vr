@@ -5,17 +5,19 @@
  */
 package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 
+import com.google.gson.Gson;
 import jersey.repackaged.com.google.common.base.Objects;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.I18n;
+import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
-import net.vpc.upa.Entity;
-import net.vpc.upa.Field;
-import net.vpc.upa.Document;
-import net.vpc.upa.types.DataType;
-import net.vpc.upa.types.ManyToOneType;
+import net.vpc.common.util.Convert;
+import net.vpc.upa.*;
+import net.vpc.upa.types.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -78,19 +80,15 @@ public class FieldPropertyView extends PropertyView {
             sv = new SelectValue(obj, obj, rr);
             for (String n : exprArr) {
                 Field field = sv.entity.getField(n);
-                DataType dataType = field.getDataType();
                 Object oo = sv.value == null ? null : field.getValue(sv.value);
-                EntityDetailPropertyView.resolveId(oo,dataType);
-                if (dataType instanceof ManyToOneType) {
-                    ManyToOneType et = (ManyToOneType) dataType;
-                    Entity e2 = et.getRelationship().getTargetRole().getEntity();
-                    Object newSelectedItem = e2.getBuilder().objectToId(oo);
-                    if(e2.getIdFields().size()==1){
-                        newSelectedItem=EntityDetailPropertyView.resolveId(newSelectedItem,e2.getIdFields().get(0).getDataType());
-                    }
-                    sv = new SelectValue(oo, newSelectedItem, e2);
+                Relationship manyToOneRelationship = field.getManyToOneRelationship();
+                if (manyToOneRelationship!=null) {
+                    PrimitiveId primitiveId = manyToOneRelationship.getTargetEntity().getBuilder().objectToPrimitiveId(oo);
+                    Object newSelectedItem = primitiveId==null?null:primitiveId.getValue();
+                    String s = VrUPAUtils.idToString(newSelectedItem, manyToOneRelationship.getTargetEntity());
+                    sv = new SelectValue(oo, s, manyToOneRelationship.getTargetEntity());
                 } else {
-                    sv = new SelectValue(oo, oo, null);
+                    sv = new SelectValue(oo,VrUPAUtils.objToJson(oo,field.getDataType()).toString(), null);
                 }
             }
         }
@@ -106,6 +104,7 @@ public class FieldPropertyView extends PropertyView {
             onChange(null);
         }
     }
+
 
 
     protected static class SelectValue {
