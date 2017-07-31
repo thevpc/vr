@@ -11,14 +11,17 @@ import net.vpc.upa.expressions.IdEnumerationExpression;
 import net.vpc.upa.expressions.Var;
 import net.vpc.upa.types.*;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by vpc on 9/5/16.
  */
 public class VrUPAUtils {
+    private static SimpleDateFormat UNIVERSAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     public static void storeUpdatedIds(UpdateEvent event) {
         Expression expr = event.getFilterExpression();
         Entity entity = event.getEntity();
@@ -142,8 +145,14 @@ public class VrUPAUtils {
             return new JsonPrimitive((Number) value);
         } else if (type instanceof LongType) {
             return new JsonPrimitive((Number) value);
+        } else if (type instanceof DoubleType) {
+            return new JsonPrimitive((Number) value);
+        } else if (type instanceof BooleanType) {
+            return new JsonPrimitive((Boolean) value);
         } else if (type instanceof StringType) {
             return new JsonPrimitive((String) value);
+        } else if (type instanceof TemporalType) {
+            return new JsonPrimitive(UNIVERSAL_DATE_FORMAT.format(value));
         } else {
             throw new IllegalArgumentException("Unsupported");
         }

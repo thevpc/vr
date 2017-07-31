@@ -21,6 +21,8 @@ public class ArticlesDisposition implements CmsTextDisposition{
     @Main
     @Unique
     private String name;
+    private String actionName;
+    private boolean enabled;
     @Summary
     private String title;
     @Summary
@@ -72,5 +74,21 @@ public class ArticlesDisposition implements CmsTextDisposition{
 
     public void setSubTitle(String subTitle) {
         this.subTitle = subTitle;
+    }
+
+    public String getActionName() {
+        return actionName;
+    }
+
+    public void setActionName(String actionName) {
+        this.actionName = actionName;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

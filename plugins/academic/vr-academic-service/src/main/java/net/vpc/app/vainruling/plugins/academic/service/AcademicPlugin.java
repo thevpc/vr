@@ -11,6 +11,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.cache.EntityCache;
 import net.vpc.app.vainruling.core.service.model.*;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesDisposition;
 import net.vpc.app.vainruling.core.service.obj.AppEntityExtendedPropertiesProvider;
 import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.plugins.Install;
@@ -3181,6 +3182,62 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         core.createRight("Custom.Education.TeacherPlanning", "TeacherPlanning");
         core.createRight("Custom.Education.MyPlanning", "MyPlanning");
         core.createRight("Custom.Education.ClassPlanning", "ClassPlanning");
+
+        core.setAppProperty("System.App.Title",null,"Eniso.info");
+        core.setAppProperty("System.App.Description",null,"ENISo Computer Science Department Web Site");
+        core.setAppProperty("System.App.Keywords",null,"eniso");
+        core.setAppProperty("System.App.Title.Major.Main",null,"Eniso");
+        core.setAppProperty("System.App.Title.Major.Secondary",null,"info");
+        core.setAppProperty("System.App.Title.Minor.Main",null,"Eniso");
+        core.setAppProperty("System.App.Title.Minor.Secondary",null,"info");
+        core.setAppProperty("System.App.Copyrights.Date",null,"2015-2017");
+        core.setAppProperty("System.App.Copyrights.Author.Name",null,"Taha Ben Salah");
+        core.setAppProperty("System.App.Copyrights.Author.URL",null,"http://tahabensalah.net");
+        core.setAppProperty("System.App.Copyrights.Author.Affiliation",null,"ENISo");
+        core.setAppProperty("System.App.GotoWelcomeText",null,"My Space");
+        core.setAppProperty("System.App.GotoLoginText",null,"My Space");
+
+        ArticlesDisposition a = core.findArticleDisposition("Activities");
+        if(a!=null){
+            a.setActionName("Activities");
+            a.setEnabled(true);
+            pu.merge(a);
+        }
+        a = core.findArticleDisposition("News");
+        if(a!=null){
+            a.setActionName("Press");
+            a.setEnabled(true);
+            pu.merge(a);
+        }
+
+        a = core.findArticleDisposition("Testimonials");
+        if(a!=null){
+            a.setActionName("Testimonials");
+            a.setEnabled(true);
+            pu.merge(a);
+        }
+
+        a = core.findArticleDisposition("Education");
+        if(a!=null){
+            a.setActionName("Studies");
+            a.setEnabled(true);
+            pu.merge(a);
+        }
+
+        a = core.findArticleDisposition("Featured");
+        if(a!=null){
+            a.setActionName("Featured");
+            a.setEnabled(true);
+            pu.merge(a);
+        }
+
+        a = core.findArticleDisposition("About");
+        if(a!=null){
+            a.setActionName("About");
+            a.setEnabled(true);
+            pu.merge(a);
+        }
+
 
         AppUserType teacherType;
         teacherType = new AppUserType();

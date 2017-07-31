@@ -1019,6 +1019,14 @@ public class Vr {
         return r2;
     }
 
+    public String getAppProperty(String name) {
+        AppProperty property = core.getAppProperty(name, null);
+        if (property != null) {
+            return property.getPropertyValue();
+        }
+        return "$$"+name;
+    }
+
     public int getPollInterval() {
         AppProperty property = core.getAppProperty("System.PollInterval", null);
         if (property != null) {
@@ -1081,7 +1089,7 @@ public class Vr {
                 TaskTextService s = (TaskTextService) c.getBean(n);
                 return taskTextService = s;
             }
-            throw new IllegalArgumentException();
+            return taskTextService= new DummyTaskTextService();
         }
         return taskTextService;
     }
@@ -1093,7 +1101,7 @@ public class Vr {
                 MessageTextService s = (MessageTextService) c.getBean(n);
                 return messageTextService = s;
             }
-            throw new IllegalArgumentException();
+            return messageTextService= new DummyMessageTextService();
         }
         return messageTextService;
     }

@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.service.notification;
 
+import net.vpc.app.vainruling.core.service.util.TODO;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import java.util.Map;
 @Component
 public class VrNotificationManager {
 
+    @TODO // should create queue by PU
     private final static Map<String, VrNotificationQueue> queues = new HashMap<>();
 
     public VrNotificationQueue getQueue(String id) {

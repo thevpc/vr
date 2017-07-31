@@ -40,7 +40,6 @@ public class ActiveSessionsTracker {
         if (sessionId != null) {
             UserSession s = activeSessions.get(sessionId);
             if (s != null) {
-                s.setUser(null);
                 s.setDestroyed(true);
                 s.reset();
                 activeSessions.remove(sessionId);

@@ -18,18 +18,19 @@
         <vr-plugin.component-type>service</vr-plugin.component-type>
         <vr-plugin.name>Student Reports</vr-plugin.name>
         <vr-plugin.description>Manageable Reports from Students with attachments support</vr-plugin.description>
+        <version.vr-core-service>1.12</version.vr-core-service>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.core</groupId>
             <artifactId>vr-core-service</artifactId>
-            <version>1.11</version>
+            <version>${version.vr-core-service}</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-service</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
         </dependency>
     </dependencies>
 

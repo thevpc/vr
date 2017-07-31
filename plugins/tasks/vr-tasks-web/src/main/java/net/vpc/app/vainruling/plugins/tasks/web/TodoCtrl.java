@@ -280,6 +280,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
 
     @Override
     public void loadContentTexts(String name) {
+        if(true) return;//TODO FIX ME
         reloadPage(null,true);
     }
 

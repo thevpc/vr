@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.service.notification;
 
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.util.TODO;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ import java.util.*;
 @Scope(value = "session")
 public class VrNotificationSession {
 
+    @TODO // should create queue by PU
     private final static Map<String, VrNotificationSessionItem> map = new HashMap<>();
 
     private VrNotificationSessionItem get(String s) {

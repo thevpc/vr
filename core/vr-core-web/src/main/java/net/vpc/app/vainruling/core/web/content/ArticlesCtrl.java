@@ -11,11 +11,8 @@ import net.vpc.app.vainruling.core.service.content.CmsTextDisposition;
 import net.vpc.app.vainruling.core.service.content.CmsTextService;
 import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.content.*;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionGroup;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesFile;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
-import net.vpc.app.vainruling.core.service.model.content.FullArticle;
 import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.*;
@@ -75,6 +72,28 @@ public class ArticlesCtrl implements CmsTextService {
 
     public void refresh() {
     }
+
+    public String getDispositionActionName(String disposition){
+        ArticlesDisposition articleDisposition = core.findArticleDisposition(disposition);
+        String actionName=null;
+        if(articleDisposition!=null){
+            actionName=articleDisposition.getActionName();
+        }
+        if(StringUtils.isEmpty(actionName)){
+            actionName="$$"+disposition;
+        }
+        return actionName;
+    }
+
+    public boolean isDispositionEnabled(String disposition){
+        ArticlesDisposition articleDisposition = core.findArticleDisposition(disposition);
+        String actionName=null;
+        if(articleDisposition!=null){
+            return articleDisposition.isEnabled();
+        }
+        return false;
+    }
+
 
     public void updateVisit(int articleId) {
         UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {

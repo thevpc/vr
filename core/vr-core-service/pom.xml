@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.core</groupId>
     <artifactId>vr-core-service</artifactId>
-    <version>1.11</version>
+    <version>1.12</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
     <parent>
@@ -16,6 +16,7 @@
         <vr-plugin.name>VR Core</vr-plugin.name>
         <vr-plugin.description>Core of VR Platform</vr-plugin.description>
         <vr-plugin.component-type>service</vr-plugin.component-type>
+        <version.vr-core-service>1.12</version.vr-core-service>
     </properties>
 
     <dependencies>
@@ -60,12 +61,12 @@
         <dependency>
             <groupId>net.vpc.upa</groupId>
             <artifactId>upa-api</artifactId>
-            <version>1.2.0.35</version>
+            <version>1.2.0.36</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.upa</groupId>
             <artifactId>upa-impl</artifactId>
-            <version>1.2.0.35.0</version>
+            <version>1.2.0.36.0</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

@@ -33,4 +33,8 @@ public interface CmsTextService extends ContentTextService {
      */
     boolean onAction(String action, int id);
 
+    boolean isDispositionEnabled(String disposition);
+
+    String getDispositionActionName(String disposition);
+
 }

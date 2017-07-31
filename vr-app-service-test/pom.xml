@@ -10,6 +10,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <version.vr-core-service>1.12</version.vr-core-service>
     </properties>
     <dependencies>
         <dependency>
@@ -25,7 +26,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.core</groupId>
             <artifactId>vr-core-service</artifactId>
-            <version>1.11</version>
+            <version>${version.vr-core-service}</version>
         </dependency>
         <!--<dependency>-->
             <!--<groupId>net.vpc.app.vain-ruling.apps.eniso-info</groupId>-->

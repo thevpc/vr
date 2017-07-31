@@ -17,6 +17,11 @@
         <param-value>*.xhtml|/fs/*|/ws/*|/p/*|/u/*|/services/rss/*</param-value>
     </context-param>
 
+    <context-param>
+        <param-name>upa.web.context-switch</param-name>
+        <param-value>net.vpc.app.vainruling.core.web.util.VrWebContextSwitch</param-value>
+    </context-param>
+
     <!--    <context-param>
         <param-name>primefaces.LEGACY_WIDGET_NAMESPACE</param-name>
         <param-value>true</param-value>

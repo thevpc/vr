@@ -21,11 +21,11 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@WebFilter(filterName = "AppSecurityFilter",
+@WebFilter(filterName = "VrWebSecurityFilter",
         urlPatterns = {"/*"})
-public class AppSecurityFilter implements Filter {
+public class VrWebSecurityFilter implements Filter {
 
-    private static final Logger log = Logger.getLogger(AppSecurityFilter.class.getName());
+    private static final Logger log = Logger.getLogger(VrWebSecurityFilter.class.getName());
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -84,6 +84,9 @@ public class AppSecurityFilter implements Filter {
             try {
                 chain.doFilter(request, response);
             } catch (Exception e) {
+                if(e instanceof javax.el.ELException || e instanceof IllegalArgumentException){
+                    e.printStackTrace();
+                }
                 HttpServletResponse webresponse = (HttpServletResponse) response;
                 if (e instanceof ServletException) {
                     Throwable rootCause = ((ServletException) e).getRootCause();

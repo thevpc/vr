@@ -85,7 +85,7 @@ public class VrThemeFactory {
         Map<String, VrTheme> themesMap = getThemesMap();
         VrTheme vrTheme = themesMap.get(id);
         if(vrTheme==null){
-            if("default".endsWith(id)){
+            if("default".equals(id)){
                 vrTheme = themesMap.get(defaultTheme);
                 if(vrTheme==null){
                     if(themesMap.size()>0){

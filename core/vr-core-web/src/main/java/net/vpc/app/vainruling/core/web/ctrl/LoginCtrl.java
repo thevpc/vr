@@ -13,6 +13,10 @@ import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.common.jsf.FacesUtils;
+import net.vpc.common.strings.StringUtils;
+import net.vpc.upa.Action;
+import net.vpc.upa.PersistenceUnit;
+import net.vpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -63,22 +67,51 @@ public class LoginCtrl {
 
     public String dologin() {
         VrWebHelper.prepareUserSession();
-        if (VrApp.getBean(AppGlobalCtrl.class).isShutdown() && !"admin".equals(getModel().getLogin())) {
-            FacesUtils.addErrorMessage("Impossible de logger. Serveur indisponible momentannément. Redémarrage en cours.");
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        String login = StringUtils.trim(getModel().getLogin());
+        String domain = null;
+        if (login.contains("@")) {
+            int i = login.indexOf('@');
+            domain = login.substring(i + 1);
+            login = login.substring(0, i);
+        }
+        if (StringUtils.isEmpty(domain)) {
+            domain = "main";
+        }
+        String finalLogin = login;
+        Action<String> welcome = new Action<String>() {
+            @Override
+            public String run() {
+                if (VrApp.getBean(AppGlobalCtrl.class).isShutdown() && !"admin".equals(finalLogin)) {
+                    FacesUtils.addErrorMessage("Impossible de logger. Serveur indisponible momentannément. Redémarrage en cours.");
+                    return null;
+                }
+                AppUser u = core.login(finalLogin, getModel().getPassword());
+                if (u != null) {
+                    ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+                    getSession().setPlatformSession(externalContext.getSession(false));
+                    getSession().setPlatformSessionMap(externalContext.getSessionMap());
+                    VrApp.getBean(ActiveSessionsCtrl.class).onRefresh();
+                    return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
+//            return VRApp.getBean(VrMenu.class).gotoPage("todo", "sys-labo-action");
+                }
+                FacesUtils.addErrorMessage("Login ou mot de passe incorrect");
+                getModel().setPassword(null);
+                return null;
+            }
+        };
+        try {
+            if (pu.getName().equals(domain)) {
+                return welcome.run();
+            } else {
+                return pu.getPersistenceGroup().getPersistenceUnit(domain).invokePrivileged(welcome);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            FacesUtils.addErrorMessage("Login ou mot de passe incorrect");
+            getModel().setPassword(null);
             return null;
         }
-        AppUser u = core.login(getModel().getLogin(), getModel().getPassword());
-        if (u != null) {
-            ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-            getSession().setPlatformSession(externalContext.getSession(false));
-            getSession().setPlatformSessionMap(externalContext.getSessionMap());
-            VrApp.getBean(ActiveSessionsCtrl.class).onRefresh();
-            return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
-//            return VRApp.getBean(VrMenu.class).gotoPage("todo", "sys-labo-action");
-        }
-        FacesUtils.addErrorMessage("Login ou mot de passe incorrect");
-        getModel().setPassword(null);
-        return null;
     }
 
     public String dologout() {

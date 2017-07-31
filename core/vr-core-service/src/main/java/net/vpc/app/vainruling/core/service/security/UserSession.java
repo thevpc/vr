@@ -44,6 +44,7 @@ public class UserSession implements Serializable {
     private Map platformSessionMap;
     private int departmentManager = -1;
     private boolean manager;
+    private String domain;
     private String selectedSiteFilter;
 
     public String getLastVisitedPageInfo() {
@@ -212,6 +213,7 @@ public class UserSession implements Serializable {
     }
 
     public void reset() {
+        setDomain(null);
         setLocale(null);
         setConnexionTime(null);
         setUser(null);
@@ -305,5 +307,13 @@ public class UserSession implements Serializable {
 
     public void setSelectedSiteFilter(String selectedSiteFilter) {
         this.selectedSiteFilter = selectedSiteFilter;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 }

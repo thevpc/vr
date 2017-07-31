@@ -13,7 +13,7 @@
 <h:head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <title>ENISo info</title>
+    <title>#{vr.getAppProperty('System.App.Title')}</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
     <!-- Bootstrap 3.3.6 -->
@@ -62,13 +62,13 @@
                                style="text-decoration: none;">
                     <!-- mini logo for sidebar mini 50x50 pixels -->
                     <span class="logo-mini">
-                        <span style="font-family: Audiowide; font-size: 9px">ENISo</span> <span
-                            style="font-family: Stalemate; font-size: 16px">info</span>
+                        <span style="font-family: Audiowide; font-size: 9px">#{vr.getAppProperty('System.App.Title.Minor.Main')}</span> <span
+                            style="font-family: Stalemate; font-size: 16px">#{vr.getAppProperty('System.App.Title.Minor.Secondary')}</span>
                     </span>
                     <!-- logo for regular state and mobile devices -->
                     <span class="logo-lg">
-                    <span style="font-family: Audiowide; font-size: 24px">ENISo</span> <span
-                            style="font-family: Stalemate; font-size: 40px">info</span>
+                    <span style="font-family: Audiowide; font-size: 24px">#{vr.getAppProperty('System.App.Title.Major.Main')}</span> <span
+                            style="font-family: Stalemate; font-size: 40px">#{vr.getAppProperty('System.App.Title.Major.Secondary')}</span>
                 </span>
                 </h:commandLink>
 
@@ -393,7 +393,9 @@
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <h:form id="sidebarMenuForm">
                     <ul class="sidebar-menu">
-                        <li class="header">Depatement #{vr.userSession.user.department.name}</li>
+                        <ui:fragment render="#{!vr.isEmpty(vr.userSession.user.department.name)}">
+                            <li class="header">Depatement #{vr.userSession.user.department.name}</li>
+                        </ui:fragment>
                         <h:inputHidden value="#{vr.buildMenu()}"/>
                         <ui:repeat value="#{vr.menu.groups}" var="p0">
                             <li class="treeview">
@@ -1444,8 +1446,8 @@
                 <p:clock styleclass="vr-clock" pattern="HH:mm:ss | dd MMM yyyy"/>
                 <b>Version</b> #{corePlugin.appVersion.version}
             </div>
-            <strong>Copyright (c) 2015-2017 <a
-                    href="http://tahabensalah.net">Taha Ben Salah</a>, ENISo.</strong> All rights , reserved. <a
+            <strong>Copyright (c) #{vr.getAppProperty('System.App.Copyrights.Date')} <a
+                    href="#{vr.getAppProperty('System.App.Copyrights.Author.URL')}">#{vr.getAppProperty('System.App.Copyrights.Author.Name')}</a>, #{vr.getAppProperty('System.App.Copyrights.Author.Affiliation')}.</strong> All rights reserved, based on vr open-source project. <a
                 href="https://github.com/thevpc/vr/issues" target="_blank">submit issue</a>, <a
                 href="https://github.com/thevpc/vr" target="_blank">get sources</a>
 

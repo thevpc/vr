@@ -120,14 +120,14 @@ public class CorePlugin {
 //        }catch(Exception ex){
 //            ex.printStackTrace();
 //        }
-        UPA.getContext().
-
-                invokePrivileged(new VoidAction() {
-                    @Override
-                    public void run() {
-                        tryInstall();
-                    }
-                });
+        for (PersistenceUnit pu : getPersistenceUnits()) {
+            pu.invokePrivileged(new VoidAction() {
+                @Override
+                public void run() {
+                    tryInstall();
+                }
+            });
+        }
     }
 
     public void onPoll() {
@@ -1056,9 +1056,12 @@ public class CorePlugin {
 
         String home = System.getProperty("user.home");
         home = home.replace("\\", "/");
+        String domain = getDomain();
+        if(StringUtils.isEmpty(domain)){
+            domain="";
+        }
         String path = (String) getOrCreateAppPropertyValue("System.FileSystem", null,
-                home + "/filesystem/"
-
+                home + "/filesystem/"+ domain
         );
         nativeFileSystemPath = path;
         fileSystem = new VrFS().subfs(path, "vrfs");
@@ -2278,6 +2281,10 @@ public class CorePlugin {
         return null;
     }
 
+    public String getDomain() {
+        return UPA.getPersistenceUnit().getName();
+    }
+
     public AppUser login(String login, String password) {
         if (login == null) {
             login = "";
@@ -2301,6 +2308,7 @@ public class CorePlugin {
                             }), null);
             UserSession s = getUserSession();
             s.setDestroyed(false);
+            s.setDomain(getDomain());
             final ActiveSessionsTracker activeSessionsTracker = getSessions();
             activeSessionsTracker.onCreate(s);
             //update stats
@@ -2523,6 +2531,9 @@ public class CorePlugin {
         return comp.getBundle();
     }
 
+    public List<PersistenceUnit> getPersistenceUnits() {
+        return new ArrayList<>(UPA.getPersistenceGroup("").getPersistenceUnits());
+    }
     public List<Plugin> getPlugins() {
         if (plugins == null) {
             buildPluginInfos();
@@ -3088,9 +3099,6 @@ public class CorePlugin {
         }
 
         Collections.sort(toStart);
-        i18n.register("i18n.dictionary");
-        i18n.register("i18n.presentation");
-        i18n.register("i18n.service");
         for (Plugin plugin : toStart) {
 //            i18n.register("i18n." + plugin.getId() + ".dictionary");
 //            i18n.register("i18n." + plugin.getId() + ".presentation");
@@ -3678,7 +3686,7 @@ public class CorePlugin {
         q.where(where);
         Chronometer c = new Chronometer();
         List<NamedId> entityList = pu.createQuery(q)
-                .getTypeList(NamedId.class);
+                .getResultList(NamedId.class);
         entityList.size();
         c.stop();
         return entityList;
@@ -3717,7 +3725,7 @@ public class CorePlugin {
         q.where(where);
         Chronometer c = new Chronometer();
         List<NamedId> entityList = pu.createQuery(q)
-                .getTypeList(NamedId.class);
+                .getResultList(NamedId.class);
         entityList.size();
         c.stop();
         return entityList;

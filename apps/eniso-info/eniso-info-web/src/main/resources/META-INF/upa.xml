@@ -14,4 +14,7 @@
             </persistenceUnit>
         </default>
     </include>
+    <persistenceUnit name="main">
+        <property name="QueryHints.maxNavigationDepth" value="1"/>
+    </persistenceUnit>
 </upa>

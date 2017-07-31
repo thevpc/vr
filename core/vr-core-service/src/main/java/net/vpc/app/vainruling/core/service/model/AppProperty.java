@@ -26,6 +26,7 @@ public class AppProperty {
     @Field(max = "512")
     private String propertyName;
     @Field(max = "4096")
+    @Summary
     private String propertyValue;
     @Summary
     private String propertyType;

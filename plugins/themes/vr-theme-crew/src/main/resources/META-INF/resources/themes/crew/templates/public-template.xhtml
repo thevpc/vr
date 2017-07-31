@@ -15,11 +15,11 @@ and open the template in the editor.
 <h:head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <title>Eniso.info</title>
+    <title>#{vr.getAppProperty('System.App.Title')}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <meta name="description" content="ENISo Computer Science Department Web Site"/>
-    <meta name="keywords" content="eniso"/>
-    <meta name="author" content="Taha BEN Salah"/>
+    <meta name="description" content="#{vr.getAppProperty('System.App.Description')}"/>
+    <meta name="keywords" content="#{vr.getAppProperty('System.App.Keywords')}"/>
+    <meta name="author" content="#{vr.getAppProperty('System.App.Copyrights.Author.Name')}"/>
 
     <!--
       //////////////////////////////////////////////////////
@@ -266,23 +266,35 @@ and open the template in the editor.
                            data-target="#navbar" aria-expanded="false" aria-controls="navbar"><i></i></a>
                         <h:commandLink action="#{vr.gotoPage('publicIndex', '')}"
                                        styleClass="navbar-brand" style="font-weight: 100;">
-                            <span style="font-family: Audiowide; font-size: 32px">Eniso</span> <span
-                                style="font-family: Stalemate; font-size: 48px">info</span></h:commandLink>
+                            <span style="font-family: Audiowide; font-size: 32px">#{vr.getAppProperty('System.App.Title.Major.Main')}</span> <span
+                                style="font-family: Stalemate; font-size: 48px">#{vr.getAppProperty('System.App.Title.Major.Secondary')}</span></h:commandLink>
                     </div>
                     <div id="navbar" class="navbar-collapse collapse">
                         <ul class="nav navbar-nav navbar-right">
                             <li class="active"><a href="#" data-nav-section="home"><span>Home</span></a></li>
-                            <li><a href="#" data-nav-section="about"><span>About</span></a></li>
-                            <li><a href="#" data-nav-section="news"><span>Activities</span></a></li>
-                            <li><a href="#" data-nav-section="features"><span>Featured</span></a></li>
-                            <li><a href="#" data-nav-section="testimonials"><span>Testimonials</span></a></li>
-                            <li><a href="#" data-nav-section="courses"><span>Studies</span></a></li>
-                            <li><a href="#" data-nav-section="press"><span>Press</span></a></li>
+                            <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('About')}">
+                                <li><a href="#" data-nav-section="about"><span>#{vr.cmsTextService.getDispositionActionName('About')}</span></a></li>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('Activities')}">
+                            <li><a href="#" data-nav-section="news"><span>#{vr.cmsTextService.getDispositionActionName('Activities')}</span></a></li>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('Featured')}">
+                            <li><a href="#" data-nav-section="features"><span>#{vr.cmsTextService.getDispositionActionName('Featured')}</span></a></li>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('Testimonials')}">
+                            <li><a href="#" data-nav-section="testimonials"><span>#{vr.cmsTextService.getDispositionActionName('Testimonials')}</span></a></li>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('Education')}">
+                            <li><a href="#" data-nav-section="courses"><span>#{vr.cmsTextService.getDispositionActionName('Education')}</span></a></li>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('News')}">
+                            <li><a href="#" data-nav-section="press"><span>#{vr.cmsTextService.getDispositionActionName('News')}</span></a></li>
+                            </ui:fragment>
                             <li>
                                 <h:commandLink rendered="#{!vr.userSession.connected}"
-                                               action="#{vr.gotoPage('login', '')}"><span>My Space</span></h:commandLink>
+                                               action="#{vr.gotoPage('login', '')}"><span>#{vr.getAppProperty('System.App.GotoWelcomeText')}</span></h:commandLink>
                                 <h:commandLink rendered="#{vr.userSession.connected}"
-                                               action="#{vr.gotoPage('welcome', '')}"><span>My Space</span></h:commandLink>
+                                               action="#{vr.gotoPage('welcome', '')}"><span>#{vr.getAppProperty('System.App.GotoLoginText')}</span></h:commandLink>
                             </li>
                         </ul>
                     </div>
@@ -472,6 +484,7 @@ and open the template in the editor.
 
             </div>
         </div>
+        <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('About')}">
 
         <div id="fh5co-about-us" data-section="about">
             <div class="container">
@@ -569,6 +582,9 @@ and open the template in the editor.
                 </div>
             </div>
         </div>
+        </ui:fragment>
+
+        <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('Activities')}">
         <div id="fh5co-our-services" data-section="news">
             <div class="container">
                 #{vr.cmsTextService.loadContentTexts('Activities.Header')}
@@ -614,6 +630,8 @@ and open the template in the editor.
                 </div>
             </div>
         </div>
+        </ui:fragment>
+        <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('Featured')}">
 
         <div id="fh5co-features" data-section="features">
             <div class="container">
@@ -662,7 +680,9 @@ and open the template in the editor.
                 </div>
             </div>
         </div>
+        </ui:fragment>
 
+        <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('Testimonials')}">
         <div id="fh5co-testimonials" data-section="testimonials">
             <div class="container">
                 #{vr.cmsTextService.loadContentTexts('Testimonials.Header')}
@@ -708,7 +728,9 @@ and open the template in the editor.
                 </ui:repeat>
             </div>
         </div>
+        </ui:fragment>
 
+        <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('Education')}">
         <div id="fh5co-pricing" data-section="courses">
             <div class="container">
                 #{vr.cmsTextService.loadContentTexts('Education.Header')}
@@ -748,7 +770,9 @@ and open the template in the editor.
                 </div>
             </div>
         </div>
+        </ui:fragment>
 
+        <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('News')}">
         <div id="fh5co-press" data-section="press">
             <div class="container">
                 #{vr.cmsTextService.loadContentTexts('News.Header')}
@@ -796,6 +820,9 @@ and open the template in the editor.
                 </div>
             </div>
         </div>
+        </ui:fragment>
+
+        <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('Partners')}">
         <div>
             #{vr.cmsTextService.loadContentTexts('Partners.Header')}
             <ui:repeat value="#{vr.cmsTextService.getContentTextListHead('Partners.Header',1)}" var="listItem">
@@ -824,6 +851,7 @@ and open the template in the editor.
                 </ui:repeat>
             </div>
         </div>
+        </ui:fragment>
 
 
         <footer id="footer" role="contentinfo">
@@ -870,7 +898,7 @@ and open the template in the editor.
                 </div>
                 <div class="row row-bottom-padded-sm">
                     <div class="col-md-12">
-                        <p class="copyright text-center"> 2016 Taha BEN Salah, ENISo. All Rights Reserved.
+                        <p class="copyright text-center"> #{vr.getAppProperty('System.App.Copyrights.Date')} #{vr.getAppProperty('System.App.Copyrights.Author.Name')}, #{vr.getAppProperty('System.App.Copyrights.Author.Affiliation')}. All Rights Reserved.
                             <br/> <span
                                     style="font-size: 6px; color: lightgray"> Free HTML5 Template by FREEHTML5.co | Images by Pexels Unsplash</span>
                         </p>
@@ -893,7 +921,7 @@ and open the template in the editor.
         </footer>
 
 
-        <!-- For demo purposes Only ( You may delete this anytime :-) -->
+        <ui:fragment rendered="#{vr.core.findArticleDispositionGroupTypes().size() gt 0}">
         <div id="colour-variations" class="sleep">
             <a class="option-toggle"><i class="icon-gear"></i></a>
             <ui:repeat
@@ -934,7 +962,7 @@ and open the template in the editor.
                         <!--style="margin-left: 10px">NOCCS</span></h:commandLink></li>-->
             <!--</ul>-->
         </div>
-        <!-- End demo purposes only -->
+        </ui:fragment>
 
 
         <!-- jQuery -->
