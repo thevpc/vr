@@ -1166,7 +1166,7 @@ public class CorePlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(o.getClass());
         Object value = e.getBuilder().objectToDocument(o, true).getObject(field);
-        T t = pu.createQueryBuilder(o.getClass()).byExpression(new Equals(new Var(field), new Literal(value, e.getField(field).getDataType())))
+        T t = pu.createQueryBuilder(o.getClass()).setEntityAlias("o").byExpression(new Equals(new Var(new Var("o"),field), new Literal(value, e.getField(field).getDataType())))
                 .getFirstResultOrNull();
         if (t == null) {
             pu.persist(o);
@@ -3023,6 +3023,8 @@ public class CorePlugin {
     }
 
     private void tryInstall() {
+        boolean alwaysInstall=false;
+        boolean alwaysNonCoherent=false;
         PersistenceUnit pu = UPA.getPersistenceUnit();
         ArrayList<Plugin> toInstall = new ArrayList<>();
         ArrayList<Plugin> toStart = new ArrayList<>();
@@ -3039,6 +3041,9 @@ public class CorePlugin {
                     log.log(Level.INFO, "Plugin {0} is deactivated (version {1})", new Object[]{pluginId, pp.getInfo().getVersion()});
                     //ignore
                     ignore = true;
+                    if(alwaysInstall){
+                        toInstall.add(pp);
+                    }
                 } else {
                     if (v == null) {
                         v = new net.vpc.app.vainruling.core.service.model.AppVersion();
@@ -3062,6 +3067,9 @@ public class CorePlugin {
                     toInstall.add(pp);
                 }
             } else {
+                if(alwaysInstall){
+                    toInstall.add(pp);
+                }
                 log.log(Level.INFO, "Plugin {0} is uptodate ({1})", new Object[]{pluginId, pp.getInfo().getVersion()});
             }
             if (!ignore) {
@@ -3071,7 +3079,7 @@ public class CorePlugin {
         HashSet<String> nonCoherent = new HashSet<>();
         Collections.sort(toInstall);
         for (Plugin plugin : toInstall) {
-            if (!nonCoherent.contains(plugin.getId())) {
+            if (alwaysInstall || !nonCoherent.contains(plugin.getId())) {
                 try {
                     plugin.install();
                 } catch (Exception e) {
@@ -3085,7 +3093,7 @@ public class CorePlugin {
             }
         }
         for (Plugin plugin : toInstall) {
-            if (!nonCoherent.contains(plugin.getId())) {
+            if (alwaysNonCoherent || !nonCoherent.contains(plugin.getId())) {
                 try {
                     plugin.installDemo();
                 } catch (Exception e) {
@@ -3876,8 +3884,8 @@ public class CorePlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(type);
         DataType dt = entity.getField(field).getDataType();
-        return pu.createQueryBuilder(type)
-                .byExpression(new And(new Var(field), new Literal(value, dt)))
+        return pu.createQueryBuilder(type).setEntityAlias("o")
+                .byExpression(new And(new Var(new Var("o"),field), new Literal(value, dt)))
                 .orderBy(entity.getListOrder())
                 .getResultList();
     }

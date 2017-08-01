@@ -30,7 +30,9 @@
     <!-- Custom Fonts -->
     <link href="#{vr.themeContext}/wplugins/sb-admin2/bower_components/font-awesome/css/font-awesome.min.css"
           rel="stylesheet" type="text/css"/>
-    <link rel="shortcut icon" href="#{vr.themeContext}/images/app-icon.png" type="image/png"/>
+    <link rel="shortcut icon" href="#{vr.context}/images/app-icon.png" type="image/png"/>
+    <link href='https://fonts.googleapis.com/css?family=Stalemate' rel='stylesheet' type='text/css'/>
+    <link href='https://fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css'/>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -50,10 +52,10 @@
                     <div class="login-panel panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">
-                                <h:commandLink action="#{vr.gotoPage('publicIndex', '')}">
-                                    <img class="navbar-brand" style="margin-top: 12px;margin-left: 20px;"
-                                         src="#{vr.themeContext}/images/app-icon.png" alt="#{vr.getAppProperty('System.App.Title')}}" height="30"/>
-                                </h:commandLink>
+                                <h:commandLink action="#{vr.gotoPage('publicIndex', '')}"
+                                               styleClass="navbar-brand" style="font-weight: 100;">
+                                    <span style="font-family: Audiowide; font-size: 24px">#{vr.getAppProperty('System.App.Title.Major.Main')}</span> <span
+                                        style="font-family: Stalemate; font-size: 40px">#{vr.getAppProperty('System.App.Title.Major.Secondary')}</span></h:commandLink>
                                 <span>Please Sign In</span>
                             </h3>
                         </div>
