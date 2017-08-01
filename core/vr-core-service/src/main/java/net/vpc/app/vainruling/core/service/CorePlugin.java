@@ -82,23 +82,6 @@ public class CorePlugin {
     private AppVersion appVersion;
     private Set<String> managerProfiles = new HashSet<>(Arrays.asList("Director"));
     private ActiveSessionsTracker sessions=new ActiveSessionsTracker();
-//    private final Map<String,Object> globalCache=new HashMap<>();
-
-//    public static void main(String[] args) {
-//        String text=VrWikiParser.convertToHtml("You can ''italicize'' text by putting 2 \n" +
-//                "apostrophes on ''each'' side. \n" +
-//                "\n" +
-//                "3 apostrophes will '''bold''' the text. \n" +
-//                "\n" +
-//                "5 apostrophes will '''''bold and italicize''''' \n" +
-//                "the text.\n" +
-//                "\n" +
-//                "(Using 4 apostrophes doesn't do anything\n" +
-//                "special -- <br /> 3 of them '''bold''' the text as\n" +
-//                "usual; the others are ''''just'''' apostrophes \n" +
-//                "around the text.)","Hello");
-//        System.out.println(text);
-//    }
 
     public static CorePlugin get() {
         return VrApp.getBean(CorePlugin.class);
