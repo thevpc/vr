@@ -18,6 +18,7 @@ import net.vpc.upa.EntityBuilder;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -26,6 +27,7 @@ import java.util.*;
  * @author taha.bensalah@gmail.com
  */
 @AppPlugin()
+@DependsOn("corePlugin")
 public class EquipmentPlugin {
 
     @Autowired
