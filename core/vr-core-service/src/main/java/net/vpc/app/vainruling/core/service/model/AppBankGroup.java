@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
+import net.vpc.upa.types.TemporalOption;
 
 import java.sql.Timestamp;
 
@@ -20,11 +21,8 @@ import java.sql.Timestamp;
 @Properties(
         {
                 @Property(name = "ui.auto-filter.country", value = "{expr='country',order=1}"),
-                @Property(name = "ui.auto-filter.governorate", value = "{expr='governorate',order=2}"),
-                @Property(name = "ui.auto-filter.settlement", value = "{expr='settlement',order=3}"),
-                @Property(name = "ui.auto-filter.industry", value = "{expr='industry',order=4}"),
         })
-public class AppCompany {
+public class AppBankGroup {
 
     @Id
     @Sequence
@@ -38,14 +36,6 @@ public class AppCompany {
     private String address;
     @Summary
     private AppCountry country;
-    @Summary
-    private AppGovernorate governorate;
-    @Summary
-    private AppSettlement settlement;
-    @Summary
-    private AppIndustry industry;
-    @Summary
-    private String activityDetails;
     private String postalCode;
     private String phone;
     private String fax;
@@ -60,8 +50,10 @@ public class AppCompany {
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
+    @Temporal(TemporalOption.DATETIME)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    @Temporal(TemporalOption.DATETIME)
     private Timestamp updateDate;
 
     public String getAbout() {
@@ -104,36 +96,12 @@ public class AppCompany {
         this.name2 = name2;
     }
 
-    public AppGovernorate getGovernorate() {
-        return governorate;
-    }
-
-    public void setGovernorate(AppGovernorate governorate) {
-        this.governorate = governorate;
-    }
-
-    public AppIndustry getIndustry() {
-        return industry;
-    }
-
-    public void setIndustry(AppIndustry industry) {
-        this.industry = industry;
-    }
-
     public AppCountry getCountry() {
         return country;
     }
 
     public void setCountry(AppCountry country) {
         this.country = country;
-    }
-
-    public AppSettlement getSettlement() {
-        return settlement;
-    }
-
-    public void setSettlement(AppSettlement settlement) {
-        this.settlement = settlement;
     }
 
     public String getPostalCode() {
@@ -203,13 +171,5 @@ public class AppCompany {
     @Override
     public String toString() {
         return String.valueOf(name);
-    }
-
-    public String getActivityDetails() {
-        return activityDetails;
-    }
-
-    public void setActivityDetails(String activityDetails) {
-        this.activityDetails = activityDetails;
     }
 }

@@ -21,10 +21,8 @@ import java.sql.Timestamp;
         {
                 @Property(name = "ui.auto-filter.country", value = "{expr='country',order=1}"),
                 @Property(name = "ui.auto-filter.governorate", value = "{expr='governorate',order=2}"),
-                @Property(name = "ui.auto-filter.settlement", value = "{expr='settlement',order=3}"),
-                @Property(name = "ui.auto-filter.industry", value = "{expr='industry',order=4}"),
         })
-public class AppCompany {
+public class AppBank {
 
     @Id
     @Sequence
@@ -40,12 +38,6 @@ public class AppCompany {
     private AppCountry country;
     @Summary
     private AppGovernorate governorate;
-    @Summary
-    private AppSettlement settlement;
-    @Summary
-    private AppIndustry industry;
-    @Summary
-    private String activityDetails;
     private String postalCode;
     private String phone;
     private String fax;
@@ -112,28 +104,12 @@ public class AppCompany {
         this.governorate = governorate;
     }
 
-    public AppIndustry getIndustry() {
-        return industry;
-    }
-
-    public void setIndustry(AppIndustry industry) {
-        this.industry = industry;
-    }
-
     public AppCountry getCountry() {
         return country;
     }
 
     public void setCountry(AppCountry country) {
         this.country = country;
-    }
-
-    public AppSettlement getSettlement() {
-        return settlement;
-    }
-
-    public void setSettlement(AppSettlement settlement) {
-        this.settlement = settlement;
     }
 
     public String getPostalCode() {
@@ -203,13 +179,5 @@ public class AppCompany {
     @Override
     public String toString() {
         return String.valueOf(name);
-    }
-
-    public String getActivityDetails() {
-        return activityDetails;
-    }
-
-    public void setActivityDetails(String activityDetails) {
-        this.activityDetails = activityDetails;
     }
 }

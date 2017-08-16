@@ -1461,20 +1461,11 @@ public class CorePlugin {
 
     public void setEnabledAppProperty(String propertyName, String userLogin, boolean enabled) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        AppUser u = null;
-        if (userLogin != null) {
-            u = findUser(userLogin);
+        AppProperty e = getAppProperty(propertyName, userLogin);
+        if(e!=null){
+            e.setEnabled(enabled);
+            pu.merge(e);
         }
-        AppProperty ap = new AppProperty();
-        ap.setEnabled(true);
-        ap.setUser(u);
-        ap.setPropertyName(propertyName);
-        String propertyType = "null";
-        String propertyValueString = "";
-        ap.setPropertyType(propertyType);
-        ap.setPropertyValue(propertyValueString);
-        ap.setEnabled(enabled);
-        setAppProperty(ap);
     }
 
     public Object getAppPropertyValue(AppProperty p) {
@@ -2523,6 +2514,7 @@ public class CorePlugin {
             String[] appPluginBeans = VrApp.getContext().getBeanNamesForAnnotation(AppPlugin.class);
             ListValueMap<String, Object> instances = new ListValueMap<>();
             List<String> errors=new ArrayList<>();
+            Arrays.sort(appPluginBeans); //just to have a reproducible error if any
             for (String beanName : appPluginBeans) {
                 Object bean = VrApp.getContext().getBean(beanName);
                 PluginBundle bundle = getPluginBundle(bean);
