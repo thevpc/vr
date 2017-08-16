@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
 import net.vpc.app.vainruling.core.web.obj.ViewContext;
@@ -49,21 +50,24 @@ public class ManyToOneTypePropertyView extends FieldPropertyView {
         }
         if (value instanceof NamedId) {
             Object id = ((NamedId) value).getId();
+            id=VrUPAUtils.stringToId(Convert.toString(id),entity);
             return entity.getBuilder().idToObject(id);
         }
         if (value instanceof String) {
-            String svalue = (String) this.value;
-            if (svalue.isEmpty()) {
-                return null;
-            }
-            Class idType = entity.getIdType();
-            if (idType.equals(Integer.class) || idType.equals(Integer.TYPE)) {
-                entity.getBuilder().idToObject(Convert.toInt(value));
-            } else if (idType.equals(Long.class) || idType.equals(Long.TYPE)) {
-                entity.getBuilder().idToObject(Convert.toInt(value));
-            } else {
-                throw new UnsupportedOperationException();
-            }
+            return VrUPAUtils.stringToId(Convert.toString(this.value),entity);
+//
+//            String svalue = (String) this.value;
+//            if (svalue.isEmpty()) {
+//                return null;
+//            }
+//            Class idType = entity.getIdType();
+//            if (idType.equals(Integer.class) || idType.equals(Integer.TYPE)) {
+//                entity.getBuilder().idToObject(Convert.toInt(value));
+//            } else if (idType.equals(Long.class) || idType.equals(Long.TYPE)) {
+//                entity.getBuilder().idToObject(Convert.toInt(value));
+//            } else {
+//                throw new UnsupportedOperationException();
+//            }
         }
         return value;
 //        throw new UnsupportedOperationException();

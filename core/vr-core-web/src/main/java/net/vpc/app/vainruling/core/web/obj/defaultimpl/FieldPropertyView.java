@@ -53,9 +53,7 @@ public class FieldPropertyView extends PropertyView {
         if (!isDisabled() && !getComponentId().contains(".")) {
             Field field = getField();
             final Object v2 = field.getDataType().convert(getObjectValue());
-            if (o != null
-                    && (o instanceof Document
-                    || field.getEntity().getEntityType().isAssignableFrom(o.getClass()))) {
+            if (o != null && field.getEntity().isInstance(o)) {
                 field.getEntity().getBuilder().setProperty(o, field.getName(), v2);
             }
         }

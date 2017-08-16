@@ -229,7 +229,7 @@ public class PropertyView implements Serializable {
                     Entity masterEntity = et.getRelationship().getTargetRole().getEntity();
                     Object entityId= VrUPAUtils.stringToId(Convert.toString(selectedItem),masterEntity);
                     for (NamedId v : values) {
-                        Object id = v.getId();
+                        Object id = VrUPAUtils.stringToId(Convert.toString(v.getId()),masterEntity);
                         if (VrUPAUtils.sameId(entityId, id)) {
                             someUpdates |= !Objects.equal(value, v);
                             value = v;
