@@ -3183,19 +3183,19 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         core.createRight("Custom.Education.MyPlanning", "MyPlanning");
         core.createRight("Custom.Education.ClassPlanning", "ClassPlanning");
 
-        core.setAppProperty("System.App.Title",null,"Eniso.info");
-        core.setAppProperty("System.App.Description",null,"ENISo Computer Science Department Web Site");
-        core.setAppProperty("System.App.Keywords",null,"eniso");
-        core.setAppProperty("System.App.Title.Major.Main",null,"Eniso");
-        core.setAppProperty("System.App.Title.Major.Secondary",null,"info");
-        core.setAppProperty("System.App.Title.Minor.Main",null,"Eniso");
-        core.setAppProperty("System.App.Title.Minor.Secondary",null,"info");
-        core.setAppProperty("System.App.Copyrights.Date",null,"2015-2017");
-        core.setAppProperty("System.App.Copyrights.Author.Name",null,"Taha Ben Salah");
-        core.setAppProperty("System.App.Copyrights.Author.URL",null,"http://tahabensalah.net");
-        core.setAppProperty("System.App.Copyrights.Author.Affiliation",null,"ENISo");
-        core.setAppProperty("System.App.GotoWelcomeText",null,"My Space");
-        core.setAppProperty("System.App.GotoLoginText",null,"My Space");
+        core.getOrCreateAppPropertyValue("System.App.Title",null,"Eniso.info");
+        core.getOrCreateAppPropertyValue("System.App.Description",null,"ENISo Computer Science Department Web Site");
+        core.getOrCreateAppPropertyValue("System.App.Keywords",null,"eniso");
+        core.getOrCreateAppPropertyValue("System.App.Title.Major.Main",null,"Eniso");
+        core.getOrCreateAppPropertyValue("System.App.Title.Major.Secondary",null,"info");
+        core.getOrCreateAppPropertyValue("System.App.Title.Minor.Main",null,"Eniso");
+        core.getOrCreateAppPropertyValue("System.App.Title.Minor.Secondary",null,"info");
+        core.getOrCreateAppPropertyValue("System.App.Copyrights.Date",null,"2015-2017");
+        core.getOrCreateAppPropertyValue("System.App.Copyrights.Author.Name",null,"Taha Ben Salah");
+        core.getOrCreateAppPropertyValue("System.App.Copyrights.Author.URL",null,"http://tahabensalah.net");
+        core.getOrCreateAppPropertyValue("System.App.Copyrights.Author.Affiliation",null,"ENISo");
+        core.getOrCreateAppPropertyValue("System.App.GotoWelcomeText",null,"My Space");
+        core.getOrCreateAppPropertyValue("System.App.GotoLoginText",null,"My Space");
 
         ArticlesDisposition a = core.findArticleDisposition("Activities");
         if(a!=null){
