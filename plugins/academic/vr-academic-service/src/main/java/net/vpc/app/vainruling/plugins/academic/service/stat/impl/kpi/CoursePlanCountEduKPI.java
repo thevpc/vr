@@ -27,7 +27,7 @@ public class CoursePlanCountEduKPI implements KPI<AcademicCourseAssignmentInfo> 
 
             @Override
             public void visit(AcademicCourseAssignmentInfo assignment) {
-                AcademicCoursePlan v = assignment.getAssignment().getCoursePlan();
+                AcademicCoursePlan v = assignment.resolveCoursePlan();
                 if (v != null) {
                     distinctValues.add(v.getId());
                 }

@@ -12,9 +12,18 @@ import net.vpc.upa.config.*;
  * @author taha.bensalah@gmail.com
  */
 public enum AcademicTeacherSituationType {
+    PERMANENT(true),
+    LEAVE(false),
+    TEMPORARY(false),
+    CONTRACTUAL(true);
 
-    PERMANENT,
-    LEAVE,
-    TEMPORARY,
-    CONTRACTUAL,
+    private boolean withDue;
+
+    AcademicTeacherSituationType(boolean withDue) {
+        this.withDue = withDue;
+    }
+
+    public boolean isWithDue() {
+        return withDue;
+    }
 }

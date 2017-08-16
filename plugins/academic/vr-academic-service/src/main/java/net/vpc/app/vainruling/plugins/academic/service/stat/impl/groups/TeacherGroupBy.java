@@ -22,7 +22,7 @@ public class TeacherGroupBy implements KPIGroupBy<AcademicCourseAssignmentInfo> 
     }
     public static Map<Integer, AcademicTeacher> findTeachers(AcademicCourseAssignmentInfo assignment,boolean intents){
         Map<Integer, AcademicTeacher> teachers = new HashMap<>();
-        AcademicTeacher t = assignment.getAssignment().getTeacher();
+        AcademicTeacher t = assignment.resolveTeacher();
         if (t != null) {
             teachers.put(t.getId(), t);
         }

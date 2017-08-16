@@ -5,6 +5,10 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
+import net.vpc.app.vainruling.core.service.model.AppContact;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.config.*;
 
@@ -58,4 +62,67 @@ public class AcademicCourseIntent {
         this.teacher = teacher;
     }
 
+    public AcademicSemester resolveSemester() {
+        AcademicCourseAssignment assignment = getAssignment();
+        if(assignment!=null){
+            return assignment.resolveSemester();
+        }
+        return null;
+    }
+
+    public AcademicProgram resolveProgram() {
+        AcademicCourseAssignment assignment = getAssignment();
+        if(assignment!=null){
+            return assignment.resolveProgram();
+        }
+        return null;
+    }
+
+    public AcademicProgramType resolveProgramType() {
+        AcademicCourseAssignment assignment = getAssignment();
+        if(assignment!=null){
+            return assignment.resolveProgramType();
+        }
+        return null;
+    }
+
+    public AppDepartment resolveDepartment() {
+        AcademicCourseAssignment assignment = getAssignment();
+        if(assignment!=null){
+            return assignment.resolveDepartment();
+        }
+        return null;
+    }
+
+    public AppDepartment resolveOwnerDepartment() {
+        AcademicCourseAssignment assignment = getAssignment();
+        if(assignment!=null){
+            return assignment.resolveOwnerDepartment();
+        }
+        return null;
+    }
+
+    public AppPeriod resolvePeriod() {
+        AcademicCourseAssignment assignment = getAssignment();
+        if(assignment!=null){
+            return assignment.resolvePeriod();
+        }
+        return null;
+    }
+
+    public AcademicClass resolveAcademicClass() {
+        AcademicCourseAssignment assignment = getAssignment();
+        if(assignment!=null){
+            return assignment.resolveAcademicClass();
+        }
+        return null;
+    }
+
+    public AppContact resolveContact() {
+        AcademicCourseAssignment assignment = getAssignment();
+        if(assignment!=null){
+            return assignment.resolveContact();
+        }
+        return null;
+    }
 }

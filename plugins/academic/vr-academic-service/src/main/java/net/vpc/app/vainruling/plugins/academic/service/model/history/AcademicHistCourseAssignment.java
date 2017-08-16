@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.service.model.history;
 
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
@@ -186,4 +187,11 @@ public class AcademicHistCourseAssignment {
         this.ownerDepartment = ownerDepartment;
     }
 
+    public AcademicSemester resolveSemester() {
+        AcademicCoursePlan coursePlan = getCoursePlan();
+        if(coursePlan!=null){
+            return coursePlan.resolveSemester();
+        }
+        return null;
+    }
 }

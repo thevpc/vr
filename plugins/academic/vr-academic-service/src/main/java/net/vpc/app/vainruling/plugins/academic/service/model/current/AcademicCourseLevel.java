@@ -14,6 +14,7 @@ import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
 
 /**
  * 1ere, deuxieme, mastere ....
@@ -105,5 +106,21 @@ public class AcademicCourseLevel {
     public void setSemester(AcademicSemester semester) {
         this.semester = semester;
     }
+    
+    public AcademicProgram resolveProgram(){
+        return getAcademicClass()==null ?null : getAcademicClass().resolveProgram();
+    }
 
+    public AcademicProgramType resolveProgramType(){
+        return getAcademicClass()==null ?null : getAcademicClass().resolveProgramType();
+    }
+
+    public AppDepartment resolveDepartment(){
+        AcademicProgram p = resolveProgram();
+        if(p!=null){
+            return p.getDepartment();
+        }
+        return null;
+    }
+    
 }

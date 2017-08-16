@@ -132,7 +132,7 @@ public class AcademicPerfEvalPlugin {
                 + (enabled != null ? (" and u.enableCourseFeedback=" + enabled) : "")
         )
                 .setParameter("periodId", periodId)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getResultList();
     }
 
@@ -147,7 +147,7 @@ public class AcademicPerfEvalPlugin {
                 + (enabled != null ? (" and u.enableCourseFeedback=" + enabled) : "")
         )
                 .setParameter("periodId", periodId)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getResultList();
     }
 
@@ -164,7 +164,8 @@ public class AcademicPerfEvalPlugin {
                 + (enabled != null ? (" and u.enableCourseFeedback=" + enabled) : "")
         )
                 .setParameter("periodId", periodId)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3);
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3);
+        ;
         if (teacherId >= 0) {
             query.setParameter("teacherId", teacherId);
         }
@@ -186,7 +187,8 @@ public class AcademicPerfEvalPlugin {
                 + ")"
         )
                 .setParameter("periodId", periodId)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3);
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+        ;
         if (teacherId >= 0) {
             query.setParameter("teacherId", teacherId);
         }
@@ -209,7 +211,8 @@ public class AcademicPerfEvalPlugin {
                 + "))"
         )
                 .setParameter("periodId", periodId)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3);
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+        ;
         if (teacherId >= 0) {
             query.setParameter("teacherId", teacherId);
         }
@@ -235,7 +238,7 @@ public class AcademicPerfEvalPlugin {
                 + " order by f.name"
         )
                 .setParameter("academicCourseAssignmentId", academicCourseAssignmentId)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getResultList();
     }
 
@@ -314,7 +317,7 @@ public class AcademicPerfEvalPlugin {
         if (archived != null) {
             q.byExpression("f.archived=" + archived);
         }
-        q.setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3);
+//        q.setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3);
         return q.getResultList();
     }
 
@@ -335,7 +338,7 @@ public class AcademicPerfEvalPlugin {
         )
                 .setParameter("studentId", studentId)
                 .setParameter("periodId", periodId)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getResultList();
     }
 

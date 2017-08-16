@@ -5,7 +5,9 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
+import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.FormulaType;
@@ -13,6 +15,7 @@ import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -21,13 +24,20 @@ import java.sql.Timestamp;
 @Path("Education/Load")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.period", value = "{expr='coursePlan.period',order=1}"),
-                @Property(name = "ui.auto-filter.department", value = "{expr='coursePlan.courseLevel.academicClass.program.department',order=2}"),
-                @Property(name = "ui.auto-filter.ownerDepartment", value = "{expr='ownerDepartment',order=3}"),
-                @Property(name = "ui.auto-filter.programType", value = "{expr='coursePlan.courseLevel.academicClass.program.programType',order=4}"),
-                @Property(name = "ui.auto-filter.program", value = "{expr='coursePlan.courseLevel.academicClass.program',order=5}"),
-                @Property(name = "ui.auto-filter.courseType", value = "{expr='courseType',order=6}"),
-                @Property(name = "ui.auto-filter.class", value = "{expr='coursePlan.courseLevel.academicClass',order=7}"),
+            @Property(name = "ui.auto-filter.period", value = "{expr='coursePlan.period',order=1}")
+            ,
+                @Property(name = "ui.auto-filter.department", value = "{expr='coursePlan.courseLevel.academicClass.program.department',order=2}")
+            ,
+                @Property(name = "ui.auto-filter.ownerDepartment", value = "{expr='ownerDepartment',order=3}")
+            ,
+                @Property(name = "ui.auto-filter.programType", value = "{expr='coursePlan.courseLevel.academicClass.program.programType',order=4}")
+            ,
+                @Property(name = "ui.auto-filter.program", value = "{expr='coursePlan.courseLevel.academicClass.program',order=5}")
+            ,
+                @Property(name = "ui.auto-filter.courseType", value = "{expr='courseType',order=6}")
+            ,
+                @Property(name = "ui.auto-filter.class", value = "{expr='coursePlan.courseLevel.academicClass',order=7}")
+            ,
                 @Property(name = "ui.auto-filter.teacher", value = "{expr='teacher',order=8}")
         }
 )
@@ -41,39 +51,39 @@ public class AcademicCourseAssignment {
     @Summary
     @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
     @Formula(
-            value = "(this.coursePlan.period.name)",formulaOrder = 1,
+            value = "(this.coursePlan.period.name)", formulaOrder = 1,
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String periodLabel;
 
     @Formula(
-            value = "concat(coalesce((select a.name from AcademicCoursePlan a where a.id=this.coursePlanId),'?'),'-',coalesce((select a.name from AcademicCourseType a where a.id=this.courseTypeId),'?'))",formulaOrder = 1,
+            value = "concat(coalesce((select a.name from AcademicCoursePlan a where a.id=this.coursePlanId),'?'),'-',coalesce((select a.name from AcademicCourseType a where a.id=this.courseTypeId),'?'))", formulaOrder = 1,
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String name;
 
     @Main
     @Formula(
-            value = "concat(" +
-                    "(select a.fullName from AcademicCoursePlan a where a.id=this.coursePlanId)" +
-                    ",'-',Coalesce((select a.Name from AcademicClass a where a.id=this.subClassId),'?')" +
-                    ",Coalesce(concat('-',this.discriminator),'')" +
-                    ",'-',coalesce((select a.name from AcademicCourseType a where a.id=this.courseTypeId),'?')" +
-                    ")",formulaOrder = 1,
+            value = "concat("
+            + "(select a.fullName from AcademicCoursePlan a where a.id=this.coursePlanId)"
+            + ",'-',Coalesce((select a.Name from AcademicClass a where a.id=this.subClassId),'?')"
+            + ",Coalesce(concat('-',this.discriminator),'')"
+            + ",'-',coalesce((select a.name from AcademicCourseType a where a.id=this.courseTypeId),'?')"
+            + ")", formulaOrder = 1,
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String fullName;
 
     @Properties(
             {
-                    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+                @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
             }
     )
     private String name2;
 
     @Properties(
             {
-                    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+                @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
             }
     )
     private AcademicCoursePlan coursePlan;
@@ -88,12 +98,11 @@ public class AcademicCourseAssignment {
 
     private String labels;
 
-
     @Summary
     @Properties(
             {
-            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
-                    , @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+                @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
+                , @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
             }
     )
     private AcademicTeacher teacher;
@@ -341,4 +350,53 @@ public class AcademicCourseAssignment {
     public void setLabels(String labels) {
         this.labels = labels;
     }
+
+    public AcademicProgram resolveProgram() {
+        return getCoursePlan() == null ? null : getCoursePlan().resolveProgram();
+    }
+
+    public AcademicProgramType resolveProgramType() {
+        return getCoursePlan() == null ? null : getCoursePlan().resolveProgramType();
+    }
+
+    public AppDepartment resolveDepartment() {
+        return getCoursePlan() == null ? null : getCoursePlan().resolveDepartment();
+    }
+
+    public AppDepartment resolveOwnerDepartment() {
+        AppDepartment d = getOwnerDepartment();
+        if (d != null) {
+            return d;
+        }
+        return resolveDepartment();
+    }
+
+    public AcademicSemester resolveSemester() {
+        return getCoursePlan() == null ? null : getCoursePlan().resolveSemester();
+    }
+
+    public AppPeriod resolvePeriod() {
+        AcademicCoursePlan coursePlan = getCoursePlan();
+        if(coursePlan!=null){
+            return coursePlan.getPeriod();
+        }
+        return null;
+    }
+
+    public AcademicClass resolveAcademicClass() {
+        AcademicClass sc = getSubClass();
+        if (sc != null) {
+            return sc;
+        }
+        return getCoursePlan().resolveAcademicClass();
+    }
+
+    public AppContact resolveContact() {
+        AcademicTeacher sc = getTeacher();
+        if (sc != null) {
+            return sc.getContact();
+        }
+        return null;
+    }
+
 }

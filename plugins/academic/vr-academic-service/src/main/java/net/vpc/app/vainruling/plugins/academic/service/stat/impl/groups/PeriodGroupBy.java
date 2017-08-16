@@ -17,7 +17,7 @@ public class PeriodGroupBy implements KPIGroupBy<AcademicCourseAssignmentInfo> {
     private static StringArrayKPIGroup NON_ASSIGNED = new StringArrayKPIGroup("<<No Period>>", null);
     @Override
     public List<KPIGroup> createGroups(AcademicCourseAssignmentInfo assignment) {
-        AppPeriod t = assignment.getAssignment().getCoursePlan().getPeriod();
+        AppPeriod t = assignment.resolvePeriod();
         if(t==null){
             return Arrays.asList(NON_ASSIGNED);
         }else {

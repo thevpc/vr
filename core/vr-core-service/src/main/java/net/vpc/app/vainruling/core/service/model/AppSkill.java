@@ -1,9 +1,6 @@
 package net.vpc.app.vainruling.core.service.model;
 
-import net.vpc.upa.config.Entity;
-import net.vpc.upa.config.Id;
-import net.vpc.upa.config.Path;
-import net.vpc.upa.config.Sequence;
+import net.vpc.upa.config.*;
 
 /**
  * Created by vpc on 7/19/17.
@@ -14,7 +11,9 @@ public class AppSkill {
     @Id
     @Sequence
     private int id;
+    @Main
     private String name;
+    @Summary
     private AppSkill parent;
 
     public int getId() {

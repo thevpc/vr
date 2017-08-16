@@ -345,7 +345,7 @@ public class TeacherGenerationHelper {
                         return new Object[]{
                                 a.getAssignment().getId(),
                                 a.getAssignment().getFullName(),
-                                a.getAssignment().getTeacher() == null ? null : a.getAssignment().getTeacher().getContact().getFullName(),
+                                a.getAssignment().getTeacher() == null ? null : a.resolveContact().getFullName(),
                                 a.getAssignment().getGroupCount(),
                                 a.getAssignment().getShareCount()
                         };
@@ -638,9 +638,9 @@ public class TeacherGenerationHelper {
         }
         p.put(prefix + "name", c.getName());
         p.put(prefix + "name2", c.getName2());
-        p.put(prefix + "sem.code", c.getCourseLevel().getSemester().getCode());
-        p.put(prefix + "sem.name", c.getCourseLevel().getSemester().getName());
-        p.put(prefix + "sem.name2", c.getCourseLevel().getSemester().getName2());
+        p.put(prefix + "sem.code", c.resolveSemester().getCode());
+        p.put(prefix + "sem.name", c.resolveSemester().getName());
+        p.put(prefix + "sem.name2", c.resolveSemester().getName2());
         p.put(prefix + "ue", c.getCourseGroup() == null ? "" : c.getCourseGroup().getName());
         p.put(prefix + "lvl", c.getCourseLevel().getName());
         p.put(prefix + "c.grp", c.getGroupCountC());
@@ -665,12 +665,12 @@ public class TeacherGenerationHelper {
         p.put(prefix + "w1.pm", c.getValuePM() / wpm);
         p.put(prefix + "w1.tppm", c.getValueTPPM() / wtppm);
 
-        p.put(prefix + "class.name", c.getCourseLevel().getAcademicClass().getName());
-        p.put(prefix + "class.name2", c.getCourseLevel().getAcademicClass().getName2());
-        p.put(prefix + "program.name", c.getCourseLevel().getAcademicClass().getProgram().getName());
-        p.put(prefix + "class.name2", c.getCourseLevel().getAcademicClass().getProgram().getName2());
-        p.put(prefix + "department.name", c.getCourseLevel().getAcademicClass().getProgram().getDepartment().getName());
-        p.put(prefix + "department.name2", c.getCourseLevel().getAcademicClass().getProgram().getDepartment().getName2());
+        p.put(prefix + "class.name", c.resolveAcademicClass().getName());
+        p.put(prefix + "class.name2", c.resolveAcademicClass().getName2());
+        p.put(prefix + "program.name", c.resolveProgram().getName());
+        p.put(prefix + "class.name2", c.resolveProgram().getName2());
+        p.put(prefix + "department.name", c.resolveDepartment().getName());
+        p.put(prefix + "department.name2", c.resolveDepartment().getName2());
     }
 
     private Map<String, Object> copyPrefixed(Map<String, Object> p, Map<String, Object> p2, String prefix) {
@@ -732,10 +732,7 @@ public class TeacherGenerationHelper {
             prefix = prefix + ".";
         }
         AcademicCoursePlan coursePlan = c.getCoursePlan();
-        AcademicClass cls = c.getSubClass();
-        if (cls == null && coursePlan != null) {
-            cls = coursePlan.getCourseLevel().getAcademicClass();
-        }
+        AcademicClass cls = c.resolveAcademicClass();
         p.put(prefix + "name", c.getName());
         p.put(prefix + "name2", c.getName2());
         p.put(prefix + "c", c.getValueC());
@@ -813,9 +810,9 @@ public class TeacherGenerationHelper {
                 p.put(prefix + "class.name2", cls.getName2());
                 p.put(prefix + "program.name", cls.getProgram().getName());
                 p.put(prefix + "program.name2", cls.getProgram().getName2());
-                p.put(prefix + "department.code", cls.getProgram().getDepartment().getCode());
-                p.put(prefix + "department.name", cls.getProgram().getDepartment().getName());
-                p.put(prefix + "department.name2", cls.getProgram().getDepartment().getName2());
+                p.put(prefix + "department.code", cls.resolveDepartment().getCode());
+                p.put(prefix + "department.name", cls.resolveDepartment().getName());
+                p.put(prefix + "department.name2", cls.resolveDepartment().getName2());
             }
         }
         AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);

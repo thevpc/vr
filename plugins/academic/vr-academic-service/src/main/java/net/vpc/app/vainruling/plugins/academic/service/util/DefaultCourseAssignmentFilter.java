@@ -431,12 +431,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
             }
         }
 
-        AppDepartment department = null;
-        try{
-            department=a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment();
-        }catch (NullPointerException ex){
-            //
-        }
+        AppDepartment department = a.resolveDepartment();
         if (!acceptDepartment(department)) {
             return false;
         }
@@ -444,7 +439,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
             return false;
         }
         if (this.getAcceptedProgramTypes().size() > 0) {
-            AcademicProgramType t = a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getProgramType();
+            AcademicProgramType t = a.resolveProgramType();
             if (t == null) {
                 throw new RuntimeException("Null Program Type");
             }
@@ -453,7 +448,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
             }
         }
         if (this.getRejectedProgramTypes().size() > 0) {
-            AcademicProgramType t = a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getProgramType();
+            AcademicProgramType t = a.resolveProgramType();
             if (t == null) {
                 throw new RuntimeException("Null Program Type");
             }
@@ -463,7 +458,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         }
 
         if (this.getAcceptedSemesters().size() > 0) {
-            AcademicSemester t = a.getCoursePlan().getCourseLevel().getSemester();
+            AcademicSemester t = a.resolveSemester();
             if (t == null) {
                 throw new RuntimeException("Null Semester");
             }
@@ -472,7 +467,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
             }
         }
         if (this.getRejectedSemesters().size() > 0) {
-            AcademicSemester t = a.getCoursePlan().getCourseLevel().getSemester();
+            AcademicSemester t = a.resolveSemester();
             if (t == null) {
                 throw new RuntimeException("Null Semester");
             }
@@ -518,27 +513,11 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         }
 
         if (this.getAcceptedClasses().size() > 0) {
-            AcademicClass t = a.getSubClass();
-            if (t == null) {
-                t = a.getCoursePlan().getCourseLevel().getAcademicClass();
-            }
+            AcademicClass t = a.resolveAcademicClass();
             if (t == null) {
                 throw new RuntimeException("Null Class");
             }
             if (!acceptedTree.contains(t.getId())) {
-                return false;
-            }
-        }
-        if (this.getAcceptedClasses().size() > 0) {
-            AcademicClass t = a.getSubClass();
-            if (t == null) {
-                t = a.getCoursePlan().getCourseLevel().getAcademicClass();
-            }
-            if (t == null) {
-                throw new RuntimeException("Null Class");
-            }
-
-            if (rejectedTree.contains(t.getId())) {
                 return false;
             }
         }

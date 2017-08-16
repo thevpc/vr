@@ -153,8 +153,10 @@ public class VrUPAUtils {
             return new JsonPrimitive((String) value);
         } else if (type instanceof TemporalType) {
             return new JsonPrimitive(UNIVERSAL_DATE_FORMAT.format(value));
+        } else if (type instanceof EnumType) {
+            return new JsonPrimitive(value.toString());
         } else {
-            throw new IllegalArgumentException("Unsupported");
+            throw new IllegalArgumentException("Unsupported json serialization of type "+type+(type==null?"":("  : "+type.getClass().getName())));
         }
     }
     public static Relationship getManyToOnePrimitiveRelationShip(Field field){

@@ -27,7 +27,7 @@ public class ClassCountEduKPI implements KPI<AcademicCourseAssignmentInfo> {
 
             @Override
             public void visit(AcademicCourseAssignmentInfo assignment) {
-                AcademicClass v = assignment.getAssignment().getCoursePlan().getCourseLevel().getAcademicClass();
+                AcademicClass v = assignment.resolveAcademicClass();
                 if (v != null) {
                     distinctValues.add(v.getId());
                 }

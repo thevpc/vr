@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.I18n;
+import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewValuesProvider;
 import net.vpc.app.vainruling.core.web.obj.ViewContext;
@@ -29,7 +30,7 @@ public class EnumTypePropertyViewValuesProvider implements PropertyViewValuesPro
         I18n i18n = VrApp.getBean(I18n.class);
         List<NamedId> list = new ArrayList<>();
         for (Object value : t.getValues()) {
-            list.add(new NamedId(value, i18n.getEnum(value)));
+            list.add(new NamedId(VrUPAUtils.objToJson(value,dt), i18n.getEnum(value)));
         }
         return list;
     }

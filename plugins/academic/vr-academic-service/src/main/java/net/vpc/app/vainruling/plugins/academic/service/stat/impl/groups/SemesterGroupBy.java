@@ -17,7 +17,7 @@ public class SemesterGroupBy implements KPIGroupBy<AcademicCourseAssignmentInfo>
     private static StringArrayKPIGroup NON_ASSIGNED = new StringArrayKPIGroup("<<No Semester>>", null);
     @Override
     public List<KPIGroup> createGroups(AcademicCourseAssignmentInfo assignment) {
-        AcademicSemester t = assignment.getAssignment().getCoursePlan().getCourseLevel().getSemester();
+        AcademicSemester t = assignment.resolveSemester();
         if(t==null){
             return Arrays.asList(NON_ASSIGNED);
         }else {

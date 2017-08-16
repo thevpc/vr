@@ -27,7 +27,7 @@ public class AssignedTeachersCountEduKPI implements KPI<AcademicCourseAssignment
 
             @Override
             public void visit(AcademicCourseAssignmentInfo assignment) {
-                AcademicTeacher teacher = assignment.getAssignment().getTeacher();
+                AcademicTeacher teacher = assignment.resolveTeacher();
                 if (teacher != null) {
                     distinctValues.add(teacher.getId());
                 }

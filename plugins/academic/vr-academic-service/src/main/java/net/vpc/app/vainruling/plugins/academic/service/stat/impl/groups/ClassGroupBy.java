@@ -21,11 +21,9 @@ public class ClassGroupBy implements KPIGroupBy<AcademicCourseAssignmentInfo> {
     @Override
     public List<KPIGroup> createGroups(AcademicCourseAssignmentInfo assignment) {
         List<AcademicClass> classes=new ArrayList<>();
-        if(assignment.getAssignment().getSubClass()!=null){
-            classes.add(assignment.getAssignment().getSubClass());
-        }
-        if(assignment.getAssignment().getCoursePlan().getCourseLevel().getAcademicClass()!=null){
-            classes.add(assignment.getAssignment().getCoursePlan().getCourseLevel().getAcademicClass());
+        AcademicClass cls = assignment.resolveAcademicClass();
+        if(cls !=null){
+            classes.add(cls);
         }
         List<AcademicClass> superClasses = AcademicPlugin.get().findAcademicUpHierarchyList(
                 classes.toArray(new AcademicClass[classes.size()]),

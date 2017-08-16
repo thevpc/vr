@@ -844,8 +844,8 @@ public class XlsxLoadImporter {
             academicStudent = new AcademicStudent();
             academicStudent.setContact(contact);
         }
-        if (checkUpdatable(academicStudent.getDepartment(), studentclass.getProgram().getDepartment(), force)) {
-            academicStudent.setDepartment(studentclass.getProgram().getDepartment());
+        if (checkUpdatable(academicStudent.getDepartment(), studentclass.resolveDepartment(), force)) {
+            academicStudent.setDepartment(studentclass.resolveDepartment());
         }
         if (academicStudent.getDepartment() == null) {
             academicStudent.setDepartment(dept);
@@ -864,8 +864,8 @@ public class XlsxLoadImporter {
         if (checkUpdatable(academicStudent.getLastClass1(), studentclass, force)) {
             academicStudent.setLastClass1(studentclass);
         }
-        if (studentclass.getProgram() != null && checkUpdatable(academicStudent.getDepartment(), studentclass.getProgram().getDepartment(), force)) {
-            academicStudent.setDepartment(studentclass.getProgram().getDepartment());
+        if (studentclass.getProgram() != null && checkUpdatable(academicStudent.getDepartment(), studentclass.resolveDepartment(), force)) {
+            academicStudent.setDepartment(studentclass.resolveDepartment());
         }
         if (checkUpdatable(contact.getGender(), gender, force)) {
             contact.setGender(gender);
@@ -1119,8 +1119,8 @@ public class XlsxLoadImporter {
                         throw new IllegalArgumentException("Invalid Class " + stringVal + " for Program " + program.getName());
                     }
                     if (department == null) {
-                        department = studentClass.getProgram().getDepartment();
-                    } else if (department.getId() != studentClass.getProgram().getDepartment().getId()) {
+                        department = studentClass.resolveDepartment();
+                    } else if (department.getId() != studentClass.resolveDepartment().getId()) {
                         throw new IllegalArgumentException("Invalid Class " + stringVal + " for Department " + program.getName());
                     }
                 }

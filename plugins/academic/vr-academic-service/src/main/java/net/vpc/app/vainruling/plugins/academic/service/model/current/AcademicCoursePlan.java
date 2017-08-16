@@ -13,6 +13,8 @@ import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 
 /**
  * cours (dans un plan d'études) Module
@@ -23,11 +25,16 @@ import java.sql.Timestamp;
 @Path("Education/StudyPlan")
 @Properties(
         {
-            @Property(name = "ui.auto-filter.period", value = "{expr='period',order=1}"),
-            @Property(name = "ui.auto-filter.department", value = "{expr='courseLevel.academicClass.program.department',order=2}"),
-            @Property(name = "ui.auto-filter.program", value = "{expr='courseLevel.academicClass.program',order=3}"),
-            @Property(name = "ui.auto-filter.programType", value = "{expr='courseLevel.academicClass.program.programType',order=4}"),
-            @Property(name = "ui.auto-filter.semester", value = "{expr='courseLevel.semester',order=5}"),
+            @Property(name = "ui.auto-filter.period", value = "{expr='period',order=1}")
+            ,
+            @Property(name = "ui.auto-filter.department", value = "{expr='courseLevel.academicClass.program.department',order=2}")
+            ,
+            @Property(name = "ui.auto-filter.program", value = "{expr='courseLevel.academicClass.program',order=3}")
+            ,
+            @Property(name = "ui.auto-filter.programType", value = "{expr='courseLevel.academicClass.program.programType',order=4}")
+            ,
+            @Property(name = "ui.auto-filter.semester", value = "{expr='courseLevel.semester',order=5}")
+            ,
             @Property(name = "ui.auto-filter.class", value = "{expr='courseLevel.academicClass',order=6}")
         }
 )
@@ -59,20 +66,17 @@ public class AcademicCoursePlan {
 
     private String name2;
 
-
 //    @Summary
 //    @Properties(
 //            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
 //    )
 //    private AcademicProgram program;
-
     private String discipline;
 
     private AcademicOfficialDiscipline officialDiscipline;
 
 //    @Summary
 //    private AcademicClass studentClass;
-
     @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:120px")
@@ -84,7 +88,6 @@ public class AcademicCoursePlan {
 //            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
 //    )
 //    private AcademicSemester semester;
-
     @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
@@ -124,20 +127,20 @@ public class AcademicCoursePlan {
 //    @Summary
     @Summary
     @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "#{concat('width:60px;','background-color:'," +
-                    " if(this.courseGroup.name like '%UE1') then '{bgcolor1}'" +
-                    "  elseif (this.courseGroup.name like '%UE2') then '{bgcolor2}' " +
-                    "  elseif (this.courseGroup.name like '%UE3') then '{bgcolor3}' " +
-                    "  elseif (this.courseGroup.name like '%UE4') then '{bgcolor4}' " +
-                    "  elseif (this.courseGroup.name like '%UE5') then '{bgcolor5}' " +
-                    "  elseif (this.courseGroup.name like '%UE6') then '{bgcolor6}' " +
-                    "  elseif (this.courseGroup.name like '%UE7') then '{bgcolor7}' " +
-                    "  elseif (this.courseGroup.name like '%UE8') then '{bgcolor8}' " +
-                    "  elseif (this.courseGroup.name like '%UE9') then '{bgcolor9}' " +
-                    "  elseif (this.courseGroup.name like '%UE10') then '{bgcolor10}' " +
-                    " end" +
-                    ")" +
-                    "}")
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "#{concat('width:60px;','background-color:',"
+                    + " if(this.courseGroup.name like '%UE1') then '{bgcolor1}'"
+                    + "  elseif (this.courseGroup.name like '%UE2') then '{bgcolor2}' "
+                    + "  elseif (this.courseGroup.name like '%UE3') then '{bgcolor3}' "
+                    + "  elseif (this.courseGroup.name like '%UE4') then '{bgcolor4}' "
+                    + "  elseif (this.courseGroup.name like '%UE5') then '{bgcolor5}' "
+                    + "  elseif (this.courseGroup.name like '%UE6') then '{bgcolor6}' "
+                    + "  elseif (this.courseGroup.name like '%UE7') then '{bgcolor7}' "
+                    + "  elseif (this.courseGroup.name like '%UE8') then '{bgcolor8}' "
+                    + "  elseif (this.courseGroup.name like '%UE9') then '{bgcolor9}' "
+                    + "  elseif (this.courseGroup.name like '%UE10') then '{bgcolor10}' "
+                    + " end"
+                    + ")"
+                    + "}")
     )
     @ManyToOne(filter = "that.period.id=this.period.id and that.academicClass.id=this.courseLevel.academicClass.id")
     private AcademicCourseGroup courseGroup;
@@ -155,14 +158,14 @@ public class AcademicCoursePlan {
     //@Summary
     private String labels;
 
-
     private String roomConstraintsC;
     @Summary
     private String roomConstraintsTP;
 
     @Properties(
             {
-                    @Property(name = UIConstants.Form.SEPARATOR, value = "Contenu"),
+                @Property(name = UIConstants.Form.SEPARATOR, value = "Contenu")
+                ,
                     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
             }
     )
@@ -173,16 +176,15 @@ public class AcademicCoursePlan {
 
     @Properties(
             {
-                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
+                @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
             }
     )
     @Field(max = "max")
     private String cDetails;
 
-
     @Properties(
             {
-                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
+                @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
             }
     )
     @Field(max = "max")
@@ -190,7 +192,7 @@ public class AcademicCoursePlan {
 
     @Properties(
             {
-                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
+                @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
             }
     )
     @Field(max = "max")
@@ -198,12 +200,11 @@ public class AcademicCoursePlan {
 
     @Properties(
             {
-                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
+                @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
             }
     )
     @Field(max = "max")
     private String referenceDetails;
-
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
@@ -260,7 +261,6 @@ public class AcademicCoursePlan {
 //    public void setStudentClass(AcademicClass studentClass) {
 //        this.studentClass = studentClass;
 //    }
-
     public AcademicCourseLevel getCourseLevel() {
         return courseLevel;
     }
@@ -276,7 +276,6 @@ public class AcademicCoursePlan {
 //    public void setSemester(AcademicSemester semester) {
 //        this.semester = semester;
 //    }
-
     public double getValueC() {
         return valueC;
     }
@@ -319,10 +318,10 @@ public class AcademicCoursePlan {
     @Override
     public String toString() {
         return "CoursePlan{" + "name=" + name
-//                + ", department=" + program 
-//                + ", studentClass=" + studentClass 
+                //                + ", department=" + program 
+                //                + ", studentClass=" + studentClass 
                 + ", moduleLevel=" + courseLevel
-//                + ", semester=" + semester 
+                //                + ", semester=" + semester 
                 + ", valueC=" + valueC + ", valueTD=" + valueTD + ", valueTP=" + valueTP + ", valuePM=" + valuePM + '}';
     }
 
@@ -565,4 +564,25 @@ public class AcademicCoursePlan {
     public void setReferenceDetails(String referenceDetails) {
         this.referenceDetails = referenceDetails;
     }
+
+    public AcademicClass resolveAcademicClass() {
+        return getCourseLevel()== null ? null : getCourseLevel().getAcademicClass();
+    }
+
+    public AcademicProgram resolveProgram() {
+        return getCourseLevel()== null ? null : getCourseLevel().resolveProgram();
+    }
+
+    public AcademicProgramType resolveProgramType() {
+        return getCourseLevel()== null ? null : getCourseLevel().resolveProgramType();
+    }
+
+    public AppDepartment resolveDepartment() {
+        return getCourseLevel()== null ? null : getCourseLevel().resolveDepartment();
+    }
+    
+    public AcademicSemester resolveSemester() {
+        return getCourseLevel()== null ? null : getCourseLevel().getSemester();
+    }
+
 }

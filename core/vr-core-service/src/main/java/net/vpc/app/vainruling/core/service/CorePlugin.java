@@ -859,7 +859,7 @@ public class CorePlugin {
     public AppCompany findCompany(int id) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return (AppCompany) pu.createQuery("Select u from AppCompany u where u.id=:id").setParameter("id", id)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getFirstResultOrNull();
 //        return (AppCompany) pu.findById(AppCompany.class, id);
     }
@@ -867,7 +867,7 @@ public class CorePlugin {
     public AppCompany findCompany(String name) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return (AppCompany) pu.createQuery("Select u from AppCompany u where u.name=:name").setParameter("name", name)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getFirstResultOrNull();
 //
 //        return (AppCompany) UPA.getPersistenceUnit().findByMainField(AppCompany.class, name);

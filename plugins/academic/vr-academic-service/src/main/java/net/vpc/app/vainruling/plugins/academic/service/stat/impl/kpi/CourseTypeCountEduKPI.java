@@ -30,7 +30,7 @@ public class CourseTypeCountEduKPI implements KPI<AcademicCourseAssignmentInfo> 
             @Override
             public void visit(AcademicCourseAssignmentInfo assignment) {
 
-                String name = assignment.getAssignment().getCourseType().getName();
+                String name = assignment.resolveCourseType().getName();
                 if ("C".equalsIgnoreCase(name)) {
                     c++;
                 }else

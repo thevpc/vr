@@ -12,6 +12,7 @@ import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
 
 /**
  * Classe
@@ -43,6 +44,7 @@ public class AcademicClass {
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
+
 
     public AcademicClass() {
     }
@@ -119,6 +121,37 @@ public class AcademicClass {
 
     public void setUpdateDate(Timestamp updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public AcademicProgramType resolveProgramType(){
+        AcademicProgram program = getProgram();
+        if(program!=null){
+            return program.getProgramType();
+        }
+        AcademicClass p = getParent();
+        if(p!=null){
+            return p.resolveProgramType();
+        }
+        return null;
+    }
+
+    public AcademicProgram resolveProgram(){
+        AcademicProgram p=getProgram();
+        if(p==null){
+            AcademicClass pp = getParent();
+            if(pp!=null){
+                return pp.resolveProgram();
+            }
+        }
+        return null;
+    }
+
+    public AppDepartment resolveDepartment(){
+        AcademicProgram p = resolveProgram();
+        if(p!=null){
+            return p.getDepartment();
+        }
+        return null;
     }
 
 

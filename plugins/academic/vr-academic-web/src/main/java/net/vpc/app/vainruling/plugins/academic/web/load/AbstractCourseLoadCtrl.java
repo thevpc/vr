@@ -484,9 +484,7 @@ public abstract class AbstractCourseLoadCtrl {
                         }
                     }
                 }
-                d = (t.getCoursePlan() != null && t.getCoursePlan().getCourseLevel().getAcademicClass() != null
-                        && t.getCoursePlan().getCourseLevel().getAcademicClass().getProgram() != null) ?
-                        t.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment() : null;
+                d = t.resolveDepartment();
                 if (d != null) {
                     if (userSession.allowed("Custom.Education.CourseLoadUpdateIntents")) {
                         AppDepartment d2 = user.getDepartment();
@@ -533,8 +531,7 @@ public abstract class AbstractCourseLoadCtrl {
                         }
                     }
                 }
-                d = (t.getCoursePlan() != null && t.getCoursePlan().getCourseLevel().getAcademicClass() != null && t.getCoursePlan().getCourseLevel().getAcademicClass().getProgram() != null) ?
-                        t.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getDepartment() : null;
+                d = t.resolveDepartment();
                 if (d != null) {
                     if (userSession.allowed("Custom.Education.CourseLoadUpdateAssignments")) {
                         AppDepartment d2 = userSession.getUser().getDepartment();
@@ -676,14 +673,7 @@ public abstract class AbstractCourseLoadCtrl {
             super(value, false);
             this.intents = value.getAssignmentChunck().toStringByTeacher(visitor);
             this.courseIntents = value.getCourseChunck().toStringByTeacher(visitor);
-            academicClass=value.getAssignment().getSubClass();
-            if(academicClass==null){
-                try {
-                    academicClass = value.getAssignment().getCoursePlan().getCourseLevel().getAcademicClass();
-                }catch (NullPointerException e){
-                    //
-                }
-            }
+            academicClass=value.resolveAcademicClass();
             AcademicCourseType courseType = value.getAssignment().getCourseType();
             if(courseType!=null && courseType.getName().equalsIgnoreCase("C")) {
                 rooms = value.getAssignment().getCoursePlan().getRoomConstraintsC();

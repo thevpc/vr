@@ -545,46 +545,55 @@ and open the template in the editor.
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('c')}"
                                         headerText="supp C/sem" width="5%"
                                         style="background: #{vrColorTable.getBgColor('extraWeek')};"
-                                        sortBy="#{i.extraWeek.c}"
+                                        sortBy="#{i.extraWeekEff.c}"
                                 >
-                                    <h:outputText value="#{i.extraWeek.c != 0 ? i.extraWeek.c : ''}"><f:convertNumber
+                                    <h:outputText value="#{i.extraWeekEff.c != 0 ? i.extraWeekEff.c : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
                                         headerText="supp TD/sem" width="5%"
                                         style="background: #{vrColorTable.getBgColor('extraWeek')};"
-                                        sortBy="#{i.extraWeek.td}"
+                                        sortBy="#{i.extraWeekEff.td}"
                                 >
-                                    <h:outputText value="#{i.extraWeek.td != 0 ? i.extraWeek.td : ''}"><f:convertNumber
+                                    <h:outputText value="#{i.extraWeekEff.td != 0 ? i.extraWeekEff.td : ''}"><f:convertNumber
+                                            pattern="#0.00"/></h:outputText>
+                                </p:column>
+                                <p:column
+                                        rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('tppm')}"
+                                        headerText="supp TP+PM/sem" width="5%"
+                                        style="background: #{vrColorTable.getBgColor('extraWeek')};"
+                                        sortBy="#{i.extraWeekEff.tppm}"
+                                >
+                                    <h:outputText value="#{i.extraWeekEff.tp != 0 ? i.extraWeekEff.tppm : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
                                         headerText="supp TP/sem" width="5%"
                                         style="background: #{vrColorTable.getBgColor('extraWeek')};"
-                                        sortBy="#{i.extraWeek.tp}"
+                                        sortBy="#{i.extraWeekEff.tp}"
                                 >
-                                    <h:outputText value="#{i.extraWeek.tp != 0 ? i.extraWeek.tp : ''}"><f:convertNumber
+                                    <h:outputText value="#{i.extraWeekEff.tp != 0 ? i.extraWeekEff.tp : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
                                         headerText="supp PM/sem" width="5%"
                                         style="background: #{vrColorTable.getBgColor('extraWeek')};"
-                                        sortBy="#{i.extraWeek.pm}"
+                                        sortBy="#{i.extraWeekEff.pm}"
                                 >
-                                    <h:outputText value="#{i.extraWeek.pm != 0 ? i.extraWeek.pm : ''}"><f:convertNumber
+                                    <h:outputText value="#{i.extraWeekEff.pm != 0 ? i.extraWeekEff.pm : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
                                         headerText="supp Eq/sem" width="5%"
                                         style="background: #{vrColorTable.getBgColor('extraWeek')};"
-                                        sortBy="#{i.extraWeek.equiv}"
+                                        sortBy="#{i.extraWeekEff.equiv}"
                                 >
                                     <h:outputText
-                                            value="#{i.extraWeek.equiv != 0 ? i.extraWeek.equiv : ''}"><f:convertNumber
+                                            value="#{i.extraWeekEff.equiv != 0 ? i.extraWeekEff.equiv : ''}"><f:convertNumber
                                             pattern="#0.00"/></h:outputText>
                                 </p:column>
 

@@ -411,9 +411,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         teacher_stat.setConfig(deviationConfig);
         teacher_stat.setCourseAssignmentFilter(filter);
         teacher_stat.setTeacher(teacher);
+        AcademicTeacherSituation situation = teacher.getSituation();
         teacher_stat.setTeacherPeriod(findAcademicTeacherPeriod(periodId, teacher_stat.getTeacher()));
         AcademicTeacherDegree degree = teacher_stat.getTeacherPeriod().getDegree();
-        teacher_stat.getDueWeek().setEquiv(degree == null ? 0 : degree.getValueDU());
+        teacher_stat.getDueWeek().setEquiv(teacherHasDue(situation, degree) ? degree.getValueDU(): 0);
 
         boolean hasDU = teacher_stat.getDueWeek().getEquiv() > 0;
         if (!hasDU) {
@@ -479,7 +480,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 ModuleStat ms = evalModuleStat(periodId, academicCourseAssignment.getAssignment().getId(), teacherId);
                 ModuleSemesterStat mss = ms.getSemester(ss.getName());
                 sem_value.add(mss.getValue());
-                if (academicCourseAssignment.getAssignment().getCoursePlan().getCourseLevel().getSemester().getId() == ss.getId()) {
+                if (academicCourseAssignment.resolveSemester().getId() == ss.getId()) {
                     semesterAssignments.add(academicCourseAssignment);
                     if (academicCourseAssignment.getAssignment().isConfirmedTeacher()) {
                         LoadValue v = getAssignmentLoadValue(academicCourseAssignment.getAssignment(), degree, conversionTable);
@@ -616,6 +617,14 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return teacher_stat;
     }
 
+    private boolean teacherHasDue(AcademicTeacherSituation situation, AcademicTeacherDegree degree) {
+        return degree != null &&
+                degree.getValueDU() >0 &&
+                situation!=null &&
+                situation.getType()!=null &&
+                        situation.getType().isWithDue();
+    }
+
     public LoadValue getAssignmentLoadValue(AcademicCourseAssignment assignment, AcademicTeacherDegree degree, AcademicConversionTableHelper conversionTable) {
         LoadValue loadValue = new LoadValue(assignment.getValueC(), assignment.getValueTD(), assignment.getValueTP(), assignment.getValuePM());
         double equiv = evalValueEquiv(loadValue, degree, conversionTable);
@@ -666,7 +675,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 AcademicSemester ss = semesters.get(i);
                 ModuleSemesterStat s = new ModuleSemesterStat();
                 s.setSemester(ss);
-                if (module.getCoursePlan().getCourseLevel().getSemester().getName().equals(ss.getName())) {
+                if (module.resolveSemester().getName().equals(ss.getName())) {
                     s.getValue().set(mod_val.copy().mul(module.getGroupCount() * module.getShareCount()));
                     s.setValueEffWeek(module.getValueEffWeek() * module.getGroupCount() * module.getShareCount());
                     s.getValue().setEquiv(evalValueEquiv(s.getValue(), trs.getDegree(), conversionTableByPeriodId));
@@ -918,13 +927,15 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public List<AcademicCourseAssignment> findAcademicCourseAssignments(int periodId) {
+//        cacheService.get(AcademicCourseAssignment.class).invalidate();
         return cacheService.get(AcademicCourseAssignment.class).getProperty("findAcademicCourseAssignments:" + periodId, new Action<List<AcademicCourseAssignment>>() {
             @Override
             public List<AcademicCourseAssignment> run() {
-                return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.coursePlan.periodId=:periodId")
+                List<AcademicCourseAssignment> list = UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.coursePlan.periodId=:periodId")
                         .setParameter("periodId", periodId)
-                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
+//                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
                         .getResultList();
+                return list;
             }
         });
     }
@@ -952,7 +963,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public List<AcademicCourseIntent> findCourseIntentsByAssignment(int assignment) {
         List<AcademicCourseIntent> intents = null;
         intents = UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseIntent a where a.assignmentId=:assignment")
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
                 .setParameter("assignment", assignment)
                 .getResultList();
         return intents;
@@ -1040,7 +1051,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                         System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled!");
                     }
                     for (AcademicCourseAssignment value : list) {
-                        AcademicSemester semester1 = value.getCoursePlan().getCourseLevel().getSemester();
+                        AcademicSemester semester1 = value.resolveSemester();
                         if (filter == null || filter.acceptAssignment(value)) {
                             m.add(value);
                         }
@@ -1057,7 +1068,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             List<AcademicCourseAssignmentInfo> m = new ArrayList<>();
             if (teacher == null) {
                 for (AcademicCourseAssignment value : findAcademicCourseAssignments(periodId)) {
-                    AcademicSemester semester1 = value.getCoursePlan().getCourseLevel().getSemester();
+                    AcademicSemester semester1 = value.resolveSemester();
                     if (filter == null || filter.acceptAssignment(value)) {
                         AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
                         b.setAssigned(value.getTeacher() != null);
@@ -1084,7 +1095,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                         System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled!");
                     }
                     for (AcademicCourseAssignment value : list) {
-                        AcademicSemester semester1 = value.getCoursePlan().getCourseLevel().getSemester();
+                        AcademicSemester semester1 = value.resolveSemester();
                         if (filter == null || filter.acceptAssignment(value)) {
                             AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
                             b.setAssigned(value.getTeacher() != null);
@@ -1501,7 +1512,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         max = courseAssignments.size();
         for (AcademicCourseAssignment value : courseAssignments) {
             mons[1].setProgress(i++, max);
-            AcademicSemester semester = value.getCoursePlan().getCourseLevel().getSemester();
+            AcademicSemester semester = value.resolveSemester();
             semestersIds.add(semester.getId());
             double grp = value.getGroupCount();
             double shr = value.getShareCount();
@@ -2527,7 +2538,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                         List<AcademicCourseAssignment> assignments = UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.coursePlan.periodId=:periodId " +
                                 " order by a.coursePlan.courseLevel.semester.code,a.coursePlan.courseLevel.academicClass.program.name,a.name,a.courseType.name")
                                 .setParameter("periodId", periodId)
-                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
+//                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
                                 .getResultList();
 
                         return Utils.unmodifiableMapList(new DefaultMapList<Integer, AcademicCourseAssignment>(
@@ -2552,7 +2563,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     @Override
                     public List<AcademicCourseIntent> run() {
                         return UPA.getPersistenceUnit().createQuery("Select u from AcademicCourseIntent u where u.assignment.coursePlan.periodId=:periodId")
-                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 4)
+//                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 4)
                                 .setParameter("periodId", periodId)
                                 .getResultList();
                     }
@@ -2565,7 +2576,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     @Override
                     public List<AcademicCourseIntent> run() {
                         return UPA.getPersistenceUnit().createQuery("Select u from AcademicCourseIntent u where u.assignment.coursePlanId=:coursePlanId")
-                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 4)
+//                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 4)
                                 .setParameter("coursePlanId", coursePlanId)
                                 .getResultList();
                     }
@@ -2578,7 +2589,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                     @Override
                     public List<AcademicCoursePlan> run() {
                         return UPA.getPersistenceUnit().createQuery("Select a from AcademicCoursePlan a where a.periodId=:periodId ")
-                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
+//                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
                                 .setParameter("periodId", periodId)
                                 .getResultList();
                     }
@@ -2778,7 +2789,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return (AcademicCoursePlan) UPA.getPersistenceUnit()
                 .createQueryBuilder(AcademicCoursePlan.class)
                 .byField("id", id)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
                 .getFirstResultOrNull();
     }
 
@@ -2893,7 +2904,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                                 .createQueryBuilder(AcademicTeacherPeriod.class)
                                 .setEntityAlias("o")
                                 .byExpression("o.periodId=:periodId")
-                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 4)
+//                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 4)
                                 .setParameter("periodId", periodId)
                                 .getResultList();
                 Map<Integer, AcademicTeacherPeriod> t = new HashMap<Integer, AcademicTeacherPeriod>();
@@ -2935,7 +2946,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         List<AcademicHistCourseAssignment> m = new ArrayList<>();
         for (AcademicHistCourseAssignment value : findHistCourseAssignments(yearId)) {
             if (teacher == null || (value.getTeacher() != null && value.getTeacher().getId() == (teacher))) {
-                AcademicSemester semester1 = value.getCoursePlan().getCourseLevel().getSemester();
+                AcademicSemester semester1 = value.resolveSemester();
                 if (semester == null || (semester1 != null && semester1.getId() == (semester))) {
                     m.add(value);
                 }
@@ -3796,9 +3807,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             List<AcademicClass> myClasses = new ArrayList<>();
             Set<String> myPrograms = new HashSet<>();
             for (AcademicCourseAssignment a : findCourseAssignments(periodId, s.getId(), new DefaultCourseAssignmentFilter().setAcceptIntents(false))) {
-                myPrograms.add(a.getCoursePlan().getCourseLevel().getAcademicClass().getProgram().getName());
-                myClasses.add(a.getSubClass());
-                myClasses.add(a.getCoursePlan().getCourseLevel().getAcademicClass());
+                myPrograms.add(a.resolveProgram().getName());
+                myClasses.add(a.resolveAcademicClass());//not to force loading of sub class!
             }
 
             for (AcademicClass ac : findAcademicUpHierarchyList(myClasses.toArray(new AcademicClass[myClasses.size()]), academicClasses)) {
@@ -4213,7 +4223,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                         List<AcademicCourseIntent> m = new ArrayList<>();
                         if (assignmentId == null) {
                             for (AcademicCourseIntent value : findCourseIntents(periodId)) {
-                                AcademicSemester semester1 = value.getAssignment().getCoursePlan().getCourseLevel().getSemester();
+                                AcademicSemester semester1 = value.resolveSemester();
                                 if (semester == null || (semester1 != null && semester1.getId() == (semester))) {
                                     m.add(value);
                                 }
@@ -4224,7 +4234,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 //                System.out.println("No intents for " + assignmentId + " : assignment=" + assignmentId);
                             } else {
                                 for (AcademicCourseIntent value : list) {
-                                    AcademicSemester semester1 = value.getAssignment().getCoursePlan().getCourseLevel().getSemester();
+                                    AcademicSemester semester1 = value.resolveSemester();
                                     if (semester == null || (semester1 != null
                                             && semester1.getId() == (semester))) {
                                         m.add(value);
@@ -4244,7 +4254,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         List<AcademicCourseIntent> m = new ArrayList<>();
         if (teacher == null) {
             for (AcademicCourseIntent value : findCourseIntents(periodId)) {
-                AcademicSemester semester1 = value.getAssignment().getCoursePlan().getCourseLevel().getSemester();
+                AcademicSemester semester1 = value.resolveSemester();
                 if (filter == null || filter.acceptIntent(value)) {
                     m.add(value);
                 }
@@ -4407,7 +4417,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public Map<Integer, Number> findInternshipTeachersInternshipsCounts(int yearId, int internshipTypeId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         List<AcademicInternship> list = pu.createQuery("Select u from AcademicInternship u where u.board.periodId=:periodId and u.board.internshipTypeId=:internshipTypeId and u.internshipStatus.closed=false")
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 1)
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 1)
                 .setParameter("periodId", yearId)
                 .setParameter("internshipTypeId", internshipTypeId)
                 .getResultList();
@@ -4473,7 +4483,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from AcademicInternshipBoardMessage u where u.internshipId=:internshipId order by u.obsUpdateDate desc")
                 .setParameter("internshipId", internshipId)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getResultList();
     }
 
@@ -4520,7 +4530,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from AcademicInternship u where u.supervisorId=:teacherId or u.secondSupervisorId=:teacherId and u.internshipStatus.closed=false")
                 .setParameter("teacherId", teacherId)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
 //                .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
                 .getResultList();
     }
@@ -4529,7 +4539,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select u from AcademicInternship u where u.board.departmentId=:departmentId " + (activeOnly ? "and u.internshipStatus.closed=false" : ""))
                 .setParameter("departmentId", departmentId)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
 //                .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
                 .getResultList();
     }
@@ -4538,7 +4548,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         List<AcademicInternship> internships = pu.createQuery("Select u from AcademicInternship u where u.board.departmentId=:departmentId " + (openOnly ? "and u.internshipStatus.closed=false" : ""))
                 .setParameter("departmentId", departmentId)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
 //                .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
                 .getResultList();
         List<AcademicInternshipSupervisorIntent> supervisorIntents = pu.createQuery("Select u from AcademicInternshipSupervisorIntent u where (u.internship.board.departmentId=:departmentId)" + (openOnly ? " and u.internship.internshipStatus.closed=false" : ""))
@@ -4546,7 +4556,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 .getResultList();
         List<AcademicInternshipBoardMessage> messages = pu.createQuery("Select u from AcademicInternshipBoardMessage u where (u.internship.board.departmentId=:departmentId) " + (openOnly ? " and u.internship.internshipStatus.closed=false" : ""))
                 .setParameter("departmentId", departmentId)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
 //                .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
                 .getResultList();
         return mergeAcademicInternshipExt(internships, supervisorIntents, messages);
@@ -4562,13 +4572,13 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             if (boardId <= 0) {
                 return pu.createQuery("Select u from AcademicInternship u where (u.boardId==null or u.board.departmentId=:departmentId) and u.internshipStatus.closed=false")
                         .setParameter("departmentId", d.getId())
-                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
+//                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
 //                        .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
                         .getResultList();
             } else {
                 return pu.createQuery("Select u from AcademicInternship u where u.boardId=:boardId and u.internshipStatus.closed=false")
                         .setParameter("boardId", boardId)
-                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
+//                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
 //                        .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
                         .getResultList();
             }
@@ -4579,7 +4589,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             for (AcademicInternshipBoard b : findEnabledInternshipBoardsByTeacher(teacherId)) {
                 List<AcademicInternship> curr = pu.createQuery("Select u from AcademicInternship u where u.boardId=:boardId and u.internshipStatus.closed=false")
                         .setParameter("boardId", b.getId())
-                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
+//                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
 //                        .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
                         .getResultList();
                 all.addAll(curr);
@@ -4588,7 +4598,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         } else {
             return pu.createQuery("Select u from AcademicInternship u where u.boardId=:boardId and u.internshipStatus.closed=false")
                     .setParameter("boardId", boardId)
-                    .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
+//                    .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
 //                    .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
                     .getResultList();
         }
@@ -4652,7 +4662,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                         .setParameter("departmentId", d.getId())
                         .setParameter("periodId", periodId, periodId >= 0)
                         .setParameter("internshipTypeId", internshipTypeId, internshipTypeId >= 0)
-                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
+//                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
                         .getResultList();
                 List<AcademicInternshipSupervisorIntent> supervisorIntents = pu.createQuery("Select u from AcademicInternshipSupervisorIntent u where " +
                         "(u.internship.boardId==null or (u.internship.board.departmentId=:departmentId"
@@ -4675,7 +4685,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                         .setParameter("departmentId", d.getId())
                         .setParameter("periodId", periodId, periodId >= 0)
                         .setParameter("internshipTypeId", internshipTypeId, internshipTypeId >= 0)
-                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+//                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                         .getResultList();
                 return mergeAcademicInternshipExt(internships, supervisorIntents, messages);
 
@@ -4683,14 +4693,14 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 List<AcademicInternship> internships = pu.createQuery("Select u from AcademicInternship u where u.boardId=:boardId "
                         + (openOnly ? " and u.internshipStatus.closed=false" : ""))
                         .setParameter("boardId", boardId)
-                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
+//                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
                         .getResultList();
                 List<AcademicInternshipSupervisorIntent> supervisorIntents = pu.createQuery("Select u from AcademicInternshipSupervisorIntent u where  u.internship.boardId=:boardId " + (openOnly ? " and u.internship.internshipStatus.closed=false" : ""))
                         .setParameter("boardId", boardId)
                         .getResultList();
                 List<AcademicInternshipBoardMessage> messages = pu.createQuery("Select u from AcademicInternshipBoardMessage u where u.internship.boardId=:boardId  " + (openOnly ? " and u.internship.internshipStatus.closed=false" : ""))
                         .setParameter("boardId", boardId)
-                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+//                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                         .getResultList();
                 return mergeAcademicInternshipExt(internships, supervisorIntents, messages);
             }
@@ -4720,26 +4730,26 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 return mergeAcademicInternshipExt(internships, supervisorIntents, messages);
             }
             List<AcademicInternship> internships = pu.createQuery("Select u from AcademicInternship u where u.boardId in (" + boardList + ") " + (openOnly ? "and u.internshipStatus.closed=false" : ""))
-                    .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
+//                    .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
                     .getResultList();
             List<AcademicInternshipSupervisorIntent> supervisorIntents = pu.createQuery("Select u from AcademicInternshipSupervisorIntent u where  u.internship.boardId in (" + boardList + ")  " + (openOnly ? "and u.internship.internshipStatus.closed=false" : ""))
                     .getResultList();
             List<AcademicInternshipBoardMessage> messages = pu.createQuery("Select u from AcademicInternshipBoardMessage u where u.internship.boardId in (" + boardList + ") " + (openOnly ? "and u.internship.internshipStatus.closed=false" : ""))
-                    .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+//                    .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                     .getResultList();
             return mergeAcademicInternshipExt(internships, supervisorIntents, messages);
 
         } else {
             List<AcademicInternship> internships = pu.createQuery("Select u from AcademicInternship u where u.boardId=:boardId and u.internshipStatus.closed=false")
                     .setParameter("boardId", boardId)
-                    .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
+//                    .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
                     .getResultList();
             List<AcademicInternshipSupervisorIntent> supervisorIntents = pu.createQuery("Select u from AcademicInternshipSupervisorIntent u where  u.internship.boardId=:boardId  " + (openOnly ? "and u.internship.internshipStatus.closed=false" : ""))
                     .setParameter("boardId", boardId)
                     .getResultList();
             List<AcademicInternshipBoardMessage> messages = pu.createQuery("Select u from AcademicInternshipBoardMessage u where u.internship.boardId=:boardId " + (openOnly ? "and u.internship.internshipStatus.closed=false" : ""))
                     .setParameter("boardId", boardId)
-                    .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+//                    .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                     .getResultList();
             return mergeAcademicInternshipExt(internships, supervisorIntents, messages);
         }
@@ -4801,7 +4811,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
         return q
 //                .setHint(QueryHints.FETCH_STRATEGY, QueryFetchStrategy.SELECT)
-                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
+//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 2)
                 .getResultList();
 
 //        if (teacher != null && d != null && teacher.getId() == teacherId) {

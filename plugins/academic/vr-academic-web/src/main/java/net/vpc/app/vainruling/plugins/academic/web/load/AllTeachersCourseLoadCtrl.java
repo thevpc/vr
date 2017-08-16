@@ -203,7 +203,7 @@ public class AllTeachersCourseLoadCtrl {
 //        List<TeacherSemesterStat> semester2 = new ArrayList<>();
 //        List<TeacherPeriodStat> year = new ArrayList<>();
         List<TeacherBaseStatTable> tables = new ArrayList<>();
-        String[] defaultFilters = {"situation", "degree", "value", "extraWeek", "c", "td", "tppm","valueWeek","eq"};
+        String[] defaultFilters = {"situation", "degree", "value", "extraWeek", "c", "td", "tppm","valueWeek"};
         String[] columnFilters = defaultFilters;
         List<SelectItem> noRefreshFilterItems;
 

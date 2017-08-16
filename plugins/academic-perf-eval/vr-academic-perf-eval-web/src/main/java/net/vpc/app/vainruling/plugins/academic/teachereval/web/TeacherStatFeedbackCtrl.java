@@ -681,12 +681,7 @@ public class TeacherStatFeedbackCtrl {
             for (AcademicCoursePlan f : feedback.findAcademicCoursePlansWithFeedbacks(periodId, teacherId, getModel().getValidatedFilter(), false, true)) {
                 boolean accept=core.isSessionAdmin();
                 if(!accept) {
-                    AppDepartment deptId = null;
-                    try {
-                        deptId = f.getCourseLevel().getAcademicClass().getProgram().getDepartment();
-                    } catch (NullPointerException ex) {
-                        //
-                    }
+                    AppDepartment deptId = f.resolveDepartment();
                     accept=academic.isManagerOf(deptId);
                 }
                 if(!accept) {

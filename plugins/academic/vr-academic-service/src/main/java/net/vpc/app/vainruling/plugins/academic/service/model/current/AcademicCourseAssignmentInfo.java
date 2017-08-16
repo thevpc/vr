@@ -5,6 +5,12 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
+import net.vpc.app.vainruling.core.service.model.AppContact;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+
 import java.util.Collections;
 import java.util.Set;
 
@@ -51,5 +57,50 @@ public class AcademicCourseAssignmentInfo {
 
     public AssignmentChuck getCourseChunck() {
         return courseChunck;
+    }
+
+
+    public AcademicProgram resolveProgram() {
+        return getAssignment().resolveProgram();
+    }
+
+    public AcademicProgramType resolveProgramType() {
+        return getAssignment().resolveProgramType();
+    }
+
+    public AppDepartment resolveDepartment() {
+        return getAssignment().resolveDepartment();
+    }
+
+    public AppDepartment resolveOwnerDepartment() {
+        return getAssignment().resolveOwnerDepartment();
+    }
+
+    public AcademicSemester resolveSemester() {
+        return getAssignment().resolveSemester();
+    }
+
+    public AppPeriod resolvePeriod() {
+        return getAssignment().resolvePeriod();
+    }
+
+    public AcademicClass resolveAcademicClass() {
+        return getAssignment().resolveAcademicClass();
+    }
+
+    public AppContact resolveContact() {
+        return getAssignment().resolveContact();
+    }
+
+    public AcademicTeacher resolveTeacher() {
+        return getAssignment().getTeacher();
+    }
+
+    public AcademicCoursePlan resolveCoursePlan() {
+        return getAssignment().getCoursePlan();
+    }
+
+    public AcademicCourseType resolveCourseType() {
+        return getAssignment().getCourseType();
     }
 }
