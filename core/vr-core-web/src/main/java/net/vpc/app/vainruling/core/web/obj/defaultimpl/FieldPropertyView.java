@@ -81,10 +81,7 @@ public class FieldPropertyView extends PropertyView {
                 Object oo = sv.value == null ? null : field.getValue(sv.value);
                 Relationship manyToOneRelationship = field.getManyToOneRelationship();
                 if (manyToOneRelationship!=null) {
-                    PrimitiveId primitiveId = manyToOneRelationship.getTargetEntity().getBuilder().objectToPrimitiveId(oo);
-                    Object newSelectedItem = primitiveId==null?null:primitiveId.getValue();
-                    String s = VrUPAUtils.idToString(newSelectedItem, manyToOneRelationship.getTargetEntity());
-                    sv = new SelectValue(oo, s, manyToOneRelationship.getTargetEntity());
+                    sv = new SelectValue(oo,VrUPAUtils.objToJson(oo,field.getDataType()).toString(), manyToOneRelationship.getTargetEntity());
                 } else {
                     sv = new SelectValue(oo,VrUPAUtils.objToJson(oo,field.getDataType()).toString(), null);
                 }

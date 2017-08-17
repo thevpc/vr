@@ -91,6 +91,7 @@ public class AcademicCourseAssignment {
     @Summary
     @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
     private AcademicClass subClass;
+
     /**
      * this field helps differentiating assignments with same properties
      */

@@ -94,8 +94,8 @@ public class SendExternalMailActionCtrl {
             ArticlesItem obj = (ArticlesItem) VrApp.getBean(ObjCtrl.class).getCurrentEntityObject();
             mailbox.sendExternalMail(obj, VrUtils.formatJSONObject(c));
         } catch (Exception e) {
-            FacesUtils.addErrorMessage(e.getMessage());
             e.printStackTrace();
+            FacesUtils.addErrorMessage(e);
         }
 //            }
 //        });

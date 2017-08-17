@@ -30,7 +30,7 @@ public class EnumTypePropertyViewValuesProvider implements PropertyViewValuesPro
         I18n i18n = VrApp.getBean(I18n.class);
         List<NamedId> list = new ArrayList<>();
         for (Object value : t.getValues()) {
-            list.add(new NamedId(VrUPAUtils.objToJson(value,dt), i18n.getEnum(value)));
+            list.add(new NamedId(VrUPAUtils.objToJson(value,dt).toString(), i18n.getEnum(value)));
         }
         return list;
     }

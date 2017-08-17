@@ -158,6 +158,11 @@ public class AcademicCoursePlan {
     //@Summary
     private String labels;
 
+    /**
+     * when true this course could no be assigned by non director
+     */
+    private boolean locked;
+
     private String roomConstraintsC;
     @Summary
     private String roomConstraintsTP;
@@ -585,4 +590,11 @@ public class AcademicCoursePlan {
         return getCourseLevel()== null ? null : getCourseLevel().getSemester();
     }
 
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
 }

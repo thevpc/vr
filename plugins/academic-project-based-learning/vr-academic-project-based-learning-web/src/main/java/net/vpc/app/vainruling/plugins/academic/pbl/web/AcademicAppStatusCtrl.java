@@ -303,13 +303,16 @@ public class AcademicAppStatusCtrl {
     public void onApplyLoad(int teacherId){
         String[] selectedSessions = getSelectedSessions();
         if (selectedSessions.length==1) {
-            apbl.applyTeacherLoad(Integer.parseInt(selectedSessions[0]), new ObjectFilter<AcademicTeacher>() {
-                @Override
-                public boolean accept(AcademicTeacher value) {
-                    return value.getId()==teacherId;
-                }
-            });
-            FacesUtils.addInfoMessage("Application reussie");
+            AcademicTeacher t=academic.findTeacher(teacherId);
+            if(t!=null) {
+                apbl.applyTeacherLoad(Integer.parseInt(selectedSessions[0]), new ObjectFilter<AcademicTeacher>() {
+                    @Override
+                    public boolean accept(AcademicTeacher value) {
+                        return value.getId() == teacherId;
+                    }
+                });
+                FacesUtils.addInfoMessage("Application reussie : "+t.getContact().getFullName());
+            }
         }
     }
 

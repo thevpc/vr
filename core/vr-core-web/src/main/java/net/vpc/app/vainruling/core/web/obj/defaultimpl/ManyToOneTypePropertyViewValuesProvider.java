@@ -60,8 +60,7 @@ public class ManyToOneTypePropertyViewValuesProvider implements PropertyViewValu
             List<NamedId> cacheItem2=new ArrayList<>(cacheItem.size());
             for (NamedId namedId : cacheItem) {
                 Object id = namedId.getId();
-                PrimitiveId primitiveId = me.getBuilder().idToPrimitiveId(id);
-                String id2 = VrUPAUtils.idToString(primitiveId==null? null:primitiveId.getValue(), me);
+                Object id2 = VrUPAUtils.objToJson(id, me.getDataType()).toString();
                 cacheItem2.add(new NamedId(id2,namedId.getName()));
             }
             return cacheItem2;

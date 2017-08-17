@@ -353,7 +353,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             FacesUtils.addInfoMessage("Realcul Réussi");
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
-            FacesUtils.addErrorMessage("Recalcul Echoué : " + ex.getMessage());
+            FacesUtils.addErrorMessage(ex,"Recalcul Echoué");
         }
     }
 
@@ -381,7 +381,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             FacesUtils.addInfoMessage("Enregistrement Réussi");
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
-            FacesUtils.addErrorMessage("Enregistrement Echoué : " + ex.getMessage());
+            FacesUtils.addErrorMessage(ex,"Enregistrement Echoué");
 //            throw ex;
         }
     }
@@ -412,7 +412,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             FacesUtils.addInfoMessage("Enregistrement Réussi");
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
-            FacesUtils.addErrorMessage("Enregistrement Echoué : " + ex.getMessage());
+            FacesUtils.addErrorMessage(ex);
 //            throw ex;
         }
     }
@@ -439,7 +439,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             updateMode(EditCtrlMode.LIST);
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
-            FacesUtils.addErrorMessage("Erreur : " + ex.getMessage());
+            FacesUtils.addErrorMessage(ex);
 //            throw ex;
         }
     }
@@ -466,9 +466,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 //                updateMode(EditCtrlMode.LIST);
             }
             if (count == 0) {
-                FacesUtils.addInfoMessage(null, "Aucun Enregistrement supprimé");
+                FacesUtils.addInfoMessage("Aucun Enregistrement supprimé");
             } else {
-                FacesUtils.addInfoMessage(null, count + " Enregistrement(s) supprimé(s)");
+                FacesUtils.addInfoMessage(count + " Enregistrement(s) supprimé(s)");
             }
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
@@ -494,13 +494,13 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 updateMode(EditCtrlMode.LIST);
             }
             if (count == 0) {
-                FacesUtils.addInfoMessage(null, "Aucun Enregistrement archivé");
+                FacesUtils.addInfoMessage("Aucun Enregistrement archivé");
             } else {
-                FacesUtils.addInfoMessage(null, count + " Enregistrement(s) archivé(s)");
+                FacesUtils.addInfoMessage(count + " Enregistrement(s) archivé(s)");
             }
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
-            FacesUtils.addErrorMessage(null, count + " Erreur : " + ex);
+            FacesUtils.addErrorMessage(count + " / Erreur : " + ex);
         }
     }
 
@@ -591,7 +591,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             }
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
-            FacesUtils.addErrorMessage("Erreur : " + ex.getMessage());
+            FacesUtils.addErrorMessage(ex);
             throw ex;
         }
     }
@@ -852,49 +852,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 String fieldValueString = entrySet.getValue();
                 Field field = e.findField(fieldName);
                 if (field != null) {
-                    DataType t = field.getDataType();
-                    Relationship manyToOnePrimitiveRelationShip = VrUPAUtils.getManyToOnePrimitiveRelationShip(field);
-                    if(manyToOnePrimitiveRelationShip!=null){
-                        Field entityField = manyToOnePrimitiveRelationShip.getSourceRole().getEntityField();
-                        Entity re = manyToOnePrimitiveRelationShip.getTargetEntity();
-                        Object rid = VrUPAUtils.stringToId(fieldValueString, re);
-                        rid=re.getBuilder().primitiveIdToId(rid);
-                        Object v = re.findById(rid);
-//                        v=re.getBuilder().objectToDocument(v);
-                        builder.setProperty(o, entityField.getName(), v);
-                    }else if (t instanceof StringType) {
-                        builder.setProperty(o, fieldName, fieldValueString);
-                    } else if (t instanceof IntType) {
-                        builder.setProperty(o, fieldName, Integer.parseInt(fieldValueString));
-                    } else if (t instanceof TemporalType) {
-                        Date v = null;
-                        boolean set = false;
-                        if (StringUtils.isEmpty(fieldValueString)) {
-                            set = true;
-                        } else {
-                            for (String df : new String[]{}) {
-                                SimpleDateFormat d = new SimpleDateFormat(df);
-                                try {
-                                    v = d.parse(fieldValueString);
-                                    set = true;
-                                    break;
-                                } catch (ParseException ex) {
-                                    //ignore
-                                }
-                            }
-                        }
-                        if (set) {
-                            builder.setProperty(o, fieldName, v);
-                        }
-                    } else if (t instanceof ManyToOneType) {
-                        ManyToOneType et = (ManyToOneType) t;
-                        Entity re = UPA.getPersistenceUnit().getEntity(et.getTargetEntityName());
-                        Object rid = VrUPAUtils.stringToId(fieldValueString, re);
-                        Object v = re.findById(rid);
-                        builder.setProperty(o, fieldName, v);
-                    } else {
-                        System.err.println("Not supported yet");
-                    }
+                    builder.setProperty(o, fieldName, VrUPAUtils.jsonToObj(fieldValueString,field.getDataType()));
                 }
             }
         }

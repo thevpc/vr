@@ -45,7 +45,7 @@ public class PasswdCtrl {
                 s2 = "";
             }
             if (!s1.equals(s2)) {
-                FacesUtils.addErrorMessage(null, "Les mots de passe ne coincident pas");
+                FacesUtils.addErrorMessage("Les mots de passe ne coincident pas");
                 return;
             }
             final String actualLogin = t.getActualLogin();
@@ -54,17 +54,17 @@ public class PasswdCtrl {
                                                   public void run() {
                                                       try {
                                                           t.passwd(actualLogin, getModel().getOldPassword(), getModel().getPassword1());
-                                                          FacesUtils.addInfoMessage(null, "Mot de passe modifié");
+                                                          FacesUtils.addInfoMessage("Mot de passe modifié");
                                                       } catch (Exception ex) {
                                                           log.log(Level.SEVERE, "Error", ex);
-                                                          FacesUtils.addErrorMessage(null, ex.getMessage());
+                                                          FacesUtils.addErrorMessage(ex);
                                                       }
                                                   }
                                               }
             );
         } catch (Exception ex) {
             log.log(Level.SEVERE, "Error", ex);
-            FacesUtils.addErrorMessage(null, ex.getMessage());
+            FacesUtils.addErrorMessage(ex);
         }
     }
 

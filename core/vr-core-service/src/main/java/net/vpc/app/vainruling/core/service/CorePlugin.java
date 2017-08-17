@@ -2198,12 +2198,18 @@ public class CorePlugin {
     }
 
     public void logout(String sessionId) {
-        final UserSession currentSession = getUserSession();
+        UserSession currentSession0 = null;
+        try{
+            currentSession0 = getUserSession();
+        }catch (Exception any){
+            //
+        }
+        final UserSession currentSession = currentSession0;
         UserSession s = getSessions().getUserSession(sessionId);
         AppUser user = s == null ? null : s.getUser();
         String login = user == null ? null : user.getLogin();
         int id = user == null ? -1 : user.getId();
-        if (s != null && user != null) {
+        if (s != null && user != null && currentSession!=null) {
             trace.trace("logout", "force logout " + login,
                     login,
                     "/System/Access", null, null, currentSession.getUser().getLogin(), id, Level.INFO, s.getClientIpAddress()

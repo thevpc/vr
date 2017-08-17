@@ -76,14 +76,14 @@ public class AcademicAdminToolsCtrl {
                 if (count > 0) {
                     FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully imported.");
                 } else {
-                    FacesUtils.addWarnMessage(null, event.getFile().getFileName() + " is uploaded but nothing is imported.");
+                    FacesUtils.addWarnMessage(event.getFile().getFileName() + " is uploaded but nothing is imported.");
                 }
             } finally {
                 //should not delete the file!
             }
         } catch (Exception ex) {
             Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);
-            FacesUtils.addErrorMessage(event.getFile().getFileName() + " uploading failed.", ex.getMessage());
+            FacesUtils.addErrorMessage(ex,event.getFile().getFileName() + " uploading failed.");
         }
     }
 

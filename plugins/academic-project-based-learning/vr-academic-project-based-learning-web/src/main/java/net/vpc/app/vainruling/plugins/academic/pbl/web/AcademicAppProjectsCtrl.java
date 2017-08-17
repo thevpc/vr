@@ -10,9 +10,9 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.Vr;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsDialogCtrl;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
@@ -109,7 +109,7 @@ public class AcademicAppProjectsCtrl {
         getModel().setProjects(new ArrayList<>());
         if (sessions.size() > 0) {
             getModel().setCurrentSessionId(sessions.get(0).getId());
-        }else{
+        } else {
             getModel().setCurrentSessionId(null);
         }
         onSearchByText();
@@ -128,11 +128,11 @@ public class AcademicAppProjectsCtrl {
                             new ObjectFilter<ApblNode>() {
                                 @Override
                                 public boolean accept(ApblNode value) {
-                                    if(value instanceof TeamNode){
-                                        if(!((TeamNode) value).getCoaches().isEmpty() && getModel().isFilterNoCoach()){
+                                    if (value instanceof TeamNode) {
+                                        if (!((TeamNode) value).getCoaches().isEmpty() && getModel().isFilterNoCoach()) {
                                             return false;
                                         }
-                                        if(!((TeamNode) value).getMembers().isEmpty() && getModel().isFilterNoMember()){
+                                        if (!((TeamNode) value).getMembers().isEmpty() && getModel().isFilterNoMember()) {
                                             return false;
                                         }
                                         return true;
@@ -143,9 +143,9 @@ public class AcademicAppProjectsCtrl {
                     );
             getModel().setProjects(projectNodes);
             ArrayList<SelectItem> projectItems = new ArrayList<>();
-            HashMap<Integer,ApblProject> projectsMap = new HashMap<>();
+            HashMap<Integer, ApblProject> projectsMap = new HashMap<>();
             for (ApblProject apblProject : apbl.findProjects(getModel().getSession().getId())) {
-                projectItems.add(new SelectItem(apblProject.getId(), Vr.get().strcut(apblProject.getName(),80)));
+                projectItems.add(new SelectItem(apblProject.getId(), Vr.get().strcut(apblProject.getName(), 80)));
                 projectsMap.put(apblProject.getId(), apblProject);
             }
             getModel().setProjectItems(projectItems);
@@ -228,7 +228,7 @@ public class AcademicAppProjectsCtrl {
     public void reloadProjects() {
 //        getModel().setProjects(new ArrayList<>());
 //        if (getModel().getSession() != null) {
-            onSearchByText();
+        onSearchByText();
 //        }
     }
 
@@ -257,7 +257,7 @@ public class AcademicAppProjectsCtrl {
                         return false;
                     }
                     TeamNode t = (TeamNode) item.getValue();
-                    if(t.getTeam().isLockedCoaches()) {
+                    if (t.getTeam().isLockedCoaches()) {
                         return false;
                     }
                     int teamCoachMax = session.getTeamCoachMax();
@@ -276,10 +276,10 @@ public class AcademicAppProjectsCtrl {
                         return false;
                     }
                     TeamNode t = (TeamNode) item.getValue();
-                    if(t.getTeam().isLockedMembers()) {
+                    if (t.getTeam().isLockedMembers()) {
                         return false;
                     }
-                    if(!t.getTeam().isFreeMembers()) {
+                    if (!t.getTeam().isFreeMembers()) {
                         int teamCoachMax = session.getTeamMemberMax();
                         if (teamCoachMax > 0 && t.getMembers().size() >= teamCoachMax) {
                             return false;
@@ -563,7 +563,7 @@ public class AcademicAppProjectsCtrl {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                FacesUtils.addErrorMessage(e.getMessage());
+                FacesUtils.addErrorMessage(e);
             }
         }
     }
@@ -579,7 +579,7 @@ public class AcademicAppProjectsCtrl {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                FacesUtils.addErrorMessage(e.getMessage());
+                FacesUtils.addErrorMessage(e);
             }
         }
     }
@@ -595,7 +595,7 @@ public class AcademicAppProjectsCtrl {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                FacesUtils.addErrorMessage(e.getMessage());
+                FacesUtils.addErrorMessage(e);
             }
         }
     }
@@ -611,7 +611,7 @@ public class AcademicAppProjectsCtrl {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                FacesUtils.addErrorMessage(e.getMessage());
+                FacesUtils.addErrorMessage(e);
             }
         }
     }
@@ -636,7 +636,7 @@ public class AcademicAppProjectsCtrl {
                 reloadProjects();
             } catch (Exception e) {
                 e.printStackTrace();
-                FacesUtils.addErrorMessage(e.getMessage());
+                FacesUtils.addErrorMessage(e);
             }
         }
     }
@@ -708,7 +708,7 @@ public class AcademicAppProjectsCtrl {
                 fireEventExtraDialogClosed();
             } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
-                FacesUtils.addErrorMessage("M.A.J échouée.", ex.getMessage());
+                FacesUtils.addErrorMessage(ex,"M.A.J échouée.");
             }
         } else {
             try {
@@ -718,7 +718,7 @@ public class AcademicAppProjectsCtrl {
                 fireEventExtraDialogClosed();
             } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
-                FacesUtils.addErrorMessage("Création échouée.", ex.getMessage());
+                FacesUtils.addErrorMessage(ex,"Création échouée.");
             }
         }
     }
@@ -739,7 +739,7 @@ public class AcademicAppProjectsCtrl {
                 fireEventExtraDialogClosed();
             } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
-                FacesUtils.addErrorMessage("M.A.J échouée.", ex.getMessage());
+                FacesUtils.addErrorMessage(ex, "M.A.J échouée.");
             }
         } else {
             try {
@@ -749,7 +749,7 @@ public class AcademicAppProjectsCtrl {
                 fireEventExtraDialogClosed();
             } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
-                FacesUtils.addErrorMessage("Création échouée.", ex.getMessage());
+                FacesUtils.addErrorMessage(ex, "Création échouée.");
             }
         }
     }
@@ -767,7 +767,7 @@ public class AcademicAppProjectsCtrl {
             RequestContext.getCurrentInstance().update("myform:pathComp");
 
         } catch (Exception ex) {
-            FacesUtils.addErrorMessage("Upload échoué.", ex.getMessage());
+            FacesUtils.addErrorMessage(ex, "Upload échoué.");
         }
     }
 
@@ -784,7 +784,7 @@ public class AcademicAppProjectsCtrl {
 //            RequestContext.getCurrentInstance().update("myform:pathComp");
 
         } catch (Exception ex) {
-            FacesUtils.addErrorMessage("Upload échoué.", ex.getMessage());
+            FacesUtils.addErrorMessage(ex, "Upload échoué.");
         }
     }
 
@@ -818,28 +818,28 @@ public class AcademicAppProjectsCtrl {
             this.owner = owner;
         }
 
-        public void setChildrenCount1(int childrenCount1) {
-            this.childrenCount1 = childrenCount1;
-        }
-
-        public void setChildrenCount2(int childrenCount2) {
-            this.childrenCount2 = childrenCount2;
-        }
-
-        public void setChildrenCount3(int childrenCount3) {
-            this.childrenCount3 = childrenCount3;
-        }
-
         public int getChildrenCount1() {
             return childrenCount1;
+        }
+
+        public void setChildrenCount1(int childrenCount1) {
+            this.childrenCount1 = childrenCount1;
         }
 
         public int getChildrenCount2() {
             return childrenCount2;
         }
 
+        public void setChildrenCount2(int childrenCount2) {
+            this.childrenCount2 = childrenCount2;
+        }
+
         public int getChildrenCount3() {
             return childrenCount3;
+        }
+
+        public void setChildrenCount3(int childrenCount3) {
+            this.childrenCount3 = childrenCount3;
         }
 
         public int getChildrenCount4() {
@@ -1053,18 +1053,10 @@ public class AcademicAppProjectsCtrl {
             return projects;
         }
 
-        public String getFilterText() {
-            return filterText;
-        }
-
-        public void setFilterText(String filterText) {
-            this.filterText = filterText;
-        }
-
         public void setProjects(List<ProjectNode> projects) {
             this.projects = projects;
             root = new DefaultTreeNode(new NodeItem("Root", projects.size(), "root", "", null), null);
-            boolean defaultExpand =true;// !net.vpc.common.strings.StringUtils.isEmpty(getFilterText());
+            boolean defaultExpand = true;// !net.vpc.common.strings.StringUtils.isEmpty(getFilterText());
             for (ProjectNode i : projects) {
                 NodeItem project =
                         i.getProject() == null ?
@@ -1118,6 +1110,14 @@ public class AcademicAppProjectsCtrl {
                 project.setChildrenCount3(studentsByProject.size());
 
             }
+        }
+
+        public String getFilterText() {
+            return filterText;
+        }
+
+        public void setFilterText(String filterText) {
+            this.filterText = filterText;
         }
     }
 

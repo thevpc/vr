@@ -385,7 +385,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
                 FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
             } catch (Exception ex) {
                 Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
-                FacesUtils.addErrorMessage(event.getFile().getFileName() + " uploading failed.", ex.getMessage());
+                FacesUtils.addErrorMessage(ex ,event.getFile().getFileName() + " uploading failed.");
             }
         } finally {
             resetArea();
@@ -403,7 +403,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
             });
         } catch (Exception ex) {
             Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
-            FacesUtils.addErrorMessage(event.getFile().getFileName() + " uploading failed.", ex.getMessage());
+            FacesUtils.addErrorMessage(ex,event.getFile().getFileName() + " uploading failed.");
         }
 
     }

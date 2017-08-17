@@ -53,10 +53,10 @@ public class MyProfileCtrl {
         final CorePlugin t = VrApp.getBean(CorePlugin.class);
         try {
             t.setCurrentUserTheme(getModel().getTheme());
-            FacesUtils.addInfoMessage(null, "Theme mis a jour");
+            FacesUtils.addInfoMessage("Theme mis a jour");
         } catch (Exception ex) {
             log.log(Level.SEVERE, "Error", ex);
-            FacesUtils.addErrorMessage(null, ex.getMessage());
+            FacesUtils.addErrorMessage(ex);
         }
     }
 

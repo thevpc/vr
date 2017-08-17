@@ -61,10 +61,10 @@ public class SubscribeTeacherCtrl {
                     }
                 }
             });
-            FacesUtils.addInfoMessage(null, "Inscription reussie");
+            FacesUtils.addInfoMessage("Inscription reussie");
             onRefresh();
         } catch (Exception e) {
-            FacesUtils.addErrorMessage(null, "Inscription echouee : "+e.getMessage());
+            FacesUtils.addErrorMessage("Inscription echouee : "+e.getMessage());
             e.printStackTrace();
         }
     }

@@ -50,11 +50,13 @@ public class ManyToOneTypePropertyView extends FieldPropertyView {
         }
         if (value instanceof NamedId) {
             Object id = ((NamedId) value).getId();
-            id=VrUPAUtils.stringToId(Convert.toString(id),entity);
-            return entity.getBuilder().idToObject(id);
+            if(id instanceof String){
+                id=VrUPAUtils.jsonToObj((String) id,entity.getDataType());
+            }
+            return id;//entity.getBuilder().idToObject(id);
         }
         if (value instanceof String) {
-            return VrUPAUtils.stringToId(Convert.toString(this.value),entity);
+            return VrUPAUtils.jsonToObj((String) this.value,getDataType());
 //
 //            String svalue = (String) this.value;
 //            if (svalue.isEmpty()) {

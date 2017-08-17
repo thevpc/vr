@@ -61,10 +61,10 @@ public class SubscribeStudentCtrl {
                     }
                 }
             });
-            FacesUtils.addInfoMessage(null, "Inscription reussie");
+            FacesUtils.addInfoMessage("Inscription reussie");
             getModel().setStudent(new AcademicStudentImport());
         } catch (Exception e) {
-            FacesUtils.addErrorMessage(null, "Inscription echouee");
+            FacesUtils.addErrorMessage("Inscription echouee");
             e.printStackTrace();
         }
     }

@@ -17,6 +17,7 @@ import java.util.Date;
         {
                 @Property(name = "ui.auto-filter.period", value = "{expr='period',order=1}"),
                 @Property(name = "ui.auto-filter.status", value = "{expr='status',order=2}"),
+                @Property(name = "ui.auto-filter.semester", value = "{expr='semester',order=3}"),
         }
 )
 public class ApblSession {
@@ -76,6 +77,7 @@ public class ApblSession {
      * if teamsBasedLoad only students in teams are considered otherwise all students in memberProfiles are
      */
     private ApblSessionLoadStrategy loadStrategy;
+    private String strategyConfig;
 
     public ApblSessionLoadStrategy getLoadStrategy() {
         return loadStrategy;
@@ -211,5 +213,13 @@ public class ApblSession {
 
     public void setSemester(AcademicSemester semester) {
         this.semester = semester;
+    }
+
+    public String getStrategyConfig() {
+        return strategyConfig;
+    }
+
+    public void setStrategyConfig(String strategyConfig) {
+        this.strategyConfig = strategyConfig;
     }
 }

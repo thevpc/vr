@@ -171,7 +171,7 @@ and open the template in the editor.
                                                             width="16"/>
                                             <p:dataExporter type="xls" target="teachersList"
                                                             fileName="proj-innov-enseignants-#{academicAppStatusCtrl.preferredFileName}"
-                                                            postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                                            postProcessor="#{vr.postProcessDataExporterXLS}" />
                                         </h:commandLink>
 
                                         <h:commandLink>
@@ -228,7 +228,7 @@ and open the template in the editor.
                                         <p:outputLabel styleClass="vr-center-text"
                                                        value="#{(vr.dblCustomFormat(e.load,'0.00'))}"/>
                                     </p:column>
-                                    <p:column headerText="" rendered="#{(academicAppStatusCtrl.model.teachers.sessions.size() eq 1) and academicAppStatusCtrl.isEnabledButton('ApplyLoad')}">
+                                    <p:column exportable="false" headerText="" rendered="#{(academicAppStatusCtrl.model.teachers.sessions.size() eq 1) and academicAppStatusCtrl.isEnabledButton('ApplyLoad')}">
                                         <p:commandButton  value="Appl. Charge" action="#{academicAppStatusCtrl.onApplyLoad(e.teacher.id)}" update=":messagesForm"/>
                                     </p:column>
                                     <!--<p:column headerText="Charge en TP" sortBy="#{e.studentsCount}">-->
@@ -236,7 +236,7 @@ and open the template in the editor.
                                     <!--value="#{vr.dblCustomFormat(e.load,'0.00')}"/>-->
                                     <!--</p:column>-->
                                     <f:facet name="footer">
-                                        #{academicAppStatusCtrl.model.filteredTeachers.size()} enseignants, #{vr.dblCustomFormat(academicAppStatusCtrl.model.teachers.coachedStudentCount,'0.00')} / #{vr.dblCustomFormat(academicAppStatusCtrl.model.teachers.teamedStudentCount,'0.00')} / #{vr.dblCustomFormat(academicAppStatusCtrl.model.teachers.maxStudentCount,'0.00')} élèves, #{academicAppStatusCtrl.model.teachers.teamsCount} équipes, #{vr.dblCustomFormat(academicAppStatusCtrl.model.teachers.unitLoad,'0.00')} charge unitaire
+
                                     </f:facet>
                                 </p:dataTable>
                             </p:tab>

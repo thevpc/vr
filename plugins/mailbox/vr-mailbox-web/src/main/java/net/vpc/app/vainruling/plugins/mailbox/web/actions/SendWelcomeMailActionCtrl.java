@@ -92,8 +92,8 @@ public class SendWelcomeMailActionCtrl {
                 VrApp.getBean(MailboxPlugin.class).sendWelcomeEmail(true);
             }
         } catch (Exception e) {
-            FacesUtils.addErrorMessage(e.getMessage());
             e.printStackTrace();
+            FacesUtils.addErrorMessage(e);
         }
 //            }
 //        });

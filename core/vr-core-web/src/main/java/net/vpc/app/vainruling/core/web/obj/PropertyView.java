@@ -218,48 +218,41 @@ public class PropertyView implements Serializable {
     }
 
     public void setSelectedItem(Object selectedItem) {
+        DataType dataType = getDataType();
         boolean someUpdates = !Objects.equal(this.selectedItem, selectedItem);
         this.selectedItem = selectedItem;
         this.value = null;
         if (selectedItem != null) {
-            DataType dataType = getDataType();
             if (dataType != null) {
-                if (dataType instanceof ManyToOneType) {
-                    ManyToOneType et = (ManyToOneType) dataType;
-                    Entity masterEntity = et.getRelationship().getTargetRole().getEntity();
-                    Object entityId= VrUPAUtils.stringToId(Convert.toString(selectedItem),masterEntity);
-                    for (NamedId v : values) {
-                        Object id = VrUPAUtils.stringToId(Convert.toString(v.getId()),masterEntity);
-                        if (VrUPAUtils.sameId(entityId, id)) {
-                            someUpdates |= !Objects.equal(value, v);
-                            value = v;
-                            break;
+                Object id0=null;
+                if(selectedItem instanceof String){
+                    id0=VrUPAUtils.jsonToObj((String) selectedItem,dataType);
+                    if(dataType instanceof ManyToOneType){
+                        id0=((ManyToOneType) dataType).getRelationship().getTargetEntity().getBuilder().objectToId(id0);
+                    }
+                }else{
+                    id0=selectedItem;
+                }
+                for (Object v : values) {
+                    Object id = (v instanceof NamedId) ? ((NamedId) v).getId() : v;
+
+                    if(id instanceof String){
+                        id=VrUPAUtils.jsonToObj((String) id,dataType);
+                        if(dataType instanceof ManyToOneType){
+                            Entity targetEntity = ((ManyToOneType) dataType).getRelationship().getTargetEntity();
+                            EntityBuilder builder = targetEntity.getBuilder();
+                            id= builder.objectToId(id);
+                            v=targetEntity.findById(id);
+                        }else{
+                            v=id;
                         }
                     }
-                } else if (dataType instanceof KeyType) {
-                    KeyType et = (KeyType) dataType;
-                    Entity masterEntity = et.getEntity();
-                    EntityBuilder mbuilder = masterEntity.getBuilder();
-                    Object entityId= VrUPAUtils.stringToId(Convert.toString(selectedItem),masterEntity);
-                    for (Object v : values) {
-                        Object id = (v instanceof NamedId) ? ((NamedId) v).getId() : mbuilder.objectToId(v);
-                        if (VrUPAUtils.sameId(entityId, id)) {
-                            someUpdates |= !Objects.equal(value, v);
-                            value = v;
-                            break;
-                        }
+
+                    if (VrUPAUtils.sameId(id0, id)) {
+                        someUpdates |= !Objects.equal(value, id0);
+                        value = v;
+                        break;
                     }
-                } else if (dataType instanceof EnumType) {
-                    EnumType et = (EnumType) dataType;
-                    for (Object v : et.getValues()) {
-                        if (Objects.equal(Convert.toString(selectedItem), Convert.toString(v))) {
-                            someUpdates |= !Objects.equal(value, v);
-                            value = v;
-                            break;
-                        }
-                    }
-                } else {
-                    //why?
                 }
             }
         }

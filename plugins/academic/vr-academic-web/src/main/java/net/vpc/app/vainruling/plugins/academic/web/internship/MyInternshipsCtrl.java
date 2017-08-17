@@ -258,9 +258,9 @@ public class MyInternshipsCtrl implements DocumentUploadListener{
                         getModel().setInternship((AcademicInternship) pu.findById(AcademicInternship.class, old.getId()));
                     }
                 });
-                FacesUtils.addWarnMessage(null, "Enregistrement réussi");
+                FacesUtils.addInfoMessage("Enregistrement réussi");
             } else {
-                FacesUtils.addWarnMessage(null, "Rien à enregistrer");
+                FacesUtils.addWarnMessage("Rien à enregistrer");
             }
         } catch (Exception e) {
             FacesUtils.addErrorMessage(e.getMessage());

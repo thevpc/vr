@@ -19,7 +19,6 @@ import net.vpc.common.strings.StringComparators;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.*;
 import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.QueryHints;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 import net.vpc.upa.filters.ObjectFilter;
@@ -386,7 +385,7 @@ public class ApblPlugin {
             sessionInfo.setSession(currentSession);
             ApblSessionLoadStrategy teamsBasedLoad = currentSession.getLoadStrategy();
             if (teamsBasedLoad == null) {
-                teamsBasedLoad = ApblSessionLoadStrategy.ALL_STUDENTS;
+                teamsBasedLoad = ApblSessionLoadStrategy.ALL_STUDENTS_COUNT;
             }
 
             int maxStudents = academic.findStudents(currentSession.getMemberProfiles(), null).size();
@@ -458,25 +457,29 @@ public class ApblPlugin {
             sessionInfo.setCoachedStudentCount(coachedStudents);
             sessionInfo.setTeamsCount(teamsCount);
             switch (teamsBasedLoad) {
-                case ALL_STUDENTS: {
+                case ALL_STUDENTS_COUNT: {
                     sessionInfo.setBaseStudentCount(maxStudents);
-                    if(sessionInfo.getBaseStudentCount()!=0) {
-                        sessionInfo.setUnitLoad(totLoad/sessionInfo.getBaseStudentCount());
-                    }
+                    sessionInfo.setUnitLoad(sessionInfo.getBaseStudentCount()==0?0:totLoad/sessionInfo.getBaseStudentCount());
                     break;
                 }
-                case TEAMED_STUDENTS: {
+                case TEAMED_STUDENTS_COUNT: {
                     sessionInfo.setBaseStudentCount(teamedStudents);
-                    if(sessionInfo.getBaseStudentCount()!=0) {
-                        sessionInfo.setUnitLoad(totLoad/sessionInfo.getBaseStudentCount());
-                    }
+                    sessionInfo.setUnitLoad(sessionInfo.getBaseStudentCount()==0?0:totLoad/sessionInfo.getBaseStudentCount());
                     break;
                 }
-                case COACHED_STUDENTS: {
+                case COACHED_STUDENTS_COUNT: {
                     sessionInfo.setBaseStudentCount(coachedStudents);
-                    if(sessionInfo.getBaseStudentCount()!=0) {
-                        sessionInfo.setUnitLoad(totLoad/sessionInfo.getBaseStudentCount());
-                    }
+                    sessionInfo.setUnitLoad(sessionInfo.getBaseStudentCount()==0?0:totLoad/sessionInfo.getBaseStudentCount());
+                    break;
+                }
+                case CUSTOM_LOAD: {
+                    sessionInfo.setBaseStudentCount(coachedStudents);
+                    sessionInfo.setUnitLoad(Convert.toDouble(sessionInfo.getSession().getStrategyConfig(),DoubleParserConfig.LENIENT));
+                    break;
+                }
+                case CUSTOM_STUDENTS_COUNT: {
+                    sessionInfo.setBaseStudentCount(Convert.toInt(sessionInfo.getSession().getStrategyConfig(),IntegerParserConfig.LENIENT));
+                    sessionInfo.setUnitLoad(sessionInfo.getBaseStudentCount()==0?0:totLoad/sessionInfo.getBaseStudentCount());
                     break;
                 }
             }
