@@ -852,7 +852,17 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 String fieldValueString = entrySet.getValue();
                 Field field = e.findField(fieldName);
                 if (field != null) {
-                    builder.setProperty(o, fieldName, VrUPAUtils.jsonToObj(fieldValueString,field.getDataType()));
+                    Object value = VrUPAUtils.jsonToObj(fieldValueString, field.getDataType());
+                    builder.setProperty(o, fieldName, value);
+                    Relationship manyToOnePrimitiveRelationShip = VrUPAUtils.getManyToOnePrimitiveRelationShip(field);
+                    if(manyToOnePrimitiveRelationShip!=null){
+                        //this is an id of another field
+                        Field entityField = manyToOnePrimitiveRelationShip.getSourceRole().getEntityField();
+                        Entity re = manyToOnePrimitiveRelationShip.getTargetEntity();
+                        Object v = re.findById(value);
+//                        v=re.getBuilder().objectToDocument(v);
+                        builder.setProperty(o, entityField.getName(), v);
+                    }
                 }
             }
         }

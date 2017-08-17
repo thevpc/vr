@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Created by vpc on 7/19/17.
  */
+/*
 @VrController(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
         menu = "/Desktop",
         url = "modules/academic/profile/my-profile"
 )
+*/
 public class MyCtrl {
     @Autowired
     private  AcademicProfilePlugin profile;

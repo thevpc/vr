@@ -20,7 +20,9 @@ public class ApblCoaching {
     @Id
     @Sequence
     private int id;
+    @Main
     private AcademicTeacher teacher;
+    @Summary
     private ApblTeam team;
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     @Field(max = "4000")
