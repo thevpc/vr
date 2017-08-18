@@ -237,6 +237,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     if ("New".equals(buttonId)) {
                         return UPA.getPersistenceUnit().getSecurityManager().isAllowedPersist(getEntity());
                     }
+                    if ("Refresh".equals(buttonId)) {
+                        return true;
+                    }
                     if ("List".equals(buttonId)) {
                         return true;
                     }
@@ -1402,6 +1405,15 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             onSelectCurrent();
         }
     }
+
+    public void onRefreshCurrent() {
+        if(getModel().getMode() == EditCtrlMode.LIST) {
+            reloadPage(true);
+        }else{
+            onReloadCurrent();
+        }
+    }
+
 
     public void onReloadCurrent() {
         switch (getModel().getMode()) {

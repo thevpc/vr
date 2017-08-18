@@ -50,7 +50,7 @@ and open the template in the editor.
                                          icon="fa fa-refresh"
                                          styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn btn-default"
                                          ajax="true"
-                                         actionListener="#{objCtrl.onRefresh}"
+                                         actionListener="#{objCtrl.onRefreshCurrent}"
                                          update=":buttonsForm :listForm :itemForm :pageTitleForm" alt=""/>
                         <p:splitButton title="Enregistrer" rendered="#{objCtrl.isEnabledButton('Save')}"
                                        onclick="processOnSaveCurrent()"

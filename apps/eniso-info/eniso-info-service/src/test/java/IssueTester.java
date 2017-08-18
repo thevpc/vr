@@ -1,80 +1,101 @@
-
-import java.lang.reflect.Field;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
-import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicTeacherCVItem;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.upa.Entity;
 import net.vpc.upa.NamedId;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
+import java.lang.reflect.Field;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseLevel;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
 
 /**
  * Created by vpc on 12/31/16.
  */
 public class IssueTester {
 
-    private static int xIsNotSoBig = 5;
-
-    public static void main(String[] args) {
-        xIsNotSoBig++;
-        if (xIsNotSoBig > 4) {
-
-        }
-        List<AcademicCourseAssignment> list = UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a "
-                + " where a.coursePlan.periodId=11 "
-                + " and a.id >=1009 and a.id <=1012 "
-                + " order by a.id")
+    public static void main1(String[] args) {
+        List<AcademicCoursePlan> list = UPA.getPersistenceUnit().createQuery("Select a from AcademicCoursePlan a "
+//                + " where a.id=159"
+                        + " order by a.id"
+        )
                 //                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
                 .getResultList();
         System.out.println(list.size());
+        int errCount = 0;
         for (int i = 0; i < list.size(); i++) {
-            AcademicCourseAssignment courseAssignment = null;
-            AcademicCoursePlan coursePlan = null;
-            AcademicCourseLevel courseLevel = null;
-            AcademicClass academicClass = null;
-            AcademicProgram program = null;
-            boolean pbm = false;
-            try {
-                courseAssignment = list.get(i);
-                coursePlan = courseAssignment.getCoursePlan();
-                courseLevel = coursePlan.getCourseLevel();
-                academicClass = courseLevel.getAcademicClass();
-                program = academicClass.getProgram();
-
-                program.getDepartment();
-            } catch (NullPointerException ex) {
-                pbm = true;
+            AcademicCoursePlan coursePlan = list.get(i);
+            AcademicProgram p = coursePlan.resolveProgram();
+            if (p == null) {
+                AcademicCourseLevel courseLevel = coursePlan.getCourseLevel();
+                AcademicClass academicClass = coursePlan.resolveAcademicClass();
+                AcademicProgram program = coursePlan.resolveProgram();
+                System.out.println(i + " " + ("ERR") + " ; [coursePlan]=" + dbg(coursePlan)
+                        + " ; [courseLevel]=" + dbg(courseLevel) + " ; [academicClass]=" + dbg(academicClass) + " ; [program]=" + dbg(program));
+                errCount++;
             }
-            System.out.println(i + " " + (pbm ? "ERR" : "   ") + ": [courseAssignment]=" + dbg(courseAssignment) + " ; [coursePlan]=" + dbg(coursePlan) 
-                    + " ; [courseLevel]=" + dbg(courseLevel) + " ; [academicClass]=" + dbg(academicClass) + " ; [program]=" + dbg(program));
+//            AcademicCourseAssignment courseAssignment = null;
+        }
+        System.out.println("Bye " + errCount + "/" + list.size());
+        System.exit(0);
+    }
+
+    private static int countErrors(List<AcademicCourseAssignment> list){
+        int errCount = 0;
+        System.out.println("========================================================================");
+        for (int i = 0; i < list.size(); i++) {
+            AcademicCourseAssignment courseAssignment = list.get(i);
+            AcademicProgram p = courseAssignment.resolveProgram();
+            AcademicCoursePlan coursePlan = courseAssignment.getCoursePlan();
+            AcademicCourseLevel courseLevel = courseAssignment.resolveCourseLevel();
+            AcademicClass academicClass = courseAssignment.resolveAcademicClass();
+            AcademicProgram program = courseAssignment.resolveProgram();
+            if (p == null) {
+                System.out.println(i + " " + ("ERR") + ": [courseAssignment]=" + dbg(courseAssignment) + " ; [coursePlan]=" + dbg(coursePlan)
+                        + " ; [courseLevel]=" + dbg(courseLevel) + " ; [academicClass]=" + dbg(academicClass) + " ; [program]=" + dbg(program));
+                errCount++;
+            }else{
+                System.out.println(i + " " + ("   ") + ": [courseAssignment]=" + dbg(courseAssignment) + " ; [coursePlan]=" + dbg(coursePlan)
+                        + " ; [courseLevel]=" + dbg(courseLevel) + " ; [academicClass]=" + dbg(academicClass) + " ; [program]=" + dbg(program));
+            }
+//            AcademicCourseAssignment courseAssignment = null;
+        }
+        return errCount;
+    }
+
+    public static void main(String[] args) {
+        List<AcademicCourseAssignment> old=null;
+        for (int i = 173; i < 1000; i++) {
+            int max = 159 + i;
+            String condition = " a.id >= 159 and a.id<= "+ max;
+            PersistenceUnit pu = UPA.getPersistenceUnit();
+            List<AcademicCourseAssignment> list = pu.createQuery("Select a from AcademicCourseAssignment a "
+                    + " where" + condition + " "
+                    + " order by a.id"
+            ).getResultList();
+            int errCount = countErrors(list);
+            if(errCount >0){
+                System.out.println("["+max+"] Bye " + errCount + "/" + list.size());
+                System.exit(0);
+            }
+            old=list;
 
         }
-        System.out.println("Bye");
+        System.out.println("Bye ");
         System.exit(0);
     }
 
     private static String dbg(Object o) {
-        if(o==null){
+        if (o == null) {
             return "null";
         }
         try {
             Field declaredField = o.getClass().getDeclaredField("id");
             declaredField.setAccessible(true);
-            return String.valueOf(declaredField.get(o)) + "@" + o;
+            return  "@("+System.identityHashCode(o)+":"+String.valueOf(declaredField.get(o))+")" + o;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
