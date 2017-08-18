@@ -28,7 +28,7 @@ public class VrUPAUtils {
         Entity entity = event.getEntity();
         if (expr instanceof IdEnumerationExpression) {
             IdEnumerationExpression k = (IdEnumerationExpression) expr;
-            expr = new IdEnumerationExpression(k.getIds(), new Var(entity.getName()));
+            expr = new IdEnumerationExpression(k.getIds(), new Var("this"));
         }
         PersistenceUnit pu = event.getPersistenceUnit();
         List old = pu.createQueryBuilder(entity.getName()).byExpression(expr).getIdList();
