@@ -235,20 +235,26 @@ public class PropertyView implements Serializable {
                 }
                 for (Object v : values) {
                     Object id = (v instanceof NamedId) ? ((NamedId) v).getId() : v;
-
+                    Entity targetEntityToLoadFrom=null;
                     if(id instanceof String){
                         id=VrUPAUtils.jsonToObj((String) id,dataType);
                         if(dataType instanceof ManyToOneType){
-                            Entity targetEntity = ((ManyToOneType) dataType).getRelationship().getTargetEntity();
-                            EntityBuilder builder = targetEntity.getBuilder();
+                            targetEntityToLoadFrom = ((ManyToOneType) dataType).getRelationship().getTargetEntity();
+                            EntityBuilder builder = targetEntityToLoadFrom.getBuilder();
                             id= builder.objectToId(id);
-                            v=targetEntity.findById(id);
                         }else{
                             v=id;
+                        }
+                    }else{
+                        if(dataType instanceof ManyToOneType) {
+                            targetEntityToLoadFrom = ((ManyToOneType) dataType).getRelationship().getTargetEntity();
                         }
                     }
 
                     if (VrUPAUtils.sameId(id0, id)) {
+                        if(targetEntityToLoadFrom!=null) {
+                            v = targetEntityToLoadFrom.findById(id);
+                        }
                         someUpdates |= !Objects.equal(value, id0);
                         value = v;
                         break;
