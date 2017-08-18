@@ -68,21 +68,23 @@ public class AppTrace {
     )
     private String level;
 
+    private String ip;
+
     @Summary
     @Field(max = "1024")
-    @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:30%")
-    )
+    @Properties({
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:30%"),
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
+    })
     private String message;
 
     @Summary
     @Field(max = "4096")
-    @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40%")
-    )
+    @Properties({
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40%"),
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
+    })
     private String data;
-
-    private String ip;
 
     public AppTrace() {
     }

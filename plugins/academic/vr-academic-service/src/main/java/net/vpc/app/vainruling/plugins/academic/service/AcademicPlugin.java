@@ -876,11 +876,17 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         pu.merge(a);
     }
 
-    public void removeCourseAssignment(int assignementId) {
+    public void removeCourseAssignment(int assignementId,boolean hardRemoval) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment a = pu.findById(AcademicCourseAssignment.class, assignementId);
-        a.setTeacher(null);
-        pu.merge(a);
+        if(a!=null) {
+            if (hardRemoval) {
+                pu.remove(a);
+            } else {
+                a.setTeacher(null);
+                pu.merge(a);
+            }
+        }
 //        cacheService.get(AcademicCourseAssignment.class).invalidate();
     }
 
@@ -3807,7 +3813,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             List<AcademicClass> myClasses = new ArrayList<>();
             Set<String> myPrograms = new HashSet<>();
             for (AcademicCourseAssignment a : findCourseAssignments(periodId, s.getId(), new DefaultCourseAssignmentFilter().setAcceptIntents(false))) {
-                myPrograms.add(a.resolveProgram().getName());
+                AcademicProgram academicProgram = a.resolveProgram();
+                if(academicProgram!=null){
+                    myPrograms.add(academicProgram.getName());
+                }
                 myClasses.add(a.resolveAcademicClass());//not to force loading of sub class!
             }
 

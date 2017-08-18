@@ -820,5 +820,4 @@ public class VrUtils {
         }
 
     }
-
 }

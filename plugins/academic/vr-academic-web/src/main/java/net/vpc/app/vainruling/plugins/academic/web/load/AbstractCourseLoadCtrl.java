@@ -217,7 +217,13 @@ public abstract class AbstractCourseLoadCtrl {
                     }
                 }
                 if (accepted) {
-                    others.add(c);
+                    UserSession userSession = UserSession.get();
+                    boolean powerUser = userSession!=null && (userSession.isManagerOrAdmin());
+                    if((c.getAssignment().isLocked() || c.getAssignment().getCoursePlan().isLocked()) && !powerUser){
+                        //dont add
+                    }else {
+                        others.add(c);
+                    }
                 }
             }
         }
@@ -264,7 +270,7 @@ public abstract class AbstractCourseLoadCtrl {
                 if (t != null) {
                     if (isAllowedUpdateMineIntents(assignment.getId())) {
                         a.addIntent(t.getId(), assignment.getId());
-                        a.removeCourseAssignment(assignment.getId());
+                        a.removeCourseAssignment(assignment.getId(),false);
                     }
                 }
             }
@@ -382,11 +388,17 @@ public abstract class AbstractCourseLoadCtrl {
         onRefresh();
     }
 
+    public void doDeleteAssignment(Integer assignementId) {
+        if(UserSession.get().isManagerOrAdmin()){
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            a.removeCourseAssignment(assignementId,true);
+        }
+    }
     public void doUnAssign(Integer assignementId) {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = getModel().getCurrentTeacher();
         if (t != null && assignementId != null) {
-            a.removeCourseAssignment(assignementId);
+            a.removeCourseAssignment(assignementId,false);
         }
         onRefresh();
     }
@@ -414,6 +426,33 @@ public abstract class AbstractCourseLoadCtrl {
         onRefresh();
     }
 
+    public void doSwitchLockAssignment(Integer assignementId) {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        if(UserSession.get().isManagerOrAdmin()) {
+            if (assignementId != null) {
+                AcademicCourseAssignment assignment = a.findCourseAssignment(assignementId);
+                if(assignment!=null) {
+                    assignment.setLocked(!assignment.isLocked());
+                    a.updateCourseAssignment(assignment);
+                }
+            }
+            onRefresh();
+        }
+    }
+
+    public void doSwitchLockAssignmentSelected() {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        if(UserSession.get().isManagerOrAdmin()) {
+            for (SelectableAssignment s : getModel().getAll().values()) {
+                if (s.isSelected()) {
+                    AcademicCourseAssignment assignment = s.getValue().getAssignment();
+                    assignment.setLocked(!assignment.isLocked());
+                    a.updateCourseAssignment(assignment);
+                }
+            }
+            onRefresh();
+        }
+    }
     public void doUnAssignSelected() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
 //        AcademicTeacher t = getModel().getCurrentTeacher();
@@ -421,11 +460,27 @@ public abstract class AbstractCourseLoadCtrl {
             for (SelectableAssignment s : getModel().getAll().values()) {
                 if (s.isSelected()) {
                     int assignementId = s.getValue().getAssignment().getId();
-                    a.removeCourseAssignment(assignementId);
+                    a.removeCourseAssignment(assignementId,false);
                 }
             }
 //        }
         onRefresh();
+    }
+
+    public void doDeleteSelected() {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        if(UserSession.get().isManagerOrAdmin()) {
+//        AcademicTeacher t = getModel().getCurrentTeacher();
+//        if (t != null) {
+            for (SelectableAssignment s : getModel().getAll().values()) {
+                if (s.isSelected()) {
+                    int assignementId = s.getValue().getAssignment().getId();
+                    a.removeCourseAssignment(assignementId, true);
+                }
+            }
+//        }
+            onRefresh();
+        }
     }
 
     public Model getModel() {

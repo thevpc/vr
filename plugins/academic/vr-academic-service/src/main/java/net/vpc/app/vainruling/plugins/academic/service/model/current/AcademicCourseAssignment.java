@@ -87,6 +87,7 @@ public class AcademicCourseAssignment {
             }
     )
     private AcademicCoursePlan coursePlan;
+    private boolean locked;
 
     @Summary
     @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
@@ -408,4 +409,11 @@ public class AcademicCourseAssignment {
         return null;
     }
 
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
 }

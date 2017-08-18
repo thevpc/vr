@@ -528,6 +528,14 @@ and open the template in the editor.
                                             <p:menuitem value="Supp. Affectation"
                                                         actionListener="#{teacherCourseLoadCtrl.doUnAssignSelected()}"
                                                         update=":listForm" icon="ui-icon-close"/>
+                                            <p:separator/>
+                                            <p:menuitem value="Supp. Definitivement"
+                                                        actionListener="#{teacherCourseLoadCtrl.doDeleteSelected()}"
+                                                        update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                            <p:menuitem value="Inverser Verouillage"
+                                                        disabled="#{!vr.userSession.managerOrAdmin}"
+                                                        actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignmentSelected()}"
+                                                        update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                         </p:menuButton>
                                     </f:facet>
                                     <p:selectBooleanCheckbox
@@ -556,8 +564,16 @@ and open the template in the editor.
                                                     disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.value.assignment.id)}"
                                                     actionListener="#{teacherCourseLoadCtrl.doUnAssign(i.value.assignment.id)}"
                                                     update=":listForm" icon="ui-icon-close"/>
+                                        <p:separator/>
+                                        <p:menuitem value="Supp. Definitivement"
+                                                    actionListener="#{teacherCourseLoadCtrl.doDeleteAssignment(i.value.assignment.id)}"
+                                                    update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                        <p:menuitem value="Inverser Verouillage"
+                                                    disabled="#{!vr.userSession.managerOrAdmin}"
+                                                    actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignment(i.value.assignment.id)}"
+                                                    update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     </p:menuButton>
-
+                                    <ui:fragment rendered="#{i.value.assignment.locked or i.value.assignment.coursePlan.locked}"><i class="fa  fa-lock"></i></ui:fragment>
                                 </p:column>
                                 <p:column headerText="" width="8%">
                                     <h:outputText
@@ -683,6 +699,14 @@ and open the template in the editor.
                                         <p:menuitem value="Supp. Affectation"
                                                     actionListener="#{teacherCourseLoadCtrl.doUnAssignSelected()}"
                                                     update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                        <p:separator/>
+                                        <p:menuitem value="Supp. Definitivement"
+                                                    actionListener="#{teacherCourseLoadCtrl.doDeleteSelected()}"
+                                                    update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                        <p:menuitem value="Inverser Verouillage"
+                                                    disabled="#{!vr.userSession.managerOrAdmin}"
+                                                    actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignmentSelected()}"
+                                                    update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     </p:menuButton>
                                 </f:facet>
                                 <p:selectBooleanCheckbox
@@ -717,7 +741,17 @@ and open the template in the editor.
                                                 disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.value.assignment.id)}"
                                                 actionListener="#{teacherCourseLoadCtrl.doUnAssign(i.value.assignment.id)}"
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:separator/>
+                                    <p:menuitem value="Supp. Definitivement"
+                                                disabled="#{!vr.userSession.managerOrAdmin}"
+                                                actionListener="#{teacherCourseLoadCtrl.doDeleteAssignment(i.value.assignment.id)}"
+                                                update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                    <p:menuitem value="Inverser Verouillage"
+                                                disabled="#{!vr.userSession.managerOrAdmin}"
+                                                actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignment(i.value.assignment.id)}"
+                                                update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                 </p:menuButton>
+                                <ui:fragment rendered="#{i.value.assignment.locked or i.value.assignment.coursePlan.locked}"><i class="fa  fa-lock"></i></ui:fragment>
                             </p:column>
                             <p:column headerText="" width="5%">
                                 <h:outputText value="#{i.value.assignment.coursePlan.courseLevel.semester.name}"/>

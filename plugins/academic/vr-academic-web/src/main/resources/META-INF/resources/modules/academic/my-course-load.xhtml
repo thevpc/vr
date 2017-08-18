@@ -287,6 +287,7 @@ and open the template in the editor.
                                             value="-"
                                             actionListener="#{myCourseLoadCtrl.removeFromMine(i.value.assignment.id)}"
                                             update=":listForm" title="Clickez ici pour supprimer le voeux"/>
+                                    <ui:fragment rendered="#{i.value.assignment.locked or i.value.assignment.coursePlan.locked}"><i class="fa  fa-lock"></i></ui:fragment>
                                 </p:column>
                                 <p:column headerText="" width="8%">
                                     <h:outputText value="#{i.academicClass.name}"/>
@@ -376,6 +377,7 @@ and open the template in the editor.
                                         value="+"
                                         actionListener="#{myCourseLoadCtrl.addToMine(i.value.assignment.id)}"
                                         update=":listForm" title="Clickez ici pour exprimez votre voeux"/>
+                                <ui:fragment rendered="#{i.value.assignment.locked or i.value.assignment.coursePlan.locked}"><i class="fa  fa-lock"></i></ui:fragment>
                             </p:column>
 
                             <p:column headerText="" width="5%">

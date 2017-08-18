@@ -9,9 +9,7 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.util.Converter;
-import net.vpc.common.util.DefaultMapList;
-import net.vpc.common.util.MapList;
+import net.vpc.common.util.*;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
@@ -126,6 +124,42 @@ public class CopyAcademicDataHelper {
         return oldIdToNewObject;
     }
 
+//    public static void main(String[] args) {
+////        System.out.println(generateDiscriminator(8,null));
+////        System.out.println(generateDiscriminator(8,"g"));
+////        System.out.println(generateDiscriminator(8,"auto-"));
+////        System.out.println(generateDiscriminator(8,"auto-9"));
+////        System.out.println(generateDiscriminator(8,"a-auto-9"));
+////        System.out.println(generateDiscriminator(8,"-auto-9"));
+////        System.out.println(generateDiscriminator(8,"-auto-9-"));
+//        System.out.println(generateDiscriminator(8,"-auto--9"));
+//    }
+//    private static String generateDiscriminator(int index,String base){
+//        if(StringUtils.isEmpty(base)){
+//            return "auto-"+(index);
+//        }else if(base.startsWith("auto-")){
+//            if(base.equals("auto-")){
+//                return "auto-"+(index);
+//            }
+//            int oldIndex=Convert.toInt(base.substring("auto-".length()), IntegerParserConfig.LENIENT);
+//            if(oldIndex>0){
+//                return "auto-"+(index);
+//            }
+//            return base.trim()+"-auto-"+(index);
+//        }else {
+//            int x=base.indexOf("-auto-");
+//            if(x<0){
+//                return base.trim()+"-auto-"+(index);
+//            }else {
+//                int oldIndex=Convert.toInt(base.substring(x+("-auto-".length())), IntegerParserConfig.LENIENT);
+//                if(oldIndex<=0) {
+//                    return base.trim() + "-auto-" + (index );
+//                }else{
+//                    return base.substring(0,x+("-auto-".length())) + (index );
+//                }
+//            }
+//        }
+//    }
     private Map<Integer, AcademicCourseAssignment> _copyAcademicDataAcademicCourseAssignment(int fromPeriodId, AppPeriod toPeriod, Map<Integer, AcademicCoursePlan> coursePlanMap, PersistenceUnit pu) {
         final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         Map<Integer, AcademicCourseAssignment> oldIdToNewObject = new HashMap<>();
@@ -136,6 +170,32 @@ public class CopyAcademicDataHelper {
             }
         };
         List<AcademicCourseAssignment> courseAssignments = p.findCourseAssignments(fromPeriodId);
+
+        if (true) {
+            HashMap<String, AcademicCourseAssignment> visited = new HashMap<>();
+            HashSet<String> reported = new HashSet<>();
+            StringBuilder error=new StringBuilder();
+            error.append("Some Course Assignments have similar names. Here are the problems").append("\n");
+            for (AcademicCourseAssignment assignment : courseAssignments) {
+                String item = converter.convert(assignment);
+                if (visited.containsKey(item)) {
+                    if (!reported.contains(item)) {
+                        reported.add(item);
+                        AcademicCourseAssignment a0 = visited.get(item);
+                        error.append("\t " + a0.getId() + " : " + item).append("\n");
+                    }
+                    error.append("\t " + assignment.getId() + " : " + item).append("\n");
+                } else {
+                    visited.put(item, assignment);
+                }
+            }
+            if(reported.size()>0) {
+                TraceService.get().trace("CopyAcademicData", "Some Course Assignments have similar names", StringUtils.substring(error.toString(), 0, 4096), "Academic", Level.SEVERE);
+                log.severe(error.toString());
+                throw new IllegalArgumentException("Some Course Assignments have similar names. Check log for details");
+            }
+        }
+
         MapList<String, AcademicCourseAssignment> fromList = new DefaultMapList<>(
                 courseAssignments,
                 converter

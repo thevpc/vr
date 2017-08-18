@@ -78,7 +78,7 @@ public class TraceServiceCallback {
         Expression expr = event.getFilterExpression();
         if (expr instanceof IdEnumerationExpression) {
             IdEnumerationExpression k = (IdEnumerationExpression) expr;
-            expr = new IdEnumerationExpression(k.getIds(), new Var(entity.getName()));
+            expr = new IdEnumerationExpression(k.getIds(), new Var("this"));
         }
         List old = pu.createQueryBuilder(entity.getName()).byExpression(expr).getDocumentList();
         old.size();//force load!

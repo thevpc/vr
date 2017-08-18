@@ -281,6 +281,10 @@ public class UserSession implements Serializable {
         this.departmentManager = departmentManager;
     }
 
+    public boolean isManagerOrAdmin() {
+        return manager || admin;
+    }
+
     public boolean isManager() {
         return manager;
     }

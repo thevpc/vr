@@ -331,12 +331,12 @@ public class ApblPlugin {
                             }
                         });
                         for (int i = 1; i < assignments.size(); i++) {
-                            academic.removeCourseAssignment(assignments.get(i).getId());
+                            academic.removeCourseAssignment(assignments.get(i).getId(),false);
                         }
                         if (assignments.size() > 0) {
                             AcademicCourseAssignment a = assignments.get(0);
                             if(val==0){
-                                academic.removeCourseAssignment(a.getId());
+                                academic.removeCourseAssignment(a.getId(),false);
                             }else {
                                 a.setShareCount(1);
                                 a.setGroupCount(1);
