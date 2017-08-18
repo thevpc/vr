@@ -376,6 +376,14 @@ public class AcademicCourseAssignment {
         return getCoursePlan() == null ? null : getCoursePlan().resolveSemester();
     }
 
+    public AcademicCourseLevel resolveCourseLevel() {
+        return getCoursePlan() == null ? null : getCoursePlan().getCourseLevel();
+    }
+
+    public AcademicCourseGroup resolveCourseGroup() {
+        return getCoursePlan() == null ? null : getCoursePlan().getCourseGroup();
+    }
+
     public AppPeriod resolvePeriod() {
         AcademicCoursePlan coursePlan = getCoursePlan();
         if(coursePlan!=null){

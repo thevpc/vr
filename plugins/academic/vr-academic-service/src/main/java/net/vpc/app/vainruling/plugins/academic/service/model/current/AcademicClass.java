@@ -143,7 +143,7 @@ public class AcademicClass {
                 return pp.resolveProgram();
             }
         }
-        return null;
+        return p;
     }
 
     public AppDepartment resolveDepartment(){

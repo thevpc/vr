@@ -79,7 +79,13 @@ public class AcademicCourseAssignmentInfo {
     public AcademicSemester resolveSemester() {
         return getAssignment().resolveSemester();
     }
+    public AcademicCourseLevel resolveCourseLevel() {
+        return getAssignment().resolveCourseLevel();
+    }
 
+    public AcademicCourseGroup resolveCourseGroup() {
+        return getAssignment().resolveCourseGroup();
+    }
     public AppPeriod resolvePeriod() {
         return getAssignment().resolvePeriod();
     }
