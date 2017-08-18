@@ -60,7 +60,8 @@ public class AcademicCoursePlan {
     @Main
     @Formula(
             value = "concat((select a.name from AppPeriod a where a.id=this.periodId),'-',(select a.name from AcademicCourseLevel a where a.id=this.courseLevelId),'-',Coalesce(this.code,'X'),'-',this.name)",
-            type = {FormulaType.PERSIST, FormulaType.UPDATE}
+            type = {FormulaType.PERSIST, FormulaType.UPDATE},
+            formulaOrder = 1
     )
     private String fullName;
 
