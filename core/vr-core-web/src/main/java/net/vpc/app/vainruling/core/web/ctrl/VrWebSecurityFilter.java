@@ -39,8 +39,9 @@ public class VrWebSecurityFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         String contextPath = ((HttpServletRequest) request).getContextPath();
         StringBuffer r = req.getRequestURL();
+        String servletPath = req.getServletPath();
         boolean acceptRequest = true;
-        if (r.toString().contains("/modules/")) {
+        if (r.toString().contains("/modules/") || (servletPath!=null && (servletPath.equals("/p") || servletPath.startsWith("/p/")))) {
             UserSession sso = null;
             try {
                 sso = (UserSession) req.getSession().getAttribute("userSession");
@@ -120,7 +121,7 @@ public class VrWebSecurityFilter implements Filter {
         } else {
             HttpServletResponse res = (HttpServletResponse) response;
             if(!res.isCommitted()) {
-                res.sendRedirect(req.getContextPath());
+                res.sendRedirect(req.getContextPath()+"/");
             }
         }
     }
