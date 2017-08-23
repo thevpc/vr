@@ -46,7 +46,7 @@ public class AcademicTeacherPeriod {
 
     @Summary
     @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
-    private boolean loadConfirmed = true;
+    private boolean loadConfirmed;
 
     public AcademicTeacherPeriod() {
     }

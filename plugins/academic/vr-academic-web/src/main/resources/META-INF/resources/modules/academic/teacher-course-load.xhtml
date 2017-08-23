@@ -35,14 +35,14 @@ and open the template in the editor.
 
                 <!-- /.row -->
                 <div>
-                    <p:outputLabel id="buttons">
+                    <div id="buttons">
                         <p:commandButton value="Rafr."
                                          styleClass="btn btn-default vr-form-field vr-form-fixed-width-medium ui-ribbon-bigbutton vr-icon-aws"
                                          ajax="true"
                                          actionListener="#{teacherCourseLoadCtrl.onRefresh}" update=":listForm"/>
 
                         <p:menuButton value="Actions..." style="margin-left: 10px;"
-                                      rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
+
                                       styleClass="btn vr-form-field vr-form-fixed-width-medium vr-toolbox-menu-button">
                             <p:menuitem value="Affectations => Voeux (tous)"
                                         disabled="#{!vr.userSession.departmentManager and !vr.userSession.admin}"
@@ -80,20 +80,21 @@ and open the template in the editor.
                                     update=":listForm"/>
                             <p:separator/>
                         </p:menuButton>
-                    </p:outputLabel>
+                        <p:selectOneMenu styleClass="vr-form-field"
+                                         value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedPeriod}">
+                            <p:ajax listener="#{teacherCourseLoadCtrl.onChangePeriod}" update=":buttonsForm :listForm"/>
+                            <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
+                            <f:selectItems value="#{teacherCourseLoadCtrl.teacherFilter.model.periodItems}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Selection Multiple" styleClass="vr-form-field vr-form-fixed-width-medium"/>
+                        <p:selectBooleanCheckbox value="#{teacherCourseLoadCtrl.model.multipleSelection}">
+                            <p:ajax listener="#{teacherCourseLoadCtrl.onChangeMultipleSelection}"
+                                    update=":buttonsForm :listForm"/>
+                        </p:selectBooleanCheckbox>
+                    </div>
                 </div>
                 <p:fieldset legend="Filtres" toggleable="true" toggleSpeed="500">
                     <div>
-                        <div>
-                            <p:outputLabel value="Période" styleClass="vr-form-field vr-form-fixed-width-medium"/>
-                            <p:selectOneMenu styleClass="vr-form-field"
-                                             value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedPeriod}">
-                                <p:ajax listener="#{teacherCourseLoadCtrl.onChangePeriod}"
-                                        update=":buttonsForm :listForm"/>
-                                <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
-                                <f:selectItems value="#{teacherCourseLoadCtrl.teacherFilter.model.periodItems}"/>
-                            </p:selectOneMenu>
-                        </div>
                         <div>
                             <p:outputLabel value="Enseignant" styleClass="vr-form-field vr-form-fixed-width-medium"/>
                             <p:selectCheckboxMenu
@@ -125,14 +126,14 @@ and open the template in the editor.
                                 <f:selectItems value="#{teacherCourseLoadCtrl.teacherFilter.model.situationItems}"/>
                             </p:selectCheckboxMenu>
                             <p:selectCheckboxMenu
-                                    styleClass="vr-form-field #{teacherCourseLoadCtrl.teacherFilter.model.selectedOfficialDisciplines.isEmpty() ?'':'vr-from-selected-many-selected'}"
-                                    value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedOfficialDisciplines}"
+                                    styleClass="vr-form-field #{teacherCourseLoadCtrl.teacherFilter.model.selectedTeacherDisciplines.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                    value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedTeacherDisciplines}"
                                     label="Disciplines"
                                     filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
                                 <p:ajax listener="#{teacherCourseLoadCtrl.onChangeOther}"
                                         update=":listForm :buttonsForm"/>
                                 <f:selectItems
-                                        value="#{teacherCourseLoadCtrl.teacherFilter.model.officialDisciplinesItems}"/>
+                                        value="#{teacherCourseLoadCtrl.teacherFilter.model.teacherDisciplineItems}"/>
                             </p:selectCheckboxMenu>
                             <p:selectOneMenu id="teachersList" styleClass="vr-form-field"
                                              value="#{teacherCourseLoadCtrl.model.teacherId}"
@@ -241,7 +242,7 @@ and open the template in the editor.
                                 <div class="vr-form-sub-row">
                                     <div class="table-responsive">
                                         <p:selectManyCheckbox styleClass="vr-form-field"
-                                                              value="#{teacherCourseLoadCtrl.courseFilter.model.refreshFilter}"
+                                                              value="#{teacherCourseLoadCtrl.courseFilter.model.refreshFilterSelected}"
                                                               layout="grid"
                                                               columns="5">
                                             <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
@@ -253,13 +254,14 @@ and open the template in the editor.
                                 </div>
                                 <div class="vr-form-sub-row">
                                     <p:selectManyCheckbox styleClass="vr-form-field"
-                                                          value="#{teacherCourseLoadCtrl.model.othersFilters}"
+                                                          value="#{teacherCourseLoadCtrl.model.currentTeacherFilters}"
                                                           layout="grid" columns="3"
 
                                     >
-                                        <p:ajax listener="#{teacherCourseLoadCtrl.onOthersFiltersChanged}"
+                                        <p:ajax listener="#{teacherCourseLoadCtrl.onCurrentTeacherFiltersChanged}"
                                                 update=":listForm"/>
-                                        <f:selectItems value="#{teacherCourseLoadCtrl.model.filterSelectItems}"/>
+                                        <f:selectItems
+                                                value="#{teacherCourseLoadCtrl.model.currentTeacherFiltersSelectItems}"/>
                                     </p:selectManyCheckbox>
                                 </div>
                             </div>
@@ -573,7 +575,9 @@ and open the template in the editor.
                                                     actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignment(i.value.assignment.id)}"
                                                     update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     </p:menuButton>
-                                    <ui:fragment rendered="#{i.value.assignment.locked or i.value.assignment.coursePlan.locked}"><i class="fa  fa-lock"></i></ui:fragment>
+                                    <ui:fragment
+                                            rendered="#{i.value.assignment.locked or i.value.assignment.coursePlan.locked}"><i
+                                            class="fa  fa-lock"></i></ui:fragment>
                                 </p:column>
                                 <p:column headerText="" width="8%">
                                     <h:outputText
@@ -587,7 +591,8 @@ and open the template in the editor.
                                     <ui:repeat value="#{vr.splitLabels(i.value.assignment.labels)}" var="prName">
                                         <span class="label label-#{vr.hashToArr(prName,'danger','success','info','warning','primary','default')}">#{prName}</span>
                                     </ui:repeat>
-                                    <ui:repeat value="#{vr.splitLabels(i.value.assignment.coursePlan.labels)}" var="prName">
+                                    <ui:repeat value="#{vr.splitLabels(i.value.assignment.coursePlan.labels)}"
+                                               var="prName">
                                         <span class="label label-#{vr.hashToArr(prName,'danger','success','info','warning','primary','default')}">#{prName}</span>
                                     </ui:repeat>
                                 </p:column>
@@ -624,13 +629,13 @@ and open the template in the editor.
                                 </p:column>
                                 <p:column headerText="Collaborateurs" width="10%">
                                     <h:outputText value="#{i.courseIntents}"
-                                                  rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('collaborators')}"
+                                                  rendered="#{teacherCourseLoadCtrl.model.isCurrentTeacherFilter('collaborators')}"
                                                   styleClass="#{i.value.assigned?'vr-label-valid':'vr-label-invalid'}"
                                     />
                                 </p:column>
 
                                 <p:column headerText="Salles" width="5%"
-                                          rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('rooms')}">
+                                          rendered="#{teacherCourseLoadCtrl.model.isCurrentTeacherFilter('rooms')}">
                                     <h:outputText value="#{i.rooms}"
                                     />
                                 </p:column>
@@ -648,6 +653,206 @@ and open the template in the editor.
                                                             action="#{teacherCourseLoadCtrl.onSwitchDisplayOtherModules}"
                                                             style="margin-left:10px; width:130px" update=":listForm"/>
                         </h1>
+                        <div>
+                            <p:fieldset legend="Filtres Autres..." toggleable="true" toggleSpeed="500"
+                                        rendered="#{teacherCourseLoadCtrl.model.displayOtherModules}"
+                            >
+                                <div>
+                                    <div>
+                                        <p:outputLabel value="Modules"
+                                                       styleClass="vr-form-field vr-form-fixed-width-medium vr-form-indented-child"/>
+                                        <div class="vr-form-sub-rows">
+                                            <div class="vr-form-sub-row">
+                                                <p:selectCheckboxMenu
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeachers.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeachers}"
+                                                        label="Enseignants"
+                                                        filter="true" filterMatchMode="startsWith"
+                                                        panelStyle="width:250px">
+                                                    <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                            update=":listForm :buttonsForm"/>
+                                                    <f:selectItems
+                                                            value="#{teacherCourseLoadCtrl.othersCourseFilter.model.teacherItems}"/>
+                                                </p:selectCheckboxMenu>
+                                                <p:selectCheckboxMenu
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDegrees.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDegrees}"
+                                                        label="Grades"
+                                                        filter="true" filterMatchMode="startsWith"
+                                                        panelStyle="width:250px">
+                                                    <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                            update=":listForm :buttonsForm"/>
+                                                    <f:selectItems
+                                                            value="#{teacherCourseLoadCtrl.othersCourseFilter.model.teacherDegreeItems}"/>
+                                                </p:selectCheckboxMenu>
+                                                <p:selectCheckboxMenu
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDepartments.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDepartments}"
+                                                        label="Dept. Enseignants"
+                                                        filter="true" filterMatchMode="startsWith"
+                                                        panelStyle="width:250px">
+                                                    <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                            update=":listForm :buttonsForm"/>
+                                                    <f:selectItems
+                                                            value="#{teacherCourseLoadCtrl.othersCourseFilter.model.departmentItems}"/>
+                                                </p:selectCheckboxMenu>
+                                                <p:selectCheckboxMenu
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDisciplines.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDisciplines}"
+                                                        label="Disciplines Enseignants"
+                                                        filter="true" filterMatchMode="startsWith"
+                                                        panelStyle="width:250px">
+                                                    <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                            update=":listForm :buttonsForm"/>
+                                                    <f:selectItems
+                                                            value="#{teacherCourseLoadCtrl.othersCourseFilter.model.teacherDisciplineItems}"/>
+                                                </p:selectCheckboxMenu>
+                                                <p:selectCheckboxMenu
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherSituations.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherSituations}"
+                                                        label="Situations Enseignants"
+                                                        filter="true" filterMatchMode="startsWith"
+                                                        panelStyle="width:250px">
+                                                    <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                            update=":listForm :buttonsForm"/>
+                                                    <f:selectItems
+                                                            value="#{teacherCourseLoadCtrl.othersCourseFilter.model.teacherSituationItems}"/>
+                                                </p:selectCheckboxMenu>
+                                            </div>
+                                            <div class="vr-form-sub-row">
+                                                <p:selectCheckboxMenu
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedSemesters.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedSemesters}"
+                                                        label="Semestres"
+                                                        filter="true" filterMatchMode="startsWith"
+                                                        panelStyle="width:250px">
+                                                    <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                            update=":listForm :buttonsForm"/>
+                                                    <f:selectItems
+                                                            value="#{teacherCourseLoadCtrl.othersCourseFilter.model.semesterItems}"/>
+                                                </p:selectCheckboxMenu>
+                                                <p:selectCheckboxMenu
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedProgramTypes.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedProgramTypes}"
+                                                        label="Type Formation"
+                                                        filter="true" filterMatchMode="startsWith"
+                                                        panelStyle="width:250px">
+                                                    <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                            update=":listForm :buttonsForm"/>
+                                                    <f:selectItems
+                                                            value="#{teacherCourseLoadCtrl.othersCourseFilter.model.programTypeItems}"/>
+                                                </p:selectCheckboxMenu>
+                                                <p:selectCheckboxMenu
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedCourseTypes.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedCourseTypes}"
+                                                        label="Types Modules"
+                                                        filter="true" filterMatchMode="startsWith"
+                                                        panelStyle="width:250px">
+                                                    <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                            update=":listForm :buttonsForm"/>
+                                                    <f:selectItems
+                                                            value="#{teacherCourseLoadCtrl.othersCourseFilter.model.courseTypeItems}"/>
+                                                </p:selectCheckboxMenu>
+                                                <p:selectCheckboxMenu
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedCourseDisciplines.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedCourseDisciplines}"
+                                                        label="Disciplines Enseignants"
+                                                        filter="true" filterMatchMode="startsWith"
+                                                        panelStyle="width:250px">
+                                                    <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                            update=":listForm :buttonsForm"/>
+                                                    <f:selectItems
+                                                            value="#{teacherCourseLoadCtrl.othersCourseFilter.model.teacherDisciplineItems}"/>
+                                                </p:selectCheckboxMenu>
+                                                <p:selectCheckboxMenu
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedClasses.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedClasses}"
+                                                        label="Classes"
+                                                        filter="true" filterMatchMode="startsWith"
+                                                        panelStyle="width:250px">
+                                                    <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                            update=":listForm :buttonsForm"/>
+                                                    <f:selectItems
+                                                            value="#{teacherCourseLoadCtrl.othersCourseFilter.model.classItems}"/>
+                                                </p:selectCheckboxMenu>
+                                            </div>
+                                            <div class="vr-form-sub-row">
+                                                <p:selectCheckboxMenu
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedDepartments.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedDepartments}"
+                                                        label="Departement"
+                                                        filter="true" filterMatchMode="startsWith"
+                                                        panelStyle="width:250px">
+                                                    <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                            update=":listForm :buttonsForm"/>
+                                                    <f:selectItems
+                                                            value="#{teacherCourseLoadCtrl.othersCourseFilter.model.departmentItems}"/>
+                                                </p:selectCheckboxMenu>
+                                                <p:selectCheckboxMenu
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedOwnerDepartments.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedOwnerDepartments}"
+                                                        label="Géré par..."
+                                                        filter="true" filterMatchMode="startsWith"
+                                                        panelStyle="width:250px">
+                                                    <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                            update=":listForm :buttonsForm"/>
+                                                    <f:selectItems
+                                                            value="#{teacherCourseLoadCtrl.othersCourseFilter.model.departmentItems}"/>
+                                                </p:selectCheckboxMenu>
+                                                <p:selectCheckboxMenu
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedLabels.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedLabels}"
+                                                        label="Label"
+                                                        filter="true" filterMatchMode="startsWith"
+                                                        panelStyle="width:250px">
+                                                    <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                            update=":listForm :buttonsForm"/>
+                                                    <f:selectItems
+                                                            value="#{teacherCourseLoadCtrl.othersCourseFilter.model.labelItems}"/>
+                                                </p:selectCheckboxMenu>
+                                                <p:selectCheckboxMenu
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedDeviationGroups.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedDeviationGroups}"
+                                                        label="Groupe Balance"
+                                                        filter="true" filterMatchMode="startsWith"
+                                                        panelStyle="width:250px">
+                                                    <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                            update=":listForm :buttonsForm"/>
+                                                    <f:selectItems
+                                                            value="#{teacherCourseLoadCtrl.othersCourseFilter.model.deviationGroupItems}"/>
+                                                </p:selectCheckboxMenu>
+                                            </div>
+                                            <div class="vr-form-sub-row">
+                                                <div class="table-responsive">
+                                                    <p:selectManyCheckbox styleClass="vr-form-field"
+                                                                          value="#{teacherCourseLoadCtrl.othersCourseFilter.model.refreshFilterSelected}"
+                                                                          layout="grid"
+                                                                          columns="5">
+                                                        <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                update=":listForm"/>
+                                                        <f:selectItems
+                                                                value="#{teacherCourseLoadCtrl.othersCourseFilter.model.refreshFilterItems}"/>
+                                                    </p:selectManyCheckbox>
+                                                </div>
+                                            </div>
+                                            <div class="vr-form-sub-row">
+                                                <p:selectManyCheckbox styleClass="vr-form-field"
+                                                                      value="#{teacherCourseLoadCtrl.model.othersFilters}"
+                                                                      layout="grid" columns="3"
+
+                                                >
+                                                    <p:ajax listener="#{teacherCourseLoadCtrl.onOthersFiltersChanged}"
+                                                            update=":listForm"/>
+                                                    <f:selectItems
+                                                            value="#{teacherCourseLoadCtrl.model.othersFiltersSelectItems}"/>
+                                                </p:selectManyCheckbox>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </p:fieldset>
+
+                        </div>
 
                         <div style="margin-bottom: 10px;">
                             <p:inputText
@@ -751,7 +956,9 @@ and open the template in the editor.
                                                 actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignment(i.value.assignment.id)}"
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                 </p:menuButton>
-                                <ui:fragment rendered="#{i.value.assignment.locked or i.value.assignment.coursePlan.locked}"><i class="fa  fa-lock"></i></ui:fragment>
+                                <ui:fragment
+                                        rendered="#{i.value.assignment.locked or i.value.assignment.coursePlan.locked}"><i
+                                        class="fa  fa-lock"></i></ui:fragment>
                             </p:column>
                             <p:column headerText="" width="5%">
                                 <h:outputText value="#{i.value.assignment.coursePlan.courseLevel.semester.name}"/>
@@ -796,17 +1003,18 @@ and open the template in the editor.
                             </p:column>
 
                             <p:column headerText="Collaborateurs" width="10%"
-                                      rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('collaborators')}">
+                                      rendered="#{teacherCourseLoadCtrl.model.isOthersFilterSelected('collaborators')}">
                                 <h:outputText value="#{i.courseIntents}"/>
                             </p:column>
 
                             <p:column headerText="Salles" width="5%"
-                                      rendered="#{teacherCourseLoadCtrl.model.isFilterSelected('rooms')}">
+                                      rendered="#{teacherCourseLoadCtrl.model.isOthersFilterSelected('rooms')}">
                                 <h:outputText value="#{i.rooms}"/>
                             </p:column>
 
                             <f:facet name="footer">
-                                <p:outputLabel value="Total #{teacherCourseLoadCtrl.model.others.size()}"/>
+                                <p:outputLabel
+                                        value="Total #{teacherCourseLoadCtrl.model.others.size()} ; C=#{teacherCourseLoadCtrl.model.othersSumC}  ; TD=#{teacherCourseLoadCtrl.model.othersSumTD}  ; TP=#{teacherCourseLoadCtrl.model.othersSumTP}  ; PM=#{teacherCourseLoadCtrl.model.othersSumPM} "/>
                             </f:facet>
                         </p:dataTable>
                     </div>

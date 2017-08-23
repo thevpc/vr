@@ -368,4 +368,15 @@ public class AcademicStudent {
     public void setPreClassScore(double preClassScore) {
         this.preClassScore = preClassScore;
     }
+
+    public String resolveFullName(){
+        AppContact c = getContact();
+        return c==null?String.valueOf(getId()): c.getFullName();
+    }
+
+    public String resolveFullTitle(){
+        AppContact c = getContact();
+        return c==null?String.valueOf(getId()): c.getFullTitle();
+    }
+
 }

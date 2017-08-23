@@ -1066,13 +1066,13 @@ public class AcademicAppProjectsCtrl {
                                 :
                                 new NodeItem(
                                         i.getProject().getName(), i.getTeams().size()
-                                        , "project", core.getUserFullTitle(i.getProject().getOwner() == null ? null : i.getProject().getOwner()), i);
+                                        , "project", (i.getProject().getOwner() == null ? null : i.getProject().getOwner().resolveFullTitle()), i);
                 DefaultTreeNode n = new DefaultTreeNode(project, this.root);
                 n.setExpanded(defaultExpand);
                 HashSet<Integer> teachersByProject = new HashSet<>();
                 HashSet<Integer> studentsByProject = new HashSet<>();
                 for (TeamNode teamNode : i.getTeams()) {
-                    NodeItem team = new NodeItem(teamNode.getTeam().getName(), -1, "team", core.getUserFullTitle(teamNode.getTeam().getOwner()), teamNode);
+                    NodeItem team = new NodeItem(teamNode.getTeam().getName(), -1, "team", (teamNode.getTeam().getOwner()==null?"":teamNode.getTeam().getOwner().resolveFullTitle()), teamNode);
                     HashSet<Integer> teachersByTeam = new HashSet<>();
                     HashSet<Integer> studentsByTeam = new HashSet<>();
                     DefaultTreeNode t = new DefaultTreeNode(team, n);
@@ -1086,7 +1086,7 @@ public class AcademicAppProjectsCtrl {
                     for (CoachNode coachNode : teamNode.getCoaches()) {
                         teachersByProject.add(coachNode.getCoaching().getTeacher().getId());
                         teachersByTeam.add(coachNode.getCoaching().getTeacher().getId());
-                        DefaultTreeNode c = new DefaultTreeNode(new NodeItem(coachNode.getCoaching().getTeacher().getContact().getFullTitle(), 0, "coach", "", coachNode), d);
+                        DefaultTreeNode c = new DefaultTreeNode(new NodeItem(coachNode.getCoaching().getTeacher().resolveFullTitle(), 0, "coach", "", coachNode), d);
                         d.setExpanded(defaultExpand);
                     }
                     //}
@@ -1098,7 +1098,7 @@ public class AcademicAppProjectsCtrl {
                     for (MemberNode coachNode : teamNode.getMembers()) {
                         studentsByProject.add(coachNode.getMember().getStudent().getId());
                         studentsByTeam.add(coachNode.getMember().getStudent().getId());
-                        DefaultTreeNode c = new DefaultTreeNode(new NodeItem(coachNode.getMember().getStudent().getContact().getFullTitle(), 0, "member", "", coachNode), membersNode);
+                        DefaultTreeNode c = new DefaultTreeNode(new NodeItem(coachNode.getMember().getStudent().resolveFullTitle(), 0, "member", "", coachNode), membersNode);
                         c.setExpanded(defaultExpand);
                     }
                     //}

@@ -128,7 +128,7 @@ and open the template in the editor.
                             <div class="vr-form-sub-row">
                                 <div class="table-responsive">
                                     <p:selectManyCheckbox styleClass="vr-form-field"
-                                                          value="#{myCourseLoadCtrl.courseFilter.model.refreshFilter}"
+                                                          value="#{myCourseLoadCtrl.courseFilter.model.refreshFilterSelected}"
                                                           layout="grid"
                                                           columns="5">
                                         <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}"
@@ -143,7 +143,7 @@ and open the template in the editor.
                                                       value="#{myCourseLoadCtrl.model.othersFilters}" layout="grid"
                                                       columns="3">
                                     <p:ajax listener="#{myCourseLoadCtrl.onOthersFiltersChanged}" update=":listForm"/>
-                                    <f:selectItems value="#{myCourseLoadCtrl.model.filterSelectItems}"/>
+                                    <f:selectItems value="#{myCourseLoadCtrl.model.currentTeacherFiltersSelectItems}"/>
                                 </p:selectManyCheckbox>
                             </div>
                         </div>
@@ -169,13 +169,13 @@ and open the template in the editor.
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="Total Charge / Sem"/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="Bilan H.Supp. C"/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="Bilan H.Supp. TD"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Bilan H.Supp. TP"/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="Balance"/></p:column>
                                 <p:column styleClass="ui-widget-header" style="width: 100px"><p:outputLabel
                                         value=""/></p:column>
                             </p:row>
                             <p:row>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel
-                                        value="Charge Annuelle"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Charge Annuelle"/></p:column>
                                 <p:column><p:outputLabel value=""/></p:column>
                                 <p:column><p:outputLabel
                                         value="#{myCourseLoadCtrl.model.stat.val.value.c}"><f:convertNumber
@@ -231,9 +231,9 @@ and open the template in the editor.
                                     <p:column><p:outputLabel
                                             value="#{sem.val.valueWeek.equiv}"><f:convertNumber
                                             pattern="#0.00"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel
-                                            value="#{sem.val.extraWeek.equiv}"><f:convertNumber
-                                            pattern="#0.00"/></p:outputLabel></p:column>
+                                    <p:column><p:outputLabel value="#{sem.val.extraWeekEff.c}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
+                                    <p:column><p:outputLabel value="#{sem.val.extraWeekEff.td}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
+                                    <p:column><p:outputLabel value="#{sem.val.extraWeekEff.tppm}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
                                     <p:column>
                                         <p:outputLabel
                                                 value="#{sem.val.deviation}"><f:convertNumber
@@ -323,10 +323,10 @@ and open the template in the editor.
                                                   styleClass="#{i.currentAssigned?'vr-label-valid':i.otherAssigned?'vr-label-warn':'vr-label-invalid'}"
                                     />
                                 </p:column>
-                                <p:column headerText="Collaborateurs" width="10%" rendered="#{myCourseLoadCtrl.model.isFilterSelected('collaborators')}">
+                                <p:column headerText="Collaborateurs" width="10%" rendered="#{myCourseLoadCtrl.model.isCurrentTeacherFilter('collaborators')}">
                                     <h:outputText value="#{i.courseIntents}" />
                                 </p:column>
-                                <p:column headerText="Salles" width="5%" rendered="#{myCourseLoadCtrl.model.isFilterSelected('rooms')}">
+                                <p:column headerText="Salles" width="5%" rendered="#{myCourseLoadCtrl.model.isCurrentTeacherFilter('rooms')}">
                                     <h:outputText value="#{i.rooms}"/>
                                 </p:column>
                             </p:dataTable>
@@ -415,10 +415,10 @@ and open the template in the editor.
                             <p:column headerText="Voeux" width="20%">
                                 <h:outputText value="#{i.intents}"  styleClass="#{i.currentAssigned?'vr-label-valid':i.otherAssigned?'vr-label-warn':'vr-label-invalid'}"/>
                             </p:column>
-                            <p:column headerText="Collaborateurs" width="10%" rendered="#{myCourseLoadCtrl.model.isFilterSelected('collaborators')}">
+                            <p:column headerText="Collaborateurs" width="10%" rendered="#{myCourseLoadCtrl.model.isOthersFilterSelected('collaborators')}">
                                 <h:outputText value="#{i.courseIntents}" />
                             </p:column>
-                            <p:column headerText="Salles" width="5%" rendered="#{myCourseLoadCtrl.model.isFilterSelected('rooms')}">
+                            <p:column headerText="Salles" width="5%" rendered="#{myCourseLoadCtrl.model.isOthersFilterSelected('rooms')}">
                                 <h:outputText value="#{i.rooms}"/>
                             </p:column>
 

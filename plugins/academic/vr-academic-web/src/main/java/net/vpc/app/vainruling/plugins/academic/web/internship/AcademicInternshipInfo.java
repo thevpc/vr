@@ -147,10 +147,10 @@ public class AcademicInternshipInfo {
                 i.setAssignedToMe(true);
             }
             if (i.getInternship().getSupervisor() != null) {
-                supervisorInfo.add(i.getInternship().getSupervisor().getContact().getFullName() + "*");
+                supervisorInfo.add(i.getInternship().getSupervisor().resolveFullName() + "*");
             }
             if (i.getInternship().getSupervisor() != null) {
-                supervisorInfo.add(i.getInternship().getSupervisor().getContact().getFullName() + "*");
+                supervisorInfo.add(i.getInternship().getSupervisor().resolveFullName() + "*");
             }
         }
         List<AcademicInternshipSupervisorIntent> allIntents = i.getInternshipExt().getSupervisorIntents();
@@ -161,7 +161,7 @@ public class AcademicInternshipInfo {
                 if (tt != null && a.getId() == tt.getId()) {
                     i.setDemandedByMe(true);
                 }
-                String n = a.getContact().getFullName();
+                String n = a.resolveFullName();
                 if (!supervisorInfo.contains(n + "*")) {
                     supervisorInfo.add(n);
                 }

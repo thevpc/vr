@@ -58,7 +58,7 @@ public class StudentFeedbackListCtrl {
         }else{
             ArrayList<SelectItem> students = new ArrayList<>();
             for (AcademicStudent academicStudent : academic.findStudents(studentsFilter, null)) {
-                students.add(new SelectItem(String.valueOf(academicStudent.getId()),academicStudent.getContact().getFullTitle()));
+                students.add(new SelectItem(String.valueOf(academicStudent.getId()),academicStudent.resolveFullTitle()));
             }
             getModel().setStudents(students);
             getModel().setSelectedStudent(null);

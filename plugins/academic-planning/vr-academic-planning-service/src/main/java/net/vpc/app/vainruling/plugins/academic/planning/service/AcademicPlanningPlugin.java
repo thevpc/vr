@@ -120,7 +120,7 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
             //
             AcademicTeacher teacher = academicPlugin.findTeacher(teacherId);
 
-            String teacherName = teacher == null ? "" : teacher.getContact().getFullName();
+            String teacherName = teacher == null ? "" : teacher.resolveFullName();
             teacherNames.put(teacherName.toLowerCase(),teacherId);
             if (teacher != null) {
                 for (String s : splitOtherNames(teacher.getOtherNames())) {
@@ -172,7 +172,7 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
     public CalendarWeek loadTeacherPlanning(int teacherId) {
         AcademicTeacher teacher = academicPlugin.findTeacher(teacherId);
 
-        String teacherName = teacher == null ? "" : teacher.getContact().getFullName();
+        String teacherName = teacher == null ? "" : teacher.resolveFullName();
         HashSet<String> teacherNames = new HashSet<>();
         teacherNames.add(teacherName.toLowerCase());
         if (teacher != null) {

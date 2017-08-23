@@ -1,19 +1,16 @@
 package net.vpc.app.vainruling.plugins.academic.service;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
-
-import java.util.HashSet;
-import java.util.Set;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.IAcademicCourseAssignment;
 
 /**
  * Created by vpc on 6/30/16.
  */
 public interface CourseAssignmentFilter {
-    boolean acceptAssignment(AcademicCourseAssignment academicCourseAssignment) ;
+    boolean acceptAssignment(IAcademicCourseAssignment academicCourseAssignment) ;
     boolean lookupIntents() ;
     CourseAssignmentFilter ALL=new CourseAssignmentFilter() {
         @Override
-        public boolean acceptAssignment(AcademicCourseAssignment academicCourseAssignment) {
+        public boolean acceptAssignment(IAcademicCourseAssignment academicCourseAssignment) {
             return true;
         }
 
@@ -24,7 +21,7 @@ public interface CourseAssignmentFilter {
     };
     CourseAssignmentFilter NO_INTENTS=new CourseAssignmentFilter() {
         @Override
-        public boolean acceptAssignment(AcademicCourseAssignment academicCourseAssignment) {
+        public boolean acceptAssignment(IAcademicCourseAssignment academicCourseAssignment) {
             return true;
         }
 

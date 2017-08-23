@@ -234,7 +234,7 @@ public class Message {
 
     public String getUserFullName() {
         if (received) {
-            return ((MailboxReceived) msg).getSender() == null ? null : ((MailboxReceived) msg).getSender().getContact().getFullTitle();
+            return ((MailboxReceived) msg).getSender() == null ? null : ((MailboxReceived) msg).getSender().resolveFullTitle();
         }
         return ((MailboxSent) msg).getToProfiles();
     }

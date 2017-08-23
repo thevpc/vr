@@ -48,7 +48,7 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
         for (AcademicTeacher t : p.findTeachers()) {
             AcademicTeacherPeriod tp = p.findAcademicTeacherPeriod(periodId, t);
             if (tp.isEnabled() && teacherFilter.acceptTeacher(tp)) {
-                getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), t.getContact().getFullName()));
+                getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), t.resolveFullName()));
             }
         }
         onRefresh();
@@ -60,13 +60,14 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
 
     public void onInit() {
         super.onInit();
-        getCourseFilter().getModel().setRefreshFilter(new String[]{"deviation-extra", "deviation-week"});
+//        getCourseFilter().getModel().setRefreshFilterSelected(new String[]{"deviation-extra", "deviation-week"});
+        getOthersCourseFilter().getModel().setRefreshFilterSelected(new String[]{"deviation-extra", "deviation-week"});
         getModel().setOthersFilters(new String[]{"rooms","multiple-selection"});
     }
     public void onRefresh() {
         super.onRefresh();
         //
-        getModel().getFilterSelectItems().add(FacesUtils.createSelectItem("no-current-intents", "Mes Modules Affectés", "vr-checkbox"));
+        getModel().getCurrentTeacherFiltersSelectItems().add(FacesUtils.createSelectItem("no-current-intents", "Mes Modules Affectés", "vr-checkbox"));
     }
 
     @OnPageLoad

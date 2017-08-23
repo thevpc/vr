@@ -11,6 +11,7 @@ import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.config.*;
+import net.vpc.upa.types.DateTime;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -25,7 +26,9 @@ import net.vpc.upa.config.*;
                 @Property(name = "ui.auto-filter.program", value = "{expr='assignment.coursePlan.courseLevel.academicClass.program',order=4}"),
                 @Property(name = "ui.auto-filter.programType", value = "{expr='assignment.coursePlan.courseLevel.academicClass.program.programType',order=5}"),
                 @Property(name = "ui.auto-filter.class", value = "{expr='assignment.coursePlan.courseLevel.academicClass',order=6}"),
-                @Property(name = "ui.auto-filter.teacher", value = "{expr='teacher',order=7}")
+                @Property(name = "ui.auto-filter.teacher", value = "{expr='teacher',order=7}"),
+                @Property(name = "ui.auto-filter.proposal", value = "{expr='proposal',order=8}"),
+                @Property(name = "ui.auto-filter.wish", value = "{expr='wish',order=9}")
         }
 )
 public class AcademicCourseIntent {
@@ -37,6 +40,18 @@ public class AcademicCourseIntent {
     private AcademicCourseAssignment assignment;
     @Summary
     private AcademicTeacher teacher;
+    @Summary
+    private boolean proposal;
+    @Summary
+    private DateTime proposalDate;
+    @Summary
+    private boolean acceptedProposal;
+    @Summary
+    private boolean wish;
+    @Summary
+    private DateTime wishDate;
+    @Summary
+    private boolean acceptedWish;
 
     public int getId() {
         return id;
@@ -60,6 +75,54 @@ public class AcademicCourseIntent {
 
     public void setTeacher(AcademicTeacher teacher) {
         this.teacher = teacher;
+    }
+
+    public boolean isProposal() {
+        return proposal;
+    }
+
+    public void setProposal(boolean proposal) {
+        this.proposal = proposal;
+    }
+
+    public DateTime getProposalDate() {
+        return proposalDate;
+    }
+
+    public void setProposalDate(DateTime proposalDate) {
+        this.proposalDate = proposalDate;
+    }
+
+    public boolean isAcceptedProposal() {
+        return acceptedProposal;
+    }
+
+    public void setAcceptedProposal(boolean acceptedProposal) {
+        this.acceptedProposal = acceptedProposal;
+    }
+
+    public boolean isWish() {
+        return wish;
+    }
+
+    public void setWish(boolean wish) {
+        this.wish = wish;
+    }
+
+    public DateTime getWishDate() {
+        return wishDate;
+    }
+
+    public void setWishDate(DateTime wishDate) {
+        this.wishDate = wishDate;
+    }
+
+    public boolean isAcceptedWish() {
+        return acceptedWish;
+    }
+
+    public void setAcceptedWish(boolean acceptedWish) {
+        this.acceptedWish = acceptedWish;
     }
 
     public AcademicSemester resolveSemester() {

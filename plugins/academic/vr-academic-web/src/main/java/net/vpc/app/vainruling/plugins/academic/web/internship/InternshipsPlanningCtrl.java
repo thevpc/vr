@@ -360,7 +360,7 @@ public class InternshipsPlanningCtrl {
             List<AcademicTeacher> teachers = academic.findTeachers();
             Map<String, AcademicTeacher> teachersByName = new HashMap<>();
             for (AcademicTeacher teacher : teachers) {
-                teachersByName.put(teacher.getContact().getFullName(), teacher);
+                teachersByName.put(teacher.resolveFullName(), teacher);
             }
             for (PlanningActivity activity : getModel().getTable().getActivities()) {
                 int id = activity.getInternship().getId();
@@ -542,7 +542,7 @@ public class InternshipsPlanningCtrl {
         }
         for (AcademicInternship academicInternship : getModel().getInternshipsList()) {
             if (academicInternship.getSupervisor() == null) {
-                String internshipName = academicInternship.getCode() + " - " + academicInternship.getName() + " - " + academicInternship.getStudent().getContact().getFullName();
+                String internshipName = academicInternship.getCode() + " - " + academicInternship.getName() + " - " + academicInternship.getStudent().resolveFullName();
                 System.err.println(internshipName + " ignored, no supervisor found");
             } else {
                 t.addActivity(academicInternship);

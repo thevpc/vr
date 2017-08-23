@@ -16,7 +16,6 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
@@ -25,7 +24,6 @@ import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherSemesterStat;
 import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.util.Chronometer;
-import org.apache.commons.collections.map.HashedMap;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
@@ -38,6 +36,7 @@ public abstract class AbstractCourseLoadCtrl {
     protected Model model = new Model();
     protected TeacherLoadFilterComponent teacherFilter = new TeacherLoadFilterComponent();
     protected CourseLoadFilterComponent courseFilter = new CourseLoadFilterComponent();
+    protected CourseLoadFilterComponent othersCourseFilter = new CourseLoadFilterComponent();
 
     public AbstractCourseLoadCtrl() {
     }
@@ -48,6 +47,10 @@ public abstract class AbstractCourseLoadCtrl {
 
     public CourseLoadFilterComponent getCourseFilter() {
         return courseFilter;
+    }
+
+    public CourseLoadFilterComponent getOthersCourseFilter() {
+        return othersCourseFilter;
     }
 
     private void reset() {
@@ -79,6 +82,7 @@ public abstract class AbstractCourseLoadCtrl {
     public void onInit(){
         getTeacherFilter().onInit();
         getCourseFilter().onInit();
+        getOthersCourseFilter().onInit();
     }
 
     public boolean isFiltered(String value) {
@@ -119,6 +123,19 @@ public abstract class AbstractCourseLoadCtrl {
 
         getTeacherFilter().onChangePeriod();
         getCourseFilter().onChangePeriod();
+
+        List<SelectItem> refreshableFilters = new ArrayList<>();
+        refreshableFilters.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
+        refreshableFilters.add(FacesUtils.createSelectItem("deviation-week", "Balance/Sem", "vr-checkbox"));
+        refreshableFilters.add(FacesUtils.createSelectItem("deviation-extra", "Balance/Supp", "vr-checkbox"));
+        refreshableFilters.add(FacesUtils.createSelectItem("extra-abs", "Supp ABS", "vr-checkbox"));
+        getCourseFilter().getModel().setRefreshFilterItems(refreshableFilters);
+
+        refreshableFilters = new ArrayList<>();
+        refreshableFilters.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
+        getOthersCourseFilter().getModel().setRefreshFilterItems(refreshableFilters);
+
+        getOthersCourseFilter().onChangePeriod();
         onChangeOther();
     }
 
@@ -130,28 +147,38 @@ public abstract class AbstractCourseLoadCtrl {
         onRefresh();
     }
 
+    public void onChangeMultipleSelection(){
+        //do nothing
+    }
     public void onRefresh() {
         Chronometer chronometer = new Chronometer();
         int periodId = getTeacherFilter().getPeriodId();
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        List<SelectItem> allValidFilters = new ArrayList<>();
-        allValidFilters.add(FacesUtils.createSelectItem("assigned", "Modules Affectés", "vr-checkbox"));
-        allValidFilters.add(FacesUtils.createSelectItem("non-assigned", "Modules Non Affectés", "vr-checkbox"));
-        allValidFilters.add(FacesUtils.createSelectItem("intended", "Modules Demandés", "vr-checkbox"));
-        allValidFilters.add(FacesUtils.createSelectItem("non-intended", "Modules Non Demandés", "vr-checkbox"));
-        allValidFilters.add(FacesUtils.createSelectItem("conflict", "Modules En Conflits", "vr-checkbox"));
-        allValidFilters.add(FacesUtils.createSelectItem("multiple-selection", "Selection Multiple", "vr-checkbox"));
-        allValidFilters.add(FacesUtils.createSelectItem("collaborators", "Collaborateurs", "vr-checkbox"));
-        allValidFilters.add(FacesUtils.createSelectItem("rooms", "Salles", "vr-checkbox"));
-        getModel().setFilterSelectItems(allValidFilters);
+        List<SelectItem> allCurrFilters = new ArrayList<>();
+        allCurrFilters.add(FacesUtils.createSelectItem("collaborators", "Collaborateurs", "vr-checkbox"));
+        allCurrFilters.add(FacesUtils.createSelectItem("rooms", "Salles", "vr-checkbox"));
+        getModel().setCurrentTeacherFiltersSelectItems(allCurrFilters);
+        List<SelectItem> allOtherFilters = new ArrayList<>();
+        allOtherFilters.add(FacesUtils.createSelectItem("assigned", "Modules Affectés", "vr-checkbox"));
+        allOtherFilters.add(FacesUtils.createSelectItem("non-assigned", "Modules Non Affectés", "vr-checkbox"));
+        allOtherFilters.add(FacesUtils.createSelectItem("intended", "Modules Demandés", "vr-checkbox"));
+        allOtherFilters.add(FacesUtils.createSelectItem("non-intended", "Modules Non Demandés", "vr-checkbox"));
+        allOtherFilters.add(FacesUtils.createSelectItem("conflict", "Modules En Conflits", "vr-checkbox"));
+        allOtherFilters.add(FacesUtils.createSelectItem("collaborators", "Collaborateurs", "vr-checkbox"));
+        allOtherFilters.add(FacesUtils.createSelectItem("rooms", "Salles", "vr-checkbox"));
+        allOtherFilters.add(FacesUtils.createSelectItem("locked", "Modules vérouillés", "vr-checkbox"));
+        allOtherFilters.add(FacesUtils.createSelectItem("unlocked", "Modules non vérouillés", "vr-checkbox"));
 
-        AcademicTeacher t = getCurrentTeacher();
-        getModel().setCurrentTeacher(t);
+        getModel().setOthersFiltersSelectItems(allOtherFilters);
+
+        AcademicTeacher teacher = getCurrentTeacher();
+        getModel().setCurrentTeacher(teacher);
         boolean assigned = isFiltered("assigned");
         boolean nonassigned = isFiltered("non-assigned");
         boolean intended = isFiltered("intended");
         boolean nonintended = isFiltered("non-intended");
-        boolean conflict = isFiltered("conflict");
+        boolean locked = isFiltered("locked");
+        boolean unlocked = isFiltered("unlocked");
 
         if (!assigned && !nonassigned) {
             assigned = true;
@@ -161,42 +188,60 @@ public abstract class AbstractCourseLoadCtrl {
             intended = true;
             nonintended = true;
         }
+        if (!locked && !unlocked) {
+            locked = true;
+            unlocked = true;
+        }
 
         reset();
 
         Map<Integer, SelectableAssignment> all = new HashMap<>();
-        DefaultCourseAssignmentFilter allCourseAssignmentFilter = getCourseFilter().getCourseAssignmentFilter();
-        allCourseAssignmentFilter.setAcceptAssignments(true).setAcceptIntents(true).setAcceptNoTeacher(true);
-        DeviationConfig deviationConfig = getCourseFilter().getDeviationConfig();
+        DefaultCourseAssignmentFilter otherCourseAssignmentsFilter = getOthersCourseFilter().getCourseAssignmentFilter();
+        otherCourseAssignmentsFilter.setAcceptAssignments(true).setAcceptIntents(true).setAcceptNoTeacher(true);
 //        boolean includeIntents = !isFiltered("no-current-intents");
-        List<AcademicCourseAssignmentInfo> allCourseAssignmentsAndIntents = a.findCourseAssignmentsAndIntents(periodId, null, allCourseAssignmentFilter);
-        int id = t == null ? -1 : t.getId();
-        for (AcademicCourseAssignmentInfo b : allCourseAssignmentsAndIntents) {
-            all.put(b.getAssignment().getId(), new SelectableAssignment(b, id));
+        List<AcademicCourseAssignmentInfo> othersAssignmentsAndIntents = a.findCourseAssignmentsAndIntents(periodId, null, otherCourseAssignmentsFilter);
+        int teacherId = teacher == null ? -1 : teacher.getId();
+        for (AcademicCourseAssignmentInfo b : othersAssignmentsAndIntents) {
+            all.put(b.getAssignment().getId(), new SelectableAssignment(b, teacherId));
         }
         getModel().setAll(all);
-        HashSet<Integer> visited = new HashSet<Integer>();
-        if (t != null) {
+        HashSet<Integer> visitedAssignmentId = new HashSet<Integer>();
+        if (teacher != null) {
             DefaultCourseAssignmentFilter courseAssignmentFilter = getCourseFilter().getCourseAssignmentFilter();
-            TeacherPeriodStat stat = a.evalTeacherStat(periodId, id, courseAssignmentFilter, deviationConfig,null);
+            DeviationConfig deviationConfig = getCourseFilter().getDeviationConfig();
+            List<AcademicCourseAssignmentInfo> teacherAssignmentsAndIntents = a.findCourseAssignmentsAndIntents(periodId, teacherId, courseAssignmentFilter);
+            for (AcademicCourseAssignmentInfo b : teacherAssignmentsAndIntents) {
+                if(!all.containsKey(b.getAssignment().getId())) {
+                    all.put(b.getAssignment().getId(), new SelectableAssignment(b, teacherId));
+                }
+            }
+
+            TeacherPeriodStat stat = a.evalTeacherStat(periodId, teacherId, courseAssignmentFilter, deviationConfig,null);
             for (TeacherSemesterStat teacherSemesterStat : stat.getSemesters()) {
                 for (AcademicCourseAssignmentInfo m : teacherSemesterStat.getAssignments()) {
-                    visited.add(m.getAssignment().getId());
+                    visitedAssignmentId.add(m.getAssignment().getId());
                 }
             }
             getModel().setStat(new TeacherPeriodStatExt(stat, all));
         }
 
+
+
+        boolean conflict = isFiltered("conflict");
         List<AcademicCourseAssignmentInfo> others = new ArrayList<>();
-        for (AcademicCourseAssignmentInfo c : allCourseAssignmentsAndIntents) {
-            if (!visited.contains(c.getAssignment().getId())) {
+        for (AcademicCourseAssignmentInfo c : othersAssignmentsAndIntents) {
+            if (!visitedAssignmentId.contains(c.getAssignment().getId())) {
                 boolean _assigned = c.isAssigned();
+                boolean _locked = c.getAssignment().isLocked();
                 Map<Integer, TeacherAssignmentChunck> chuncks = c.getAssignmentChunck().getChuncks();
                 int chunk_size = chuncks.size();
                 boolean _intended = chunk_size > 0;
                 boolean accepted = true;
-                if (((assigned && _assigned) || (nonassigned && !_assigned))
-                        && ((intended && _intended) || (nonintended && !_intended))) {
+                if (
+                        ((assigned && _assigned) || (nonassigned && !_assigned))
+                        && ((intended && _intended) || (nonintended && !_intended))
+                        && ((locked && _locked) || (unlocked && !_locked))
+                        ) {
                     //ok
                 } else {
                     accepted = false;
@@ -270,7 +315,7 @@ public abstract class AbstractCourseLoadCtrl {
                 if (t != null) {
                     if (isAllowedUpdateMineIntents(assignment.getId())) {
                         a.addIntent(t.getId(), assignment.getId());
-                        a.removeCourseAssignment(assignment.getId(),false);
+                        a.removeCourseAssignment(assignment.getId(),false,false);
                     }
                 }
             }
@@ -391,14 +436,14 @@ public abstract class AbstractCourseLoadCtrl {
     public void doDeleteAssignment(Integer assignementId) {
         if(UserSession.get().isManagerOrAdmin()){
             AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-            a.removeCourseAssignment(assignementId,true);
+            a.removeCourseAssignment(assignementId,true,false);
         }
     }
     public void doUnAssign(Integer assignementId) {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = getModel().getCurrentTeacher();
         if (t != null && assignementId != null) {
-            a.removeCourseAssignment(assignementId,false);
+            a.removeCourseAssignment(assignementId,false,true);
         }
         onRefresh();
     }
@@ -460,7 +505,7 @@ public abstract class AbstractCourseLoadCtrl {
             for (SelectableAssignment s : getModel().getAll().values()) {
                 if (s.isSelected()) {
                     int assignementId = s.getValue().getAssignment().getId();
-                    a.removeCourseAssignment(assignementId,false);
+                    a.removeCourseAssignment(assignementId,false,true);
                 }
             }
 //        }
@@ -475,7 +520,7 @@ public abstract class AbstractCourseLoadCtrl {
             for (SelectableAssignment s : getModel().getAll().values()) {
                 if (s.isSelected()) {
                     int assignementId = s.getValue().getAssignment().getId();
-                    a.removeCourseAssignment(assignementId, true);
+                    a.removeCourseAssignment(assignementId, true,false);
                 }
             }
 //        }
@@ -485,6 +530,10 @@ public abstract class AbstractCourseLoadCtrl {
 
     public Model getModel() {
         return model;
+    }
+
+    public void onCurrentTeacherFiltersChanged() {
+        onRefresh();
     }
 
     public void onOthersFiltersChanged() {
@@ -691,13 +740,13 @@ public abstract class AbstractCourseLoadCtrl {
 //            if ((
 //                    assignmentTeacher != null
 //                            && assignmentTeacher.getContact() != null
-//                            && i.equals(assignmentTeacher.getContact().getFullName())
+//                            && i.equals(assignmentTeacher.resolveFullName())
 //            )
 //                    ||
 //                    (
 //                            visitorTeacher != null
 //                                    && visitorTeacher.getContact() != null
-//                                    && i.equals(visitorTeacher.getContact().getFullName())
+//                                    && i.equals(visitorTeacher.resolveFullName())
 //                    )) {
 //                //ignore
 //            } else {
@@ -839,7 +888,7 @@ public abstract class AbstractCourseLoadCtrl {
         Map<Integer, SelectableAssignment> all = new HashMap<>();
         TeacherPeriodStatExt stat;
         boolean nonIntentedOnly = false;
-        boolean multipleSelection = false;
+        boolean multipleSelection = true;
         boolean enableLoadEditing = false;
         boolean displayOtherModules = false;
         AcademicCourseAssignmentInfo selectedFromOthers = null;
@@ -848,10 +897,20 @@ public abstract class AbstractCourseLoadCtrl {
         boolean myDisciplineOnly = true;
         String[] defaultFilters = {"situation", "degree", "valueWeek", "extraWeek", "c", "td", "tp", "pm"};
         String[] othersFilters = defaultFilters;
+        String[] currentTeacherFilters = defaultFilters;
         List<SelectItem> filterSelectItems = new ArrayList<>();
+        List<SelectItem> otherFilterSelectItems = new ArrayList<>();
         String othersTextFilter;
 
         AcademicTeacher currentTeacher;
+
+        public String[] getCurrentTeacherFilters() {
+            return currentTeacherFilters;
+        }
+
+        public void setCurrentTeacherFilters(String[] currentTeacherFilters) {
+            this.currentTeacherFilters = currentTeacherFilters;
+        }
 
         public AcademicTeacher getCurrentTeacher() {
             return currentTeacher;
@@ -861,14 +920,29 @@ public abstract class AbstractCourseLoadCtrl {
             this.currentTeacher = currentTeacher;
         }
 
-        public boolean isFilterSelected(String value) {
+        public boolean isOthersFilterSelected(String value) {
             return Arrays.asList(getOthersFilters()).indexOf(value) >= 0;
+        }
+
+        public boolean isCurrentTeacherFilter(String value) {
+            return Arrays.asList(getCurrentTeacherFilters()).indexOf(value) >= 0;
         }
 
         public boolean isMultipleSelection() {
             return multipleSelection;
         }
 
+        public void setMultipleSelection(boolean multipleSelection) {
+            this.multipleSelection = multipleSelection;
+        }
+
+        public List<SelectItem> getOthersFiltersSelectItems() {
+            return otherFilterSelectItems;
+        }
+
+        public void setOthersFiltersSelectItems(List<SelectItem> othersFiltersSelectItems) {
+            this.otherFilterSelectItems = othersFiltersSelectItems;
+        }
 //        public List<AcademicCourseAssignmentInfo> getMineS1() {
 //            return mineS1;
 //        }
@@ -900,6 +974,38 @@ public abstract class AbstractCourseLoadCtrl {
         public Model setNonFilteredOthers(List<SelectableAssignment> nonFilteredOthers) {
             this.nonFilteredOthers = nonFilteredOthers;
             return this;
+        }
+
+        public double getOthersSumC() {
+            double v=0;
+            for (SelectableAssignment other : others) {
+                v+=other.getValue().getAssignment().getValueC();
+            }
+            return v;
+        }
+
+        public double getOthersSumTD() {
+            double v=0;
+            for (SelectableAssignment other : others) {
+                v+=other.getValue().getAssignment().getValueTD();
+            }
+            return v;
+        }
+
+        public double getOthersSumTP() {
+            double v=0;
+            for (SelectableAssignment other : others) {
+                v+=other.getValue().getAssignment().getValueTP();
+            }
+            return v;
+        }
+
+        public double getOthersSumPM() {
+            double v=0;
+            for (SelectableAssignment other : others) {
+                v+=other.getValue().getAssignment().getValuePM();
+            }
+            return v;
         }
 
         public List<SelectableAssignment> getOthers() {
@@ -964,15 +1070,14 @@ public abstract class AbstractCourseLoadCtrl {
 
         public void setOthersFilters(String[] othersFilters) {
             this.othersFilters = (othersFilters == null || othersFilters.length == 0) ? defaultFilters : othersFilters;
-            multipleSelection = isFilterSelected("multiple-selection");
         }
 
-        public List<SelectItem> getFilterSelectItems() {
+        public List<SelectItem> getCurrentTeacherFiltersSelectItems() {
             return filterSelectItems;
         }
 
-        public void setFilterSelectItems(List<SelectItem> filterSelectItems) {
-            this.filterSelectItems = filterSelectItems;
+        public void setCurrentTeacherFiltersSelectItems(List<SelectItem> currentTeacherFiltersSelectItems) {
+            this.filterSelectItems = currentTeacherFiltersSelectItems;
         }
 
         public boolean isEnableLoadEditing() {

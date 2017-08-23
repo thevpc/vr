@@ -8,6 +8,7 @@ import net.vpc.upa.Entity;
 import net.vpc.upa.NamedId;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
+import net.vpc.upa.impl.UPAImplDefaults;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -17,6 +18,21 @@ import java.util.List;
  */
 public class IssueTester {
 
+    public static void main(String[] args) {
+        UPAImplDefaults.PRODUCTION_MODE=false;
+        List<Object> all = UPA.getPersistenceUnit()
+                .createQuery("Select u from AcademicTeacher u where u.id in ("
+                        + " (Select t.id from AcademicTeacher t "
+                        + " inner join AcademicCourseAssignment a on a.teacherId=t.id "
+                        + " where a.coursePlan.period.id=:periodId) "
+                        + " union (Select t.id from AcademicTeacher t "
+                        + " inner join AcademicCourseAssignment a on a.teacherId=t.id "
+                        + " where a.coursePlan.period.id=:periodId) "
+                        + ") order by u.contact.fullName")
+                .setParameter("periodId",12)
+                .getResultList();
+        System.out.println("found = "+all);
+    }
     public static void main1(String[] args) {
         List<AcademicCoursePlan> list = UPA.getPersistenceUnit().createQuery("Select a from AcademicCoursePlan a "
 //                + " where a.id=159"
@@ -66,7 +82,7 @@ public class IssueTester {
         return errCount;
     }
 
-    public static void main(String[] args) {
+    public static void main2(String[] args) {
         List<AcademicCourseAssignment> old=null;
         for (int i = 173; i < 1000; i++) {
             int max = 159 + i;

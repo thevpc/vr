@@ -313,7 +313,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     public void generateTeacherAssignementDocumentsFolder(int periodId, String path) {
         for (AcademicCourseAssignment a : findAcademicCourseAssignments(periodId)) {
             if (a.getTeacher() != null && a.getTeacher().getContact() != null) {
-                String n = VrUtils.toValidFileName(a.getTeacher().getContact().getFullName());
+                String n = VrUtils.toValidFileName(a.getTeacher().resolveFullName());
                 String c = VrUtils.toValidFileName(a.getFullName());
                 VFile r = core.getFileSystem().get(path + "/" + n + "/" + c);
                 r.mkdirs();
@@ -414,7 +414,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         AcademicTeacherSituation situation = teacher.getSituation();
         teacher_stat.setTeacherPeriod(findAcademicTeacherPeriod(periodId, teacher_stat.getTeacher()));
         AcademicTeacherDegree degree = teacher_stat.getTeacherPeriod().getDegree();
-        teacher_stat.getDueWeek().setEquiv(teacherHasDue(situation, degree) ? degree.getValueDU(): 0);
+        teacher_stat.getDueWeek().setEquiv(teacherHasDue(situation, degree) ? degree.getValueDU() : 0);
 
         boolean hasDU = teacher_stat.getDueWeek().getEquiv() > 0;
         if (!hasDU) {
@@ -619,10 +619,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     private boolean teacherHasDue(AcademicTeacherSituation situation, AcademicTeacherDegree degree) {
         return degree != null &&
-                degree.getValueDU() >0 &&
-                situation!=null &&
-                situation.getType()!=null &&
-                        situation.getType().isWithDue();
+                degree.getValueDU() > 0 &&
+                situation != null &&
+                situation.getType() != null &&
+                situation.getType().isWithDue();
     }
 
     public LoadValue getAssignmentLoadValue(AcademicCourseAssignment assignment, AcademicTeacherDegree degree, AcademicConversionTableHelper conversionTable) {
@@ -876,15 +876,19 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         pu.merge(a);
     }
 
-    public void removeCourseAssignment(int assignementId,boolean hardRemoval) {
+    public void removeCourseAssignment(int assignementId, boolean hardRemoval, boolean switchToIntent) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment a = pu.findById(AcademicCourseAssignment.class, assignementId);
-        if(a!=null) {
+        if (a != null) {
             if (hardRemoval) {
                 pu.remove(a);
             } else {
+                AcademicTeacher teacher = a.getTeacher();
                 a.setTeacher(null);
                 pu.merge(a);
+                if (teacher != null && switchToIntent) {
+                    addIntent(teacher.getId(), a.getId());
+                }
             }
         }
 //        cacheService.get(AcademicCourseAssignment.class).invalidate();
@@ -975,37 +979,27 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return intents;
     }
 
-
     public List<AcademicCourseIntent> findCourseIntentsByTeacher(int periodId, Integer teacher, CourseAssignmentFilter filter) {
-        List<AcademicCourseIntent> intents = null;
-        //if (cache != null) {
-        intents = getAcademicCourseIntentByTeacherAndSemester(periodId, teacher, new CourseIntentFilter() {
-            @Override
-            public boolean acceptIntent(AcademicCourseIntent academicCourseIntent) {
-                return filter.acceptAssignment(academicCourseIntent.getAssignment());
+        List<AcademicCourseIntent> intents = new ArrayList<>();
+        if (teacher == null) {
+            for (AcademicCourseIntent value : findCourseIntents(periodId)) {
+                if (filter == null || filter.acceptAssignment(new AcademicCourseAssignment2(value))) {
+                    intents.add(value);
+                }
             }
-        });
-//        } else {
-//            if (teacher == null) {
-//                intents = UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseIntent a where a.assignment.coursePlan.periodId=:periodId")
-//                        .setParameter("periodId", periodId)
-//                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
-//                        .getResultList();
-//            } else {
-//                intents = UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseIntent a where a.assignment.coursePlan.periodId=:periodId and a.teacherId=:teacherId")
-//                        .setParameter("periodId", periodId)
-//                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
-//                        .setParameter("teacherId", teacher)
-//                        .getResultList();
-//            }
-//        }
-        List<AcademicCourseIntent> m = new ArrayList<>();
-        for (AcademicCourseIntent value : intents) {
-            if (filter == null || filter.acceptAssignment(value.getAssignment())) {
-                m.add(value);
+        } else {
+            List<AcademicCourseIntent> list = getAcademicCourseIntentByTeacherId(periodId).get(teacher);
+            if (list == null) {
+                //System.out.println("No intents for " + teacher + " : " + getAcademicTeacherMap().get(teacher));
+            } else {
+                for (AcademicCourseIntent value : list) {
+                    if (filter == null || filter.acceptAssignment(new AcademicCourseAssignment2(value))) {
+                        intents.add(value);
+                    }
+                }
             }
         }
-        return m;
+        return intents;
     }
 
     private List<AcademicCourseAssignment> filterAssignments(List<AcademicCourseAssignment> base, CourseAssignmentFilter filter) {
@@ -1014,7 +1008,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
         List<AcademicCourseAssignment> ret = new ArrayList<>();
         for (AcademicCourseAssignment academicCourseAssignment : base) {
-            if (filter.acceptAssignment(academicCourseAssignment)) {
+            if (filter.acceptAssignment(new AcademicCourseAssignment1(academicCourseAssignment))) {
                 ret.add(academicCourseAssignment);
             }
         }
@@ -1034,7 +1028,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             List<AcademicCourseAssignment> m = new ArrayList<>();
             if (teacher == null) {
                 for (AcademicCourseAssignment value : findAcademicCourseAssignments(periodId)) {
-                    if (filter.acceptAssignment(value)) {
+                    if (filter.acceptAssignment(new AcademicCourseAssignment1(value))) {
                         m.add(value);
                     }
                 }
@@ -1057,8 +1051,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                         System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled!");
                     }
                     for (AcademicCourseAssignment value : list) {
-                        AcademicSemester semester1 = value.resolveSemester();
-                        if (filter == null || filter.acceptAssignment(value)) {
+                        if (filter == null || filter.acceptAssignment(new AcademicCourseAssignment1(value))) {
                             m.add(value);
                         }
                     }
@@ -1074,8 +1067,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             List<AcademicCourseAssignmentInfo> m = new ArrayList<>();
             if (teacher == null) {
                 for (AcademicCourseAssignment value : findAcademicCourseAssignments(periodId)) {
-                    AcademicSemester semester1 = value.resolveSemester();
-                    if (filter == null || filter.acceptAssignment(value)) {
+                    if (filter == null || filter.acceptAssignment(new AcademicCourseAssignment1(value))) {
                         AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
                         b.setAssigned(value.getTeacher() != null);
                         b.setAssignment(value);
@@ -1101,8 +1093,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                         System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled!");
                     }
                     for (AcademicCourseAssignment value : list) {
-                        AcademicSemester semester1 = value.resolveSemester();
-                        if (filter == null || filter.acceptAssignment(value)) {
+                        if (filter == null || filter.acceptAssignment(new AcademicCourseAssignment1(value))) {
                             AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
                             b.setAssigned(value.getTeacher() != null);
                             b.setAssignment(value);
@@ -1176,7 +1167,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             }
 
             AcademicCoursePlan coursePlan = a.getAssignment().getCoursePlan();
-            List<AcademicCourseAssignment> other = coursePlan == null ? Collections.EMPTY_LIST : findCourseAssignmentsByPlan(coursePlan.getId());
+            List<AcademicCourseAssignment> other = coursePlan == null ? Collections.EMPTY_LIST : findCourseAssignmentsByCoursePlan(coursePlan.getId());
             for (AcademicCourseAssignment academicCourseAssignment : other) {
                 AcademicTeacher teacher1 = academicCourseAssignment.getTeacher();
                 if (teacher1 != null) {
@@ -1495,7 +1486,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
         List<AcademicCourseAssignment> courseAssignments = findCourseAssignments(periodId, new CourseAssignmentFilterAnd().and(filter).and(new CourseAssignmentFilter() {
             @Override
-            public boolean acceptAssignment(AcademicCourseAssignment academicCourseAssignment) {
+            public boolean acceptAssignment(IAcademicCourseAssignment academicCourseAssignment) {
                 AcademicTeacher t = academicCourseAssignment.getTeacher();
                 if (t != null) {
                     return teacherFilter == null || teacherFilter.acceptTeacher(findAcademicTeacherPeriod(periodId, t));
@@ -1964,7 +1955,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     public AcademicTeacher findTeacher(StringComparator t) {
         for (AcademicTeacher teacher : findTeachers()) {
-            if (t.matches(teacher.getContact() == null ? null : teacher.getContact().getFullName())) {
+            if (t.matches(teacher.getContact() == null ? null : teacher.resolveFullName())) {
                 return teacher;
             }
         }
@@ -2028,10 +2019,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 " x.deleted=false " +
                 ((StringUtils.isEmpty(studentUpqlFilter)) ? "" : (" and " + studentUpqlFilter)) +
                 " order by x.contact.fullName").getResultList();
-        return filterStudents(base,studentProfileFilter);
+        return filterStudents(base, studentProfileFilter);
     }
 
-    public List<AcademicStudent> filterStudents(List<AcademicStudent> base,String studentProfileFilter) {
+    public List<AcademicStudent> filterStudents(List<AcademicStudent> base, String studentProfileFilter) {
         if (!StringUtils.isEmpty(studentProfileFilter)) {
             HashSet<Integer> goodUsers = new HashSet<Integer>();
             AppUserType studentType = core.findUserType("Student");
@@ -2053,10 +2044,10 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
     public List<AcademicTeacher> findTeachers(String teacherProfileFilter) {
-        return filterTeachers(findTeachers(),teacherProfileFilter);
+        return filterTeachers(findTeachers(), teacherProfileFilter);
     }
 
-    public List<AcademicTeacher> filterTeachers(List<AcademicTeacher> base,String teacherProfileFilter) {
+    public List<AcademicTeacher> filterTeachers(List<AcademicTeacher> base, String teacherProfileFilter) {
         if (!StringUtils.isEmpty(teacherProfileFilter)) {
             List<AcademicTeacher> goodTeachers = new ArrayList<>();
             HashSet<Integer> goodUsers = new HashSet<Integer>();
@@ -2092,12 +2083,44 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 .getResultList();
     }
 
-    public List<AcademicTeacher> findTeachersWithAssignements() {
+    public List<AcademicTeacher> findTeachersWithAssignmentsOrIntent(int periodId) {
+        List<AcademicTeacher> byAssignment = findTeachersWithAssignments(periodId);
+        List<AcademicTeacher> byIntent = findTeachersWithIntents(periodId);
+        HashMap<Integer, AcademicTeacher> visited = new HashMap<>();
+        for (AcademicTeacher academicTeacher : byAssignment) {
+            if (!visited.containsKey(academicTeacher.getId())) {
+                visited.put(academicTeacher.getId(), academicTeacher);
+            }
+        }
+        for (AcademicTeacher academicTeacher : byIntent) {
+            if (!visited.containsKey(academicTeacher.getId())) {
+                visited.put(academicTeacher.getId(), academicTeacher);
+            }
+        }
+        List<AcademicTeacher> ret = new ArrayList<>(visited.values());
+        ret.sort(Comparator.comparing(AcademicTeacher::resolveFullName));
+        return ret;
+    }
+
+    public List<AcademicTeacher> findTeachersWithAssignments(int periodId) {
         return UPA.getPersistenceUnit()
                 .createQuery("Select u from AcademicTeacher u where u.id in ("
                         + " Select t.id from AcademicTeacher t "
-                        + " inner join AcademicCourseAssignment a on a.teacherId=t.id"
+                        + " inner join AcademicCourseAssignment a on a.teacherId=t.id "
+                        + " where a.coursePlan.period.id=:periodId "
                         + ") order by u.contact.fullName")
+                .setParameter("periodId", periodId)
+                .getResultList();
+    }
+
+    public List<AcademicTeacher> findTeachersWithIntents(int periodId) {
+        return UPA.getPersistenceUnit()
+                .createQuery("Select u from AcademicTeacher u where u.id in ("
+                        + " Select t.id from AcademicTeacher t "
+                        + " inner join AcademicCourseIntent a on a.teacherId=t.id "
+                        + " where a.assignment.coursePlan.period.id=:periodId "
+                        + ") order by u.contact.fullName")
+                .setParameter("periodId", periodId)
                 .getResultList();
     }
 
@@ -2529,7 +2552,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 AcademicCourseAssignmentIdConverter
         );
         for (AcademicCourseAssignment academicCourseAssignment : courseAssignments) {
-            if (filter.acceptAssignment(academicCourseAssignment)) {
+            if (filter.acceptAssignment(new AcademicCourseAssignment1(academicCourseAssignment))) {
                 m.add(academicCourseAssignment);
             }
         }
@@ -2602,9 +2625,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
                 });
     }
 
-    public List<AcademicCourseAssignment> findCourseAssignmentsByPlan(int planId) {
+    public List<AcademicCourseAssignment> findCourseAssignmentsByCoursePlan(int planId) {
         return cacheService.get(AcademicCourseAssignment.class)
-                .getProperty("findCourseAssignmentsByPlan:" + planId, new Action<List<AcademicCourseAssignment>>() {
+                .getProperty("findCourseAssignmentsByCoursePlan:" + planId, new Action<List<AcademicCourseAssignment>>() {
                     @Override
                     public List<AcademicCourseAssignment> run() {
                         return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.coursePlanId=:v")
@@ -2705,7 +2728,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     private void updateCoursePlanValuesByLoadValues(AcademicCoursePlan coursePlan) {
 //        Chronometer ch=new Chronometer();
-        List<AcademicCourseAssignment> loads = findCourseAssignmentsByPlan(coursePlan.getId());
+        List<AcademicCourseAssignment> loads = findCourseAssignmentsByCoursePlan(coursePlan.getId());
         double c = 0;
         double td = 0;
         double tp = 0;
@@ -3200,56 +3223,56 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         core.createRight("Custom.Education.MyPlanning", "MyPlanning");
         core.createRight("Custom.Education.ClassPlanning", "ClassPlanning");
 
-        core.getOrCreateAppPropertyValue("System.App.Title",null,"Eniso.info");
-        core.getOrCreateAppPropertyValue("System.App.Description",null,"ENISo Computer Science Department Web Site");
-        core.getOrCreateAppPropertyValue("System.App.Keywords",null,"eniso");
-        core.getOrCreateAppPropertyValue("System.App.Title.Major.Main",null,"Eniso");
-        core.getOrCreateAppPropertyValue("System.App.Title.Major.Secondary",null,"info");
-        core.getOrCreateAppPropertyValue("System.App.Title.Minor.Main",null,"Eniso");
-        core.getOrCreateAppPropertyValue("System.App.Title.Minor.Secondary",null,"info");
-        core.getOrCreateAppPropertyValue("System.App.Copyrights.Date",null,"2015-2017");
-        core.getOrCreateAppPropertyValue("System.App.Copyrights.Author.Name",null,"Taha Ben Salah");
-        core.getOrCreateAppPropertyValue("System.App.Copyrights.Author.URL",null,"http://tahabensalah.net");
-        core.getOrCreateAppPropertyValue("System.App.Copyrights.Author.Affiliation",null,"ENISo");
-        core.getOrCreateAppPropertyValue("System.App.GotoWelcomeText",null,"My Space");
-        core.getOrCreateAppPropertyValue("System.App.GotoLoginText",null,"My Space");
+        core.getOrCreateAppPropertyValue("System.App.Title", null, "Eniso.info");
+        core.getOrCreateAppPropertyValue("System.App.Description", null, "ENISo Computer Science Department Web Site");
+        core.getOrCreateAppPropertyValue("System.App.Keywords", null, "eniso");
+        core.getOrCreateAppPropertyValue("System.App.Title.Major.Main", null, "Eniso");
+        core.getOrCreateAppPropertyValue("System.App.Title.Major.Secondary", null, "info");
+        core.getOrCreateAppPropertyValue("System.App.Title.Minor.Main", null, "Eniso");
+        core.getOrCreateAppPropertyValue("System.App.Title.Minor.Secondary", null, "info");
+        core.getOrCreateAppPropertyValue("System.App.Copyrights.Date", null, "2015-2017");
+        core.getOrCreateAppPropertyValue("System.App.Copyrights.Author.Name", null, "Taha Ben Salah");
+        core.getOrCreateAppPropertyValue("System.App.Copyrights.Author.URL", null, "http://tahabensalah.net");
+        core.getOrCreateAppPropertyValue("System.App.Copyrights.Author.Affiliation", null, "ENISo");
+        core.getOrCreateAppPropertyValue("System.App.GotoWelcomeText", null, "My Space");
+        core.getOrCreateAppPropertyValue("System.App.GotoLoginText", null, "My Space");
 
         ArticlesDisposition a = core.findArticleDisposition("Activities");
-        if(a!=null){
+        if (a != null) {
             a.setActionName("Activities");
             a.setEnabled(true);
             pu.merge(a);
         }
         a = core.findArticleDisposition("News");
-        if(a!=null){
+        if (a != null) {
             a.setActionName("Press");
             a.setEnabled(true);
             pu.merge(a);
         }
 
         a = core.findArticleDisposition("Testimonials");
-        if(a!=null){
+        if (a != null) {
             a.setActionName("Testimonials");
             a.setEnabled(true);
             pu.merge(a);
         }
 
         a = core.findArticleDisposition("Education");
-        if(a!=null){
+        if (a != null) {
             a.setActionName("Studies");
             a.setEnabled(true);
             pu.merge(a);
         }
 
         a = core.findArticleDisposition("Featured");
-        if(a!=null){
+        if (a != null) {
             a.setActionName("Featured");
             a.setEnabled(true);
             pu.merge(a);
         }
 
         a = core.findArticleDisposition("About");
-        if(a!=null){
+        if (a != null) {
             a.setActionName("About");
             a.setEnabled(true);
             pu.merge(a);
@@ -3581,7 +3604,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
         String name = null;
         if (t.getContact() != null) {
-            name = t.getContact().getFullName();
+            name = t.resolveFullName();
         }
         if (StringUtils.isEmpty(name) && t.getUser() != null) {
             name = t.getUser().getLogin();
@@ -3598,7 +3621,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         }
         String name = null;
         if (t.getContact() != null) {
-            name = t.getContact().getFullName();
+            name = t.resolveFullName();
         }
         if (StringUtils.isEmpty(name) && t.getUser() != null) {
             name = t.getUser().getLogin();
@@ -3814,7 +3837,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             Set<String> myPrograms = new HashSet<>();
             for (AcademicCourseAssignment a : findCourseAssignments(periodId, s.getId(), new DefaultCourseAssignmentFilter().setAcceptIntents(false))) {
                 AcademicProgram academicProgram = a.resolveProgram();
-                if(academicProgram!=null){
+                if (academicProgram != null) {
                     myPrograms.add(academicProgram.getName());
                 }
                 myClasses.add(a.resolveAcademicClass());//not to force loading of sub class!
@@ -4081,7 +4104,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
     }
 
 
-
     public void updateTeacherPeriod(int periodId, int teacherId, int copyFromPeriod) {
 //        AppPeriod p = core.getCurrentPeriod();
         AcademicTeacher teacher = findTeacher(teacherId);
@@ -4259,29 +4281,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     }
 
-    public List<AcademicCourseIntent> getAcademicCourseIntentByTeacherAndSemester(int periodId, Integer teacher, CourseIntentFilter filter) {
-        List<AcademicCourseIntent> m = new ArrayList<>();
-        if (teacher == null) {
-            for (AcademicCourseIntent value : findCourseIntents(periodId)) {
-                AcademicSemester semester1 = value.resolveSemester();
-                if (filter == null || filter.acceptIntent(value)) {
-                    m.add(value);
-                }
-            }
-        } else {
-            List<AcademicCourseIntent> list = getAcademicCourseIntentByTeacherId(periodId).get(teacher);
-            if (list == null) {
-                //System.out.println("No intents for " + teacher + " : " + getAcademicTeacherMap().get(teacher));
-            } else {
-                for (AcademicCourseIntent value : list) {
-                    if (filter == null || filter.acceptIntent(value)) {
-                        m.add(value);
-                    }
-                }
-            }
-        }
-        return m;
-    }
+
 
     public Map<Integer, List<AcademicCourseIntent>> getAcademicCourseIntentByTeacherId(int periodId) {
 
@@ -5095,17 +5095,17 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (pfe != null) {
             formerStudent.setGraduationProjectTitle(pfe.getName());
             formerStudent.setGraduationProjectSummary(pfe.getDescription());
-            formerStudent.setGraduationProjectSupervisor(pfe.getSupervisor() == null ? null : pfe.getSupervisor().getContact().getFullTitle());
+            formerStudent.setGraduationProjectSupervisor(pfe.getSupervisor() == null ? null : pfe.getSupervisor().resolveFullTitle());
             {
                 StringBuilder sb = new StringBuilder();
                 if (pfe.getSupervisor() != null) {
-                    sb.append(pfe.getSupervisor().getContact().getFullName());
+                    sb.append(pfe.getSupervisor().resolveFullName());
                 }
                 if (pfe.getSecondSupervisor() != null) {
                     if (sb.length() > 0) {
                         sb.append(", ");
                     }
-                    sb.append(pfe.getSecondSupervisor().getContact().getFullName());
+                    sb.append(pfe.getSecondSupervisor().resolveFullName());
                 }
                 formerStudent.setGraduationProjectSupervisor(sb.toString());
             }
@@ -5113,19 +5113,19 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             {
                 StringBuilder sb = new StringBuilder();
                 if (pfe.getChairExaminer() != null) {
-                    sb.append("Pr:").append(pfe.getChairExaminer().getContact().getFullName());
+                    sb.append("Pr:").append(pfe.getChairExaminer().resolveFullName());
                 }
                 if (pfe.getFirstExaminer() != null) {
                     if (sb.length() > 0) {
                         sb.append(", ");
                     }
-                    sb.append("R:").append(pfe.getFirstExaminer().getContact().getFullName());
+                    sb.append("R:").append(pfe.getFirstExaminer().resolveFullName());
                 }
                 if (pfe.getSecondExaminer() != null) {
                     if (sb.length() > 0) {
                         sb.append(", ");
                     }
-                    sb.append("R:").append(pfe.getSecondExaminer().getContact().getFullName());
+                    sb.append("R:").append(pfe.getSecondExaminer().resolveFullName());
                 }
                 formerStudent.setGraduationProjectJury(sb.toString());
                 if (pfe.isPreEmployment()) {

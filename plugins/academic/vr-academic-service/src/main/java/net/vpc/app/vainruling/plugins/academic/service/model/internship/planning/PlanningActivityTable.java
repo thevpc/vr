@@ -43,17 +43,17 @@ public class PlanningActivityTable {
                 academicInternship.getId(),
                 academicInternship.getCode(),
                 academicInternship.getName(),
-                academicInternship.getStudent().getContact().getFullName(),
+                academicInternship.getStudent().resolveFullName(),
                 academicInternship.getMainDiscipline(),
                 academicInternship.getSessionType() == null ? null : academicInternship.getSessionType().getName(),
-                academicInternship.getSupervisor().getContact().getFullName()
+                academicInternship.getSupervisor().resolveFullName()
         ));
         if (chair != null) {
-            activity.setChair(chair.getContact().getFullName());
+            activity.setChair(chair.resolveFullName());
             activity.setFixedChair(true);
         }
         if (examiner != null) {
-            activity.setExaminer(examiner.getContact().getFullName());
+            activity.setExaminer(examiner.resolveFullName());
             activity.setFixedExaminer(true);
         }
         PlanningRoom location = null;

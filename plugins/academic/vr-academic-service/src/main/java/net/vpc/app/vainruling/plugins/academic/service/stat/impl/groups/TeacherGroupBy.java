@@ -48,7 +48,7 @@ public class TeacherGroupBy implements KPIGroupBy<AcademicCourseAssignmentInfo> 
         }
         List<KPIGroup> g = new ArrayList<>();
         for (AcademicTeacher academicTeacher : teachers.values()) {
-            g.add(new StringArrayKPIGroup(academicTeacher.getContact().getFullName(), academicTeacher, academicTeacher.getId()));
+            g.add(new StringArrayKPIGroup(academicTeacher.resolveFullName(), academicTeacher, academicTeacher.getId()));
         }
         return g;
     }

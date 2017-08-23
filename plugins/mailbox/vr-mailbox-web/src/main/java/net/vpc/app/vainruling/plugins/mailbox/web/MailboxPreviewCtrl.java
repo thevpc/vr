@@ -63,7 +63,7 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
                 previews.add(new MessagePreview(
                         lo,
                         lo.getSender(),
-                        lo.getSender() == null ? null : lo.getSender().getContact().getFullName(),
+                        lo.getSender() == null ? null : lo.getSender().resolveFullName(),
                         VrUtils.strcut(cat, 36),
                         VrUtils.strcut(subject, 36),
                         VrUtils.strcut(content, 36),

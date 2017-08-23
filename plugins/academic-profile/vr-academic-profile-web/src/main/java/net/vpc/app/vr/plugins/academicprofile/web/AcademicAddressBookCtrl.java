@@ -108,15 +108,15 @@ public class AcademicAddressBookCtrl {
                 }
                 if (obj instanceof AcademicTeacher) {
                     AcademicTeacher t = (AcademicTeacher) obj;
-                    return t.getContact().getFullName().toLowerCase().contains(fquery.toLowerCase());
+                    return t.resolveFullName().toLowerCase().contains(fquery.toLowerCase());
                 }
                 if (obj instanceof AcademicStudent) {
                     AcademicStudent t = (AcademicStudent) obj;
-                    return t.getContact().getFullName().toLowerCase().contains(fquery.toLowerCase());
+                    return t.resolveFullName().toLowerCase().contains(fquery.toLowerCase());
                 }
                 if (obj instanceof AcademicFormerStudent) {
                     AcademicFormerStudent t = (AcademicFormerStudent) obj;
-                    return t.getStudent().getContact().getFullName().toLowerCase().contains(fquery.toLowerCase());
+                    return t.getStudent().resolveFullName().toLowerCase().contains(fquery.toLowerCase());
                 }
                 return false;
             }
@@ -135,7 +135,7 @@ public class AcademicAddressBookCtrl {
                     for (AcademicTeacher t : ap.findEnabledTeachers(mainPeriod.getId())) {
                         if (query.accept(t)) {
                             Contact ct = new Contact();
-                            ct.setName(t.getContact().getFullName());
+                            ct.setName(t.resolveFullName());
                             if (t.getDepartment() != null) {
                                 ct.getTitles().add("Dept. " + getValidString(t.getDepartment().getName(), t.getDepartment().getName2(), t.getDepartment().getName3()));
                             }
@@ -166,7 +166,7 @@ public class AcademicAddressBookCtrl {
                     for (AcademicStudent t : VrApp.getBean(AcademicPlugin.class).findStudents()) {
                         if (query.accept(t)) {
                             Contact ct = new Contact();
-                            ct.setName(t.getContact().getFullName());
+                            ct.setName(t.resolveFullName());
                             if (t.getFirstSubscription() != null) {
                                 ct.getTitles().add(getValidString(
                                         "sub. " + t.getFirstSubscription().getName(),
@@ -203,14 +203,14 @@ public class AcademicAddressBookCtrl {
                     for (AcademicFormerStudent t : VrApp.getBean(AcademicPlugin.class).findGraduatedStudents()) {
                         if (query.accept(t)) {
                             Contact ct = new Contact();
-                            ct.setName(t.getStudent().getContact().getFullName());
+                            ct.setName(t.getStudent().resolveFullName());
                             if (t.getStudent().getStage() == AcademicStudentStage.GRADUATED) {
                                 ct.getTitles().add("Graduated on " + t.getGraduationDate());
                             } else {
                                 ct.getTitles().add("Eliminated");
                             }
                             if (t.getStudent().getFirstSubscription() != null) {
-                                ct.getTitles().add("sub. " + t.getStudent().getContact().getFullName());
+                                ct.getTitles().add("sub. " + t.getStudent().resolveFullName());
                             }
 //                            if (t.getLastClass1() != null) {
 //                                ct.getTitles().add(t.getLastClass1().getName());

@@ -87,11 +87,18 @@ public class AcademicCourseAssignment {
             }
     )
     private AcademicCoursePlan coursePlan;
-    private boolean locked;
+
+    @Summary
+    @Properties(
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
+    )
+    private AcademicCourseType courseType;
 
     @Summary
     @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
     private AcademicClass subClass;
+
+    private boolean locked;
 
     /**
      * this field helps differentiating assignments with same properties
@@ -146,11 +153,6 @@ public class AcademicCourseAssignment {
     )
     private double groupCount = 1;
 
-    @Summary
-    @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
-    )
-    private AcademicCourseType courseType;
     /**
      * number of teachers or Masters sharing the same Course load
      */

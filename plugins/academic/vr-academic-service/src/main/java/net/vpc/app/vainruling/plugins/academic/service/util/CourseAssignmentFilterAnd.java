@@ -1,9 +1,7 @@
 package net.vpc.app.vainruling.plugins.academic.service.util;
 
 import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
-import net.vpc.app.vainruling.plugins.academic.service.TeacherFilter;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.IAcademicCourseAssignment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +28,7 @@ public class CourseAssignmentFilterAnd implements CourseAssignmentFilter {
     }
 
     @Override
-    public boolean acceptAssignment(AcademicCourseAssignment t) {
+    public boolean acceptAssignment(IAcademicCourseAssignment t) {
         if(all.size()==0){
             return true;
         }

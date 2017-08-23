@@ -69,7 +69,7 @@ public class TeacherValuePopulation {
             if(sb.length()>0){
                 sb.append(", ");
             }
-            sb.append(teacher.getContact().getFullName());
+            sb.append(teacher.resolveFullName());
         }
         return sb.toString();
     }

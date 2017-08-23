@@ -65,9 +65,9 @@ public class TeacherLoadFilterComponent {
         }
 
 
-        getModel().getOfficialDisciplinesItems().clear();
+        getModel().getTeacherDisciplineItems().clear();
         for (AcademicOfficialDiscipline item : academicPlugin.findOfficialDisciplines()) {
-            getModel().getOfficialDisciplinesItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
+            getModel().getTeacherDisciplineItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
         }
 
         getModel().getDepartmentItems().clear();
@@ -103,7 +103,7 @@ public class TeacherLoadFilterComponent {
         for (String s : getModel().getSelectedDepartments()) {
             defaultTeacherFilter.addAcceptedDepartment(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
         }
-        for (String s : getModel().getSelectedOfficialDisciplines()) {
+        for (String s : getModel().getSelectedTeacherDisciplines()) {
             defaultTeacherFilter.addAcceptedOfficialDisciplines(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedSituations()) {
@@ -124,7 +124,7 @@ public class TeacherLoadFilterComponent {
     }
 
 //    public boolean containsRefreshFilter(String s) {
-//        String[] f = getModel().getRefreshFilter();
+//        String[] f = getModel().getRefreshFilterSelected();
 //        return Arrays.asList(f).indexOf(s) >= 0;
 //    }
 
@@ -132,12 +132,12 @@ public class TeacherLoadFilterComponent {
 //        String[] refreshFilter = {};
         List<SelectItem> refreshFilterItems;
 
-        List<SelectItem> officialDisciplinesItems = new ArrayList<>();
+        List<SelectItem> teacherDisciplineItems = new ArrayList<>();
         List<SelectItem> degreeItems = new ArrayList<>();
         List<SelectItem> situationItems = new ArrayList<>();
         List<SelectItem> departmentItems = new ArrayList<>();
 
-        List<String> selectedOfficialDisciplines = new ArrayList<>();
+        List<String> selectedTeacherDisciplines = new ArrayList<>();
         List<String> selectedDegrees = new ArrayList<>();
         List<String> selectedSituations = new ArrayList<>();
         List<String> selectedDepartments = new ArrayList<>();
@@ -160,12 +160,12 @@ public class TeacherLoadFilterComponent {
             this.selectedPeriod = selectedPeriod;
         }
 
-        public List<SelectItem> getOfficialDisciplinesItems() {
-            return officialDisciplinesItems;
+        public List<SelectItem> getTeacherDisciplineItems() {
+            return teacherDisciplineItems;
         }
 
-        public void setOfficialDisciplinesItems(List<SelectItem> officialDisciplinesItems) {
-            this.officialDisciplinesItems = officialDisciplinesItems;
+        public void setTeacherDisciplineItems(List<SelectItem> teacherDisciplineItems) {
+            this.teacherDisciplineItems = teacherDisciplineItems;
         }
 
         public List<SelectItem> getDegreeItems() {
@@ -192,12 +192,12 @@ public class TeacherLoadFilterComponent {
             this.departmentItems = departmentItems;
         }
 
-        public List<String> getSelectedOfficialDisciplines() {
-            return selectedOfficialDisciplines;
+        public List<String> getSelectedTeacherDisciplines() {
+            return selectedTeacherDisciplines;
         }
 
-        public void setSelectedOfficialDisciplines(List<String> selectedOfficialDisciplines) {
-            this.selectedOfficialDisciplines = selectedOfficialDisciplines;
+        public void setSelectedTeacherDisciplines(List<String> selectedTeacherDisciplines) {
+            this.selectedTeacherDisciplines = selectedTeacherDisciplines;
         }
 
         public List<String> getSelectedDegrees() {
@@ -224,11 +224,11 @@ public class TeacherLoadFilterComponent {
             this.selectedDepartments = selectedDepartments;
         }
 
-//        public String[] getRefreshFilter() {
+//        public String[] getRefreshFilterSelected() {
 //            return refreshFilter;
 //        }
 
-//        public void setRefreshFilter(String[] refreshFilter) {
+//        public void setRefreshFilterSelected(String[] refreshFilter) {
 //            this.refreshFilter = refreshFilter;
 //        }
 

@@ -6,12 +6,14 @@ import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgramType;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationGroup;
 import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
@@ -59,9 +61,9 @@ public class CourseLoadFilterComponent {
         }
 
 
-        getModel().getOfficialDisciplinesItems().clear();
+        getModel().getTeacherDisciplineItems().clear();
         for (AcademicOfficialDiscipline item : academicPlugin.findOfficialDisciplines()) {
-            getModel().getOfficialDisciplinesItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
+            getModel().getTeacherDisciplineItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
         }
 
         getModel().getDepartmentItems().clear();
@@ -109,17 +111,31 @@ public class CourseLoadFilterComponent {
             getModel().getClassItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
         }
 
-        getModel().setRefreshFilter(new String[]{"intents", "deviation-extra", "deviation-week"});
+        getModel().getTeacherSituationItems().clear();
+        for (AcademicTeacherSituation item : a.findTeacherSituations()) {
+            getModel().getTeacherSituationItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
+        }
+
+        getModel().getTeacherDegreeItems().clear();
+        for (AcademicTeacherDegree item : a.findTeacherDegrees()) {
+            getModel().getTeacherDegreeItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
+        }
+
+        getModel().getTeacherDisciplineItems().clear();
+        for (AcademicOfficialDiscipline item : a.findOfficialDisciplines()) {
+            getModel().getTeacherDisciplineItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
+        }
+
+        getModel().getTeacherItems().clear();
+        for (AcademicTeacher item : a.findTeachersWithAssignmentsOrIntent(getPeriodId())) {
+            getModel().getTeacherItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.resolveFullName(), "vr-checkbox"));
+        }
+
+        getModel().setRefreshFilterSelected(new String[]{"intents", "deviation-extra", "deviation-week"});
     }
 
     public void onChangePeriod() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        List<SelectItem> refreshableFilters = new ArrayList<>();
-        refreshableFilters.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
-        refreshableFilters.add(FacesUtils.createSelectItem("deviation-week", "Balance/Sem", "vr-checkbox"));
-        refreshableFilters.add(FacesUtils.createSelectItem("deviation-extra", "Balance/Supp", "vr-checkbox"));
-        refreshableFilters.add(FacesUtils.createSelectItem("extra-abs", "Supp ABS", "vr-checkbox"));
-        getModel().setRefreshFilterItems(refreshableFilters);
 
 
         getModel().getLabelItems().clear();
@@ -167,10 +183,28 @@ public class CourseLoadFilterComponent {
         for (String s : getModel().getSelectedDepartments()) {
             c.addAcceptedDepartment(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
         }
+        for (String s : getModel().getSelectedTeachers()) {
+            c.addAcceptedTeacher(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+        }
         for (String s : getModel().getSelectedOwnerDepartments()) {
             c.addAcceptedOwnerDepartment(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
         }
-//        for (String s : getModel().getSelectedOfficialDisciplines()) {
+        for (String s : getModel().getSelectedTeacherDepartments()) {
+            c.addAcceptedTeacherDepartment(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+        }
+        for (String s : getModel().getSelectedTeacherDegrees()) {
+            c.addAcceptedTeacherDegree(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+        }
+        for (String s : getModel().getSelectedTeacherSituations()) {
+            c.addAcceptedTeacherSituation(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+        }
+        for (String s : getModel().getSelectedTeacherDisciplines()) {
+            c.addAcceptedTeacherDiscipline(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+        }
+        for (String s : getModel().getSelectedCourseDisciplines()) {
+            c.addAcceptedCourseDiscipline(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+        }
+//        for (String s : getModel().getSelectedTeacherDisciplines()) {
 //            c.addAcceptedOfficialDisciplines(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
 //        }
 //        for (String s : getModel().getSelectedSituations()) {
@@ -182,7 +216,7 @@ public class CourseLoadFilterComponent {
     }
 
     public boolean isIncludeIntents() {
-        HashSet<String> labels = new HashSet<>(Arrays.asList(getModel().getRefreshFilter()));
+        HashSet<String> labels = new HashSet<>(Arrays.asList(getModel().getRefreshFilterSelected()));
         return labels.contains("intents");
     }
 
@@ -190,16 +224,17 @@ public class CourseLoadFilterComponent {
 //        if("extra-abs".equals(s)){
 //            return true;
 //        }
-        String[] f = getModel().getRefreshFilter();
+        String[] f = getModel().getRefreshFilterSelected();
         return Arrays.asList(f).indexOf(s) >= 0;
     }
 
     public static class Model {
         private List<SelectItem> refreshFilterItems;
-        private String[] refreshFilter = {};
+        private String[] refreshFilterSelected = {};
 
-        private List<SelectItem> officialDisciplinesItems = new ArrayList<>();
-        private List<String> selectedOfficialDisciplines = new ArrayList<>();
+        private List<SelectItem> teacherDisciplineItems = new ArrayList<>();
+        private List<String> selectedTeacherDisciplines = new ArrayList<>();
+        private List<String> selectedCourseDisciplines = new ArrayList<>();
 
 //        private List<SelectItem> degreeItems=new ArrayList<>();
 //        private List<String> selectedDegrees=new ArrayList<>();
@@ -210,6 +245,7 @@ public class CourseLoadFilterComponent {
         private List<SelectItem> departmentItems = new ArrayList<>();
         private List<String> selectedDepartments = new ArrayList<>();
         private List<String> selectedOwnerDepartments = new ArrayList<>();
+        private List<String> selectedTeacherDepartments = new ArrayList<>();
 
         private List<SelectItem> programTypeItems = new ArrayList<>();
         private List<String> selectedProgramTypes = new ArrayList<>();
@@ -232,6 +268,63 @@ public class CourseLoadFilterComponent {
         private List<SelectItem> classItems = new ArrayList<>();
         private List<String> selectedClasses = new ArrayList<>();
 
+        private List<SelectItem> teacherDegreeItems = new ArrayList<>();
+        private List<String> selectedTeacherDegrees = new ArrayList<>();
+
+        private List<SelectItem> teacherItems = new ArrayList<>();
+        private List<String> selectedTeachers = new ArrayList<>();
+
+        private List<SelectItem> teacherSituationItems = new ArrayList<>();
+        private List<String> selectedTeacherSituations = new ArrayList<>();
+
+        public List<String> getSelectedCourseDisciplines() {
+            return selectedCourseDisciplines;
+        }
+
+        public void setSelectedCourseDisciplines(List<String> selectedCourseDisciplines) {
+            this.selectedCourseDisciplines = selectedCourseDisciplines;
+        }
+
+        public List<String> getSelectedTeacherDepartments() {
+            return selectedTeacherDepartments;
+        }
+
+        public List<SelectItem> getTeacherDegreeItems() {
+            return teacherDegreeItems;
+        }
+
+        public List<String> getSelectedTeacherDegrees() {
+            return selectedTeacherDegrees;
+        }
+
+        public List<SelectItem> getTeacherSituationItems() {
+            return teacherSituationItems;
+        }
+
+        public List<String> getSelectedTeacherSituations() {
+            return selectedTeacherSituations;
+        }
+
+        public void setSelectedTeacherDepartments(List<String> selectedTeacherDepartments) {
+            this.selectedTeacherDepartments = selectedTeacherDepartments;
+        }
+
+        public void setTeacherDegreeItems(List<SelectItem> teacherDegreeItems) {
+            this.teacherDegreeItems = teacherDegreeItems;
+        }
+
+        public void setSelectedTeacherDegrees(List<String> selectedTeacherDegrees) {
+            this.selectedTeacherDegrees = selectedTeacherDegrees;
+        }
+
+        public void setTeacherSituationItems(List<SelectItem> teacherSituationItems) {
+            this.teacherSituationItems = teacherSituationItems;
+        }
+
+        public void setSelectedTeacherSituations(List<String> selectedTeacherSituations) {
+            this.selectedTeacherSituations = selectedTeacherSituations;
+        }
+
         public List<SelectItem> getPeriodItems() {
             return periodItems;
         }
@@ -248,14 +341,29 @@ public class CourseLoadFilterComponent {
             this.selectedPeriod = selectedPeriod;
         }
 
-        public List<SelectItem> getOfficialDisciplinesItems() {
-            return officialDisciplinesItems;
+        public List<SelectItem> getTeacherDisciplineItems() {
+            return teacherDisciplineItems;
         }
 
-        public void setOfficialDisciplinesItems(List<SelectItem> officialDisciplinesItems) {
-            this.officialDisciplinesItems = officialDisciplinesItems;
+        public void setTeacherDisciplineItems(List<SelectItem> teacherDisciplineItems) {
+            this.teacherDisciplineItems = teacherDisciplineItems;
         }
 
+        public List<SelectItem> getTeacherItems() {
+            return teacherItems;
+        }
+
+        public void setTeacherItems(List<SelectItem> teacherItems) {
+            this.teacherItems = teacherItems;
+        }
+
+        public List<String> getSelectedTeachers() {
+            return selectedTeachers;
+        }
+
+        public void setSelectedTeachers(List<String> selectedTeachers) {
+            this.selectedTeachers = selectedTeachers;
+        }
 //        public List<SelectItem> getDegreeItems() {
 //            return degreeItems;
 //        }
@@ -280,12 +388,12 @@ public class CourseLoadFilterComponent {
             this.departmentItems = departmentItems;
         }
 
-        public List<String> getSelectedOfficialDisciplines() {
-            return selectedOfficialDisciplines;
+        public List<String> getSelectedTeacherDisciplines() {
+            return selectedTeacherDisciplines;
         }
 
-        public void setSelectedOfficialDisciplines(List<String> selectedOfficialDisciplines) {
-            this.selectedOfficialDisciplines = selectedOfficialDisciplines;
+        public void setSelectedTeacherDisciplines(List<String> selectedTeacherDisciplines) {
+            this.selectedTeacherDisciplines = selectedTeacherDisciplines;
         }
 
 //        public List<String> getSelectedDegrees() {
@@ -320,12 +428,12 @@ public class CourseLoadFilterComponent {
             this.selectedOwnerDepartments = selectedOwnerDepartments;
         }
 
-        public String[] getRefreshFilter() {
-            return refreshFilter;
+        public String[] getRefreshFilterSelected() {
+            return refreshFilterSelected;
         }
 
-        public void setRefreshFilter(String[] refreshFilter) {
-            this.refreshFilter = refreshFilter;
+        public void setRefreshFilterSelected(String[] refreshFilterSelected) {
+            this.refreshFilterSelected = refreshFilterSelected;
         }
 
         public List<SelectItem> getRefreshFilterItems() {

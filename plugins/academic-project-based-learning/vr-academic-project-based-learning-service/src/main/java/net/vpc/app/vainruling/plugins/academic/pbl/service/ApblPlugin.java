@@ -34,8 +34,8 @@ public class ApblPlugin {
     public static final Comparator<ApblTeacherInfo> APBL_TEACHER_INFO_COMPARATOR = new Comparator<ApblTeacherInfo>() {
         @Override
         public int compare(ApblTeacherInfo o1, ApblTeacherInfo o2) {
-            String s1 = o1.getTeacher().getContact() != null ? o1.getTeacher().getContact().getFullTitle() : "";
-            String s2 = o2.getTeacher().getContact() != null ? o2.getTeacher().getContact().getFullTitle() : "";
+            String s1 = o1.getTeacher().getContact() != null ? o1.getTeacher().resolveFullTitle() : "";
+            String s2 = o2.getTeacher().getContact() != null ? o2.getTeacher().resolveFullTitle() : "";
             return s1.compareTo(s2);
         }
     };
@@ -308,7 +308,7 @@ public class ApblPlugin {
         ApblSession session = sessionInfo.getSession();
         List<ApblProgramSession> sessionPrograms = findSessionPrograms(session.getId());
         MapList<Integer,ApblProgramSession> list=new DefaultMapList<Integer, ApblProgramSession>(sessionPrograms,ApblProgramSession::getId);
-        AcademicCourseType tp = academic.findCourseType("TP");
+        AcademicCourseType ps = academic.findCourseType("PS");
         for (ApblTeacherInfo t : teacherInfos.getTeachers()) {
             if(teacherFilter.accept(t.getTeacher())) {
                 for (ApblProgramSession sessionProgram : sessionPrograms) {
@@ -318,7 +318,7 @@ public class ApblPlugin {
                     if(coursePlan!=null) {
                         List<AcademicCourseAssignment> assignments = academic.findCourseAssignments(session.getPeriod().getId(), t.getTeacher().getId(), new CourseAssignmentFilter() {
                             @Override
-                            public boolean acceptAssignment(AcademicCourseAssignment academicCourseAssignment) {
+                            public boolean acceptAssignment(IAcademicCourseAssignment academicCourseAssignment) {
                                 AcademicCoursePlan p = academicCourseAssignment.getCoursePlan();
                                 return (p != null && p.getId() == coursePlan.getId()
                                         && String.valueOf(t.getTeacher().getId()).equals(academicCourseAssignment.getDiscriminator())
@@ -331,12 +331,12 @@ public class ApblPlugin {
                             }
                         });
                         for (int i = 1; i < assignments.size(); i++) {
-                            academic.removeCourseAssignment(assignments.get(i).getId(),false);
+                            academic.removeCourseAssignment(assignments.get(i).getId(),false,false);
                         }
                         if (assignments.size() > 0) {
                             AcademicCourseAssignment a = assignments.get(0);
                             if(val==0){
-                                academic.removeCourseAssignment(a.getId(),false);
+                                academic.removeCourseAssignment(a.getId(),false,false);
                             }else {
                                 a.setShareCount(1);
                                 a.setGroupCount(1);
@@ -344,6 +344,7 @@ public class ApblPlugin {
                                 a.setValueTD(0);
                                 a.setValueTP(Math.round(val * 100.0) / 100.0);
                                 a.setValuePM(0);
+                                a.setCourseType(ps);
                                 academic.updateCourseAssignment(a);
                                 a.setSubClass(null);
                             }
@@ -360,7 +361,7 @@ public class ApblPlugin {
                                 a.setLabels("Pbl");
                                 a.setTeacher(t.getTeacher());
                                 a.setCoursePlan(coursePlan);
-                                a.setCourseType(tp);
+                                a.setCourseType(ps);
                                 a.setOwnerDepartment(program.getDepartment());
                                 a.setSubClass(null);
                                 academic.addCourseAssignment(a);
@@ -615,8 +616,8 @@ public class ApblPlugin {
         Collections.sort(apblStudentInfos, new Comparator<ApblStudentInfo>() {
             @Override
             public int compare(ApblStudentInfo o1, ApblStudentInfo o2) {
-                String s1 = o1.getStudent().getContact() != null ? o1.getStudent().getContact().getFullTitle() : "";
-                String s2 = o2.getStudent().getContact() != null ? o2.getStudent().getContact().getFullTitle() : "";
+                String s1 = o1.getStudent().getContact() != null ? o1.getStudent().resolveFullTitle() : "";
+                String s2 = o2.getStudent().getContact() != null ? o2.getStudent().resolveFullTitle() : "";
                 return s1.compareTo(s2);
             }
         });
@@ -925,7 +926,7 @@ public class ApblPlugin {
 
                     (
                             comparator.matches(project.getProject().getName())
-                                    || (project.getProject().getOwner() != null && comparator.matches(project.getProject().getOwner().getContact().getFullTitle()))
+                                    || (project.getProject().getOwner() != null && comparator.matches(project.getProject().getOwner().resolveFullTitle()))
                     )
                     )
             );
@@ -940,7 +941,7 @@ public class ApblPlugin {
                         tnode.setSelectionMatch(
                                 (
                                         comparator.matches(team.getTeam().getName())
-                                                || (team.getTeam().getOwner() != null && comparator.matches(team.getTeam().getOwner().getContact().getFullTitle()))
+                                                || (team.getTeam().getOwner() != null && comparator.matches(team.getTeam().getOwner().resolveFullTitle()))
                                 )
                         );
                         boolean someCoach = false;
@@ -948,7 +949,7 @@ public class ApblPlugin {
                         for (CoachNode teacher : team.getCoaches()) {
                             CoachNode cnode = new CoachNode();
                             cnode.setCoaching(teacher.getCoaching());
-                            cnode.setSelectionMatch(comparator.matches(teacher.getCoaching().getTeacher().getContact().getFullTitle()));
+                            cnode.setSelectionMatch(comparator.matches(teacher.getCoaching().getTeacher().resolveFullTitle()));
                             if (!nodeFilter.accept(teacher)) {
                                 cnode.setSelectionMatch(false);
                             } else {
@@ -961,7 +962,7 @@ public class ApblPlugin {
                         for (MemberNode student : team.getMembers()) {
                             MemberNode mnode = new MemberNode();
                             mnode.setMember(student.getMember());
-                            mnode.setSelectionMatch(comparator.matches(student.getMember().getStudent().getContact().getFullTitle()));
+                            mnode.setSelectionMatch(comparator.matches(student.getMember().getStudent().resolveFullTitle()));
                             if (!nodeFilter.accept(student)) {
                                 mnode.setSelectionMatch(false);
                             } else {

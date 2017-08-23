@@ -71,11 +71,11 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
         Collections.sort(users, new Comparator<AppUser>() {
             @Override
             public int compare(AppUser o1, AppUser o2) {
-                return StringUtils.nonNull(core.getUserFullTitle(o1)).compareTo(StringUtils.nonNull(core.getUserFullTitle(o2)));
+                return StringUtils.nonNull((o1==null?"":o1.resolveFullTitle())).compareTo(StringUtils.nonNull((o2==null?"":o2.resolveFullTitle())));
             }
         });
         for (AppUser user : users) {
-            getModel().getUsers().add(new SelectItem(user.getId(), user.getContact().getFullTitle()));
+            getModel().getUsers().add(new SelectItem(user.getId(), user.resolveFullTitle()));
             if (oldSelectedUser == user.getId()) {
                 oldSelectedUserFound = true;
             }

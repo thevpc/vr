@@ -65,6 +65,9 @@ public class AcademicCoursePlan {
     )
     private String fullName;
 
+    @Properties(
+            @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+    )
     private String name2;
 
 //    @Summary
@@ -83,6 +86,25 @@ public class AcademicCoursePlan {
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:120px")
     )
     private AcademicCourseLevel courseLevel;
+    @Summary
+    @Properties(
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "#{concat('width:60px;','background-color:',"
+                    + " if(this.courseGroup.name like '%UE1') then '{bgcolor1}'"
+                    + "  elseif (this.courseGroup.name like '%UE2') then '{bgcolor2}' "
+                    + "  elseif (this.courseGroup.name like '%UE3') then '{bgcolor3}' "
+                    + "  elseif (this.courseGroup.name like '%UE4') then '{bgcolor4}' "
+                    + "  elseif (this.courseGroup.name like '%UE5') then '{bgcolor5}' "
+                    + "  elseif (this.courseGroup.name like '%UE6') then '{bgcolor6}' "
+                    + "  elseif (this.courseGroup.name like '%UE7') then '{bgcolor7}' "
+                    + "  elseif (this.courseGroup.name like '%UE8') then '{bgcolor8}' "
+                    + "  elseif (this.courseGroup.name like '%UE9') then '{bgcolor9}' "
+                    + "  elseif (this.courseGroup.name like '%UE10') then '{bgcolor10}' "
+                    + " end"
+                    + ")"
+                    + "}")
+    )
+    @ManyToOne(filter = "that.period.id=this.period.id and that.academicClass.id=this.courseLevel.academicClass.id")
+    private AcademicCourseGroup courseGroup;
 
 //    @Summary
 //    @Properties(
@@ -126,25 +148,6 @@ public class AcademicCoursePlan {
     //    private double valueDU;
     //Unite enseignement/UE
 //    @Summary
-    @Summary
-    @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "#{concat('width:60px;','background-color:',"
-                    + " if(this.courseGroup.name like '%UE1') then '{bgcolor1}'"
-                    + "  elseif (this.courseGroup.name like '%UE2') then '{bgcolor2}' "
-                    + "  elseif (this.courseGroup.name like '%UE3') then '{bgcolor3}' "
-                    + "  elseif (this.courseGroup.name like '%UE4') then '{bgcolor4}' "
-                    + "  elseif (this.courseGroup.name like '%UE5') then '{bgcolor5}' "
-                    + "  elseif (this.courseGroup.name like '%UE6') then '{bgcolor6}' "
-                    + "  elseif (this.courseGroup.name like '%UE7') then '{bgcolor7}' "
-                    + "  elseif (this.courseGroup.name like '%UE8') then '{bgcolor8}' "
-                    + "  elseif (this.courseGroup.name like '%UE9') then '{bgcolor9}' "
-                    + "  elseif (this.courseGroup.name like '%UE10') then '{bgcolor10}' "
-                    + " end"
-                    + ")"
-                    + "}")
-    )
-    @ManyToOne(filter = "that.period.id=this.period.id and that.academicClass.id=this.courseLevel.academicClass.id")
-    private AcademicCourseGroup courseGroup;
     private int position;
     private int groupCountC = 1;
     private int groupCountTD = 1;

@@ -249,7 +249,7 @@ public class AcademicAppStatusCtrl {
                 VrUtils.filterList(
                         getModel().getTeachers().getTeachers(),
                         value -> filter.matches(
-                                value.getTeacher().getContact().getFullTitle()
+                                value.getTeacher().resolveFullTitle()
                         )
                 )
         );
@@ -264,9 +264,9 @@ public class AcademicAppStatusCtrl {
                             @Override
                             public boolean accept(ApblStudentInfo value) {
                                 return filter.matches(
-                                        value.getStudent().getContact().getFullTitle()
+                                        value.getStudent().resolveFullTitle()
                                         +" "
-                                        + (value.getCoach()!=null?value.getCoach().getContact().getFullTitle():"")
+                                        + (value.getCoach()!=null?value.getCoach().resolveFullTitle():"")
                                         +" "
                                         + (value.getTeam()!=null && value.getTeam().getTeam()!=null ?value.getTeam().getTeam().getName():"")
                                         +" "
@@ -311,7 +311,7 @@ public class AcademicAppStatusCtrl {
                         return value.getId() == teacherId;
                     }
                 });
-                FacesUtils.addInfoMessage("Application reussie : "+t.getContact().getFullName());
+                FacesUtils.addInfoMessage("Application reussie : "+t.resolveFullName());
             }
         }
     }

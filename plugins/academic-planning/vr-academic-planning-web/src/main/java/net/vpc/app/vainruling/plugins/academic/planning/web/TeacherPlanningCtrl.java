@@ -71,7 +71,7 @@ public class TeacherPlanningCtrl extends AbstractPlanningCtrl {
         for (AcademicTeacher t : p.findTeachers()) {
             AcademicTeacherPeriod tp = p.findAcademicTeacherPeriod(getPeriodId(), t);
             if (tp.isEnabled()) {
-                getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), t.getContact().getFullName()));
+                getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), t.resolveFullName()));
             }
         }
         int t = StringUtils.isEmpty(getModel().getTeacherId()) ? -1 : Integer.parseInt(getModel().getTeacherId());

@@ -36,15 +36,19 @@ public class AcademicCourseGroup {
             type = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String fullName;
+
+    @Summary
     @Field(max = "4000")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
     @Summary
     private AppPeriod period;
 
+    @Summary
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicClass academicClass;
 
+    @Summary
     private double credits;
 
     @Properties(

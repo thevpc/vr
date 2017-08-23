@@ -238,4 +238,15 @@ public class AppUser {
     public String toString() {
         return String.valueOf(login);
     }
+
+    public String resolveFullName(){
+        AppContact c = getContact();
+        return c==null?String.valueOf(getId()): c.getFullName();
+    }
+
+    public String resolveFullTitle(){
+        AppContact c = getContact();
+        return c==null?String.valueOf(getId()): c.getFullTitle();
+    }
+
 }

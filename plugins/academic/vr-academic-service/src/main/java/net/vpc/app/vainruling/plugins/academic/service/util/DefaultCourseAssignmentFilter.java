@@ -4,11 +4,11 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgramType;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,6 +17,18 @@ import java.util.Set;
  * Created by vpc on 6/30/16.
  */
 public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
+    private Set<Integer> acceptedTeacherSituations = new HashSet<>();
+    private Set<Integer> rejectedTeacherSituations = new HashSet<>();
+    private Set<Integer> acceptedTeachers = new HashSet<>();
+    private Set<Integer> rejectedTeachers = new HashSet<>();
+    private Set<Integer> acceptedTeacherDepartments = new HashSet<>();
+    private Set<Integer> rejectedTeacherDepartments = new HashSet<>();
+    private Set<Integer> acceptedTeacherDegrees = new HashSet<>();
+    private Set<Integer> rejectedTeacherDegrees = new HashSet<>();
+    private Set<Integer> acceptedTeacherDisciplines = new HashSet<>();
+    private Set<Integer> rejectedTeacherDisciplines = new HashSet<>();
+    private Set<Integer> acceptedCourseDisciplines = new HashSet<>();
+    private Set<Integer> rejectedCourseDisciplines = new HashSet<>();
     private Set<Integer> acceptedDepartments = new HashSet<>();
     private Set<Integer> rejectedDepartments = new HashSet<>();
     private Set<Integer> acceptedOwnerDepartments = new HashSet<>();
@@ -70,6 +82,54 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
             refreshFilter.add("label:!" + id);
         }
         return filter;
+    }
+
+    public Set<Integer> getAcceptedTeacherSituations() {
+        return acceptedTeacherSituations;
+    }
+
+    public Set<Integer> getRejectedTeacherSituations() {
+        return rejectedTeacherSituations;
+    }
+
+    public Set<Integer> getAcceptedTeachers() {
+        return acceptedTeachers;
+    }
+
+    public Set<Integer> getRejectedTeachers() {
+        return rejectedTeachers;
+    }
+
+    public Set<Integer> getAcceptedTeacherDepartments() {
+        return acceptedTeacherDepartments;
+    }
+
+    public Set<Integer> getRejectedTeacherDepartments() {
+        return rejectedTeacherDepartments;
+    }
+
+    public Set<Integer> getAcceptedTeacherDegrees() {
+        return acceptedTeacherDegrees;
+    }
+
+    public Set<Integer> getRejectedTeacherDegrees() {
+        return rejectedTeacherDegrees;
+    }
+
+    public Set<Integer> getAcceptedTeacherDisciplines() {
+        return acceptedTeacherDisciplines;
+    }
+
+    public Set<Integer> getRejectedTeacherDisciplines() {
+        return rejectedTeacherDisciplines;
+    }
+
+    public Set<Integer> getAcceptedCourseDisciplines() {
+        return acceptedCourseDisciplines;
+    }
+
+    public Set<Integer> getRejectedCourseDisciplines() {
+        return rejectedCourseDisciplines;
     }
 
     public boolean isAcceptNoTeacher() {
@@ -238,6 +298,126 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         return labels;
     }
 
+    public DefaultCourseAssignmentFilter addAcceptedTeacherSituation(Integer id) {
+        acceptedTeacherSituations.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeAcceptedTeacherSituation(Integer id) {
+        acceptedTeacherSituations.remove(id);
+        return this;
+    }
+    public DefaultCourseAssignmentFilter addRejectedTeacherSituation(Integer id) {
+        rejectedTeacherSituations.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeRejectedTeacherSituation(Integer id) {
+        rejectedTeacherSituations.remove(id);
+        return this;
+    }
+    ////////////////////////////////////////////
+
+    public DefaultCourseAssignmentFilter addAcceptedTeacher(Integer id) {
+        acceptedTeachers.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeAcceptedTeacher(Integer id) {
+        acceptedTeachers.remove(id);
+        return this;
+    }
+    public DefaultCourseAssignmentFilter addRejectedTeacher(Integer id) {
+        rejectedTeachers.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeRejectedTeacher(Integer id) {
+        rejectedTeachers.remove(id);
+        return this;
+    }
+    ////////////////////////////////////////////
+
+    public DefaultCourseAssignmentFilter addAcceptedTeacherDepartment(Integer id) {
+        acceptedTeacherDepartments.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeAcceptedTeacherDepartment(Integer id) {
+        acceptedTeacherDepartments.remove(id);
+        return this;
+    }
+    public DefaultCourseAssignmentFilter addRejectedTeacherDepartment(Integer id) {
+        rejectedTeacherDepartments.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeRejectedTeacherDepartment(Integer id) {
+        rejectedTeacherDepartments.remove(id);
+        return this;
+    }
+    ////////////////////////////////////////////
+
+    public DefaultCourseAssignmentFilter addAcceptedTeacherDegree(Integer id) {
+        acceptedTeacherDegrees.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeAcceptedTeacherDegree(Integer id) {
+        acceptedTeacherDegrees.remove(id);
+        return this;
+    }
+    public DefaultCourseAssignmentFilter addRejectedTeacherDegree(Integer id) {
+        rejectedTeacherDegrees.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeRejectedTeacherDegree(Integer id) {
+        rejectedTeacherDegrees.remove(id);
+        return this;
+    }
+    ////////////////////////////////////////////
+
+    public DefaultCourseAssignmentFilter addAcceptedTeacherDiscipline(Integer id) {
+        acceptedTeacherDisciplines.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeAcceptedTeacherDiscipline(Integer id) {
+        acceptedTeacherDisciplines.remove(id);
+        return this;
+    }
+    public DefaultCourseAssignmentFilter addRejectedTeacherDiscipline(Integer id) {
+        rejectedTeacherDisciplines.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeRejectedTeacherDiscipline(Integer id) {
+        rejectedTeacherDisciplines.remove(id);
+        return this;
+    }
+    ////////////////////////////////////////////
+
+    public DefaultCourseAssignmentFilter addAcceptedCourseDiscipline(Integer id) {
+        acceptedCourseDisciplines.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeAcceptedCourseDiscipline(Integer id) {
+        acceptedCourseDisciplines.remove(id);
+        return this;
+    }
+    public DefaultCourseAssignmentFilter addRejectedCourseDiscipline(Integer id) {
+        rejectedCourseDisciplines.add(id);
+        return this;
+    }
+
+    public DefaultCourseAssignmentFilter removeRejectedCourseDiscipline(Integer id) {
+        rejectedCourseDisciplines.remove(id);
+        return this;
+    }
+    ////////////////////////////////////////////
+
     public DefaultCourseAssignmentFilter addAcceptedProgramType(Integer id) {
         acceptedProgramTypes.add(id);
         return this;
@@ -381,6 +561,138 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         return true;
     }
 
+    public boolean acceptTeacherDepartment(AppDepartment a) {
+        if (this.getAcceptedTeacherDepartments().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (!this.getAcceptedTeacherDepartments().contains(a.getId())) {
+                return false;
+            }
+        }
+        if (this.getRejectedTeacherDepartments().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (this.getRejectedTeacherDepartments().contains(a.getId())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean acceptTeacherSituation(AcademicTeacherSituation a) {
+        if (this.getAcceptedTeacherSituations().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (!this.getAcceptedTeacherSituations().contains(a.getId())) {
+                return false;
+            }
+        }
+        if (this.getRejectedTeacherSituations().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (this.getRejectedTeacherSituations().contains(a.getId())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean acceptTeacher(AcademicTeacher a) {
+        if (this.getAcceptedTeachers().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (!this.getAcceptedTeachers().contains(a.getId())) {
+                return false;
+            }
+        }
+        if (this.getRejectedTeachers().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (this.getRejectedTeachers().contains(a.getId())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean acceptTeacherDegree(AcademicTeacherDegree a) {
+        if (this.getAcceptedTeacherDegrees().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (!this.getAcceptedTeacherDegrees().contains(a.getId())) {
+                return false;
+            }
+        }
+        if (this.getRejectedTeacherDegrees().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (this.getRejectedTeacherDegrees().contains(a.getId())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean acceptTeacherDiscipline(AcademicOfficialDiscipline a) {
+        if (this.getAcceptedTeacherDisciplines().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (!this.getAcceptedTeacherDisciplines().contains(a.getId())) {
+                return false;
+            }
+        }
+        if (this.getRejectedTeacherDisciplines().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (this.getRejectedTeacherDisciplines().contains(a.getId())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean acceptCourseDiscipline(AcademicOfficialDiscipline a) {
+        if (this.getAcceptedCourseDisciplines().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (!this.getAcceptedCourseDisciplines().contains(a.getId())) {
+                return false;
+            }
+        }
+        if (this.getRejectedCourseDisciplines().size() > 0) {
+            if (a == null) {
+                return false;
+//                throw new RuntimeException("Null AppDepartment");
+            }
+            if (this.getRejectedCourseDisciplines().contains(a.getId())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean acceptOwnerDepartment(AppDepartment a) {
         if (this.getAcceptedOwnerDepartments().size() > 0) {
             if (a == null) {
@@ -403,18 +715,56 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         return true;
     }
 
-    public boolean acceptAssignment(AcademicCourseAssignment a) {
+    public boolean acceptAssignment(IAcademicCourseAssignment a) {
 //        if(!isAcceptIntents() && a.getTeacher()==null){
 //                return false;
 //        }
 //        if(!isAcceptAssignments() && a.getTeacher()!=null){
 //            return false;
 //        }
-        if(!isAcceptNoTeacher() && a.getTeacher()!=null){
+        AcademicTeacher teacher = a.getTeacher();
+
+        if(!isAcceptNoTeacher() && teacher !=null){
             return false;
         }
+        AppDepartment teacherDepartment = null;
+        AcademicTeacherSituation teacherSituation = null;
+        AcademicTeacherDegree teacherDegree = null;
+        AcademicOfficialDiscipline teacherDiscipline = null;
+        if(teacher !=null){
+            teacherDepartment = teacher.getDepartment();
+            teacherSituation = teacher.getSituation();
+            teacherDegree = teacher.getDegree();
+            teacherDiscipline = teacher.getOfficialDiscipline();
+        }
+        if (!acceptTeacherDegree(teacherDegree)) {
+            return false;
+        }
+        if (!acceptTeacherDegree(teacherDegree)) {
+            return false;
+        }
+        if (!acceptTeacher(teacher)) {
+            return false;
+        }
+        if (!acceptTeacherSituation(teacherSituation)) {
+            return false;
+        }
+        if (!acceptTeacherDepartment(teacherDepartment)) {
+            return false;
+        }
+        if (!acceptTeacherDepartment(teacherDepartment)) {
+            return false;
+        }
+        if (!acceptTeacherDiscipline(teacherDiscipline)) {
+            return false;
+        }
+        AcademicCoursePlan coursePlan = a.getCoursePlan();
+        if (!acceptCourseDiscipline(coursePlan.getOfficialDiscipline())) {
+            return false;
+        }
+
         if (this.getAcceptedLabels().size() > 0 || this.getRejectedLabels().size() > 0) {
-            Set<String> foundLabels = buildCoursePlanLabelsFromString(a.getCoursePlan().getLabels());
+            Set<String> foundLabels = buildCoursePlanLabelsFromString(coursePlan.getLabels());
             if (this.getAcceptedLabels().size() > 0) {
                 for (String lab : this.getAcceptedLabels()) {
                     if (!foundLabels.contains(lab)) {
@@ -553,7 +903,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
 //                accepted = false;
 //            } else if (c.getAssignment().getTeacher() != null) {
 //                accepted = (c.getIntentsSet().size() == 1
-//                        && !c.getAssignment().getTeacher().getContact().getFullName().equals(c.getIntentsSet().toArray()[0]))
+//                        && !c.getAssignment().getTeacher().resolveFullName().equals(c.getIntentsSet().toArray()[0]))
 //                        || c.getIntentsSet().size() > 1;
 //            } else {
 //                accepted = c.getIntentsSet().size() > 1;

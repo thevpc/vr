@@ -44,7 +44,7 @@ public class CalendarsPlugin {
             newName="noname";
             if(user!=null){
                 if(user.getContact()!=null){
-                    newName=user.getContact().getFullTitle();
+                    newName=user.resolveFullTitle();
                 }else{
                     newName=user.getLogin();
                 }
@@ -60,7 +60,7 @@ public class CalendarsPlugin {
             String name="noname";
             if(user!=null){
                 if(user.getContact()!=null){
-                    name=user.getContact().getFullTitle();
+                    name=user.resolveFullTitle();
                 }else{
                     name=user.getLogin();
                 }

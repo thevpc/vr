@@ -40,8 +40,14 @@ public class VrWebSecurityFilter implements Filter {
         String contextPath = ((HttpServletRequest) request).getContextPath();
         StringBuffer r = req.getRequestURL();
         String servletPath = req.getServletPath();
+        String pathInfo = req.getPathInfo();
         boolean acceptRequest = true;
-        if (r.toString().contains("/modules/") || (servletPath!=null && (servletPath.equals("/p") || servletPath.startsWith("/p/")))) {
+        if (r.toString().contains("/modules/") || (servletPath!=null
+                &&
+                        (servletPath.equals("/p") || servletPath.startsWith("/p/"))
+                //TODO fix me later
+                && (pathInfo==null || !pathInfo.startsWith("/news"))
+        )) {
             UserSession sso = null;
             try {
                 sso = (UserSession) req.getSession().getAttribute("userSession");

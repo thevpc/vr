@@ -98,14 +98,14 @@ and open the template in the editor.
                             <f:selectItems value="#{allTeachersCourseLoadCtrl.teacherFilter.model.situationItems}"/>
                         </p:selectCheckboxMenu>
                         <p:selectCheckboxMenu
-                                styleClass="vr-form-field #{allTeachersCourseLoadCtrl.teacherFilter.model.selectedOfficialDisciplines.isEmpty() ?'':'vr-from-selected-many-selected'}"
-                                value="#{allTeachersCourseLoadCtrl.teacherFilter.model.selectedOfficialDisciplines}"
+                                styleClass="vr-form-field #{allTeachersCourseLoadCtrl.teacherFilter.model.selectedTeacherDisciplines.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                value="#{allTeachersCourseLoadCtrl.teacherFilter.model.selectedTeacherDisciplines}"
                                 label="Disciplines"
                                 filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
                             <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}"
                                     update=":listForm :buttonsForm"/>
                             <f:selectItems
-                                    value="#{allTeachersCourseLoadCtrl.teacherFilter.model.officialDisciplinesItems}"/>
+                                    value="#{allTeachersCourseLoadCtrl.teacherFilter.model.teacherDisciplineItems}"/>
                         </p:selectCheckboxMenu>
                     </div>
                     <div class="">
@@ -203,7 +203,7 @@ and open the template in the editor.
                             <div class="vr-form-sub-row">
                                 <div class="table-responsive">
                                     <p:selectManyCheckbox styleClass="vr-form-field"
-                                                          value="#{allTeachersCourseLoadCtrl.courseFilter.model.refreshFilter}"
+                                                          value="#{allTeachersCourseLoadCtrl.courseFilter.model.refreshFilterSelected}"
                                                           layout="grid"
                                                           columns="5">
                                         <p:ajax listener="#{allTeachersCourseLoadCtrl.onRefreshFiltersChanged}"

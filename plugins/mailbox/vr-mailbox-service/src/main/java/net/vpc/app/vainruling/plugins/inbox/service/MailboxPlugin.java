@@ -811,7 +811,7 @@ public class MailboxPlugin {
                 allValues.put("login", p.getLogin());
                 allValues.put("firstName", p.getContact().getFirstName());
                 allValues.put("lastName", p.getContact().getLastName());
-                allValues.put("fullName", p.getContact().getFullName());
+                allValues.put("fullName", p.resolveFullName());
                 allValues.put("civility", p.getContact().getCivility() == null ? "" : p.getContact().getCivility().getName());
                 allValues.put("department", p.getDepartment() == null ? "" : p.getDepartment().getName());
                 allValues.put("gender", p.getContact().getGender() == null ? "" : p.getContact().getGender().getName());
@@ -925,7 +925,7 @@ public class MailboxPlugin {
         if (u != null) {
             m.getProperties().setProperty("from_login", StringUtils.nonNull(u.getLogin()));
             m.getProperties().setProperty("from_type", StringUtils.nonNull(u.getType().getName()));
-            m.getProperties().setProperty("from_fullName", StringUtils.nonNull(u.getContact().getFullName()));
+            m.getProperties().setProperty("from_fullName", StringUtils.nonNull(u.resolveFullName()));
             m.getProperties().setProperty("from_firstName", StringUtils.nonNull(u.getContact().getFirstName()));
             m.getProperties().setProperty("from_lastName", StringUtils.nonNull(u.getContact().getLastName()));
             m.getProperties().setProperty("from_positionTitle1", StringUtils.nonNull(u.getContact().getPositionTitle1()));

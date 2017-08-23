@@ -3105,22 +3105,6 @@ public class CorePlugin {
         }
     }
 
-    public String getUserFullTitle(AppUser user){
-        if(user==null || user.getContact()==null){
-            return "";
-        }
-        return user.getContact().getFullTitle();
-    }
-
-    public String getUserFullName(AppUser user){
-        if(user==null || user.getContact()==null){
-            return "";
-        }
-        return user.getContact().getFullName();
-    }
-
-
-
     public ArticlesItem findArticle(int articleId) {
         return UPA.getPersistenceUnit().findById(ArticlesItem.class,articleId);
     }
@@ -3382,7 +3366,7 @@ public class CorePlugin {
                 description.setType("text/html;charset=UTF-8");
                 description.setValue(art.getContent());
                 entry.setDescription(description);
-                entry.setAuthor(art.getUser() == null ? null : art.getUser().getContact().getFullName());
+                entry.setAuthor(art.getUser() == null ? null : art.getUser().resolveFullName());
                 entries.add(entry);
             }
 

@@ -267,4 +267,14 @@ public class AcademicTeacher {
     public void setOfficialDiscipline(AcademicOfficialDiscipline officialDiscipline) {
         this.officialDiscipline = officialDiscipline;
     }
+
+    public String resolveFullName(){
+        AppContact c = getContact();
+        return c==null?String.valueOf(getId()): c.getFullName();
+    }
+
+    public String resolveFullTitle(){
+        AppContact c = getContact();
+        return c==null?String.valueOf(getId()): c.getFullTitle();
+    }
 }

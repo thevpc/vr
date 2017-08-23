@@ -41,15 +41,15 @@ public class AllTeachersCourseLoadCtrl {
     private static Comparator<TeacherSemesterStat> teacherSemesterStatComparatorByTeacher = new Comparator<TeacherSemesterStat>() {
         @Override
         public int compare(TeacherSemesterStat o1, TeacherSemesterStat o2) {
-            return o1.getTeacher().getContact().getFullName()
-                    .compareTo(o2.getTeacher().getContact().getFullName());
+            return o1.getTeacher().resolveFullName()
+                    .compareTo(o2.getTeacher().resolveFullName());
         }
     };
     private static Comparator<TeacherPeriodStat> teacherPeriodStatComparatorByTeacher = new Comparator<TeacherPeriodStat>() {
         @Override
         public int compare(TeacherPeriodStat o1, TeacherPeriodStat o2) {
-            return o1.getTeacher().getContact().getFullName()
-                    .compareTo(o2.getTeacher().getContact().getFullName());
+            return o1.getTeacher().resolveFullName()
+                    .compareTo(o2.getTeacher().resolveFullName());
         }
     };
     protected Model model = new Model();
@@ -104,6 +104,18 @@ public class AllTeachersCourseLoadCtrl {
     public void onChangePeriod() {
         getTeacherFilter().onChangePeriod();
         getCourseFilter().onChangePeriod();
+
+        List<SelectItem> refreshableFilters = new ArrayList<>();
+        refreshableFilters.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
+        refreshableFilters.add(FacesUtils.createSelectItem("deviation-week", "Balance/Sem", "vr-checkbox"));
+        refreshableFilters.add(FacesUtils.createSelectItem("deviation-extra", "Balance/Supp", "vr-checkbox"));
+        refreshableFilters.add(FacesUtils.createSelectItem("extra-abs", "Supp ABS", "vr-checkbox"));
+        getCourseFilter().getModel().setRefreshFilterItems(refreshableFilters);
+
+        refreshableFilters = new ArrayList<>();
+        refreshableFilters.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
+//        getOthersCourseFilter().getModel().setRefreshFilterItems(refreshableFilters);
+//        getOthersCourseFilter().onChangePeriod();
         onRefresh();
     }
 

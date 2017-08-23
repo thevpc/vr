@@ -53,7 +53,7 @@ public class VrDefaultCalendarProvider implements VrCalendarProvider {
         if (uuu == null) {
             return 0;
         }
-//        String teacherName = uuu == null ? "" : uuu.getContact().getFullName();
+//        String teacherName = uuu == null ? "" : uuu.resolveFullName();
         VFile p = core.getUserFolder(uuu.getLogin()).get(path);
         if (p != null && p.exists()) {
             try {
@@ -90,7 +90,7 @@ public class VrDefaultCalendarProvider implements VrCalendarProvider {
         if (uuu == null) {
             return list;
         }
-//        String teacherName = uuu == null ? "" : uuu.getContact().getFullName();
+//        String teacherName = uuu == null ? "" : uuu.resolveFullName();
         VFile p = core.getUserFolder(uuu.getLogin()).get(path);
         if (p != null && p.exists()) {
             try {

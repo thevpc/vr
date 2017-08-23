@@ -56,7 +56,7 @@ public class PFEPlanning {
         }
         for (AcademicInternship academicInternship : internshipsList) {
             if (academicInternship.getSupervisor() == null) {
-                String internshipName = academicInternship.getCode() + " - " + academicInternship.getName() + " - " + academicInternship.getStudent().getContact().getFullName();
+                String internshipName = academicInternship.getCode() + " - " + academicInternship.getName() + " - " + academicInternship.getStudent().resolveFullName();
                 System.err.println(internshipName + " ignored, no supervisor found");
             } else {
                 t.addActivity(academicInternship);

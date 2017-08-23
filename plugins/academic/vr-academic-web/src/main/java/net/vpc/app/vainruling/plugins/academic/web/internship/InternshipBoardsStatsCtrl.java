@@ -178,7 +178,7 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
                     }
                     data.put(s0, y);
                 } else if (s1 != null && s2 == null) {
-                    String s0 = s1.getContact().getFullName();
+                    String s0 = s1.resolveFullName();
                     Number y = localIntershipSupersorsMap.get(s1.getId());
                     if (y == null) {
                         y = 1;
@@ -188,7 +188,7 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
                     data.put(s0, y);
                     localIntershipSupersorsMap.put(s1.getId(), y);
                 } else if (s2 != null && s1 == null) {
-                    String s0 = s2.getContact().getFullName();
+                    String s0 = s2.resolveFullName();
                     Number y = localIntershipSupersorsMap.get(s2.getId());
                     if (y == null) {
                         y = 1;
@@ -198,7 +198,7 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
                     data.put(s0, y);
                     localIntershipSupersorsMap.put(s2.getId(), y);
                 } else {
-                    String s0 = s1.getContact().getFullName();
+                    String s0 = s1.resolveFullName();
                     Number y = localIntershipSupersorsMap.get(s1.getId());
                     if (y == null) {
                         y = 1;
@@ -208,7 +208,7 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
                     data.put(s0, y);
                     localIntershipSupersorsMap.put(s1.getId(), y);
 
-                    s0 = s2.getContact().getFullName();
+                    s0 = s2.resolveFullName();
                     y = localIntershipSupersorsMap.get(s2.getId());
                     if (y == null) {
                         y = 1;

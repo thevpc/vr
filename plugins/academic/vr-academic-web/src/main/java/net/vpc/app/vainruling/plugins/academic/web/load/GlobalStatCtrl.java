@@ -27,6 +27,7 @@ import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import org.primefaces.model.chart.PieChartModel;
 
+import javax.faces.model.SelectItem;
 import java.util.*;
 
 /**
@@ -63,7 +64,21 @@ public class GlobalStatCtrl {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         getTeacherFilter().onChangePeriod();
         getCourseFilter().onChangePeriod();
+
+        List<SelectItem> refreshableFilters = new ArrayList<>();
+        refreshableFilters.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
+        refreshableFilters.add(FacesUtils.createSelectItem("deviation-week", "Balance/Sem", "vr-checkbox"));
+        refreshableFilters.add(FacesUtils.createSelectItem("deviation-extra", "Balance/Supp", "vr-checkbox"));
+        refreshableFilters.add(FacesUtils.createSelectItem("extra-abs", "Supp ABS", "vr-checkbox"));
+        getCourseFilter().getModel().setRefreshFilterItems(refreshableFilters);
         getCourseFilter().getModel().getRefreshFilterItems().add(FacesUtils.createSelectItem("x:percent", "Pourcentages", "vr-checkbox"));
+
+//        refreshableFilters = new ArrayList<>();
+//        refreshableFilters.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
+//
+//        getOthersCourseFilter().getModel().setRefreshFilterItems(refreshableFilters);
+//        getOthersCourseFilter().onChangePeriod();
+
         onRefresh();
     }
 
@@ -318,7 +333,7 @@ public class GlobalStatCtrl {
     }
 
     public boolean isPercent() {
-        for (String s : getCourseFilter().getModel().getRefreshFilter()) {
+        for (String s : getCourseFilter().getModel().getRefreshFilterSelected()) {
             if ("x:percent".equals(s)) {
                 return true;
             }

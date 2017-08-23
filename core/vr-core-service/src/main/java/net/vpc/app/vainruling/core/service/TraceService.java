@@ -25,13 +25,14 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @Service
 public class TraceService {
-
+    public static final Logger log=Logger.getLogger(TraceService.class.getName());
     private static final ThreadLocal<Integer> SILENCE = new ThreadLocal<>();
 
     private static void enterSilence() {
@@ -379,6 +380,8 @@ public class TraceService {
     }
 
     public void archiveLogs(String filter,Map<String,Object> params,String fileNamePattern,int rowsPerFile0) {
+        log.info("Start archiveLogs with filter : "+filter+" -- "+params);
+        System.out.println("Start archiveLogs with filter : "+filter+" -- "+params);
         UPA.getContext().invokePrivileged(makeSilenced(new VoidAction() {
             @Override
             public void run() {
@@ -433,6 +436,8 @@ public class TraceService {
                 }
             }
         }));
+        log.info("End archiveLogs with filter : "+filter+" -- "+params);
+        System.out.println("End archiveLogs with filter : "+filter+" -- "+params);
     }
     public static TraceService get(){
         return VrApp.getBean(TraceService.class);

@@ -142,7 +142,7 @@ public class TeacherStatFeedbackCtrl {
             List<AcademicTeacher> teachersWithFeedbacks = feedback.findTeachersWithFeedbacks(getSelectedPeriodId(), getModel().getValidatedFilter(), false, true);
             for (AcademicTeacher f : teachersWithFeedbacks) {
                 if (academic.isManagerOf(f)) {
-                    academicTeachers.add(new SelectItem(String.valueOf(f.getId()), f.getContact().getFullTitle()));
+                    academicTeachers.add(new SelectItem(String.valueOf(f.getId()), f.resolveFullTitle()));
                 }
             }
         }
@@ -511,7 +511,7 @@ public class TeacherStatFeedbackCtrl {
             int periodId = getSelectedPeriodId();
             for (AcademicTeacher f : feedback.findTeachersWithFeedbacks(periodId, getModel().getValidatedFilter(), false, true)) {
                 if (academic.isManagerOf(f)) {
-                    theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getContact().getFullTitle()));
+                    theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.resolveFullTitle()));
                 }
             }
             getModel().setFilterList(theList);
@@ -685,7 +685,7 @@ public class TeacherStatFeedbackCtrl {
                     accept=academic.isManagerOf(deptId);
                 }
                 if(!accept) {
-                    for (AcademicCourseAssignment ca : academic.findCourseAssignmentsByPlan(f.getId())) {
+                    for (AcademicCourseAssignment ca : academic.findCourseAssignmentsByCoursePlan(f.getId())) {
                         if(ca.getOwnerDepartment()!=null){
                             accept=academic.isManagerOf(ca.getOwnerDepartment());
                             if(accept){
