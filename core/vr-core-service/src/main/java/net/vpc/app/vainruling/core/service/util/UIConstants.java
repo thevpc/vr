@@ -24,7 +24,7 @@ public final class UIConstants {
         public static final String CONTROL_FILE_TYPE = "ui.form.control.file.type";
         public static final String CONTROL_FILE_PATH = "ui.form.control.file.path";
         /**
-         * colspan and rowspan separated with , example : 3,4
+         * colspan and rowspan separated with , example : 3,4 or MAX_VALUE
          */
         public static final String SPAN = "ui.form.span";
         /**

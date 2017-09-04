@@ -1254,6 +1254,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                                 if (defaultSelection != null) {
                                     f.setSelectedString(String.valueOf(defaultSelection));
                                 }
+                            } else if(curr instanceof BooleanType){
+                                f.getValues().add(FacesUtils.createSelectItem(String.valueOf(true), StringUtils.nonNull(true), ""));
+                                f.getValues().add(FacesUtils.createSelectItem(String.valueOf(false), StringUtils.nonNull(false), ""));
                             } else {
                                 throw new IllegalArgumentException("Unsupported");
                             }

@@ -295,7 +295,7 @@ and open the template in the editor.
                                 <p:column headerText="Module">
                                     <h:outputText action="#{myCourseLoadCtrl.gotoCourseAssignment(i.value.assignment)}"
                                                   value="#{i.value.assignment.coursePlan.name} - #{i.value.assignment.courseType.name}"
-                                                  styleClass="#{i.value.assigned?'vr-assigned-course':''}"/>
+                                                  styleClass="#{i.currentAssigned?'vr-assigned-course':''}"/>
                                 </p:column>
                                 <p:column headerText="C" width="5%">
                                     <h:outputText
@@ -319,12 +319,14 @@ and open the template in the editor.
                                 </p:column>
 
                                 <p:column headerText="Voeux des autres" width="20%">
-                                    <h:outputText value="#{i.intents}"
-                                                  styleClass="#{i.currentAssigned?'vr-label-valid':i.otherAssigned?'vr-label-warn':'vr-label-invalid'}"
-                                    />
+                                    <ui:repeat value="#{i.intents}" var="ci">
+                                        <h:outputText value=" #{ci}" styleClass="#{ci.assigned?'vr-label-valid':ci.intended?'vr-label-warn':'vr-label-invalid'}"/>
+                                    </ui:repeat>
                                 </p:column>
                                 <p:column headerText="Collaborateurs" width="10%" rendered="#{myCourseLoadCtrl.model.isCurrentTeacherFilter('collaborators')}">
-                                    <h:outputText value="#{i.courseIntents}" />
+                                    <ui:repeat value="#{i.courseIntents}" var="ci">
+                                        <h:outputText value=" #{ci}" styleClass="#{ci.assigned?'vr-label-valid':ci.intended?'vr-label-warn':'vr-label-invalid'}"/>
+                                    </ui:repeat>
                                 </p:column>
                                 <p:column headerText="Salles" width="5%" rendered="#{myCourseLoadCtrl.model.isCurrentTeacherFilter('rooms')}">
                                     <h:outputText value="#{i.rooms}"/>
@@ -413,10 +415,14 @@ and open the template in the editor.
                             </p:column>
 
                             <p:column headerText="Voeux" width="20%">
-                                <h:outputText value="#{i.intents}"  styleClass="#{i.currentAssigned?'vr-label-valid':i.otherAssigned?'vr-label-warn':'vr-label-invalid'}"/>
+                                <ui:repeat value="#{i.intents}" var="ci">
+                                    <h:outputText value=" #{ci}" styleClass="#{ci.assigned?'vr-label-valid':ci.intended?'vr-label-warn':'vr-label-invalid'}"/>
+                                </ui:repeat>
                             </p:column>
                             <p:column headerText="Collaborateurs" width="10%" rendered="#{myCourseLoadCtrl.model.isOthersFilterSelected('collaborators')}">
-                                <h:outputText value="#{i.courseIntents}" />
+                                <ui:repeat value="#{i.courseIntents}" var="ci">
+                                    <h:outputText value=" #{ci}" styleClass="#{ci.assigned?'vr-label-valid':ci.intended?'vr-label-warn':'vr-label-invalid'}"/>
+                                </ui:repeat>
                             </p:column>
                             <p:column headerText="Salles" width="5%" rendered="#{myCourseLoadCtrl.model.isOthersFilterSelected('rooms')}">
                                 <h:outputText value="#{i.rooms}"/>

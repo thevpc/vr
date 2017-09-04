@@ -37,19 +37,19 @@ public class DevToolsCtrl {
     }
 
     public void exec() {
+        clear();
         String q = getModel().getQuery();
-        if (q != null && q.trim().length() > 0) {
-            clear();
-            if (getModel().isSql()) {
-                q = q.trim();
-                if (q.toLowerCase().startsWith("select")) {
-                    try {
+        try {
+            if (q != null && q.trim().length() > 0) {
+                if (getModel().isSql()) {
+                    q = q.trim();
+                    if (q.toLowerCase().startsWith("select")) {
                         QueryResult r = UPA.getPersistenceUnit().getConnection().executeQuery(q, null, null, false);
                         final int fieldsCount = r.getColumnsCount();
                         for (int i = 0; i < fieldsCount; i++) {
                             String columnName = r.getColumnName(i);
-                            if(StringUtils.isEmpty(columnName)){
-                                columnName="C" + (i + 1);
+                            if (StringUtils.isEmpty(columnName)) {
+                                columnName = "C" + (i + 1);
                             }
                             getModel().getRowNames().add(new ColDef(columnName, i));
                         }
@@ -60,30 +60,14 @@ public class DevToolsCtrl {
                             }
                             getModel().getRows().add(row);
                         }
-                    } catch (Exception e) {
-                        List<Object> row1 = Arrays.asList((Object) e.getMessage());
-                        List<Object> row2 = Arrays.asList((Object) StringUtils.verboseStacktraceToString(e));
-                        getModel().getRows().add(row1);
-                        getModel().getRows().add(row2);
-                        getModel().getRowNames().add(new ColDef("<Error>", 0));
-                    }
-                } else {
-                    try {
+                    } else {
                         int r = UPA.getPersistenceUnit().getConnection().executeNonQuery(q, null, null);
                         List<Object> row = Arrays.asList((Object) r);
                         getModel().getRows().add(row);
                         getModel().getRowNames().add(new ColDef("<Result>", 0));
-                    } catch (Exception e) {
-                        List<Object> row1 = Arrays.asList((Object) e.getMessage());
-                        List<Object> row2 = Arrays.asList((Object) StringUtils.verboseStacktraceToString(e));
-                        getModel().getRows().add(row1);
-                        getModel().getRows().add(row2);
-                        getModel().getRowNames().add(new ColDef("<Error>", 0));
                     }
-                }
-            } else if (getModel().isupql()) {
-                if (q.toLowerCase().startsWith("select")) {
-                    try {
+                } else if (getModel().isupql()) {
+                    if (q.toLowerCase().startsWith("select")) {
                         List<MultiDocument> r = UPA.getPersistenceUnit().createQuery(q).getMultiDocumentList();
                         HashMap<String, Integer> indices = new HashMap<String, Integer>();
                         for (MultiDocument r1 : r) {
@@ -108,33 +92,26 @@ public class DevToolsCtrl {
                         for (Map.Entry<String, Integer> es : indices.entrySet()) {
                             getModel().getRowNames().set(es.getValue(), new ColDef(es.getKey(), es.getValue()));
                         }
-                    } catch (Exception e) {
-                        List<Object> row1 = Arrays.asList((Object) e.getMessage());
-                        List<Object> row2 = Arrays.asList((Object) StringUtils.verboseStacktraceToString(e));
-                        getModel().getRows().clear();
-                        getModel().getRows().add(row1);
-                        getModel().getRows().add(row2);
-                        getModel().getRowNames().clear();
-                        getModel().getRowNames().add(new ColDef("<Error>", 0));
-                    }
-                } else {
-                    try {
+                    } else {
                         int r = UPA.getPersistenceUnit().createQuery(q).executeNonQuery();
                         List<Object> row = Arrays.asList((Object) r);
                         getModel().getRows().add(row);
                         getModel().getRowNames().add(new ColDef("<Result>", 0));
-                    } catch (Exception e) {
-                        List<Object> row1 = Arrays.asList((Object) e.getMessage());
-                        List<Object> row2 = Arrays.asList((Object) StringUtils.verboseStacktraceToString(e));
-                        getModel().getRows().clear();
-                        getModel().getRows().add(row1);
-                        getModel().getRows().add(row2);
-                        getModel().getRowNames().clear();
-                        getModel().getRowNames().add(new ColDef("<Error>", 0));
                     }
                 }
             }
+        } catch (Exception ex) {
+            Throwable th = ex;
+            getModel().getRowNames().add(new ColDef("<Error>", 0));
+            while (th != null) {
+                List<Object> row1 = Arrays.asList((Object) th.getMessage());
+                List<Object> row2 = Arrays.asList((Object) StringUtils.verboseStacktraceToString(th));
+                getModel().getRows().add(row1);
+                getModel().getRows().add(row2);
+                th = th.getCause();
+            }
         }
+
     }
 
     public static class Model {

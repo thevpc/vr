@@ -2,10 +2,7 @@ package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Created by vpc on 9/4/16.
@@ -15,6 +12,16 @@ public class AssignmentChuck {
 
     public Map<Integer, TeacherAssignmentChunck> getChuncks() {
         return chuncks;
+    }
+
+    public List<TeacherAssignmentChunck> getAllButTeacher(int teacherId){
+        List<TeacherAssignmentChunck> all=new ArrayList<>();
+        for (TeacherAssignmentChunck i : chuncks.values()) {
+            if(i.getTeacherId()!=teacherId) {
+                all.add(i);
+            }
+        }
+        return all;
     }
 
     public String toStringByTeacher(int teacherId){

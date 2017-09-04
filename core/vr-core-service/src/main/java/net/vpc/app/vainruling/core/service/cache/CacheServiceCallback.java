@@ -28,11 +28,8 @@ public class CacheServiceCallback {
     @OnPersist
     public void onPersist(PersistEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
-        if (!UPA.getPersistenceUnit().getName().equals(pu.getName())) {
-            return;
-        }
         Entity entity = event.getEntity();
-        CacheService service = getEntityCacheService();
+        CacheService.DomainCache service = getDomainCache(pu);
         if (service != null) {
             service.invalidate(entity, event.getPersistedDocument());
         }
@@ -41,11 +38,7 @@ public class CacheServiceCallback {
     @OnUpdate
     public void onUpdate(UpdateEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
-        if (!UPA.getPersistenceUnit().getName().equals(pu.getName())) {
-            event.getContext().setObject("silenced", true);
-            return;
-        }
-        CacheService service = getEntityCacheService();
+        CacheService.DomainCache service = getDomainCache(pu);
         Entity entity = event.getEntity();
         if (service != null) {
             service.invalidate(entity, event.getUpdatesDocument());
@@ -55,11 +48,7 @@ public class CacheServiceCallback {
     @OnRemove
     public void onRemove(RemoveEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
-        if (!UPA.getPersistenceUnit().getName().equals(pu.getName())) {
-            event.getContext().setObject("silenced", true);
-            return;
-        }
-        CacheService service = getEntityCacheService();
+        CacheService.DomainCache service = getDomainCache(pu);
         Entity entity = event.getEntity();
         if (service != null) {
             service.invalidate(entity, event.getFilterExpression());
@@ -67,14 +56,14 @@ public class CacheServiceCallback {
     }
 
 
-    private CacheService getEntityCacheService() {
+    private CacheService.DomainCache getDomainCache(PersistenceUnit pu) {
         CacheService trace = null;
         try {
             trace = VrApp.getBean(CacheService.class);
         } catch (Exception e) {
             //
         }
-        return trace;
+        return trace==null?null:trace.getDomainCache(pu);
     }
 
 }

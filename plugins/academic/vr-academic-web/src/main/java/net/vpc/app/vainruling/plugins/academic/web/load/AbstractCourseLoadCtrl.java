@@ -765,9 +765,9 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public static class SelectableAssignment extends SelectableObject<AcademicCourseAssignmentInfo> {
-        private String intents;
+        private List<TeacherAssignmentChunck> intents;
         private String rooms;
-        private String courseIntents;
+        private  List<TeacherAssignmentChunck> courseIntents;
         private AcademicClass academicClass;
         private boolean currentAssigned;
         private boolean otherAssigned;
@@ -775,8 +775,8 @@ public abstract class AbstractCourseLoadCtrl {
 
         public SelectableAssignment(AcademicCourseAssignmentInfo value, int visitor) {
             super(value, false);
-            this.intents = value.getAssignmentChunck().toStringByTeacher(visitor);
-            this.courseIntents = value.getCourseChunck().toStringByTeacher(visitor);
+            this.intents = value.getAssignmentChunck().getAllButTeacher(visitor);
+            this.courseIntents = value.getCourseChunck().getAllButTeacher(visitor);
             academicClass=value.resolveAcademicClass();
             AcademicCourseType courseType = value.getAssignment().getCourseType();
             if(courseType!=null && courseType.getName().equalsIgnoreCase("C")) {
@@ -803,15 +803,15 @@ public abstract class AbstractCourseLoadCtrl {
             return academicClass;
         }
 
-        public String getIntents() {
+        public List<TeacherAssignmentChunck> getIntents() {
             return intents;
         }
 
-        public String getCourseIntents() {
+        public List<TeacherAssignmentChunck> getCourseIntents() {
             return courseIntents;
         }
 
-        public SelectableAssignment setCourseIntents(String courseIntents) {
+        public SelectableAssignment setCourseIntents( List<TeacherAssignmentChunck> courseIntents) {
             this.courseIntents = courseIntents;
             return this;
         }

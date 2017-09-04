@@ -448,7 +448,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (td == null) {
             td = new AcademicTeacherDegree();
         }
-        AcademicLoadConversionRow r = conversionTable.get(td.getConversionRule().getId());
+        AcademicLoadConversionRow r = td.getConversionRule()==null ?null  : conversionTable.get(td.getConversionRule().getId());
         if (r == null) {
             r = new AcademicLoadConversionRow();
             r.setValueC(0);
@@ -4131,16 +4131,17 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (copyFromPeriod <= 0 || copyFromPeriod == periodId) {
             item.setDegree(teacher.getDegree());
             item.setSituation(teacher.getSituation());
-//            item.setEnabled(teacher.isEnabled());
+            item.setEnabled(teacher.getSituation()!=null);
             item.setDepartment(teacher.getDepartment());
         } else {
             AcademicTeacherPeriod other = findAcademicTeacherPeriod(copyFromPeriod, teacher);
             item.setDegree(other.getDegree());
             item.setSituation(other.getSituation());
-//            item.setEnabled(other.isEnabled());
+            item.setEnabled(other.isEnabled());
             item.setDepartment(other.getDepartment());
         }
         if (toPersist) {
+            item.setLoadConfirmed(false);
             pu.persist(item);
         } else {
             pu.merge(item);

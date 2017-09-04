@@ -16,7 +16,7 @@ import java.util.WeakHashMap;
  */
 @Service
 public class CacheService {
-    protected static class CacheData {
+    public static class DomainCache {
         private WeakHashMap<String, EntityCache> entityCache = new WeakHashMap<>();
         private Map<String, Object> properties = new HashMap<>();
         public void invalidate() {
@@ -64,14 +64,17 @@ public class CacheService {
         }
     }
 
-    public CacheData getCacheData() {
-        final PersistenceUnit pu = UPA.getPersistenceUnit();
+    public DomainCache getDomainCache() {
+        return getDomainCache(UPA.getPersistenceUnit());
+    }
+    public DomainCache getDomainCache(PersistenceUnit pu) {
         String name = CacheService.class.getName();
-        CacheData cache = pu.getProperties().getObject(name);
+        DomainCache cache = pu.getProperties().getObject(name);
         if(cache==null){
             synchronized (pu){
+                cache = pu.getProperties().getObject(name);
                 if(cache==null) {
-                    cache=new CacheData();
+                    cache=new DomainCache();
                     pu.getProperties().setObject(name,cache);
                 }
             }
@@ -80,30 +83,30 @@ public class CacheService {
     }
 
     public void invalidate() {
-        getCacheData().invalidate();
+        getDomainCache().invalidate();
     }
 
     public void invalidate(Entity entity, Object value) {
-        getCacheData().invalidate(entity,value);
+        getDomainCache().invalidate(entity,value);
     }
 
     public <K, V> MapList<K, V> getList(Class<V> entity) {
-        return getCacheData().getList(entity);
+        return getDomainCache().getList(entity);
     }
 
     public EntityCache get(Class entity) {
-        return getCacheData().get(entity);
+        return getDomainCache().get(entity);
     }
 
     public EntityCache get(Entity entity) {
-        return getCacheData().get(entity);
+        return getDomainCache().get(entity);
     }
 
     public <T> T getProperty(String value, Action<T> evalAction) {
-        return getCacheData().getProperty(value,evalAction);
+        return getDomainCache().getProperty(value,evalAction);
     }
 
     public Map<String, Object> getProperties() {
-        return getCacheData().getProperties();
+        return getDomainCache().getProperties();
     }
 }

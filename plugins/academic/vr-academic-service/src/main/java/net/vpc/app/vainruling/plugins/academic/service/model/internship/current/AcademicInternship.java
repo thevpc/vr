@@ -31,8 +31,8 @@ import java.sql.Timestamp;
                 @Property(name = "ui.auto-filter.program", value = "{expr='board.program',order=3}"),
                 @Property(name = "ui.auto-filter.academicClass", value = "{expr='board.academicClass',order=4}"),
                 @Property(name = "ui.auto-filter.internshipType", value = "{expr='board.internshipType',order=5}"),
-                @Property(name = "ui.auto-filter.internshipStatus", value = "{expr='board.internshipStatus',order=6}"),
-                @Property(name = "ui.auto-filter.sessionType", value = "{expr='board.sessionType',order=7}"),
+                @Property(name = "ui.auto-filter.internshipStatus", value = "{expr='internshipStatus',order=6}"),
+                @Property(name = "ui.auto-filter.sessionType", value = "{expr='sessionType',order=7}"),
         }
 )public class AcademicInternship {
 

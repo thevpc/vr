@@ -56,7 +56,8 @@ public class Equipment {
             {
                     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
                     @Property(name = UIConstants.Form.CONTROL_FILE_TYPE, value = "root"),
-                    @Property(name = UIConstants.Form.CONTROL_FILE_PATH, value = "/Data/Equipment")
+                    @Property(name = UIConstants.Form.CONTROL_FILE_PATH, value = "/Data/Equipment"),
+                    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
             })
     private String photo;
 

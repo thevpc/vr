@@ -54,7 +54,6 @@ public class CorePlugin {
 
     public static final java.util.logging.Logger LOG_APPLICATION_STATS = java.util.logging.Logger.getLogger(CorePlugin.class.getName() + ".Stats");
     public static final String SEND_EXTERNAL_MAIL_QUEUE = "sendExternalMailQueue";
-    private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePlugin.class.getName());
     public static final String PATH_LOG = "/Var/Log";
     public static final String PATH_TEMP = "/Var/Temp";
     public static final String USER_ADMIN = "admin";
@@ -64,11 +63,12 @@ public class CorePlugin {
     public static final String RIGHT_FILESYSTEM_ASSIGN_RIGHTS = "Custom.FileSystem.AssignRights";
     public static final String RIGHT_FILESYSTEM_SHARE_FOLDERS = "Custom.FileSystem.ShareFolders";
     public static final Set<String> ADMIN_ENTITIES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("Trace", "User", "UserProfile", "UserProfileBinding", "UserProfileRight")));
+    private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePlugin.class.getName());
     public static String FOLDER_MY_DOCUMENTS = "Mes Documents";
     public static String FOLDER_ALL_DOCUMENTS = "Tous";
     public static String FOLDER_BACK = "<Dossier Parent>";
-    private VirtualFileSystem fileSystem;
-    private String nativeFileSystemPath;
+    //    private VirtualFileSystem fileSystem;
+//    private String nativeFileSystemPath;
     @Autowired
     private TraceService trace;
     @Autowired
@@ -81,12 +81,19 @@ public class CorePlugin {
     private List<Plugin> plugins;
     private AppVersion appVersion;
     private Set<String> managerProfiles = new HashSet<>(Arrays.asList("Director"));
-    private ActiveSessionsTracker sessions=new ActiveSessionsTracker();
+    private ActiveSessionsTracker sessions = new ActiveSessionsTracker();
+    private Map<String, PluginComponent> components;
+    private Map<String, PluginBundle> bundles;
 
     public static CorePlugin get() {
         return VrApp.getBean(CorePlugin.class);
     }
 
+//    private void init(){
+//    }
+//    public UserSession getUserSession() {
+//        return VrApp.getContext().getBean(UserSession.class);
+//    }
 
     @PostConstruct
     public void prepare() {
@@ -130,12 +137,6 @@ public class CorePlugin {
         }
     }
 
-//    private void init(){
-//    }
-//    public UserSession getUserSession() {
-//        return VrApp.getContext().getBean(UserSession.class);
-//    }
-
     public AppUser findUser(String login) {
         final EntityCache entityCache = cacheService.get(AppUser.class);
         Map<String, AppUser> m = entityCache.getProperty("findUserByLogin", new Action<Map<String, AppUser>>() {
@@ -166,7 +167,7 @@ public class CorePlugin {
 
     public AppUserType findUserType(String name) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return (AppUserType) pu.findByField(AppUserType.class, "code",name);
+        return (AppUserType) pu.findByField(AppUserType.class, "code", name);
     }
 
     public List<AppUserType> findUserTypes() {
@@ -471,6 +472,25 @@ public class CorePlugin {
         return p;
     }
 
+
+//    public Object getGlobalCache(String name){
+//        synchronized (globalCache){
+//            return globalCache.get(name);
+//        }
+//    }
+//
+//    public void setGlobalCache(String name,Object value){
+//        synchronized (globalCache){
+//            globalCache.put(name, value);
+//        }
+//    }
+//
+//    public void removeGlobalCache(String name){
+//        synchronized (globalCache){
+//            globalCache.remove(name);
+//        }
+//    }
+
     public AppProfile findProfileByName(String profileName) {
         final EntityCache entityCache = cacheService.get(AppProfile.class);
         Map<String, AppProfile> m = entityCache.getProperty("findProfileByName", new Action<Map<String, AppProfile>>() {
@@ -517,36 +537,34 @@ public class CorePlugin {
 
     }
 
-
-//    public Object getGlobalCache(String name){
-//        synchronized (globalCache){
-//            return globalCache.get(name);
+//    public Map<Integer,List<AppProfile>> findProfilesMapByUserId() {
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        List<AppUserProfileBinding> appUserProfileBindings = pu.createQuery("Select u from AppUserProfileBinding  u").getResultList();
+//        HashMap<Integer, List<AppProfile>> all = new HashMap<>();
+//        for (AppUserProfileBinding o : appUserProfileBindings) {
+//            if(o.getUser()!=null && o.getProfile()!=null){
+//                List<AppProfile> list = all.get(o.getUser().getId());
+//                if(list==null){
+//                    list=new ArrayList<>();
+//                    all.put(o.getUser().getId(), list);
+//                }
+//                list.add(o.getProfile());
+//            }
 //        }
-//    }
-//
-//    public void setGlobalCache(String name,Object value){
-//        synchronized (globalCache){
-//            globalCache.put(name, value);
-//        }
-//    }
-//
-//    public void removeGlobalCache(String name){
-//        synchronized (globalCache){
-//            globalCache.remove(name);
-//        }
+//        return all;
 //    }
 
     public Set<String> findUniformProfileNamesMapByUserId(int userId, boolean includeLogin) {
         Map<Integer, Set<String>> uniformProfileNamesMapByUserId = findUniformProfileNamesMapByUserId(includeLogin);
         Set<String> profiles = uniformProfileNamesMapByUserId.get(userId);
-        if(profiles==null){
-            AppUser u=findUser(userId);
-            if(u==null){
+        if (profiles == null) {
+            AppUser u = findUser(userId);
+            if (u == null) {
                 return null;
             }
-            profiles=new HashSet<>();
-            uniformProfileNamesMapByUserId.put(userId,profiles);
-            if(includeLogin){
+            profiles = new HashSet<>();
+            uniformProfileNamesMapByUserId.put(userId, profiles);
+            if (includeLogin) {
                 profiles.add(u.getLogin().toLowerCase());
             }
         }
@@ -605,23 +623,6 @@ public class CorePlugin {
 
     }
 
-//    public Map<Integer,List<AppProfile>> findProfilesMapByUserId() {
-//        PersistenceUnit pu = UPA.getPersistenceUnit();
-//        List<AppUserProfileBinding> appUserProfileBindings = pu.createQuery("Select u from AppUserProfileBinding  u").getResultList();
-//        HashMap<Integer, List<AppProfile>> all = new HashMap<>();
-//        for (AppUserProfileBinding o : appUserProfileBindings) {
-//            if(o.getUser()!=null && o.getProfile()!=null){
-//                List<AppProfile> list = all.get(o.getUser().getId());
-//                if(list==null){
-//                    list=new ArrayList<>();
-//                    all.put(o.getUser().getId(), list);
-//                }
-//                list.add(o.getProfile());
-//            }
-//        }
-//        return all;
-//    }
-
     public List<AppProfile> findProfilesByUser(int userId) {
         final EntityCache entityCache = cacheService.get(AppUserProfileBinding.class);
         Map<Integer, List<AppProfile>> m = entityCache
@@ -655,8 +656,8 @@ public class CorePlugin {
         return all;
     }
 
-    public List<AppUser> findUsersByTypeAndDepartment(int userType,int userDepartment) {
-        if(userDepartment<0){
+    public List<AppUser> findUsersByTypeAndDepartment(int userType, int userDepartment) {
+        if (userDepartment < 0) {
             return findUsersByType(userType);
         }
         final EntityCache entityCache = cacheService.get(AppUser.class);
@@ -667,18 +668,18 @@ public class CorePlugin {
                         List<AppUser> bindings = entityCache.getValues();
                         Map<String, List<AppUser>> m = new HashMap<String, List<AppUser>>();
                         for (AppUser user : bindings) {
-                            String key = (user.getType()==null?"":user.getType().getId()) + ";" + (user.getDepartment()==null?"":user.getDepartment().getId());
+                            String key = (user.getType() == null ? "" : user.getType().getId()) + ";" + (user.getDepartment() == null ? "" : user.getDepartment().getId());
                             List<AppUser> found = m.get(key);
                             if (found == null) {
                                 found = new ArrayList<AppUser>();
-                                m.put(key,found);
+                                m.put(key, found);
                             }
                             found.add(user);
                         }
                         return m;
                     }
                 });
-        List<AppUser> all = m.get((userType<0?"":String.valueOf(userType))+";"+(userDepartment<0?"":String.valueOf(userDepartment)));
+        List<AppUser> all = m.get((userType < 0 ? "" : String.valueOf(userType)) + ";" + (userDepartment < 0 ? "" : String.valueOf(userDepartment)));
         if (all == null) {
             all = Collections.EMPTY_LIST;
         }
@@ -698,7 +699,7 @@ public class CorePlugin {
                                 List<AppUser> found = m.get(user.getType().getId());
                                 if (found == null) {
                                     found = new ArrayList<AppUser>();
-                                    m.put(user.getType().getId(),found);
+                                    m.put(user.getType().getId(), found);
                                 }
                                 found.add(user);
                             }
@@ -713,6 +714,7 @@ public class CorePlugin {
         return all;
 
     }
+
     public List<AppUser> findUsersByProfile(int profileId) {
         final EntityCache entityCache = cacheService.get(AppUserProfileBinding.class);
         Map<Integer, List<AppUser>> m = entityCache
@@ -727,7 +729,7 @@ public class CorePlugin {
                                 List<AppUser> found = m.get(binding.getProfile().getId());
                                 if (found == null) {
                                     found = new ArrayList<AppUser>();
-                                    m.put(binding.getProfile().getId(),found);
+                                    m.put(binding.getProfile().getId(), found);
                                 }
                                 found.add(binding.getUser());
                             }
@@ -1037,34 +1039,28 @@ public class CorePlugin {
         createRight("Custom.Article.SendExternalEmail", "Send External Email");
         createRight("Custom.Article.SendInternalEmail", "Send Internal Email");
 
-        String home = System.getProperty("user.home");
-        home = home.replace("\\", "/");
-        String domain = getDomain();
-        if(StringUtils.isEmpty(domain)){
-            domain="";
-        }
-        String path = (String) getOrCreateAppPropertyValue("System.FileSystem", null,
-                home + "/filesystem/"+ domain
-        );
-        nativeFileSystemPath = path;
-        fileSystem = new VrFS().subfs(path, "vrfs");
-        fileSystem.get("/").mkdirs();
-        new File(path + PATH_LOG).mkdirs();
-        try {
-            //check if already bound
+
+        //check if already bound
 //            for (Handler handler : LOG_APPLICATION_STATS.getHandlers()) {
 //                if(handler instanceof FileHandler){
 //                    FileHandler f=(FileHandler) handler;
 //                }
 //            }
 
-            if (LOG_APPLICATION_STATS.getHandlers().length == 0) {
-                FileHandler handler = new FileHandler(path + PATH_LOG + "/application-stats.log", 5 * 1024 * 1024, 5, true);
-                handler.setFormatter(new CustomTextFormatter());
-                LOG_APPLICATION_STATS.addHandler(handler);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (LOG_APPLICATION_STATS.getHandlers().length == 0) {
+            UPA.getPersistenceUnit("main").invokePrivileged(new VoidAction() {
+                @Override
+                public void run() {
+                    String path = getNativeFileSystemPath();
+                    try {
+                        FileHandler handler = new FileHandler(path + PATH_LOG + "/application-stats.log", 5 * 1024 * 1024, 5, true);
+                        handler.setFormatter(new CustomTextFormatter());
+                        LOG_APPLICATION_STATS.addHandler(handler);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
         validateRightsDefinitions();
         VrApp.getBean(VrNotificationManager.class).register(SEND_EXTERNAL_MAIL_QUEUE, SEND_EXTERNAL_MAIL_QUEUE, 200);
@@ -1124,13 +1120,13 @@ public class CorePlugin {
                         }
                     }
                     for (Field field : entity.getFields()) {
-                        if(field.getReadAccessLevel()==AccessLevel.PROTECTED){
+                        if (field.getReadAccessLevel() == AccessLevel.PROTECTED) {
                             String rightName = entity.getAbsoluteName() + "." + field.getName() + ".Read";
-                            createRight(rightName,rightName);
+                            createRight(rightName, rightName);
                         }
-                        if(field.getUpdateAccessLevel()==AccessLevel.PROTECTED){
+                        if (field.getUpdateAccessLevel() == AccessLevel.PROTECTED) {
                             String rightName = entity.getAbsoluteName() + "." + field.getName() + ".Write";
-                            createRight(rightName,rightName);
+                            createRight(rightName, rightName);
                         }
                     }
                 }
@@ -1149,7 +1145,7 @@ public class CorePlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(o.getClass());
         Object value = e.getBuilder().objectToDocument(o, true).getObject(field);
-        T t = pu.createQueryBuilder(o.getClass()).setEntityAlias("o").byExpression(new Equals(new Var(new Var("o"),field), new Literal(value, e.getField(field).getDataType())))
+        T t = pu.createQueryBuilder(o.getClass()).setEntityAlias("o").byExpression(new Equals(new Var(new Var("o"), field), new Literal(value, e.getField(field).getDataType())))
                 .getFirstResultOrNull();
         if (t == null) {
             pu.persist(o);
@@ -1187,40 +1183,6 @@ public class CorePlugin {
         return userMatchesProfileFilter(userId, login, profile, whereClause, null);
     }
 
-    private boolean userMatchesProfileFilter(Integer userId, String login, String profile, String whereClause, Map<String, Object> cache) {
-        return userMatchesProfileFilter(userId, login, new ProfileFilterExpression(profile, whereClause), cache);
-    }
-
-    private boolean userMatchesProfileFilter(Integer userId, String login, ProfileFilterExpression profileExpr, Map<String, Object> cache) {
-        if (StringUtils.isEmpty(profileExpr.getFilterExpression()) && StringUtils.isEmpty(profileExpr.getProfileListExpression())) {
-            return true;
-        }
-        if (cache == null) {
-            cache = new HashMap<>();
-        }
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        if (userId == null) {
-            userId = findUserIdByLogin(login);
-        }
-        Set<String> foundProfileNames = (userId == null) ? (new HashSet<String>()) : findUniformProfileNamesMapByUserId(userId,true);
-        if (foundProfileNames == null) {
-            foundProfileNames = new HashSet<>();
-        }
-        InSetEvaluator evaluator = createProfilesEvaluator(foundProfileNames);
-        boolean b = false;
-        try {
-            b = evaluator.evaluateExpression(profileExpr.getProfileListExpression());
-        }catch(Exception e){
-            //error
-        }
-        if (b && !StringUtils.isEmpty(profileExpr.getFilterExpression())) {
-            return filterUsersByExpression(
-                    userId == null ? new int[0] : new int[]{userId}
-                    , profileExpr.getFilterExpression()).size() > 0;
-        }
-        return b;
-    }
-
     //    public List<AppProfile> resolveProfilesByProfileFilter(String profile) {
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        if (profile != null && profile.trim().length() > 0) {
@@ -1250,60 +1212,94 @@ public class CorePlugin {
 //        }
 //    }
 
-    public List<String> autoCompleteUserOrProfile(String userOrProfile){
-        if(userOrProfile==null){
-            userOrProfile="";
+    private boolean userMatchesProfileFilter(Integer userId, String login, String profile, String whereClause, Map<String, Object> cache) {
+        return userMatchesProfileFilter(userId, login, new ProfileFilterExpression(profile, whereClause), cache);
+    }
+
+    private boolean userMatchesProfileFilter(Integer userId, String login, ProfileFilterExpression profileExpr, Map<String, Object> cache) {
+        if (StringUtils.isEmpty(profileExpr.getFilterExpression()) && StringUtils.isEmpty(profileExpr.getProfileListExpression())) {
+            return true;
         }
-        userOrProfile=userOrProfile.trim().toLowerCase();
-        List<String> all=new ArrayList<>();
+        if (cache == null) {
+            cache = new HashMap<>();
+        }
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        if (userId == null) {
+            userId = findUserIdByLogin(login);
+        }
+        Set<String> foundProfileNames = (userId == null) ? (new HashSet<String>()) : findUniformProfileNamesMapByUserId(userId, true);
+        if (foundProfileNames == null) {
+            foundProfileNames = new HashSet<>();
+        }
+        InSetEvaluator evaluator = createProfilesEvaluator(foundProfileNames);
+        boolean b = false;
+        try {
+            b = evaluator.evaluateExpression(profileExpr.getProfileListExpression());
+        } catch (Exception e) {
+            //error
+        }
+        if (b && !StringUtils.isEmpty(profileExpr.getFilterExpression())) {
+            return filterUsersByExpression(
+                    userId == null ? new int[0] : new int[]{userId}
+                    , profileExpr.getFilterExpression()).size() > 0;
+        }
+        return b;
+    }
+
+    public List<String> autoCompleteUserOrProfile(String userOrProfile) {
+        if (userOrProfile == null) {
+            userOrProfile = "";
+        }
+        userOrProfile = userOrProfile.trim().toLowerCase();
+        List<String> all = new ArrayList<>();
         for (AppProfile appProfile : findProfiles()) {
-            if(appProfile.getName()!=null && appProfile.getName().toLowerCase().contains(userOrProfile)){
+            if (appProfile.getName() != null && appProfile.getName().toLowerCase().contains(userOrProfile)) {
                 all.add(appProfile.getName().trim());
             }
         }
         for (AppUser appUser : findUsers()) {
-            if(appUser.getLogin()!=null && appUser.getLogin().toLowerCase().contains(userOrProfile)){
+            if (appUser.getLogin() != null && appUser.getLogin().toLowerCase().contains(userOrProfile)) {
                 all.add(appUser.getLogin().trim());
             }
         }
         return all;
     }
 
-    public List<String> autoCompleteProfileExpression(String queryExpr){
-        if(queryExpr==null){
-            queryExpr="";
+    public List<String> autoCompleteProfileExpression(String queryExpr) {
+        if (queryExpr == null) {
+            queryExpr = "";
         }
-        queryExpr=queryExpr.trim();
-        int x=queryExpr.length()-1;
-        while(x>=0){
-            char c=queryExpr.charAt(x);
-            if(!Character.isLetterOrDigit(c) && c!='.'){
+        queryExpr = queryExpr.trim();
+        int x = queryExpr.length() - 1;
+        while (x >= 0) {
+            char c = queryExpr.charAt(x);
+            if (!Character.isLetterOrDigit(c) && c != '.') {
                 break;
             }
             x--;
         }
-        if(x>0){
-            if(x<queryExpr.length()-1) {
-                String prefix = queryExpr.substring(0, x+1);
-                String suffix =queryExpr.substring(x+1);
-                List<String> all=new ArrayList<>();
+        if (x > 0) {
+            if (x < queryExpr.length() - 1) {
+                String prefix = queryExpr.substring(0, x + 1);
+                String suffix = queryExpr.substring(x + 1);
+                List<String> all = new ArrayList<>();
                 List<String> strings = autoCompleteUserOrProfile(suffix);
-                if(strings.isEmpty()){
-                    strings=Arrays.asList("");
+                if (strings.isEmpty()) {
+                    strings = Arrays.asList("");
                 }
                 for (String s : strings) {
-                    all.add(prefix+s);
+                    all.add(prefix + s);
                 }
                 return all;
-            }else{
+            } else {
                 return Arrays.asList(queryExpr);
             }
-        }else{
+        } else {
             return new ArrayList<String>(new TreeSet<String>(autoCompleteUserOrProfile(queryExpr)));
         }
     }
 
-    public List<AppUser> filterUsersByProfileFilter(List<AppUser> users,String profilePattern, Integer userType) {
+    public List<AppUser> filterUsersByProfileFilter(List<AppUser> users, String profilePattern, Integer userType) {
         //check if pattern contains where clause!
         ProfileFilterExpression ee = new ProfileFilterExpression(profilePattern);
         ProfileFilterExpression profilesOnlyExpr = new ProfileFilterExpression(ee.getProfileListExpression(), null);
@@ -1330,34 +1326,34 @@ public class CorePlugin {
     }
 
     public List<AppUser> filterUsersBysContacts(List<AppContact> users) {
-        Set<Integer> visited=new HashSet<>();
-        List<AppUser> ret=new ArrayList<>();
-        StringBuilder q=new StringBuilder("-1");
+        Set<Integer> visited = new HashSet<>();
+        List<AppUser> ret = new ArrayList<>();
+        StringBuilder q = new StringBuilder("-1");
         PersistenceUnit pu = UPA.getPersistenceUnit();
         for (int i = 0; i < users.size(); i++) {
             AppContact contact = users.get(i);
             q.append(",").append(contact.getId());
-            if(i%50==(50-1) || i==users.size()-1){
+            if (i % 50 == (50 - 1) || i == users.size() - 1) {
                 for (AppUser o : pu.createQuery("Select u from AppUser u where u.contactId in (" + q + ")")
                         .<AppUser>getResultList()) {
-                    if(visited.contains(o.getId())){
+                    if (visited.contains(o.getId())) {
                         visited.add(o.getId());
                         ret.add(o);
                     }
                 }
-                q.delete(0,q.length());
+                q.delete(0, q.length());
                 q.append("-1");
             }
         }
         return ret;
     }
 
-    public List<AppContact> filterContactsByProfileFilter(List<AppContact> contacts,String profilePattern) {
-        List<AppContact> ret=new ArrayList<>();
-        Set<Integer> visited=new HashSet<>();
+    public List<AppContact> filterContactsByProfileFilter(List<AppContact> contacts, String profilePattern) {
+        List<AppContact> ret = new ArrayList<>();
+        Set<Integer> visited = new HashSet<>();
         for (AppUser user : filterUsersByProfileFilter(filterUsersBysContacts(contacts), profilePattern, null)) {
             AppContact c = user.getContact();
-            if(c!=null && !visited.contains(c.getId())){
+            if (c != null && !visited.contains(c.getId())) {
                 visited.add(c.getId());
                 ret.add(c);
             }
@@ -1366,7 +1362,7 @@ public class CorePlugin {
     }
 
     public List<AppUser> findUsersByProfileFilter(String profilePattern, Integer userType) {
-        return filterUsersByProfileFilter(findEnabledUsers(),profilePattern,userType);
+        return filterUsersByProfileFilter(findEnabledUsers(), profilePattern, userType);
     }
 
     private List<AppUser> filterUsersByExpression(List<AppUser> all, String expression) {
@@ -1387,6 +1383,21 @@ public class CorePlugin {
                 .createQuery("Select x from AppUser x where x.id in (" + ids + ") " + expression)
                 .getResultList();
     }
+//    public List<AppUser> resolveUsersByProfileFilter(String profile) {
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        if (profile != null && profile.trim().length() > 0) {
+//            StringBuilder x = new StringBuilder();
+//            for (String p : profile.split(" , |;")) {
+//                if (p != null) {
+//                    x.append("/").append(p);
+//                }
+//            }
+//            return pu.createQuery("Select u.user from AppUserProfileBinding u where :expr like concat('/',u.profile.name,'/')")
+//                    .setParameter("expr", x.toString())
+//                    .getResultList();
+//        }
+//        return Collections.EMPTY_LIST;
+//    }
 
     private List<AppUser> filterUsersByExpression(int[] all, String expression) {
         if (all.length == 0) {
@@ -1443,26 +1454,11 @@ public class CorePlugin {
         ap.setPropertyValue(propertyValueString);
         setAppProperty(ap);
     }
-//    public List<AppUser> resolveUsersByProfileFilter(String profile) {
-//        PersistenceUnit pu = UPA.getPersistenceUnit();
-//        if (profile != null && profile.trim().length() > 0) {
-//            StringBuilder x = new StringBuilder();
-//            for (String p : profile.split(" , |;")) {
-//                if (p != null) {
-//                    x.append("/").append(p);
-//                }
-//            }
-//            return pu.createQuery("Select u.user from AppUserProfileBinding u where :expr like concat('/',u.profile.name,'/')")
-//                    .setParameter("expr", x.toString())
-//                    .getResultList();
-//        }
-//        return Collections.EMPTY_LIST;
-//    }
 
     public void setEnabledAppProperty(String propertyName, String userLogin, boolean enabled) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AppProperty e = getAppProperty(propertyName, userLogin);
-        if(e!=null){
+        if (e != null) {
             e.setEnabled(enabled);
             pu.merge(e);
         }
@@ -1710,13 +1706,13 @@ public class CorePlugin {
 
     public void setAppProperty(AppProperty ap) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        AppProperty old =null;
-        if(ap.getUser()==null) {
-            old=pu.createQuery("Select a from AppProperty a where a.propertyName=:propertyName and a.userId=null")
+        AppProperty old = null;
+        if (ap.getUser() == null) {
+            old = pu.createQuery("Select a from AppProperty a where a.propertyName=:propertyName and a.userId=null")
                     .setParameter("propertyName", ap.getPropertyName())
                     .getFirstResultOrNull();
-        }else{
-            old=pu.createQuery("Select a from AppProperty a where a.propertyName=:propertyName and a.userId=:userId")
+        } else {
+            old = pu.createQuery("Select a from AppProperty a where a.propertyName=:propertyName and a.userId=:userId")
                     .setParameter("propertyName", ap.getPropertyName())
                     .setParameter("userId", ap.getUser().getId())
                     .getFirstResultOrNull();
@@ -1741,7 +1737,7 @@ public class CorePlugin {
     public AppContact findOrCreateContact(AppContact c) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AppContact old = findContact(c);
-        if(old!=null){
+        if (old != null) {
             return old;
         }
         pu.persist(c);
@@ -1752,30 +1748,30 @@ public class CorePlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         String nin = c.getNin();
         if (!StringUtils.isEmpty(nin)) {
-            nin=nin.trim();
+            nin = nin.trim();
             AppContact oldAcademicTeacher = pu.createQueryBuilder(AppContact.class)
                     .byField("nin", nin)
                     .getFirstResultOrNull();
             if (oldAcademicTeacher != null) {
                 return oldAcademicTeacher;
             }
-            StringBuilder s=new StringBuilder(nin);
-            while(s.length()>0 && s.charAt(0)=='0'){
-                s.delete(0,1);
+            StringBuilder s = new StringBuilder(nin);
+            while (s.length() > 0 && s.charAt(0) == '0') {
+                s.delete(0, 1);
             }
-            if(s.length()>0) {
+            if (s.length() > 0) {
                 List<AppContact> possibleContacts = pu.createQuery("Select u from AppContact u where u.nin like :nin")
                         .setParameter("nin", "%" + s + "%")
                         .getResultList();
                 for (AppContact o : possibleContacts) {
                     String nin1 = o.getNin();
-                    if(!StringUtils.isEmpty(nin1)){
-                        nin1=nin1.trim();
-                        StringBuilder s1=new StringBuilder(nin1);
-                        while(s1.length()>0 && s1.charAt(0)=='0'){
-                            s1.delete(0,1);
+                    if (!StringUtils.isEmpty(nin1)) {
+                        nin1 = nin1.trim();
+                        StringBuilder s1 = new StringBuilder(nin1);
+                        while (s1.length() > 0 && s1.charAt(0) == '0') {
+                            s1.delete(0, 1);
                         }
-                        if(s1.toString().equals(s.toString())){
+                        if (s1.toString().equals(s.toString())) {
                             //okkay found!
                             return o;
                         }
@@ -1842,6 +1838,32 @@ public class CorePlugin {
         return us != null && us.isAdmin();
     }
 
+//    public String validateName(String text) {
+//        //make it kamel based
+//        boolean wasWhite = true;
+//        char[] chars = (text == null ? "" : text).toCharArray();
+//        StringBuilder sb = new StringBuilder();
+//        for (int i = 0; i < chars.length; i++) {
+//            char aChar = chars[i];
+//            if (Character.isWhitespace(aChar)) {
+//                if (!(aChar == ' ' || aChar == '\t')) {
+//                    aChar = ' ';
+//                }
+//                if (!wasWhite) {
+//                    sb.append(aChar);
+//                }
+//                wasWhite = true;
+//            } else if (wasWhite) {
+//                sb.append(Character.toUpperCase(aChar));
+//                wasWhite = false;
+//            } else {
+//                sb.append(Character.toLowerCase(aChar));
+//                wasWhite = false;
+//            }
+//        }
+//        return sb.toString().trim();
+//    }
+
     public boolean isUserSessionAdmin() {
         UserSession us = null;
         try {
@@ -1875,32 +1897,6 @@ public class CorePlugin {
         UserSession us = getUserSession();
         return us != null && us.isAdmin();
     }
-
-//    public String validateName(String text) {
-//        //make it kamel based
-//        boolean wasWhite = true;
-//        char[] chars = (text == null ? "" : text).toCharArray();
-//        StringBuilder sb = new StringBuilder();
-//        for (int i = 0; i < chars.length; i++) {
-//            char aChar = chars[i];
-//            if (Character.isWhitespace(aChar)) {
-//                if (!(aChar == ' ' || aChar == '\t')) {
-//                    aChar = ' ';
-//                }
-//                if (!wasWhite) {
-//                    sb.append(aChar);
-//                }
-//                wasWhite = true;
-//            } else if (wasWhite) {
-//                sb.append(Character.toUpperCase(aChar));
-//                wasWhite = false;
-//            } else {
-//                sb.append(Character.toLowerCase(aChar));
-//                wasWhite = false;
-//            }
-//        }
-//        return sb.toString().trim();
-//    }
 
     public String resolvePasswordProposal(AppContact contact) {
         String fn = contact.getFirstName();
@@ -2117,7 +2113,7 @@ public class CorePlugin {
 
     public AppPeriod getCurrentPeriod() {
         AppConfig currentConfig = getCurrentConfig();
-        return currentConfig==null?null:currentConfig.getMainPeriod();
+        return currentConfig == null ? null : currentConfig.getMainPeriod();
     }
 
     public AppPeriod findPeriodOrMain(int id) {
@@ -2199,9 +2195,9 @@ public class CorePlugin {
 
     public void logout(String sessionId) {
         UserSession currentSession0 = null;
-        try{
+        try {
             currentSession0 = getUserSession();
-        }catch (Exception any){
+        } catch (Exception any) {
             //
         }
         final UserSession currentSession = currentSession0;
@@ -2209,7 +2205,7 @@ public class CorePlugin {
         AppUser user = s == null ? null : s.getUser();
         String login = user == null ? null : user.getLogin();
         int id = user == null ? -1 : user.getId();
-        if (s != null && user != null && currentSession!=null) {
+        if (s != null && user != null && currentSession != null) {
             trace.trace("logout", "force logout " + login,
                     login,
                     "/System/Access", null, null, currentSession.getUser().getLogin(), id, Level.INFO, s.getClientIpAddress()
@@ -2325,6 +2321,19 @@ public class CorePlugin {
         return user;
     }
 
+
+//    private AppUser findUser(String login, String password) {
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        return (AppUser) pu
+//                .createQuery("Select u from AppUser u "
+//                        + "where "
+//                        + "u.login=:login "
+//                        + "and u.password=:password")
+//                .setParameter("login", login)
+//                .setParameter("password", password)
+//                .getEntity();
+//    }
+
     protected void buildSession(UserSession s, AppUser user) {
         final List<AppProfile> userProfiles = findProfilesByUser(user.getId());
         Set<String> userProfilesNames = new HashSet<>();
@@ -2378,22 +2387,6 @@ public class CorePlugin {
                 .setParameter("password", password)
                 .getFirstResultOrNull();
     }
-
-
-//    private AppUser findUser(String login, String password) {
-//        PersistenceUnit pu = UPA.getPersistenceUnit();
-//        return (AppUser) pu
-//                .createQuery("Select u from AppUser u "
-//                        + "where "
-//                        + "u.login=:login "
-//                        + "and u.password=:password")
-//                .setParameter("login", login)
-//                .setParameter("password", password)
-//                .getEntity();
-//    }
-
-    private Map<String, PluginComponent> components;
-    private Map<String, PluginBundle> bundles;
 
     public PluginInfo getPluginInfo(String bundleId) {
         getPlugins();
@@ -2482,8 +2475,8 @@ public class CorePlugin {
     public URL getPluginComponentURL(Class type, String path) {
         try {
             String location = type.getProtectionDomain().getCodeSource().getLocation().toString();
-            if(location.endsWith("/")){
-                return new URL(location+path);
+            if (location.endsWith("/")) {
+                return new URL(location + path);
             }
             return new URL("jar:" + location + "!" + path);
         } catch (MalformedURLException e) {
@@ -2514,30 +2507,31 @@ public class CorePlugin {
     public List<PersistenceUnit> getPersistenceUnits() {
         return new ArrayList<>(UPA.getPersistenceGroup("").getPersistenceUnits());
     }
+
     public List<Plugin> getPlugins() {
         if (plugins == null) {
             buildPluginInfos();
             String[] appPluginBeans = VrApp.getContext().getBeanNamesForAnnotation(AppPlugin.class);
             ListValueMap<String, Object> instances = new ListValueMap<>();
-            List<String> errors=new ArrayList<>();
+            List<String> errors = new ArrayList<>();
             Arrays.sort(appPluginBeans); //just to have a reproducible error if any
             for (String beanName : appPluginBeans) {
                 Object bean = VrApp.getContext().getBean(beanName);
                 PluginBundle bundle = getPluginBundle(bean);
                 if (bundle != null) {
                     instances.put(bundle.getId(), bean);
-                }else{
+                } else {
                     errors.add(beanName);
-                    log.log(Level.SEVERE, "Unable to find bundle Instance for "+beanName+"... some thing is wrong...");
+                    log.log(Level.SEVERE, "Unable to find bundle Instance for " + beanName + "... some thing is wrong...");
                 }
             }
 
-            if(errors.size()>0){
+            if (errors.size() > 0) {
                 Enumeration<URL> resources = null;
                 try {
                     resources = Thread.currentThread().getContextClassLoader().getResources("/META-INF/vr-plugin.properties");
                     for (URL url : Collections.list(resources)) {
-                        log.log(Level.SEVERE, "\t resolved plugin url : "+url);
+                        log.log(Level.SEVERE, "\t resolved plugin url : " + url);
                     }
 //                    String beanName=errors.get(0);
 //                    Object bean=VrApp.getContext().getBean(beanName);
@@ -2594,18 +2588,35 @@ public class CorePlugin {
     }
 
     public String getNativeFileSystemPath() {
-        return nativeFileSystemPath;
+        return cacheService.get(AppProperty.class).getProperty("System.FileSystem.Path", new Action<String>() {
+            @Override
+            public String run() {
+                String appName="vr";//change me
+                String home = System.getProperty("user.home");
+                home = home.replace("\\", "/");
+                String domain = getDomain();
+                if (StringUtils.isEmpty(domain)) {
+                    domain = "";
+                }
+                String path = (String) getOrCreateAppPropertyValue("System.FileSystem", null,
+                        home+"/workspace/"+appName+"/filesystem/" + domain
+                );
+                return path;
+            }
+        });
     }
 
     public VirtualFileSystem getFileSystem() {
-        if(fileSystem==null){
-            throw new RuntimeException("FileSystem is not initialized yet. It seems that installService() has never been called...");
-        }
-        return fileSystem;
-    }
-
-    public void setFileSystem(VirtualFileSystem fileSystem) {
-        this.fileSystem = fileSystem;
+        return cacheService.get(AppProperty.class).getProperty("System.FileSystem", new Action<VirtualFileSystem>() {
+            @Override
+            public VirtualFileSystem run() {
+                String path = getNativeFileSystemPath();
+                VirtualFileSystem fileSystem = new VrFS().subfs(path, "vrfs");
+                fileSystem.get("/").mkdirs();
+                new File(path + PATH_LOG).mkdirs();
+                return fileSystem;
+            }
+        });
     }
 
     public VFile getUserDocumentsFolder(final String login) {
@@ -2631,7 +2642,7 @@ public class CorePlugin {
                 }
 
             }, null);
-            return fileSystem.get(path);
+            return getFileSystem().get(path);
         }
         return null;
     }
@@ -2647,7 +2658,7 @@ public class CorePlugin {
             }
 
         });
-        return fileSystem.get(path);
+        return getFileSystem().get(path);
     }
 
     public VFile getProfileFolder(final String profile) {
@@ -2669,7 +2680,7 @@ public class CorePlugin {
 
             }, null);
 
-            return fileSystem.get(path);
+            return getFileSystem().get(path);
         }
         return null;
     }
@@ -2689,21 +2700,21 @@ public class CorePlugin {
                 }
 
             }, null);
-            return fileSystem.get(path);
+            return getFileSystem().get(path);
         }
         return null;
     }
 
     public VirtualFileSystem getUserHomeFileSystem(final String login) {
         VFile home = getUserFolder(login);
-        return fileSystem.subfs(home.getPath());
+        return getFileSystem().subfs(home.getPath());
     }
 
     public VirtualFileSystem getUserFileSystem(final String login) {
         AppUser u = findUser(login);
         if (u != null) {
             VFile home = getUserFolder(login);
-            final VirtualFileSystem me = fileSystem.subfs(home.getPath());
+            final VirtualFileSystem me = getFileSystem().subfs(home.getPath());
             MountableFS mfs = VFS.createMountableFS("user:" + login);
             try {
                 mfs.mount("/" + FOLDER_MY_DOCUMENTS, me);
@@ -2711,7 +2722,7 @@ public class CorePlugin {
                 for (AppProfile p : profiles) {
                     if (CorePlugin.PROFILE_ADMIN.equals(p.getName())) {
                         //this is admin
-                        mfs.mount("/" + FOLDER_ALL_DOCUMENTS, fileSystem);
+                        mfs.mount("/" + FOLDER_ALL_DOCUMENTS, getFileSystem());
                     }
                 }
                 VrFSTable t = getVrFSTable();
@@ -2720,13 +2731,13 @@ public class CorePlugin {
                     mfs.mount(profileMountPoint, getProfileFileSystem(p.getName(), t));
                 }
                 for (VrFSEntry e : t.getEntries(login, "User")) {
-                    mfs.mount("/" + e.getMountPoint(), fileSystem.subfs(e.getLinkPath()));
+                    mfs.mount("/" + e.getMountPoint(), getFileSystem().subfs(e.getLinkPath()));
                 }
                 for (VrFSEntry e : t.getEntriesByType("Profile")) {
                     //if (isComplexProfileExpr(e.getFilterName())) {
-                        if (userMatchesProfileFilter(u.getId(), e.getFilterName())) {
-                            mountSubFS(mfs, e);
-                        }
+                    if (userMatchesProfileFilter(u.getId(), e.getFilterName())) {
+                        mountSubFS(mfs, e);
+                    }
                     //}
                 }
             } catch (IOException ex) {
@@ -2740,20 +2751,20 @@ public class CorePlugin {
 
     private void mountSubFS(MountableFS mfs, VrFSEntry e) throws IOException {
         String linkPath = e.getLinkPath();
-        if(linkPath.contains("*")){
-            VFile[] files=fileSystem.get("/").find(linkPath, new VFileFilter() {
+        if (linkPath.contains("*")) {
+            VFile[] files = getFileSystem().get("/").find(linkPath, new VFileFilter() {
                 @Override
                 public boolean accept(VFile pathname) {
                     return pathname.isDirectory();
                 }
             });
-            ListFS lfs= VFS.createListFS(e.getMountPoint());
+            ListFS lfs = VFS.createListFS(e.getMountPoint());
             for (VFile file : files) {
-                lfs.addOrRename(file.getName(),file,null);
+                lfs.addOrRename(file.getName(), file, null);
             }
             mfs.mount("/" + e.getMountPoint(), lfs);
-        }else {
-            mfs.mount("/" + e.getMountPoint(), fileSystem.subfs(e.getLinkPath()));
+        } else {
+            mfs.mount("/" + e.getMountPoint(), getFileSystem().subfs(e.getLinkPath()));
         }
     }
 
@@ -2776,7 +2787,7 @@ public class CorePlugin {
                 }
 
             }, null);
-            VirtualFileSystem pfs = fileSystem.subfs(path);
+            VirtualFileSystem pfs = getFileSystem().subfs(path);
             MountableFS mfs = null;
             try {
                 if (t == null) {
@@ -2801,14 +2812,14 @@ public class CorePlugin {
     }
 
     private void commitVrFSTable(VrFSTable tab) {
-        fileSystem.mkdirs("/Config");
-        OutputStream out=null;
+        getFileSystem().mkdirs("/Config");
+        OutputStream out = null;
         try {
             try {
-                out=fileSystem.getOutputStream("/Config/fstab");
+                out = getFileSystem().getOutputStream("/Config/fstab");
                 tab.store(out);
-            }finally{
-                if(out!=null){
+            } finally {
+                if (out != null) {
                     out.close();
                 }
             }
@@ -2819,15 +2830,15 @@ public class CorePlugin {
 
     private VrFSTable getVrFSTable() {
         VrFSTable t = new VrFSTable();
-        InputStream in=null;
+        InputStream in = null;
         try {
             try {
-                if (fileSystem.exists("/Config/fstab")) {
-                    in = fileSystem.getInputStream("/Config/fstab");
+                if (getFileSystem().exists("/Config/fstab")) {
+                    in = getFileSystem().getInputStream("/Config/fstab");
                     t.load(in);
                 }
-            }finally{
-                if(in!=null){
+            } finally {
+                if (in != null) {
                     in.close();
                 }
             }
@@ -2909,17 +2920,6 @@ public class CorePlugin {
         return managerProfiles;
     }
 
-    private static class InitData {
-
-        long now;
-        AppProfile adminProfile;
-        AppUser admin;
-        AppUserType adminType;
-        List<AppCivility> civilities;
-        List<AppGender> genders;
-        List<AppDepartment> departments;
-    }
-
     public void invalidateCache() {
         cacheService.invalidate();
     }
@@ -2963,7 +2963,6 @@ public class CorePlugin {
         }
     }
 
-
     private List<String> getOrderedPlugins() {
         final Map<String, Object> s = VrApp.getContext().getBeansWithAnnotation(AppPlugin.class);
         ArrayList<String> ordered = new ArrayList<>();
@@ -3004,8 +3003,8 @@ public class CorePlugin {
     }
 
     private void tryInstall() {
-        boolean alwaysInstall=false;
-        boolean alwaysNonCoherent=false;
+        boolean alwaysInstall = false;
+        boolean alwaysNonCoherent = false;
         PersistenceUnit pu = UPA.getPersistenceUnit();
         ArrayList<Plugin> toInstall = new ArrayList<>();
         ArrayList<Plugin> toStart = new ArrayList<>();
@@ -3022,7 +3021,7 @@ public class CorePlugin {
                     log.log(Level.INFO, "Plugin {0} is deactivated (version {1})", new Object[]{pluginId, pp.getInfo().getVersion()});
                     //ignore
                     ignore = true;
-                    if(alwaysInstall){
+                    if (alwaysInstall) {
                         toInstall.add(pp);
                     }
                 } else {
@@ -3048,7 +3047,7 @@ public class CorePlugin {
                     toInstall.add(pp);
                 }
             } else {
-                if(alwaysInstall){
+                if (alwaysInstall) {
                     toInstall.add(pp);
                 }
                 log.log(Level.INFO, "Plugin {0} is uptodate ({1})", new Object[]{pluginId, pp.getInfo().getVersion()});
@@ -3106,11 +3105,11 @@ public class CorePlugin {
     }
 
     public ArticlesItem findArticle(int articleId) {
-        return UPA.getPersistenceUnit().findById(ArticlesItem.class,articleId);
+        return UPA.getPersistenceUnit().findById(ArticlesItem.class, articleId);
     }
 
     public ArticlesDisposition findArticleDisposition(int articleDispositionId) {
-        return UPA.getPersistenceUnit().findById(ArticlesDisposition.class,articleDispositionId);
+        return UPA.getPersistenceUnit().findById(ArticlesDisposition.class, articleDispositionId);
     }
 
     public List<ArticlesDispositionGroupType> findArticleDispositionGroupTypes() {
@@ -3120,12 +3119,12 @@ public class CorePlugin {
 
     public List<ArticlesDispositionGroup> findArticleDispositionGroups(int siteType) {
         final EntityCache entityCache = cacheService.get(ArticlesDispositionGroup.class);
-        return entityCache.getProperty("findArticleDispositionGroups:"+siteType, new Action<List<ArticlesDispositionGroup>>() {
+        return entityCache.getProperty("findArticleDispositionGroups:" + siteType, new Action<List<ArticlesDispositionGroup>>() {
             @Override
             public List<ArticlesDispositionGroup> run() {
                 return UPA.getPersistenceUnit()
                         .createQuery("Select u from ArticlesDispositionGroup u where u.typeId=:typeId order by u.index,u.title")
-                        .setParameter("typeId",siteType)
+                        .setParameter("typeId", siteType)
                         .getResultList();
             }
         });
@@ -3206,7 +3205,7 @@ public class CorePlugin {
                 return findArticle(id);
             }
         });
-        if(a==null){
+        if (a == null) {
             return null;
         }
         String aname = a.getLinkText();
@@ -3214,11 +3213,11 @@ public class CorePlugin {
         String acss = a.getLinkClassStyle();
         List<ArticlesFile> att = new ArrayList<>();
         if (!StringUtils.isEmpty(aname) || !StringUtils.isEmpty(aurl)) {
-            if(StringUtils.isEmpty(aname)){
-                aname=VrUtils.getURLName(aurl);
+            if (StringUtils.isEmpty(aname)) {
+                aname = VrUtils.getURLName(aurl);
             }
-            if(StringUtils.isEmpty(aname)){
-                aname="NoName";
+            if (StringUtils.isEmpty(aname)) {
+                aname = "NoName";
             }
             ArticlesFile baseArt = new ArticlesFile();
             baseArt.setId(-1);
@@ -3235,13 +3234,13 @@ public class CorePlugin {
         return f;
     }
 
-    public List<FullArticle> findFullArticlesByUserAndCategory(final String login, int dispositionGroupId,boolean includeNoDept, final String disposition) {
+    public List<FullArticle> findFullArticlesByUserAndCategory(final String login, int dispositionGroupId, boolean includeNoDept, final String disposition) {
         return UPA.getContext().invokePrivileged(new Action<List<FullArticle>>() {
 
             @Override
             public List<FullArticle> run() {
                 List<FullArticle> all = new ArrayList<>();
-                List<ArticlesItem> articles = findArticlesByUserAndCategory(login, dispositionGroupId, includeNoDept,disposition);
+                List<ArticlesItem> articles = findArticlesByUserAndCategory(login, dispositionGroupId, includeNoDept, disposition);
                 int[] articleIds = new int[articles.size()];
                 for (int i = 0; i < articleIds.length; i++) {
                     articleIds[i] = articles.get(i).getId();
@@ -3256,11 +3255,11 @@ public class CorePlugin {
                     String acss = a.getLinkClassStyle();
                     List<ArticlesFile> att = new ArrayList<>();
                     if (!StringUtils.isEmpty(aname) || !StringUtils.isEmpty(aurl)) {
-                        if(StringUtils.isEmpty(aname)){
-                            aname=VrUtils.getURLName(aurl);
+                        if (StringUtils.isEmpty(aname)) {
+                            aname = VrUtils.getURLName(aurl);
                         }
-                        if(StringUtils.isEmpty(aname)){
-                            aname="NoName";
+                        if (StringUtils.isEmpty(aname)) {
+                            aname = "NoName";
                         }
                         ArticlesFile baseArt = new ArticlesFile();
                         baseArt.setId(-1);
@@ -3283,30 +3282,30 @@ public class CorePlugin {
         }, null);
     }
 
-    public List<ArticlesItem> findArticlesByUserAndCategory(String login, int dispositionGroupId,boolean includeNoDept,String ... dispositions) {
-        if(dispositions.length==0){
+    public List<ArticlesItem> findArticlesByUserAndCategory(String login, int dispositionGroupId, boolean includeNoDept, String... dispositions) {
+        if (dispositions.length == 0) {
             return Collections.EMPTY_LIST;
         }
-        StringBuilder queryStr=new StringBuilder("Select u from ArticlesItem u where ");
+        StringBuilder queryStr = new StringBuilder("Select u from ArticlesItem u where ");
         queryStr.append(" u.deleted=false ");
         queryStr.append(" and u.archived=false");
         queryStr.append(" and (");
-        Map<String,Object> disps=new HashMap<>();
+        Map<String, Object> disps = new HashMap<>();
         for (int i = 0; i < dispositions.length; i++) {
             String disposition = dispositions[i];
-            if(i>0){
+            if (i > 0) {
                 queryStr.append(" or ");
             }
-            queryStr.append(" u.disposition.name=:disposition"+i);
-            disps.put("disposition"+i,disposition);
+            queryStr.append(" u.disposition.name=:disposition" + i);
+            disps.put("disposition" + i, disposition);
         }
         queryStr.append(" )");
-        if(includeNoDept) {
+        if (includeNoDept) {
             queryStr.append(" and (u.dispositionGroupId=:dispositionGroupId or u.dispositionGroupId=null)");
-            disps.put("dispositionGroupId",dispositionGroupId);
-        }else{
+            disps.put("dispositionGroupId", dispositionGroupId);
+        } else {
             queryStr.append(" and (u.dispositionGroupId=:dispositionGroupId)");
-            disps.put("dispositionGroupId",dispositionGroupId);
+            disps.put("dispositionGroupId", dispositionGroupId);
         }
 
         queryStr.append(" order by "
@@ -3334,15 +3333,10 @@ public class CorePlugin {
         });
     }
 
-//    @EntityActionList(entityType = ArticlesItem.class)
-//    public String[] findArticleActions(){
-//        return new String[]{"SendEmail"};
-//    }
-
     public void generateRSS(String login, String rss, OutputStream out) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         ArticlesDisposition t = pu.findByMainField(ArticlesDisposition.class, "rss." + rss);
-        List<FullArticle> articles = findFullArticlesByUserAndCategory(login, -1,true,"rss." + rss);
+        List<FullArticle> articles = findFullArticlesByUserAndCategory(login, -1, true, "rss." + rss);
         try {
             String feedType = "rss_2.0";
 //            String fileName = "feed.xml";
@@ -3381,29 +3375,34 @@ public class CorePlugin {
         }
     }
 
-    public String getArticlesProperty(String value){
+//    @EntityActionList(entityType = ArticlesItem.class)
+//    public String[] findArticleActions(){
+//        return new String[]{"SendEmail"};
+//    }
+
+    public String getArticlesProperty(String value) {
         return getArticlesProperties().get(value);
     }
 
-    public String getArticlesPropertyOrCreate(String value,String defaultValue){
+    public String getArticlesPropertyOrCreate(String value, String defaultValue) {
         String s = getArticlesProperties().get(value);
-        if(StringUtils.isEmpty(s) && !StringUtils.isEmpty(defaultValue)){
+        if (StringUtils.isEmpty(s) && !StringUtils.isEmpty(defaultValue)) {
             PersistenceUnit pu = UPA.getPersistenceUnit();
             pu.invokePrivileged(new VoidAction() {
                 @Override
                 public void run() {
-                    ArticlesProperty p=new ArticlesProperty();
+                    ArticlesProperty p = new ArticlesProperty();
                     p.setName(value);
                     p.setValue(defaultValue);
                     pu.persist(p);
                 }
             });
-            s=defaultValue;
+            s = defaultValue;
         }
         return s;
     }
 
-    public Map<String,String> getArticlesProperties(){
+    public Map<String, String> getArticlesProperties() {
         final EntityCache entityCache = cacheService.get(ArticlesProperty.class);
         Map<String, String> m = entityCache.getProperty("getArticlesProperties", new Action<Map<String, String>>() {
             @Override
@@ -3425,8 +3424,6 @@ public class CorePlugin {
     public ActiveSessionsTracker getSessions() {
         return sessions;
     }
-
-
 
     public Object resolveId(String entityName, Object t) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -3622,7 +3619,7 @@ public class CorePlugin {
     public List<NamedId> findAllNamedIds(Relationship r, Map<String, Object> criteria, Object currentInstance) {
         final String aliasName = "o";
         Expression relationExpression = r.createTargetListExpression(currentInstance, aliasName);
-        return findAllNamedIds(r.getTargetEntity(),criteria,relationExpression);
+        return findAllNamedIds(r.getTargetEntity(), criteria, relationExpression);
     }
 
     public List<NamedId> findAllNamedIds(Entity entity, Map<String, Object> criteria, Expression condition) {
@@ -3704,7 +3701,7 @@ public class CorePlugin {
         return entityList;
     }
 
-    public long findCountByFilter(String entityName, String criteria, ObjSearch objSearch, Map<String,Object> parameters) {
+    public long findCountByFilter(String entityName, String criteria, ObjSearch objSearch, Map<String, Object> parameters) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         String qq = "Select count(1) from " + entityName + " o ";
         Expression filterExpression = null;
@@ -3712,7 +3709,7 @@ public class CorePlugin {
             filterExpression = new UserExpression(criteria);
         }
         if (objSearch != null) {
-            String c = objSearch.createPreProcessingExpression(entityName,parameters,"os");
+            String c = objSearch.createPreProcessingExpression(entityName, parameters, "os");
             if (c != null) {
                 if (filterExpression == null) {
                     filterExpression = new UserExpression(c);
@@ -3725,16 +3722,16 @@ public class CorePlugin {
             qq += " where " + filterExpression;
         }
         Query query = pu.createQuery(qq);
-        if(parameters!=null){
+        if (parameters != null) {
             for (Map.Entry<String, Object> pp : parameters.entrySet()) {
-                query.setParameter(pp.getKey(),pp.getValue());
+                query.setParameter(pp.getKey(), pp.getValue());
             }
         }
         Number nn = (Number) query.getSingleValue();
         return nn.longValue();
     }
 
-    public List<Object> findByFilter(String entityName, String criteria, ObjSearch objSearch,Map<String,Object> parameters) {
+    public List<Object> findByFilter(String entityName, String criteria, ObjSearch objSearch, Map<String, Object> parameters) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         QueryBuilder q = pu
@@ -3746,7 +3743,7 @@ public class CorePlugin {
             filterExpression = new UserExpression(criteria);
         }
         if (objSearch != null) {
-            String c = objSearch.createPreProcessingExpression(entityName,parameters,"os");
+            String c = objSearch.createPreProcessingExpression(entityName, parameters, "os");
             if (c != null) {
                 if (filterExpression == null) {
                     filterExpression = new UserExpression(c);
@@ -3758,9 +3755,9 @@ public class CorePlugin {
         if (filterExpression != null) {
             q.byExpression(filterExpression);
         }
-        if(parameters!=null){
+        if (parameters != null) {
             for (Map.Entry<String, Object> pp : parameters.entrySet()) {
-                q.setParameter(pp.getKey(),pp.getValue());
+                q.setParameter(pp.getKey(), pp.getValue());
             }
         }
         List<Object> list = q.getResultList();
@@ -3770,7 +3767,7 @@ public class CorePlugin {
         return list;
     }
 
-    public List<Document> findDocumentsByFilter(String entityName, String criteria, ObjSearch objSearch, String textSearch, Map<String,Object> parameters) {
+    public List<Document> findDocumentsByFilter(String entityName, String criteria, ObjSearch objSearch, String textSearch, Map<String, Object> parameters) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         QueryBuilder q = pu
@@ -3782,7 +3779,7 @@ public class CorePlugin {
             filterExpression = new UserExpression(criteria);
         }
         if (objSearch != null) {
-            String c = objSearch.createPreProcessingExpression(entityName,parameters,"os");
+            String c = objSearch.createPreProcessingExpression(entityName, parameters, "os");
             if (c != null) {
                 if (filterExpression == null) {
                     filterExpression = new UserExpression(c);
@@ -3795,40 +3792,40 @@ public class CorePlugin {
             q.byExpression(filterExpression);
 
         }
-        if(parameters!=null){
+        if (parameters != null) {
             for (Map.Entry<String, Object> pp : parameters.entrySet()) {
-                q.setParameter(pp.getKey(),pp.getValue());
+                q.setParameter(pp.getKey(), pp.getValue());
             }
         }
         Object appPropertyValue = getAppPropertyValue("System.MaxLoadedObjects", null);
-        if(appPropertyValue==null){
-            appPropertyValue=7000;
+        if (appPropertyValue == null) {
+            appPropertyValue = 7000;
         }
-        q.setTop(Convert.toInt(appPropertyValue,IntegerParserConfig.LENIENT_F));
+        q.setTop(Convert.toInt(appPropertyValue, IntegerParserConfig.LENIENT_F));
         List<Document> list = q.getDocumentList();
         if (objSearch != null) {
             list = objSearch.filterList(list, entityName);
         }
         if (!StringUtils.isEmpty(textSearch)) {
 
-            list = createSearch(null,entity,textSearch).filterList(list, entityName);
+            list = createSearch(null, entity, textSearch).filterList(list, entityName);
         }
         return list;
     }
 
-    public ObjSearch createSearch(String name,Entity entity,String expression){
-        if(StringUtils.isEmpty(expression)){
+    public ObjSearch createSearch(String name, Entity entity, String expression) {
+        if (StringUtils.isEmpty(expression)) {
             return new ObjSimpleSearch(null);
         }
         String f = entity.getProperties().getString(UIConstants.ENTITY_TEXT_SEARCH_FACTORY);
-        if(StringUtils.isEmpty(f)){
+        if (StringUtils.isEmpty(f)) {
             return new ObjSimpleSearch(expression);
         }
-        EntityObjSearchFactory g= null;
+        EntityObjSearchFactory g = null;
         try {
             g = (EntityObjSearchFactory) Class.forName(f).newInstance();
             ObjSearch objSearch = g.create(name, entity, expression);
-            if(objSearch==null){
+            if (objSearch == null) {
                 return new ObjSimpleSearch(expression);
             }
             return objSearch;
@@ -3850,34 +3847,34 @@ public class CorePlugin {
         Entity entity = pu.getEntity(type);
         DataType dt = entity.getField(field).getDataType();
         return pu.createQueryBuilder(type).setEntityAlias("o")
-                .byExpression(new And(new Var(new Var("o"),field), new Literal(value, dt)))
+                .byExpression(new And(new Var(new Var("o"), field), new Literal(value, dt)))
                 .orderBy(entity.getListOrder())
                 .getResultList();
     }
 
-    public VFile uploadFile(VFile baseFile,UploadedFileHandler event) throws IOException {
+    public VFile uploadFile(VFile baseFile, UploadedFileHandler event) throws IOException {
         String fileName = normalizeFilePath(event.getFileName());
         VFile newFile = baseFile;//.get(fileName);
         VFile baseFolder = null;
-        if(newFile.exists() && newFile.isDirectory()){
-            baseFolder=newFile;
-            int pos=0;
-            while(true){
-                String n=fileName;
-                if(pos>0) {
+        if (newFile.exists() && newFile.isDirectory()) {
+            baseFolder = newFile;
+            int pos = 0;
+            while (true) {
+                String n = fileName;
+                if (pos > 0) {
                     n = FileUtils.changeFileSuffix(new File(fileName), "-" + pos).getPath();
                 }
                 VFile vFile = newFile.get(n);
-                if(!vFile.exists()){
-                    newFile=vFile;
+                if (!vFile.exists()) {
+                    newFile = vFile;
                     break;
                 }
                 pos++;
             }
-        }else if (newFile.exists()) {
+        } else if (newFile.exists()) {
             boolean doOverride = false;
             //check if alreay selected
-            if(event.acceptOverride(newFile)){
+            if (event.acceptOverride(newFile)) {
                 doOverride = true;
             }
             if (!doOverride) {
@@ -3907,11 +3904,14 @@ public class CorePlugin {
         }
     }
 
-    public String normalizeFilePath(String path){
+    public String normalizeFilePath(String path) {
         char[] chars = StringUtils.normalize(path).toCharArray();
         for (int i = 0; i < chars.length; i++) {
-            switch (chars[i]){
-                case '°':{chars[i]='o';break;}
+            switch (chars[i]) {
+                case '°': {
+                    chars[i] = 'o';
+                    break;
+                }
                 case '"':
                 case '\'':
                 case '?':
@@ -3920,10 +3920,23 @@ public class CorePlugin {
                 case '%':
                 case '|':
                 case '<':
-                case '>':
-                    {chars[i]=' ';break;}
+                case '>': {
+                    chars[i] = ' ';
+                    break;
+                }
             }
         }
         return new String(chars);
+    }
+
+    private static class InitData {
+
+        long now;
+        AppProfile adminProfile;
+        AppUser admin;
+        AppUserType adminType;
+        List<AppCivility> civilities;
+        List<AppGender> genders;
+        List<AppDepartment> departments;
     }
 }

@@ -207,7 +207,7 @@
     </distributionManagement>
 
     <build>
-        <finalName>vr</finalName>
+        <finalName>enisoinfo</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

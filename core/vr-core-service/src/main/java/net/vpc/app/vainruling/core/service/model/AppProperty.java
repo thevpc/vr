@@ -27,6 +27,7 @@ public class AppProperty {
     private String propertyName;
     @Field(max = "4096")
     @Summary
+    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     private String propertyValue;
     @Summary
     private String propertyType;

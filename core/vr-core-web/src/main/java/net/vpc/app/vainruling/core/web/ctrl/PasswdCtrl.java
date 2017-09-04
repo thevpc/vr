@@ -48,12 +48,17 @@ public class PasswdCtrl {
                 FacesUtils.addErrorMessage("Les mots de passe ne coincident pas");
                 return;
             }
+            String oldPassword = getModel().getOldPassword();
+            String newPassword = getModel().getPassword1();
+            getModel().setOldPassword("");
+            getModel().setPassword1("");
+            getModel().setPassword2("");
             final String actualLogin = t.getActualLogin();
             UPA.getContext().invokePrivileged(new VoidAction() {
                                                   @Override
                                                   public void run() {
                                                       try {
-                                                          t.passwd(actualLogin, getModel().getOldPassword(), getModel().getPassword1());
+                                                          t.passwd(actualLogin, oldPassword, newPassword);
                                                           FacesUtils.addInfoMessage("Mot de passe modifié");
                                                       } catch (Exception ex) {
                                                           log.log(Level.SEVERE, "Error", ex);
