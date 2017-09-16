@@ -11,7 +11,7 @@ import net.vpc.upa.config.*;
 @Path("Education/Projects/Apbl")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.session", value = "{expr='session',order=1}"),
+                @Property(name = "ui.auto-filter.session", value = "{expr='this.session',order=1}"),
         }
 )
 public class ApblTeam {

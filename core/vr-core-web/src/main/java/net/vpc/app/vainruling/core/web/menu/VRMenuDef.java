@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.web.menu;
 
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.web.ActionEnabler;
 import net.vpc.app.vainruling.core.web.Vr;
 
 import java.io.UnsupportedEncodingException;
@@ -34,14 +35,16 @@ public class VRMenuDef {
     private String path;
     private String type;
     private String command;
+    private ActionEnabler enabler;
     private String securityKey;
     private String icon;
     private List<VRMenuDef> children;
     private List<VRMenuLabel> labels=new ArrayList<>();
 
-    public VRMenuDef(String name, String path, String type, String command, String securityKey, String icon,int order,VRMenuLabel[] labels) {
+    public VRMenuDef(String name, String path, String type, String command, String securityKey, ActionEnabler enabler,String icon,int order,VRMenuLabel[] labels) {
         this.name = name;
         this.path = path;
+        this.enabler = enabler;
         this.order = order;
         this.type = type;
         this.command = command;
@@ -210,4 +213,11 @@ public class VRMenuDef {
         return "VRMenuDef{" + "name=" + name + ", path=" + path + ", type=" + type + ", command=" + command + ", securityKey=" + securityKey + ", icon=" + icon + '}';
     }
 
+    public ActionEnabler getEnabler() {
+        return enabler;
+    }
+
+    public void setEnabler(ActionEnabler enabler) {
+        this.enabler = enabler;
+    }
 }

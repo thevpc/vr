@@ -16,12 +16,12 @@ import java.sql.Timestamp;
 @Path("Todo")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.todo", value = "{expr='todo',order=1}"),
-                @Property(name = "ui.auto-filter.responsible", value = "{expr='todo.responsible',order=2}"),
-                @Property(name = "ui.auto-filter.initiator", value = "{expr='todo.initiator',order=3}"),
-                @Property(name = "ui.auto-filter.list", value = "{expr='todo.list',order=4}"),
-                @Property(name = "ui.auto-filter.status", value = "{expr='status',order=5}"),
-                @Property(name = "ui.auto-filter.priority", value = "{expr='todo.priority',order=6}")
+                @Property(name = "ui.auto-filter.todo", value = "{expr='this.todo',order=1}"),
+                @Property(name = "ui.auto-filter.responsible", value = "{expr='this.todo.responsible',order=2}"),
+                @Property(name = "ui.auto-filter.initiator", value = "{expr='this.todo.initiator',order=3}"),
+                @Property(name = "ui.auto-filter.list", value = "{expr='this.todo.list',order=4}"),
+                @Property(name = "ui.auto-filter.status", value = "{expr='this.status',order=5}"),
+                @Property(name = "ui.auto-filter.priority", value = "{expr='this.todo.priority',order=6}")
         }
 )
 public class TodoProgress {

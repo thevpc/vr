@@ -28,6 +28,11 @@
             <version>${version.vr-core-service}</version>
         </dependency>
         <dependency>
+            <groupId>net.vpc.scholar</groupId>
+            <artifactId>hadrumaths</artifactId>
+            <version>3.1.16</version>
+        </dependency>
+        <dependency>
             <groupId>net.sf.jgap</groupId>
             <artifactId>jgap</artifactId>
             <version>3.4.4</version>

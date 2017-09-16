@@ -37,6 +37,12 @@ and open the template in the editor.
                 <p:messages id="pageMessages"/>
 
                 <div>
+                    <p:selectOneMenu value="#{studentFeedbackCtrl.model.periodId}" style="margin-bottom: 20px; margin-right: 20px;">
+                        <p:ajax listener="#{studentFeedbackCtrl.onUpdatePeriod}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
+                        <f:selectItems value="#{studentFeedbackCtrl.model.periods}"/>
+                    </p:selectOneMenu>
+
                     <p:selectOneMenu value="#{studentFeedbackCtrl.model.selectedFeedback}">
                         <p:ajax listener="#{studentFeedbackCtrl.onFeedbackChange}" update=":listForm"/>
                         <f:selectItem itemLabel="Selectionner..." itemValue=""/>

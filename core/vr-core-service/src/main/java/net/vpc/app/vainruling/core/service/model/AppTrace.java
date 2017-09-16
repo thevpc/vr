@@ -17,10 +17,10 @@ import java.sql.Timestamp;
 @Path("Admin/Security")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.module", value = "{expr='module',order=1}"),
-                @Property(name = "ui.auto-filter.action", value = "{expr='action',order=2}"),
-                @Property(name = "ui.auto-filter.user", value = "{expr='user',order=3}"),
-                @Property(name = "ui.auto-filter.level", value = "{expr='level',order=4}")
+                @Property(name = "ui.auto-filter.module", value = "{expr='this.module',order=1}"),
+                @Property(name = "ui.auto-filter.action", value = "{expr='this.action',order=2}"),
+                @Property(name = "ui.auto-filter.user", value = "{expr='this.user',order=3}"),
+                @Property(name = "ui.auto-filter.level", value = "{expr='this.level',order=4}")
         }
 )
 public class AppTrace {

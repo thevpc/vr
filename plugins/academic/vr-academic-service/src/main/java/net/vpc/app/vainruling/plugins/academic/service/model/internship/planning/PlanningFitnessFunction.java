@@ -157,7 +157,7 @@ public class PlanningFitnessFunction extends FitnessFunction {
             }
         }
         if (pbm) {
-            teachers.add(0, FitnessValue.invalid("teachers", othersGood));
+            teachers.add(0, FitnessValue.invalid("teachers-st", othersGood));
         } else {
             if (othersGood > 0) {
                 teachers.add(0, FitnessValue.valid("good-teachers", othersGood));

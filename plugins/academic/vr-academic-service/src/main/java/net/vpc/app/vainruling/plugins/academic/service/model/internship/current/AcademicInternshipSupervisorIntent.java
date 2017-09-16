@@ -16,8 +16,8 @@ import net.vpc.upa.config.*;
 @Path("Education/Projects/Internships")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.department", value = "{expr='teacher.department',order=1}"),
-                @Property(name = "ui.auto-filter.teacher", value = "{expr='teacher',order=2}"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='this.teacher.department',order=1}"),
+                @Property(name = "ui.auto-filter.teacher", value = "{expr='this.teacher',order=2}"),
         })
 public class AcademicInternshipSupervisorIntent {
 

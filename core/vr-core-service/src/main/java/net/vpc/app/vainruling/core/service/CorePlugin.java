@@ -1898,33 +1898,7 @@ public class CorePlugin {
         return us != null && us.isAdmin();
     }
 
-    public String resolvePasswordProposal(AppContact contact) {
-        String fn = contact.getFirstName();
-        String ln = contact.getLastName();
-        if (fn == null) {
-            fn = "";
-        }
-        if (ln == null) {
-            ln = "";
-        }
-        String fnlower = fn.toLowerCase();
-        String[] fns = fnlower.split(" ");
-        if (fns.length > 0 && fns[0].length() >= 3) {
-            String p = fns[0];
-            for (int i = 0; i < 4; i++) {
-                int x = (int) (Math.random() * 10);
-                p += x;
-            }
-            return p;
-        }
-//        if()
-        String p = fnlower.replace(" ", "");
-        for (int i = 0; i < 4; i++) {
-            int x = (int) (Math.random() * 10);
-            p += x;
-        }
-        return p;
-    }
+
 
     public String resolveLoginProposal(AppContact contact) {
         String fn = contact.getFirstName();
@@ -1949,14 +1923,17 @@ public class CorePlugin {
         return c;
     }
 
-    public AppUser createUser(AppContact contact, int userTypeId, int departmentId, boolean attachToExistingUser, String[] defaultProfiles) {
+    public AppUser createUser(AppContact contact, int userTypeId, int departmentId, boolean attachToExistingUser, String[] defaultProfiles,VrPasswordStrategy passwordStrategy) {
         AppUser u = findUserByContact(contact.getId());
         if (u == null) {
+            if(passwordStrategy==null){
+                passwordStrategy=VrPasswordStrategyRandom.INSTANCE;
+            }
             String login = resolveLoginProposal(contact);
             if (StringUtils.isEmpty(login)) {
                 login = "user";
             }
-            String password = resolvePasswordProposal(contact);
+            String password = passwordStrategy.generatePassword(contact);
             u = findUser(login);
             if (u != null && u.getContact() != null) {
                 if (u.getContact().getId() == contact.getId()) {
@@ -3927,6 +3904,26 @@ public class CorePlugin {
             }
         }
         return new String(chars);
+    }
+
+    public List<String> getAllCompletionLists(int monitorUserId) {
+        String[] appPluginBeans = VrApp.getContext().getBeanNamesForType(CompletionProvider.class);
+        TreeSet<String> cats=new TreeSet<>();
+        for (String beanName : appPluginBeans) {
+            CompletionProvider bean = (CompletionProvider) VrApp.getContext().getBean(beanName);
+            cats.addAll(bean.getCompletionLists(monitorUserId));
+        }
+        return new ArrayList<>(cats);
+    }
+
+    public List<CompletionInfo> findAllCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel){
+        String[] appPluginBeans = VrApp.getContext().getBeanNamesForType(CompletionProvider.class);
+        List<CompletionInfo> cats=new ArrayList<>();
+        for (String beanName : appPluginBeans) {
+            CompletionProvider bean = (CompletionProvider) VrApp.getContext().getBean(beanName);
+            cats.addAll(bean.findCompletions(monitorUserId, category, objectType, objectId, minLevel));
+        }
+        return new ArrayList<>(cats);
     }
 
     private static class InitData {

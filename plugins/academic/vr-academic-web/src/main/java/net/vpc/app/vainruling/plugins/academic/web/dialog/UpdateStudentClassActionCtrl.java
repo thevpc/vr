@@ -168,6 +168,52 @@ public class UpdateStudentClassActionCtrl {
         }
     }
 
+    public void onFailure() {
+        if (    //xor between board and group
+                (getModel().isUserSelectedOnly() || !StringUtils.isEmpty(getModel().getSelectedClassFrom()))
+                        && !StringUtils.isEmpty(getModel().getSelectedPeriod())
+                ) {
+            getModel().setMessage("");
+            int periodId = Convert.toInt(getModel().getSelectedPeriod(), IntegerParserConfig.LENIENT_F);
+            boolean userSelectedOnly = getModel().isUserSelectedOnly();
+            if (userSelectedOnly && periodId >= 0) {
+                AppPeriod period = core.findPeriod(periodId);
+                if (period != null) {
+                    try {
+                        for (String studentIdStr : getModel().getSelectionIdList()) {
+                            int studentId = Convert.toInt(studentIdStr, IntegerParserConfig.LENIENT_F);
+                            AcademicStudent st = ap.findStudent(studentId);
+                            st.setFailureCount(st.getFailureCount()+1);
+                            ap.update(st);
+                        }
+                    } catch (Exception ex) {
+                        log.log(Level.SEVERE, "Error", ex);
+                        getModel().setMessage(ex.getMessage());
+                    }
+                }
+            } else {
+                int fromId = Convert.toInt(getModel().getSelectedClassFrom(), IntegerParserConfig.LENIENT_F);
+                try {
+                    for (AcademicStudent st : ap.findStudentsByClass(fromId, getModel().getClassNumber())) {
+                        st.setFailureCount(st.getFailureCount()+1);
+                        ap.update(st);
+                    }
+                } catch (Exception ex) {
+                    log.log(Level.SEVERE, "Error", ex);
+                    getModel().setMessage(ex.getMessage());
+                }
+            }
+        }else{
+            getModel().setMessage("Merci de faire votre selection");
+        }
+        if(StringUtils.isEmpty(getModel().getMessage())) {
+            fireEventExtraDialogClosed();
+        }
+    }
+
+    public void onFilterChanged() {
+
+    }
     public void onChangeClass() {
         if (    //xor between board and group
                 (getModel().isUserSelectedOnly() || !StringUtils.isEmpty(getModel().getSelectedClassFrom()))

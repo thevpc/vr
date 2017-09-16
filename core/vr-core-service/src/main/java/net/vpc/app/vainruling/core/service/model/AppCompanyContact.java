@@ -19,8 +19,8 @@ import java.sql.Timestamp;
 @Path("Contact")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.company", value = "{expr='company',order=1}"),
-                @Property(name = "ui.auto-filter.positionTitle1", value = "{expr='positionTitle1',order=2}"),
+                @Property(name = "ui.auto-filter.company", value = "{expr='this.company',order=1}"),
+                @Property(name = "ui.auto-filter.positionTitle1", value = "{expr='this.positionTitle1',order=2}"),
         })
 public class AppCompanyContact {
 

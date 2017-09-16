@@ -11,9 +11,9 @@ import net.vpc.upa.config.*;
 @Path("Education/Projects/Apbl")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.session", value = "{expr='team.session',order=1}"),
-                @Property(name = "ui.auto-filter.teacher", value = "{expr='teacher',order=2}"),
-                @Property(name = "ui.auto-filter.team", value = "{expr='team',order=3}"),
+                @Property(name = "ui.auto-filter.session", value = "{expr='this.team.session',order=1}"),
+                @Property(name = "ui.auto-filter.teacher", value = "{expr='this.teacher',order=2}"),
+                @Property(name = "ui.auto-filter.team", value = "{expr='this.team',order=3}"),
         }
 )
 public class ApblCoaching {

@@ -120,4 +120,33 @@ public class AcademicBac {
         this.governorate = governorate;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AcademicBac that = (AcademicBac) o;
+
+        if (id != that.id) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (name2 != null ? !name2.equals(that.name2) : that.name2 != null) return false;
+        if (otherNames != null ? !otherNames.equals(that.otherNames) : that.otherNames != null) return false;
+        if (parent != null ? !parent.equals(that.parent) : that.parent != null) return false;
+        if (governorate != null ? !governorate.equals(that.governorate) : that.governorate != null) return false;
+        if (creationDate != null ? !creationDate.equals(that.creationDate) : that.creationDate != null) return false;
+        return updateDate != null ? updateDate.equals(that.updateDate) : that.updateDate == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (name2 != null ? name2.hashCode() : 0);
+        result = 31 * result + (otherNames != null ? otherNames.hashCode() : 0);
+        result = 31 * result + (parent != null ? parent.hashCode() : 0);
+        result = 31 * result + (governorate != null ? governorate.hashCode() : 0);
+        result = 31 * result + (creationDate != null ? creationDate.hashCode() : 0);
+        result = 31 * result + (updateDate != null ? updateDate.hashCode() : 0);
+        return result;
+    }
 }

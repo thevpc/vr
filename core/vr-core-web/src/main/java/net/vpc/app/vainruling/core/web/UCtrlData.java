@@ -19,6 +19,7 @@ public class UCtrlData {
     private String securityKey;
 
     private String css;
+    private ActionEnabler enabler;
 
     private BreadcrumbItem[] breadcrumb;
 
@@ -85,5 +86,13 @@ public class UCtrlData {
 
     public String getSubTitle() {
         return subTitle;
+    }
+
+    public ActionEnabler getEnabler() {
+        return enabler;
+    }
+
+    public void setEnabler(ActionEnabler enabler) {
+        this.enabler = enabler;
     }
 }

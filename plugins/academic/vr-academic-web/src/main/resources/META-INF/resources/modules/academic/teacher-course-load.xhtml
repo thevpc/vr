@@ -98,7 +98,7 @@ and open the template in the editor.
                         <div>
                             <p:outputLabel value="Enseignant" styleClass="vr-form-field vr-form-fixed-width-medium"/>
                             <p:selectCheckboxMenu
-                                    styleClass="vr-form-field #{teacherCourseLoadCtrl.teacherFilter.model.selectedDepartments.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                    styleClass="vr-form-field #{teacherCourseLoadCtrl.teacherFilter.model.selectedDepartments.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                     value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedDepartments}"
                                     label="Departements"
                                     filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
@@ -108,7 +108,7 @@ and open the template in the editor.
                             </p:selectCheckboxMenu>
 
                             <p:selectCheckboxMenu
-                                    styleClass="vr-form-field #{teacherCourseLoadCtrl.teacherFilter.model.selectedDegrees.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                    styleClass="vr-form-field #{teacherCourseLoadCtrl.teacherFilter.model.selectedDegrees.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                     value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedDegrees}"
                                     label="Grades"
                                     filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
@@ -117,7 +117,7 @@ and open the template in the editor.
                                 <f:selectItems value="#{teacherCourseLoadCtrl.teacherFilter.model.degreeItems}"/>
                             </p:selectCheckboxMenu>
                             <p:selectCheckboxMenu
-                                    styleClass="vr-form-field #{teacherCourseLoadCtrl.teacherFilter.model.selectedSituations.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                    styleClass="vr-form-field #{teacherCourseLoadCtrl.teacherFilter.model.selectedSituations.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                     value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedSituations}"
                                     label="Situations"
                                     filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
@@ -126,7 +126,7 @@ and open the template in the editor.
                                 <f:selectItems value="#{teacherCourseLoadCtrl.teacherFilter.model.situationItems}"/>
                             </p:selectCheckboxMenu>
                             <p:selectCheckboxMenu
-                                    styleClass="vr-form-field #{teacherCourseLoadCtrl.teacherFilter.model.selectedTeacherDisciplines.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                    styleClass="vr-form-field #{teacherCourseLoadCtrl.teacherFilter.model.selectedTeacherDisciplines.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                     value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedTeacherDisciplines}"
                                     label="Disciplines"
                                     filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
@@ -151,7 +151,7 @@ and open the template in the editor.
                             <div class="vr-form-sub-rows">
                                 <div class="vr-form-sub-row">
                                     <p:selectCheckboxMenu
-                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedSemesters.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedSemesters.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                             value="#{teacherCourseLoadCtrl.courseFilter.model.selectedSemesters}"
                                             label="Semestres"
                                             filter="true" filterMatchMode="startsWith"
@@ -162,7 +162,7 @@ and open the template in the editor.
                                                 value="#{teacherCourseLoadCtrl.courseFilter.model.semesterItems}"/>
                                     </p:selectCheckboxMenu>
                                     <p:selectCheckboxMenu
-                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedProgramTypes.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedProgramTypes.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                             value="#{teacherCourseLoadCtrl.courseFilter.model.selectedProgramTypes}"
                                             label="Type Formation"
                                             filter="true" filterMatchMode="startsWith"
@@ -173,7 +173,7 @@ and open the template in the editor.
                                                 value="#{teacherCourseLoadCtrl.courseFilter.model.programTypeItems}"/>
                                     </p:selectCheckboxMenu>
                                     <p:selectCheckboxMenu
-                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedCourseTypes.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedCourseTypes.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                             value="#{teacherCourseLoadCtrl.courseFilter.model.selectedCourseTypes}"
                                             label="Types Modules"
                                             filter="true" filterMatchMode="startsWith"
@@ -184,7 +184,7 @@ and open the template in the editor.
                                                 value="#{teacherCourseLoadCtrl.courseFilter.model.courseTypeItems}"/>
                                     </p:selectCheckboxMenu>
                                     <p:selectCheckboxMenu
-                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedClasses.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedClasses.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                             value="#{teacherCourseLoadCtrl.courseFilter.model.selectedClasses}"
                                             label="Classes"
                                             filter="true" filterMatchMode="startsWith"
@@ -196,7 +196,7 @@ and open the template in the editor.
                                 </div>
                                 <div class="vr-form-sub-row">
                                     <p:selectCheckboxMenu
-                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedDepartments.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedDepartments.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                             value="#{teacherCourseLoadCtrl.courseFilter.model.selectedDepartments}"
                                             label="Departement"
                                             filter="true" filterMatchMode="startsWith"
@@ -207,7 +207,7 @@ and open the template in the editor.
                                                 value="#{teacherCourseLoadCtrl.courseFilter.model.departmentItems}"/>
                                     </p:selectCheckboxMenu>
                                     <p:selectCheckboxMenu
-                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedOwnerDepartments.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedOwnerDepartments.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                             value="#{teacherCourseLoadCtrl.courseFilter.model.selectedOwnerDepartments}"
                                             label="Géré par..."
                                             filter="true" filterMatchMode="startsWith"
@@ -218,7 +218,7 @@ and open the template in the editor.
                                                 value="#{teacherCourseLoadCtrl.courseFilter.model.departmentItems}"/>
                                     </p:selectCheckboxMenu>
                                     <p:selectCheckboxMenu
-                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedLabels.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedLabels.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                             value="#{teacherCourseLoadCtrl.courseFilter.model.selectedLabels}"
                                             label="Label"
                                             filter="true" filterMatchMode="startsWith"
@@ -228,7 +228,7 @@ and open the template in the editor.
                                         <f:selectItems value="#{teacherCourseLoadCtrl.courseFilter.model.labelItems}"/>
                                     </p:selectCheckboxMenu>
                                     <p:selectCheckboxMenu
-                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedDeviationGroups.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                            styleClass="vr-form-field #{teacherCourseLoadCtrl.courseFilter.model.selectedDeviationGroups.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                             value="#{teacherCourseLoadCtrl.courseFilter.model.selectedDeviationGroups}"
                                             label="Groupe Balance"
                                             filter="true" filterMatchMode="startsWith"
@@ -663,7 +663,7 @@ and open the template in the editor.
                                         <div class="vr-form-sub-rows">
                                             <div class="vr-form-sub-row">
                                                 <p:selectCheckboxMenu
-                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeachers.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeachers.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                                         value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeachers}"
                                                         label="Enseignants"
                                                         filter="true" filterMatchMode="startsWith"
@@ -674,7 +674,7 @@ and open the template in the editor.
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.teacherItems}"/>
                                                 </p:selectCheckboxMenu>
                                                 <p:selectCheckboxMenu
-                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDegrees.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDegrees.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                                         value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDegrees}"
                                                         label="Grades"
                                                         filter="true" filterMatchMode="startsWith"
@@ -685,7 +685,7 @@ and open the template in the editor.
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.teacherDegreeItems}"/>
                                                 </p:selectCheckboxMenu>
                                                 <p:selectCheckboxMenu
-                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDepartments.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDepartments.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                                         value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDepartments}"
                                                         label="Dept. Enseignants"
                                                         filter="true" filterMatchMode="startsWith"
@@ -696,7 +696,7 @@ and open the template in the editor.
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.departmentItems}"/>
                                                 </p:selectCheckboxMenu>
                                                 <p:selectCheckboxMenu
-                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDisciplines.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDisciplines.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                                         value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDisciplines}"
                                                         label="Disciplines Enseignants"
                                                         filter="true" filterMatchMode="startsWith"
@@ -707,7 +707,7 @@ and open the template in the editor.
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.teacherDisciplineItems}"/>
                                                 </p:selectCheckboxMenu>
                                                 <p:selectCheckboxMenu
-                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherSituations.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherSituations.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                                         value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedTeacherSituations}"
                                                         label="Situations Enseignants"
                                                         filter="true" filterMatchMode="startsWith"
@@ -720,7 +720,7 @@ and open the template in the editor.
                                             </div>
                                             <div class="vr-form-sub-row">
                                                 <p:selectCheckboxMenu
-                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedSemesters.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedSemesters.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                                         value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedSemesters}"
                                                         label="Semestres"
                                                         filter="true" filterMatchMode="startsWith"
@@ -731,7 +731,7 @@ and open the template in the editor.
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.semesterItems}"/>
                                                 </p:selectCheckboxMenu>
                                                 <p:selectCheckboxMenu
-                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedProgramTypes.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedProgramTypes.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                                         value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedProgramTypes}"
                                                         label="Type Formation"
                                                         filter="true" filterMatchMode="startsWith"
@@ -742,7 +742,7 @@ and open the template in the editor.
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.programTypeItems}"/>
                                                 </p:selectCheckboxMenu>
                                                 <p:selectCheckboxMenu
-                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedCourseTypes.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedCourseTypes.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                                         value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedCourseTypes}"
                                                         label="Types Modules"
                                                         filter="true" filterMatchMode="startsWith"
@@ -753,7 +753,7 @@ and open the template in the editor.
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.courseTypeItems}"/>
                                                 </p:selectCheckboxMenu>
                                                 <p:selectCheckboxMenu
-                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedCourseDisciplines.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedCourseDisciplines.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                                         value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedCourseDisciplines}"
                                                         label="Disciplines Enseignants"
                                                         filter="true" filterMatchMode="startsWith"
@@ -764,7 +764,7 @@ and open the template in the editor.
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.teacherDisciplineItems}"/>
                                                 </p:selectCheckboxMenu>
                                                 <p:selectCheckboxMenu
-                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedClasses.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedClasses.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                                         value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedClasses}"
                                                         label="Classes"
                                                         filter="true" filterMatchMode="startsWith"
@@ -777,7 +777,7 @@ and open the template in the editor.
                                             </div>
                                             <div class="vr-form-sub-row">
                                                 <p:selectCheckboxMenu
-                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedDepartments.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedDepartments.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                                         value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedDepartments}"
                                                         label="Departement"
                                                         filter="true" filterMatchMode="startsWith"
@@ -788,7 +788,7 @@ and open the template in the editor.
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.departmentItems}"/>
                                                 </p:selectCheckboxMenu>
                                                 <p:selectCheckboxMenu
-                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedOwnerDepartments.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedOwnerDepartments.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                                         value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedOwnerDepartments}"
                                                         label="Géré par..."
                                                         filter="true" filterMatchMode="startsWith"
@@ -799,7 +799,7 @@ and open the template in the editor.
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.departmentItems}"/>
                                                 </p:selectCheckboxMenu>
                                                 <p:selectCheckboxMenu
-                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedLabels.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedLabels.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                                         value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedLabels}"
                                                         label="Label"
                                                         filter="true" filterMatchMode="startsWith"
@@ -810,7 +810,7 @@ and open the template in the editor.
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.labelItems}"/>
                                                 </p:selectCheckboxMenu>
                                                 <p:selectCheckboxMenu
-                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedDeviationGroups.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                                        styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedDeviationGroups.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                                         value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedDeviationGroups}"
                                                         label="Groupe Balance"
                                                         filter="true" filterMatchMode="startsWith"

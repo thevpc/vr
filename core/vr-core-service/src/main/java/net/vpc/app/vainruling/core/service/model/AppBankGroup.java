@@ -20,7 +20,7 @@ import java.sql.Timestamp;
 @Path("Contact")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.country", value = "{expr='country',order=1}"),
+                @Property(name = "ui.auto-filter.country", value = "{expr='this.country',order=1}"),
         })
 public class AppBankGroup {
 

@@ -1167,8 +1167,12 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                         I18n i18n = VrApp.getBean(I18n.class);
                         DataType curr = entity.getDataType();
                         String evalLabel = i18n.get(entity);
-                        for (String s : expr.split("\\.")) {
-                            if (curr instanceof KeyType) {
+                        String[] splitted = expr.split("\\.");
+                        for (int i = 0; i < splitted.length; i++) {
+                            String s = splitted[i];
+                            if(i==0 && s.equals("this")){
+                                //ignore
+                            }else if (curr instanceof KeyType) {
                                 Field field = ((KeyType) curr).getEntity().getField(s);
                                 evalLabel = i18n.get(field);
                                 if (field.isManyToOne()) {

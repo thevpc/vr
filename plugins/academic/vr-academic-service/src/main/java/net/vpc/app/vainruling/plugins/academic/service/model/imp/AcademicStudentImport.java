@@ -5,11 +5,17 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.imp;
 
+import net.vpc.app.vainruling.core.service.model.AppContact;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.upa.config.Id;
+import net.vpc.upa.config.Sequence;
+
 /**
  * @author taha.bensalah@gmail.com
  */
 public class AcademicStudentImport {
-
+    @Id @Sequence
+    private int id;
     private String nin;
     private String subscriptionNumber;
     private String firstName;
@@ -22,22 +28,70 @@ public class AcademicStudentImport {
     private String preClassBacName;
     private double preClassBacScore;
     private double preClassPrepScore;
-    private int preClassPrepRank;
-    private int preClassPrepRankMax;
+    private Integer preClassPrepRank;
+    private Integer preClassPrepRank2;
+    private Integer preClassPrepRankMax;
+    private Integer preClassRankByProgram;
+    private Integer preClassChoice;
     private Integer preClassPrepId;
     private String preClassPrepName;
     private Integer preClassTypeId;
     private String preClassTypeName;
     private String email;
+    private String email2;
     private String startPeriodName;
     private Integer startPeriodId;
-    private String phone;
+    private String phone1;
+    private String phone2;
+    private String phone3;
     private String genderName;
     private Integer genderId;
     private String civilityName;
     private Integer civilityId;
     private String className;
     private Integer classId;
+    private Integer preClassChoice1Id;
+    private Integer preClassChoice2Id;
+    private Integer preClassChoice3Id;
+
+    public AcademicStudentImport() {
+    }
+
+    public AcademicStudentImport(AcademicStudent student) {
+        nin = student.getSubscriptionNumber();
+        AppContact contact = student.getContact();
+        if(contact !=null) {
+            firstName = contact.getFirstName();
+            firstName2 = contact.getFirstName2();
+            lastName = contact.getLastName();
+            lastName2 = contact.getLastName2();
+            email = contact.getEmail();
+            email2 = contact.getEmail2();
+            phone1 = contact.getPhone1();
+            phone2 = contact.getPhone1();
+            genderId = contact.getGender()==null?null:contact.getGender().getId();
+            civilityId = contact.getCivility()==null?null:contact.getCivility().getId();
+        }
+        preClassChoice1Id = student.getPreClassChoice1() == null ? null : student.getPreClassChoice1().getId();
+        preClassChoice2Id = student.getPreClassChoice2() == null ? null : student.getPreClassChoice2().getId();
+        preClassChoice3Id = student.getPreClassChoice3() == null ? null : student.getPreClassChoice3().getId();
+        preClassBacId=student.getBaccalaureateClass()==null?null:student.getBaccalaureateClass().getId();
+        preClassBacScore=student.getBaccalaureateScore();
+        preClassPrepRank=student.getPreClassRank();
+        preClassPrepRank=student.getPreClassRank2();
+        preClassPrepRankMax=student.getPreClassRankMax();
+        preClassRankByProgram=student.getPreClassRankByProgram();
+        preClassChoice=student.getPreClassChoice();
+        preClassTypeId=student.getPreClassType()==null?null:student.getPreClassType().getId();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getNin() {
         return nin;
@@ -127,12 +181,12 @@ public class AcademicStudentImport {
         this.startPeriodId = startPeriodId;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getPhone1() {
+        return phone1;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPhone1(String phone1) {
+        this.phone1 = phone1;
     }
 
     public String getGenderName() {
@@ -223,19 +277,19 @@ public class AcademicStudentImport {
         this.preClassBacScore = preClassBacScore;
     }
 
-    public int getPreClassPrepRank() {
+    public Integer getPreClassPrepRank() {
         return preClassPrepRank;
     }
 
-    public void setPreClassPrepRank(int preClassPrepRank) {
+    public void setPreClassPrepRank(Integer preClassPrepRank) {
         this.preClassPrepRank = preClassPrepRank;
     }
 
-    public int getPreClassPrepRankMax() {
+    public Integer getPreClassPrepRankMax() {
         return preClassPrepRankMax;
     }
 
-    public void setPreClassPrepRankMax(int preClassPrepRankMax) {
+    public void setPreClassPrepRankMax(Integer preClassPrepRankMax) {
         this.preClassPrepRankMax = preClassPrepRankMax;
     }
 
@@ -261,5 +315,77 @@ public class AcademicStudentImport {
 
     public void setPreClassPrepScore(double preClassPrepScore) {
         this.preClassPrepScore = preClassPrepScore;
+    }
+
+    public int getPreClassPrepRank2() {
+        return preClassPrepRank2;
+    }
+
+    public void setPreClassPrepRank2(Integer preClassPrepRank2) {
+        this.preClassPrepRank2 = preClassPrepRank2;
+    }
+
+    public Integer getPreClassRankByProgram() {
+        return preClassRankByProgram;
+    }
+
+    public void setPreClassRankByProgram(Integer preClassRankByProgram) {
+        this.preClassRankByProgram = preClassRankByProgram;
+    }
+
+    public Integer getPreClassChoice() {
+        return preClassChoice;
+    }
+
+    public void setPreClassChoice(Integer preClassChoice) {
+        this.preClassChoice = preClassChoice;
+    }
+
+    public String getEmail2() {
+        return email2;
+    }
+
+    public void setEmail2(String email2) {
+        this.email2 = email2;
+    }
+
+    public String getPhone2() {
+        return phone2;
+    }
+
+    public void setPhone2(String phone2) {
+        this.phone2 = phone2;
+    }
+
+    public String getPhone3() {
+        return phone3;
+    }
+
+    public void setPhone3(String phone3) {
+        this.phone3 = phone3;
+    }
+
+    public Integer getPreClassChoice1Id() {
+        return preClassChoice1Id;
+    }
+
+    public void setPreClassChoice1Id(Integer preClassChoice1Id) {
+        this.preClassChoice1Id = preClassChoice1Id;
+    }
+
+    public Integer getPreClassChoice2Id() {
+        return preClassChoice2Id;
+    }
+
+    public void setPreClassChoice2Id(Integer preClassChoice2Id) {
+        this.preClassChoice2Id = preClassChoice2Id;
+    }
+
+    public Integer getPreClassChoice3Id() {
+        return preClassChoice3Id;
+    }
+
+    public void setPreClassChoice3Id(Integer preClassChoice3Id) {
+        this.preClassChoice3Id = preClassChoice3Id;
     }
 }

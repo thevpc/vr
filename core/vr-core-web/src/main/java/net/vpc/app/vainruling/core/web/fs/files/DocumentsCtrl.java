@@ -61,9 +61,9 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider {
     @Override
     public List<VRMenuDef> createVRMenuDefList() {
         List<VRMenuDef> m = new ArrayList<>();
-        m.add(new VRMenuDef("Documents Privés", "/FileSystem", "documents", "{type:'home'}", "Custom.FileSystem.MyFileSystem", "", 100, new VRMenuLabel[0]));
-        m.add(new VRMenuDef("Mes Documents", "/FileSystem", "documents", "{type:'all'}", "Custom.FileSystem.MyFileSystem", "", 100, new VRMenuLabel[0]));
-        m.add(new VRMenuDef("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", "Custom.FileSystem.RootFileSystem", "", 500, new VRMenuLabel[0]));
+        m.add(new VRMenuDef("Documents Privés", "/FileSystem", "documents", "{type:'home'}", "Custom.FileSystem.MyFileSystem", null,"", 100, new VRMenuLabel[0]));
+        m.add(new VRMenuDef("Mes Documents", "/FileSystem", "documents", "{type:'all'}", "Custom.FileSystem.MyFileSystem", null,"", 100, new VRMenuLabel[0]));
+        m.add(new VRMenuDef("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", "Custom.FileSystem.RootFileSystem", null,"", 500, new VRMenuLabel[0]));
         return m;
     }
 

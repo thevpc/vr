@@ -25,7 +25,7 @@ and open the template in the editor.
         <ui:define name="dialog-body">
 
 
-            <h:form id="listForm" enctype="multipart/form-data" style="margin-top: 10px;">
+            <h:form id="listForm" enctype="multipart/form-data" style="margin-top: 10px;min-height: 300px;">
                 <div style="margin-bottom: 10px;">
                     Glissez/Deposez votre fichier dans cette zone ou Cliquez su le bouton pour accéder à votre disque local
                 </div>
@@ -41,6 +41,8 @@ and open the template in the editor.
                                   cancelLabel="Annuler"
                                   update=":listForm"
                                   style="margin-top: 5px;"
+                                  sizeLimit="#{documentsUploadDialogCtrl.model.config.sizeLimit}"
+                                  accept="#{vr.fileExtensionPattern(documentsUploadDialogCtrl.model.config.extensions)}"
                     />
                 </div>
             </h:form>

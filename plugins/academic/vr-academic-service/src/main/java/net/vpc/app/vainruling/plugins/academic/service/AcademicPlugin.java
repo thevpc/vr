@@ -21,8 +21,7 @@ import net.vpc.app.vainruling.core.service.stats.KPI;
 import net.vpc.app.vainruling.core.service.stats.KPIGroupBy;
 import net.vpc.app.vainruling.core.service.stats.KPIProcessProcessor;
 import net.vpc.app.vainruling.core.service.stats.KPIResult;
-import net.vpc.app.vainruling.core.service.util.NamedValueCount;
-import net.vpc.app.vainruling.core.service.util.VrUtils;
+import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.plugins.academic.service.helper.AcademicConversionTableHelper;
 import net.vpc.app.vainruling.plugins.academic.service.helper.CopyAcademicDataHelper;
 import net.vpc.app.vainruling.plugins.academic.service.helper.TeacherGenerationHelper;
@@ -62,10 +61,12 @@ import java.util.logging.Logger;
  * @author taha.bensalah@gmail.com
  */
 @AppPlugin()
-public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
+public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, CompletionProvider {
 
     public static final int DEFAULT_SEMESTER_MAX_WEEKS = 14;
-    public static final Set<DeviationGroup> DEFAULT_DEVIATION_GROUPS = Collections.unmodifiableSet(new java.util.HashSet<DeviationGroup>(Arrays.asList(DeviationGroup.DEPARTMENT, DeviationGroup.DEGREE, DeviationGroup.SITUATION, DeviationGroup.DISCIPLINE)));
+    public static final Set<DeviationGroup> DEFAULT_DEVIATION_GROUPS = Collections.unmodifiableSet(new java.util.HashSet<DeviationGroup>(Arrays.asList(
+            DeviationGroup.DEPARTMENT, DeviationGroup.DEGREE, DeviationGroup.SITUATION, DeviationGroup.DISCIPLINE
+    )));
     public static final Converter<Integer, AcademicCourseAssignment> AcademicCourseAssignmentIdConverter = new Converter<Integer, AcademicCourseAssignment>() {
         @Override
         public Integer convert(AcademicCourseAssignment value) {
@@ -448,7 +449,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (td == null) {
             td = new AcademicTeacherDegree();
         }
-        AcademicLoadConversionRow r = td.getConversionRule()==null ?null  : conversionTable.get(td.getConversionRule().getId());
+        AcademicLoadConversionRow r = td.getConversionRule() == null ? null : conversionTable.get(td.getConversionRule().getId());
         if (r == null) {
             r = new AcademicLoadConversionRow();
             r.setValueC(0);
@@ -2004,6 +2005,16 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return vals;
     }
 
+    public List<AcademicStudent> findStudents(Integer department, AcademicStudentStage stage) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        QueryBuilder q = pu.createQueryBuilder(AcademicStudent.class);
+        AcademicStudent proto = new AcademicStudent();
+        proto.setDepartment(department == null ? null : core.findDepartment(department));
+        proto.setStage(stage);
+        q.byPrototype(proto);
+        return q.getResultList();
+    }
+
     public List<AcademicStudent> findStudents() {
         return UPA.getPersistenceUnit().createQuery("Select u from AcademicStudent u where u.deleted=false order by u.contact.fullName").getResultList();
     }
@@ -3436,14 +3447,14 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
     public void addUserForTeacher(AcademicTeacher academicTeacher) {
         AppUserType teacherType = VrApp.getBean(CorePlugin.class).findUserType("Teacher");
-        AppUser u = core.createUser(academicTeacher.getContact(), teacherType.getId(), academicTeacher.getDepartment().getId(), false, new String[]{"Teacher"});
+        AppUser u = core.createUser(academicTeacher.getContact(), teacherType.getId(), academicTeacher.getDepartment().getId(), false, new String[]{"Teacher"}, VrPasswordStrategyRandom.INSTANCE);
         academicTeacher.setUser(u);
         UPA.getPersistenceUnit().merge(academicTeacher);
     }
 
     public boolean addUserForStudent(AcademicStudent academicStudent) {
         AppUserType teacherType = VrApp.getBean(CorePlugin.class).findUserType("Student");
-        AppUser u = core.createUser(academicStudent.getContact(), teacherType.getId(), academicStudent.getDepartment().getId(), false, new String[]{"Student"});
+        AppUser u = core.createUser(academicStudent.getContact(), teacherType.getId(), academicStudent.getDepartment().getId(), false, new String[]{"Student"}, VrPasswordStrategyNin.INSTANCE);
         academicStudent.setUser(u);
         UPA.getPersistenceUnit().merge(academicStudent);
         for (AcademicClass c : new AcademicClass[]{academicStudent.getLastClass1(), academicStudent.getLastClass2(), academicStudent.getLastClass3()}) {
@@ -4131,7 +4142,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         if (copyFromPeriod <= 0 || copyFromPeriod == periodId) {
             item.setDegree(teacher.getDegree());
             item.setSituation(teacher.getSituation());
-            item.setEnabled(teacher.getSituation()!=null);
+            item.setEnabled(teacher.getSituation() != null);
             item.setDepartment(teacher.getDepartment());
         } else {
             AcademicTeacherPeriod other = findAcademicTeacherPeriod(copyFromPeriod, teacher);
@@ -4281,7 +4292,6 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
 
 
     }
-
 
 
     public Map<Integer, List<AcademicCourseIntent>> getAcademicCourseIntentByTeacherId(int periodId) {
@@ -5557,6 +5567,122 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
         return circle1_values;
     }
 
+    @Override
+    public List<String> getCompletionLists(int monitorUserId) {
+        return Arrays.asList("Contact");
+    }
+
+    @Override
+    public List<CompletionInfo> findCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel) {
+        if(minLevel==null){
+            minLevel=Level.ALL;
+        }
+        List<CompletionInfo> all = new ArrayList<>();
+        if (category == null) {
+            for (String cat : getCompletionLists(monitorUserId)) {
+                all.addAll(findCompletions(monitorUserId, cat, objectType, objectId, minLevel));
+            }
+        } else {
+            switch (category) {
+                case "Contact": {
+                    String categoryName = "Infos Contact";
+                    if (objectType == null) {
+                        List<AcademicStudent> students = findStudents(null, AcademicStudentStage.ATTENDING);
+                        for (AcademicStudent student : students) {
+                            all.addAll(findCompletions(monitorUserId, category, "AcademicStudent", student, minLevel));
+                        }
+                    } else {
+                        switch (objectType) {
+                            case "AcademicStudent": {
+                                String objectTypeName="Eleve Ingenieur";
+                                if (objectId != null) {
+                                    AcademicStudent c = null;
+                                    if (objectId instanceof AcademicStudent) {
+                                        c = (AcademicStudent) objectId;
+                                    } else {
+                                        c = findStudent(Convert.toInt(objectId));
+                                    }
+                                    ValidatorProgressHelper h = new ValidatorProgressHelper();
+                                    h.checkNotDefault(c.getContact().getFirstName());
+                                    h.checkNotDefault(c.getContact().getLastName());
+                                    h.checkNotDefault(c.getContact().getEmail());
+                                    h.checkNotDefault(c.getContact().getPhone1());
+                                    h.checkNotDefault(c.getContact().getCivility());
+                                    h.checkNotDefault(c.getContact().getGender());
+                                    h.checkNotDefault(c.getDepartment());
+                                    h.checkNotDefault(c.getBaccalaureateClass());
+                                    h.checkNotDefault(c.getBaccalaureateScore());
+                                    h.checkNotDefault(c.getPreClassType());
+                                    h.checkNotDefault(c.getPreClass());
+                                    h.checkNotDefault(c.getPreClassRank());
+                                    h.checkNotDefault(c.getPreClassRank2());
+                                    h.checkNotDefault(c.getPreClassRankByProgram());
+                                    h.checkNotDefault(c.getPreClassScore());
+                                    h.check(c.getPreClassChoice1() != null || !StringUtils.isEmpty(c.getPreClassChoice1Other()));
+                                    h.check(c.getPreClassChoice2() != null || !StringUtils.isEmpty(c.getPreClassChoice2Other()));
+                                    h.check(c.getPreClassChoice3() != null || !StringUtils.isEmpty(c.getPreClassChoice3Other()));
+                                    if(h.getCompletionPercent()<100){
+                                        if(Level.SEVERE.intValue()>=minLevel.intValue()) {
+                                            all.add(new DefaultCompletionInfo(
+                                                    category,
+                                                    categoryName,
+                                                    c.getId(),
+                                                    c.resolveFullName(),
+                                                    objectType,
+                                                    objectTypeName,
+                                                    (float) h.getCompletionPercent(),
+                                                    "info Contact manquante",
+                                                    Level.SEVERE,
+                                                    new String[]{
+                                                            c.getDepartment()==null?null:c.getDepartment().getName(),
+                                                            c.getLastClass1()==null?null:c.getLastClass1().getProgram()==null?null:c.getLastClass1().getProgram().getName(),
+                                                            c.getLastClass1()==null?null:c.getLastClass1().getName()
+                                                    },
+                                                    Arrays.asList(new DefaultCompletionInfoAction(
+                                                            "corriger",
+                                                            "",
+                                                            ""
+                                                    ))
+                                            ));
+                                        }
+                                    }else{
+                                        if(Level.FINEST.intValue()>=minLevel.intValue()) {
+                                            all.add(new DefaultCompletionInfo(
+                                                    category,
+                                                    categoryName,
+                                                    c.getId(),
+                                                    c.resolveFullName(),
+                                                    objectType,
+                                                    objectTypeName,
+                                                    (float) h.getCompletionPercent(),
+                                                    "info Contact manquante",
+                                                    Level.SEVERE,
+                                                    new String[]{
+                                                            c.getDepartment()==null?null:c.getDepartment().getName(),
+                                                            c.getLastClass1()==null?null:c.getLastClass1().getProgram()==null?null:c.getLastClass1().getProgram().getName(),
+                                                            c.getLastClass1()==null?null:c.getLastClass1().getName()
+                                                    },
+                                                    Arrays.asList(new DefaultCompletionInfoAction(
+                                                            "corriger",
+                                                            "",
+                                                            ""
+                                                    ))
+                                            ));
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                        }
+
+                    }
+                    break;
+                }
+            }
+        }
+        return all;
+    }
+
     private class TeacherIdByTeacherPeriodComparator implements Comparator<AcademicTeacher> {
 
         private final int periodId;
@@ -5606,5 +5732,4 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider {
             return r;
         }
     }
-
 }

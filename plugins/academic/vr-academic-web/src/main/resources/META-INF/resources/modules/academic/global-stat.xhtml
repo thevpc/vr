@@ -107,7 +107,7 @@ and open the template in the editor.
                             </div>
                             <div class="vr-form-sub-row">
                                 <p:selectCheckboxMenu
-                                        styleClass="vr-form-field #{globalStatCtrl.courseFilter.model.selectedDepartments.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                        styleClass="vr-form-field #{globalStatCtrl.courseFilter.model.selectedDepartments.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                         value="#{globalStatCtrl.courseFilter.model.selectedDepartments}"
                                         label="Modules du Departement"
                                         filter="true" filterMatchMode="startsWith"
@@ -118,7 +118,7 @@ and open the template in the editor.
                                             value="#{globalStatCtrl.courseFilter.model.departmentItems}"/>
                                 </p:selectCheckboxMenu>
                                 <p:selectCheckboxMenu
-                                        styleClass="vr-form-field #{globalStatCtrl.courseFilter.model.selectedOwnerDepartments.isEmpty() ?'':'vr-from-selected-many-selected'}"
+                                        styleClass="vr-form-field #{globalStatCtrl.courseFilter.model.selectedOwnerDepartments.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                         value="#{globalStatCtrl.courseFilter.model.selectedOwnerDepartments}"
                                         label="Modules Gérés par..."
                                         filter="true" filterMatchMode="startsWith"

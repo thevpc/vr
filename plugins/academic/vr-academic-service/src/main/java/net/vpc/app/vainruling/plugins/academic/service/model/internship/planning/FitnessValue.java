@@ -17,6 +17,12 @@ public class FitnessValue {
     List<FitnessValue> children;
 
     public FitnessValue(String name, boolean valid, double value, List<FitnessValue> children) {
+            if(name.startsWith("teacher:") && !valid){
+                System.out.printf("");
+            }
+            if("teachers".equals(name) && !valid){
+                System.out.printf("");
+            }
         this.name = name;
         this.valid = valid;
         this.value = value;

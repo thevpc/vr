@@ -18,11 +18,11 @@ import java.sql.Timestamp;
 @Path("Todo")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.responsible", value = "{expr='responsible',order=1}"),
-                @Property(name = "ui.auto-filter.initiator", value = "{expr='initiator',order=2}"),
-                @Property(name = "ui.auto-filter.list", value = "{expr='list',order=3}"),
-                @Property(name = "ui.auto-filter.status", value = "{expr='status',order=4}"),
-                @Property(name = "ui.auto-filter.priority", value = "{expr='priority',order=5}")
+                @Property(name = "ui.auto-filter.responsible", value = "{expr='this.responsible',order=1}"),
+                @Property(name = "ui.auto-filter.initiator", value = "{expr='this.initiator',order=2}"),
+                @Property(name = "ui.auto-filter.list", value = "{expr='this.list',order=3}"),
+                @Property(name = "ui.auto-filter.status", value = "{expr='this.status',order=4}"),
+                @Property(name = "ui.auto-filter.priority", value = "{expr='this.priority',order=5}")
         }
 )
 public class Todo {

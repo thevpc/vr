@@ -57,6 +57,9 @@ public class SingleSelectionAutoFilter extends AutoFilter{
                     return getData().getExpr() + "=:" + paramPrefix;
                 }
             }else if(dataType instanceof EnumType) {
+                if(selectedString.startsWith("\"") && selectedString.endsWith("\"") && selectedString.length()>=2){
+                    selectedString=selectedString.substring(1,selectedString.length()-1);
+                }
                 parameters.put(paramPrefix,((Enum)((EnumType)dataType).parse(selectedString)));
                 return getData().getExpr()+"=:"+paramPrefix;
             }else if(dataType instanceof StringType) {

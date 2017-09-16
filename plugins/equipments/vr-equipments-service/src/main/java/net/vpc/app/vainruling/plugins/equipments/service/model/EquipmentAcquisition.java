@@ -21,9 +21,9 @@ import java.util.Date;
 @Path("Equipment")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),
-                @Property(name = "ui.auto-filter.orderPeriod", value = "{expr='orderPeriod',order=2}"),
-                @Property(name = "ui.auto-filter.acquisitionPeriod", value = "{expr='acquisitionPeriod',order=3}"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='this.department',order=1}"),
+                @Property(name = "ui.auto-filter.orderPeriod", value = "{expr='this.orderPeriod',order=2}"),
+                @Property(name = "ui.auto-filter.acquisitionPeriod", value = "{expr='this.acquisitionPeriod',order=3}"),
         })
 public class EquipmentAcquisition {
 

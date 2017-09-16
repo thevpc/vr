@@ -3,6 +3,7 @@ package net.vpc.app.vainruling.plugins.academic.service.model.internship.plannin
 
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
+import net.vpc.scholar.hadrumaths.Complex;
 import net.vpc.upa.UPA;
 import net.vpc.upa.bulk.*;
 import org.jgap.Configuration;
@@ -32,8 +33,93 @@ import java.util.*;
 @Service
 public class PlanningService {
     //    public static final int MAX_SUPERVIZERS=2;
-    public static final int EVOLUTION_SIZE = 5000;
-    public static final int MAX_ALLOWED_EVOLUTIONS = 500;
+    public static final int EVOLUTION_SIZE = 200;
+    public static final int MAX_ALLOWED_EVOLUTIONS = 50000;
+
+    public static void main(String[] args) {
+        PlanningService s = new PlanningService();
+        PlanningActivityTable activityTable = new PlanningActivityTable();
+        activityTable.addGeneratedRooms("R", 20);
+        activityTable.addGeneratedTimes("2017-09-09 08:00", 4, 30, 5);
+//        String pfes="A:B:C\n" +
+//                "A:C:B\n" +
+//                "B:A:C\n" +
+//                "B:C:A\n" +
+//                "C:A:B\n"+
+//                "C:B:A\n";
+//        String pfes="A:?:?\n" +
+//                "A:?:?\n" +
+//                "B:?:?\n" +
+//                "B:?:?\n" +
+//                "C:?:?\n"+
+//                "C:?:?\n";
+        String pfes = "Ali Lahouar - Ens. II:?:?\n" +
+                "Anis Ben Arbia - Ens. Perm MA II:?:?\n" +
+                "Anis Ben Arbia - Ens. Perm MA II:?:?\n" +
+                "Anis Ben Arbia - Ens. Perm MA II:?:?\n" +
+                "Anis Ben Arbia - Ens. Perm MA II:?:?\n" +
+                "Anis Ben Arbia - Ens. Perm MA II:?:?\n" +
+                "Aref Meddeb - Ens. Perm P II:?:?\n" +
+                "Aref Meddeb - Ens. Perm P II:?:?\n" +
+                "Aref Meddeb - Ens. Perm P II:?:?\n" +
+                "Aref Meddeb - Ens. Perm P II:?:?\n" +
+                "Imed Bennour - Ens. Perm MA II:?:?\n" +
+                "Imed Bennour - Ens. Perm MA II:?:?\n" +
+                "Imen Khadhraoui - Ens. V II:?:?\n" +
+                "Jamel Bel Hadj Taher - Ens. Perm P II:?:?\n" +
+                "Jamel Bel Hadj Taher - Ens. Perm P II:?:?\n" +
+                "Jamel Bel Hadj Taher - Ens. Perm P II:?:?\n" +
+                "Jamel Bel Hadj Taher - Ens. Perm P II:?:?\n" +
+                "Jamel Bel Hadj Taher - Ens. Perm P II:?:?\n" +
+                "Lotfi Hamrouni - Ens. Perm A II:?:?\n" +
+                "Manel Abdel Hedi - Ens. Perm A II:?:?\n" +
+                "Manel Abdel Hedi - Ens. Perm A II:?:?\n" +
+                "Manel Abdel Hedi - Ens. Perm A II:?:?\n" +
+                "Mohamed Nazih Omri - Ens. Perm P II:?:?\n" +
+                "Mohamed Nazih Omri - Ens. Perm P II:?:?\n" +
+                "Mohamed Nazih Omri - Ens. Perm P II:?:?\n" +
+                "Naoufel Khayati - Ens. Perm MA II:?:?\n" +
+                "Naoufel Khayati - Ens. Perm MA II:?:?\n" +
+                "Naoufel Khayati - Ens. Perm MA II:?:?\n" +
+                "Saoussen Ben Jabra - Ens. Perm MA II:?:?\n" +
+                "Saoussen Ben Jabra - Ens. Perm MA II:?:?\n" +
+                "Saoussen Ben Jabra - Ens. Perm MA II:?:?\n" +
+                "Saoussen Ben Jabra - Ens. Perm MA II:?:?\n" +
+                "Taha Ben Salah - Ens. Perm MA II:?:?\n" +
+                "Taha Ben Salah - Ens. Perm MA II:?:?\n" +
+                "Taha Ben Salah - Ens. Perm MA II:?:?\n" +
+                "Walid Chainbi - Ens. Perm MA II:?:?\n" +
+                "Walid Chainbi - Ens. Perm MA II:?:?\n" +
+                "Walid Chainbi - Ens. Perm MA II:?:?\n" +
+                "Walid Chainbi - Ens. Perm MA II:?:?\n" +
+                "Walid Chainbi - Ens. Perm MA II:?:?\n" +
+                "Walid Chainbi - Ens. Perm MA II:?:?\n" +
+                "Walid Chainbi - Ens. Perm MA II:?:?\n" +
+                "Walid Chainbi - Ens. Perm MA II:?:?\n";
+        int index = 1;
+        for (String s1 : pfes.split("\n")) {
+            if (s1 != null) {
+                String[] ss = s1.split(":");
+                PlanningActivity internship = new PlanningActivity(new PlanningInternship(index++, null, null, null, null, null, ss[0]));
+                if (!"?".equals(ss[1])) {
+                    internship.setChair(ss[1]);
+                    internship.setFixedChair(true);
+                }
+                if (!"?".equals(ss[2])) {
+                    internship.setChair(ss[2]);
+                    internship.setFixedExaminer(true);
+                }
+                activityTable.addActivity(internship);
+            }
+        }
+        activityTable.setDefaultChairsAndExaminers();
+        PlanningResult planningResult = s.matchActivitiesGeneticAlgo(activityTable, -1, true, false);
+        System.out.println(planningResult);
+        System.out.println(planningResult.getFitness().isValid() ? "------VALID-------" : "------INVALID-------");
+        for (PlanningActivity planningActivity : planningResult.getResut().getActivities()) {
+            System.out.println(planningActivity.getInternship().getId() + " : " + planningActivity.getInternship().getSupervisors() + ";" + planningActivity.getChair() + ";" + planningActivity.getExaminer() + " : " + planningActivity.getSpaceTime());
+        }
+    }
 
     public void display(PlanningActivityTable t) {
         display(t, System.out);
@@ -215,39 +301,6 @@ public class PlanningService {
         return fitness.evalTeacherStats(t, fixedOnly);
     }
 
-    public void display(PlanningActivityTable t, PrintStream out) {
-        if (t == null) {
-            System.out.println("NULL TABLE");
-        } else {
-            boolean time = t.getActivities().get(0).getTime() != null;
-            PlanningActivityTableExt t2 = new PlanningActivityTableExt(t, true, time, null);
-
-
-            PlanningFitnessFunction fitness = new PlanningFitnessFunction(t2);
-            FitnessValue fitnessValue = fitness.evalTableFitness();
-            out.println("------ " + (fitnessValue.valid ? "  VALID" : "INVALID") + " " + fitnessValue);
-            out.println("\t times(#" + t.getTimes().size() + "):" + new TreeSet(t.getTimes()));
-            out.println("\t rooms(#" + t.getRooms().size() + "):" + new TreeSet(t.getRooms()));
-            for (Map.Entry<String, PlanningTeacherStats> e : fitness.evalTeacherStats(t, false).entrySet()) {
-                out.println("\t teacher " + e.getKey() + ":");
-                out.println("\t\t activities:" + e.getValue().activities);
-                out.println("\t\t balance   :" + e.getValue().chairBalance + "/" + e.getValue().examinerBalance);
-                out.println("\t\t supervisor:" + e.getValue().supervisor);
-                out.println("\t\t chair     :" + e.getValue().chair);
-                out.println("\t\t examiner  :" + e.getValue().examiner);
-                out.println("\t\t days      :" + e.getValue().days);
-
-            }
-            List<PlanningActivity> activities = t.getActivities();
-            Collections.sort(activities);
-            out.println("\t activities(#" + activities.size() + "):");
-            for (PlanningActivity a : activities) {
-                //evalTableFitness()
-                out.println(a.getSpaceTime() + " : " + a.getChair() + " ; " + a.getExaminer() + " ; " + a.getInternship().getSupervisors() + " ; " + a.getInternship().getCode() + " ; " + a.getInternship().getName());
-            }
-        }
-    }
-
 //    public PlanningResult matchActivitiesBruteForce(PlanningActivityTable activityTable) {
 //        PlanningActivityTableExt t=new PlanningActivityTableExt(activityTable,true,true,null);
 //        PlanningFitnessFunction myFunc = new PlanningFitnessFunction(t);
@@ -294,6 +347,39 @@ public class PlanningService {
 //        }
 //        return new PlanningResult(t.getTable(),myFunc.evalTableFitness(new PlanningActivityTableExt(t.getTable(),true,true,null)));
 //    }
+
+    public void display(PlanningActivityTable t, PrintStream out) {
+        if (t == null) {
+            System.out.println("NULL TABLE");
+        } else {
+            boolean time = t.getActivities().get(0).getTime() != null;
+            PlanningActivityTableExt t2 = new PlanningActivityTableExt(t, true, time, null);
+
+
+            PlanningFitnessFunction fitness = new PlanningFitnessFunction(t2);
+            FitnessValue fitnessValue = fitness.evalTableFitness();
+            out.println("------ " + (fitnessValue.valid ? "  VALID" : "INVALID") + " " + fitnessValue);
+            out.println("\t times(#" + t.getTimes().size() + "):" + new TreeSet(t.getTimes()));
+            out.println("\t rooms(#" + t.getRooms().size() + "):" + new TreeSet(t.getRooms()));
+            for (Map.Entry<String, PlanningTeacherStats> e : fitness.evalTeacherStats(t, false).entrySet()) {
+                out.println("\t teacher " + e.getKey() + ":");
+                out.println("\t\t activities:" + e.getValue().activities);
+                out.println("\t\t balance   :" + e.getValue().chairBalance + "/" + e.getValue().examinerBalance);
+                out.println("\t\t supervisor:" + e.getValue().supervisor);
+                out.println("\t\t chair     :" + e.getValue().chair);
+                out.println("\t\t examiner  :" + e.getValue().examiner);
+                out.println("\t\t days      :" + e.getValue().days);
+
+            }
+            List<PlanningActivity> activities = t.getActivities();
+            Collections.sort(activities);
+            out.println("\t activities(#" + activities.size() + "):");
+            for (PlanningActivity a : activities) {
+                //evalTableFitness()
+                out.println(a.getSpaceTime() + " : " + a.getChair() + " ; " + a.getExaminer() + " ; " + a.getInternship().getSupervisors() + " ; " + a.getInternship().getCode() + " ; " + a.getInternship().getName());
+            }
+        }
+    }
 
     public PlanningResult generateActivitiesSpaceTime(PlanningActivityTable table, int maxSeconds) {
         return matchActivitiesGeneticAlgo(table, maxSeconds, false, true);
@@ -431,6 +517,22 @@ public class PlanningService {
     }
 
     public PlanningResult matchActivitiesGeneticAlgo(PlanningActivityTable activityTable, int maxSeconds, boolean teachers, boolean spaceTime) {
+        net.vpc.scholar.hadrumaths.Plot.update("activityTable").plot(net.vpc.scholar.hadrumaths.Maths.matrix(
+                activityTable.getActivities().size(), 3,
+                (r,c) -> {
+                    PlanningActivity planningActivity = activityTable.getActivities().get(r);
+                    switch (c) {
+                        case 0:
+                            return Complex.valueOf(activityTable.getTeachers().indexOf(planningActivity.getExaminer()));
+                        case 1:
+                            return Complex.valueOf(activityTable.getTeachers().indexOf(planningActivity.getChair()));
+                        case 2:
+                            return Complex.valueOf(activityTable.getTeachers().indexOf(planningActivity.getInternship().getSupervisors().get(0)));
+                    }
+                    return Complex.valueOf(-1);
+                }
+        ));
+
         PlanningActivityTableExt activityTable2 = null;
         PlanningActivityTable bestActivityTable = null;
         FitnessValue bestFitnessValue = FitnessValue.invalid("invalid", 0);
@@ -498,6 +600,9 @@ public class PlanningService {
                     }
                     good++;
                     ok = true;
+                    if (error == 0) {
+                        break;
+                    }
 //                    if(good>=maxIters){
 //                        display(activityTable2.getTable());
 //                        break;
@@ -506,8 +611,28 @@ public class PlanningService {
                 } else {
                     good = 0;
                 }
+
+                List<List<Complex>> rows = new ArrayList<>();
+
+                PlanningActivityTable finalBestActivityTable = bestActivityTable;
+                net.vpc.scholar.hadrumaths.Plot.update("Current").plot(net.vpc.scholar.hadrumaths.Maths.matrix(
+                        activityTable.getActivities().size(), 3,
+                        (r,c) -> {
+                            PlanningActivity planningActivity = finalBestActivityTable.getActivities().get(r);
+                            switch (c) {
+                                case 0:
+                                    return Complex.valueOf(finalBestActivityTable.getTeachers().indexOf(planningActivity.getExaminer()));
+                                case 1:
+                                    return Complex.valueOf(finalBestActivityTable.getTeachers().indexOf(planningActivity.getChair()));
+                                case 2:
+                                    return Complex.valueOf(finalBestActivityTable.getTeachers().indexOf(planningActivity.getInternship().getSupervisors().get(0)));
+                            }
+                            return Complex.valueOf(-1);
+                        }
+                ));
+
                 long elapsed = chronometer.getTime() / 1000;
-                if (elapsed > maxSeconds) {
+                if (maxSeconds > 0 && elapsed > maxSeconds) {
                     System.out.println(chronometer.toString() + " elapsed > " + maxSeconds + "s. returning " + (ok ? "valid" : "invalid") + " result");
                     break;
                 }

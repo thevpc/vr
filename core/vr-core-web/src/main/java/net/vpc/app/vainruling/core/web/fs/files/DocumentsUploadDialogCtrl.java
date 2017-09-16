@@ -67,6 +67,12 @@ public class DocumentsUploadDialogCtrl {
     }
 
     public void initContent(Config cmd) {
+        if(cmd==null){
+            cmd=new Config();
+        }
+        if(cmd.getSizeLimit()<=0){
+            cmd.setSizeLimit(1024*1024*10);
+        }
         getModel().setConfig(cmd);
         Config c = getModel().getConfig();
         if (c == null) {
@@ -123,53 +129,79 @@ public class DocumentsUploadDialogCtrl {
         private String path;
         private String userInfo;
         private String fspath;
+        private long sizeLimit;
+        private String extensions;
 
         public String getType() {
             return type;
         }
 
-        public void setType(String type) {
+        public Config setType(String type) {
             this.type = type;
+            return this;
         }
 
         public String getValue() {
             return value;
         }
 
-        public void setValue(String value) {
+        public Config setValue(String value) {
             this.value = value;
+            return this;
         }
 
         public String getTitle() {
             return title;
         }
 
-        public void setTitle(String title) {
+        public Config setTitle(String title) {
             this.title = title;
+            return this;
         }
 
         public String getPath() {
             return path;
         }
 
-        public void setPath(String path) {
+        public Config setPath(String path) {
             this.path = path;
+            return this;
         }
 
         public String getUserInfo() {
             return userInfo;
         }
 
-        public void setUserInfo(String userInfo) {
+        public Config setUserInfo(String userInfo) {
             this.userInfo = userInfo;
+            return this;
         }
 
         public String getFspath() {
             return fspath;
         }
 
-        public void setFspath(String fspath) {
+        public Config setFspath(String fspath) {
             this.fspath = fspath;
+            return this;
+        }
+
+        public long getSizeLimit() {
+            return sizeLimit;
+        }
+
+        public Config setSizeLimit(long sizeLimit) {
+            this.sizeLimit = sizeLimit;
+            return this;
+        }
+
+        public String getExtensions() {
+            return extensions;
+        }
+
+        public Config setExtensions(String extensions) {
+            this.extensions = extensions;
+            return this;
         }
     }
 
@@ -211,6 +243,7 @@ public class DocumentsUploadDialogCtrl {
         public void setTitle(String title) {
             this.title = title;
         }
+
 
     }
 

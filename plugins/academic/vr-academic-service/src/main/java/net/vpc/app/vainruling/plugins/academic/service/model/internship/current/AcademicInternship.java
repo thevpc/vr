@@ -26,13 +26,13 @@ import java.sql.Timestamp;
 @Path("Education/Projects/Internships")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.period", value = "{expr='board.period',order=1}"),
-                @Property(name = "ui.auto-filter.department", value = "{expr='board.department',order=2}"),
-                @Property(name = "ui.auto-filter.program", value = "{expr='board.program',order=3}"),
-                @Property(name = "ui.auto-filter.academicClass", value = "{expr='board.academicClass',order=4}"),
-                @Property(name = "ui.auto-filter.internshipType", value = "{expr='board.internshipType',order=5}"),
-                @Property(name = "ui.auto-filter.internshipStatus", value = "{expr='internshipStatus',order=6}"),
-                @Property(name = "ui.auto-filter.sessionType", value = "{expr='sessionType',order=7}"),
+                @Property(name = "ui.auto-filter.period", value = "{expr='this.board.period',order=1}"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='this.board.department',order=2}"),
+                @Property(name = "ui.auto-filter.program", value = "{expr='this.board.program',order=3}"),
+                @Property(name = "ui.auto-filter.academicClass", value = "{expr='this.board.academicClass',order=4}"),
+                @Property(name = "ui.auto-filter.internshipType", value = "{expr='this.board.internshipType',order=5}"),
+                @Property(name = "ui.auto-filter.internshipStatus", value = "{expr='this.internshipStatus',order=6}"),
+                @Property(name = "ui.auto-filter.sessionType", value = "{expr='this.sessionType',order=7}"),
         }
 )public class AcademicInternship {
 

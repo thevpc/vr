@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.*;
+import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.ImportOptions;
@@ -21,7 +22,6 @@ import net.vpc.common.util.Chronometer;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.DoubleParserConfig;
 import net.vpc.common.util.IntegerParserConfig;
-import net.vpc.common.vfs.VFS;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
@@ -601,25 +601,30 @@ public class XlsxLoadImporter {
     public AcademicStudentImport parseAcademicStudentImport(Object[] values) throws IOException {
 
         int col = 0;
-        final int COL_NIN = ++col;
-        final int COL_SUBSCRIPTION_NBR = ++col;
-        final int COL_FIRST_NAME = ++col;
-        final int COL_LAST_NAME = ++col;
-        final int COL_EMAIL = ++col;
-        final int COL_GSM = ++col;
-        final int COL_YEAR1 = ++col;
-        final int COL_CLASS = ++col;
-        final int COL_GENDER = ++col;
-        final int COL_CIVILITY = ++col;
-        final int COL_LAST_NAME2 = ++col;
-        final int COL_FIRST_NAME2 = ++col;
-        final int COL_PREP = ++col;
-        final int COL_PREP_SECTION = ++col;
-        final int COL_PREP_RANK = ++col;
-        final int COL_PREP_RANK_MAX = ++col;
-        final int COL_PREP_SCORE = ++col;
-        final int COL_BAC = ++col;
-        final int COL_BAC_SCORE = ++col;
+        final int COL_NIN = col++;
+        final int COL_SUBSCRIPTION_NBR = col++;
+        final int COL_FIRST_NAME = col++;
+        final int COL_LAST_NAME = col++;
+        final int COL_EMAIL = col++;
+        final int COL_GSM = col++;
+        final int COL_YEAR1 = col++;
+        final int COL_CLASS = col++;
+        final int COL_GENDER = col++;
+        final int COL_CIVILITY = col++;
+        final int COL_LAST_NAME2 = col++;
+        final int COL_FIRST_NAME2 = col++;
+        final int COL_PREP = col++;
+        final int COL_PREP_SECTION = col++;
+        final int COL_PREP_RANK = col++;
+        final int COL_PREP_RANK_MAX = col++;
+        final int COL_PREP_SCORE = col++;
+        final int COL_BAC = col++;
+        final int COL_BAC_SCORE = col++;
+        if(values==null){
+            values=new Object[col];
+        }else if(values.length<col){
+            values=Arrays.copyOf(values,col);
+        }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         String fn = VrUtils.validateContactName(Convert.toString(values[COL_FIRST_NAME]));
         String ln = VrUtils.validateContactName(Convert.toString(values[COL_LAST_NAME]));
@@ -639,31 +644,17 @@ public class XlsxLoadImporter {
             a.setPreClassBacName(Convert.toString(values[COL_BAC]));
             Object value = values[COL_PREP_SCORE];
             if (value != null && (value instanceof String)) {
-                String s = value.toString().trim();
-                if (s.contains(",") && !s.contains(".")) {
-                    s = s.replace(',', '.');
-                }
-                if (s.isEmpty()) {
-                    s = "0";
-                }
-                value = s;
+                value= VrUtils.prepareParseInt((String) value);
             }
             a.setPreClassPrepScore(Convert.toDouble(value, DoubleParserConfig.LENIENT));
 
             value = values[COL_BAC_SCORE];
             if (value != null && (value instanceof String)) {
-                String s = value.toString().trim();
-                if (s.contains(",") && !s.contains(".")) {
-                    s = s.replace(',', '.');
-                }
-                if (s.isEmpty()) {
-                    s = "0";
-                }
-                value = s;
+                value= VrUtils.prepareParseInt((String) value);
             }
             a.setPreClassBacScore(Convert.toDouble(value, DoubleParserConfig.LENIENT));
             a.setLastName2(Convert.toString(values[COL_LAST_NAME2]));
-            a.setPhone(Convert.toString(values[COL_GSM]));
+            a.setPhone1(Convert.toString(values[COL_GSM]));
             a.setGenderName(Convert.toString(values[COL_GENDER]));
             a.setSubscriptionNumber(Convert.toString(values[COL_SUBSCRIPTION_NBR]));
             a.setCivilityName(Convert.toString(values[COL_CIVILITY]));
@@ -674,6 +665,9 @@ public class XlsxLoadImporter {
     }
 
     public void importStudent(AcademicStudentImport a, ImportStudentContext ctx) throws IOException {
+        if (StringUtils.isEmpty(a.getNin())) {
+            throw new NoSuchElementException("Nin Not Found " + a);
+        }
         final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         if (ctx == null) {
@@ -855,8 +849,8 @@ public class XlsxLoadImporter {
         contact.setLastName2(ln2);
         contact.setFullName2(AppContact.getName2(contact));
 
-        if (checkUpdatable(contact.getPhone1(), a.getPhone(), force)) {
-            contact.setPhone1(a.getPhone());
+        if (checkUpdatable(contact.getPhone1(), a.getPhone1(), force)) {
+            contact.setPhone1(a.getPhone1());
         }
         if (checkUpdatable(academicStudent.getFirstSubscription(), period, force)) {
             academicStudent.setFirstSubscription(period);

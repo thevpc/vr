@@ -21,7 +21,7 @@ import java.sql.Timestamp;
 @Path("Education/Config")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.conversionTable", value = "{expr='conversionTable',order=1}")
+                @Property(name = "ui.auto-filter.conversionTable", value = "{expr='this.conversionTable',order=1}")
         }
 )
 public class AcademicLoadConversionRow {

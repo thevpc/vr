@@ -115,15 +115,20 @@ public class PlanningInternship implements Comparable<PlanningInternship> {
 
     @Override
     public int compareTo(PlanningInternship o) {
-        int c = getCode().compareTo(o.getCode());
-        if (c != 0) {
-            return 0;
-        }
-        c = getName().compareTo(o.getName());
+        int c = Integer.compare(getId(),o.getId());
         if (c != 0) {
             return 0;
         }
         return c;
+//        c = getCode().compareTo(o.getCode());
+//        if (c != 0) {
+//            return 0;
+//        }
+//        c = getName().compareTo(o.getName());
+//        if (c != 0) {
+//            return 0;
+//        }
+//        return c;
     }
 
     public PlanningInternship copy() {

@@ -13,6 +13,7 @@ import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -21,9 +22,9 @@ import java.sql.Timestamp;
 @Path("Contact")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.company", value = "{expr='company',order=1}"),
-                @Property(name = "ui.auto-filter.positionTitle1", value = "{expr='positionTitle1',order=2}"),
-//                @Property(name = "ui.auto-filter.company", value = "{expr='company',order=3}")
+                @Property(name = "ui.auto-filter.company", value = "{expr='this.company',order=1}"),
+                @Property(name = "ui.auto-filter.positionTitle1", value = "{expr='this.positionTitle1',order=2}"),
+//                @Property(name = "ui.auto-filter.company", value = "{expr='this.company',order=3}")
                 @Property(name = UIConstants.ENTITY_TEXT_SEARCH_FACTORY, value = "net.vpc.app.vainruling.core.service.obj.AppContactObjSearchFactory")
         }
 )
@@ -37,6 +38,7 @@ public class AppContact {
      * National Identity Number
      */
     private String nin;
+    private String passportNumber;
 
     private AppCivility civility;
 
@@ -59,6 +61,8 @@ public class AppContact {
             @Property(name = UIConstants.Form.SEPARATOR, value = "Details"))
     @Summary
     private String email;
+    private String email2;
+
     private AppCompany company;
 
     @Summary
@@ -91,6 +95,10 @@ public class AppContact {
     @Field(max = "4000")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
+
+    private Date birthDate;
+    private String birthLocation;
+    private AppGovernorate birthGovernorate;
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
@@ -387,5 +395,45 @@ public class AppContact {
 
     public void setOfficePhoneNumber(String officePhoneNumber) {
         this.officePhoneNumber = officePhoneNumber;
+    }
+
+    public String getPassportNumber() {
+        return passportNumber;
+    }
+
+    public void setPassportNumber(String passportNumber) {
+        this.passportNumber = passportNumber;
+    }
+
+    public String getEmail2() {
+        return email2;
+    }
+
+    public void setEmail2(String email2) {
+        this.email2 = email2;
+    }
+
+    public Date getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getBirthLocation() {
+        return birthLocation;
+    }
+
+    public void setBirthLocation(String birthLocation) {
+        this.birthLocation = birthLocation;
+    }
+
+    public AppGovernorate getBirthGovernorate() {
+        return birthGovernorate;
+    }
+
+    public void setBirthGovernorate(AppGovernorate birthGovernorate) {
+        this.birthGovernorate = birthGovernorate;
     }
 }

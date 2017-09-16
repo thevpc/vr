@@ -10,83 +10,118 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-        >
+>
 
 <h:head>
 </h:head>
 
 <h:body>
 
+    <!--@elvariable id="updateStatusInternshipsActionCtrl" type="net.vpc.app.vainruling.plugins.academic.web.internship.actions.UpdateStatusInternshipsActionCtrl"-->
     <ui:composition template="#{vr.themePath}/templates/dialog-template.xhtml">
         <ui:define name="dialog-title">
             <h:outputText value="Changer Phases"/>
         </ui:define>
         <ui:define name="dialog-body">
-            <div class="row">
-                <h:form id="listForm" style="width: 98%;">
-                    <p:panelGrid styleClass="vr-no-border-grid" style="border-style: none;border-width: 0px;width: 100%;">
-                        <p:row>
-                            <p:column colspan="2"><p:outputLabel
-                                    value="#{updateStatusInternshipsActionCtrl.model.message}"/></p:column>
-                        </p:row>
-                        <p:row>
-                            <p:column><p:outputLabel value="Groupe"/></p:column>
-                            <p:column>
-                                <p:selectOneMenu value="#{updateStatusInternshipsActionCtrl.model.selectedGroup}">
-                                    <f:selectItem itemLabel="Selectionner Groupe..." itemValue=""/>
-                                    <f:selectItems value="#{updateStatusInternshipsActionCtrl.model.groups}"/>
-                                </p:selectOneMenu>
-                            </p:column>
-                        </p:row>
-                        <p:row>
-                            <p:column><p:outputLabel value="Comité"/></p:column>
-                            <p:column>
-                                <p:selectOneMenu value="#{updateStatusInternshipsActionCtrl.model.selectedBoard}">
-                                    <p:ajax listener="#{updateStatusInternshipsActionCtrl.onUpdateBoard}"
+            <div class="vr-form-dialog-container">
+                <h:form id="listForm">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Filter</h3>
+                        </div>
+                        <div class="panel-body">
+
+                            <div class="form-group">
+                                <label>Appliquer aux lignes selectionnées</label>
+                                <p:selectBooleanCheckbox styleClass="vr-form-inline-component"
+                                                         value="#{updateStatusInternshipsActionCtrl.model.userSelectedOnly}">
+                                    <p:ajax listener="#{updateStatusInternshipsActionCtrl.onUserFilterChanged}"
                                             update=":listForm"/>
-                                    <f:selectItem itemLabel="Selectionner Comité..." itemValue=""/>
-                                    <f:selectItems value="#{updateStatusInternshipsActionCtrl.model.boards}"/>
-                                </p:selectOneMenu>
-                            </p:column>
-                        </p:row>
-                        <p:row>
-                            <p:column><p:outputLabel value="Filtrer par Phase"/></p:column>
-                            <p:column>
-                                <p:selectOneMenu value="#{updateStatusInternshipsActionCtrl.model.selectedStatusFrom}">
+                                </p:selectBooleanCheckbox>
+                            </div>
+                            <ui:fragment rendered="#{!updateStatusInternshipsActionCtrl.model.userSelectedOnly}">
+                                <div class="form-group">
+                                    <label>Filtrer par Groupe</label>
+                                    <p:selectOneMenu styleClass="form-control vf-form-control"
+                                                     value="#{updateStatusInternshipsActionCtrl.model.selectedGroup}">
+                                        <f:selectItem itemLabel="Selectionner Groupe..." itemValue=""/>
+                                        <f:selectItems value="#{updateStatusInternshipsActionCtrl.model.groups}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Filtrer par Comité</label>
+                                    <p:selectOneMenu styleClass="form-control vf-form-control"
+                                                     value="#{updateStatusInternshipsActionCtrl.model.selectedBoard}">
+                                        <p:ajax listener="#{updateStatusInternshipsActionCtrl.onUpdateBoard}"
+                                                update=":listForm"/>
+                                        <f:selectItem itemLabel="Selectionner Comité..." itemValue=""/>
+                                        <f:selectItems value="#{updateStatusInternshipsActionCtrl.model.boards}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Filtrer par Phase</label>
+                                    <p:selectOneMenu styleClass="form-control vf-form-control"
+                                                     value="#{updateStatusInternshipsActionCtrl.model.selectedStatusFrom}">
+                                        <f:selectItem itemLabel="Selectionner Phase..." itemValue=""/>
+                                        <f:selectItems value="#{updateStatusInternshipsActionCtrl.model.statuses}"/>
+                                    </p:selectOneMenu>
+
+                                </div>
+
+                            </ui:fragment>
+                        </div>
+                    </div>
+                    <ui:fragment id="msg" rendered="#{!vr.isEmpty(updateStatusInternshipsActionCtrl.model.message)}">
+                        <div class="form-group" id="">
+                            <div class="alert alert-danger" role="alert">
+                                #{updateStatusInternshipsActionCtrl.model.message}
+                            </div>
+                        </div>
+                    </ui:fragment>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Appliquer</h3>
+                        </div>
+                        <div class="panel-body">
+                            <ui:fragment rendered="#{updateStatusInternshipsActionCtrl.model.userSelectedOnly}">
+                                <div class="form-group">
+                                    <label>Type Stage</label>
+                                    <p:selectOneMenu styleClass="form-control vf-form-control"
+                                                     value="#{updateStatusInternshipsActionCtrl.model.selectedInternshipType}">
+                                        <f:selectItem itemLabel="Selectionner Type..." itemValue=""/>
+                                        <f:selectItems value="#{updateStatusInternshipsActionCtrl.model.internshipTypes}"/>
+                                        <p:ajax listener="#{updateStatusInternshipsActionCtrl.onUserFilterChanged}"
+                                                update=":listForm"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </ui:fragment>
+                            <div class="form-group">
+                                <label>Changer en ...</label>
+                                <p:selectOneMenu styleClass="form-control vf-form-control"
+                                                 value="#{updateStatusInternshipsActionCtrl.model.selectedStatusTo}">
                                     <f:selectItem itemLabel="Selectionner Phase..." itemValue=""/>
                                     <f:selectItems value="#{updateStatusInternshipsActionCtrl.model.statuses}"/>
                                 </p:selectOneMenu>
-                            </p:column>
-                        </p:row>
-                        <p:row>
-                            <p:column><p:outputLabel value="Appliquer aux lignes selectionnées"/></p:column>
-                            <p:column>
-                                <p:selectBooleanCheckbox
-                                        value="#{updateStatusInternshipsActionCtrl.model.userSelectedOnly}"/>
-                            </p:column>
-                        </p:row>
+                            </div>
+                        </div>
+                    </div>
 
-                        <p:row>
-                            <p:column><p:outputLabel value="Changer en ..."/></p:column>
-                            <p:column>
-                                <p:selectOneMenu value="#{updateStatusInternshipsActionCtrl.model.selectedStatusTo}">
-                                    <f:selectItem itemLabel="Selectionner Phase..." itemValue=""/>
-                                    <f:selectItems value="#{updateStatusInternshipsActionCtrl.model.statuses}"/>
-                                </p:selectOneMenu>
-                            </p:column>
-                        </p:row>
 
-                    </p:panelGrid>
+                    <div class="btn-group vr-form-button-group">
+                        <p:commandButton value="Appliquer changements"
+                                         styleClass="btn btn-primary vr-form-button "
+                                         actionListener="#{updateStatusInternshipsActionCtrl.apply}"
+                                         style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"
+                                         disabled="#{updateStatusInternshipsActionCtrl.model.disabled}"/>
+                        <p:commandButton value="Fermer"
+                                         styleClass="btn btn-default vr-form-button "
+                                         actionListener="#{updateStatusInternshipsActionCtrl.fireEventExtraDialogClosed}"
+                                         style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
+                    </div>
 
-                    <p:commandButton value="Appliquer changements"
-                                     styleClass="btn btn-primary"
-                                     actionListener="#{updateStatusInternshipsActionCtrl.apply}"
-                                     style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"
-                                     disabled="#{updateStatusInternshipsActionCtrl.model.disabled}"/>
-                    <p:commandButton value="Fermer"
-                                     styleClass="btn btn-default"
-                                     actionListener="#{updateStatusInternshipsActionCtrl.fireEventExtraDialogClosed}"
-                                     style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
+
                 </h:form>
             </div>
         </ui:define>

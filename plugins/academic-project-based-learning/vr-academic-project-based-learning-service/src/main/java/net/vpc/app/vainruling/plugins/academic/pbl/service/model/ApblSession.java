@@ -15,9 +15,9 @@ import java.util.Date;
 @Path("Education/Projects/Apbl")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.period", value = "{expr='period',order=1}"),
-                @Property(name = "ui.auto-filter.status", value = "{expr='status',order=2}"),
-                @Property(name = "ui.auto-filter.semester", value = "{expr='semester',order=3}"),
+                @Property(name = "ui.auto-filter.period", value = "{expr='this.period',order=1}"),
+                @Property(name = "ui.auto-filter.status", value = "{expr='this.status',order=2}"),
+                @Property(name = "ui.auto-filter.semester", value = "{expr='this.semester',order=3}"),
         }
 )
 public class ApblSession {

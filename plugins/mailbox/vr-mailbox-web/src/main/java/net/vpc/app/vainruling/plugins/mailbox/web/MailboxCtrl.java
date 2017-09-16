@@ -165,7 +165,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         int userId = currentUser == null ? -1 : currentUser.getId();
         int count = userId < 0 ? 0 : mailboxPlugin.findLocalReceivedMessages(userId, -1, true, MailboxFolder.CURRENT).size();
         return Arrays.asList(
-                new VRMenuDef("Mes Messages", "/Social", "mailbox", "{folder:'CURRENT',sent:false}", "Custom.Site.Mailbox", "", 100,
+                new VRMenuDef("Mes Messages", "/Social", "mailbox", "{folder:'CURRENT',sent:false}", "Custom.Site.Mailbox", null,"", 100,
                         new VRMenuLabel[]{
                                 count <= 0 ? null : new VRMenuLabel(String.valueOf(count), "success")
                         }

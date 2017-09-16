@@ -244,7 +244,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
                     }
                     ).size();
             final VRMenuDef vrMenuDef = new VRMenuDef(findTodoListsByResp.getName(), "/Todo", "todo", findTodoListsByResp.getName(),
-                    "Custom.Todo." + findTodoListsByResp.getName(), "",100,
+                    "Custom.Todo." + findTodoListsByResp.getName(), null,"",100,
                     new VRMenuLabel[]{
                         new VRMenuLabel(String.valueOf(count),"severe")
                     }

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:jstl="http://java.sun.com/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+>
+
+<h:head>
+</h:head>
+
+<h:body>
+
+    <!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
+    <!--@elvariable id="completionMonitorCtrl" type="net.vpc.app.vainruling.core.web.content.CompletionMonitorCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+
+    <ui:composition template="#{vr.privateTemplatePath}">
+        <ui:define name="content">
+            <h:form id="itemForm" enctype="multipart/form-data">
+                <p:dataTable id="listTable" value="#{completionMonitorCtrl.model.list}" var="row">
+                    <p:column headerText="Catégorie" filterBy="#{row.categoryName}">
+                        <p:outputLabel value="#{row.categoryName}"/>
+                    </p:column>
+                    <p:column headerText="Type" filterBy="#{row.objectTypeName}">
+                        <p:outputLabel value="#{row.objectTypeName}"/>
+                    </p:column>
+                    <p:column headerText="Filtre 1" filterBy="#{row.getFilter(0)}">
+                        <p:outputLabel value="#{row.getFilter(0)}"/>
+                    </p:column>
+                    <p:column headerText="Filtre 2" filterBy="#{row.getFilter(1)}">
+                        <p:outputLabel value="#{row.getFilter(1)}"/>
+                    </p:column>
+                    <p:column headerText="Filtre 3" filterBy="#{row.getFilter(2)}">
+                        <p:outputLabel value="#{row.getFilter(2)}"/>
+                    </p:column>
+                    <p:column headerText="Filtre 4" filterBy="#{row.getFilter(3)}">
+                        <p:outputLabel value="#{row.getFilter(3)}"/>
+                    </p:column>
+                    <p:column headerText="Nom" filterBy="#{row.objectName}">
+                        <p:outputLabel value="#{row.objectName}"/>
+                    </p:column>
+                    <p:column headerText="Progression">
+                        <p:outputLabel value="#{vr.dblCustomFormat(row.completion,'0.00')}%"/>
+                    </p:column>
+                    <p:column headerText="Message" filterBy="#{row.message}">
+                        <p:outputLabel value="#{row.message}"/>
+                    </p:column>
+                    <p:column headerText="Criticité" filterBy="#{row.messageLevel}">
+                        <p:outputLabel value="#{row.messageLevel}"/>
+                    </p:column>
+                    <p:column headerText="Actions">
+                        <ui:repeat var="x" value="#{row.actions}">
+                            <button type="button" class="btn btn-info" style="margin-left: 5px;">
+                                <a href="#{x.url}">#{x.name}</a>
+                            </button>
+                        </ui:repeat>
+                    </p:column>
+
+                    <f:facet name="footer">
+                        <p:outputLabel value="Total #{completionMonitorCtrl.model.list.size()}"/>
+
+                        <div style="float: right;">
+                            <h:commandLink>
+                                <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png"
+                                                width="16"/>
+                                <p:dataExporter type="xls" target="listTable"
+                                                fileName="eniso-info-completion-monitor"
+                                                postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                            </h:commandLink>
+
+                            <h:commandLink>
+                                <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png"
+                                                width="16"/>
+                                <p:dataExporter type="pdf" target="listTable"
+                                                fileName="eniso-info-completion-monitor"/>
+                            </h:commandLink>
+
+                            <h:commandLink>
+                                <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png"
+                                                width="16"/>
+                                <p:dataExporter type="csv" target="listTable"
+                                                fileName="eniso-info-completion-monitor"/>
+                            </h:commandLink>
+
+                            <h:commandLink>
+                                <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png"
+                                                width="16"/>
+                                <p:dataExporter type="xml" target="listTable"
+                                                fileName="eniso-info-completion-monitor"/>
+                            </h:commandLink>
+                        </div>
+                    </f:facet>
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>

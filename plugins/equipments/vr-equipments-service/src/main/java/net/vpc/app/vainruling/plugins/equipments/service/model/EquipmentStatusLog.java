@@ -20,11 +20,11 @@ import java.sql.Timestamp;
 @Properties(
         {
                 @Property(name = UIConstants.ENTITY_ID_HIERARCHY, value = "brandLine"),
-                @Property(name = "ui.auto-filter.department", value = "{expr='equipment.department',order=1}"),
-                @Property(name = "ui.auto-filter.equipment", value = "{expr='equipment',order=2}"),
-                @Property(name = "ui.auto-filter.type", value = "{expr='type',order=3}"),
-                @Property(name = "ui.auto-filter.actor", value = "{expr='actor',order=4}"),
-                @Property(name = "ui.auto-filter.responsible", value = "{expr='responsible',order=5}"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='this.equipment.department',order=1}"),
+                @Property(name = "ui.auto-filter.equipment", value = "{expr='this.equipment',order=2}"),
+                @Property(name = "ui.auto-filter.type", value = "{expr='this.type',order=3}"),
+                @Property(name = "ui.auto-filter.actor", value = "{expr='this.actor',order=4}"),
+                @Property(name = "ui.auto-filter.responsible", value = "{expr='this.responsible',order=5}"),
         })
 public class EquipmentStatusLog {
 

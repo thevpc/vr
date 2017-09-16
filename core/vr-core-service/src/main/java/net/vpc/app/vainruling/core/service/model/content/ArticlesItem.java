@@ -23,9 +23,9 @@ import java.sql.Timestamp;
                 //i is a ObjRow!
                 @Property(name = UIConstants.Grid.ROW_STYLE,
                         value = "(i.object.deleted or i.object.archived) ?'vr-row-deleted':(i.object.disposition eq null) ?'vr-row-invalid':(i.object.important) ?'vr-row-important' : ''"),
-                @Property(name = "ui.auto-filter.dispositionGroup", value = "{expr='dispositionGroup',order=1}"),
-                @Property(name = "ui.auto-filter.disposition", value = "{expr='disposition',order=2}"),
-                @Property(name = "ui.auto-filter.sender", value = "{expr='sender',order=3}")
+                @Property(name = "ui.auto-filter.dispositionGroup", value = "{expr='this.dispositionGroup',order=1}"),
+                @Property(name = "ui.auto-filter.disposition", value = "{expr='this.disposition',order=2}"),
+                @Property(name = "ui.auto-filter.sender", value = "{expr='this.sender',order=3}")
         }
 )
 public class ArticlesItem {

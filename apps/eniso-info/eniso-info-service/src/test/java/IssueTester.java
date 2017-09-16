@@ -19,6 +19,10 @@ import java.util.List;
 public class IssueTester {
 
     public static void main(String[] args) {
+        mainOld(args);
+    }
+
+    public static void main3(String[] args) {
         UPAImplDefaults.PRODUCTION_MODE=false;
         List<Object> all = UPA.getPersistenceUnit()
                 .createQuery("Select u from AcademicTeacher u where u.id in ("
@@ -121,9 +125,9 @@ public class IssueTester {
         VrApp.runStandalone();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Object af1 = pu.findById(AppPeriod.class, 11);
-        Object af2 = pu.findById(AppDepartment.class, 1);
+        Object af2 = pu.findById(AppDepartment.class, 3);
         List<AcademicCoursePlan> all = pu
-                .createQuery("Select TOP 7000 o From AcademicCoursePlan o Where (period=:af1) and (IsHierarchyDescendant(:af2 , courseLevel.academicClass.program.department,AppDepartment)) Order By period.name Desc , fullName Asc , name Asc ")
+                .createQuery("Select TOP 7000 o From AcademicCoursePlan o Where (o.period=:af1) and (IsHierarchyDescendant(:af2 , o.courseLevel.academicClass.program.department,AppDepartment)) Order By period.name Desc , fullName Asc , name Asc ")
                 .setParameter("af1", af1)
                 .setParameter("af2", af2)
                 .getResultList();

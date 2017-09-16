@@ -10,8 +10,10 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.*;
 import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
+import net.vpc.app.vainruling.core.web.converters.EntityConverter;
 import net.vpc.app.vainruling.core.web.ctrl.ActiveSessionsCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.AppGlobalCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.LoginCtrl;
@@ -31,6 +33,8 @@ import net.vpc.common.vfs.VFileFilter;
 import net.vpc.common.vfs.VFileVisitor;
 import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.Action;
+import net.vpc.upa.Entity;
+import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -42,6 +46,8 @@ import org.springframework.context.annotation.Scope;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
+import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -60,10 +66,11 @@ import java.util.regex.Pattern;
 @VrController
 @Scope(value = "singleton")
 public class Vr {
-
+    public static final Object NullSelected=new Object();
 
     public static final Map<String, String> extensionsToCss = new HashMap<String, String>();
     public static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.00");
+    public static final String NULL_VALUE_STR = "-*Aucune Valeur*-";
 
     static {
         extensionsToCss.put("csv", "file-csv");
@@ -923,6 +930,10 @@ public class Vr {
         return VrApp.getBean(VrMenuManager.class).goBack();
     }
 
+    public String gotoHome() {
+        return gotoPage("welcome","");
+    }
+
     public String gotoPage(String command, String arguments) {
         return VrApp.getBean(VrMenuManager.class).gotoPage(command, arguments);
     }
@@ -1587,6 +1598,55 @@ public class Vr {
             }
         }
         return labels.toArray(new String[labels.size()]);
+    }
+
+    public List<SelectItem> entitySelectItems(String entityName,boolean selectNone,boolean selectNull){
+        //should cache this?
+        List<SelectItem> list = new ArrayList<>();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity e = pu.getEntity(entityName);
+        if(selectNone){
+            list.add(new SelectItem("", "Non Spécifié"));
+        }
+        if(selectNull){
+            list.add(new SelectItem(NULL_VALUE_STR,"--Valeur Nulle--"));
+        }
+        for (Object x : pu.findAll(entityName)) {
+            String name = e.getMainFieldValue(x);
+            String id = VrUPAUtils.objToJson(x, e.getDataType()).toString();
+            list.add(new SelectItem(id, name));
+        }
+        return list;
+    }
+
+    public Converter entityObjConverter(String entityName){
+        return new EntityConverter(entityName);
+    }
+
+    public String fileExtensionPattern(String extensions){
+        HashSet<String> all=new HashSet<>();
+        if(StringUtils.isEmpty(extensions)){
+            return "";
+        }
+        for (String s : extensions.split("[ ,|]")) {
+            if(!StringUtils.isEmpty(s)){
+                all.add(s);
+            }
+        }
+        if(all.isEmpty()){
+            return "";
+        }
+        StringBuilder sb=new StringBuilder("/(\\.|\\/)(");
+
+        String[] ext = all.toArray(new String[all.size()]);
+        for (int i = 0; i < ext.length; i++) {
+         if(i>0){
+             sb.append("|");
+         }
+         sb.append(ext[i]);
+        }
+        sb.append(")$/");
+        return sb.toString();
     }
 
 }

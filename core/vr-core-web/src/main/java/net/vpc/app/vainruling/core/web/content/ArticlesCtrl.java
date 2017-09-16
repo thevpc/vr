@@ -17,6 +17,8 @@ import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.*;
 import net.vpc.upa.expressions.UserExpression;
+import net.vpc.upa.types.DateTime;
+import org.primefaces.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -25,6 +27,8 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -113,6 +117,17 @@ public class ArticlesCtrl implements CmsTextService {
 
     public void loadContentTexts(String name) {
         List<FullArticle> a = findArticles(name);
+        if("Welcome".equalsIgnoreCase(name)){
+            //add further filter
+            for (Iterator<FullArticle> iterator = a.iterator(); iterator.hasNext(); ) {
+                FullArticle article = iterator.next();
+                DateTime d = article.getArticlesItem().getSendTime();
+                Date d2 = net.vpc.common.util.DateUtils.addMonths(d, 1);
+                if(new Date().compareTo(d2)<0){
+                    iterator.remove();
+                }
+            }
+        }
         getModel().setDisposition(name);
         getModel().getArticles().put(name, a);
         if (getModel().getCurrent() == null) {

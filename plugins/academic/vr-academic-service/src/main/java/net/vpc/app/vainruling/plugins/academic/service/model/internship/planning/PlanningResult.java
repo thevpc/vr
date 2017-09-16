@@ -19,4 +19,12 @@ public class PlanningResult {
     public FitnessValue getFitness() {
         return fitness;
     }
+
+    @Override
+    public String toString() {
+        return "PlanningResult{" +
+                "resut=" + resut +
+                ", fitness=" + fitness +
+                '}';
+    }
 }

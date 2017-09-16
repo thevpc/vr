@@ -24,95 +24,144 @@ and open the template in the editor.
             <h:outputText value="Passage de Classes"/>
         </ui:define>
         <ui:define name="dialog-body">
-            <div class="row">
-                <h:form id="listForm" style="width: 98%;">
-                    <p:panelGrid styleClass="vr-no-border-grid"
-                                 style="border-style: none;border-width: 0px;width: 100%;">
-                        <p:row>
-                            <p:column colspan="4">
-                                <p:outputLabel id="msg"
-                                        value="#{updateStudentClassActionCtrl.model.message}"/></p:column>
-                        </p:row>
-                        <p:row>
-                            <p:column><p:outputLabel value="Période (*)"/></p:column>
-                            <p:column colspan="3">
-
-                                <p:selectOneMenu value="#{updateStudentClassActionCtrl.model.selectedPeriod}">
+            <div class="vr-form-dialog-container">
+                <h:form id="listForm">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Filter</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label>Période (*)</label>
+                                <p:selectOneMenu styleClass="form-control vr-form-control"
+                                                 value="#{updateStudentClassActionCtrl.model.selectedPeriod}">
                                     <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
                                     <f:selectItems value="#{updateStudentClassActionCtrl.model.periods}"/>
                                 </p:selectOneMenu>
-                            </p:column>
-                        </p:row>
-                        <p:row>
-                            <p:column><p:outputLabel value="Filtrer par Classe"/></p:column>
-                            <p:column >
-                                <p:selectOneMenu value="#{updateStudentClassActionCtrl.model.selectedClassFrom}">
-                                    <f:selectItem itemLabel="Selectionner Classe..." itemValue=""/>
-                                    <f:selectItems value="#{updateStudentClassActionCtrl.model.classes}"/>
-                                </p:selectOneMenu>
-                            </p:column>
-                            <p:column><p:outputLabel value="Appliquer aux lignes selectionnées" style="margin-left: 10px;"/></p:column>
-                            <p:column colspan="3">
-                                <p:selectBooleanCheckbox
-                                        value="#{updateStudentClassActionCtrl.model.userSelectedOnly}"/>
-                            </p:column>
-                        </p:row>
-
-                        <p:row>
-                            <p:column>
-                                <div>
-                                    <p:outputLabel value="Changer en ..."/>
-                                    <p:selectOneMenu value="#{updateStudentClassActionCtrl.model.selectedClassTo}">
+                            </div>
+                            <div class="form-group">
+                                <label>Appliquer aux lignes selectionnées</label>
+                                <p:selectBooleanCheckbox styleClass="vr-form-inline-component"
+                                                         value="#{updateStudentClassActionCtrl.model.userSelectedOnly}">
+                                    <p:ajax listener="#{updateStudentClassActionCtrl.onFilterChanged}"
+                                            update=":listForm"/>
+                                </p:selectBooleanCheckbox>
+                            </div>
+                            <ui:fragment rendered="#{!updateStudentClassActionCtrl.model.userSelectedOnly}">
+                                <div class="form-group">
+                                    <label>Filtrer par Classe</label>
+                                    <p:selectOneMenu styleClass="form-control vf-form-control"
+                                                     value="#{updateStudentClassActionCtrl.model.selectedClassFrom}">
                                         <f:selectItem itemLabel="Selectionner Classe..." itemValue=""/>
                                         <f:selectItems value="#{updateStudentClassActionCtrl.model.classes}"/>
                                     </p:selectOneMenu>
                                 </div>
-                            </p:column>
-                            <p:column>
-                                <h:outputText value=""/>
-                            </p:column>
-                            <p:column>
-                                <div>
-                                    <p:outputLabel value="Raison ..."/>
-                                    <p:inputText value="#{updateStudentClassActionCtrl.model.eliminationReason}"/>
-                                </div>
-                            </p:column>
-                        </p:row>
-                        <p:row style="margin-top: 10px">
-                            <p:column>
-                                <p:commandButton value="Changer de classe"
-                                                 styleClass="btn btn-primary"
-                                                 actionListener="#{updateStudentClassActionCtrl.onChangeClass}"
-                                                 disabled="#{updateStudentClassActionCtrl.model.disabled}"
-                                                 update="msg"
-                                />
-                            </p:column>
-                            <p:column>
-                                <p:commandButton value="Conférer diplôme"
-                                                 styleClass="btn btn-success"
-                                                 actionListener="#{updateStudentClassActionCtrl.onGraduated}"
-                                                 disabled="#{updateStudentClassActionCtrl.model.disabled}"
-                                                 update="msg"
-                                />
-                            </p:column>
-                            <p:column>
-                                <p:commandButton value="Eliminer"
-                                                 styleClass="btn btn-danger"
-                                                 actionListener="#{updateStudentClassActionCtrl.onEliminated}"
-                                                 style="margin-left: 20px;margin-right: 20px;"
-                                                 disabled="#{updateStudentClassActionCtrl.model.disabled}"
-                                                 update="msg"
-                                />
-                            </p:column>
-                            <p:column>
-                                <p:commandButton value="Fermer"
-                                                 styleClass="btn btn-default"
-                                                 actionListener="#{updateStudentClassActionCtrl.fireEventExtraDialogClosed}"
-                                                 />
-                            </p:column>
-                        </p:row>
 
-                    </p:panelGrid>
+                            </ui:fragment>
+                        </div>
+                    </div>
+                    <ui:fragment id="msg" rendered="#{!vr.isEmpty(updateStudentClassActionCtrl.model.message)}">
+                        <div class="form-group" id="">
+                            <div class="alert alert-danger" role="alert">
+                                #{updateStudentClassActionCtrl.model.message}
+                            </div>
+                        </div>
+                    </ui:fragment>
+                    <p:tabView>
+                        <p:tab title="Changer classe">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">Changer classe</h4>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label>Changer en ...</label>
+                                        <p:selectOneMenu value="#{updateStudentClassActionCtrl.model.selectedClassTo}"
+                                                         styleClass="form-control vr-form-control">
+                                            <f:selectItem itemLabel="Selectionner Classe..."
+                                                          itemValue=""/>
+                                            <f:selectItems value="#{updateStudentClassActionCtrl.model.classes}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="btn-group vr-form-button-group">
+                                        <p:commandButton value="Changer de classe"
+                                                         styleClass="btn btn-primary vr-form-button vr-form-button-w180"
+                                                         actionListener="#{updateStudentClassActionCtrl.onChangeClass}"
+                                                         disabled="#{updateStudentClassActionCtrl.model.disabled}"
+                                                         update=":listForm:msg"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </p:tab>
+                        <p:tab title="Conférer diplome">
+
+                            <div class="panel panel-success">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">Conférer diplome</h4>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="btn-group vr-form-button-group">
+                                        <p:commandButton value="Conférer diplôme"
+                                                         styleClass="btn btn-success vr-form-button vr-form-button-w180"
+                                                         actionListener="#{updateStudentClassActionCtrl.onGraduated}"
+                                                         disabled="#{updateStudentClassActionCtrl.model.disabled}"
+                                                         update=":listForm:msg"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </p:tab>
+                        <p:tab title="Redoublement">
+                            <div class="panel panel-danger">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">Redoublement</h4>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="btn-group vr-form-button-group">
+                                        <p:commandButton value="Redoubler"
+                                                         styleClass="btn btn-danger  vr-form-button-w180"
+                                                         actionListener="#{updateStudentClassActionCtrl.onFailure}"
+                                                         disabled="#{updateStudentClassActionCtrl.model.disabled}"
+                                                         update=":listForm:msg"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </p:tab>
+                        <p:tab title="Eliminer">
+                            <div class="panel panel-danger">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">Eliminer</h4>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label>Raison...</label>
+                                        <p:inputText styleClass="form-control vr-form-control"
+                                                     value="#{updateStudentClassActionCtrl.model.eliminationReason}"/>
+                                    </div>
+
+                                    <div class="btn-group vr-form-button-group">
+                                        <p:commandButton value="Eliminer"
+                                                         styleClass="btn btn-danger  vr-form-button-w180"
+                                                         actionListener="#{updateStudentClassActionCtrl.onEliminated}"
+                                                         disabled="#{updateStudentClassActionCtrl.model.disabled}"
+                                                         update=":listForm:msg"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </p:tab>
+                    </p:tabView>
+
+
+                    <div class="btn-group vr-form-button-group">
+
+                        <p:commandButton value="Fermer"
+                                         styleClass="btn btn-default vr-form-button vr-form-button-w180"
+                                         actionListener="#{updateStudentClassActionCtrl.fireEventExtraDialogClosed}"
+                        />
+                    </div>
 
                 </h:form>
             </div>

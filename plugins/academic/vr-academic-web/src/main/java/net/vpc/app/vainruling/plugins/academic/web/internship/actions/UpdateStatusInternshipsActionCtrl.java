@@ -10,6 +10,7 @@ import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipStatus;
+import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipType;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipBoard;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipGroup;
@@ -41,8 +42,9 @@ public class UpdateStatusInternshipsActionCtrl {
     private Model model = new Model();
 
     public void openDialog(List<String> itemIds) {
-        resetModel();
         getModel().setSelectionIdList(itemIds == null ? new ArrayList<String>() : itemIds);
+        getModel().setUserSelectedOnly(getModel().getSelectionIdList().size() > 0);
+        onUserFilterChanged();
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
         options.put("draggable", true);
@@ -55,7 +57,7 @@ public class UpdateStatusInternshipsActionCtrl {
         List<SelectItem> internshipBoardsItems = new ArrayList<>();
         AcademicTeacher tt = ap.getCurrentTeacher();
 
-        List<AcademicInternshipBoard> internshipBoards = pi.findEnabledInternshipBoardsByDepartment(-1,tt.getDepartment().getId(),true);
+        List<AcademicInternshipBoard> internshipBoards = pi.findEnabledInternshipBoardsByDepartment(-1, tt.getDepartment().getId(), true);
         for (AcademicInternshipBoard t : internshipBoards) {
             String n = t.getName();
             internshipBoardsItems.add(new SelectItem(String.valueOf(t.getId()), n));
@@ -76,17 +78,48 @@ public class UpdateStatusInternshipsActionCtrl {
         getModel().setGroups(internshipGroupsItems);
     }
 
+    public void reloadInternshipTypes() {
+        List<SelectItem> list = new ArrayList<>();
+        List<AcademicInternshipType> internshipGroups = pi.findInternshipTypes();
+        for (AcademicInternshipType t : internshipGroups) {
+            String n = t.getName();
+            list.add(new SelectItem(String.valueOf(t.getId()), n));
+        }
+        getModel().setInternshipTypes(list);
+    }
+
     public void reloadInternshipStatuses() {
         List<SelectItem> all = new ArrayList<>();
-        if (!StringUtils.isEmpty(getModel().getSelectedBoard())) {
-            int boardId = Integer.parseInt(getModel().getSelectedBoard());
-            AcademicInternshipBoard board = pi.findInternshipBoard(boardId);
+        if (getModel().isUserSelectedOnly()) {
+            if (!StringUtils.isEmpty(getModel().getSelectedInternshipType())) {
+                int typeId = Integer.parseInt(getModel().getSelectedInternshipType());
+                for (AcademicInternshipStatus t : pi.findInternshipStatusesByType(typeId)) {
+                    all.add(new SelectItem(String.valueOf(t.getId()), t.getName()));
+                }
+            }
+        } else {
+            if (!StringUtils.isEmpty(getModel().getSelectedBoard())) {
+                int boardId = Integer.parseInt(getModel().getSelectedBoard());
+                AcademicInternshipBoard board = pi.findInternshipBoard(boardId);
 
-            for (AcademicInternshipStatus t : pi.findInternshipStatusesByType(board.getInternshipType().getId())) {
-                all.add(new SelectItem(String.valueOf(t.getId()), t.getName()));
+                for (AcademicInternshipStatus t : pi.findInternshipStatusesByType(board.getInternshipType().getId())) {
+                    all.add(new SelectItem(String.valueOf(t.getId()), t.getName()));
+                }
             }
         }
         getModel().setStatuses(all);
+    }
+
+    public void onUserFilterChanged() {
+        getModel().setDisabled(false);
+        getModel().setMessage("");
+        reloadInternshipBoards();
+        reloadInternshipGroups();
+        reloadInternshipTypes();
+        reloadInternshipStatuses();
+        getModel().setSelectedBoard(null);
+        getModel().setSelectedStatusFrom(null);
+        getModel().setSelectedStatusTo(null);
     }
 
     public void onUpdateBoard() {
@@ -96,48 +129,41 @@ public class UpdateStatusInternshipsActionCtrl {
     }
 
     public void resetModel() {
-        getModel().setDisabled(false);
-        getModel().setMessage("");
-        reloadInternshipBoards();
-        reloadInternshipGroups();
-        getModel().setSelectedBoard(null);
-        getModel().setSelectedStatusFrom(null);
-        getModel().setSelectedStatusTo(null);
         getModel().setUserSelectedOnly(false);
+        onUserFilterChanged();
     }
 
     public void apply() {
-        if (    //xor between board and group
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        if (getModel().isUserSelectedOnly()) {
+            if (!StringUtils.isEmpty(getModel().getSelectedStatusTo())) {
+                int to = Integer.parseInt(getModel().getSelectedStatusTo());
+                AcademicInternshipStatus toObj = pi.findInternshipStatus(to);
+                for (String s : getModel().getSelectionIdList()) {
+                    AcademicInternship ii=pi.findInternship(Convert.toInt(s));
+                    ii.setInternshipStatus(toObj);
+                    pu.merge(ii);
+                }
+                fireEventExtraDialogClosed();
+            }
+        } else if (    //xor between board and group
                 !StringUtils.isEmpty(getModel().getSelectedStatusFrom())
                         && !StringUtils.isEmpty(getModel().getSelectedStatusTo())) {
-            PersistenceUnit pu = UPA.getPersistenceUnit();
             int boardId = Convert.toInt(getModel().getSelectedBoard(), IntegerParserConfig.LENIENT_F);
             int groupId = Convert.toInt(getModel().getSelectedGroup(), IntegerParserConfig.LENIENT_F);
-            boolean userSelectedOnly = getModel().isUserSelectedOnly();
             int from = StringUtils.isEmpty(getModel().getSelectedStatusFrom()) ? -1 : Integer.parseInt(getModel().getSelectedStatusFrom());
             int to = Integer.parseInt(getModel().getSelectedStatusTo());
             AcademicInternshipStatus toObj = pi.findInternshipStatus(to);
 
-            if (userSelectedOnly && boardId < 0 && groupId < 0) {
-                List<AcademicInternship> all = pi.findInternships(-1, groupId, boardId, -1, -1, true);
-                Set<String> selectionIdList = new HashSet<>(getModel().getSelectionIdList());
-                for (AcademicInternship ii : all) {
-                    AcademicInternshipStatus s = ii.getInternshipStatus();
-                    if (s != null && (s.getId() == from || selectionIdList.contains(String.valueOf(ii.getId())))) {
-                        ii.setInternshipStatus(toObj);
-                        pu.merge(ii);
-                    }
-                }
-            } else {
-                List<AcademicInternship> all = pi.findInternships(-1, groupId, boardId, -1, -1, true);
-                for (AcademicInternship ii : all) {
-                    AcademicInternshipStatus s = ii.getInternshipStatus();
-                    if (s != null && s.getId() == from) {
-                        ii.setInternshipStatus(toObj);
-                        pu.merge(ii);
-                    }
+            List<AcademicInternship> all = pi.findInternships(-1, groupId, boardId, -1, -1, true);
+            for (AcademicInternship ii : all) {
+                AcademicInternshipStatus s = ii.getInternshipStatus();
+                if (s != null && s.getId() == from) {
+                    ii.setInternshipStatus(toObj);
+                    pu.merge(ii);
                 }
             }
+            fireEventExtraDialogClosed();
         }
         //
         //VrApp.getBean(AcademicPlugin.class).generateInternships(getModel().getInternship(), getModel().getProfile());
@@ -163,6 +189,7 @@ public class UpdateStatusInternshipsActionCtrl {
         private String message;
         private List<String> selectionIdList;
         private AcademicInternship internship;
+        private String selectedInternshipType;
         private String selectedBoard;
         private String selectedGroup;
         private String selectedStatusFrom;
@@ -171,6 +198,23 @@ public class UpdateStatusInternshipsActionCtrl {
         private List<SelectItem> boards = new ArrayList<SelectItem>();
         private List<SelectItem> groups = new ArrayList<SelectItem>();
         private List<SelectItem> statuses = new ArrayList<SelectItem>();
+        private List<SelectItem> internshipTypes = new ArrayList<SelectItem>();
+
+        public String getSelectedInternshipType() {
+            return selectedInternshipType;
+        }
+
+        public void setSelectedInternshipType(String selectedInternshipType) {
+            this.selectedInternshipType = selectedInternshipType;
+        }
+
+        public List<SelectItem> getInternshipTypes() {
+            return internshipTypes;
+        }
+
+        public void setInternshipTypes(List<SelectItem> internshipTypes) {
+            this.internshipTypes = internshipTypes;
+        }
 
         public AcademicInternship getInternship() {
             return internship;

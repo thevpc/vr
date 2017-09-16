@@ -14,7 +14,13 @@ import net.vpc.upa.config.*;
  */
 @Entity
 @Path("/Education/Evaluation")
-public class AcademicFeedback {
+@Properties(
+        {
+                @Property(name = "ui.auto-filter.session", value = "{expr='this.session',order=1}"),
+                @Property(name = "ui.auto-filter.model", value = "{expr='this.model',order=2}"),
+                @Property(name = "ui.auto-filter.student", value = "{expr='this.student',order=3}"),
+        }
+)public class AcademicFeedback {
 
     @Id
     @Sequence

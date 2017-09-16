@@ -133,23 +133,32 @@ public class GenerateLoadDialogCtrl {
 
 
     public void onGenerate() {
-        try {
-            AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-            int periodId = getPeriodId();
-            setVersion(periodId, getModel().getVersion());
-            getModel().setGenerationProgress(0);
-            p.generateTeachingLoad(periodId, CourseAssignmentFilter.NO_INTENTS, getModel().getVersion(), getModel().getOldVersion(), new AbstractProgressMonitor() {
-                @Override
-                protected void onProgress(double progress, ProgressMessage message) {
-                    getModel().setGenerationProgress(progress*100);
+        UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                try {
+                    AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
+                    int periodId = getPeriodId();
+                    String version = getModel().getVersion();
+                    if(StringUtils.isEmpty(version)){
+                        version="temp-version";
+                    }
+                    setVersion(periodId, version);
+                    getModel().setGenerationProgress(0);
+                    p.generateTeachingLoad(periodId, CourseAssignmentFilter.NO_INTENTS, version, getModel().getOldVersion(), new AbstractProgressMonitor() {
+                        @Override
+                        protected void onProgress(double progress, ProgressMessage message) {
+                            getModel().setGenerationProgress(progress*100);
+                        }
+                    });
+                    FacesUtils.addInfoMessage("Successful Operation");
+                } catch (Exception ex) {
+                    Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                    FacesUtils.addErrorMessage(ex.getMessage());
                 }
-            });
-            FacesUtils.addInfoMessage("Successful Operation");
-        } catch (Exception ex) {
-            Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);
-            FacesUtils.addErrorMessage(ex.getMessage());
-        }
-        fireEventExtraDialogClosed();
+                fireEventExtraDialogClosed();
+            }
+        });
     }
 
     public Model getModel() {

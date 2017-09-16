@@ -38,7 +38,7 @@
     <orderEntry type="library" name="Maven: net.sourceforge.jexcelapi:jxl:2.6.10" level="project" />
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.14" level="project" />
     <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-strings:1.2.7" level="project" />
-    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-utils:1.7" level="project" />
+    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-utils:1.8" level="project" />
     <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-io:1.3.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.3.1" level="project" />
     <orderEntry type="module" module-name="vfs" />
@@ -56,8 +56,6 @@
     <orderEntry type="library" name="Maven: de.fau.cs.osr.utils:utils:2.1.0" level="project" />
     <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.2" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jopt-simple:jopt-simple:4.3" level="project" />
-    <orderEntry type="library" name="Maven: junit:junit:4.12" level="project" />
-    <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:1.4" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-web:4.1.2.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:4.1.2.RELEASE" level="project" />
@@ -113,6 +111,72 @@
     <orderEntry type="library" name="Maven: stax:stax-api:1.0.1" level="project" />
     <orderEntry type="module" module-name="vr-academic-profile-service" />
     <orderEntry type="module" module-name="vr-academic-service" />
+    <orderEntry type="library" name="Maven: net.vpc.scholar:hadrumaths:3.1.16" level="project" />
+    <orderEntry type="library" name="Maven: org.jfree:jfreechart:1.0.19" level="project" />
+    <orderEntry type="library" name="Maven: org.jfree:jcommon:1.0.23" level="project" />
+    <orderEntry type="library" name="Maven: org.jzy3d:jzy3d-api:1.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.jzy3d:jzy3d-jdt-core:1.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt-main:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:natives-android-aarch64:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:natives-android-armv6:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:natives-linux-amd64:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:natives-linux-armv6:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:natives-linux-armv6hf:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:natives-linux-i586:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:natives-macosx-universal:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:natives-solaris-amd64:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:natives-solaris-i586:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:natives-windows-amd64:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:natives-windows-i586:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all-main:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:natives-android-aarch64:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:natives-android-armv6:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:natives-linux-amd64:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:natives-linux-armv6:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:natives-linux-armv6hf:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:natives-linux-i586:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:natives-macosx-universal:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:natives-solaris-amd64:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:natives-solaris-i586:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:natives-windows-amd64:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:natives-windows-i586:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.smurn:jply:0.2.1" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.jmatio:jmatio:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.miglayout:miglayout:3.7.4" level="project" />
+    <orderEntry type="library" name="Maven: net.sf.opencsv:opencsv:2.1" level="project" />
+    <orderEntry type="library" name="Maven: junit:junit:4.11" level="project" />
+    <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derby:10.13.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyclient:10.13.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.scalanlp:jblas:1.2.1" level="project" />
+    <orderEntry type="library" name="Maven: de.mukis:de.mukis.jama:2.0.0.M1" level="project" />
+    <orderEntry type="library" name="Maven: com.nativelibs4java:javacl:1.0.0-RC2" level="project" />
+    <orderEntry type="library" name="Maven: com.nativelibs4java:javacl-core:1.0.0-RC2" level="project" />
+    <orderEntry type="library" name="Maven: com.nativelibs4java:opencl4java:1.0.0-RC2" level="project" />
+    <orderEntry type="library" name="Maven: com.nativelibs4java:bridj:0.6.1" level="project" />
+    <orderEntry type="library" name="Maven: com.google.android.tools:dx:1.7" level="project" />
+    <orderEntry type="library" name="Maven: com.nativelibs4java:nativelibs4java-utils:1.4" level="project" />
+    <orderEntry type="library" name="Maven: org.ojalgo:ojalgo:31.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-math3:3.2" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.f2j:arpack_combined_all:0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil.netlib:core:1.1.2" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil.netlib:netlib-native_ref-osx-x86_64:natives:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil.netlib:native_ref-java:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil:jniloader:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil.netlib:netlib-native_ref-linux-x86_64:natives:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil.netlib:netlib-native_ref-linux-i686:natives:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil.netlib:netlib-native_ref-win-x86_64:natives:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil.netlib:netlib-native_ref-win-i686:natives:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil.netlib:netlib-native_ref-linux-armhf:natives:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil.netlib:netlib-native_system-osx-x86_64:natives:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil.netlib:native_system-java:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil.netlib:netlib-native_system-linux-x86_64:natives:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil.netlib:netlib-native_system-linux-i686:natives:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil.netlib:netlib-native_system-linux-armhf:natives:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil.netlib:netlib-native_system-win-x86_64:natives:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fommil.netlib:netlib-native_system-win-i686:natives:1.1" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jgap:jgap:3.4.4" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.3" level="project" />
     <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:2.0.2" level="project" />

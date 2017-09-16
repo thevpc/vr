@@ -1139,6 +1139,10 @@ td.vr-mailbox-name label {
 
 }
 
+.vr-form-control{
+ max-width: 800px;
+}
+
 .vr-form-calendar-text{
     border-width: 0px;
     margin-left: -10px;
@@ -1170,13 +1174,36 @@ span.ui-autocomplete.vr-form-control-with-button60{
     width: calc(100% - 65px) !important;
 }
 
+.vr-form-button-w180{
+    width: 180px;
+}
+
+.vr-form-button-w120{
+    width: 120px;
+}
+
+.vr-form-button-w60{
+    width: 60px;
+}
+
+.vr-form-button-group{
+    float: right;
+    margin-top: 5px;
+}
+
+.vr-form-button{
+    margin-left: 5px;
+}
 
 .vr-form-button-icon-only{
     width: 25px;
 }
 
-.vr-from-selected-many-selected {
+.vr-form-selected-many-selected {
     color: #3c8dbc !important;
+}
+.vr-form-inline-component {
+    margin-left: 10px;
 }
 
 
@@ -1250,4 +1277,11 @@ span.ui-autocomplete.vr-form-control:focus{
 .vr-spinner > input{
     width: 97%;
     height: 100%;
+}
+
+.vr-form-dialog-container{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
 }

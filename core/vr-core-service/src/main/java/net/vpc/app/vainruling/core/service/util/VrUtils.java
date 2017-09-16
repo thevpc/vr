@@ -820,4 +820,18 @@ public class VrUtils {
         }
 
     }
+
+    public static String prepareParseInt(String value){
+        if(value==null){
+            value="";
+        }
+        String s = value.toString().trim();
+        if (s.contains(",") && !s.contains(".")) {
+            s = s.replace(',', '.');
+        }
+        if (s.isEmpty()) {
+            s = "0";
+        }
+        return s;
+    }
 }

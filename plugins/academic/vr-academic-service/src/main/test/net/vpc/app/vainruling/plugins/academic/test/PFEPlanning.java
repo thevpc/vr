@@ -49,11 +49,7 @@ public class PFEPlanning {
 
         PlanningActivityTable t = new PlanningActivityTable();
         t.addGeneratedRooms("R", 8);
-        try {
-            t.addGeneratedTimes("2016-06-27", days, "08:30", 60, 6);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        t.addGeneratedTimes("2016-06-27", days, "08:30", 60, 6);
         for (AcademicInternship academicInternship : internshipsList) {
             if (academicInternship.getSupervisor() == null) {
                 String internshipName = academicInternship.getCode() + " - " + academicInternship.getName() + " - " + academicInternship.getStudent().resolveFullName();

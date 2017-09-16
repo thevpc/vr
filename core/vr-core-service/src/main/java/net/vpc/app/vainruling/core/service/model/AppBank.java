@@ -19,8 +19,8 @@ import java.sql.Timestamp;
 @Path("Contact")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.country", value = "{expr='country',order=1}"),
-                @Property(name = "ui.auto-filter.governorate", value = "{expr='governorate',order=2}"),
+                @Property(name = "ui.auto-filter.country", value = "{expr='this.country',order=1}"),
+                @Property(name = "ui.auto-filter.governorate", value = "{expr='this.governorate',order=2}"),
         })
 public class AppBank {
 

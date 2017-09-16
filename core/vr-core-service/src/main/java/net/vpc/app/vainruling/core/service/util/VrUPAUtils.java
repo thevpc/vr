@@ -142,6 +142,7 @@ public class VrUPAUtils {
             if (type instanceof StringType) {
                 return "";
             }
+            return null;
         }
         Gson g = new Gson();
         JsonElement jsonElement = g.fromJson(value, JsonElement.class);
@@ -156,7 +157,7 @@ public class VrUPAUtils {
             Relationship r = ((ManyToOneType) type).getRelationship();
             Entity entity = r.getTargetEntity();
             Object o = jsonToObj(value, entity.getDataType());
-            return entity.getBuilder().idToObject(o);
+            return o;
         } else if (type instanceof KeyType) {
             Entity entity = ((KeyType) type).getEntity();
 
@@ -171,14 +172,14 @@ public class VrUPAUtils {
                         for (PrimitiveField idPrimitiveField : idPrimitiveFields) {
                             vals.add(jsonToObj(value, idPrimitiveField.getDataType()));
                         }
-                        return entity.getBuilder().primitiveIdToId(vals.toArray());
+                        return entity.getBuilder().idToObject(entity.getBuilder().primitiveIdToId(vals.toArray()));
                     } else if (idPrimitiveFields.size() == 1) {
-                        return jsonToObj(value, idPrimitiveFields.get(0).getDataType());
+                        return entity.getBuilder().idToObject(jsonToObj(value, idPrimitiveFields.get(0).getDataType()));
                     } else {
                         throw new IllegalArgumentException("Unexpected");
                     }
                 } else {
-                    return jsonPrimitiveToValue(value, dataType);
+                    return entity.getBuilder().idToObject(jsonPrimitiveToValue(value, dataType));
                 }
             } else {
                 throw new IllegalArgumentException("Multi id entities not Supported yet");
@@ -253,6 +254,9 @@ public class VrUPAUtils {
             return objToJson(value,((ManyToOneType) type).getRelationship().getTargetEntity().getDataType());
         }else if (type instanceof KeyType) {
             Entity entity=((KeyType) type).getEntity();
+            if(entity.isInstance(value)){
+                value=entity.getBuilder().objectToId(value);
+            }
             PrimitiveId primitiveId = (value instanceof PrimitiveId) ? (PrimitiveId) value:entity.getBuilder().idToPrimitiveId(value);
             if (primitiveId == null) {
                 return new JsonPrimitive("");

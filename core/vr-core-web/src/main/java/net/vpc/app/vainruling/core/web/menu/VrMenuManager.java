@@ -319,6 +319,12 @@ public class VrMenuManager {
                     }
                 }
             }
+            if(d.getEnabler()!=null){
+                if(!d.getEnabler().isEnabled(d)){
+                    log.warning("Illegal Access to " + command + " by " + UserSession.getCurrentUser());
+                    return gotoPage("publicIndex", "");
+                }
+            }
         }
         setPageCtrl(o);
         PlatformReflector.InstanceInvoker[] mm = PlatformReflector.findInstanceByAnnotation(o, OnPageLoad.class);
@@ -488,7 +494,11 @@ public class VrMenuManager {
                 if (StringUtils.isEmpty(title)) {
                     title = c.title();
                 }
-                VRMenuDef md = new VRMenuDef(title, menu, beanName, "", c.securityKey(), "", c.order(), new VRMenuLabel[0]);
+                ActionEnabler actionEnabler=null;
+                if(b instanceof ActionEnabler){
+                    actionEnabler=(ActionEnabler) b;
+                }
+                VRMenuDef md = new VRMenuDef(title, menu, beanName, "", c.securityKey(),actionEnabler, "", c.order(), new VRMenuLabel[0]);
                 UCtrlData uc = getUCtrlData(md.getType(), md.getCommand());
                 if (uc != null) {
                     md.setName(uc.getTitle());
@@ -496,7 +506,9 @@ public class VrMenuManager {
                 if (md.getSecurityKey() == null
                         || md.getSecurityKey().length() == 0
                         || UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(md.getSecurityKey())) {
-                    menuCtrl.add(md);
+                    if(md.getEnabler()==null || md.getEnabler().isEnabled(md)) {
+                        menuCtrl.add(md);
+                    }
                 }
             }
             if (b instanceof VRMenuDefFactory) {
@@ -507,6 +519,9 @@ public class VrMenuManager {
                         UCtrlData uc = getUCtrlData(md.getType(), md.getCommand());
                         if (uc != null) {
                             md.setName(uc.getTitle());
+                            if(uc.getEnabler()!=null){
+                                md.setEnabler(uc.getEnabler());
+                            }
                         }
                         menuCtrl.add(md);
                     }
@@ -618,7 +633,7 @@ public class VrMenuManager {
 
     private class MenuTree implements TreeDefinition<VRMenuDef> {
 
-        final VRMenuDef root = new VRMenuDef("/", "/", "package", "", "", "", 0, new VRMenuLabel[0]);
+        final VRMenuDef root = new VRMenuDef("/", "/", "package", "", "",null, "", 0, new VRMenuLabel[0]);
         final List<VRMenuDef> autowiredCustomMenusByCtrl = resolveAutowiredCustomMenusByCtrl();
         final HashSet<VRMenuDef> nonVisitedCustomMenus = new HashSet<>(autowiredCustomMenusByCtrl);
         final HashSet<VRMenuDef> visitedCustomMenus = new HashSet<>();
@@ -660,7 +675,7 @@ public class VrMenuManager {
                         } catch (Exception e) {
                             //ignore
                         }
-                        children.add(new VRMenuDef(i18n.get(p), p.getPath(), "package", "", "", i18n.getOrNull("Package." + p0 + ".css-icon-class"), order, new VRMenuLabel[0]));
+                        children.add(new VRMenuDef(i18n.get(p), p.getPath(), "package", "", "", null,i18n.getOrNull("Package." + p0 + ".css-icon-class"), order, new VRMenuLabel[0]));
                     }
                     for (String p : findCustomPaths(t.getPath(), autowiredCustomMenusByCtrl)) {
                         if (!subFolders.contains(p)) {
@@ -679,7 +694,7 @@ public class VrMenuManager {
                                 //ignore
                             }
 
-                            children.add(new VRMenuDef(i18n.get("Package." + p0), p0, "package", "", "", i18n.getOrNull("Package." + p0 + ".css-icon-class"), order, new VRMenuLabel[0]));
+                            children.add(new VRMenuDef(i18n.get("Package." + p0), p0, "package", "", "", null,i18n.getOrNull("Package." + p0 + ".css-icon-class"), order, new VRMenuLabel[0]));
                         }
                     }
                     for (VRMenuDef p : findCustomMenus(t.getPath(), autowiredCustomMenusByCtrl)) {
@@ -703,7 +718,7 @@ public class VrMenuManager {
                                             ee.getAbsoluteName() + ".DefaultEditor")) {
                                         int order = 100;
                                         //UCtrlData d = ;
-                                        VRMenuDef md = new VRMenuDef(i18n.get(ee), t.getPath(), "obj", "{entity:'" + ee.getName() + "'}", "", "", 100, new VRMenuLabel[0]);
+                                        VRMenuDef md = new VRMenuDef(i18n.get(ee), t.getPath(), "obj", "{entity:'" + ee.getName() + "'}", "",null, "", 100, new VRMenuLabel[0]);
                                         UCtrlData uc = getUCtrlData(md.getType(), md.getCommand());
                                         if (uc != null) {
                                             md.setName(uc.getTitle());
@@ -727,7 +742,7 @@ public class VrMenuManager {
                                         if (UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(
                                                 ee.getAbsoluteName() + ".DefaultEditor")) {
                                             int order = 100;
-                                            VRMenuDef md = new VRMenuDef(i18n.get(ee), t.getPath(), "obj", "{entity:'" + ee.getName() + "'}", "", "", 100, new VRMenuLabel[0]);
+                                            VRMenuDef md = new VRMenuDef(i18n.get(ee), t.getPath(), "obj", "{entity:'" + ee.getName() + "'}", "", null,"", 100, new VRMenuLabel[0]);
                                             UCtrlData uc = getUCtrlData(md.getType(), md.getCommand());
                                             if (uc != null) {
                                                 md.setName(uc.getTitle());

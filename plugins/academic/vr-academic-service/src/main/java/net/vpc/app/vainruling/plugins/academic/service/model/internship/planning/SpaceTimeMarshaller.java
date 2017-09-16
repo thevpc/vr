@@ -22,7 +22,11 @@ public class SpaceTimeMarshaller extends BaseMarshaller {
 
     @Override
     public void unmarshall(IChromosome iChromosome, PlanningActivityTableExt activityTable) {
-        int selected = (int) ((iChromosome.getGene(getIndex())).getAllele());
+        Object allele = (iChromosome.getGene(getIndex())).getAllele();
+        if(allele==null){
+            return;
+        }
+        int selected = (int) allele;
         PlanningSpaceTime value = activityTable.getSpaceTimes().get(selected);
 
         PlanningActivity activity = activityTable.getTable().getActivities().get(getActivity());

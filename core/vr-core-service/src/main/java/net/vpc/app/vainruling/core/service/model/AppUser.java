@@ -23,11 +23,11 @@ import java.sql.Timestamp;
 @Path("Contact")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),
-                @Property(name = "ui.auto-filter.type", value = "{expr='type',order=2}"),
-                @Property(name = "ui.auto-filter.company", value = "{expr='contact.company',order=3}"),
-                @Property(name = "ui.auto-filter.positionTitle1", value = "{expr='contact.positionTitle1',order=4}"),
-                @Property(name = "ui.auto-filter.company", value = "{expr='contact.company',order=5}"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='this.department',order=1}"),
+                @Property(name = "ui.auto-filter.type", value = "{expr='this.type',order=2}"),
+                @Property(name = "ui.auto-filter.company", value = "{expr='this.contact.company',order=3}"),
+                @Property(name = "ui.auto-filter.positionTitle1", value = "{expr='this.contact.positionTitle1',order=4}"),
+                @Property(name = "ui.auto-filter.company", value = "{expr='this.contact.company',order=5}"),
                 @Property(name = "ui.main-photo-provider", value = "net.vpc.app.vainruling.core.web.obj.photo.AppUserMainPhotoProvider"),
                 @Property(name = UIConstants.ENTITY_TEXT_SEARCH_FACTORY, value = "net.vpc.app.vainruling.core.service.obj.AppUserObjSearchFactory")
         })

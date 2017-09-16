@@ -5,12 +5,20 @@
  */
 package net.vpc.app.vainruling.core.service.agent;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.upa.AccessLevel;
+import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
+import net.vpc.upa.Relationship;
 import net.vpc.upa.callbacks.FieldEvent;
+import net.vpc.upa.callbacks.PersistenceUnitEvent;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.config.OnPreCreate;
+import net.vpc.upa.config.OnPreUpdateFormula;
+import net.vpc.upa.config.OnUpdateFormula;
 import net.vpc.upa.exceptions.UPAException;
+import net.vpc.upa.extensions.HierarchyExtension;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -31,6 +39,29 @@ public class VRDefaultFieldsCallback {
             f.setPersistAccessLevel(AccessLevel.PRIVATE);
             f.setUpdateAccessLevel(AccessLevel.PROTECTED);
             f.setReadAccessLevel(AccessLevel.PROTECTED);
+        }
+    }
+
+    @OnUpdateFormula
+    public void onUpdateFormulas(PersistenceUnitEvent event) {
+        for (Entity entity : event.getPersistenceUnit().getEntities()) {
+            boolean h=false;
+            for (Relationship relationship : entity.getRelationships()) {
+                HierarchyExtension hierarchyExtension = relationship.getHierarchyExtension();
+                if(hierarchyExtension!=null){
+                    h=true;
+                    break;
+                }
+            }
+            if(h){
+                for (Object o : entity.createQueryBuilder().setLazyListLoadingEnabled(true).getResultList()) {
+                    try {
+                        entity.merge(o);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
     }
 

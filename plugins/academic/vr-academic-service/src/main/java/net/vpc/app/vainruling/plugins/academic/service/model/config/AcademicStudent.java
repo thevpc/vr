@@ -10,10 +10,7 @@ import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicBac;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicPreClass;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicPreClassType;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
@@ -28,9 +25,9 @@ import java.util.Objects;
 @Path("Contact")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),
-                @Property(name = "ui.auto-filter.lastClass1", value = "{expr='lastClass1',order=2}"),
-                @Property(name = "ui.auto-filter.stage", value = "{expr='stage',order=3}"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='this.department',order=1}"),
+                @Property(name = "ui.auto-filter.lastClass1", value = "{expr='this.lastClass1',order=2}"),
+                @Property(name = "ui.auto-filter.stage", value = "{expr='this.stage',order=3}"),
                 @Property(name = "ui.main-photo-provider", value = "net.vpc.app.vainruling.plugins.academic.web.photo.AcademicStudentMainPhotoProvider"),
                 @Property(name = UIConstants.ENTITY_TEXT_SEARCH_FACTORY, value = "net.vpc.app.vainruling.plugins.academic.service.util.AcademicStudentObjSearchFactory")
         }
@@ -51,6 +48,8 @@ public class AcademicStudent {
     private AcademicClass lastClass1;
     private AcademicClass lastClass2;
     private AcademicClass lastClass3;
+    private int failureCount;
+    private int registrationWithdrawalCount ;
     @Summary
     private AcademicStudentStage stage = AcademicStudentStage.ATTENDING;
 
@@ -64,7 +63,16 @@ public class AcademicStudent {
     private AcademicPreClass preClass;
     private AcademicPreClassType preClassType;
     private int preClassRank;
+    private int preClassRank2;
+    private int preClassRankByProgram;
+    private int preClassChoice;
     private int preClassRankMax;
+    private AcademicPreClassChoice preClassChoice1;
+    private String preClassChoice1Other;
+    private AcademicPreClassChoice preClassChoice2;
+    private String preClassChoice2Other;
+    private AcademicPreClassChoice preClassChoice3;
+    private String preClassChoice3Other;
     private AcademicBac baccalaureateClass;
     private double baccalaureateScore;
     private double preClassScore;
@@ -379,4 +387,91 @@ public class AcademicStudent {
         return c==null?String.valueOf(getId()): c.getFullTitle();
     }
 
+    public int getPreClassRank2() {
+        return preClassRank2;
+    }
+
+    public void setPreClassRank2(int preClassRank2) {
+        this.preClassRank2 = preClassRank2;
+    }
+
+    public int getPreClassRankByProgram() {
+        return preClassRankByProgram;
+    }
+
+    public void setPreClassRankByProgram(int preClassRankByProgram) {
+        this.preClassRankByProgram = preClassRankByProgram;
+    }
+
+    public int getPreClassChoice() {
+        return preClassChoice;
+    }
+
+    public void setPreClassChoice(int preClassChoice) {
+        this.preClassChoice = preClassChoice;
+    }
+
+    public AcademicPreClassChoice getPreClassChoice1() {
+        return preClassChoice1;
+    }
+
+    public void setPreClassChoice1(AcademicPreClassChoice preClassChoice1) {
+        this.preClassChoice1 = preClassChoice1;
+    }
+
+    public String getPreClassChoice1Other() {
+        return preClassChoice1Other;
+    }
+
+    public void setPreClassChoice1Other(String preClassChoice1Other) {
+        this.preClassChoice1Other = preClassChoice1Other;
+    }
+
+    public AcademicPreClassChoice getPreClassChoice2() {
+        return preClassChoice2;
+    }
+
+    public void setPreClassChoice2(AcademicPreClassChoice preClassChoice2) {
+        this.preClassChoice2 = preClassChoice2;
+    }
+
+    public String getPreClassChoice2Other() {
+        return preClassChoice2Other;
+    }
+
+    public void setPreClassChoice2Other(String preClassChoice2Other) {
+        this.preClassChoice2Other = preClassChoice2Other;
+    }
+
+    public AcademicPreClassChoice getPreClassChoice3() {
+        return preClassChoice3;
+    }
+
+    public void setPreClassChoice3(AcademicPreClassChoice preClassChoice3) {
+        this.preClassChoice3 = preClassChoice3;
+    }
+
+    public String getPreClassChoice3Other() {
+        return preClassChoice3Other;
+    }
+
+    public void setPreClassChoice3Other(String preClassChoice3Other) {
+        this.preClassChoice3Other = preClassChoice3Other;
+    }
+
+    public int getFailureCount() {
+        return failureCount;
+    }
+
+    public void setFailureCount(int failureCount) {
+        this.failureCount = failureCount;
+    }
+
+    public int getRegistrationWithdrawalCount() {
+        return registrationWithdrawalCount;
+    }
+
+    public void setRegistrationWithdrawalCount(int registrationWithdrawalCount) {
+        this.registrationWithdrawalCount = registrationWithdrawalCount;
+    }
 }

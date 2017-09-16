@@ -18,6 +18,7 @@ import net.vpc.app.vainruling.core.service.obj.AppEntityExtendedPropertiesProvid
 import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.Start;
+import net.vpc.app.vainruling.core.service.util.VrPasswordStrategyRandom;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
@@ -549,7 +550,7 @@ public class MailboxPlugin {
             m.setCategory("Welcome");
             m.getProperties().setProperty("new_user_login", u.getLogin());
             if (StringUtils.isEmpty(u.getPasswordAuto())) {
-                u.setPasswordAuto(core.resolvePasswordProposal(u.getContact()));
+                u.setPasswordAuto(VrPasswordStrategyRandom.INSTANCE.generatePassword(u.getContact()));
                 u.setPassword(u.getPasswordAuto());
                 UPA.getContext().invokePrivileged(TraceService.makeSilenced(new VoidAction() {
                     @Override

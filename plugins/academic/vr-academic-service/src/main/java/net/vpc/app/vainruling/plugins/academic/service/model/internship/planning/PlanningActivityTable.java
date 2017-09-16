@@ -84,6 +84,9 @@ public class PlanningActivityTable {
         getActivities().add(activity);
     }
 
+    public void addActivity(PlanningActivity internship) {
+        getActivities().add(internship);
+    }
     public void addActivity(PlanningInternship internship) {
         getActivities().add(new PlanningActivity(internship));
     }
@@ -180,15 +183,25 @@ public class PlanningActivityTable {
         getRooms().addAll(all);
     }
 
-    public void addGeneratedTimes(String startDateOnly, int days, String startTimeOnly, int minutesPerSession, int sessionsPerDay) throws ParseException {
+    public void addGeneratedTimes(String startDateOnly, int days, String startTimeOnly, int minutesPerSession, int sessionsPerDay) {
         SimpleDateFormat sdf = PlanningTime.DEFAULT_FORMAT;
-        Date d = sdf.parse(startDateOnly + " " + startTimeOnly);
+        Date d = null;
+        try {
+            d = sdf.parse(startDateOnly + " " + startTimeOnly);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(e);
+        }
         addGeneratedTimes(d, days, minutesPerSession, sessionsPerDay);
     }
 
-    public void addGeneratedTimes(String startDate, int days, int minutesPerSession, int sessionsPerDay) throws ParseException {
+    public void addGeneratedTimes(String startDate, int days, int minutesPerSession, int sessionsPerDay) {
         SimpleDateFormat sdf = PlanningTime.DEFAULT_FORMAT;
-        Date d = sdf.parse(startDate);
+        Date d = null;
+        try {
+            d = sdf.parse(startDate);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(e);
+        }
         addGeneratedTimes(d, days, minutesPerSession, sessionsPerDay);
     }
 
@@ -260,5 +273,12 @@ public class PlanningActivityTable {
         persons.addAll(getChairs());
         persons.addAll(getExaminers());
         return new ArrayList<>(persons);
+    }
+
+    @Override
+    public String toString() {
+        return "PlanningActivityTable{" +
+                "activities=" + activities +
+                '}';
     }
 }

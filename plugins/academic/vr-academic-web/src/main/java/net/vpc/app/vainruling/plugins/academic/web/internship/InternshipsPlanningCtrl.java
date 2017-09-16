@@ -537,7 +537,7 @@ public class InternshipsPlanningCtrl {
         t.addGeneratedRooms("R", getModel().getGenerationRoomPerDay());
         try {
             t.addGeneratedTimes(getModel().getGenerationStartDate().trim() + " " + getModel().getGenerationStartTime().trim(), getModel().getGenerationDays(), getModel().getGenerationMinutesPerSession(), getModel().getGenerationSessionsPerDay());
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         for (AcademicInternship academicInternship : getModel().getInternshipsList()) {

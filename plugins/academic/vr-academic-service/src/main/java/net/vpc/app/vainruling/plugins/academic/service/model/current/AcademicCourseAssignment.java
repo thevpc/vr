@@ -24,21 +24,21 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSeme
 @Path("Education/Load")
 @Properties(
         {
-            @Property(name = "ui.auto-filter.period", value = "{expr='coursePlan.period',order=1}")
+            @Property(name = "ui.auto-filter.period", value = "{expr='this.coursePlan.period',order=1}")
             ,
-                @Property(name = "ui.auto-filter.department", value = "{expr='coursePlan.courseLevel.academicClass.program.department',order=2}")
+                @Property(name = "ui.auto-filter.department", value = "{expr='this.coursePlan.courseLevel.academicClass.program.department',order=2}")
             ,
-                @Property(name = "ui.auto-filter.ownerDepartment", value = "{expr='ownerDepartment',order=3}")
+                @Property(name = "ui.auto-filter.ownerDepartment", value = "{expr='this.ownerDepartment',order=3}")
             ,
-                @Property(name = "ui.auto-filter.programType", value = "{expr='coursePlan.courseLevel.academicClass.program.programType',order=4}")
+                @Property(name = "ui.auto-filter.programType", value = "{expr='this.coursePlan.courseLevel.academicClass.program.programType',order=4}")
             ,
-                @Property(name = "ui.auto-filter.program", value = "{expr='coursePlan.courseLevel.academicClass.program',order=5}")
+                @Property(name = "ui.auto-filter.program", value = "{expr='this.coursePlan.courseLevel.academicClass.program',order=5}")
             ,
-                @Property(name = "ui.auto-filter.courseType", value = "{expr='courseType',order=6}")
+                @Property(name = "ui.auto-filter.courseType", value = "{expr='this.courseType',order=6}")
             ,
-                @Property(name = "ui.auto-filter.class", value = "{expr='coursePlan.courseLevel.academicClass',order=7}")
+                @Property(name = "ui.auto-filter.class", value = "{expr='this.coursePlan.courseLevel.academicClass',order=7}")
             ,
-                @Property(name = "ui.auto-filter.teacher", value = "{expr='teacher',order=8}")
+                @Property(name = "ui.auto-filter.teacher", value = "{expr='this.teacher',order=8}")
         }
 )
 public class AcademicCourseAssignment {

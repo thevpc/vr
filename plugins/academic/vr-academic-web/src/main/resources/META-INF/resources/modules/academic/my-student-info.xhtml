@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+
+>
+
+<h:head>
+</h:head>
+
+<h:body>
+
+
+    <!--@elvariable id="myStudentInfoCtrl" type="net.vpc.app.vainruling.plugins.academic.web.MyStudentInfoCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <ui:composition template="#{vr.privateTemplatePath}" enctype="multipart/form-data">
+        <ui:define name="content">
+            <h:form id="listForm">
+                <p:messages id="messages"/>
+                <div class="row">
+
+                    <div class="col-md-9 col-sm-6 col-xs-12">
+                        <div class="info-box #{myStudentInfoCtrl.model.completion eq 100 ?'bg-green':'bg-red'}">
+                            <span class="info-box-icon"><i class="fa fa-graduation-cap"></i></span>
+
+                            <div class="info-box-content">
+                                <span class="info-box-text">Profil rempli à : #{vr.dblCustomFormat(myStudentInfoCtrl.model.completion,"00.00")}%</span>
+                                <div class="progress">
+                                    <div class="progress-bar"
+                                         style="width: #{myStudentInfoCtrl.model.completion}%"></div>
+                                </div>
+                                <span class="progress-description">#{myStudentInfoCtrl.model.completion eq 100 ? 'Informations complètes' :'Merci de remplir les informations manquantes'}</span>
+                            </div>
+                            <!-- /.info-box-content -->
+                        </div>
+                        <!-- /.info-box -->
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="card text-white bg-dark mb-3" style="width: 20rem;">
+                            <img src="#{myStudentInfoCtrl.model.student.user eq null ? '' : vr.url(vr.getUserPhoto(myStudentInfoCtrl.model.student.user.id))}"
+                                 class="img-circle" alt="User Image"
+                                 style="height: 100px;"
+                            />
+                            <div class="card-body">
+                                <h4 class="card-title">Photo de profil</h4>
+                                <!--<p class="card-text">Votre photo peut etre mise a jour en cliquant sur ce bouton  : </p>-->
+                                <p:commandButton class="btn btn-outline-primary"
+                                                 actionListener="#{myStudentInfoCtrl.onRequestUploadPhoto}"
+                                                 value="changer photo..."
+
+                                />
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div>
+                    <div class="table-responsive">
+                        <p:tabView>
+                            <p:tab title="Identité">
+
+
+                                <div class="form-group">
+                                    <label>CIN</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.contact.nin}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label>N° Inscription</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.subscriptionNumber}"
+                                                 disabled="#{myStudentInfoCtrl.model.insertMode}"
+                                    />
+                                </div>
+                                <div class="form-group">
+                                    <label>Prénom</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.contact.firstName}"
+                                                 disabled="#{myStudentInfoCtrl.model.insertMode}"
+                                    />
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Nom</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.contact.lastName}"
+                                                 disabled="#{myStudentInfoCtrl.model.insertMode}"
+                                    />
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Nom (ar)</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.contact.lastName2}"
+                                                 disabled="#{myStudentInfoCtrl.model.insertMode}"
+                                    />
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Prénom (ar)</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.contact.firstName2}"
+                                                 disabled="#{myStudentInfoCtrl.model.insertMode}"
+                                    />
+                                </div>
+                                <div class="form-group">
+                                    <label>Genre</label>
+                                    <p:selectOneRadio class=""
+                                                      value="#{myStudentInfoCtrl.model.student.contact.gender}"
+                                                      converter="#{vr.entityObjConverter('AppGender')}"
+                                                      disabled="#{myStudentInfoCtrl.model.insertMode}"
+                                    >
+                                        <f:selectItems
+                                                value="#{vr.entitySelectItems('AppGender',true,false)}"/>
+                                    </p:selectOneRadio>
+                                </div>
+                                <div class="form-group">
+                                    <label>Civitlité</label>
+                                    <p:selectOneRadio class=""
+                                                      value="#{myStudentInfoCtrl.model.student.contact.civility}"
+                                                      converter="#{vr.entityObjConverter('AppCivility')}"
+                                    >
+                                        <f:selectItems
+                                                value="#{vr.entitySelectItems('AppCivility',true,false)}"/>
+                                    </p:selectOneRadio>
+                                </div>
+
+                            </p:tab>
+                            <p:tab title="Contact">
+
+                                <div class="form-group">
+                                    <label>GSM (98 222 333)</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.contact.phone1}"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Autre Numero (98 222 333)</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.contact.phone2}"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.contact.email}"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Autre Email</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.contact.email2}"/>
+                                </div>
+
+                            </p:tab>
+                            <p:tab title="1er Cycle (Prepa/License)">
+                                <div class="form-group">
+                                    <label>1er cycle</label>
+                                    <p:selectOneMenu class="form-control vr-form-control"
+                                                     value="#{myStudentInfoCtrl.model.student.preClass}"
+                                                     converter="#{vr.entityObjConverter('AcademicPreClass')}">
+                                        <f:selectItems value="#{vr.entitySelectItems('AcademicPreClass',true,false)}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Type 1er cycle</label>
+                                    <p:selectOneMenu class="form-control vr-form-control"
+                                                     value="#{myStudentInfoCtrl.model.student.preClassType}"
+                                                     converter="#{vr.entityObjConverter('AcademicPreClassType')}">
+                                        <f:selectItems
+                                                value="#{vr.entitySelectItems('AcademicPreClassType',true,false)}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Moyenne annuelle</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.preClassScore}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label>Rang 1er cycle</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.preClassRank}"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Rang Max 1er cycle</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.preClassRankMax}"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Rang majoré+15 Max 1er cycle</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.preClassRank2}"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Rang dans l'affectation</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.preClassRankByProgram}"/>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Entree">
+                                <div class="form-group">
+                                    <label>L'affectation correspond a quel choix?</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.preClassChoice}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label>1er choix en fin de 1er cycle</label>
+                                    <p:selectOneMenu class="form-control vr-form-control"
+                                                     value="#{myStudentInfoCtrl.model.student.preClassChoice1}"
+                                                     converter="#{vr.entityObjConverter('AcademicPreClassChoice')}">
+                                        <f:selectItems
+                                                value="#{vr.entitySelectItems('AcademicPreClassChoice',true,false)}"/>
+                                    </p:selectOneMenu>
+                                    <p:inputText class="form-control vr-form-control" a:placeholder="Autre..."
+                                                 value="#{myStudentInfoCtrl.model.student.preClassChoice1Other}"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>2eme choix en fin de 1er cycle</label>
+                                    <p:selectOneMenu class="form-control vr-form-control"
+                                                     value="#{myStudentInfoCtrl.model.student.preClassChoice2}"
+                                                     converter="#{vr.entityObjConverter('AcademicPreClassChoice')}">
+                                        <f:selectItems
+                                                value="#{vr.entitySelectItems('AcademicPreClassChoice',true,false)}"/>
+                                    </p:selectOneMenu>
+                                    <p:inputText class="form-control vr-form-control" a:placeholder="Autre..."
+                                                 value="#{myStudentInfoCtrl.model.student.preClassChoice2Other}"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>3eme choix en fin de 1er cycle</label>
+                                    <p:selectOneMenu class="form-control vr-form-control"
+                                                     value="#{myStudentInfoCtrl.model.student.preClassChoice3}"
+                                                     converter="#{vr.entityObjConverter('AcademicPreClassChoice')}">
+                                        <f:selectItems
+                                                value="#{vr.entitySelectItems('AcademicPreClassChoice',true,false)}"/>
+                                    </p:selectOneMenu>
+                                    <p:inputText class="form-control vr-form-control" a:placeholder="Autre..."
+                                                 value="#{myStudentInfoCtrl.model.student.preClassChoice3Other}"/>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Bac">
+                                <div class="form-group">
+                                    <label>Bac</label>
+                                    <p:selectOneMenu class="form-control vr-form-control"
+                                                     value="#{myStudentInfoCtrl.model.student.baccalaureateClass}"
+                                                     converter="#{vr.entityObjConverter('AcademicBac')}">
+                                        <f:selectItems value="#{vr.entitySelectItems('AcademicBac',true,false)}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Moyenne Bac</label>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 value="#{myStudentInfoCtrl.model.student.baccalaureateScore}"/>
+                                </div>
+                            </p:tab>
+                            <p:tab title="Curriculum">
+                                <div class="form-group">
+                                    <label>CV</label>
+                                    <p:inputText class="form-control vr-form-control" a:placeholder="chemin..."
+                                                 value="#{myStudentInfoCtrl.model.student.curriculumVitae}"
+                                                 disabled="true"/>
+                                </div>
+                            </p:tab>
+                        </p:tabView>
+                        <!--<p:outputLabel value="Classe"/>-->
+                        <!--<p:selectOneMenu value="# {myStudentInfoCtrl.model.student.classId}">-->
+                        <!--<f:selectItem itemLabel="Selectionner ..." itemValue=""/>-->
+                        <!--<f:selectItems value="# {myStudentInfoCtrl.model.classItems}"/>-->
+                        <!--</p:selectOneMenu>-->
+                    </div>
+                </div>
+
+
+                <p:separator/>
+
+                <div>
+                    <div class="btn-group vr-form-button-group">
+                        <p:commandButton action="#{myStudentInfoCtrl.onImport}" value="Enregistrer"
+                                         styleClass="btn btn-primary vr-form-button-group"
+                                         update=":listForm"/>
+                        <p:commandButton action="#{vr.gotoHome}" value="Annuler"
+                                         styleClass="btn btn-secondary vr-form-button-group"
+                                         update=":listForm"/>
+                    </div>
+                </div>
+
+            </h:form>
+
+
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>

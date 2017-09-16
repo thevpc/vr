@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.plugins.academic.teachereval.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
@@ -54,6 +55,13 @@ public class StudentFeedbackCtrl {
 
     @OnPageLoad
     public void onLoad() {
+        ArrayList<SelectItem> items = new ArrayList<>();
+        List<AppPeriod> periods = core.findNavigatablePeriods();
+        for (AppPeriod t : periods) {
+            String n = t.getName();
+            items.add(new SelectItem(String.valueOf(t.getId()), n));
+        }
+        getModel().setPeriods(items);
         onReloadFeedbacks();
     }
 
@@ -81,9 +89,19 @@ public class StudentFeedbackCtrl {
     public void onReloadFeedbacks() {
         AcademicStudent s = academic.getCurrentStudent();
         getModel().setFeedbacks(new ArrayList<SelectItem>());
+        AppPeriod p=null;
+        if(StringUtils.isEmpty(getModel().getPeriodId())){
+            p=core.getCurrentPeriod();
+            //
+        }else {
+            p=core.findPeriod(Integer.parseInt(getModel().getPeriodId()));
+        }
+        if(p==null){
+            p=core.getCurrentPeriod();
+        }
         if (s != null) {
             HashSet<String> ids = new HashSet<>();
-            for (AcademicFeedback f : feedback.findStudentFeedbacks(core.getCurrentPeriod().getId(),s.getId(), false, false, true,true,true)) {
+            for (AcademicFeedback f : feedback.findStudentFeedbacks(p.getId(),s.getId(), false, false, true,true,true)) {
                 getModel().getFeedbacks().add(new SelectItem(String.valueOf(f.getId()), f.getCourse().getFullName() + " - " + academic.getValidName(f.getCourse().getTeacher())));
                 ids.add(String.valueOf(f.getId()));
             }
@@ -171,6 +189,10 @@ public class StudentFeedbackCtrl {
         }
     }
 
+    public void onUpdatePeriod(){
+        onReloadFeedbacks();
+    }
+
     public Model getModel() {
         return model;
     }
@@ -216,9 +238,27 @@ public class StudentFeedbackCtrl {
 
         private String title;
         private String selectedFeedback;
+        private String periodId;
         private List<SelectItem> feedbacks = new ArrayList<SelectItem>();
+        private List<SelectItem> periods = new ArrayList<SelectItem>();
         private AcademicFeedback feedback = null;
         private List<Row> rows = new ArrayList<>();
+
+        public List<SelectItem> getPeriods() {
+            return periods;
+        }
+
+        public void setPeriods(List<SelectItem> periods) {
+            this.periods = periods;
+        }
+
+        public String getPeriodId() {
+            return periodId;
+        }
+
+        public void setPeriodId(String periodId) {
+            this.periodId = periodId;
+        }
 
         public String getTitle() {
             return title;

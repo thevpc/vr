@@ -25,17 +25,17 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSeme
 @Path("Education/StudyPlan")
 @Properties(
         {
-            @Property(name = "ui.auto-filter.period", value = "{expr='period',order=1}")
+            @Property(name = "ui.auto-filter.period", value = "{expr='this.period',order=1}")
             ,
-            @Property(name = "ui.auto-filter.department", value = "{expr='courseLevel.academicClass.program.department',order=2}")
+            @Property(name = "ui.auto-filter.department", value = "{expr='this.courseLevel.academicClass.program.department',order=2}")
             ,
-            @Property(name = "ui.auto-filter.program", value = "{expr='courseLevel.academicClass.program',order=3}")
+            @Property(name = "ui.auto-filter.program", value = "{expr='this.courseLevel.academicClass.program',order=3}")
             ,
-            @Property(name = "ui.auto-filter.programType", value = "{expr='courseLevel.academicClass.program.programType',order=4}")
+            @Property(name = "ui.auto-filter.programType", value = "{expr='this.courseLevel.academicClass.program.programType',order=4}")
             ,
-            @Property(name = "ui.auto-filter.semester", value = "{expr='courseLevel.semester',order=5}")
+            @Property(name = "ui.auto-filter.semester", value = "{expr='this.courseLevel.semester',order=5}")
             ,
-            @Property(name = "ui.auto-filter.class", value = "{expr='courseLevel.academicClass',order=6}")
+            @Property(name = "ui.auto-filter.class", value = "{expr='this.courseLevel.academicClass',order=6}")
         }
 )
 public class AcademicCoursePlan {

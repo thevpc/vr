@@ -26,10 +26,10 @@ import java.sql.Timestamp;
 @Properties(
         {
                 @Property(name = "cache.navigationDepth", type = "int", value = "5"),
-                @Property(name = "ui.auto-filter.department", value = "{expr='department',order=1}"),
-                @Property(name = "ui.auto-filter.officialDiscipline", value = "{expr='officialDiscipline',order=2}"),
-                @Property(name = "ui.auto-filter.degree", value = "{expr='degree',order=3}"),
-                @Property(name = "ui.auto-filter.situation", value = "{expr='situation',order=3}"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='this.department',order=1}"),
+                @Property(name = "ui.auto-filter.officialDiscipline", value = "{expr='this.officialDiscipline',order=2}"),
+                @Property(name = "ui.auto-filter.degree", value = "{expr='this.degree',order=3}"),
+                @Property(name = "ui.auto-filter.situation", value = "{expr='this.situation',order=3}"),
                 @Property(name = "ui.main-photo-provider", value = "net.vpc.app.vainruling.plugins.academic.web.photo.AcademicTeacherMainPhotoProvider"),
                 @Property(name = UIConstants.ENTITY_TEXT_SEARCH_FACTORY, value = "net.vpc.app.vainruling.plugins.academic.service.util.AcademicTeacherObjSearchFactory")
         }

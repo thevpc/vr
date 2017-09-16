@@ -227,4 +227,18 @@ public class PlanningActivity implements Comparable<PlanningActivity>, Cloneable
     public void setFixedSpace(boolean fixedSpace) {
         this.fixedSpace = fixedSpace;
     }
+
+    @Override
+    public String toString() {
+        return "PlanningActivity{" +
+                "internship=" + internship +
+                ", spaceTime=" + spaceTime +
+                ", examiner='" + examiner + '\'' +
+                ", chair='" + chair + '\'' +
+                ", fixedExaminer=" + fixedExaminer +
+                ", fixedChair=" + fixedChair +
+                ", fixedTime=" + fixedTime +
+                ", fixedSpace=" + fixedSpace +
+                '}';
+    }
 }

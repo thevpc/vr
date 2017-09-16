@@ -12,9 +12,9 @@ import java.util.Date;
 @Path("Education/Projects/Apbl")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.session", value = "{expr='coaching.team.session',order=1}"),
-                @Property(name = "ui.auto-filter.teacher", value = "{expr='coaching.teacher',order=2}"),
-                @Property(name = "ui.auto-filter.team", value = "{expr='coaching.team',order=3}"),
+                @Property(name = "ui.auto-filter.session", value = "{expr='this.coaching.team.session',order=1}"),
+                @Property(name = "ui.auto-filter.teacher", value = "{expr='this.coaching.teacher',order=2}"),
+                @Property(name = "ui.auto-filter.team", value = "{expr='this.coaching.team',order=3}"),
         }
 )
 public class ApblCoachingLog {

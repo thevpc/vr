@@ -139,4 +139,39 @@ public class AcademicPreClass {
     public void setName3(String name3) {
         this.name3 = name3;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AcademicPreClass that = (AcademicPreClass) o;
+
+        if (id != that.id) return false;
+//        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+//        if (longName != null ? !longName.equals(that.longName) : that.longName != null) return false;
+//        if (name2 != null ? !name2.equals(that.name2) : that.name2 != null) return false;
+//        if (name3 != null ? !name3.equals(that.name3) : that.name3 != null) return false;
+//        if (otherNames != null ? !otherNames.equals(that.otherNames) : that.otherNames != null) return false;
+//        if (parent != null ? !parent.equals(that.parent) : that.parent != null) return false;
+//        if (governorate != null ? !governorate.equals(that.governorate) : that.governorate != null) return false;
+//        if (creationDate != null ? !creationDate.equals(that.creationDate) : that.creationDate != null) return false;
+//        return updateDate != null ? updateDate.equals(that.updateDate) : that.updateDate == null;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+//        result = 31 * result + (name != null ? name.hashCode() : 0);
+//        result = 31 * result + (longName != null ? longName.hashCode() : 0);
+//        result = 31 * result + (name2 != null ? name2.hashCode() : 0);
+//        result = 31 * result + (name3 != null ? name3.hashCode() : 0);
+//        result = 31 * result + (otherNames != null ? otherNames.hashCode() : 0);
+//        result = 31 * result + (parent != null ? parent.hashCode() : 0);
+//        result = 31 * result + (governorate != null ? governorate.hashCode() : 0);
+//        result = 31 * result + (creationDate != null ? creationDate.hashCode() : 0);
+//        result = 31 * result + (updateDate != null ? updateDate.hashCode() : 0);
+        return result;
+    }
 }
