@@ -47,7 +47,7 @@ and open the template in the editor.
                     <p:column headerText="Nom" filterBy="#{row.objectName}">
                         <p:outputLabel value="#{row.objectName}"/>
                     </p:column>
-                    <p:column headerText="Progression">
+                    <p:column headerText="Progression" sortBy="#{row.completion}">
                         <p:outputLabel value="#{vr.dblCustomFormat(row.completion,'0.00')}%"/>
                     </p:column>
                     <p:column headerText="Message" filterBy="#{row.message}">

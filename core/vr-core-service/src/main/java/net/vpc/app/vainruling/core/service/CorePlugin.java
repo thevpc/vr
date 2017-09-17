@@ -3227,6 +3227,30 @@ public class CorePlugin {
                     articlesFilesMap.put(articlesFile.getArticle().getId(), articlesFile);
                 }
                 for (ArticlesItem a : articles) {
+                    ArticlesDisposition d = a.getDisposition();
+                    if(d!=null){
+                        int periodCalendarType=-1;
+                        if(d.getPeriodType()!=null && d.getMaxPeriod()>0){
+                            switch (d.getPeriodType()){
+                                case DAY:
+                                case WEEK:
+                                case MONTH:
+                                case YEAR:
+                                    {
+                                    periodCalendarType=d.getPeriodType().getCalendarId();
+                                    break;
+                                }
+                            }
+                        }
+                        if(periodCalendarType>0) {
+                            DateTime dd = a.getSendTime();
+                            Date d2 = net.vpc.common.util.DateUtils.add(new Date(), periodCalendarType, -d.getMaxPeriod());
+                            if (dd.compareTo(d2) < 0) {
+                                continue;
+                            }
+                        }
+
+                    }
                     String aname = a.getLinkText();
                     String aurl = a.getLinkURL();
                     String acss = a.getLinkClassStyle();

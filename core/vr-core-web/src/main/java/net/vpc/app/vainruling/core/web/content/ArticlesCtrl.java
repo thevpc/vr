@@ -26,10 +26,7 @@ import org.springframework.stereotype.Controller;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -117,17 +114,17 @@ public class ArticlesCtrl implements CmsTextService {
 
     public void loadContentTexts(String name) {
         List<FullArticle> a = findArticles(name);
-        if("Welcome".equalsIgnoreCase(name)){
-            //add further filter
-            for (Iterator<FullArticle> iterator = a.iterator(); iterator.hasNext(); ) {
-                FullArticle article = iterator.next();
-                DateTime d = article.getArticlesItem().getSendTime();
-                Date d2 = net.vpc.common.util.DateUtils.addMonths(d, 1);
-                if(new Date().compareTo(d2)<0){
-                    iterator.remove();
-                }
-            }
-        }
+//        if("Welcome".equalsIgnoreCase(name)){
+//            //add further filter
+//            for (Iterator<FullArticle> iterator = a.iterator(); iterator.hasNext(); ) {
+//                FullArticle article = iterator.next();
+//                DateTime d = article.getArticlesItem().getSendTime();
+//                Date d2 = net.vpc.common.util.DateUtils.addMonths(new Date(), 1);
+//                if(d.compareTo(d2)<0){
+//                    iterator.remove();
+//                }
+//            }
+//        }
         getModel().setDisposition(name);
         getModel().getArticles().put(name, a);
         if (getModel().getCurrent() == null) {
@@ -160,6 +157,9 @@ public class ArticlesCtrl implements CmsTextService {
         ArticlesDispositionGroup g = core.findArticleDispositionGroup(filter);
         if(g==null){
             g=core.findArticleDispositionGroup("II");
+        }
+        if(g==null){
+            return new ArrayList<>();
         }
 
         AppUser u = userSession==null?null:userSession.getUser();

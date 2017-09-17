@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.service.model.content;
 
 import net.vpc.app.vainruling.core.service.content.CmsTextDisposition;
+import net.vpc.app.vainruling.core.service.util.PeriodType;
 import net.vpc.upa.config.*;
 
 /**
@@ -13,7 +14,7 @@ import net.vpc.upa.config.*;
  */
 @Entity(listOrder = "name")
 @Path("/Social/Config")
-public class ArticlesDisposition implements CmsTextDisposition{
+public class ArticlesDisposition implements CmsTextDisposition {
 
     @Id
     @Sequence
@@ -27,6 +28,8 @@ public class ArticlesDisposition implements CmsTextDisposition{
     private String title;
     @Summary
     private String subTitle;
+    private int maxPeriod;
+    private PeriodType periodType;
     @Summary
     @Field(max = "1024")
     private String description;
@@ -91,4 +94,21 @@ public class ArticlesDisposition implements CmsTextDisposition{
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    public int getMaxPeriod() {
+        return maxPeriod;
+    }
+
+    public void setMaxPeriod(int maxPeriod) {
+        this.maxPeriod = maxPeriod;
+    }
+
+    public PeriodType getPeriodType() {
+        return periodType;
+    }
+
+    public void setPeriodType(PeriodType periodType) {
+        this.periodType = periodType;
+    }
+
 }

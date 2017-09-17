@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.core.service.model.content;
 
-import net.vpc.app.vainruling.core.service.content.CmsTextDisposition;
+import net.vpc.app.vainruling.core.service.util.PeriodType;
 import net.vpc.upa.config.*;
 
 /**
@@ -13,7 +13,7 @@ import net.vpc.upa.config.*;
  */
 @Entity(listOrder = "index,title")
 @Path("/Social/Config")
-public class ArticlesDispositionGroup{
+public class ArticlesDispositionGroup {
 
     @Id
     @Sequence
