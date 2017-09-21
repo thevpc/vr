@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.core.service.fs;
 
 
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.vfs.VFile;
 
 import java.io.*;
 import java.util.*;
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
  * @author taha.bensalah@gmail.com
  */
 public class VrFSTable {
-    private static final Set<String> VALID_FILTER_TYPES=new HashSet<>(Arrays.asList("profile","user"));
+    private static final Set<String> VALID_FILTER_TYPES = new HashSet<>(Arrays.asList("profile", "user"));
     private final List<VrFSEntry> entries = new ArrayList<>();
 
     private static VrFSEntry parseVrFSEntry(String line) {
@@ -145,42 +146,42 @@ public class VrFSTable {
         return entries.toArray(new VrFSEntry[entries.size()]);
     }
 
-    public int[] findPathEntries(String path){
-        if(StringUtils.isEmpty(path)){
+    public int[] findPathEntries(String path) {
+        if (StringUtils.isEmpty(path)) {
             return new int[0];
         }
-        ArrayList<Integer> all=new ArrayList<>();
+        ArrayList<Integer> all = new ArrayList<>();
         for (int i = 0; i < entries.size(); i++) {
             VrFSEntry e = entries.get(i);
-            if(e.getLinkPath()!=null && e.getLinkPath().equals(path)){
+            if (e.getLinkPath() != null && e.getLinkPath().equals(path)) {
                 all.add(i);
             }
         }
-        int[] ret=new int[all.size()];
+        int[] ret = new int[all.size()];
         for (int i = 0; i < all.size(); i++) {
-            ret[i]=all.get(i);
+            ret[i] = all.get(i);
         }
         return ret;
     }
 
-    public void addEntry(VrFSEntry e){
-        if(e!=null){
-            if(StringUtils.isEmpty(e.getLinkPath())){
+    public void addEntry(VrFSEntry e) {
+        if (e != null) {
+            if (StringUtils.isEmpty(e.getLinkPath())) {
                 throw new RuntimeException("Invalid Path");
             }
-            if(StringUtils.isEmpty(e.getMountPoint()) || e.getMountPoint().contains("/")){
-                throw new RuntimeException("Invalid Mount Point "+e.getMountPoint());
+            if (StringUtils.isEmpty(e.getMountPoint()) || e.getMountPoint().contains("/")) {
+                throw new RuntimeException("Invalid Mount Point " + e.getMountPoint());
             }
-            if(StringUtils.isEmpty(e.getFilterType()) || !VALID_FILTER_TYPES.contains(e.getFilterType().toLowerCase())){
-                throw new RuntimeException("Invalid Filter Type "+e.getMountPoint());
+            if (StringUtils.isEmpty(e.getFilterType()) || !VALID_FILTER_TYPES.contains(e.getFilterType().toLowerCase())) {
+                throw new RuntimeException("Invalid Filter Type " + e.getMountPoint());
             }
-            if(StringUtils.isEmpty(e.getFilterName())){
-                throw new RuntimeException("Invalid Filter Expression "+e.getFilterName());
+            if (StringUtils.isEmpty(e.getFilterName())) {
+                throw new RuntimeException("Invalid Filter Expression " + e.getFilterName());
             }
             int[] old = findPathEntries(e.getLinkPath());
 
             for (int i = 0; i < old.length; i++) {
-                if(entries.get(old[i]).equals(e)){
+                if (entries.get(old[i]).equals(e)) {
                     return;
                 }
             }
@@ -188,23 +189,23 @@ public class VrFSTable {
         }
     }
 
-    public void removeEntry(VrFSEntry e){
-        if(e!=null){
-            if(StringUtils.isEmpty(e.getLinkPath())){
+    public void removeEntry(VrFSEntry e) {
+        if (e != null) {
+            if (StringUtils.isEmpty(e.getLinkPath())) {
                 throw new RuntimeException("Invalid Path");
             }
-            if(StringUtils.isEmpty(e.getMountPoint()) || e.getMountPoint().contains("/")){
-                throw new RuntimeException("Invalid Mount Point "+e.getMountPoint());
+            if (StringUtils.isEmpty(e.getMountPoint()) || e.getMountPoint().contains("/")) {
+                throw new RuntimeException("Invalid Mount Point " + e.getMountPoint());
             }
-            if(StringUtils.isEmpty(e.getFilterType()) || !VALID_FILTER_TYPES.contains(e.getFilterType().toLowerCase())){
-                throw new RuntimeException("Invalid Filter Type "+e.getMountPoint());
+            if (StringUtils.isEmpty(e.getFilterType()) || !VALID_FILTER_TYPES.contains(e.getFilterType().toLowerCase())) {
+                throw new RuntimeException("Invalid Filter Type " + e.getMountPoint());
             }
-            if(StringUtils.isEmpty(e.getFilterName())){
-                throw new RuntimeException("Invalid Filter Expression "+e.getFilterName());
+            if (StringUtils.isEmpty(e.getFilterName())) {
+                throw new RuntimeException("Invalid Filter Expression " + e.getFilterName());
             }
             int[] old = findPathEntries(e.getLinkPath());
             for (int i = 0; i < old.length; i++) {
-                if(entries.get(old[i]).equals(e)){
+                if (entries.get(old[i]).equals(e)) {
                     entries.remove(i);
                     return;
                 }
@@ -212,7 +213,7 @@ public class VrFSTable {
         }
     }
 
-    public void removeEntry(int index){
+    public void removeEntry(int index) {
         entries.remove(index);
     }
 
@@ -221,6 +222,16 @@ public class VrFSTable {
         for (VrFSEntry e : this.entries) {
             if (e.getFilterName() != null && e.getFilterName().equalsIgnoreCase(filterName)
                     && e.getFilterType() != null && e.getFilterType().equalsIgnoreCase(filterType)) {
+                lentries.add(e);
+            }
+        }
+        return lentries.toArray(new VrFSEntry[lentries.size()]);
+    }
+
+    public VrFSEntry[] getEntriesByLinkPath(String linkPath) {
+        List<VrFSEntry> lentries = new ArrayList<>();
+        for (VrFSEntry e : this.entries) {
+            if (e.getFilterType() != null && e.getLinkPath().equals(linkPath)) {
                 lentries.add(e);
             }
         }
@@ -237,6 +248,18 @@ public class VrFSTable {
         return lentries.toArray(new VrFSEntry[lentries.size()]);
     }
 
+    public void store(VFile out) throws IOException {
+        OutputStream os = null;
+        try {
+            os = out.getOutputStream();
+            store(os);
+        } finally {
+            if (os != null) {
+                os.close();
+            }
+        }
+    }
+
     public void store(OutputStream out) throws IOException {
         if (out == null) {
             return;
@@ -251,14 +274,39 @@ public class VrFSTable {
                 "# Profile Student NewFolderName /Documents/ByProfile/Teacher/MyFolderToShare\n" +
                 "# mounts a folder named NewFolderNameMyFolderToShare under MyDocument of Profile Student that points to the given MyFolderToShare\n");
         for (VrFSEntry entry : entries) {
-            p.print("\""+entry.getFilterType()+"\"\t");
-            p.print("\""+entry.getFilterName()+"\"\t");
-            p.print("\""+entry.getMountPoint()+"\"\t");
-            p.print("\""+entry.getLinkPath()+"\"\t");
+            p.print("\"" + entry.getFilterType() + "\"\t");
+            p.print("\"" + entry.getFilterName() + "\"\t");
+            p.print("\"" + entry.getMountPoint() + "\"\t");
+            p.print("\"" + entry.getLinkPath() + "\"\t");
             p.println();
         }
         p.flush();
     }
+
+    public boolean loadSilently(VFile file) {
+        try {
+            if (file.isFile()) {
+                load(file);
+                return true;
+            }
+        } catch (Exception any) {
+            //ignore
+        }
+        return false;
+    }
+
+    public void load(VFile file) throws IOException {
+        InputStream in = null;
+        try {
+            in = file.getInputStream();
+            load(in);
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
+    }
+
     public void load(InputStream in) throws IOException {
         if (in == null) {
             return;

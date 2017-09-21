@@ -138,6 +138,15 @@ public class AcademicCoursePlan {
     )
     @Field(defaultValue = "0")
     private double credits;
+    private int evalMidExams;
+    private boolean evalFinalExam;
+    private int evalRandomExams;
+    private boolean evalTpExam;
+    private int evalOralExams;
+    private String evalCertif;
+    private int maxPopulationC;
+    private int maxPopulationTD;
+    private int maxPopulationTP;
 
     @Summary
     @Properties(
@@ -600,5 +609,92 @@ public class AcademicCoursePlan {
 
     public void setLocked(boolean locked) {
         this.locked = locked;
+    }
+
+    public int getEvalMidExams() {
+        return evalMidExams;
+    }
+
+    public void setEvalMidExams(int evalMidExams) {
+        this.evalMidExams = evalMidExams;
+    }
+
+    public boolean isEvalFinalExam() {
+        return evalFinalExam;
+    }
+
+    public void setEvalFinalExam(boolean evalFinalExam) {
+        this.evalFinalExam = evalFinalExam;
+    }
+
+    public int getEvalRandomExams() {
+        return evalRandomExams;
+    }
+
+    public void setEvalRandomExams(int evalRandomExams) {
+        this.evalRandomExams = evalRandomExams;
+    }
+
+    public boolean isEvalTpExam() {
+        return evalTpExam;
+    }
+
+    public void setEvalTpExam(boolean evalTpExam) {
+        this.evalTpExam = evalTpExam;
+    }
+
+    public int getEvalOralExams() {
+        return evalOralExams;
+    }
+
+    public void setEvalOralExams(int evalOralExams) {
+        this.evalOralExams = evalOralExams;
+    }
+
+    public String getEvalCertif() {
+        return evalCertif;
+    }
+
+    public void setEvalCertif(String evalCertif) {
+        this.evalCertif = evalCertif;
+    }
+
+    public int getMaxPopulationC() {
+        return maxPopulationC;
+    }
+
+    public void setMaxPopulationC(int maxPopulationC) {
+        this.maxPopulationC = maxPopulationC;
+    }
+
+    public int getMaxPopulationTD() {
+        return maxPopulationTD;
+    }
+
+    public void setMaxPopulationTD(int maxPopulationTD) {
+        this.maxPopulationTD = maxPopulationTD;
+    }
+
+    public int getMaxPopulationTP() {
+        return maxPopulationTP;
+    }
+
+    public void setMaxPopulationTP(int maxPopulationTP) {
+        this.maxPopulationTP = maxPopulationTP;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AcademicCoursePlan that = (AcademicCoursePlan) o;
+
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

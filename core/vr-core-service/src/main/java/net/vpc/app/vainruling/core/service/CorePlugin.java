@@ -25,6 +25,7 @@ import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.AppVersion;
 import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.common.io.FileUtils;
+import net.vpc.common.io.PathInfo;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.*;
 import net.vpc.common.vfs.*;
@@ -207,11 +208,15 @@ public class CorePlugin {
         List<AppRightName> allRigths = pu.createQuery("Select u from AppRightName u")
                 .getResultList();
         for (AppRightName r : allRigths) {
-            allMap.put(r.getName(), r);
+            if(r!=null) {
+                allMap.put(r.getName(), r);
+            }
         }
         for (AppRightName r : oldRigths) {
-            existing.put(r.getName(), r);
-            allMap.remove(r.getName());
+            if(r!=null) {
+                existing.put(r.getName(), r);
+                allMap.remove(r.getName());
+            }
         }
         List<AppRightName> in = new ArrayList<>(existing.values());
         List<AppRightName> out = new ArrayList<>(allMap.values());
@@ -2702,21 +2707,33 @@ public class CorePlugin {
                         mfs.mount("/" + FOLDER_ALL_DOCUMENTS, getFileSystem());
                     }
                 }
-                VrFSTable t = getVrFSTable();
+                VrFSTable t0 = getVrFSTable();
+                Map<Integer, VrFSTable> usersVrFSTable = getUsersVrFSTable();
+                List<VrFSTable> all=new ArrayList<>();
+                all.add(t0);
+                all.addAll(usersVrFSTable.values());
+
                 for (AppProfile p : profiles) {
                     String profileMountPoint = "/" + normalizeFilePath(p.getName()) + " Documents";
-                    mfs.mount(profileMountPoint, getProfileFileSystem(p.getName(), t));
-                }
-                for (VrFSEntry e : t.getEntries(login, "User")) {
-                    mfs.mount("/" + e.getMountPoint(), getFileSystem().subfs(e.getLinkPath()));
-                }
-                for (VrFSEntry e : t.getEntriesByType("Profile")) {
-                    //if (isComplexProfileExpr(e.getFilterName())) {
-                    if (userMatchesProfileFilter(u.getId(), e.getFilterName())) {
-                        mountSubFS(mfs, e);
+                    VirtualFileSystem profileFileSystem = getProfileFileSystem(p.getName(), t0);
+                    if(profileFileSystem.get("/").listFiles().length>0){
+                        mfs.mount(profileMountPoint, profileFileSystem);
                     }
-                    //}
                 }
+
+                for (VrFSTable t : all) {
+                    for (VrFSEntry e : t.getEntries(login, "User")) {
+                        mfs.mount("/" + e.getMountPoint(), getFileSystem().subfs(e.getLinkPath()));
+                    }
+                    for (VrFSEntry e : t.getEntriesByType("Profile")) {
+                        //if (isComplexProfileExpr(e.getFilterName())) {
+                        if (userMatchesProfileFilter(u.getId(), e.getFilterName())) {
+                            mountSubFS(mfs, e);
+                        }
+                        //}
+                    }
+                }
+
             } catch (IOException ex) {
                 log.log(Level.SEVERE, null, ex);
             }
@@ -2803,6 +2820,107 @@ public class CorePlugin {
         } catch (Exception exx) {
             //ignore it
         }
+    }
+
+    public void removeUserLinkPathEntry(int userId,String linkPath) throws IOException {
+        VrFSTable table = getUserVrFSTable(userId);
+        VrFSEntry[] entries = table.getEntries();
+        for (int i = 0; i < entries.length; i++) {
+            VrFSEntry e = entries[i];
+            if (e.getLinkPath().equals(linkPath)) {
+                table.removeEntry(i);
+                saveUserVrFSTable(userId,table);
+                return;
+            }
+        }
+    }
+
+    public void setUserLinkPathEntry(int userId,VrFSEntry entry) throws IOException {
+        if(StringUtils.isEmpty(entry.getMountPoint())){
+            removeUserLinkPathEntry(userId,entry.getLinkPath());
+        }else {
+            VrFSTable table = getUserVrFSTable(userId);
+            String lp = entry.getLinkPath();
+            for (VrFSEntry e : table.getEntries()) {
+                if (e.getLinkPath().equals(lp)) {
+                    e.setFilterName(entry.getFilterName());
+                    e.setFilterType(entry.getFilterType());
+                    e.setLinkPath(entry.getLinkPath());
+                    e.setMountPoint(entry.getMountPoint());
+                    saveUserVrFSTable(userId, table);
+                    return;
+                }
+            }
+            VrFSEntry e = new VrFSEntry();
+            e.setFilterName(entry.getFilterName());
+            e.setFilterType(entry.getFilterType());
+            e.setLinkPath(entry.getLinkPath());
+            e.setMountPoint(entry.getMountPoint());
+            table.addEntry(e);
+            saveUserVrFSTable(userId, table);
+        }
+    }
+
+    public void saveUserVrFSTable(int userId, VrFSTable table) throws IOException {
+        AppUser u = findUser(userId);
+        if(u==null){
+            throw new IllegalArgumentException("Invalid user");
+        }
+        VirtualFileSystem fs = getFileSystem();
+        fs.get("/Config").mkdirs();
+        VFile file = fs.get("/Config/" + u.getLogin() + ".fstab");
+        table.store(file);
+    }
+
+    public VrFSTable getUserVrFSTable(int userId) {
+        VrFSTable t=new VrFSTable();
+        AppUser u = findUser(userId);
+        if(u==null){
+            return null;
+        }
+        VirtualFileSystem fs = getFileSystem();
+        VFile file = fs.get("/Config/" + u.getLogin() + ".fstab");
+        if(file.isFile()){
+            t.loadSilently(file);
+        }
+        return t;
+    }
+
+    private Map<Integer,VrFSTable> getUsersVrFSTable() {
+        HashMap<Integer, VrFSTable> map = new HashMap<>();
+        VirtualFileSystem fs = getFileSystem();
+        if (fs.exists("/Config")) {
+            for (VFile userfstab:fs.get("/Config").listFiles(new VFileFilter() {
+                     @Override
+                     public boolean accept(VFile pathname) {
+                         return pathname.getName().endsWith(".fstab");
+                     }
+                 })) {
+                String login = userfstab.getName().substring(0,userfstab.getName().length()-".fstab".length());//PathInfo.create(userfstab.getName()).getNamePart();
+                AppUser u = findUser(login);
+                if(u!=null){
+                    VrFSTable t = new VrFSTable();
+                    t.loadSilently(userfstab);
+
+                    for (VrFSEntry vrFSEntry : t.getEntries()) {
+                        String m = vrFSEntry.getMountPoint();
+                        if(m==null){
+                            m="unknown";
+                        }
+                        m=m.trim();
+                        if(m.endsWith("/")){
+                            m=m.substring(0,m.length()-1);
+                        }
+                        if(m.isEmpty()){
+                            m="unknown";
+                        }
+                        vrFSEntry.setMountPoint("/"+ m +"#"+u.getId());
+                    }
+                    map.put(u.getId(),t);
+                }
+            }
+        }
+        return map;
     }
 
     private VrFSTable getVrFSTable() {

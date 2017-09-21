@@ -5,10 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.config;
 
-import net.vpc.app.vainruling.core.service.model.AppContact;
-import net.vpc.app.vainruling.core.service.model.AppDepartment;
-import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.upa.FormulaType;
@@ -74,6 +71,7 @@ public class AcademicStudent {
     private AcademicPreClassChoice preClassChoice3;
     private String preClassChoice3Other;
     private AcademicBac baccalaureateClass;
+    private AppGovernorate baccalaureateGovernorate;
     private double baccalaureateScore;
     private double preClassScore;
     @Properties({
@@ -473,5 +471,13 @@ public class AcademicStudent {
 
     public void setRegistrationWithdrawalCount(int registrationWithdrawalCount) {
         this.registrationWithdrawalCount = registrationWithdrawalCount;
+    }
+
+    public AppGovernorate getBaccalaureateGovernorate() {
+        return baccalaureateGovernorate;
+    }
+
+    public void setBaccalaureateGovernorate(AppGovernorate baccalaureateGovernorate) {
+        this.baccalaureateGovernorate = baccalaureateGovernorate;
     }
 }

@@ -61,29 +61,11 @@ and open the template in the editor.
                                      styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn-default" ajax="true"
                                      actionListener="#{documentsCtrl.onCancel}" update=":listForm"/>
                     <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Security')}"
-                                     title="Sucurite" icon="fa fa-users"
+                                     title="Sécurité" icon="fa fa-users"
                                      styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button btn-default" ajax="true"
                                      actionListener="#{documentsCtrl.onShowSecurityDialog}" update=":listForm"/>
-                    <p:fileUpload rendered="#{documentsCtrl.model.area.equals('Upload')}" multiple="true"
-                                  fileUploadListener="#{documentsCtrl.handleNewFile}"
-                                  dragDropSupport="true"
-                                  label="ajouter fichiers"
-                                  mode="advanced"
-                                  auto="true"
-                                  skinSimple="true"
-                                  uploadLabel="Téléverser"
-                                  cancelLabel="Annuler"
-                                  update=":listForm"
-                                  style="margin-top: 5px;"
-                            />
                 </div>
                 <div >
-                    <p:panel id="newFilePanel"
-                             rendered="#{documentsCtrl.model.area.equals('NewFile') or documentsCtrl.model.area.equals('NewFolder')}"
-                             style="border-style: none;margin-bottom: 10px;">
-                        <p:outputLabel value="Intitulé"/>
-                        <p:inputText value="#{documentsCtrl.model.newName}"/>
-                    </p:panel>
                     <p:dataTable id="filesTable" var="i" value="#{documentsCtrl.model.files}"
                                  class="table table-bordered table-hover"
                                  paginatorAlwaysVisible="false"

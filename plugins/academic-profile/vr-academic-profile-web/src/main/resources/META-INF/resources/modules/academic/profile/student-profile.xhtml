@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      >
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="links">
+                 <h:outputStylesheet name="#{vr.themeContext}/scroll/css/coda-slider.css"/>
+                <h:outputScript name="#{vr.themeContext}/scroll/js/coda-slider.js" target="head" />
+                <h:outputScript name="#{vr.themeContext}/scroll/js/jquery.scrollTo-1.3.3.js" target="head" />
+                <h:outputScript name="#{vr.themeContext}/scroll/js/jquery.localscroll-1.2.5.js" target="head" />
+                <h:outputScript name="#{vr.themeContext}/scroll/js/jquery.serialScroll-1.2.1.js" target="head" />
+                <h:outputScript name="#{vr.themeContext}/scroll/js/jquery.easing.1.3.js" target="head" />
+            </ui:define>
+            <ui:define name="content">
+                <div class="row">
+                    
+
+                    <div class="col-lg-9">
+                        <div id="profileSlider">
+                            <div id="profileTooplate_wrapper">
+
+                                <div id="profileContent">
+                                    <div class="profileScroll">
+                                        <div class="profileScrollContainer">
+                                            
+                                            <div class="profilePanel" id="identitySection">
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <h1 class="text-green"><i class="fa fa-user margin-r-5"></i>Informations d'identité</h1>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <hr/>
+                                                                <strong class="text-green"><i class="fa fa-user margin-r-5"></i>Nom et prénom</strong>
+                                                                <p>#{studentProfileSettingsCtrl.model.contact.fullName}</p>
+                                                                <strong class="text-green"><i class="fa fa-user margin-r-5"></i>Nom et prénom (ar)</strong>
+                                                                <p>#{studentProfileSettingsCtrl.model.contact.lastName2} #{studentProfileSettingsCtrl.model.contact.firstName2}</p>
+                                                                <hr/>
+                                                                <strong class="text-green"><i class="fa fa-user margin-r-5"></i>CIN</strong>
+                                                                <p>#{studentProfileSettingsCtrl.model.contact.nin}</p>
+                                                                <hr/>
+                                                                <strong class="text-green"><i class="fa fa-user margin-r-5"></i>N° Inscription</strong>
+                                                                <p>#{studentProfileSettingsCtrl.model.student.subscriptionNumber}</p>
+                                                                <hr/>
+                                                                <strong class="text-green"><i class="fa fa-user margin-r-5"></i>Titre(s)</strong>
+                                                                <p>#{vr.strcatsep(', ',studentProfileSettingsCtrl.model.contact.positionTitle1,studentProfileSettingsCtrl.model.contact.positionTitle2, studentProfileSettingsCtrl.model.contact.positionTitle3) }</p>
+                                                                <hr/>
+
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <hr/>
+                                                                <strong class="text-green"><i class="fa fa-user margin-r-5"></i>Date et lieu de naissance</strong>
+                                                                <p>Né(e) le #{studentProfileSettingsCtrl.model.contact.birthDate} à #{studentProfileSettingsCtrl.model.contact.birthLocation} (#{studentProfileSettingsCtrl.model.contact.birthGovernorate})</p>
+                                                                <hr/>
+                                                                <strong class="text-green"><i class="fa fa-user margin-r-5"></i>Genre</strong>
+                                                                <p>#{studentProfileSettingsCtrl.model.contact.gender}</p>
+                                                                <hr/>
+                                                                <strong class="text-green"><i class="fa fa-user margin-r-5"></i>Civility</strong>
+                                                                <p>#{studentProfileSettingsCtrl.model.contact.civility}</p>
+                                                                <hr/>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> 
+
+                                            <div class="profilePanel" id="contactSection">
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <h1 class="text-blue"><i class="fa fa-info-circle margin-r-5"></i>Informations du contact</h1>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-envelope margin-r-5"></i>Email 1</strong>
+                                                                <p>#{studentProfileSettingsCtrl.model.contact.email}</p>
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-envelope margin-r-5"></i>Email 2</strong>
+                                                                <p>#{studentProfileSettingsCtrl.model.contact.email2}</p>
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-globe margin-r-5"></i>Site Web</strong>
+                                                                <p>#{studentProfileSettingsCtrl.model.studentCV.wwwURL}</p>
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-university margin-r-5"></i>Département</strong>
+                                                                <p>#{studentProfileSettingsCtrl.model.student.department.name}</p>
+                                                                <hr/>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-phone-square margin-r-5"></i>Tél 1</strong>
+                                                                <p>#{studentProfileSettingsCtrl.model.contact.phone1}</p>
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-phone-square margin-r-5"></i>Tél 2</strong>
+                                                                <p>#{studentProfileSettingsCtrl.model.contact.phone2}</p>
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-phone-square margin-r-5"></i>Tél 3</strong>
+                                                                <p>#{studentProfileSettingsCtrl.model.contact.phone3}</p>
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-users margin-r-5"></i>Groupes</strong>
+                                                                <p>
+                                                                    <ui:repeat value="#{vr.userSession.profiles}" var="prName">
+                                                                        <span class="label label-#{vr.hashToArr(prName.name,'danger','success','info','warning','primary','default')}">#{prName.name}</span>
+                                                                    </ui:repeat>
+                                                                </p>
+                                                                <hr/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="text-center">
+                                                            <a href="#{vr.exurl(studentProfileSettingsCtrl.model.studentCV.socialURL1)}" target="_blank" class="btn btn-social-icon btn-twitter"><i class="fa fa-twitter"></i></a>
+                                                            <a href="#{vr.exurl(studentProfileSettingsCtrl.model.studentCV.socialURL2)}" target="_blank"  class="btn btn-social-icon btn-linkedin"><i class="fa fa-linkedin"></i></a>
+                                                            <a href="#{vr.exurl(studentProfileSettingsCtrl.model.studentCV.socialURL3)}" target="_blank"  class="btn btn-social-icon btn-google"><i class="fa fa-google-plus"></i></a>
+                                                            <a href="#{vr.exurl(studentProfileSettingsCtrl.model.studentCV.socialURL4)}" target="_blank"  class="btn btn-social-icon btn-github"><i class="fa fa-github"></i></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> 
+
+                                            <div class="profilePanel" id="aboutSection">
+                                                <div class="box box-solid" >
+                                                    <div class="box-body">
+                                                        <h1 class="text-maroon"><i class="fa fa-commenting-o margin-r-5"></i>A propos</h1>
+                                                        <div class="col-md-4">
+                                                            <img class="img-responsive img-rounded" src="#{vr.url(vr.currentUserPhoto)}" alt="User profile picture"/>
+                                                        </div>
+                                                        <div class="col-md-8 text-black">
+                                                            <p>#{studentProfileSettingsCtrl.model.contact.description}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="profilePanel" id="studySection">
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <h1 class="text-purple"><i class="fa fa-graduation-cap margin-r-5"></i>Etudes</h1>
+                                                        <ul class="timeline">
+                                                            <li>
+                                                                <i class="fa fa-graduation-cap bg-purple"></i>
+                                                                <div class="timeline-item">
+                                                                    <h3 class="timeline-header bg-purple">#{studentProfileSettingsCtrl.model.contact.company}</h3>
+                                                                    <div class="timeline-body">
+                                                                        <p><strong><h:outputLabel value="Classe mastere pro : " rendered="#{studentProfileSettingsCtrl.model.student.lastClass3 != null}"/> </strong>#{studentProfileSettingsCtrl.model.student.lastClass3} </p>
+                                                                        <p><strong><h:outputLabel value="Classe mastere de recherche : " rendered="#{studentProfileSettingsCtrl.model.student.lastClass2 != null}"/> </strong>#{studentProfileSettingsCtrl.model.student.lastClass2} </p>
+                                                                        <p><strong><h:outputLabel value="Classe ingénieur : " rendered="#{studentProfileSettingsCtrl.model.student.lastClass1 != null}"/> </strong>#{studentProfileSettingsCtrl.model.student.lastClass1} </p>
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                            <li>
+                                                                <i class="fa fa-graduation-cap bg-purple"></i>
+                                                                <div class="timeline-item">
+                                                                    <h3 class="timeline-header bg-purple">Entrée à l'Ecole Nationale d'Ingénieurs de Sousse</h3>
+                                                                    <div class="timeline-body">
+                                                                        <p><strong> 1er choix en fin de 1er cycle : </strong><h:outputText value="#{studentProfileSettingsCtrl.model.student.preClassChoice1 != null ? studentProfileSettingsCtrl.model.student.preClassChoice1 : studentProfileSettingsCtrl.model.student.preClassChoice1Other}"/></p>
+                                                                        <p><strong> 2eme choix en fin de 1er cycle : </strong><h:outputText value="#{studentProfileSettingsCtrl.model.student.preClassChoice2 != null ? studentProfileSettingsCtrl.model.student.preClassChoice2 : studentProfileSettingsCtrl.model.student.preClassChoice2Other}"/></p>
+                                                                        <p><strong> 3eme choix en fin de 1er cycle : </strong><h:outputText value="#{studentProfileSettingsCtrl.model.student.preClassChoice3 != null ? studentProfileSettingsCtrl.model.student.preClassChoice3 : studentProfileSettingsCtrl.model.student.preClassChoice3Other}"/></p>
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                            <li>
+                                                                <i class="fa fa-graduation-cap bg-purple"></i>
+                                                                <div class="timeline-item">
+                                                                    <h3 class="timeline-header bg-purple">1er cycle</h3>
+                                                                    <div class="timeline-body">
+                                                                        <p><strong> Etablissement : </strong>#{studentProfileSettingsCtrl.model.student.preClass}</p>
+                                                                        <p><strong> Type 1er cycle : </strong>#{studentProfileSettingsCtrl.model.student.preClassType}</p>   
+                                                                        <p><strong> Moyenne annuelle : </strong>#{studentProfileSettingsCtrl.model.student.preClassScore}</p> 
+                                                                        <p><strong> Rang 1er cycle : </strong>#{studentProfileSettingsCtrl.model.student.preClassRank} / #{studentProfileSettingsCtrl.model.student.preClassRankMax} </p> 
+                                                                        <p><strong> Rang majoré+15 Max 1er cycle : </strong>#{studentProfileSettingsCtrl.model.student.preClassRank2}</p>
+                                                                        <p><strong> Rang dans l'affectation : </strong>#{studentProfileSettingsCtrl.model.student.preClassRankByProgram}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                            <li>
+                                                                <i class="fa fa-graduation-cap bg-purple"></i>
+                                                                <div class="timeline-item">
+                                                                    <h3 class="timeline-header bg-purple">Baccalauréat</h3>
+                                                                    <div class="timeline-body">
+                                                                        <p><strong> Type baccalauréat : </strong>#{studentProfileSettingsCtrl.model.student.baccalaureateClass}</p>
+                                                                        <p><strong> Moyenne de baccalauréat : </strong>#{studentProfileSettingsCtrl.model.student.baccalaureateScore}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                            <li> <i class="fa fa-clock-o bg-gray"></i> </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            
+                                           
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div> 
+                    
+                    <div class="col-lg-3">
+                        <div class="box box-solid">
+                            <ui:include src="profile-card.xhtml" />
+                            <div class="box-body">
+                                <nav>
+                                    <a class="btn btn-app bg-green color-palette" style="width:100px;" id="identity" href="#identitySection"><i class="fa fa-user"></i>Identité</a>
+                                    <a class="btn btn-app bg-blue color-palette" style="width:100px;" id="contact" href="#contactSection"><i class="fa fa-info-circle"></i>Contact</a>
+                                    <a class="btn btn-app bg-maroon color-palette" style="width:100px;" id="about" href="#aboutSection"><i class="fa fa-commenting-o"></i> A propos</a>
+                                    <a class="btn btn-app bg-purple color-palette" style="width:100px;" id="study" href="#studySection"><i class="fa fa-graduation-cap"></i>Etudes</a>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </ui:define>
+
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

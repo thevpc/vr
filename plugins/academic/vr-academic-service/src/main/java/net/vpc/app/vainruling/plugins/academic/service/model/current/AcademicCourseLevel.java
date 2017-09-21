@@ -32,6 +32,7 @@ public class AcademicCourseLevel {
     @Formula(value = "concat(this.academicClass.name,'-',this.semester.code)",formulaOrder = 1)
     @Main
     private String name;
+    private String periodLevel;
     @Summary
     @ManyToOne(type = RelationshipType.COMPOSITION)
     private AcademicClass academicClass;
@@ -52,6 +53,14 @@ public class AcademicCourseLevel {
     public AcademicCourseLevel(int id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public String getPeriodLevel() {
+        return periodLevel;
+    }
+
+    public void setPeriodLevel(String periodLevel) {
+        this.periodLevel = periodLevel;
     }
 
     public int getId() {

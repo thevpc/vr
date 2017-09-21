@@ -17,7 +17,9 @@ import net.vpc.app.vainruling.core.web.converters.EntityConverter;
 import net.vpc.app.vainruling.core.web.ctrl.ActiveSessionsCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.AppGlobalCtrl;
 import net.vpc.app.vainruling.core.web.ctrl.LoginCtrl;
+import net.vpc.app.vainruling.core.web.fs.files.DocumentUploadListener;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsCtrl;
+import net.vpc.app.vainruling.core.web.fs.files.DocumentsUploadDialogCtrl;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
@@ -575,6 +577,23 @@ public class Vr {
             prefix += "/";
         }
         return prefix + path;
+    }
+
+    public String exurl(String path) {
+        if (path == null) {
+            path = "";
+        }
+        if (StringUtils.isEmpty(path)) {
+            return "";
+        }
+        path=path.trim();
+        if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("ftp://")) {
+            return path;
+        }
+        if(path.contains("://")){
+            return path;
+        }
+        return "http://"+path;
     }
 
     /**
@@ -1648,5 +1667,10 @@ public class Vr {
         sb.append(")$/");
         return sb.toString();
     }
+
+    public void openUploadDialog(DocumentsUploadDialogCtrl.Config config, DocumentUploadListener listener) {
+        VrApp.getBean(DocumentsUploadDialogCtrl.class).openCustomDialog(config,listener);
+    }
+
 
 }

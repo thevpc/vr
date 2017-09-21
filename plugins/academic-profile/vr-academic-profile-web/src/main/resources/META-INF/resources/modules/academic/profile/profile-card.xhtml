@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:head>
+    </h:head>
+
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <!--@elvariable id="myProfileCtrl" type="net.vpc.app.vainruling.core.web.ctrl.MyProfileCtrl"-->
+    <h:body>
+
+        <ui:composition>
+
+            
+                <div class="box-header with-border">
+                    <img class="profile-user-img img-responsive img-circle" src="#{vr.url(vr.currentUserPhoto)}" alt="User profile picture"/>
+                    <h3 class="profile-username text-center">#{vr.userSession.user.contact.fullName}</h3>
+                    <p class="text-muted text-center"><i class="fa  fa-users margin-r-5"></i>#{vr.userSession.user.type.name}</p>
+                </div>
+                
+
+            <!--   <div class="box box-solid">
+                   <div class="box-body">
+                       <img class="profile-user-img img-responsive img-circle" src="#{vr.url(vr.currentUserPhoto)}" alt="User profile picture"/>
+                       <h3 class="profile-username text-center">#{vr.userSession.user.contact.fullName}</h3>
+                       <p class="text-muted text-center"><i class="fa  fa-users margin-r-5"></i>#{vr.userSession.user.type.name}</p>
+                   </div>
+               </div> -->
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+
+
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="box box-solid">
+                            <ui:include src="profile-card.xhtml" />
+                            <div class="box-body">
+                                <h:link class="btn btn-primary btn-block" outcome="teacher-profile" value="Aperçu profil" /> 
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-9">
+
+                        <div class="box-group" id="accordion">
+
+                            <div class="panel box box-solid" style="border-color: #3c8dbc;">
+                                <div class="box-header with-border">
+                                    <h4 class="box-title">
+                                        <a class="text-blue" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseOne"><i class="fa fa-info-circle margin-r-5"></i>Coordonnées</a>
+                                    </h4>
+                                </div>
+                                <div id="collapseOne" class="panel-collapse collapse in">
+                                    <h:form id="basicInformationsForm" enctype="multipart/form-data" class="form-horizontal">
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Email" for="emailInput" />
+                                                <div class="col-sm-7">
+                                                    <h:inputText  value="#{teacherProfileSettingsCtrl.model.contact.email}" class="form-control" id="emailInput"/>
+                                                </div>
+                                            </div>
+                                            <br/>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Tél 1" for="phone1Input" />
+                                                <div class="col-sm-7">
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.contact.phone1}"  class="form-control" id="phone1Input"/>
+                                                </div>
+                                            </div>
+                                            <br/>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Tél 2" for="phone2Input" />
+                                                <div class="col-sm-7">
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.contact.phone2}"  class="form-control" id="phone2Input"/>
+                                                </div>
+                                            </div>
+                                            <br/>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Tél 3" for="phone3Input" />
+                                                <div class="col-sm-7">
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.contact.phone3}"  class="form-control" id="phone3Input"/>
+                                                </div>
+                                            </div>
+                                            <br/>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Numéro du bureau" for="officeLocationNumberInput" />
+                                                <div class="col-sm-7">
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.contact.officeLocationNumber}"  class="form-control" id="officeLocationNumberInput"/>
+                                                </div>
+                                            </div>
+                                            <br/>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Numéro de téléphone du bureau" for="officePhoneNumberInput" />
+                                                <div class="col-sm-7">
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.contact.officePhoneNumber}"  class="form-control" id="officePhoneNumberInput"/>
+                                                </div>
+                                            </div>
+                                            <br/>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Site Web" for="webSiteInput" />
+                                                <div class="col-sm-7">
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.teacherCV.wwwURL}" class="form-control" id="webSiteInput"/>
+                                                </div>
+                                            </div>
+                                            <br/>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Twitter URL" for="twitterURL" />
+                                                <div class="col-sm-7">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">http://</span>
+                                                        <h:inputText  value="#{teacherProfileSettingsCtrl.model.teacherCV.socialURL1}" class="form-control" id="twitterURL"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br/>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Google+ URL" for="googlePlusURL" />
+                                                <div class="col-sm-7">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">http://</span>
+                                                        <h:inputText  value="#{teacherProfileSettingsCtrl.model.teacherCV.socialURL2}" class="form-control" id="googlePlusURL"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br/>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Linkedin URL" for="linkedinURL" />
+                                                <div class="col-sm-7">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">http://</span>
+                                                        <h:inputText  value="#{teacherProfileSettingsCtrl.model.teacherCV.socialURL3}" class="form-control" id="linkedinURL"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br/>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="GitHub URL" for="gitHubURL" />
+                                                <div class="col-sm-7">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">http://</span>
+                                                        <h:inputText  value="#{teacherProfileSettingsCtrl.model.teacherCV.socialURL4}" class="form-control" id="gitHubURL"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <h:commandLink id="updateBasicInformationSection" class="btn bg-blue pull-right" action="#{teacherProfileSettingsCtrl.updateBasicInformationSection()}" value="Mettre à jour" />
+                                        </div>
+                                    </h:form> 
+                                </div> 
+                            </div>
+
+                            <!-- About section -->
+
+                            <div class="panel box box-solid" style="border-color: #D81B60;">
+                                <div class="box-header with-border" >
+                                    <h4 class="box-title">
+                                        <a class="text-maroon" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><i class="fa fa-commenting-o margin-r-5"></i>A propos </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseTwo" class="panel-collapse collapse">
+                                    <h:form id="aboutForm" enctype="multipart/form-data" class="form-horizontal">
+                                        <div class="box-body">
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-maroon" value="A propos" for="aboutTextarea" />
+                                                <div class="col-sm-7">
+                                                    <h:inputTextarea value="#{teacherProfileSettingsCtrl.model.contact.description}" rows="3" class="form-control" id="aboutTextarea"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-maroon"  value="Photo" for="photo" />
+                                                <div class="col-sm-7">
+                                                    <h:inputFile class="form-control" id="photo"/>
+                                                </div>
+                                            </div>
+                                            <h:commandLink id="updateAboutSection" class="btn bg-maroon pull-right" action="#{teacherProfileSettingsCtrl.updateAboutSection()}" value="Mettre à jour"/> 
+                                        </div>
+                                    </h:form> 
+                                </div>
+                            </div>
+
+                            <!-- Experience section -->
+                            <div class="panel box box-solid" style="border-color: #001F3F;">
+                                <div class="box-header with-border">
+                                    <h4 class="box-title">
+                                        <a class="text-navy" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseFour"><i class="fa fa-suitcase margin-r-5"></i>Expériences  </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseFour" class="panel-collapse collapse">
+                                    <div class="box-body">
+                                        <h:form id="experienceForm" enctype="multipart/form-data" class="form-horizontal"> 
+                                            <ul class="timeline">
+                                                <li class="time-label">
+                                                    <span class="bg-navy">Mes expériences</span>
+                                                    <p:commandButton id="addNewExperienceBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter" onclick="PF('addExperience').show();"/>
+                                                </li>
+                                                <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
+                                                    <li>
+                                                        <i class="fa fa-suitcase bg-navy"></i>
+                                                        <div class="timeline-item">
+                                                            <h3 class="timeline-header bg-navy"><h:inputTextarea class="form-control bg-navy text-white" value="#{item.title}" rows="1"/></h3>
+                                                            <div class="timeline-body">
+                                                                <div class="form-group">
+                                                                    <h:outputLabel class="col-sm-3 control-label text-navy" value="De" for="experienceFromDate" />
+                                                                    <div class="col-sm-7">
+                                                                        <h:inputText  value="2014" class="form-control" id="experienceFromDate"/>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <h:outputLabel class="col-sm-3 control-label text-navy" value="A" for="experienceToDate" />
+                                                                    <div class="col-sm-7">
+                                                                        <h:inputText  value="2016" class="form-control" id="experienceToDate"/>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <!--<h:outputLabel class="col-sm-3 control-label text-navy" for="experienceCompany" value="Etablissement" />
+                                                                    <div class="col-sm-7">
+                                                                        <p:selectOneMenu id="experienceCompany" value="#{teacherProfileSettingsCtrl.model.cvItem.company.name}" style="width:125px">
+                                                                            <f:selectItem itemLabel="#{teacherProfileSettingsCtrl.model.cvItem.company.name}" itemValue="#{teacherProfileSettingsCtrl.model.cvItem.company.name}" />
+                                                                            <f:selectItems value="#{teacherProfileSettingsCtrl.model.companyItems}" />
+                                                                        </p:selectOneMenu>
+                                                                    </div> -->
+                                                                    <!-- <h:outputLabel class="col-sm-3 control-label text-navy" value="Etablissement" for="experienceCompany" />
+                                                                    <div class="col-sm-7">
+                                                                        <h:inputText  value="ENISO" class="form-control" id="experienceCompany"/>
+                                                                    </div> -->
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <h:outputLabel class="col-sm-3 control-label text-navy" value="Détails" for="experienceDetails" />
+                                                                    <div class="col-sm-7">
+                                                                        <h:inputTextarea value="#{item.details}" rows="3" class="form-control" id="experienceDetails"/>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="timeline-footer">
+                                                                <h:commandLink id="deleteExperienceItem" class="btn btn-danger btn-xs" action="#{teacherProfileSettingsCtrl.deleteCvItem(item)}" value="Supprimer" />
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ui:repeat>
+                                                <li> <i class="fa fa-clock-o bg-gray"></i> </li>
+                                            </ul>
+                                            <h:commandLink id="updateExperience" class="btn bg-navy pull-right" value="Mettre à jour" action="update"/>
+                                        </h:form>
+                                    </div>
+                                </div>
+                            </div>
+                            <ui:include src="add-teacher-experience.xhtml"/>
+
+
+
+
+                            <div class="panel box box-solid" style="border-color: #605ca8;">
+                                <div class="box-header with-border">
+                                    <h4 class="box-title">
+                                        <a class="text-purple" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseThree"> <i class="fa fa-graduation-cap margin-r-5"></i>Formations  </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseThree" class="panel-collapse collapse">
+                                    <div class="box-body">
+                                        <h:form id="educationForm" enctype="multipart/form-data" class="form-horizontal"> 
+                                            <ul class="timeline">
+                                                <li class="time-label">
+                                                    <span class="bg-purple">Mes études</span>
+                                                    <p:commandButton id="addNewEducationBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter" onclick="PF('addEducation').show();"/>
+                                                </li>
+                                                <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
+                                                    <li>
+                                                        <i class="fa fa-graduation-cap bg-purple"></i>
+                                                        <div class="timeline-item">
+                                                            <h3 class="timeline-header bg-purple"><h:inputTextarea class="form-control bg-purple text-white" value="#{item.title}" rows="1"/></h3>
+                                                            <div class="timeline-body">
+                                                                <div class="form-group">
+                                                                    <h:outputLabel class="col-sm-3 control-label text-purple" value="De" for="educationFromDate" />
+                                                                    <div class="col-sm-7">
+                                                                        <h:inputText  value="2014" class="form-control" id="educationFromDate"/>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <h:outputLabel class="col-sm-3 control-label text-purple" value="A" for="educationToDate" />
+                                                                    <div class="col-sm-7">
+                                                                        <h:inputText  value="2016" class="form-control" id="educationToDate"/>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <!--<h:outputLabel class="col-sm-3 control-label text-navy" for="experienceCompany" value="Etablissement" />
+                                                                    <div class="col-sm-7">
+                                                                        <p:selectOneMenu id="experienceCompany" value="#{teacherProfileSettingsCtrl.model.cvItem.company.name}" style="width:125px">
+                                                                            <f:selectItem itemLabel="#{teacherProfileSettingsCtrl.model.cvItem.company.name}" itemValue="#{teacherProfileSettingsCtrl.model.cvItem.company.name}" />
+                                                                            <f:selectItems value="#{teacherProfileSettingsCtrl.model.companyItems}" />
+                                                                        </p:selectOneMenu>
+                                                                    </div> -->
+                                                                    <!-- <h:outputLabel class="col-sm-3 control-label text-navy" value="Etablissement" for="experienceCompany" />
+                                                                    <div class="col-sm-7">
+                                                                        <h:inputText  value="ENISO" class="form-control" id="experienceCompany"/>
+                                                                    </div> -->
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <h:outputLabel class="col-sm-3 control-label text-purple" value="Détails" for="educationDetails" />
+                                                                    <div class="col-sm-7">
+                                                                        <h:inputTextarea value="#{item.details}" rows="3" class="form-control" id="educationDetails"/>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="timeline-footer">
+                                                                <h:commandLink id="deleteEducationItem" class="btn btn-danger btn-xs" action="#{teacherProfileSettingsCtrl.deleteCvItem(item)}" value="Supprimer" />
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ui:repeat> 
+                                                <li> <i class="fa fa-clock-o bg-gray"></i> </li>
+                                            </ul>
+                                            <h:commandLink id="updateEducation" class="btn bg-purple pull-right" value="Mettre à jour" action="update"/>
+                                        </h:form>
+                                    </div>
+                                </div>
+                            </div>
+                            <ui:include src="add-teacher-education.xhtml"/>
+
+                            
+                            
+
+                            <div class="panel box box-solid" style="border-color: #d2d6de;">
+                                <div class="box-header with-border">
+                                    <h4 class="box-title">
+                                        <a class="text-black" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseFive"><i class="fa fa-github margin-r-5"></i>Projets  </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseFive" class="panel-collapse collapse">
+                                    <div class="box-body">
+                                        <h:form id="projectForm" enctype="multipart/form-data" class="form-horizontal"> 
+                                            <p:commandButton id="addNewProjectBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter" onclick="PF('addProject').show();"/>
+                                            <br/>
+                                            <br/>
+                                            <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
+                                                <div class="box box-solid">
+                                                    <div class="box-header with-border bg-gray">
+                                                        <h3 class="form-control box-title bg-gray"><h:inputTextarea class="form-control bg-gray text-black" value="#{item.title}" rows="1"/></h3>
+                                                    </div>
+                                                    <div class="box-body">
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-black" value="De" for="projectFromDate" />
+                                                            <div class="col-sm-7">
+                                                                <h:inputText  value="2014" class="form-control" id="projectFromDate"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-black" value="A" for="projectToDate" />
+                                                            <div class="col-sm-7">
+                                                                <h:inputText  value="2016" class="form-control" id="projectToDate"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-black" value="Détails" for="projectDetails" />
+                                                            <div class="col-sm-7">
+                                                                <h:inputTextarea value="#{item.details}" rows="3" class="form-control" id="projectDetails"/>
+                                                            </div>
+                                                        </div>
+                                                        <h:commandLink id="deleteProjectItem" class="btn btn-danger btn-xs" action="#{teacherProfileSettingsCtrl.deleteCvItem(item)}" value="Supprimer" />
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                            <h:commandLink id="updateProject" class="btn bg-gray pull-right" value="Mettre à jour" action="update"/>
+                                        </h:form>
+                                    </div>
+                                </div>
+                            </div>
+                            <ui:include src="add-teacher-project.xhtml"/>
+
+
+                            <div class="panel box box-solid" style="border-color: #00a65a;">
+                                <div class="box-header with-border">
+                                    <h4 class="box-title">
+                                        <a class="text-green" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseSeven"><i class="fa fa-search margin-r-5"></i>Axes de recherche  </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseSeven" class="panel-collapse collapse">
+                                    <div class="box-body">
+                                        <h:form id="researchForm" enctype="multipart/form-data" class="form-horizontal"> 
+                                            <p:commandButton id="addNewResearchBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter" onclick="PF('addResearch').show();"/>
+                                            <br/>
+                                            <br/>
+                                            <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
+                                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                                    <div class="info-box ">
+                                                        <span class="info-box-icon bg-green"><i class="fa fa-search"></i></span>
+                                                        <div class="info-box-content">
+                                                            <div class="form-group">
+                                                                <h:outputLabel class="col-sm-3 control-label text-green" value="Titre" for="researchTitle" />
+                                                                <div class="col-sm-7">
+                                                                    <h:inputText  value="#{item.title}" class="form-control" id="researchTitle"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <h:outputLabel class="col-sm-3 control-label text-green" value="Mots-clés" for="researchKeywords" />
+                                                                <div class="col-sm-7">
+                                                                    <h:inputTextarea value="#{item.keywords}" rows="3" class="form-control" id="researchKeywords"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <h:outputLabel class="col-sm-3 control-label text-green" value="Détails" for="researchDetails" />
+                                                                <div class="col-sm-7">
+                                                                    <h:inputTextarea value="#{item.details}" rows="3" class="form-control" id="researchDetails"/>
+                                                                </div>
+                                                            </div>
+                                                            <h:commandLink id="deleteResearchItem" class="btn btn-danger btn-xs" action="#{teacherProfileSettingsCtrl.deleteCvItem(item)}" value="Supprimer" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                            <h:commandLink id="updateResearchBtn" class="btn bg-green pull-right" value="Mettre à jour" action="update"/>
+                                        </h:form>
+                                    </div>
+                                </div>
+                            </div>
+                            <ui:include src="add-teacher-research.xhtml"/>
+
+
+                            
+                            <div class="panel box box-solid" style="border-color: #00c0ef;">
+                                <div class="box-header with-border">
+                                    <h4 class="box-title">
+                                        <a class="text-aqua" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseEight"><i class="fa fa-book margin-r-5"></i>Cours enseignés </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseEight" class="panel-collapse collapse">
+                                    <div class="box-body">
+                                        <h:form id="courseForm" enctype="multipart/form-data" class="form-horizontal"> 
+                                            <p:commandButton id="addNewCourseBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter" onclick="PF('addCourse').show();"/>
+                                            <br/>
+                                            <br/>
+                                            <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
+                                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                                    <div class="info-box ">
+                                                        <span class="info-box-icon bg-aqua"><i class="fa fa-book"></i></span>
+                                                        <br/>
+                                                        <div class="info-box-content">
+                                                            <div class="form-group">
+                                                                <h:outputLabel class="col-sm-3 control-label text-aqua" value="Titre" for="courseTitle" />
+                                                                <div class="col-sm-7">
+                                                                    <h:inputText  value="#{item.title}" class="form-control" id="courseTitle"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <h:outputLabel class="col-sm-3 control-label text-aqua" value="Détails" for="courseDetails" />
+                                                                <div class="col-sm-7">
+                                                                    <h:inputTextarea value="#{item.details}" rows="3" class="form-control" id="courseDetails"/>
+                                                                </div>
+                                                            </div>
+                                                            <h:commandLink id="deleteCourseItem" class="btn btn-danger btn-xs" action="#{teacherProfileSettingsCtrl.deleteCvItem(item)}" value="Supprimer" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ui:repeat>
+                                            <h:commandLink id="updateCourseBtn" class="btn bg-aqua pull-right" value="Mettre à jour" action="update"/>
+                                        </h:form>
+                                    </div>
+                                </div>
+                            </div>
+                            <ui:include src="add-teacher-course.xhtml"/>
+                            
+                            
+
+                            <div class="panel box box-solid" style="border-color: #f56954;">
+                                <div class="box-header with-border">
+                                    <h4 class="box-title">
+                                        <a class="text-red" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseNine"><i class="fa fa-language margin-r-5"></i>Compétences</a>
+                                    </h4>
+                                </div>
+                                <div id="collapseNine" class="panel-collapse collapse">
+                                    <div class="box-body">
+                                        <h:form class="form-horizontal">
+                                        </h:form> 
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div> 
+                    </div>
+                </div>
+            </ui:define>
+
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

@@ -1,0 +1,671 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+>
+<!--@elvariable id="studentProfileSettingsCtrl" type="net.vpc.app.vr.plugins.academicprofile.web.StudentProfileSettingsCtrl"-->
+<!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+
+<h:head>
+</h:head>
+
+<h:body>
+
+
+    <ui:composition template="#{vr.privateTemplatePath}">
+        <ui:define name="content">
+            <div class="row">
+
+
+                <div class="col-lg-9">
+
+                    <div class="box-group" id="accordion">
+
+                        <!-- identity -->
+                        <div class="panel box box-solid" style="border-color: #00a65a;">
+                            <div class="box-header with-border">
+                                <h4 class="box-title">
+                                    <a class="text-green" style="text-decoration: underline;" data-toggle="collapse"
+                                       data-parent="#accordion" href="#collapseZero"><i
+                                            class="fa fa-user margin-r-5"></i>Informations d'identité</a>
+                                </h4>
+                            </div>
+                            <div id="collapseZero" class="panel-collapse collapse in">
+                                <h:form id="identityForm" enctype="multipart/form-data" class="form-horizontal">
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-green" value="CIN"
+                                                           for="nin"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText required="true" requiredMessage="CIN obligatoire"
+                                                             value="#{studentProfileSettingsCtrl.model.contact.nin}"
+                                                             class="form-control" id="nin"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-green"
+                                                           value="N° Inscription" for="subscriptionNumber"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText required="true"
+                                                             requiredMessage="N° Inscription obligatoire"
+                                                             value="#{studentProfileSettingsCtrl.model.student.subscriptionNumber}"
+                                                             class="form-control" id="subscriptionNumber"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Prénom"
+                                                           for="firstName"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText required="true" requiredMessage="Prénom obligatoire"
+                                                             value="#{studentProfileSettingsCtrl.model.contact.firstName}"
+                                                             class="form-control" id="firstName"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Nom"
+                                                           for="lastName"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText required="true" requiredMessage="Nom obligatoire"
+                                                             value="#{studentProfileSettingsCtrl.model.contact.lastName}"
+                                                             class="form-control" id="lastName"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Prénom (ar)"
+                                                           for="firstName2"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText
+                                                        value="#{studentProfileSettingsCtrl.model.contact.firstName2}"
+                                                        class="form-control" id="firstName2"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Nom (ar)"
+                                                           for="lastName2"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText
+                                                        value="#{studentProfileSettingsCtrl.model.contact.lastName2}"
+                                                        class="form-control" id="lastName2"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Date de naissance"
+                                                           for="birthdate"/>
+                                            <div class="col-sm-7">
+                                                <p:calendar styleClass="from-control vr-form-calendar-text"
+                                                        value="#{studentProfileSettingsCtrl.model.contact.birthDate}"
+                                                        class="form-control" id="birthdate"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Lieu de naissance"
+                                                           for="birthLocation"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText
+                                                        value="#{studentProfileSettingsCtrl.model.contact.birthLocation}"
+                                                        class="form-control" id="birthLocation"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Gouvenorat de naissance"
+                                                           for="birthGovernorate"/>
+                                            <div class="col-sm-7">
+                                                <p:selectOneMenu class="form-control vr-form-control"
+                                                                 id="birthGovernorate"
+                                                                 value="#{studentProfileSettingsCtrl.model.contact.birthGovernorate}"
+                                                                 converter="#{vr.entityObjConverter('AppGovernorate')}">
+                                                    <f:selectItems
+                                                            value="#{vr.entitySelectItems('AppGovernorate',true,false)}"/>
+                                                </p:selectOneMenu>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Genre"
+                                                           for="gender"/>
+                                            <div class="col-sm-7">
+                                                <p:selectOneRadio id="gender"
+                                                                  value="#{studentProfileSettingsCtrl.model.student.contact.gender}"
+                                                                  converter="#{vr.entityObjConverter('AppGender')}">
+                                                    <f:selectItems
+                                                            value="#{vr.entitySelectItems('AppGender',true,false)}"/>
+                                                </p:selectOneRadio>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Civilité"
+                                                           for="civility"/>
+                                            <div class="col-sm-7">
+                                                <p:selectOneRadio id="civility"
+                                                                  value="#{studentProfileSettingsCtrl.model.contact.civility}"
+                                                                  converter="#{vr.entityObjConverter('AppCivility')}">
+                                                    <f:selectItems
+                                                            value="#{vr.entitySelectItems('AppCivility',true,false)}"/>
+                                                </p:selectOneRadio>
+                                            </div>
+                                        </div>
+                                        <br/>
+
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Titre 1"
+                                                           for="title1"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText
+                                                        value="#{studentProfileSettingsCtrl.model.contact.positionTitle1}"
+                                                        class="form-control" id="title1"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Titre 2"
+                                                           for="title2"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText
+                                                        value="#{studentProfileSettingsCtrl.model.contact.positionTitle2}"
+                                                        class="form-control" id="title2"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Titre 3"
+                                                           for="title3"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText
+                                                        value="#{studentProfileSettingsCtrl.model.contact.positionTitle1}"
+                                                        class="form-control" id="title3"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+
+
+                                        <h:commandLink id="updateIdentitySection" class="btn bg-green pull-right"
+                                                       action="#{studentProfileSettingsCtrl.updateIdentityInformation()}"
+                                                       value="Mettre à jour"/>
+                                    </div>
+                                </h:form>
+                            </div>
+                        </div>
+
+                        <!-- contact -->
+                        <div class="panel box box-solid" style="border-color: #3c8dbc;">
+                            <div class="box-header with-border">
+                                <h4 class="box-title">
+                                    <a class="text-blue" style="text-decoration: underline;" data-toggle="collapse"
+                                       data-parent="#accordion" href="#collapseOne"><i
+                                            class="fa fa-info-circle margin-r-5"></i>Informations du contact</a>
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse">
+                                <h:form id="basicInformationsForm" enctype="multipart/form-data"
+                                        class="form-horizontal">
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-blue" value="Email 1"
+                                                           for="email1"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText value="#{studentProfileSettingsCtrl.model.contact.email}"
+                                                             class="form-control" id="email1"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-blue" value="Email 2"
+                                                           for="email2"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText value="#{studentProfileSettingsCtrl.model.contact.email2}"
+                                                             class="form-control" id="email2"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-blue" value="Tél 1"
+                                                           for="phone1"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText value="#{studentProfileSettingsCtrl.model.contact.phone1}"
+                                                             class="form-control" id="phone1"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-blue" value="Tél 2"
+                                                           for="phone2"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText value="#{studentProfileSettingsCtrl.model.contact.phone2}"
+                                                             class="form-control" id="phone2"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-blue" value="Tél 3"
+                                                           for="phone3"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText value="#{studentProfileSettingsCtrl.model.contact.phone3}"
+                                                             class="form-control" id="phone3"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-blue" value="Site Web"
+                                                           for="webSite"/>
+                                            <div class="col-sm-7">
+                                                <h:inputText
+                                                        value="#{studentProfileSettingsCtrl.model.studentCV.wwwURL}"
+                                                        class="form-control" id="webSite"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-blue" value="Twitter URL"
+                                                           for="twitterURL"/>
+                                            <div class="col-sm-7">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">http://</span>
+                                                    <h:inputText
+                                                            value="#{studentProfileSettingsCtrl.model.studentCV.socialURL1}"
+                                                            class="form-control" id="twitterURL"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-blue" value="Google+ URL"
+                                                           for="googlePlusURL"/>
+                                            <div class="col-sm-7">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">http://</span>
+                                                    <h:inputText
+                                                            value="#{studentProfileSettingsCtrl.model.studentCV.socialURL2}"
+                                                            class="form-control" id="googlePlusURL"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-blue" value="Linkedin URL"
+                                                           for="linkedinURL"/>
+                                            <div class="col-sm-7">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">http://</span>
+                                                    <h:inputText
+                                                            value="#{studentProfileSettingsCtrl.model.studentCV.socialURL3}"
+                                                            class="form-control" id="linkedinURL"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-blue" value="GitHub URL"
+                                                           for="gitHubURL"/>
+                                            <div class="col-sm-7">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">http://</span>
+                                                    <h:inputText
+                                                            value="#{studentProfileSettingsCtrl.model.studentCV.socialURL4}"
+                                                            class="form-control" id="gitHubURL"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h:commandLink id="updateBasicInformationSection" class="btn bg-blue pull-right"
+                                                       action="#{studentProfileSettingsCtrl.updateContactInformationSection()}"
+                                                       value="Mettre à jour"/>
+                                    </div>
+                                </h:form>
+                            </div>
+                        </div>
+
+                        <!-- About-->
+                        <div class="panel box box-solid" style="border-color: #D81B60;">
+                            <div class="box-header with-border">
+                                <h4 class="box-title">
+                                    <a class="text-maroon" style="text-decoration: underline;" data-toggle="collapse"
+                                       data-parent="#accordion" href="#collapseTwo"><i
+                                            class="fa fa-commenting-o margin-r-5"></i>A propos </a>
+                                </h4>
+                            </div>
+                            <div id="collapseTwo" class="panel-collapse collapse">
+                                <h:form id="aboutForm" enctype="multipart/form-data" class="form-horizontal">
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-maroon" value="A propos"
+                                                           for="description"/>
+                                            <div class="col-sm-7">
+                                                <h:inputTextarea
+                                                        value="#{studentProfileSettingsCtrl.model.contact.description}"
+                                                        rows="3" class="form-control" id="description"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-maroon" value="Photo"
+                                                           />
+                                            <div class="col-sm-7">
+                                                <p:commandButton styleClass="btn btn-default" value="photo"
+                                                                 actionListener="#{studentProfileSettingsCtrl.onRequestUploadPhoto}"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <h:outputLabel class="col-sm-3 control-label text-maroon" value="CV"
+                                                           />
+                                            <div class="col-sm-7">
+                                                <p:commandButton styleClass="btn btn-default" value="cv"
+                                                                 actionListener="#{studentProfileSettingsCtrl.onRequestUploadCV}"/>
+                                            </div>
+                                        </div>
+                                        <h:commandLink id="updateAboutSection" class="btn bg-maroon pull-right"
+                                                       action="#{studentProfileSettingsCtrl.updateAboutSection()}"
+                                                       value="Mettre à jour"/>
+                                    </div>
+                                </h:form>
+                            </div>
+                        </div>
+
+                        <!-- studies -->
+                        <div class="panel box box-solid" style="border-color: #605ca8;">
+                            <div class="box-header with-border">
+                                <h4 class="box-title">
+                                    <a class="text-purple" style="text-decoration: underline;" data-toggle="collapse"
+                                       data-parent="#accordion" href="#collapseThree"> <i
+                                            class="fa fa-graduation-cap margin-r-5"></i>Formations </a>
+                                </h4>
+                            </div>
+                            <div id="collapseThree" class="panel-collapse collapse">
+                                <div class="box-body">
+                                    <h:form id="educationForm" enctype="multipart/form-data" class="form-horizontal">
+                                        <ul class="timeline">
+                                            <li class="time-label">
+                                                <span class="bg-purple">Mes études</span>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-graduation-cap bg-purple"></i>
+                                                <div class="timeline-item">
+                                                    <h3 class="timeline-header bg-purple">Ecole Nationale d'Ingénieurs de Sousse (ENISo)</h3>
+                                                    <div class="timeline-body">
+                                                        <p><strong><h:outputLabel value="Classe ingénieur : "
+                                                                                  rendered="#{studentProfileSettingsCtrl.model.student.lastClass1 != null}"/>
+                                                        </strong>#{studentProfileSettingsCtrl.model.student.lastClass1}
+                                                        </p>
+                                                        <p><strong><h:outputLabel value="Classe mastere de recherche : "
+                                                                                  rendered="#{studentProfileSettingsCtrl.model.student.lastClass2 != null}"/>
+                                                        </strong>#{studentProfileSettingsCtrl.model.student.lastClass2}
+                                                        </p>
+                                                        <p><strong><h:outputLabel value="Classe mastere pro : "
+                                                                                  rendered="#{studentProfileSettingsCtrl.model.student.lastClass3 != null}"/>
+                                                        </strong>#{studentProfileSettingsCtrl.model.student.lastClass3}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-graduation-cap bg-purple"></i>
+                                                <div class="timeline-item">
+                                                    <h3 class="timeline-header bg-purple">Entrée à l'Ecole Nationale d'Ingénieurs de Sousse</h3>
+                                                    <div class="timeline-body">
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           value="L'affectation correspond a quel choix ?"
+                                                                           for="preClassChoice"/>
+                                                            <div class="col-sm-7">
+                                                                <h:inputText
+                                                                        value="#{studentProfileSettingsCtrl.model.student.preClassChoice}"
+                                                                        class="form-control" id="preClassChoice"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           value="1er choix en fin de 1er cycle"
+                                                                           for="preClassChoice1"/>
+                                                            <div class="col-sm-7">
+                                                                <p:selectOneMenu class="form-control vr-form-control"
+                                                                                 id="preClassChoice1"
+                                                                                 value="#{studentProfileSettingsCtrl.model.student.preClassChoice1}"
+                                                                                 converter="#{vr.entityObjConverter('AcademicPreClassChoice')}">
+                                                                    <f:selectItems
+                                                                            value="#{vr.entitySelectItems('AcademicPreClassChoice',true,false)}"/>
+                                                                </p:selectOneMenu>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           value="Autre 1er choix"
+                                                                           for="preClassChoice1Other"/>
+                                                            <div class="col-sm-7">
+                                                                <h:inputText
+                                                                        value="#{studentProfileSettingsCtrl.model.student.preClassChoice1Other}"
+                                                                        class="form-control" id="preClassChoice1Other"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           value="2eme choix en fin de 1er cycle"
+                                                                           for="preClassChoice2"/>
+                                                            <div class="col-sm-7">
+                                                                <p:selectOneMenu class="form-control vr-form-control"
+                                                                                 id="preClassChoice2"
+                                                                                 value="#{studentProfileSettingsCtrl.model.student.preClassChoice2}"
+                                                                                 converter="#{vr.entityObjConverter('AcademicPreClassChoice')}">
+                                                                    <f:selectItems
+                                                                            value="#{vr.entitySelectItems('AcademicPreClassChoice',true,false)}"/>
+                                                                </p:selectOneMenu>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           value="Autre 2eme choix"
+                                                                           for="preClassChoice2Other"/>
+                                                            <div class="col-sm-7">
+                                                                <h:inputText
+                                                                        value="#{studentProfileSettingsCtrl.model.student.preClassChoice2Other}"
+                                                                        class="form-control" id="preClassChoice2Other"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           value="3eme choix en fin de 1er cycle"
+                                                                           for="preClassChoice3"/>
+                                                            <div class="col-sm-7">
+                                                                <p:selectOneMenu class="form-control vr-form-control"
+                                                                                 id="preClassChoice3"
+                                                                                 value="#{studentProfileSettingsCtrl.model.student.preClassChoice3}"
+                                                                                 converter="#{vr.entityObjConverter('AcademicPreClassChoice')}">
+                                                                    <f:selectItems
+                                                                            value="#{vr.entitySelectItems('AcademicPreClassChoice',true,false)}"/>
+                                                                </p:selectOneMenu>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           value="Autre 3eme choix"
+                                                                           for="preClassChoice3Other"/>
+                                                            <div class="col-sm-7">
+                                                                <h:inputText
+                                                                        value="#{studentProfileSettingsCtrl.model.student.preClassChoice3Other}"
+                                                                        class="form-control" id="preClassChoice3Other"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-graduation-cap bg-purple"></i>
+                                                <div class="timeline-item">
+                                                    <h3 class="timeline-header bg-purple">1er cycle</h3>
+                                                    <div class="timeline-body">
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           value="Etablissement 1er cycle"
+                                                                           for="preClassInput"/>
+                                                            <div class="col-sm-7">
+                                                                <p:selectOneMenu class="form-control vr-form-control"
+                                                                                 id="preClassInput"
+                                                                                 value="#{studentProfileSettingsCtrl.model.student.preClass}"
+                                                                                 converter="#{vr.entityObjConverter('AcademicPreClass')}">
+                                                                    <f:selectItems
+                                                                            value="#{vr.entitySelectItems('AcademicPreClass',true,false)}"/>
+                                                                </p:selectOneMenu>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           for="firstCycleType" value="Type 1er cycle"/>
+                                                            <div class="col-sm-7">
+                                                                <p:selectOneMenu class="form-control vr-form-control"
+                                                                                 id="firstCycleType"
+                                                                                 value="#{studentProfileSettingsCtrl.model.student.preClassType}"
+                                                                                 converter="#{vr.entityObjConverter('AcademicPreClassType')}">
+                                                                    <f:selectItems
+                                                                            value="#{vr.entitySelectItems('AcademicPreClassType',true,false)}"/>
+                                                                </p:selectOneMenu>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           value="Moyenne annuelle"
+                                                                           for="preClassScore"/>
+                                                            <div class="col-sm-7">
+                                                                <h:inputText
+                                                                        value="#{studentProfileSettingsCtrl.model.student.preClassScore}"
+                                                                        class="form-control" id="preClassScore"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           value="Rang 1er cycle" for="preClassRank"/>
+                                                            <div class="col-sm-7">
+                                                                <h:inputText
+                                                                        value="#{studentProfileSettingsCtrl.model.student.preClassRank}"
+                                                                        class="form-control" id="preClassRank"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           value="Rang maximal 1er cycle"
+                                                                           for="preClassRankMax"/>
+                                                            <div class="col-sm-7">
+                                                                <h:inputText
+                                                                        value="#{studentProfileSettingsCtrl.model.student.preClassRankMax}"
+                                                                        class="form-control" id="preClassRankMax"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           value="Rang majoré+15 Max 1er cycle"
+                                                                           for="preClassRankMax2"/>
+                                                            <div class="col-sm-7">
+                                                                <h:inputText
+                                                                        value="#{studentProfileSettingsCtrl.model.student.preClassRank2}"
+                                                                        class="form-control" id="preClassRankMax2"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           value="Rang dans l'affectation"
+                                                                           for="preClassRankByProgram"/>
+                                                            <div class="col-sm-7">
+                                                                <h:inputText
+                                                                        value="#{studentProfileSettingsCtrl.model.student.preClassRankByProgram}"
+                                                                        class="form-control"
+                                                                        id="preClassRankByProgram"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-graduation-cap bg-purple"></i>
+                                                <div class="timeline-item">
+                                                    <h3 class="timeline-header bg-purple">Baccalauréat</h3>
+                                                    <div class="timeline-body">
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           value="Type Baccalauréat"
+                                                                           for="baccalaureateClass"/>
+                                                            <div class="col-sm-7">
+                                                                <p:selectOneMenu class="form-control vr-form-control"
+                                                                                 id="baccalaureateClass"
+                                                                                 value="#{studentProfileSettingsCtrl.model.student.baccalaureateClass}"
+                                                                                 converter="#{vr.entityObjConverter('AcademicBac')}">
+                                                                    <f:selectItems
+                                                                            value="#{vr.entitySelectItems('AcademicBac',true,false)}"/>
+                                                                </p:selectOneMenu>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Gouvenorat du bac"
+                                                                           for="bacGovernorate"/>
+                                                            <div class="col-sm-7">
+                                                                <p:selectOneMenu class="form-control vr-form-control"
+                                                                                 id="bacGovernorate"
+                                                                                 value="#{studentProfileSettingsCtrl.model.student.baccalaureateGovernorate}"
+                                                                                 converter="#{vr.entityObjConverter('AppGovernorate')}">
+                                                                    <f:selectItems
+                                                                            value="#{vr.entitySelectItems('AppGovernorate',true,false)}"/>
+                                                                </p:selectOneMenu>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                           value="Moyenne de baccalauréat"
+                                                                           for="baccalaureateScore"/>
+                                                            <div class="col-sm-7">
+                                                                <h:inputText
+                                                                        value="#{studentProfileSettingsCtrl.model.student.baccalaureateScore}"
+                                                                        class="form-control" id="baccalaureateScore"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li><i class="fa fa-clock-o bg-gray"></i></li>
+                                        </ul>
+                                        <h:commandLink id="updateEducationSection" class="btn bg-purple pull-right"
+                                                       action="#{studentProfileSettingsCtrl.updateStudySection()}"
+                                                       value="Mettre à jour"/>
+                                    </h:form>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <div class="box box-solid">
+                        <ui:include src="profile-card.xhtml"/>
+                        <div class="box-body">
+                            <h:link class="btn btn-primary btn-block" outcome="student-profile" value="Aperçu profil"/>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>

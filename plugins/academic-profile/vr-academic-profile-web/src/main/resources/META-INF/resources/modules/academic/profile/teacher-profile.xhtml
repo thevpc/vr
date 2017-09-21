@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      >
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+        
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="links">
+                <h:outputStylesheet name="#{vr.themeContext}/scroll/css/coda-slider.css"/>
+                <h:outputScript name="#{vr.themeContext}/scroll/js/coda-slider.js" target="head" />
+                <!-- <h:outputScript name="#{vr.themeContext}/scroll/js/jquery-3.1.1.min.js" target="head" /> -->
+                <h:outputScript name="#{vr.themeContext}/scroll/js/jquery.scrollTo-1.3.3.js" target="head" />
+                <h:outputScript name="#{vr.themeContext}/scroll/js/jquery.localscroll-1.2.5.js" target="head" />
+                <h:outputScript name="#{vr.themeContext}/scroll/js/jquery.serialScroll-1.2.1.js" target="head" />
+                <h:outputScript name="#{vr.themeContext}/scroll/js/jquery.easing.1.3.js" target="head" />
+            </ui:define>
+
+            <ui:define name="content">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="box box-solid">
+                            <ui:include src="profile-card.xhtml" />
+                            <div class="box-body">
+                                <nav>
+                                    <a class="btn btn-app bg-blue color-palette" style="width:100px;" id="coordonnees" href="#coordonneesSection"><i class="fa fa-info-circle"></i>Coordonnées</a>
+                                    <a class="btn btn-app bg-maroon color-palette" style="width:100px;" id="apropos" href="#aproposSection"><i class="fa fa-commenting-o"></i> A propos</a>
+                                    <a class="btn btn-app bg-navy color-palette" style="width:100px;" id="experiences" href="#experiencesSection"> <i class="fa fa-suitcase"></i>Expériences</a>
+                                    <a class="btn btn-app bg-purple color-palette" style="width:100px;" id="formations" href="#formationsSection"><i class="fa fa-graduation-cap"></i>Formations</a>
+                                    <a class="btn btn-app bg-gray color-palette" style="width:100px;" id="projets" href="#projetsSection"><i class="fa fa-github"></i>Projets</a>
+                                    <a class="btn btn-app bg-green color-palette" style="width:100px;" id="axesDeRecherche" href="#axesDeRechercheSection"><i class="fa fa-search"></i> Axes de recherche</a>
+                                    <a class="btn btn-app bg-aqua color-palette" style="width:100px;" id="courses" href="#coursesSection"><i class="fa fa-book"></i>Cours</a>
+                                    <a class="btn btn-app bg-red color-palette" style="width:100px;" id="skills" href="#skillsSection"><i class="fa fa-language"></i>Skills</a>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-9">
+
+                        <div id="profileSlider">
+                            <div id="profileTooplate_wrapper">
+
+                                <div id="profileContent">
+                                    <div class="profileScroll">
+                                        <div class="profileScrollContainer">
+
+                                            <div class="profilePanel" id="coordonneesSection">
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <h1 class="text-blue"><i class="fa fa-info-circle margin-r-5"></i>Coordonnées</h1>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-envelope margin-r-5"></i>Email</strong>
+                                                                <p>#{teacherProfileSettingsCtrl.model.contact.email}</p>
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-globe margin-r-5"></i>Site Web</strong>
+                                                                <p>#{teacherProfileSettingsCtrl.model.teacherCV.wwwURL}</p>
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-phone-square margin-r-5"></i>Tél 1</strong>
+                                                                <p>#{teacherProfileSettingsCtrl.model.contact.phone1}</p>
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-phone-square margin-r-5"></i>Tél 2</strong>
+                                                                <p>#{teacherProfileSettingsCtrl.model.contact.phone2}</p>
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-phone-square margin-r-5"></i>Tél 3</strong>
+                                                                <p>#{teacherProfileSettingsCtrl.model.contact.phone3}</p>
+                                                                <hr/>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-university margin-r-5"></i>Département</strong>
+                                                                <p>#{teacherProfileSettingsCtrl.model.teacher.department}</p>
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-university margin-r-5"></i>Discipline</strong>
+                                                                <p>#{teacherProfileSettingsCtrl.model.teacher.discipline}</p>
+                                                                <p>#{teacherProfileSettingsCtrl.model.teacher.officialDiscipline.name}, #{teacherProfileSettingsCtrl.model.teacher.officialDiscipline.name2}, #{teacherProfileSettingsCtrl.model.teacher.officialDiscipline.name3}</p>
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-users margin-r-5"></i>Groupes</strong>
+                                                                <p>
+                                                                    <ui:repeat value="#{vr.userSession.profiles}" var="prName">
+                                                                        <span class="label label-#{vr.hashToArr(prName.name,'danger','success','info','warning','primary','default')}">#{prName.name}</span>
+                                                                    </ui:repeat>
+                                                                </p>
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-map-marker margin-r-5"></i>Numéro du bureau</strong>
+                                                                <p>#{teacherProfileSettingsCtrl.model.contact.officeLocationNumber}</p>
+                                                                <hr/>
+                                                                <strong class="text-blue"><i class="fa fa-phone margin-r-5"></i>Numéro de téléphone du bureau</strong>
+                                                                <p>#{teacherProfileSettingsCtrl.model.contact.officePhoneNumber}</p>
+                                                                <hr/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="text-center">
+                                                            <a href="http://#{teacherProfileSettingsCtrl.model.teacherCV.socialURL1}" class="btn btn-social-icon btn-twitter"><i class="fa fa-twitter"></i></a>
+                                                            <a href="http://#{teacherProfileSettingsCtrl.model.teacherCV.socialURL2}" class="btn btn-social-icon btn-linkedin"><i class="fa fa-linkedin"></i></a>
+                                                            <a href="http://#{teacherProfileSettingsCtrl.model.teacherCV.socialURL3}" class="btn btn-social-icon btn-google"><i class="fa fa-google-plus"></i></a>
+                                                            <a href="http://#{teacherProfileSettingsCtrl.model.teacherCV.socialURL4}" class="btn btn-social-icon btn-github"><i class="fa fa-github"></i></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> 
+
+                                            <div class="profilePanel" id="aproposSection">
+                                                <div class="box box-solid" >
+                                                    <div class="box-body">
+                                                        <h1 class="text-maroon"><i class="fa fa-commenting-o margin-r-5"></i>A propos</h1>
+                                                        <div class="col-md-4">
+                                                            <img class="img-responsive img-rounded" src="#{vr.url(vr.currentUserPhoto)}" alt="User profile picture"/>
+                                                        </div>
+                                                        <div class="col-md-8 text-black">
+                                                            <p>#{teacherProfileSettingsCtrl.model.contact.description}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="profilePanel" id="experiencesSection">
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <h1 class="text-navy"><i class="fa fa-suitcase margin-r-5"></i>Expériences</h1>
+                                                        <ul class="timeline">
+                                                            <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
+                                                                <li class="time-label"><span class="bg-navy">#{item.fromDate} - #{item.toDate}</span> </li>
+                                                                <li>
+                                                                    <i class="fa fa-suitcase bg-navy"></i>
+                                                                    <div class="timeline-item">
+                                                                        <h3 class="timeline-header bg-navy text-white">#{item.title}</h3>
+                                                                        <div class="timeline-body">
+                                                                            <p><strong>Etablissement : </strong>#{item.company}</p>
+                                                                            <p><strong>Détails : </strong>#{item.details}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            </ui:repeat>
+                                                            <li> <i class="fa fa-clock-o bg-gray"></i> </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="profilePanel" id="formationsSection">
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <h1 class="text-purple"><i class="fa fa-graduation-cap margin-r-5"></i>Formations</h1>
+                                                        <ul class="timeline">
+                                                            <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
+                                                                <li class="time-label"><span class="bg-purple">#{item.fromDate} - #{item.toDate}</span> </li>
+                                                                <li>
+                                                                    <i class="fa fa-graduation-cap bg-purple"></i>
+                                                                    <div class="timeline-item">
+                                                                        <h3 class="timeline-header bg-purple">#{item.title}</h3>
+                                                                        <div class="timeline-body">
+                                                                            <p><strong>Etablissement : </strong>#{item.company}</p>
+                                                                            <p><strong>Détails : </strong>#{item.details}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            </ui:repeat>
+                                                            <li> <i class="fa fa-clock-o bg-gray"></i> </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="profilePanel" id="projetsSection">
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <h1 class="text-gray"><i class="fa fa-github margin-r-5"></i>Projets</h1>
+                                                        <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
+                                                            <div class="box collapsed-box box-solid">
+                                                                <div class="box-header with-border bg-gray">
+                                                                    <h3 class="box-title">#{item.title}</h3>
+                                                                    <div class="box-tools pull-right">
+                                                                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="box-body">
+                                                                    <p>#{item.details}</p>
+                                                                    <!-- keywords-->
+                                                                </div>
+                                                            </div>
+                                                        </ui:repeat>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="profilePanel" id="axesDeRechercheSection">
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <h1 class="text-green"><i class="fa fa-search margin-r-5"></i>Axes de recherche</h1>
+                                                        <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div class="info-box ">
+                                                                    <span class="info-box-icon bg-green"><i class="fa fa-search"></i></span>
+                                                                    <div class="info-box-content">
+                                                                        <p class="info-box-text">#{item.title}</p>
+                                                                        <p>#{item.details}</p>
+                                                                        <!-- keywords-->
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </ui:repeat>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="profilePanel" id="coursesSection">
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <h1 class="text-aqua"><i class="fa fa-book margin-r-5"></i>Cours enseignés</h1>
+                                                        <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="info-box">
+                                                                <span class="info-box-icon bg-aqua"><i class="fa fa-book"></i></span>
+                                                                <div class="info-box-content">
+                                                                    <p class="info-box-text">#{item.title} </p>
+                                                                    <p>#{item.details}</p>
+                                                                        <!-- keywords-->
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        </ui:repeat>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="profilePanel" id="skillsSection">
+                                                <div class="box box-solid">
+                                                    <div class="box-body">
+                                                        <div class="col-lg-6">
+                                                            <h1 class="text-red"><i class="fa fa-language margin-r-5"></i>professional skills</h1>
+                                                            <div class="progress-group">
+                                                                <span class="progress-text">JEE</span>
+                                                                <span class="progress-number">90%</span>
+                                                                <div class="progress sm">
+                                                                    <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 90%">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="progress-group">
+                                                                <span class="progress-text">SQL</span>
+                                                                <span class="progress-number">70%</span>
+                                                                <div class="progress sm">
+                                                                    <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 70%">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="progress-group">
+                                                                <span class="progress-text">.NET</span>
+                                                                <span class="progress-number">50%</span>
+                                                                <div class="progress sm">
+                                                                    <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 50%">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="progress-group">
+                                                                <span class="progress-text">C++</span>
+                                                                <span class="progress-number">30%</span>
+                                                                <div class="progress sm">
+                                                                    <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <h1 class="text-red"><i class="fa fa-language margin-r-5"></i>Languages</h1>
+                                                            <div class="progress-group">
+                                                                <span class="progress-text">Français</span>
+                                                                <span class="progress-number">80%</span>
+                                                                <div class="progress sm">
+                                                                    <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="progress-group">
+                                                                <span class="progress-text">Allemand</span>
+                                                                <span class="progress-number">30%</span>
+                                                                <div class="progress sm">
+                                                                    <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> 
+                </div>
+            </ui:define>
+
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

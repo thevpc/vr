@@ -22,12 +22,12 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
-//        title = "Mon Profil", css = "fa-dashboard",
-        url = "modules/config/my-profile",
-        menu = "/Config",
-        securityKey = "Custom.MyProfile"
-)
+//@VrController(
+////        title = "Mon Profil", css = "fa-dashboard",
+//        url = "modules/config/my-profile",
+//        menu = "/Config",
+//        securityKey = "Custom.MyProfile"
+//)
 public class MyProfileCtrl {
 
     private static final Logger log = Logger.getLogger(MyProfileCtrl.class.getName());

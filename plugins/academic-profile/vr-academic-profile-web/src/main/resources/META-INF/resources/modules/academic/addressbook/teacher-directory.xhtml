@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+    <h:head>
+    </h:head>
+
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <!--@elvariable id="myProfileCtrl" type="net.vpc.app.vainruling.core.web.ctrl.MyProfileCtrl"-->
+    <h:body>
+
+
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <h:form id="listForm" enctype="multipart/form-data">
+                    <p:messages id="messages" showDetail="true" autoUpdate="true"/>
+
+                    <div style=" margin-bottom: 20px;" >
+                        <h:outputText
+                            value="Vous êtes #{vr.userSession.user.contact eq null ? '':vr.userSession.user.contact.fullName} (#{userSession.user.login})"/>
+                    </div>
+                </h:form>
+                <div class="row">
+                    <ui:repeat var="teacher" value="#{academicTeacherDirectoryCtrl.model.teacherList}" >
+                        <div class="col-md-4">
+                            <div class="box box-widget widget-user-2">
+                                <div class="widget-user-header bg-blue">
+                                    <div class="widget-user-image">
+                                        <!--  <img class="img-circle" src="" alt="Member photo"> -->
+                                    </div> 
+                                    <h3 class="widget-user-username">Olfa</h3>
+                                    <h5 class="widget-user-desc">Enseignant</h5>
+                                </div>
+                                <div class="box-footer no-padding">
+                                    <ul class="nav nav-stacked">
+                                        <li><a href="#">Voir CV<span class="pull-right badge bg-blue">31</span></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </ui:repeat>
+                </div> 
+            </ui:define>
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

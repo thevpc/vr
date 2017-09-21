@@ -42,14 +42,14 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
-        breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-//        css = "fa-table",
-//        title = "Inscription Etudiant",
-        url = "modules/academic/my-student-info",
-        menu = "/Desktop"
-)
+//@VrController(
+//        breadcrumb = {
+//                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+////        css = "fa-table",
+////        title = "Inscription Etudiant",
+//        url = "modules/academic/my-student-info",
+//        menu = "/Desktop"
+//)
 public class MyStudentInfoCtrl implements DocumentUploadListener ,ActionEnabler{
 
     private Model model = new Model();

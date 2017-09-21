@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+    </h:head>
+
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <!--@elvariable id="myProfileCtrl" type="net.vpc.app.vainruling.core.web.ctrl.MyProfileCtrl"-->
+    <h:body>
+
+        <ui:composition>
+
+            <p:dialog header="Ajouter une nouvelle expérience" widgetVar="addExperience" minHeight="40" width="50%">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="info-box ">
+                        <h:form id="experienceAddForm" enctype="multipart/form-data" class="form-horizontal"> 
+                            <ul class="timeline">
+                                <li class="time-label"></li>
+                                <li>
+                                    <i class="fa fa-suitcase bg-navy"></i>
+                                    <div class="timeline-item">
+                                        <h3 class="timeline-header bg-navy">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">Titre : </span>
+                                                <h:inputText  value="#{teacherProfileSettingsCtrl.model.experienceItem.title}" class="form-control" id="experienceTitle"/>
+                                            </div>
+                                        </h3>
+                                        <div class="timeline-body">
+                                            <!-- <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-navy" value="De" for="fromDate" />
+                                                <div class="col-sm-7">
+                                                    <p:calendar id="fromDate" value="#{teacherProfileSettingsCtrl.model.experienceItem.fromDate}" showOn="button" />
+                                                    <h:inputText  value="#{teacherProfileSettingsCtrl.model.experienceItem.fromDate}" class="form-control" id="fromDate"/>
+                                                </div>
+                                            </div> -->
+                                            <!-- <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-navy" value="A" for="toDate" />
+                                                <div class="col-sm-7">
+                                                    <p:calendar id="toDate" value="#{teacherProfileSettingsCtrl.model.experienceItem.toDate}" showOn="button"/>
+                                                </div>
+                                            </div> -->
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-navy" for="experienceCompanyList" value="Etablissement" />
+                                                <div class="col-sm-7">
+                                                    <p:selectOneMenu id="experienceCompanyList" value="Entreprise" style="width:125px">
+                                                        <f:selectItem itemLabel="Selectionner ..." itemValue="#{teacherProfileSettingsCtrl.model.experienceItem.company}" />
+                                                        <f:selectItems value="#{teacherProfileSettingsCtrl.model.companyItems}" />
+                                                    </p:selectOneMenu>
+                                                </div> 
+                                            </div>
+                                           
+                                                <!--  <p:outputLabel class="col-sm-3 control-label text-navy" value="Etablissement" for="etablissement"/>
+                                                  <div class="col-sm-7">
+                                                      <p:selectOneMenu value="#{teacherProfileSettingsCtrl.model.cvItem.company}">
+                                                          <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                                          <f:selectItems value="#{teacherProfileSettingsCtrl.model.cvItem.company}"/>
+                                                      </p:selectOneMenu>
+                                                  </div> -->
+                                                <!-- <h:outputLabel class="col-sm-3 control-label text-navy" value="Etablissement" for="etablissement" />
+                                                 <select class="form-control">
+                                                     <option>option 1</option>
+                                                     <option>option 2</option>
+                                                     <option>option 3</option>
+                                                     <option>option 4</option>
+                                                     <option>option 5</option>
+                                                 </select>
+                                             
+                                             <div class="col-sm-7">
+                                                 <h:inputText  value="#{teacherProfileSettingsCtrl.model.cvItem.company}" class="form-control" id="etablissement"/>
+                                             </div> 
+                                            </div>-->
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-navy" value="Détails" for="experienceDetailsTextarea" />
+                                                <div class="col-sm-7">
+                                                    <h:inputTextarea value="#{teacherProfileSettingsCtrl.model.experienceItem.details}" rows="3" class="form-control" id="experienceDetailsTextarea"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <p:commandButton id="ExperienceCancelBtn" class="btn btn-danger pull-left" value="Annuler" onclick="PF('addExperience').hide();"/>
+                            <h:commandLink id="experienceUpdateBtn" class="btn bg-navy pull-right" value="Ajouter" action="#{teacherProfileSettingsCtrl.addNewExpeienceItem()}"/>
+                        </h:form>
+                    </div>
+                </div>
+            </p:dialog>
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

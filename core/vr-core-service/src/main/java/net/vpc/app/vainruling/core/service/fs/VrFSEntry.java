@@ -17,6 +17,13 @@ public class VrFSEntry {
     public VrFSEntry() {
     }
 
+    public VrFSEntry(String filterName, String filterType, String mountPoint, String linkPath) {
+        this.filterName = filterName;
+        this.filterType = filterType;
+        this.mountPoint = mountPoint;
+        this.linkPath = linkPath;
+    }
+
     public String getFilterName() {
         return filterName;
     }
@@ -38,6 +45,19 @@ public class VrFSEntry {
     }
 
     public void setMountPoint(String mountPoint) {
+        if (mountPoint == null) {
+            throw new IllegalArgumentException("Invalid path");
+        }
+        mountPoint = mountPoint.trim();
+        if (mountPoint.isEmpty()) {
+            throw new IllegalArgumentException("Invalid path");
+        }
+//        if (mountPoint.endsWith("/")) {
+//            mountPoint = mountPoint.substring(0, mountPoint.length() - 1);
+//        }
+//        if (!mountPoint.startsWith("/")) {
+//            mountPoint = "/" + mountPoint;
+//        }
         this.mountPoint = mountPoint;
     }
 
@@ -46,6 +66,19 @@ public class VrFSEntry {
     }
 
     public void setLinkPath(String linkPath) {
+        if (linkPath == null) {
+            throw new IllegalArgumentException("Invalid path");
+        }
+        linkPath = linkPath.trim();
+        if (linkPath.isEmpty()) {
+            throw new IllegalArgumentException("Invalid path");
+        }
+        if (linkPath.endsWith("/")) {
+            linkPath = linkPath.substring(0, linkPath.length() - 1);
+        }
+        if (!linkPath.startsWith("/")) {
+            linkPath = "/" + linkPath;
+        }
         this.linkPath = linkPath;
     }
 
