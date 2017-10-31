@@ -356,7 +356,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             FacesUtils.addInfoMessage("Realcul Réussi");
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
-            FacesUtils.addErrorMessage(ex,"Recalcul Echoué");
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
@@ -384,7 +384,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             FacesUtils.addInfoMessage("Enregistrement Réussi");
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
-            FacesUtils.addErrorMessage(ex,"Enregistrement Echoué");
+            FacesUtils.addErrorMessage(ex);
 //            throw ex;
         }
     }

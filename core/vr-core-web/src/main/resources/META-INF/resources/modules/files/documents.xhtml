@@ -23,7 +23,7 @@ and open the template in the editor.
     <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
             <h:form id="listForm" enctype="multipart/form-data">
-                <p:messages showDetail="false"/>
+                <p:messages showDetail="true"/>
                 <p:confirmDialog message="Etes vous sur de vouloir supprimer ce document/repertoire ?" header="Processus de suppression"
                                  widgetVar="confirmationDelete">
                     <p:commandButton value="Yes Sure" onclick="PF('confirmationDelete').hide();

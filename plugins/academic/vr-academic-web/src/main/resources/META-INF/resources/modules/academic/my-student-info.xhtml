@@ -25,7 +25,7 @@ and open the template in the editor.
     <ui:composition template="#{vr.privateTemplatePath}" enctype="multipart/form-data">
         <ui:define name="content">
             <h:form id="listForm">
-                <p:messages id="messages"/>
+                <p:messages id="messages" showDetail="true"/>
                 <div class="row">
 
                     <div class="col-md-9 col-sm-6 col-xs-12">
@@ -117,6 +117,7 @@ and open the template in the editor.
                                     <label>Genre</label>
                                     <p:selectOneRadio class=""
                                                       value="#{myStudentInfoCtrl.model.student.contact.gender}"
+                                                      filter="true" filterMatchMode="contains"
                                                       converter="#{vr.entityObjConverter('AppGender')}"
                                                       disabled="#{myStudentInfoCtrl.model.insertMode}"
                                     >
@@ -128,6 +129,7 @@ and open the template in the editor.
                                     <label>Civitlité</label>
                                     <p:selectOneRadio class=""
                                                       value="#{myStudentInfoCtrl.model.student.contact.civility}"
+                                                      filter="true" filterMatchMode="contains"
                                                       converter="#{vr.entityObjConverter('AppCivility')}"
                                     >
                                         <f:selectItems
@@ -168,6 +170,7 @@ and open the template in the editor.
                                     <label>1er cycle</label>
                                     <p:selectOneMenu class="form-control vr-form-control"
                                                      value="#{myStudentInfoCtrl.model.student.preClass}"
+                                                     filter="true" filterMatchMode="contains"
                                                      converter="#{vr.entityObjConverter('AcademicPreClass')}">
                                         <f:selectItems value="#{vr.entitySelectItems('AcademicPreClass',true,false)}"/>
                                     </p:selectOneMenu>
@@ -177,6 +180,7 @@ and open the template in the editor.
                                     <label>Type 1er cycle</label>
                                     <p:selectOneMenu class="form-control vr-form-control"
                                                      value="#{myStudentInfoCtrl.model.student.preClassType}"
+                                                     filter="true" filterMatchMode="contains"
                                                      converter="#{vr.entityObjConverter('AcademicPreClassType')}">
                                         <f:selectItems
                                                 value="#{vr.entitySelectItems('AcademicPreClassType',true,false)}"/>
@@ -222,6 +226,7 @@ and open the template in the editor.
                                     <label>1er choix en fin de 1er cycle</label>
                                     <p:selectOneMenu class="form-control vr-form-control"
                                                      value="#{myStudentInfoCtrl.model.student.preClassChoice1}"
+                                                     filter="true" filterMatchMode="contains"
                                                      converter="#{vr.entityObjConverter('AcademicPreClassChoice')}">
                                         <f:selectItems
                                                 value="#{vr.entitySelectItems('AcademicPreClassChoice',true,false)}"/>
@@ -234,6 +239,7 @@ and open the template in the editor.
                                     <label>2eme choix en fin de 1er cycle</label>
                                     <p:selectOneMenu class="form-control vr-form-control"
                                                      value="#{myStudentInfoCtrl.model.student.preClassChoice2}"
+                                                     filter="true" filterMatchMode="contains"
                                                      converter="#{vr.entityObjConverter('AcademicPreClassChoice')}">
                                         <f:selectItems
                                                 value="#{vr.entitySelectItems('AcademicPreClassChoice',true,false)}"/>
@@ -246,6 +252,7 @@ and open the template in the editor.
                                     <label>3eme choix en fin de 1er cycle</label>
                                     <p:selectOneMenu class="form-control vr-form-control"
                                                      value="#{myStudentInfoCtrl.model.student.preClassChoice3}"
+                                                     filter="true" filterMatchMode="contains"
                                                      converter="#{vr.entityObjConverter('AcademicPreClassChoice')}">
                                         <f:selectItems
                                                 value="#{vr.entitySelectItems('AcademicPreClassChoice',true,false)}"/>
@@ -259,6 +266,7 @@ and open the template in the editor.
                                     <label>Bac</label>
                                     <p:selectOneMenu class="form-control vr-form-control"
                                                      value="#{myStudentInfoCtrl.model.student.baccalaureateClass}"
+                                                     filter="true" filterMatchMode="contains"
                                                      converter="#{vr.entityObjConverter('AcademicBac')}">
                                         <f:selectItems value="#{vr.entitySelectItems('AcademicBac',true,false)}"/>
                                     </p:selectOneMenu>

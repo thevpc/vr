@@ -436,4 +436,19 @@ public class AppContact {
     public void setBirthGovernorate(AppGovernorate birthGovernorate) {
         this.birthGovernorate = birthGovernorate;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AppContact that = (AppContact) o;
+
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }

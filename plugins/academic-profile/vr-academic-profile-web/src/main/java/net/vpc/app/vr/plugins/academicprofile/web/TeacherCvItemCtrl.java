@@ -45,7 +45,7 @@ public class TeacherCvItemCtrl {
             public void run() {
                 try {
                     app.createAcademicTeacherCVItem(getModel().cvItem);
-                    FacesUtils.addInfoMessage(null, "Opération d'ajout réussie");
+                    FacesUtils.addInfoMessage("Opération d'ajout réussie");
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);
                     FacesUtils.addErrorMessage(ex.getMessage());

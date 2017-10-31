@@ -35,10 +35,6 @@ public class AcademicProfilePlugin {
         //called at the startup of the server
     }
 
-    public void customMethod(){
-
-    }
-
     public void updateViewsCounterForTeacherCV(int t) {
         AcademicTeacherCV cv = findOrCreateAcademicTeacherCV(t);
         if (cv != null) {
@@ -113,10 +109,11 @@ public class AcademicProfilePlugin {
         return null;
     }
     
-    public List<AcademicTeacherCVItem> findTeacherCvItemsBySection(int teacherCV, int sectionId){
+    public List<AcademicTeacherCVItem> findTeacherCvItemsBySection(int teacherCVId, int sectionId){
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        /*List<AcademicTeacherCVItem> itemList = pu.createQuery("Select u from AcademicTeacherCVItem u where u.academicTeacherCVId=:id")
-                .setParameter("id", teacherCV)
+        /*List<AcademicTeacherCVItem> itemList = pu.createQuery("Select u from AcademicTeacherCVItem u where u.academicTeacherCVId=:teacherCVId and u.academicCVSectionId=:sectionId")
+                .setParameter("teacherCVId", teacherCVId)
+                .setParameter("sectionId", sectionId)
                 .getResultList();*/
         List<AcademicTeacherCVItem> itemList = pu.findAll(AcademicTeacherCVItem.class);
         return itemList;
@@ -125,7 +122,6 @@ public class AcademicProfilePlugin {
     public void removeTeacherCvItem(int itemId){
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicTeacherCVItem item = pu.findById(AcademicTeacherCVItem.class, itemId);
-        //AcademicTeacherCVItem item = findTeacherCVItem(itemId);
         if(item != null){
             pu.remove(item);
         }
@@ -136,10 +132,14 @@ public class AcademicProfilePlugin {
         pu.merge(item);
     }
   
-
     public void updateContactInformations(AppContact contact) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         pu.merge(contact);
+    }
+    
+    public void updateCvItem(AcademicTeacherCVItem item) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        pu.merge(item);
     }
     
     public void updateStudentInformations(AcademicStudent student) {

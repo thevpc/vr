@@ -12,8 +12,9 @@ import net.vpc.upa.config.*;
 @Path("Education/Projects/Apbl")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.session", value = "{expr='this.session',order=1}"),
-                @Property(name = "ui.auto-filter.owner", value = "{expr='this.owner',order=2}"),
+                @Property(name = "ui.auto-filter.period", value = "{expr='this.session.period',order=1}"),
+                @Property(name = "ui.auto-filter.session", value = "{expr='this.session',order=2}"),
+                @Property(name = "ui.auto-filter.owner", value = "{expr='this.owner',order=3}"),
         }
 )
 public class ApblProject {

@@ -426,7 +426,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             onRefresh();
             FacesUtils.addInfoMessage("Envoi réussi");
         } catch (Exception e) {
-            FacesUtils.addErrorMessage(e,"Envoi impossible");
+            FacesUtils.addErrorMessage(e);
         }
     }
 
@@ -667,7 +667,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 //            RequestContext.getCurrentInstance().update("myform:pathComp");
 
         } catch (Exception ex) {
-            FacesUtils.addErrorMessage(ex,"Upload échoué.");
+            FacesUtils.addErrorMessage(ex,"Upload échoué."+ex.getMessage());
         }
     }
 

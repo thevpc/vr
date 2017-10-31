@@ -153,6 +153,14 @@ public class AcademicAppProjectsCtrl {
         }
     }
 
+    public boolean isTeamNode(NodeItem node) {
+        return node.getValue() instanceof TeamNode;
+    }
+
+    public boolean isProjectNode(NodeItem node) {
+        return node.getValue() instanceof ProjectNode;
+    }
+
     public boolean isAdmin() {
         return currentAdmin;
     }
@@ -692,6 +700,34 @@ public class AcademicAppProjectsCtrl {
         }
     }
 
+    public void onOpenAssignCoachDialog(NodeItem node) {
+        if (node.getValue() instanceof ProjectNode) {
+            //do nothing
+        } else if (node.getValue() instanceof TeamNode) {
+            TeamNode teamNode = (TeamNode) node.getValue();
+            ApblTeam team = teamNode.getTeam();
+            getModel().setViewOnly(!currentAdmin);
+            getModel().setSelectedTeam(team);
+            getModel().setSelectedTeamNode(teamNode);
+            getModel().setEditMode(true);
+            Map<String, Object> options = new HashMap<String, Object>();
+            options.put("resizable", false);
+            options.put("draggable", true);
+            options.put("modal", true);
+            RequestContext.getCurrentInstance().openDialog("/modules/academic/pbl/dialog/team-assign-dialog", options, null);
+        }
+    }
+
+    public void onAddCoach() {
+        TeamNode value = getModel().getSelectedTeamNode();
+        if(getModel().getNewCoach()!=null) {
+            ApblCoaching apblCoaching = apbl.addTeamCoach(value.getTeam().getId(), getModel().getNewCoach().getId());
+            if (apblCoaching != null) {
+                value.getCoaches().add(new CoachNode(apblCoaching));
+            }
+        }
+    }
+
     public void onSaveTeam() {
         if (
                 Objects.equals(getModel().getSelectedTeam().getReport(), getModel().getSelectedPathBeforeUpload())
@@ -708,7 +744,7 @@ public class AcademicAppProjectsCtrl {
                 fireEventExtraDialogClosed();
             } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
-                FacesUtils.addErrorMessage(ex,"M.A.J échouée.");
+                FacesUtils.addErrorMessage(ex);
             }
         } else {
             try {
@@ -718,7 +754,7 @@ public class AcademicAppProjectsCtrl {
                 fireEventExtraDialogClosed();
             } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
-                FacesUtils.addErrorMessage(ex,"Création échouée.");
+                FacesUtils.addErrorMessage(ex);
             }
         }
     }
@@ -739,7 +775,7 @@ public class AcademicAppProjectsCtrl {
                 fireEventExtraDialogClosed();
             } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
-                FacesUtils.addErrorMessage(ex, "M.A.J échouée.");
+                FacesUtils.addErrorMessage(ex);
             }
         } else {
             try {
@@ -749,7 +785,7 @@ public class AcademicAppProjectsCtrl {
                 fireEventExtraDialogClosed();
             } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
-                FacesUtils.addErrorMessage(ex, "Création échouée.");
+                FacesUtils.addErrorMessage(ex);
             }
         }
     }
@@ -767,7 +803,7 @@ public class AcademicAppProjectsCtrl {
             RequestContext.getCurrentInstance().update("myform:pathComp");
 
         } catch (Exception ex) {
-            FacesUtils.addErrorMessage(ex, "Upload échoué.");
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
@@ -784,7 +820,7 @@ public class AcademicAppProjectsCtrl {
 //            RequestContext.getCurrentInstance().update("myform:pathComp");
 
         } catch (Exception ex) {
-            FacesUtils.addErrorMessage(ex, "Upload échoué.");
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
@@ -899,10 +935,12 @@ public class AcademicAppProjectsCtrl {
         List<SelectItem> teacherItems = new ArrayList<>();
         List<SelectItem> sItems = new ArrayList<>();
         Integer currentTeamProject = null;
+        AcademicTeacher newCoach = null;
         Integer currentSessionId = null;
         private TreeNode root;
         private ApblProject selectedProject;
         private ApblTeam selectedTeam;
+        private TeamNode selectedTeamNode;
         private boolean editMode;
         private boolean viewOnly;
         private String selectedPathUploaded;
@@ -910,6 +948,22 @@ public class AcademicAppProjectsCtrl {
         private String filterText;
         private boolean filterNoCoach;
         private boolean filterNoMember;
+
+        public AcademicTeacher getNewCoach() {
+            return newCoach;
+        }
+
+        public void setNewCoach(AcademicTeacher newCoach) {
+            this.newCoach = newCoach;
+        }
+
+        public TeamNode getSelectedTeamNode() {
+            return selectedTeamNode;
+        }
+
+        public void setSelectedTeamNode(TeamNode selectedTeamNode) {
+            this.selectedTeamNode = selectedTeamNode;
+        }
 
         public boolean isFilterNoMember() {
             return filterNoMember;

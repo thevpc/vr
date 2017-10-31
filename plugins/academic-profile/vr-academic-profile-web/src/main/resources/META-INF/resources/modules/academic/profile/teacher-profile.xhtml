@@ -9,7 +9,7 @@
     </h:head>
 
     <h:body>
-        
+
         <ui:composition template="#{vr.privateTemplatePath}">
             <ui:define name="links">
                 <h:outputStylesheet name="#{vr.themeContext}/scroll/css/coda-slider.css"/>
@@ -23,23 +23,7 @@
 
             <ui:define name="content">
                 <div class="row">
-                    <div class="col-lg-3">
-                        <div class="box box-solid">
-                            <ui:include src="profile-card.xhtml" />
-                            <div class="box-body">
-                                <nav>
-                                    <a class="btn btn-app bg-blue color-palette" style="width:100px;" id="coordonnees" href="#coordonneesSection"><i class="fa fa-info-circle"></i>Coordonnées</a>
-                                    <a class="btn btn-app bg-maroon color-palette" style="width:100px;" id="apropos" href="#aproposSection"><i class="fa fa-commenting-o"></i> A propos</a>
-                                    <a class="btn btn-app bg-navy color-palette" style="width:100px;" id="experiences" href="#experiencesSection"> <i class="fa fa-suitcase"></i>Expériences</a>
-                                    <a class="btn btn-app bg-purple color-palette" style="width:100px;" id="formations" href="#formationsSection"><i class="fa fa-graduation-cap"></i>Formations</a>
-                                    <a class="btn btn-app bg-gray color-palette" style="width:100px;" id="projets" href="#projetsSection"><i class="fa fa-github"></i>Projets</a>
-                                    <a class="btn btn-app bg-green color-palette" style="width:100px;" id="axesDeRecherche" href="#axesDeRechercheSection"><i class="fa fa-search"></i> Axes de recherche</a>
-                                    <a class="btn btn-app bg-aqua color-palette" style="width:100px;" id="courses" href="#coursesSection"><i class="fa fa-book"></i>Cours</a>
-                                    <a class="btn btn-app bg-red color-palette" style="width:100px;" id="skills" href="#skillsSection"><i class="fa fa-language"></i>Skills</a>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
+
 
                     <div class="col-lg-9">
 
@@ -79,8 +63,8 @@
                                                                 <p>#{teacherProfileSettingsCtrl.model.teacher.department}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-university margin-r-5"></i>Discipline</strong>
+                                                                <p>#{teacherProfileSettingsCtrl.model.teacher.officialDiscipline.name}</p>
                                                                 <p>#{teacherProfileSettingsCtrl.model.teacher.discipline}</p>
-                                                                <p>#{teacherProfileSettingsCtrl.model.teacher.officialDiscipline.name}, #{teacherProfileSettingsCtrl.model.teacher.officialDiscipline.name2}, #{teacherProfileSettingsCtrl.model.teacher.officialDiscipline.name3}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-users margin-r-5"></i>Groupes</strong>
                                                                 <p>
@@ -126,14 +110,14 @@
                                                     <div class="box-body">
                                                         <h1 class="text-navy"><i class="fa fa-suitcase margin-r-5"></i>Expériences</h1>
                                                         <ul class="timeline">
-                                                            <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
-                                                                <li class="time-label"><span class="bg-navy">#{item.fromDate} - #{item.toDate}</span> </li>
+                                                            <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceList}">
+                                                                <li class="time-label"><span class="bg-navy">#{item.fromDate} à #{item.toDate}</span> </li>
                                                                 <li>
                                                                     <i class="fa fa-suitcase bg-navy"></i>
                                                                     <div class="timeline-item">
                                                                         <h3 class="timeline-header bg-navy text-white">#{item.title}</h3>
                                                                         <div class="timeline-body">
-                                                                            <p><strong>Etablissement : </strong>#{item.company}</p>
+                                                                            <p><strong>Etablissement : </strong>#{item.company.name}</p>
                                                                             <p><strong>Détails : </strong>#{item.details}</p>
                                                                         </div>
                                                                     </div>
@@ -151,14 +135,14 @@
                                                     <div class="box-body">
                                                         <h1 class="text-purple"><i class="fa fa-graduation-cap margin-r-5"></i>Formations</h1>
                                                         <ul class="timeline">
-                                                            <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
-                                                                <li class="time-label"><span class="bg-purple">#{item.fromDate} - #{item.toDate}</span> </li>
+                                                            <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.educationList}">
+                                                                <li class="time-label"><span class="bg-purple">#{item.fromDate} à #{item.toDate}</span> </li>
                                                                 <li>
                                                                     <i class="fa fa-graduation-cap bg-purple"></i>
                                                                     <div class="timeline-item">
                                                                         <h3 class="timeline-header bg-purple">#{item.title}</h3>
                                                                         <div class="timeline-body">
-                                                                            <p><strong>Etablissement : </strong>#{item.company}</p>
+                                                                            <p><strong>Etablissement : </strong>#{item.company.name}</p>
                                                                             <p><strong>Détails : </strong>#{item.details}</p>
                                                                         </div>
                                                                     </div>
@@ -175,7 +159,7 @@
                                                 <div class="box box-solid">
                                                     <div class="box-body">
                                                         <h1 class="text-gray"><i class="fa fa-github margin-r-5"></i>Projets</h1>
-                                                        <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
+                                                        <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.projectList}">
                                                             <div class="box collapsed-box box-solid">
                                                                 <div class="box-header with-border bg-gray">
                                                                     <h3 class="box-title">#{item.title}</h3>
@@ -185,8 +169,10 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="box-body">
-                                                                    <p>#{item.details}</p>
-                                                                    <!-- keywords-->
+                                                                    <p><strong>De </strong>#{item.fromDate} <strong>à </strong>#{item.toDate}</p>
+                                                                    <p><strong>Etablissement : </strong>#{item.company.name}</p>
+                                                                    <p><strong>Détails : </strong>#{item.details}</p>
+                                                                    <p><strong>Mots-clés : </strong>#{item.keywords}</p>
                                                                 </div>
                                                             </div>
                                                         </ui:repeat>
@@ -199,15 +185,20 @@
                                                 <div class="box box-solid">
                                                     <div class="box-body">
                                                         <h1 class="text-green"><i class="fa fa-search margin-r-5"></i>Axes de recherche</h1>
-                                                        <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
-                                                            <div class="col-md-12 col-sm-12 col-xs-12">
-                                                                <div class="info-box ">
-                                                                    <span class="info-box-icon bg-green"><i class="fa fa-search"></i></span>
-                                                                    <div class="info-box-content">
-                                                                        <p class="info-box-text">#{item.title}</p>
-                                                                        <p>#{item.details}</p>
-                                                                        <!-- keywords-->
+                                                        <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.researchList}">
+                                                            <div class="box box-solid">
+                                                                <div class="box-header with-border">
+                                                                    <div class="info-box">
+                                                                        <span class="info-box-icon bg-green"><i class="fa fa-search"></i></span>
+                                                                        <div class="info-box-content">
+                                                                            <p class="info-box-text">#{item.title}</p>
+                                                                        </div>
                                                                     </div>
+                                                                </div>
+                                                                <div class="box-body">
+                                                                    <p><strong>Etablissement : </strong>#{item.company.name}</p>
+                                                                    <p><strong>Détails : </strong>#{item.details}</p>
+                                                                    <p><strong>Mots-clés : </strong>#{item.keywords}</p>
                                                                 </div>
                                                             </div>
                                                         </ui:repeat>
@@ -219,23 +210,28 @@
                                                 <div class="box box-solid">
                                                     <div class="box-body">
                                                         <h1 class="text-aqua"><i class="fa fa-book margin-r-5"></i>Cours enseignés</h1>
-                                                        <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
-                                                        <div class="col-md-12 col-sm-12 col-xs-12">
-                                                            <div class="info-box">
-                                                                <span class="info-box-icon bg-aqua"><i class="fa fa-book"></i></span>
-                                                                <div class="info-box-content">
-                                                                    <p class="info-box-text">#{item.title} </p>
-                                                                    <p>#{item.details}</p>
-                                                                        <!-- keywords-->
+                                                        <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.courseList}">
+                                                            <div class="box box-solid">
+                                                                <div class="box-header with-border">
+                                                                    <div class="info-box">
+                                                                        <span class="info-box-icon bg-aqua"><i class="fa fa-book"></i></span>
+                                                                        <div class="info-box-content">
+                                                                            <p class="info-box-text">#{item.title}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="box-body">
+                                                                    <p><strong>Etablissement : </strong>#{item.company.name}</p>
+                                                                    <p><strong>Détails : </strong>#{item.details}</p>
+                                                                    <p><strong>Mots-clés : </strong>#{item.keywords}</p>
                                                                 </div>
                                                             </div>
-                                                        </div>
                                                         </ui:repeat>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div class="profilePanel" id="skillsSection">
+                                            <!--<div class="profilePanel" id="skillsSection">
                                                 <div class="box box-solid">
                                                     <div class="box-body">
                                                         <div class="col-lg-6">
@@ -294,7 +290,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> -->
 
                                         </div>
                                     </div>
@@ -303,6 +299,27 @@
                         </div>
 
                     </div> 
+
+
+                    <div class="col-lg-3">
+                        <div class="box box-solid">
+                            <ui:include src="profile-card.xhtml" />
+                            <div class="box-body">
+                                <nav>
+                                    <a class="btn btn-app bg-blue color-palette" style="width:100px;" id="coordonnees" href="#coordonneesSection"><i class="fa fa-info-circle"></i>Coordonnées</a>
+                                    <a class="btn btn-app bg-maroon color-palette" style="width:100px;" id="apropos" href="#aproposSection"><i class="fa fa-commenting-o"></i> A propos</a>
+                                    <a class="btn btn-app bg-navy color-palette" style="width:100px;" id="experiences" href="#experiencesSection"> <i class="fa fa-suitcase"></i>Expériences</a>
+                                    <a class="btn btn-app bg-purple color-palette" style="width:100px;" id="formations" href="#formationsSection"><i class="fa fa-graduation-cap"></i>Formations</a>
+                                    <a class="btn btn-app bg-gray color-palette" style="width:100px;" id="projets" href="#projetsSection"><i class="fa fa-github"></i>Projets</a>
+                                    <a class="btn btn-app bg-green color-palette" style="width:100px;" id="axesDeRecherche" href="#axesDeRechercheSection"><i class="fa fa-search"></i> Axes de recherche</a>
+                                    <a class="btn btn-app bg-aqua color-palette" style="width:100px;" id="courses" href="#coursesSection"><i class="fa fa-book"></i>Cours</a>
+                                    <!-- <a class="btn btn-app bg-red color-palette" style="width:100px;" id="skills" href="#skillsSection"><i class="fa fa-language"></i>Skills</a> -->
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
             </ui:define>
 

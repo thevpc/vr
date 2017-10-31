@@ -95,4 +95,19 @@ public class AppPeriod {
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AppPeriod appPeriod = (AppPeriod) o;
+
+        return id == appPeriod.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }

@@ -11,19 +11,12 @@
     <h:head>
     </h:head>
 
+    <!--@elvariable id="teacherProfileSettingsCtrl" type="net.vpc.app.vr.plugins.academicprofile.web.TeacherProfileSettingsCtrl"-->
     <h:body>
-        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
         <ui:composition template="#{vr.privateTemplatePath}">
             <ui:define name="content">
                 <div class="row">
-                    <div class="col-lg-3">
-                        <div class="box box-solid">
-                            <ui:include src="profile-card.xhtml" />
-                            <div class="box-body">
-                                <h:link class="btn btn-primary btn-block" outcome="teacher-profile" value="Aperçu profil" /> 
-                            </div>
-                        </div>
-                    </div>
+
 
                     <div class="col-lg-9">
 
@@ -126,14 +119,13 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <h:commandLink id="updateBasicInformationSection" class="btn bg-blue pull-right" action="#{teacherProfileSettingsCtrl.updateBasicInformationSection()}" value="Mettre à jour" />
+                                            <h:commandLink id="updateBasicInformationSection" class="btn bg-blue btn-xs pull-right" action="#{teacherProfileSettingsCtrl.updateBasicInformationSection()}" value="Mettre à jour" />
                                         </div>
                                     </h:form> 
                                 </div> 
                             </div>
 
                             <!-- About section -->
-
                             <div class="panel box box-solid" style="border-color: #D81B60;">
                                 <div class="box-header with-border" >
                                     <h4 class="box-title">
@@ -150,12 +142,18 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <h:outputLabel class="col-sm-3 control-label text-maroon"  value="Photo" for="photo" />
+                                                <h:outputLabel class="col-sm-3 control-label text-maroon" value="Photo"/>
                                                 <div class="col-sm-7">
-                                                    <h:inputFile class="form-control" id="photo"/>
+                                                    <p:commandButton styleClass="btn btn-default" value="photo" actionListener="#{teacherProfileSettingsCtrl.onRequestUploadPhoto}"/>
                                                 </div>
                                             </div>
-                                            <h:commandLink id="updateAboutSection" class="btn bg-maroon pull-right" action="#{teacherProfileSettingsCtrl.updateAboutSection()}" value="Mettre à jour"/> 
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-maroon" value="CV"  />
+                                                <div class="col-sm-7">
+                                                    <p:commandButton styleClass="btn btn-default" value="cv" actionListener="#{teacherProfileSettingsCtrl.onRequestUploadCV}"/>
+                                                </div>
+                                            </div>
+                                            <h:commandLink id="updateAboutSection" class="btn bg-maroon btn-xs pull-right" action="#{teacherProfileSettingsCtrl.updateAboutSection()}" value="Mettre à jour"/> 
                                         </div>
                                     </h:form> 
                                 </div>
@@ -165,7 +163,7 @@
                             <div class="panel box box-solid" style="border-color: #001F3F;">
                                 <div class="box-header with-border">
                                     <h4 class="box-title">
-                                        <a class="text-navy" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseFour"><i class="fa fa-suitcase margin-r-5"></i>Expériences  </a>
+                                        <a class="text-navy" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseFour"><i class="fa fa-suitcase margin-r-5"></i>Expérience  </a>
                                     </h4>
                                 </div>
                                 <div id="collapseFour" class="panel-collapse collapse">
@@ -173,56 +171,63 @@
                                         <h:form id="experienceForm" enctype="multipart/form-data" class="form-horizontal"> 
                                             <ul class="timeline">
                                                 <li class="time-label">
-                                                    <span class="bg-navy">Mes expériences</span>
-                                                    <p:commandButton id="addNewExperienceBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter" onclick="PF('addExperience').show();"/>
+                                                    <span class="bg-navy">Mon expérience</span>
+                                                    <p:commandButton id="addNewExperienceBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter"  actionListener="#{teacherProfileSettingsCtrl.onNewExperience}"/>
                                                 </li>
-                                                <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
+                                                <ui:repeat var="experienceItem" value="#{teacherProfileSettingsCtrl.model.experienceList}">
                                                     <li>
                                                         <i class="fa fa-suitcase bg-navy"></i>
                                                         <div class="timeline-item">
-                                                            <h3 class="timeline-header bg-navy"><h:inputTextarea class="form-control bg-navy text-white" value="#{item.title}" rows="1"/></h3>
+                                                            <h3 class="timeline-header bg-navy">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon">Titre : </span>
+                                                                    <h:inputText  value="#{experienceItem.title}" class="form-control" id="experienceTitle"/>
+                                                                </div>
+                                                            </h3>
                                                             <div class="timeline-body">
                                                                 <div class="form-group">
-                                                                    <h:outputLabel class="col-sm-3 control-label text-navy" value="De" for="experienceFromDate" />
-                                                                    <div class="col-sm-7">
-                                                                        <h:inputText  value="2014" class="form-control" id="experienceFromDate"/>
-                                                                    </div>
-                                                                </div>
+                                                                      <h:outputLabel class="col-sm-3 control-label text-navy" value="De" for="experienceFromDate" />
+                                                                      <div class="col-sm-7">
+                                                                          <p:calendar value="#{experienceItem.fromDate}" id="experienceFromDate" converter="vpcDateConverter"/>
+                                                                      </div>
+                                                                  </div>
+                                                                  <div class="form-group">
+                                                                      <h:outputLabel class="col-sm-3 control-label text-navy" value="A" for="experienceToDate"  />
+                                                                      <div class="col-sm-7">
+                                                                          <p:calendar value="#{experienceItem.toDate}" id="experienceToDate" converter="vpcDateConverter"/>
+                                                                      </div>
+                                                                  </div>
                                                                 <div class="form-group">
-                                                                    <h:outputLabel class="col-sm-3 control-label text-navy" value="A" for="experienceToDate" />
+                                                                    <h:outputLabel class="col-sm-3 control-label text-navy"
+                                                                                   value="Etablissement"
+                                                                                   for="experienceCompany"/>
                                                                     <div class="col-sm-7">
-                                                                        <h:inputText  value="2016" class="form-control" id="experienceToDate"/>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <!--<h:outputLabel class="col-sm-3 control-label text-navy" for="experienceCompany" value="Etablissement" />
-                                                                    <div class="col-sm-7">
-                                                                        <p:selectOneMenu id="experienceCompany" value="#{teacherProfileSettingsCtrl.model.cvItem.company.name}" style="width:125px">
-                                                                            <f:selectItem itemLabel="#{teacherProfileSettingsCtrl.model.cvItem.company.name}" itemValue="#{teacherProfileSettingsCtrl.model.cvItem.company.name}" />
-                                                                            <f:selectItems value="#{teacherProfileSettingsCtrl.model.companyItems}" />
+                                                                        <p:selectOneMenu class="form-control vr-form-control"
+                                                                                         id="experienceCompany"
+                                                                                         value="#{experienceItem.company}"
+                                                                                         converter="#{vr.entityObjConverter('AppCompany')}"
+                                                                        >
+                                                                            <f:selectItems
+                                                                                value="#{vr.entitySelectItems('AppCompany',true,false)}"/>
                                                                         </p:selectOneMenu>
-                                                                    </div> -->
-                                                                    <!-- <h:outputLabel class="col-sm-3 control-label text-navy" value="Etablissement" for="experienceCompany" />
-                                                                    <div class="col-sm-7">
-                                                                        <h:inputText  value="ENISO" class="form-control" id="experienceCompany"/>
-                                                                    </div> -->
+                                                                    </div>
                                                                 </div>
                                                                 <div class="form-group">
                                                                     <h:outputLabel class="col-sm-3 control-label text-navy" value="Détails" for="experienceDetails" />
                                                                     <div class="col-sm-7">
-                                                                        <h:inputTextarea value="#{item.details}" rows="3" class="form-control" id="experienceDetails"/>
+                                                                        <h:inputTextarea value="#{experienceItem.details}" rows="3" class="form-control" id="experienceDetails"/>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div class="timeline-footer">
-                                                                <h:commandLink id="deleteExperienceItem" class="btn btn-danger btn-xs" action="#{teacherProfileSettingsCtrl.deleteCvItem(item)}" value="Supprimer" />
+                                                                <h:commandLink id="deleteExperienceItem" class="btn btn-danger btn-xs" action="#{teacherProfileSettingsCtrl.deleteCvItem(experienceItem)}" value="Supprimer" />
+                                                                <h:commandLink id="updateExperience" class="btn bg-navy btn-xs pull-right" value="Mettre à jour" action="#{teacherProfileSettingsCtrl.updateCvItem(experienceItem)}"/>
                                                             </div>
                                                         </div>
                                                     </li>
                                                 </ui:repeat>
                                                 <li> <i class="fa fa-clock-o bg-gray"></i> </li>
                                             </ul>
-                                            <h:commandLink id="updateExperience" class="btn bg-navy pull-right" value="Mettre à jour" action="update"/>
                                         </h:form>
                                     </div>
                                 </div>
@@ -235,7 +240,7 @@
                             <div class="panel box box-solid" style="border-color: #605ca8;">
                                 <div class="box-header with-border">
                                     <h4 class="box-title">
-                                        <a class="text-purple" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseThree"> <i class="fa fa-graduation-cap margin-r-5"></i>Formations  </a>
+                                        <a class="text-purple" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseThree"> <i class="fa fa-graduation-cap margin-r-5"></i>Formation  </a>
                                     </h4>
                                 </div>
                                 <div id="collapseThree" class="panel-collapse collapse">
@@ -244,63 +249,70 @@
                                             <ul class="timeline">
                                                 <li class="time-label">
                                                     <span class="bg-purple">Mes études</span>
-                                                    <p:commandButton id="addNewEducationBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter" onclick="PF('addEducation').show();"/>
+                                                    <p:commandButton id="addNewEducationBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter" actionListener="#{teacherProfileSettingsCtrl.onNewEducation}"/>
                                                 </li>
-                                                <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
+                                                <ui:repeat var="educationItem" value="#{teacherProfileSettingsCtrl.model.educationList}">
                                                     <li>
                                                         <i class="fa fa-graduation-cap bg-purple"></i>
                                                         <div class="timeline-item">
-                                                            <h3 class="timeline-header bg-purple"><h:inputTextarea class="form-control bg-purple text-white" value="#{item.title}" rows="1"/></h3>
+                                                            <h3 class="timeline-header bg-purple">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon">Titre : </span>
+                                                                    <h:inputText  value="#{educationItem.title}" class="form-control" id="educationTitle"/>
+                                                                </div>
+                                                            </h3>
                                                             <div class="timeline-body">
+                                                                  <div class="form-group">
+                                                                      <h:outputLabel class="col-sm-3 control-label text-purple" value="De" for="educationFromDate" />
+                                                                      <div class="col-sm-7">
+                                                                          <p:calendar value="#{educationItem.fromDate}" id="educationFromDate"  converter="vpcDateConverter"/>
+                                                                      </div>
+                                                                  </div>
+                                                                  <div class="form-group">
+                                                                      <h:outputLabel class="col-sm-3 control-label text-purple" value="A" for="educationToDate" />
+                                                                      <div class="col-sm-7">
+                                                                          <p:calendar value="#{educationItem.toDate}" id="educationToDate"  converter="vpcDateConverter"/>
+                                                                      </div>
+                                                                  </div>
                                                                 <div class="form-group">
-                                                                    <h:outputLabel class="col-sm-3 control-label text-purple" value="De" for="educationFromDate" />
+                                                                    <h:outputLabel class="col-sm-3 control-label text-purple"
+                                                                                   value="Etablissement"
+                                                                                   for="educationCompany"/>
                                                                     <div class="col-sm-7">
-                                                                        <h:inputText  value="2014" class="form-control" id="educationFromDate"/>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <h:outputLabel class="col-sm-3 control-label text-purple" value="A" for="educationToDate" />
-                                                                    <div class="col-sm-7">
-                                                                        <h:inputText  value="2016" class="form-control" id="educationToDate"/>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <!--<h:outputLabel class="col-sm-3 control-label text-navy" for="experienceCompany" value="Etablissement" />
-                                                                    <div class="col-sm-7">
-                                                                        <p:selectOneMenu id="experienceCompany" value="#{teacherProfileSettingsCtrl.model.cvItem.company.name}" style="width:125px">
-                                                                            <f:selectItem itemLabel="#{teacherProfileSettingsCtrl.model.cvItem.company.name}" itemValue="#{teacherProfileSettingsCtrl.model.cvItem.company.name}" />
-                                                                            <f:selectItems value="#{teacherProfileSettingsCtrl.model.companyItems}" />
+                                                                        <p:selectOneMenu class="form-control vr-form-control"
+                                                                                         id="educationCompany"
+                                                                                         value="#{educationItem.company}"
+                                                                                         converter="#{vr.entityObjConverter('AppCompany')}">
+                                                                            <f:selectItem itemLabel="" itemValue="#{educationItem.company}"/>
+                                                                            <f:selectItems
+                                                                                value="#{vr.entitySelectItems('AppCompany',true,false)}"/>
                                                                         </p:selectOneMenu>
-                                                                    </div> -->
-                                                                    <!-- <h:outputLabel class="col-sm-3 control-label text-navy" value="Etablissement" for="experienceCompany" />
-                                                                    <div class="col-sm-7">
-                                                                        <h:inputText  value="ENISO" class="form-control" id="experienceCompany"/>
-                                                                    </div> -->
+                                                                    </div>
                                                                 </div>
                                                                 <div class="form-group">
                                                                     <h:outputLabel class="col-sm-3 control-label text-purple" value="Détails" for="educationDetails" />
                                                                     <div class="col-sm-7">
-                                                                        <h:inputTextarea value="#{item.details}" rows="3" class="form-control" id="educationDetails"/>
+                                                                        <h:inputTextarea value="#{educationItem.details}" rows="3" class="form-control" id="educationDetails"/>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div class="timeline-footer">
-                                                                <h:commandLink id="deleteEducationItem" class="btn btn-danger btn-xs" action="#{teacherProfileSettingsCtrl.deleteCvItem(item)}" value="Supprimer" />
+                                                                <h:commandLink id="deleteEducationItem" class="btn btn-danger btn-xs" action="#{teacherProfileSettingsCtrl.deleteCvItem(educationItem)}" value="Supprimer" />
+                                                                <h:commandLink id="updateEducation" class="btn bg-purple btn-xs pull-right" value="Mettre à jour" action="#{teacherProfileSettingsCtrl.updateCvItem(educationItem)}"/>
                                                             </div>
                                                         </div>
                                                     </li>
                                                 </ui:repeat> 
                                                 <li> <i class="fa fa-clock-o bg-gray"></i> </li>
                                             </ul>
-                                            <h:commandLink id="updateEducation" class="btn bg-purple pull-right" value="Mettre à jour" action="update"/>
                                         </h:form>
                                     </div>
                                 </div>
                             </div>
-                            <ui:include src="add-teacher-education.xhtml"/>
+                            <ui:include src="add-teacher-education-dialog.xhtml"/>
 
-                            
-                            
+
+
 
                             <div class="panel box box-solid" style="border-color: #d2d6de;">
                                 <div class="box-header with-border">
@@ -311,43 +323,68 @@
                                 <div id="collapseFive" class="panel-collapse collapse">
                                     <div class="box-body">
                                         <h:form id="projectForm" enctype="multipart/form-data" class="form-horizontal"> 
-                                            <p:commandButton id="addNewProjectBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter" onclick="PF('addProject').show();"/>
+                                            <p:commandButton id="addNewProjectBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter" actionListener="#{teacherProfileSettingsCtrl.onNewProject}"/>
                                             <br/>
                                             <br/>
-                                            <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
+                                            <ui:repeat var="projectItem" value="#{teacherProfileSettingsCtrl.model.projectList}">
                                                 <div class="box box-solid">
                                                     <div class="box-header with-border bg-gray">
-                                                        <h3 class="form-control box-title bg-gray"><h:inputTextarea class="form-control bg-gray text-black" value="#{item.title}" rows="1"/></h3>
+                                                        <h3 class="timeline-header bg-gray">
+                                                            <div class="input-group">
+                                                                <span class="input-group-addon">Titre : </span>
+                                                                <h:inputText  value="#{projectItem.title}" class="form-control" id="projectTitle"/>
+                                                            </div>
+                                                        </h3>
                                                     </div>
                                                     <div class="box-body">
                                                         <div class="form-group">
                                                             <h:outputLabel class="col-sm-3 control-label text-black" value="De" for="projectFromDate" />
                                                             <div class="col-sm-7">
-                                                                <h:inputText  value="2014" class="form-control" id="projectFromDate"/>
+                                                                <p:calendar value="#{projectItem.fromDate}" id="projectFromDate"  converter="vpcDateConverter"/>
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
                                                             <h:outputLabel class="col-sm-3 control-label text-black" value="A" for="projectToDate" />
                                                             <div class="col-sm-7">
-                                                                <h:inputText  value="2016" class="form-control" id="projectToDate"/>
+                                                                <p:calendar value="#{projectItem.toDate}" id="projectToDate"  converter="vpcDateConverter"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-black"
+                                                                           value="Etablissement"
+                                                                           for="projectCompany"/>
+                                                            <div class="col-sm-7">
+                                                                <p:selectOneMenu class="form-control vr-form-control"
+                                                                                 id="projectCompany"
+                                                                                 value="#{projectItem.company}"
+                                                                                 converter="#{vr.entityObjConverter('AppCompany')}">
+                                                                    <f:selectItems
+                                                                        value="#{vr.entitySelectItems('AppCompany',true,false)}"/>
+                                                                </p:selectOneMenu>
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
                                                             <h:outputLabel class="col-sm-3 control-label text-black" value="Détails" for="projectDetails" />
                                                             <div class="col-sm-7">
-                                                                <h:inputTextarea value="#{item.details}" rows="3" class="form-control" id="projectDetails"/>
+                                                                <h:inputTextarea value="#{projectItem.details}" rows="3" class="form-control" id="projectDetails"/>
                                                             </div>
                                                         </div>
-                                                        <h:commandLink id="deleteProjectItem" class="btn btn-danger btn-xs" action="#{teacherProfileSettingsCtrl.deleteCvItem(item)}" value="Supprimer" />
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-black" value="Mots-clés" for="projectKeywords" />
+                                                            <div class="col-sm-7">
+                                                                <h:inputTextarea value="#{projectItem.keywords}" rows="3" class="form-control" id="projectKeywords"/>
+                                                            </div>
+                                                        </div>
+                                                        <h:commandLink id="deleteProjectItem" class="btn btn-danger btn-xs" action="#{teacherProfileSettingsCtrl.deleteCvItem(projectItem)}" value="Supprimer" />
+                                                        <h:commandLink id="updateProject" class="btn bg-gray btn-xs pull-right" value="Mettre à jour" action="#{teacherProfileSettingsCtrl.updateCvItem(projectItem)}"/>
                                                     </div>
                                                 </div>
                                             </ui:repeat>
-                                            <h:commandLink id="updateProject" class="btn bg-gray pull-right" value="Mettre à jour" action="update"/>
                                         </h:form>
                                     </div>
                                 </div>
                             </div>
-                            <ui:include src="add-teacher-project.xhtml"/>
+                            <ui:include src="add-teacher-project-dialog.xhtml"/>
 
 
                             <div class="panel box box-solid" style="border-color: #00a65a;">
@@ -359,46 +396,62 @@
                                 <div id="collapseSeven" class="panel-collapse collapse">
                                     <div class="box-body">
                                         <h:form id="researchForm" enctype="multipart/form-data" class="form-horizontal"> 
-                                            <p:commandButton id="addNewResearchBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter" onclick="PF('addResearch').show();"/>
+                                            <p:commandButton id="addNewResearchBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter" actionListener="#{teacherProfileSettingsCtrl.onNewResearch}"/>
                                             <br/>
                                             <br/>
-                                            <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
-                                                <div class="col-md-12 col-sm-12 col-xs-12">
-                                                    <div class="info-box ">
-                                                        <span class="info-box-icon bg-green"><i class="fa fa-search"></i></span>
-                                                        <div class="info-box-content">
-                                                            <div class="form-group">
-                                                                <h:outputLabel class="col-sm-3 control-label text-green" value="Titre" for="researchTitle" />
-                                                                <div class="col-sm-7">
-                                                                    <h:inputText  value="#{item.title}" class="form-control" id="researchTitle"/>
+                                            <ui:repeat var="researchItem" value="#{teacherProfileSettingsCtrl.model.researchList}">
+                                                <div class="box box-solid">
+                                                    <div class="box-header with-border">
+                                                        <div class="info-box">
+                                                            <span class="info-box-icon bg-green"><i class="fa fa-search"></i></span>
+                                                            <div class="info-box-content">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon">Titre : </span>
+                                                                    <h:inputText  value="#{researchItem.title}" class="form-control" id="researchTitle"/>
                                                                 </div>
                                                             </div>
-                                                            <div class="form-group">
-                                                                <h:outputLabel class="col-sm-3 control-label text-green" value="Mots-clés" for="researchKeywords" />
-                                                                <div class="col-sm-7">
-                                                                    <h:inputTextarea value="#{item.keywords}" rows="3" class="form-control" id="researchKeywords"/>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <h:outputLabel class="col-sm-3 control-label text-green" value="Détails" for="researchDetails" />
-                                                                <div class="col-sm-7">
-                                                                    <h:inputTextarea value="#{item.details}" rows="3" class="form-control" id="researchDetails"/>
-                                                                </div>
-                                                            </div>
-                                                            <h:commandLink id="deleteResearchItem" class="btn btn-danger btn-xs" action="#{teacherProfileSettingsCtrl.deleteCvItem(item)}" value="Supprimer" />
                                                         </div>
+                                                    </div>
+                                                    <div class="box-body">
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-green"
+                                                                           value="Etablissement"
+                                                                           for="researchCompany"/>
+                                                            <div class="col-sm-7">
+                                                                <p:selectOneMenu class="form-control vr-form-control"
+                                                                                 id="researchCompany"
+                                                                                 value="#{researchItem.company}"
+                                                                                 converter="#{vr.entityObjConverter('AppCompany')}">
+                                                                    <f:selectItems
+                                                                        value="#{vr.entitySelectItems('AppCompany',true,false)}"/>
+                                                                </p:selectOneMenu>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Détails" for="researchDetails" />
+                                                            <div class="col-sm-7">
+                                                                <h:inputTextarea value="#{researchItem.details}" rows="3" class="form-control" id="researchDetails"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Mots-clés" for="researchKeywords" />
+                                                            <div class="col-sm-7">
+                                                                <h:inputTextarea value="#{researchItem.keywords}" rows="3" class="form-control" id="researchKeywords"/>
+                                                            </div>
+                                                        </div>
+                                                        <h:commandLink id="deleteResearchItem" class="btn btn-danger btn-xs" action="#{teacherProfileSettingsCtrl.deleteCvItem(researchItem)}" value="Supprimer" />
+                                                        <h:commandLink id="updateResearchBtn" class="btn bg-green btn-xs pull-right" value="Mettre à jour" action="#{teacherProfileSettingsCtrl.updateCvItem(researchItem)}"/>
                                                     </div>
                                                 </div>
                                             </ui:repeat>
-                                            <h:commandLink id="updateResearchBtn" class="btn bg-green pull-right" value="Mettre à jour" action="update"/>
                                         </h:form>
                                     </div>
                                 </div>
                             </div>
-                            <ui:include src="add-teacher-research.xhtml"/>
+                            <ui:include src="add-teacher-research-dialog.xhtml"/>
 
 
-                            
+
                             <div class="panel box box-solid" style="border-color: #00c0ef;">
                                 <div class="box-header with-border">
                                     <h4 class="box-title">
@@ -411,54 +464,115 @@
                                             <p:commandButton id="addNewCourseBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter" onclick="PF('addCourse').show();"/>
                                             <br/>
                                             <br/>
-                                            <ui:repeat var="item" value="#{teacherProfileSettingsCtrl.model.experienceSectionList}">
-                                                <div class="col-md-12 col-sm-12 col-xs-12">
-                                                    <div class="info-box ">
-                                                        <span class="info-box-icon bg-aqua"><i class="fa fa-book"></i></span>
-                                                        <br/>
-                                                        <div class="info-box-content">
-                                                            <div class="form-group">
-                                                                <h:outputLabel class="col-sm-3 control-label text-aqua" value="Titre" for="courseTitle" />
-                                                                <div class="col-sm-7">
-                                                                    <h:inputText  value="#{item.title}" class="form-control" id="courseTitle"/>
+                                            <ui:repeat var="courseItem" value="#{teacherProfileSettingsCtrl.model.courseList}">
+                                                <div class="box box-solid">
+                                                    <div class="box-header with-border">
+                                                        <div class="info-box">
+                                                            <span class="info-box-icon bg-aqua"><i class="fa fa-book"></i></span>
+                                                            <div class="info-box-content">
+                                                                <div class="input-group">
+                                                                    <span class="input-group-addon">Titre : </span>
+                                                                    <h:inputText  value="#{courseItem.title}" class="form-control" id="courseTitle"/>
                                                                 </div>
                                                             </div>
-                                                            <div class="form-group">
-                                                                <h:outputLabel class="col-sm-3 control-label text-aqua" value="Détails" for="courseDetails" />
-                                                                <div class="col-sm-7">
-                                                                    <h:inputTextarea value="#{item.details}" rows="3" class="form-control" id="courseDetails"/>
-                                                                </div>
-                                                            </div>
-                                                            <h:commandLink id="deleteCourseItem" class="btn btn-danger btn-xs" action="#{teacherProfileSettingsCtrl.deleteCvItem(item)}" value="Supprimer" />
                                                         </div>
+                                                    </div>
+                                                    <div class="box-body">
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-aqua"
+                                                                           value="Etablissement"
+                                                                           for="courseCompany"/>
+                                                            <div class="col-sm-7">
+                                                                <p:selectOneMenu class="form-control vr-form-control"
+                                                                                 id="courseCompany"
+                                                                                 value="#{courseItem.company}"
+                                                                                 converter="#{vr.entityObjConverter('AppCompany')}">
+                                                                    <f:selectItems
+                                                                        value="#{vr.entitySelectItems('AppCompany',true,false)}"/>
+                                                                </p:selectOneMenu>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-aqua" value="Détails" for="courseDetails" />
+                                                            <div class="col-sm-7">
+                                                                <h:inputTextarea value="#{courseItem.details}" rows="3" class="form-control" id="courseDetails"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <h:outputLabel class="col-sm-3 control-label text-aqua" value="Mots-clés" for="courseKeywords" />
+                                                            <div class="col-sm-7">
+                                                                <h:inputTextarea value="#{courseItem.keywords}" rows="3" class="form-control" id="courseKeywords"/>
+                                                            </div>
+                                                        </div>
+                                                        <h:commandLink id="deleteCourseItem" class="btn btn-danger btn-xs" action="#{teacherProfileSettingsCtrl.deleteCvItem(courseItem)}" value="Supprimer" />
+                                                        <h:commandLink id="updateCourseBtn" class="btn bg-aqua btn-xs pull-right" value="Mettre à jour" action="#{teacherProfileSettingsCtrl.updateCvItem(courseItem)}"/>
                                                     </div>
                                                 </div>
                                             </ui:repeat>
-                                            <h:commandLink id="updateCourseBtn" class="btn bg-aqua pull-right" value="Mettre à jour" action="update"/>
                                         </h:form>
                                     </div>
                                 </div>
                             </div>
-                            <ui:include src="add-teacher-course.xhtml"/>
-                            
-                            
+                            <ui:include src="add-teacher-course-dialog.xhtml"/>
 
-                            <div class="panel box box-solid" style="border-color: #f56954;">
+
+                            <!--<div class="panel box box-solid" style="border-color: #f56954;">
+                                  <div class="box-header with-border">
+                                      <h4 class="box-title">
+                                          <a class="text-red" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseNine"><i class="fa fa-language margin-r-5"></i>Compétences</a>
+                                      </h4>
+                                  </div>
+                                  <div id="collapseNine" class="panel-collapse collapse">
+                                      <div class="box-body">
+                                          <h:form id="themeForm" enctype="multipart/form-data">
+  
+                                          </h:form>
+                                      </div>
+                                  </div>
+                              </div> -->
+
+                            <div class="panel box box-solid" style="border-color: #ff851b;">
                                 <div class="box-header with-border">
                                     <h4 class="box-title">
-                                        <a class="text-red" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseNine"><i class="fa fa-language margin-r-5"></i>Compétences</a>
+                                        <a class="text-orange" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseTen"><i class="fa fa-language margin-r-5"></i>Thème du profil</a>
                                     </h4>
                                 </div>
-                                <div id="collapseNine" class="panel-collapse collapse">
+                                <div id="collapseTen" class="panel-collapse collapse">
                                     <div class="box-body">
-                                        <h:form class="form-horizontal">
-                                        </h:form> 
+                                        <h:form id="theme1Form" enctype="multipart/form-data">
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-orange" value="Thème"
+                                                               for="theme"/>
+                                                <div class="col-sm-7">
+                                                    <p:selectOneMenu class="form-control vr-form-control"
+                                                                     id="theme"
+                                                                     value="#{teacherProfileSettingsCtrl.model.theme}">
+                                                        <f:selectItems
+                                                            value="#{teacherProfileSettingsCtrl.model.themes}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                            </div>
+                                            <br/>
+                                            <br/>
+                                            <h:commandLink id="updateThemeBtn" class="btn bg-orange pull-right" value="Mettre à jour" action="#{teacherProfileSettingsCtrl.onSelectTheme}"/>
+                                        </h:form>
                                     </div>
                                 </div>
                             </div>
 
                         </div> 
                     </div>
+
+
+                    <div class="col-lg-3">
+                        <div class="box box-solid">
+                            <ui:include src="profile-card.xhtml" />
+                            <div class="box-body">
+                                <h:link class="btn btn-primary btn-block" outcome="teacher-profile" value="Aperçu profil" /> 
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </ui:define>
 

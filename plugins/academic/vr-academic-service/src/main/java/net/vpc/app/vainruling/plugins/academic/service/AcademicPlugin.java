@@ -4946,11 +4946,57 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
         for (AcademicInternship vc : allFound) {
             validCodes.add(vc.getCode());
         }
+        AppDepartment department = internship.getMainGroup().getDepartment();
+        AppDepartment department2 = internship.getBoard().getDepartment();
+        AcademicClass cls = internship.getBoard().getAcademicClass();
+        AcademicProgram prog = internship.getBoard().getProgram();
 
         AppUserType studentType = core.findUserType("Student");
+        if(cls!=null) {
+            studentProfiles=VrUtils.combineAndProfile(studentProfiles,cls.getName());
+        }
+        if(department!=null) {
+            studentProfiles=VrUtils.combineAndProfile(studentProfiles,department.getCode());
+        }
+        if(department2!=null) {
+            studentProfiles=VrUtils.combineAndProfile(studentProfiles,department2.getCode());
+        }
+        if(prog!=null) {
+            studentProfiles=VrUtils.combineAndProfile(studentProfiles,prog.getName());
+        }
         for (AppUser appUser : core.findUsersByProfileFilter(studentProfiles, studentType.getId())) {
             AcademicStudent student = acad.findStudentByUser(appUser.getId());
             if (student != null) {
+                if(department!=null){
+                    if((student.getDepartment() == null) || (department.getId() != student.getDepartment().getId())){
+                        continue;
+                    }
+                }
+                if(department2!=null){
+                    if(student.getDepartment()==null || department2.getId()!=student.getDepartment().getId()){
+                        continue;
+                    }
+                }
+                if(cls!=null){
+                    if(
+                            (student.getLastClass1()==null || cls.getId()!=student.getLastClass1().getId())
+                            &&(student.getLastClass2()==null || cls.getId()!=student.getLastClass2().getId())
+                            &&(student.getLastClass3()==null || cls.getId()!=student.getLastClass2().getId())
+
+                            ){
+                        continue;
+                    }
+                }
+                if(prog!=null){
+                    if(
+                            (student.getLastClass1()==null || student.getLastClass1().resolveProgramType()==null || prog.getId()!=student.getLastClass1().resolveProgramType().getId())
+                            &&(student.getLastClass2()==null || student.getLastClass2().resolveProgramType()==null || prog.getId()!=student.getLastClass2().resolveProgramType().getId())
+                            &&(student.getLastClass3()==null || student.getLastClass3().resolveProgramType()==null || prog.getId()!=student.getLastClass3().resolveProgramType().getId())
+
+                            ){
+                        continue;
+                    }
+                }
                 AcademicInternship i = pu.createQuery("Select u from AcademicInternship u where "
                         + "(u.studentId=:studentId or u.secondStudentId==:studentId) "
                         + "and u.boardId=:boardId "

@@ -489,10 +489,14 @@ public class TeacherGenerationHelper {
         for (TeacherSemesterStat semester : stat.getSemesters()) {
             AcademicSemester sem = semester.getSemester();
             int moduleIndex = 1;
-            String semesterPrefix = "sem(" + sem.getName() + ")";
-            for (AcademicCourseAssignment m : academicPlugin.findCourseAssignments(periodId, t.getId(), new CourseAssignmentFilterAnd().and(stat.getCourseAssignmentFilter()).and(
-                    new DefaultCourseAssignmentFilter().addAcceptedSemester(sem.getId())
-            ))) {
+            String semesterPrefix = "sem(" + sem.getCode() + ")";
+            List<AcademicCourseAssignmentInfo> semAssignments = semester.getAssignments();
+//            List<AcademicCourseAssignment> semAssignments2 = academicPlugin.findCourseAssignments(periodId, t.getId(), new CourseAssignmentFilterAnd().and(stat.getCourseAssignmentFilter()).and(
+//                    new DefaultCourseAssignmentFilter().addAcceptedSemester(sem.getId())
+//            ));
+//            for (AcademicCourseAssignment m : semAssignments) {
+            for (AcademicCourseAssignmentInfo m2 : semAssignments) {
+                AcademicCourseAssignment m=m2.getAssignment();
                 if ((Math.abs(m.getValueC()) + Math.abs(m.getValuePM()) + Math.abs(m.getValueTD()) + Math.abs(m.getValueTP())) * Math.abs(m.getGroupCount() * m.getShareCount()) != 0) {
                     String modulePrefix = semesterPrefix + ".mod(" + moduleIndex + ")";
                     p.put(modulePrefix + ".name", m.getName());

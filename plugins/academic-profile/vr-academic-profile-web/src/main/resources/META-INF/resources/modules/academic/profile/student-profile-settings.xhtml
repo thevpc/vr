@@ -106,10 +106,11 @@ and open the template in the editor.
                                             <h:outputLabel class="col-sm-3 control-label text-green" value="Date de naissance"
                                                            for="birthdate"/>
                                             <div class="col-sm-7">
-                                                <p:calendar styleClass="from-control vr-form-calendar-text"
+                                                <p:calendar 
                                                         value="#{studentProfileSettingsCtrl.model.contact.birthDate}"
-                                                        class="form-control" id="birthdate"/>
+                                                        id="birthdate"/>
                                             </div>
+                                            <!-- styleClass="from-control vr-form-calendar-text"-->
                                         </div>
                                         <br/>
                                         <div class="form-group">
@@ -609,7 +610,7 @@ and open the template in the editor.
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
-                                                            <h:outputLabel class="col-sm-3 control-label text-green" value="Gouvenorat du bac"
+                                                            <h:outputLabel class="col-sm-3 control-label text-purple" value="Gouvenorat du bac"
                                                                            for="bacGovernorate"/>
                                                             <div class="col-sm-7">
                                                                 <p:selectOneMenu class="form-control vr-form-control"
@@ -643,6 +644,35 @@ and open the template in the editor.
                                 </div>
                             </div>
                         </div>
+                        
+                        <div class="panel box box-solid" style="border-color: #ff851b;">
+                                <div class="box-header with-border">
+                                    <h4 class="box-title">
+                                        <a class="text-orange" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseTen"><i class="fa fa-language margin-r-5"></i>Thème du profil</a>
+                                    </h4>
+                                </div>
+                                <div id="collapseTen" class="panel-collapse collapse">
+                                    <div class="box-body">
+                                        <h:form id="theme1Form" enctype="multipart/form-data">
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-orange" value="Thème"
+                                                               for="theme"/>
+                                                <div class="col-sm-7">
+                                                    <p:selectOneMenu class="form-control vr-form-control"
+                                                                     id="theme"
+                                                                     value="#{studentProfileSettingsCtrl.model.theme}">
+                                                        <f:selectItems
+                                                            value="#{studentProfileSettingsCtrl.model.themes}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                            </div>
+                                            <br/>
+                                            <br/>
+                                            <h:commandLink id="updateThemeBtn" class="btn bg-orange pull-right" value="Mettre à jour" action="#{studentProfileSettingsCtrl.onSelectTheme}"/>
+                                        </h:form>
+                                    </div>
+                                </div>
+                            </div>
 
 
                     </div>

@@ -116,7 +116,7 @@ public class AcademicAppMyTeamsCtrl {
             fireEventExtraDialogClosed();
         } catch (Exception ex) {
             log.log(Level.SEVERE, null, ex);
-            FacesUtils.addErrorMessage(ex,"M.A.J échouée.");
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
@@ -127,7 +127,7 @@ public class AcademicAppMyTeamsCtrl {
             fireEventExtraDialogClosed();
         } catch (Exception ex) {
             log.log(Level.SEVERE, null, ex);
-            FacesUtils.addErrorMessage(ex,"M.A.J échouée.");
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
@@ -148,7 +148,7 @@ public class AcademicAppMyTeamsCtrl {
                 fireEventExtraDialogClosed();
             } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
-                FacesUtils.addErrorMessage(ex,"M.A.J échouée.");
+                FacesUtils.addErrorMessage(ex);
             }
         } else {
             try {
@@ -159,7 +159,7 @@ public class AcademicAppMyTeamsCtrl {
                 fireEventExtraDialogClosed();
             } catch (Exception ex) {
                 log.log(Level.SEVERE, null, ex);
-                FacesUtils.addErrorMessage(ex,"Création échouée.");
+                FacesUtils.addErrorMessage(ex);
             }
         }
     }

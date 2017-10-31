@@ -77,17 +77,11 @@ public class AppCivility {
         AppCivility that = (AppCivility) o;
 
         if (id != that.id) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (name2 != null ? !name2.equals(that.name2) : that.name2 != null) return false;
-        return name3 != null ? name3.equals(that.name3) : that.name3 == null;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (name2 != null ? name2.hashCode() : 0);
-        result = 31 * result + (name3 != null ? name3.hashCode() : 0);
-        return result;
+        return id;
     }
 }

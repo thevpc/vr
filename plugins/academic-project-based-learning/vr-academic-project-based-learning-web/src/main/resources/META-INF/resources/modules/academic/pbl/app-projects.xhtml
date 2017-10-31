@@ -24,7 +24,7 @@ and open the template in the editor.
     <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
             <h:form id="messagesForm">
-                <p:messages id="messages"/>
+                <p:messages id="messages" showDetail="true"/>
             </h:form>
             <h:form id="listForm">
 
@@ -130,6 +130,12 @@ and open the template in the editor.
                                                  update=":listForm"
                                                  rendered="#{academicAppProjectsCtrl.isLeaveAllowed(document)}"
                                                  actionListener="#{academicAppProjectsCtrl.onRemove(document)}"
+                                />
+                                <p:commandButton value="affecter." styleClass="btn btn-danger btn-xs"
+                                                 ajax="true"
+                                                 update=":listForm"
+                                                 rendered="#{academicAppProjectsCtrl.isAdmin() and academicAppProjectsCtrl.isTeamNode(document)}"
+                                                 actionListener="#{academicAppProjectsCtrl.onOpenAssignCoachDialog(document)}"
                                 />
                             </p:column>
                         </p:treeTable>

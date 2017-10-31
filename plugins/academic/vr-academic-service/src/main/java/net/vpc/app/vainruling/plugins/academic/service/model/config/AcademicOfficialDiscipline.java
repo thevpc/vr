@@ -102,5 +102,18 @@ public class AcademicOfficialDiscipline {
         this.updateDate = updateDate;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        AcademicOfficialDiscipline that = (AcademicOfficialDiscipline) o;
+
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }

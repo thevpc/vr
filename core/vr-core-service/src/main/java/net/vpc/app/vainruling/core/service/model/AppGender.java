@@ -87,19 +87,11 @@ public class AppGender {
         AppGender appGender = (AppGender) o;
 
         if (id != appGender.id) return false;
-        if (code != null ? !code.equals(appGender.code) : appGender.code != null) return false;
-        if (name != null ? !name.equals(appGender.name) : appGender.name != null) return false;
-        if (name2 != null ? !name2.equals(appGender.name2) : appGender.name2 != null) return false;
-        return name3 != null ? name3.equals(appGender.name3) : appGender.name3 == null;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (code != null ? code.hashCode() : 0);
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (name2 != null ? name2.hashCode() : 0);
-        result = 31 * result + (name3 != null ? name3.hashCode() : 0);
-        return result;
+        return id;
     }
 }

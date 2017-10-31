@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.service.model.current;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
@@ -105,6 +106,10 @@ public class AcademicCoursePlan {
     )
     @ManyToOne(filter = "that.period.id=this.period.id and that.academicClass.id=this.courseLevel.academicClass.id")
     private AcademicCourseGroup courseGroup;
+
+    private AcademicTeacher responsible;
+    private AcademicTeacher responsible2;
+    private String responsibleAvailability;
 
 //    @Summary
 //    @Properties(
@@ -696,5 +701,29 @@ public class AcademicCoursePlan {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    public AcademicTeacher getResponsible() {
+        return responsible;
+    }
+
+    public void setResponsible(AcademicTeacher responsible) {
+        this.responsible = responsible;
+    }
+
+    public AcademicTeacher getResponsible2() {
+        return responsible2;
+    }
+
+    public void setResponsible2(AcademicTeacher responsible2) {
+        this.responsible2 = responsible2;
+    }
+
+    public String getResponsibleAvailability() {
+        return responsibleAvailability;
+    }
+
+    public void setResponsibleAvailability(String responsibleAvailability) {
+        this.responsibleAvailability = responsibleAvailability;
     }
 }

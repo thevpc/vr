@@ -213,4 +213,18 @@ public class AppTrace {
         return String.valueOf(message);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AppTrace appTrace = (AppTrace) o;
+
+        return id == appTrace.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }

@@ -1,7 +1,10 @@
 package net.vpc.app.vr.plugins.academicprofile.web;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppContact;
@@ -9,6 +12,8 @@ import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentUploadListener;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsCtrl;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsUploadDialogCtrl;
+import net.vpc.app.vainruling.core.web.themes.VrTheme;
+import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
@@ -28,8 +33,8 @@ import org.primefaces.event.FileUploadEvent;
                 @UPathItem(title = "Paramètres", css = "fa-dashboard", ctrl = "")},
         title = "Mon profil étudiant",
         menu = "/Config",
-        url = "modules/academic/profile/student-profile-settings",
-        securityKey = "Custom.StudentProfileSettings"
+        url = "modules/academic/profile/student-profile-settings"
+        //securityKey = "Custom.StudentProfileSettings"
 )
 public class StudentProfileSettingsCtrl implements DocumentUploadListener,ActionEnabler{
 
@@ -53,6 +58,14 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         getModel().setStudent(ap.findStudentByUser(vr.getUserSession().getUser().getId()));
         getModel().setStudentCV(app.findOrCreateAcademicStudentCV(getModel().getStudent().getId()));
+        
+        VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
+        getModel().getThemes().clear();
+        getModel().getThemes().add(FacesUtils.createSelectItem("", "<Default>", null));
+        for (VrTheme vrTheme : tfactory.getThemes()) {
+            getModel().getThemes().add(FacesUtils.createSelectItem(vrTheme.getId(), vrTheme.getName(), null));
+        }
+        getModel().setTheme(CorePlugin.get().getCurrentUserTheme());
     }
 
     @Override
@@ -61,14 +74,13 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
     }
 
     public void updateIdentityInformation() {
-
         UPA.getContext().invokePrivileged(new VoidAction() {
             @Override
             public void run() {
                 try {
                     app.updateContactInformations(getModel().contact);
                     app.updateStudentInformations(getModel().student);
-                    FacesUtils.addInfoMessage(null, "Modifications enregistrées");
+                    FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);
                     FacesUtils.addErrorMessage(ex.getMessage());
@@ -78,21 +90,30 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
     }
 
     public void updateContactInformationSection() {
-
-
         UPA.getContext().invokePrivileged(new VoidAction() {
             @Override
             public void run() {
                 try {
                     app.updateContactInformations(getModel().contact);
                     app.updateStudentCVInformations(getModel().studentCV);
-                    FacesUtils.addInfoMessage(null, "Modifications enregistrées");
+                    FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);
                     FacesUtils.addErrorMessage(ex.getMessage());
                 }
             }
         });
+    }
+    
+     public void onSelectTheme() {
+        final CorePlugin t = VrApp.getBean(CorePlugin.class);
+        try {
+            t.setCurrentUserTheme(getModel().getTheme());
+            FacesUtils.addInfoMessage("Theme mis a jour");
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex.getMessage());
+        }
     }
 
     public void onRequestUploadPhoto(){
@@ -115,14 +136,12 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
     }
 
     public void updateAboutSection() {
-        getModel().contact.setDescription(getModel().contact.getDescription());
-
         UPA.getContext().invokePrivileged(new VoidAction() {
             @Override
             public void run() {
                 try {
                     app.updateContactInformations(getModel().contact);
-                    FacesUtils.addInfoMessage(null, "Modifications enregistrées");
+                    FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);
                     FacesUtils.addErrorMessage(ex.getMessage());
@@ -209,7 +228,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
             public void run() {
                 try {
                     app.updateStudentInformations(getModel().student);
-                    FacesUtils.addInfoMessage(null, "Modifications enregistrées");
+                    FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);
                     FacesUtils.addErrorMessage(ex.getMessage());
@@ -225,6 +244,9 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
         private AcademicStudent student;
         private AppContact contact;
         private AcademicStudentCV studentCV;
+        
+        private String theme;
+        private List<SelectItem> themes = new ArrayList<>();
 
         public AcademicStudent getStudent() {
             return student;
@@ -265,6 +287,23 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
         public void setUploadingCV(boolean uploadingCV) {
             this.uploadingCV = uploadingCV;
         }
+
+        public String getTheme() {
+            return theme;
+        }
+
+        public void setTheme(String theme) {
+            this.theme = theme;
+        }
+
+        public List<SelectItem> getThemes() {
+            return themes;
+        }
+
+        public void setThemes(List<SelectItem> themes) {
+            this.themes = themes;
+        }    
+        
     }
 
 }

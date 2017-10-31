@@ -249,4 +249,18 @@ public class AppUser {
         return c==null?String.valueOf(getId()): c.getFullTitle();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AppUser appUser = (AppUser) o;
+
+        return id == appUser.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }

@@ -52,4 +52,19 @@ public class AppUrl {
     public void setInternalURL(String internalURL) {
         this.internalURL = internalURL;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AppUrl appUrl = (AppUrl) o;
+
+        return id == appUrl.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }

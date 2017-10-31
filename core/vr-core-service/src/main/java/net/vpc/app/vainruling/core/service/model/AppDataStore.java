@@ -65,4 +65,18 @@ public class AppDataStore {
         this.updateDate = updateDate;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AppDataStore that = (AppDataStore) o;
+
+        return idName != null ? idName.equals(that.idName) : that.idName == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return idName != null ? idName.hashCode() : 0;
+    }
 }

@@ -23,7 +23,7 @@ and open the template in the editor.
     <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
             <h:form id="listForm">
-                <p:messages id="currentMessages"/>
+                <p:messages id="currentMessages" showDetail="true"/>
                 <ui:fragment rendered="#{myInternshipBoardsCtrl.model.list}">
 
                     <div >

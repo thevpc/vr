@@ -278,4 +278,19 @@ public class AcademicTeacher {
         AppContact c = getContact();
         return c==null?String.valueOf(getId()): c.getFullTitle();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AcademicTeacher that = (AcademicTeacher) o;
+
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }

@@ -51,4 +51,19 @@ public class AppDepartmentPeriod {
     public void setPeriod(AppPeriod period) {
         this.period = period;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AppDepartmentPeriod that = (AppDepartmentPeriod) o;
+
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }

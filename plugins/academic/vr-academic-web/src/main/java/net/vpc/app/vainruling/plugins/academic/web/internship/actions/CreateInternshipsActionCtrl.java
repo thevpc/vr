@@ -45,7 +45,7 @@ public class CreateInternshipsActionCtrl {
         getModel().setProfile("");
         AcademicInternship internship = new AcademicInternship();
         getModel().setInternship(internship);
-
+        initModel();
 
         getModel().setBoard((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipBoard.class));
         getModel().setGroup((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipGroup.class));
@@ -58,6 +58,12 @@ public class CreateInternshipsActionCtrl {
         options.put("modal", true);
         RequestContext.getCurrentInstance().openDialog("/modules/academic/internship/create-internships-dialog", options, null);
 
+    }
+
+    private void initModel(){
+        getModel().getInternship().setName("Ecrire le titre de ton PFE ici");
+        getModel().getInternship().setDescription("Ecrire une description longue de ton PFE ici. N'oublie pas par contre d'attacher le PDF de cahier des charges de ton  PFE. Tous les champs doivent etre remplis correctement.");
+//        getModel().getInternship().setInternshipStatus();
     }
 
     public void save() {

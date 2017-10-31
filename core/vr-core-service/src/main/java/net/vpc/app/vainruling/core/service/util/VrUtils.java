@@ -834,4 +834,31 @@ public class VrUtils {
         }
         return s;
     }
+
+    public static String combineAndProfile(String oldProfile,String newProfile){
+        boolean empty1 = StringUtils.isEmpty(oldProfile);
+        boolean empty2 = StringUtils.isEmpty(newProfile);
+        if(empty1 && empty2){
+            return null;
+        }else if(empty1){
+            return newProfile;
+        }else if(empty2){
+            return oldProfile;
+        }else{
+            return "("+oldProfile+") + ("+newProfile+")";
+        }
+    }
+    public static String combineOrProfile(String oldProfile,String newProfile){
+        boolean empty1 = StringUtils.isEmpty(oldProfile);
+        boolean empty2 = StringUtils.isEmpty(newProfile);
+        if(empty1 && empty2){
+            return null;
+        }else if(empty1){
+            return newProfile;
+        }else if(empty2){
+            return oldProfile;
+        }else{
+            return "("+oldProfile+") , ("+newProfile+")";
+        }
+    }
 }

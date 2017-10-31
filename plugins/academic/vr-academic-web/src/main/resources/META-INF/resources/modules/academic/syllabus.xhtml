@@ -22,11 +22,17 @@
 			<h:form id="listForm">
 			<p:selectOneMenu class="form-control vr-form-control"
 							 value="#{syllabusCtrl.model.academicCoursePlan}"
+							 filter="true" filterMatchMode="contains"
 							 converter="#{vr.entityObjConverter('AcademicCoursePlan')}">
 				<f:selectItems value="#{vr.entitySelectItems('AcademicCoursePlan',true,false)}"/>
-				<p:ajax listener="#{teacherPlanningCtrl.onTeacherChanged}" update=":listForm"/>
+				<p:ajax listener="#{syllabusCtrl.onRefresh}" update="@form"/>
 			</p:selectOneMenu>
+				hello-start
+				<p:outputLabel value="#{syllabusCtrl.model.academicCoursePlan}"/>
+				hello-end
 			<ui:fragment rendered="#{syllabusCtrl.model.academicCoursePlan ne null}">
+
+
 <table align="left" cellspacing="0" border="0">
 	<colgroup span="2" width="21"></colgroup>
 	<colgroup width="108"></colgroup>
@@ -98,7 +104,7 @@
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic">#{syllabusCtrl.model.academicCoursePlan.courseLevel.academicClass.program.department.name}</font></td>
 		<td align="left" valign="middle" bgcolor="#ECF2F8"><b><font face="Century Gothic"><br/></font></b></td>
 		<td style="border-top: 1px solid #969696; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><b><font face="Century Gothic" color="#333333">Responsable</font></b></td>
-		<td style="border-top: 1px solid #969696; border-bottom: 1px solid #c0c0c0; border-right: 1px solid #969696" colspan="10" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic"><br/></font></td>
+		<td style="border-top: 1px solid #969696; border-bottom: 1px solid #c0c0c0; border-right: 1px solid #969696" colspan="10" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic">#{syllabusCtrl.model.academicCoursePlan.responsible}</font></td>
 		<td style="border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
 	</tr>
 	<tr>
@@ -107,7 +113,7 @@
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic">#{syllabusCtrl.model.academicCoursePlan.courseLevel.academicClass.program.name}</font></td>
 		<td align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">Responsable Associé</font></td>
-		<td style="border-top: 1px solid #969696; border-bottom: 1px solid #c0c0c0; border-right: 1px solid #969696" colspan="10" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic"><br/></font></td>
+		<td style="border-top: 1px solid #969696; border-bottom: 1px solid #c0c0c0; border-right: 1px solid #969696" colspan="10" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic">#{syllabusCtrl.model.academicCoursePlan.responsible2}</font></td>
 		<td style="border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
 	</tr>
 	<tr>
@@ -116,7 +122,7 @@
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #969696; border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#FFFFFF" sdnum="1033;1033;M/D/YYYY"><font face="Century Gothic">#{syllabusCtrl.model.academicCoursePlan.courseLevel.periodLevel}</font></td>
 		<td align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">Horaire disponibilité</font></td>
-		<td style="border-top: 1px solid #969696; border-bottom: 1px solid #c0c0c0; border-right: 1px solid #969696" colspan="10" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic"><br/></font></td>
+		<td style="border-top: 1px solid #969696; border-bottom: 1px solid #c0c0c0; border-right: 1px solid #969696" colspan="10" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic">#{syllabusCtrl.model.academicCoursePlan.responsibleAvailability}</font></td>
 		<td style="border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
 	</tr>
 	<tr>
@@ -126,7 +132,7 @@
 		<td align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-left: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">Contact</font></td>
 		<td style="border-top: 1px solid #969696; border-right: 1px solid #969696" colspan="10" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic"><br/></font></td>
-		<td style="border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
+		<td style="border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic">#{syllabusCtrl.model.academicCoursePlan.responsible.contact.email}</font></td>
 	</tr>
 	<tr>
 		<td style="border-left: 1px solid #969696" height="27" align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
@@ -167,7 +173,7 @@
 		<td style="border-left: 1px solid #969696" height="27" align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">Code Module</font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333"><br/></font></td>
-		<td style="border-top: 1px solid #969696; border-bottom: 1px solid #c0c0c0; border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic">syllabusCtrl.model.academicCoursePlan.code</font></td>
+		<td style="border-top: 1px solid #969696; border-bottom: 1px solid #c0c0c0; border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic">#{syllabusCtrl.model.academicCoursePlan.code}</font></td>
 		<td align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-left: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333"><br/></font></td>
 		<td style="border-top: 1px solid #bfbfbf; border-bottom: 1px solid #bfbfbf; border-left: 1px solid #bfbfbf" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic"><br/></font></td>
@@ -227,34 +233,32 @@
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">CR/Tst</font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic" color="#333333"><p:inputText value="#{syllabusCtrl.model.academicCoursePlan.evalRandomExams}"/></font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-right: 1px solid #bfbfbf" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">Ex TP</font></td>
-		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic" color="#333333"><p:selectBooleanCheckbox value="#{syllabusCtrl.model.academicCoursePlan.evalTPExam}" /></font></td>
+		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic" color="#333333"><p:selectBooleanCheckbox value="#{syllabusCtrl.model.academicCoursePlan.evalTpExam}" /></font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">Orl</font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-right: 1px solid #bfbfbf" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic" color="#333333"><p:inputText value="#{syllabusCtrl.model.academicCoursePlan.evalOralExams}"/></font></td>
 		<td style="border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
 	</tr>
 	<tr>
 		<td style="border-left: 1px solid #969696" height="26" align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
-		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">Année universitaire</font></td>
-		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333"><br/></font></td>
+		<td colspan="3" style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">Année universitaire</font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #969696; border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#FFFFFF" sdnum="1033;1033;M/D/YYYY"><font face="Century Gothic">#{syllabusCtrl.model.academicCoursePlan.period.name}</font></td>
 		<td align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">Volume Horaire</font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">Tot</font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic" color="#333333"><br/>#{syllabusCtrl.model.academicCoursePlan.valueC+syllabusCtrl.model.academicCoursePlan.valueTD+syllabusCtrl.model.academicCoursePlan.valueTP+syllabusCtrl.model.academicCoursePlan.valuePM}</font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">C</font></td>
-		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic" color="#333333"><br/>#{syllabusCtrl.model.academicCoursePlan.valueC}</font></td>
+		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic" color="#333333"><br/><p:inputText value="#{syllabusCtrl.model.academicCoursePlan.valueC}"/> </font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">TD</font></td>
-		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic" color="#333333"><br/>#{syllabusCtrl.model.academicCoursePlan.valueTD}</font></td>
+		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic" color="#333333"><br/><p:inputText value="#{syllabusCtrl.model.academicCoursePlan.valueTD}"/></font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">TP</font></td>
-		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic" color="#333333"><br/>#{syllabusCtrl.model.academicCoursePlan.valueTP}</font></td>
+		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic" color="#333333"><br/><p:inputText value="#{syllabusCtrl.model.academicCoursePlan.valueTP}"/></font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">PR</font></td>
-		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic" color="#333333"><br/>#{syllabusCtrl.model.academicCoursePlan.valuePM}</font></td>
+		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #bfbfbf; border-right: 1px solid #bfbfbf" align="center" valign="middle" bgcolor="#FFFFFF"><font face="Century Gothic" color="#333333"><br/><p:inputText value="#{syllabusCtrl.model.academicCoursePlan.valuePM}"/></font></td>
 		<td style="border-left: 1px solid #bfbfbf; border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
 	</tr>
 	<tr>
 		<td style="border-left: 1px solid #969696" height="26" align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
-		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">Dern. Revision</font></td>
-		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333"><br/></font></td>
+		<td colspan="2" style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; border-left: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">Dern. Revision</font></td>
 		<td style="border-top: 1px solid #969696; border-bottom: 1px solid #c0c0c0; border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#FFFFFF" sdval="42139" sdnum="1033;0;[$-F800]DDDD, MMMM DD, YYYY"><font face="Century Gothic">#{syllabusCtrl.model.academicCoursePlan.updateDate}</font></td>
 		<td align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
 		<td style="border-top: 1px solid #c0c0c0; border-bottom: 1px solid #969696; border-left: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic" color="#333333">Autre</font></td>
@@ -291,7 +295,7 @@
 		<td style="border-left: 1px solid #969696" height="27" align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
 		<td style="border-top: 1px solid #969696; border-left: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic"><br/></font></td>
 		<td style="border-top: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><b><font face="Century Gothic">Objectif</font></b></td>
-		<td style="border-top: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic"><p:inputTextarea value="#{syllabusCtrl.model.academicCoursePlan.overviewDetails}"/></font></td>
+		<td style="border-top: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic"><br/></font></td>
 		<td style="border-top: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic"><br/></font></td>
 		<td style="border-top: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic"><br/></font></td>
 		<td style="border-top: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic"><br/></font></td>
@@ -305,6 +309,11 @@
 		<td style="border-top: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic"><br/></font></td>
 		<td style="border-top: 1px solid #969696; border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#D0D7E2"><font face="Century Gothic"><br/></font></td>
 		<td style="border-right: 1px solid #969696" align="left" valign="middle" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
+	</tr>
+	<tr>
+		<td colspan="17">
+			<p:inputTextarea value="#{syllabusCtrl.model.academicCoursePlan.overviewDetails}"/>
+		</td>
 	</tr>
 	<tr>
 		<td style="border-left: 1px solid #969696" height="23" align="left" valign="bottom" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
@@ -2388,7 +2397,6 @@
 		<td style="border-bottom: 1px solid #969696; border-right: 1px solid #969696" align="left" valign="bottom" bgcolor="#ECF2F8"><font face="Century Gothic"><br/></font></td>
 	</tr>
 </table>
-<img src="eniso-ii-syllabus-2015-IA3-StabdardsDeCommunicationSansFils_html_314596bdb2500d76.png" width="198" height="80"/>
 <br clear="left"/>
 <!-- ************************************************************************** -->
 			</ui:fragment>

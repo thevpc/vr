@@ -14,9 +14,8 @@ and open the template in the editor.
     <h:head>
     </h:head>
 
-    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
-    <!--@elvariable id="myProfileCtrl" type="net.vpc.app.vainruling.core.web.ctrl.MyProfileCtrl"-->
     <h:body>
+        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
 
         <ui:composition>
 
@@ -24,6 +23,7 @@ and open the template in the editor.
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <div class="info-box ">
                         <h:form id="experienceAddForm" enctype="multipart/form-data" class="form-horizontal"> 
+                            <div class="box box-solid">
                             <ul class="timeline">
                                 <li class="time-label"></li>
                                 <li>
@@ -36,53 +36,36 @@ and open the template in the editor.
                                             </div>
                                         </h3>
                                         <div class="timeline-body">
-                                            <!-- <div class="form-group">
-                                                <h:outputLabel class="col-sm-3 control-label text-navy" value="De" for="fromDate" />
-                                                <div class="col-sm-7">
-                                                    <p:calendar id="fromDate" value="#{teacherProfileSettingsCtrl.model.experienceItem.fromDate}" showOn="button" />
-                                                    <h:inputText  value="#{teacherProfileSettingsCtrl.model.experienceItem.fromDate}" class="form-control" id="fromDate"/>
-                                                </div>
-                                            </div> -->
-                                            <!-- <div class="form-group">
-                                                <h:outputLabel class="col-sm-3 control-label text-navy" value="A" for="toDate" />
-                                                <div class="col-sm-7">
-                                                    <p:calendar id="toDate" value="#{teacherProfileSettingsCtrl.model.experienceItem.toDate}" showOn="button"/>
-                                                </div>
-                                            </div> -->
                                             <div class="form-group">
-                                                <h:outputLabel class="col-sm-3 control-label text-navy" for="experienceCompanyList" value="Etablissement" />
+                                                <h:outputLabel class="col-sm-3 control-label text-navy" value="De" for="experienceFromDate" />
                                                 <div class="col-sm-7">
-                                                    <p:selectOneMenu id="experienceCompanyList" value="Entreprise" style="width:125px">
-                                                        <f:selectItem itemLabel="Selectionner ..." itemValue="#{teacherProfileSettingsCtrl.model.experienceItem.company}" />
-                                                        <f:selectItems value="#{teacherProfileSettingsCtrl.model.companyItems}" />
-                                                    </p:selectOneMenu>
-                                                </div> 
+                                                    <p:calendar value="#{teacherProfileSettingsCtrl.model.experienceItem.fromDate}" id="experienceFromDate" converter="vpcDateConverter"/>
+                                                </div>
                                             </div>
-                                           
-                                                <!--  <p:outputLabel class="col-sm-3 control-label text-navy" value="Etablissement" for="etablissement"/>
-                                                  <div class="col-sm-7">
-                                                      <p:selectOneMenu value="#{teacherProfileSettingsCtrl.model.cvItem.company}">
-                                                          <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                                          <f:selectItems value="#{teacherProfileSettingsCtrl.model.cvItem.company}"/>
-                                                      </p:selectOneMenu>
-                                                  </div> -->
-                                                <!-- <h:outputLabel class="col-sm-3 control-label text-navy" value="Etablissement" for="etablissement" />
-                                                 <select class="form-control">
-                                                     <option>option 1</option>
-                                                     <option>option 2</option>
-                                                     <option>option 3</option>
-                                                     <option>option 4</option>
-                                                     <option>option 5</option>
-                                                 </select>
-                                             
-                                             <div class="col-sm-7">
-                                                 <h:inputText  value="#{teacherProfileSettingsCtrl.model.cvItem.company}" class="form-control" id="etablissement"/>
-                                             </div> 
-                                            </div>-->
                                             <div class="form-group">
-                                                <h:outputLabel class="col-sm-3 control-label text-navy" value="Détails" for="experienceDetailsTextarea" />
+                                                <h:outputLabel class="col-sm-3 control-label text-navy" value="A" for="experienceToDate" />
                                                 <div class="col-sm-7">
-                                                    <h:inputTextarea value="#{teacherProfileSettingsCtrl.model.experienceItem.details}" rows="3" class="form-control" id="experienceDetailsTextarea"/>
+                                                    <p:calendar value="#{teacherProfileSettingsCtrl.model.experienceItem.toDate}" id="experienceToDate" converter="vpcDateConverter"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-navy"
+                                                               value="Etablissement"
+                                                               for="experienceCompany"/>
+                                                <div class="col-sm-7">
+                                                    <p:selectOneMenu class="form-control vr-form-control"
+                                                                     id="experienceCompany"
+                                                                     value="#{teacherProfileSettingsCtrl.model.experienceItem.company}"
+                                                                     converter="#{vr.entityObjConverter('AppCompany')}">
+                                                        <f:selectItems
+                                                            value="#{vr.entitySelectItems('AppCompany',true,false)}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-navy" value="Détails" for="experienceDetails" />
+                                                <div class="col-sm-7">
+                                                    <h:inputTextarea value="#{teacherProfileSettingsCtrl.model.experienceItem.details}" rows="3" class="form-control" id="experienceDetails"/>
                                                 </div>
                                             </div>
                                         </div>
@@ -91,6 +74,7 @@ and open the template in the editor.
                             </ul>
                             <p:commandButton id="ExperienceCancelBtn" class="btn btn-danger pull-left" value="Annuler" onclick="PF('addExperience').hide();"/>
                             <h:commandLink id="experienceUpdateBtn" class="btn bg-navy pull-right" value="Ajouter" action="#{teacherProfileSettingsCtrl.addNewExpeienceItem()}"/>
+                            </div>
                         </h:form>
                     </div>
                 </div>

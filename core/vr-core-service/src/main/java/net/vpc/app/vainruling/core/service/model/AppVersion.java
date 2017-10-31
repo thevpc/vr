@@ -82,4 +82,21 @@ public class AppVersion {
         this.coherent = coherent;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AppVersion that = (AppVersion) o;
+
+        if (serviceName != null ? !serviceName.equals(that.serviceName) : that.serviceName != null) return false;
+        return serviceVersion != null ? serviceVersion.equals(that.serviceVersion) : that.serviceVersion == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = serviceName != null ? serviceName.hashCode() : 0;
+        result = 31 * result + (serviceVersion != null ? serviceVersion.hashCode() : 0);
+        return result;
+    }
 }

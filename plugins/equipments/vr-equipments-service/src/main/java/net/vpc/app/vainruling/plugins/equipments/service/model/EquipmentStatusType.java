@@ -21,7 +21,10 @@ public enum EquipmentStatusType {
     PLANNED_INTERVENTION(0),
     INTERVENTION_ON_COMPLAINT(0),
     COMPLAINT(0),
-    ACQUISITION(1);
+    ACQUISITION(1),
+    INUSE(1),
+    INSTORE(1)
+    ;
 
     private int sign;
 

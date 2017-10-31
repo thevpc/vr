@@ -25,6 +25,8 @@ import java.util.Objects;
                 @Property(name = "ui.auto-filter.department", value = "{expr='this.department',order=1}"),
                 @Property(name = "ui.auto-filter.lastClass1", value = "{expr='this.lastClass1',order=2}"),
                 @Property(name = "ui.auto-filter.stage", value = "{expr='this.stage',order=3}"),
+                @Property(name = "ui.auto-filter.firstSubscription", value = "{expr='this.firstSubscription',order=4}"),
+                @Property(name = "ui.auto-filter.lastSubscription", value = "{expr='this.lastSubscription',order=5}"),
                 @Property(name = "ui.main-photo-provider", value = "net.vpc.app.vainruling.plugins.academic.web.photo.AcademicStudentMainPhotoProvider"),
                 @Property(name = UIConstants.ENTITY_TEXT_SEARCH_FACTORY, value = "net.vpc.app.vainruling.plugins.academic.service.util.AcademicStudentObjSearchFactory")
         }
