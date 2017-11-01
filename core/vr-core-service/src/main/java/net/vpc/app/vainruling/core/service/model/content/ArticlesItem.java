@@ -55,7 +55,7 @@ public class ArticlesItem {
     )
     private ArticlesDisposition disposition;
 
-    @Field(readAccessLevel = AccessLevel.PROTECTED)
+    @Field(readAccessLevel = AccessLevel.PROTECTED,defaultValue = "true")
     private boolean includeSender=true;
     @Field(readAccessLevel = AccessLevel.PROTECTED)
     private boolean noSubject;

@@ -1078,10 +1078,10 @@ public class ApblPlugin {
         }
         return pu.createQuery("Select u from ApblTeam u where u.session.status.closed = false and  ( " +
                 "1=2 " +
-                (asMember ? ("or exists ((Select m from ApblTeamMember m where m.teamId=u.id and m.student.userId=:userId)) " +
-                        "or exists ((Select m from ApblCoaching m where m.teamId=u.id and m.teacher.userId=:userId)) ") : "") +
+                (asMember ? ("or exists (Select m from ApblTeamMember m where m.teamId=u.id and m.student.userId=:userId) " +
+                        "or exists((Select m from ApblCoaching m where m.teamId=u.id and m.teacher.userId=:userId)) ") : "") +
                 (asOwner ?
-                        ("or exists ((Select m from ApblProject m where m.ownerId=:userId))" +
+                        ("or exists((Select m from ApblProject m where m.ownerId=:userId))" +
                                 "or u.ownerId=:userId ") : "") +
                 ")"
         )
