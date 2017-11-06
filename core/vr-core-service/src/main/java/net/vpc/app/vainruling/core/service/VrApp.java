@@ -33,6 +33,10 @@ public class VrApp implements ApplicationContextAware {
         return getContext().getBean(type);
     }
 
+    public static <T extends Object> T getBean(String name) throws BeansException {
+        return (T) getContext().getBean(name);
+    }
+
     public static ApplicationContext getContext() {
         return context;
     }

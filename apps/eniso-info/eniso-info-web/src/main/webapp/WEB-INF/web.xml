@@ -14,7 +14,7 @@
 
     <context-param>
         <param-name>upa.web.context-url-filter</param-name>
-        <param-value>*.xhtml|/fs/*|/ws/*|/p/*|/u/*|/services/rss/*</param-value>
+        <param-value>*.xhtml|/fs/*|/ws2/*|/p/*|/u/*|/ws/*|/services/rss/*</param-value>
     </context-param>
 
     <context-param>
@@ -52,10 +52,25 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
+
     <servlet-mapping>
         <servlet-name>Jersey Servlet</servlet-name>
+        <url-pattern>/ws2/*</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>spring</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>spring</servlet-name>
         <url-pattern>/ws/*</url-pattern>
     </servlet-mapping>
+
 
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>

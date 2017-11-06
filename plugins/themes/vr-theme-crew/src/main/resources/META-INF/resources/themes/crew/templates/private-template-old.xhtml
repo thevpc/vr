@@ -279,11 +279,11 @@ and open the template in the editor.
                         </li>
                         <h:inputHidden value="#{vr.buildMenu()}"/>
 
-                        <ui:repeat value="#{vr.menu.groups}" var="p0">
+                        <ui:repeat value="#{vr.menu.resolveGroups()}" var="p0">
                             <li>
                                 <a href="#"><i class="fa #{p0.icon}"></i> #{p0.name}</a>
                                 <ul class="nav nav-second-level">
-                                    <ui:repeat value="#{p0.groups}" var="p1">
+                                    <ui:repeat value="#{p0.resolveGroups()}" var="p1">
                                         <li>
                                             <a href="#"><i class="fa #{p1.icon}"></i> #{p1.name} <span
                                                     class="fa arrow"></span></a>
@@ -310,7 +310,7 @@ and open the template in the editor.
                                 </ul>
                             </li>
                         </ui:repeat>
-                        <ui:repeat value="#{vr.menu.leaves}" var="p1">
+                        <ui:repeat value="#{vr.menu.resolveLeaves()}" var="p1">
                             <li>
                                 <h:outputLink value="#{p1.prettyURL}">
                                     <h:outputText value="      #{p1.name}"/>

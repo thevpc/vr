@@ -21,10 +21,16 @@ public class Plugin implements Comparable<Plugin> {
 
     PluginBundle info;
     List<Object> beanInstances;
+    List<String> beanNames;
 
-    public Plugin(List<Object> beanInstances, PluginBundle info) {
+    public Plugin(List<Object> beanInstances, List<String> beanNames,PluginBundle info) {
         this.beanInstances = beanInstances;
+        this.beanNames = beanNames;
         this.info = info;
+    }
+
+    public List<String> getBeanNames() {
+        return beanNames;
     }
 
     public static int compare(Plugin s1, Plugin s2) {

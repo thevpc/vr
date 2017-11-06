@@ -2,45 +2,52 @@ package net.vpc.app.vainruling.core.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
-import net.vpc.upa.config.Path;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by vpc on 9/16/16.
  */
-@Component
-@javax.ws.rs.Path("/core")
+//@Component
+//@javax.ws.rs.Path("/core")
+@RestController
 public class CoreWS {
-    @GET
-    @Transactional
-    @javax.ws.rs.Path("/login")
+//    @GET
+//    @Transactional
+//    @javax.ws.rs.Path("/login")
+    @RequestMapping("/core/login")
 //    @Produces(MediaType.APPLICATION_JSON)
 //    @Consumes(MediaType.TEXT_PLAIN)
-    public boolean login(@QueryParam("login") String login, @QueryParam("password") String password) {
+    public boolean login(@RequestParam("login") String login, @RequestParam("password") String password) {
         try {
             VrWebHelper.prepareUserSession();
             UserSession userSession = UserSession.get();
-            VrApp.getBean(CorePlugin.class).login(login, password);
-            return true;
+            AppUser u=VrApp.getBean(CorePlugin.class).login(login, password);
+            if(u!=null) {
+                return true;
+            }
         } catch (Exception e) {
-            return false;
+            e.printStackTrace();
+            //return false;
         }
+        return false;
     }
 
-    @GET
-    @Transactional
-    @javax.ws.rs.Path("/logout")
+//    @GET
+//    @Transactional
+    @RequestMapping("/core/logout")
 //    @Produces(MediaType.APPLICATION_JSON)
     public boolean logout() {
         try {
@@ -49,5 +56,18 @@ public class CoreWS {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @RequestMapping("/core/invoke")
+    public String invoke(@RequestParam("commands") WSCommand[] commands) {
+        System.out.println(commands == null ? null : Arrays.asList(commands));
+        return "thanks";
+    }
+//    @GET
+//    @Transactional
+    @RequestMapping("/core/rsi")
+    public Map<String,String> rsi(@RequestParam("script") String script) {
+        RSIEnv e=new RSIEnv();
+        return e.invoke(script);
     }
 }

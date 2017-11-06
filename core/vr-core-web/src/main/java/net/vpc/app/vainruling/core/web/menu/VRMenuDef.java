@@ -83,6 +83,9 @@ public class VRMenuDef {
     public String getPrettyURL() {
         Vr c = Vr.get();
         String context = c.getContext();
+        if(context==null){
+            context="";
+        }
         if (context.length()>0 && !context.endsWith("/")) {
             context = context + "/";
         }
@@ -131,7 +134,7 @@ public class VRMenuDef {
         return !getType().equals("package");
     }
 
-    public List<VRMenuDef> getGroups() {
+    public List<VRMenuDef> resolveGroups() {
         List<VRMenuDef> all = new ArrayList<>();
         for (VRMenuDef c : children) {
             if (c.getType().equals("package")) {
@@ -142,7 +145,7 @@ public class VRMenuDef {
         return all;
     }
 
-    public List<VRMenuDef> getLeaves() {
+    public List<VRMenuDef> resolveLeaves() {
         List<VRMenuDef> all = new ArrayList<>();
         for (VRMenuDef c : children) {
             if (!c.getType().equals("package")) {

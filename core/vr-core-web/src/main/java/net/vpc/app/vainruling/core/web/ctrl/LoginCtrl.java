@@ -88,11 +88,14 @@ public class LoginCtrl {
                 }
                 AppUser u = core.login(finalLogin, getModel().getPassword());
                 if (u != null) {
-                    ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-                    getSession().setPlatformSession(externalContext.getSession(false));
-                    getSession().setPlatformSessionMap(externalContext.getSessionMap());
-                    VrApp.getBean(ActiveSessionsCtrl.class).onRefresh();
-                    return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
+                    FacesContext currentInstance = FacesContext.getCurrentInstance();
+                    if(currentInstance!=null) {
+                        ExternalContext externalContext = currentInstance.getExternalContext();
+                        getSession().setPlatformSession(externalContext.getSession(false));
+                        getSession().setPlatformSessionMap(externalContext.getSessionMap());
+                        VrApp.getBean(ActiveSessionsCtrl.class).onRefresh();
+                        return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
+                    }
 //            return VRApp.getBean(VrMenu.class).gotoPage("todo", "sys-labo-action");
                 }
                 FacesUtils.addErrorMessage("Login ou mot de passe incorrect");

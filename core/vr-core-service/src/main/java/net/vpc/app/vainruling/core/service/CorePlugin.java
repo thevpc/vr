@@ -2490,11 +2490,28 @@ public class CorePlugin {
         return new ArrayList<>(UPA.getPersistenceGroup("").getPersistenceUnits());
     }
 
+    public List<String> getPluginIds() {
+        List<String> plugins=new ArrayList<>();
+        for (Plugin plugin : getPlugins()) {
+            plugins.add(plugin.getId());
+        }
+        return plugins;
+    }
+
+    public List<String> getPluginBeans() {
+        List<String> plugins=new ArrayList<>();
+        for (Plugin plugin : getPlugins()) {
+            plugins.addAll(plugin.getBeanNames());
+        }
+        return plugins;
+    }
+
     public List<Plugin> getPlugins() {
         if (plugins == null) {
             buildPluginInfos();
             String[] appPluginBeans = VrApp.getContext().getBeanNamesForAnnotation(AppPlugin.class);
             ListValueMap<String, Object> instances = new ListValueMap<>();
+            ListValueMap<String, String> beanNames = new ListValueMap<>();
             List<String> errors = new ArrayList<>();
             Arrays.sort(appPluginBeans); //just to have a reproducible error if any
             for (String beanName : appPluginBeans) {
@@ -2502,6 +2519,7 @@ public class CorePlugin {
                 PluginBundle bundle = getPluginBundle(bean);
                 if (bundle != null) {
                     instances.put(bundle.getId(), bean);
+                    beanNames.put(bundle.getId(), beanName);
                 } else {
                     errors.add(beanName);
                     log.log(Level.SEVERE, "Unable to find bundle Instance for " + beanName + "... some thing is wrong...");
@@ -2533,7 +2551,14 @@ public class CorePlugin {
                     }
                     log.log(Level.INFO, "Plugin " + pluginInfo.getId() + " defines no configurator class");
                 }
-                Plugin p = new Plugin(objects, pluginInfo);
+                List<String> bnames = beanNames.get(pluginInfo.getId());
+                if (bnames == null || bnames.size() == 0) {
+                    if (bnames == null) {
+                        bnames = new ArrayList<>();
+                    }
+                    //log.log(Level.INFO, "Plugin " + pluginInfo.getId() + " defines no configurator class");
+                }
+                Plugin p = new Plugin(objects, bnames,pluginInfo);
                 plugins.add(p);
             }
             Collections.sort(plugins);

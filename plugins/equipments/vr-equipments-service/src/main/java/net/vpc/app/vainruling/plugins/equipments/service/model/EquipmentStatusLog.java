@@ -48,7 +48,7 @@ public class EquipmentStatusLog {
     //@Properties({@Property(name = UIConstants.Form.SUBMIT_ON_CHANGE, value = "true")})
     private EquipmentStatusType type=EquipmentStatusType.AVAILABLE;
 
-
+    @Field(defaultValue = "1")
     @Summary
     private double quantity;
 

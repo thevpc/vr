@@ -26,7 +26,7 @@ import java.util.List;
 public class InventoryPluginCallback {
     @OnPreCreate
     public void onPreCreate(FieldEvent event) {
-        if(event.getField().getAbsoluteName().equals("ArticlesItem.disposition")){
+        if (event.getField().getAbsoluteName().equals("ArticlesItem.disposition")) {
             event.getField().setDefaultObject((CustomDefaultObject) () -> CorePlugin.get().findArticleDisposition("Welcome"));
         }
     }
@@ -38,21 +38,18 @@ public class InventoryPluginCallback {
             EquipmentStatusLog eq = (EquipmentStatusLog) event.getPersistedObject();
             EquipmentStatusType type = eq.getType();
             eq.setActor(CorePlugin.get().getCurrentUser());
-            if(type!=null){
-                if(type.getSign()==0){
+            if (type != null) {
+                if (type.getSign() == 0) {
                     eq.setQuantity(0);
-                }else if(type.getSign()>0){
-                    if(eq.getQuantity()<0){
-                        eq.setQuantity(-eq.getQuantity());
-                    }
-                }else if(type.getSign()<0){
-                    if(eq.getQuantity()>0){
-                        eq.setQuantity(-eq.getQuantity());
-                    }
+                    event.getPersistedDocument().setDouble("quantity", eq.getQuantity());
+                } else if (type.getSign() * eq.getQuantity() < 0) {
+                    eq.setQuantity(-eq.getQuantity());
+                    event.getPersistedDocument().setDouble("quantity", eq.getQuantity());
                 }
             }
         }
     }
+
     @OnPersist
     public void onPersist(PersistEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
@@ -94,24 +91,25 @@ public class InventoryPluginCallback {
                     pu.persist(r);
                 }
             }
-        }else if (entity.getName().equals("EquipmentStatusLog")) {
+        } else if (entity.getName().equals("EquipmentStatusLog")) {
             EquipmentStatusLog eq = (EquipmentStatusLog) event.getPersistedObject();
-            if(eq.getEquipment()!=null){
+            if (eq.getEquipment() != null) {
                 eq.getEquipment().setStatusType(eq.getType());
-                if(eq.getAcquisition()!=null && eq.getType()==EquipmentStatusType.ACQUISITION) {
+                if (eq.getAcquisition() != null && eq.getType() == EquipmentStatusType.ACQUISITION) {
                     eq.getEquipment().setAcquisition(eq.getAcquisition());
                 }
                 pu.merge(eq.getEquipment());
             }
         }
     }
+
     @OnPreUpdate
     public void onPreUpdate(UpdateEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
         if (entity.getName().equals("EquipmentStatusLog")) {
             EquipmentStatusLog eq = (EquipmentStatusLog) event.getUpdatesObject();
-            if(eq!=null) {
+            if (eq != null) {
                 EquipmentStatusType type = eq.getType();
                 if (type != null) {
                     if (type.getSign() == 0) {
@@ -119,23 +117,24 @@ public class InventoryPluginCallback {
                     } else if (type.getSign() * eq.getQuantity() < 0) {
                         double quantity = -eq.getQuantity();
                         eq.setQuantity(quantity);
-                        event.getUpdatesDocument().setDouble("quantity",quantity);
+                        event.getUpdatesDocument().setDouble("quantity", quantity);
                     }
                 }
             }
-            if(eq!=null && eq.getEquipment()!=null){
-                event.getContext().setObject("EquipmentStatusLog.Updated",pu.createQueryBuilder("EquipmentStatusLog").byExpression(event.getFilterExpression()).getIdList());
-            }else{
-                event.getContext().setObject("EquipmentStatusLog.Updated",new ArrayList<>());
+            if (eq != null && eq.getEquipment() != null) {
+                event.getContext().setObject("EquipmentStatusLog.Updated", pu.createQueryBuilder("EquipmentStatusLog").byExpression(event.getFilterExpression()).getIdList());
+            } else {
+                event.getContext().setObject("EquipmentStatusLog.Updated", new ArrayList<>());
             }
         }
     }
+
     @OnUpdate
     public void onUpdate(UpdateEvent event) {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
         if (entity.getName().equals("EquipmentStatusLog")) {
-            List ids=event.getContext().getObject("EquipmentStatusLog.Updated");
+            List ids = event.getContext().getObject("EquipmentStatusLog.Updated");
             for (Object id : ids) {
                 List<EquipmentStatusLog> currents = pu.createQuery("Select Top 1 o from EquipmentStatusLog o where o.equipmentId=(Select x.equipmentId from EquipmentStatusLog x where x.id=:id) order by o.startDate desc, o.id asc")
                         .setParameter("id", id)

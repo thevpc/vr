@@ -159,28 +159,28 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
 //        ExcelTemplate.generateExcelSheet(sheet, preparePrintableTeacherLoadProperties(yearId,teacherId));
 //    }
 
-    public static void main(String[] args) {
-
-        AcademicLoadConversionRow R_MA = new AcademicLoadConversionRow();
-        R_MA.setValueC(1.83);
-        R_MA.setValueTD(1);
-        R_MA.setValueTP(0.73);
-        R_MA.setValuePM(0.49);
-        AcademicLoadConversionRow R_PR = new AcademicLoadConversionRow();
-        R_PR.setValueC(1);
-        R_PR.setValueTD(0.75);
-        R_PR.setValueTP(0.50);
-        R_PR.setValuePM(0.33);
-
-        LoadValue extra = new LoadValue().setC(0.1).setTd(-3).setTp(5).setPm(1);
-        System.out.println(extra);
-        System.out.println("eff=" + evalHeureSupp(extra, R_MA));
-
-//        LoadValue extra2=new LoadValue().setC(-3).setTd(3   ).setTp(2).setPm(1);
-        LoadValue extra2 = new LoadValue().setC(-3).setTd(3).setTp(0).setPm(0);
-        System.out.println(extra2);
-        System.out.println("eff2=" + evalHeureSupp(extra2, R_PR));
-    }
+//    public static void main(String[] args) {
+//
+//        AcademicLoadConversionRow R_MA = new AcademicLoadConversionRow();
+//        R_MA.setValueC(1.83);
+//        R_MA.setValueTD(1);
+//        R_MA.setValueTP(0.73);
+//        R_MA.setValuePM(0.49);
+//        AcademicLoadConversionRow R_PR = new AcademicLoadConversionRow();
+//        R_PR.setValueC(1);
+//        R_PR.setValueTD(0.75);
+//        R_PR.setValueTP(0.50);
+//        R_PR.setValuePM(0.33);
+//
+//        LoadValue extra = new LoadValue().setC(0.1).setTd(-3).setTp(5).setPm(1);
+//        System.out.println(extra);
+//        System.out.println("eff=" + evalHeureSupp(extra, R_MA));
+//
+////        LoadValue extra2=new LoadValue().setC(-3).setTd(3   ).setTp(2).setPm(1);
+//        LoadValue extra2 = new LoadValue().setC(-3).setTd(3).setTp(0).setPm(0);
+//        System.out.println(extra2);
+//        System.out.println("eff2=" + evalHeureSupp(extra2, R_PR));
+//    }
 
     private static LoadValue reevalLoadValueFormulas(LoadValue sem_value, AcademicLoadConversionRow r) {
         sem_value.setTdtppm(sem_value.getTd() + sem_value.getTp() * (r.getValueTP() / r.getValueTD()) + sem_value.getPm() * (r.getValuePM() / r.getValueTD()));

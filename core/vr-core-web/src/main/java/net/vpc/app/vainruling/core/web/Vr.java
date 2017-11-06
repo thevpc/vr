@@ -863,7 +863,11 @@ public class Vr {
     }
 
     public String getFullContext() {
-        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        FacesContext currentInstance = FacesContext.getCurrentInstance();
+        if(currentInstance==null){
+            return null;
+        }
+        HttpServletRequest req = (HttpServletRequest) currentInstance.getExternalContext().getRequest();
         StringBuilder sb = new StringBuilder();
         StringBuffer requestURL = req.getRequestURL();
         String contextPath = req.getContextPath();
@@ -872,12 +876,20 @@ public class Vr {
     }
 
     public String getContext() {
-        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        FacesContext currentInstance = FacesContext.getCurrentInstance();
+        if(currentInstance==null){
+            return null;
+        }
+        HttpServletRequest req = (HttpServletRequest) currentInstance.getExternalContext().getRequest();
         return req.getContextPath();
     }
 
     public String getCurrentRequestURI() {
-        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        FacesContext currentInstance = FacesContext.getCurrentInstance();
+        if(currentInstance==null){
+            return null;
+        }
+        HttpServletRequest req = (HttpServletRequest) currentInstance.getExternalContext().getRequest();
         return req.getRequestURI();
     }
 
@@ -893,7 +905,11 @@ public class Vr {
     }
 
     public String getThemeContext() {
-        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        FacesContext currentInstance = FacesContext.getCurrentInstance();
+        if(currentInstance==null){
+            return null;
+        }
+        HttpServletRequest req = (HttpServletRequest) currentInstance.getExternalContext().getRequest();
         String contextPath = req.getContextPath();
         return contextPath + "/themes/" + getTheme().getId();
 //        return contextPath+"/META-INF/resources/themes/"+getTheme().getId();

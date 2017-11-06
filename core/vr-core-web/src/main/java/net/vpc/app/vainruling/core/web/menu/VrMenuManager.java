@@ -72,24 +72,8 @@ public class VrMenuManager {
         }
     }
 
-    public String buildMenu() {
-        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-        String searchText = params.get("searchTextInput");
-//        if(!StringUtils.isEmpty(searchText)){
-//            getModel().setSearchText(searchText);
-        getModel().setSearchText("");
-//        }else{
-//            searchText=getModel().getSearchText();
-        //}
-//        MenuTree v = new MenuTree();
-//        TreeTraversal.preOrderTreeTraversal(v, new TreeVisitor<VRMenuDef>() {
-//
-//            @Override
-//            public void visit(VRMenuDef t, TreeDefinition<VRMenuDef> tree) {
-//
-//            }
-//        });
-        String finalSearchText = searchText;
+    public VRMenuDef createMenu(String searchText) {
+        String finalSearchText = (searchText==null?"":searchText.toLowerCase());
         ObjectFilter<String> menuFilter = StringUtils.isEmpty(searchText) ? new ObjectFilter<String>() {
             @Override
             public boolean accept(String value) {
@@ -101,10 +85,17 @@ public class VrMenuManager {
                 if (value == null) {
                     value = "";
                 }
-                return value.toLowerCase().contains(finalSearchText.toLowerCase());
+                return value.toLowerCase().contains(finalSearchText);
             }
         };
-        getModel().setRoot(new MenuTree(menuFilter).root);
+        return (new MenuTree(menuFilter).root);
+    }
+
+    public String buildMenu() {
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        String searchText = params.get("searchTextInput");
+        getModel().setSearchText("");
+        getModel().setRoot(createMenu(searchText));
         return "ignore-me";
     }
 

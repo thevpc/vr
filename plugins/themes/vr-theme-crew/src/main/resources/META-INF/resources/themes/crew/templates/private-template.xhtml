@@ -397,7 +397,7 @@
                             <li class="header">Depatement #{vr.userSession.user.department.name}</li>
                         </ui:fragment>
                         <h:inputHidden value="#{vr.buildMenu()}"/>
-                        <ui:repeat value="#{vr.menu.groups}" var="p0">
+                        <ui:repeat value="#{vr.menu.resolveGroups()}" var="p0">
                             <li class="treeview">
                                 <a href="#">
                                     <i class="fa  #{vr.nvl(p0.icon,'fa-folder')}"></i> <span>#{p0.name}</span>
@@ -410,7 +410,7 @@
                                 </a>
 
                                 <ul class="treeview-menu">
-                                    <ui:repeat value="#{p0.groups}" var="p1">
+                                    <ui:repeat value="#{p0.resolveGroups()}" var="p1">
                                         <li><a href="#"><i class="fa #{vr.nvl(p1.icon,'fa-folder')}"></i> #{p1.name}
                                             <h:panelGroup styleClass="pull-right-container">
                                                 <ui:repeat value="#{p1.labels}" var="l">
@@ -420,7 +420,7 @@
                                             </h:panelGroup>
                                         </a>
                                             <ul class="treeview-menu">
-                                                <ui:repeat value="#{p1.groups}" var="p2">
+                                                <ui:repeat value="#{p1.resolveGroups()}" var="p2">
                                                     <li><a href="#"><i
                                                             class="fa #{vr.nvl(p2.icon,'fa-folder')}"></i> #{p2.name}
                                                         <h:panelGroup styleClass="pull-right-container">
@@ -431,7 +431,7 @@
                                                         </h:panelGroup>
                                                     </a>
                                                         <ul class="treeview-menu">
-                                                            <ui:repeat value="#{p2.groups}" var="p3">
+                                                            <ui:repeat value="#{p2.resolveGroups()}" var="p3">
                                                                 <li><a href="#"><i
                                                                         class="fa #{vr.nvl(p3.icon,'fa-folder')}"></i> #{p3.name}
                                                                     <h:panelGroup styleClass="pull-right-container">
@@ -490,7 +490,7 @@
                                 </ul>
                             </li>
                         </ui:repeat>
-                        <ui:repeat value="#{vr.menu.leaves}" var="p0">
+                        <ui:repeat value="#{vr.menu.resolveLeaves()}" var="p0">
                             <li>
                                 <h:outputLink value="#{p0.prettyURL}"><i
                                         class="fa vr.nvl(p0.icon,vr.mapValue(p0.type,'fa-cube','obj','fa-circle-o'))"></i> #{p0.name}
