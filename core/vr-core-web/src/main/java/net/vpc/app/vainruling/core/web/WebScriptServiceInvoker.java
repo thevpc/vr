@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class RSIEnv {
+public class WebScriptServiceInvoker {
     public static ThreadLocal<ScriptEngine> currentEngine = new ThreadLocal<>();
     public Set<String> blacklistClassNames = new HashSet<>(
             Arrays.asList(

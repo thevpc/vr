@@ -39,6 +39,7 @@ import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Timestamp;
@@ -2504,6 +2505,46 @@ public class CorePlugin {
             plugins.addAll(plugin.getBeanNames());
         }
         return plugins;
+    }
+
+    private String typeToString(Class cls) {
+        if(cls.isArray()){
+            return typeToString(cls.getComponentType())+"[]";
+        }
+        return cls.getName();
+    }
+
+    public Map<String,List<String>> getPluginsAPI() {
+        String[] beanNames = VrApp.getContext().getBeanNamesForAnnotation(AppPlugin.class);
+        Map<String,List<String>> api=new HashMap<>();
+        for (String beanName : beanNames) {
+
+            Object bean = VrApp.getContext().getBean(beanName);
+            ArrayList<String> a=new ArrayList<>();
+            //declared Method
+            for (Method method : bean.getClass().getMethods()) {
+                StringBuilder sb=new StringBuilder();
+                sb.append(typeToString(method.getReturnType()));
+                sb.append(" ");
+                sb.append(beanName);
+                sb.append(".");
+                sb.append(method.getName());
+                sb.append("(");
+                boolean first=true;
+                for (Class t: method.getParameterTypes()) {
+                    if(first){
+                        first=false;
+                    }else{
+                        sb.append(", ");
+                    }
+                    sb.append(typeToString(t));
+                }
+                sb.append(")");
+                a.add(sb.toString());
+            }
+            api.put(beanName,a);
+        }
+        return api;
     }
 
     public List<Plugin> getPlugins() {

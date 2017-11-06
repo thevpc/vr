@@ -1,14 +1,12 @@
 package net.vpc.app.vainruling.core.restclient;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
@@ -33,23 +31,17 @@ import java.util.Map;
  * Created by vpc on 2/26/17.
  */
 public class VrRestClient {
-    private static SimpleDateFormat UNIVERSAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-    public static TypedParam NULL_STRING = new TypedParam(null, String.class);
-    public static TypedParam NULL_INTEGER = new TypedParam(null, Integer.class);
-    public static TypedParam NULL_LONG = new TypedParam(null, Long.class);
-    public static TypedParam NULL_DOUBLE = new TypedParam(null, Double.class);
     private CloseableHttpClient httpClient;
     private CookieStore cookieStore = new BasicCookieStore();
     private HttpContext httpContext = new BasicHttpContext();
     private String url = "http://localhost:8080/";
     private String wsContext = "ws";
-    private Map<Class,TypeParser> typesParser = new HashMap<>();
 
     public static void main(String[] args) {
         VrRestClient s = new VrRestClient();
         s.login("admin", "admin");
 
-        JsonObject ret = s.remoteScriptInvocationAsJson("" +
+        JsonObject ret = s.wscriptJson("" +
                 "Return(bean('calendarsPlugin').loadCalendars('my-calendars', ''));" +
                 "");
 //        Map ret = s.remoteScriptInvocation("" +
@@ -82,16 +74,16 @@ public class VrRestClient {
         );
     }
 
-    public Map remoteScriptInvocationAsMap(String script) {
-        String s=invokePost("/core/rsi"
+    public Map wscriptMap(String script) {
+        String s=invokePost("/core/wscript"
                 , "script", script
         );
         Gson g=new Gson();
         return g.fromJson(s,LinkedHashMap.class);
     }
 
-    public JsonObject remoteScriptInvocationAsJson(String script) {
-        String s=invokePost("/core/rsi"
+    public JsonObject wscriptJson(String script) {
+        String s=invokePost("/core/wscript"
                 , "script", script
         );
         Gson g=new Gson();

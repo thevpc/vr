@@ -5,16 +5,11 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.QueryParam;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -65,9 +60,9 @@ public class CoreWS {
     }
 //    @GET
 //    @Transactional
-    @RequestMapping("/core/rsi")
+    @RequestMapping("/core/wscript")
     public Map<String,String> rsi(@RequestParam("script") String script) {
-        RSIEnv e=new RSIEnv();
+        WebScriptServiceInvoker e=new WebScriptServiceInvoker();
         return e.invoke(script);
     }
 }
