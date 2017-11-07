@@ -25,13 +25,13 @@ and open the template in the editor.
                                      icon="ui-ribbonicon-refresh"
                                      styleClass="btn btn-primary vr-toolbox-button-fixed-height" ajax="true"
                                      actionListener="#{activeSessionsCtrl.onRefresh}" update=":listForm"/>
-                    <p:commandLink rendered="#{!vr.shutdown and vr.userSession.admin}" action="#{vr.notifyShutdown}"
+                    <p:commandLink rendered="#{!vr.shutdown and vr.currentSession.admin}" action="#{vr.notifyShutdown}"
                                    styleClass="btn btn-danger vr-toolbox-button-fixed-height"
                                    value="Notifier arrêt serveur">
                         <i class="fa fa-sign-out fa-fw"></i>
                     </p:commandLink>
 
-                    <p:commandLink rendered="#{vr.shutdown and vr.userSession.admin}" action="#{vr.cancelShutdown}"
+                    <p:commandLink rendered="#{vr.shutdown and vr.currentSession.admin}" action="#{vr.cancelShutdown}"
                                    styleClass="btn btn-danger vr-toolbox-button-fixed-height"
                                    value="Annuler arrêt">
                         <i class="fa fa-sign-out fa-fw"></i>

@@ -27,7 +27,7 @@ public class AcademicTeacherCVSecurer extends DefaultEntitySecurityManager {
     @Override
     public Expression getEntityFilter(Entity entity) throws UPAException {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        if (core.isUserSessionAdmin()) {
+        if (core.isCurrentSessionAdmin()) {
             return null;
         }
         return new UserExpression("this.teacher.user.login=currentUser()");

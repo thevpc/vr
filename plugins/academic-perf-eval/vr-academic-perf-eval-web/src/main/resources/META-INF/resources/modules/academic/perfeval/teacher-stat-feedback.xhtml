@@ -182,7 +182,7 @@ and open the template in the editor.
                             </div>
                         </ui:repeat>
                     </p:tab>
-                    <p:tab title="Progression Elèves" rendered="#{vr.userSession.admin}">
+                    <p:tab title="Progression Elèves" rendered="#{vr.currentSession.admin}">
                         <p:dataTable value="#{teacherStatFeedbackCtrl.model.statData.studentinfos}" var="s"
                                      style="margin-top: 20px;">
                             <p:column headerText="Elève" width="30%">

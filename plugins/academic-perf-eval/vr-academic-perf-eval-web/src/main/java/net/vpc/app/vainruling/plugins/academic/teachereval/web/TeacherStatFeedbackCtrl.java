@@ -221,8 +221,8 @@ public class TeacherStatFeedbackCtrl {
     }
 
     public int getSelectedOwnerDepartmentId() {
-        UserSession sm = core.getUserSession();
-        if (core.isSessionAdmin()) {
+        UserSession sm = core.getCurrentSession();
+        if (core.isCurrentSessionAdmin()) {
             return -1;
         }
         AppUser user = (sm == null) ? null : sm.getUser();
@@ -579,7 +579,7 @@ public class TeacherStatFeedbackCtrl {
 //                boolean admin=core.isSessionAdmin();
 //                if(!admin)
 //                try{
-//                    f.getProgram().getDepartment().getId()==core.getUserSession().getUser().getDepartment().getId()
+//                    f.getProgram().getDepartment().getId()==core.getCurrentUser().getDepartment().getId()
 //
 //                }catch (NullPointerException ex){
 //
@@ -679,7 +679,7 @@ public class TeacherStatFeedbackCtrl {
             int periodId = getSelectedPeriodId();
             int teacherId = getSelectedTeacherId();
             for (AcademicCoursePlan f : feedback.findAcademicCoursePlansWithFeedbacks(periodId, teacherId, getModel().getValidatedFilter(), false, true)) {
-                boolean accept=core.isSessionAdmin();
+                boolean accept=core.isCurrentSessionAdmin();
                 if(!accept) {
                     AppDepartment deptId = f.resolveDepartment();
                     accept=academic.isManagerOf(deptId);

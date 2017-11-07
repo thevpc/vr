@@ -59,7 +59,7 @@ public class VrWebHelper {
     }
     public static void prepareUserSession() {
 
-        UserSession s = VrApp.getContext().getBean(UserSession.class);
+        UserSession s = UserSession.get();
         if (s != null && s.getUser() != null) {
             s.setTheme(Vr.get().getUserTheme(s.getUser().getLogin()).getId());
         } else {
@@ -138,8 +138,9 @@ public class VrWebHelper {
 
         String path="";
         if(userhome) {
+            UserSession s = UserSession.get();
             AppUser user = null;
-            user = UserSession.get().getUser();
+            user = s==null?null:s.getUser();
             if (user == null) {
                 return null;
             }

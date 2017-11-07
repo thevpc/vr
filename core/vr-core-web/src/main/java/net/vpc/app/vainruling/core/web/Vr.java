@@ -977,7 +977,7 @@ public class Vr {
         return VrApp.getBean(VrMenuManager.class).gotoPageObjItem(entity, id);
     }
 
-    public UserSession getUserSession() {
+    public UserSession getCurrentSession() {
         return UserSession.get();
     }
 
@@ -1153,7 +1153,7 @@ public class Vr {
     }
 
     public String getCurrentUserPhoto() {
-        UserSession s = getUserSession();
+        UserSession s = getCurrentSession();
         if (s != null && s.getUser() != null) {
             return getUserPhoto(s.getUser().getId());
         }
@@ -1319,7 +1319,7 @@ public class Vr {
     }
 
     public String gotoPublicSubSite(String siteFilter) {
-        getUserSession().setSelectedSiteFilter(siteFilter);
+        getCurrentSession().setSelectedSiteFilter(siteFilter);
         return gotoPage("publicIndex", "");
     }
 

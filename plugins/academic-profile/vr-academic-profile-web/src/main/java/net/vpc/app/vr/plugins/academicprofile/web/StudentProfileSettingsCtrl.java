@@ -54,9 +54,9 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
     @OnPageLoad
     private void onPageReload() {
         Vr vr = Vr.get();
-        getModel().setContact(vr.getUserSession().getUser().getContact());
+        getModel().setContact(vr.getCurrentSession().getUser().getContact());
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
-        getModel().setStudent(ap.findStudentByUser(vr.getUserSession().getUser().getId()));
+        getModel().setStudent(ap.findStudentByUser(vr.getCurrentSession().getUser().getId()));
         getModel().setStudentCV(app.findOrCreateAcademicStudentCV(getModel().getStudent().getId()));
         
         VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);

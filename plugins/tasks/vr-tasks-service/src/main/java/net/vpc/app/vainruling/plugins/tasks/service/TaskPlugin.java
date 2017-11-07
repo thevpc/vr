@@ -53,7 +53,7 @@ public class TaskPlugin {
     }
 
     public List<TodoList> findTodoListsByResp(Integer user) {
-        UserSession session = VrApp.getContext().getBean(UserSession.class);
+        UserSession session = core.getCurrentSession();
         List<AppProfile> up = null;
         if (!session.allowed("TASK_VIEW_ALL")) {
             if (user == null) {
@@ -96,7 +96,7 @@ public class TaskPlugin {
     }
 
     public List<TodoList> findTodoListsByInitiator(Integer user) {
-        UserSession session = VrApp.getContext().getBean(UserSession.class);
+        UserSession session = core.getCurrentSession();
         HashSet<Integer> fnd = null;
         if (!session.allowed("TASK_VIEW_ALL")) {
             if (user == null) {
@@ -198,7 +198,7 @@ public class TaskPlugin {
         Todo t = pu.findById(Todo.class, todoId);
         if (t != null) {
             if (!t.isDeleted()) {
-                UserSession session = VrApp.getContext().getBean(UserSession.class);
+                UserSession session = core.getCurrentSession();
                 t.setDeleted(true);
                 t.setDeletedBy(session.getUser().getLogin());
                 t.setDeletedOn(new Timestamp(System.currentTimeMillis()));
@@ -213,7 +213,7 @@ public class TaskPlugin {
         TodoList t = pu.findById(TodoList.class, todoListId);
         if (t != null) {
             pu.remove(TodoList.class, RemoveOptions.forId(t.getId()));
-//            UserSession session = VRApp.getContext().getBean(UserSession.class);
+//            UserSession session = core.getCurrentSession();
 //            t.setDeleted(true);
 //            t.setDeletedBy(session.getUser().getLogin());
 //            t.setDeletedOn(new Timestamp(System.currentTimeMillis()));
@@ -241,7 +241,7 @@ public class TaskPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Todo t = pu.findById(Todo.class, todoId);
         if (t != null) {
-            UserSession session = VrApp.getContext().getBean(UserSession.class);
+            UserSession session = core.getCurrentSession();
             t.setArchived(true);
             pu.merge(t);
         }
@@ -275,7 +275,7 @@ public class TaskPlugin {
     public void saveTodo(Todo t) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (t.getId() == 0) {
-            UserSession session = VrApp.getContext().getBean(UserSession.class);
+            UserSession session = core.getCurrentSession();
             t.setInitiator(session.getUser());
             t.setCreationTime(new Timestamp(System.currentTimeMillis()));
             t.setStatus(findStartStatus(t.getList().getId()));
@@ -307,7 +307,7 @@ public class TaskPlugin {
 
     //    public void saveProgress(TodoProgress todo) {
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
-//        UserSession session = VRSpring.getContext().getBean(UserSession.class);
+//        UserSession session = core.getCurrentSession();
 //        pu.persist(todo);
 //    }
     public List<TodoCategory> findTodoCategories(int listId) {
@@ -328,7 +328,7 @@ public class TaskPlugin {
 
     public List<Todo> findTodosByResponsible(Integer listId, Integer responsible, TodoStatusType[] statuses) {
 
-        UserSession session = VrApp.getContext().getBean(UserSession.class);
+        UserSession session = core.getCurrentSession();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         HashMap<String, Object> params = new HashMap<String, Object>();
         StringBuilder q = new StringBuilder("Select a from Todo a where a.deleted=:d and a.archived=:r");
@@ -365,7 +365,7 @@ public class TaskPlugin {
     }
 
     public List<Todo> findTodosByInitiator(Integer listId, Integer initiator, TodoStatusType status) {
-        UserSession session = VrApp.getContext().getBean(UserSession.class);
+        UserSession session = core.getCurrentSession();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         HashMap<String, Object> params = new HashMap<String, Object>();
         StringBuilder q = new StringBuilder("Select a from Todo a where a.deleted=:d and a.archived=:r");

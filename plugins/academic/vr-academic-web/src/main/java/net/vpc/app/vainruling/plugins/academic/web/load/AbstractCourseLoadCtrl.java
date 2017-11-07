@@ -542,11 +542,7 @@ public abstract class AbstractCourseLoadCtrl {
 
     public AppDepartment getUserDepartment() {
         //enableLoadEditing
-        UserSession userSession = VrApp.getBean(CorePlugin.class).getUserSession();
-        if (userSession == null) {
-            return null;
-        }
-        AppUser user = userSession.getUser();
+        AppUser user = VrApp.getBean(CorePlugin.class).getCurrentUser();
         if (user == null) {
             return null;
         }
@@ -554,7 +550,7 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public boolean isAllowedUpdateMineIntents(Integer assignmentId) {
-        UserSession userSession = VrApp.getBean(CorePlugin.class).getUserSession();
+        UserSession userSession = VrApp.getBean(CorePlugin.class).getCurrentSession();
         if (userSession == null) {
             return false;
         }
@@ -603,7 +599,7 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public boolean isAllowedUpdateMineAssignments(Integer assignementId) {
-        UserSession userSession = VrApp.getBean(CorePlugin.class).getUserSession();
+        UserSession userSession = VrApp.getBean(CorePlugin.class).getCurrentSession();
         if (userSession == null) {
             return false;
         }

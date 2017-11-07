@@ -56,7 +56,7 @@ public class ApblPlugin {
         ApblTeamMember old = findTeamMember(teamId, studentId);
         if (old != null) {
             AcademicStudent student = academic.getCurrentStudent();
-            if (!core.isSessionAdmin() && student != null && student.getId() == old.getStudent().getId()) {
+            if (!core.isCurrentSessionAdmin() && student != null && student.getId() == old.getStudent().getId()) {
                 UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
                     @Override
                     public void run() {
@@ -102,7 +102,7 @@ public class ApblPlugin {
     }
 
     public void removeTeam(int teamId) {
-        AppUser user = core.getUserSession().getUser();
+        AppUser user = core.getCurrentSession().getUser();
         ApblTeam team = findTeam(teamId);
         if (team == null) {
             return;
@@ -112,7 +112,7 @@ public class ApblPlugin {
         if (owner != null && user != null && owner.getId() == user.getId()) {
             forceAllowed = true;
         }
-        if (!core.isSessionAdmin() && forceAllowed) {
+        if (!core.isCurrentSessionAdmin() && forceAllowed) {
             PersistenceUnit pu = UPA.getPersistenceUnit();
             pu.invokePrivileged(new VoidAction() {
                 @Override
@@ -142,7 +142,7 @@ public class ApblPlugin {
         ApblCoaching old = findTeamCoach(teamId, teacherId);
         if (old != null) {
             AcademicTeacher teacher = academic.getCurrentTeacher();
-            if (!core.isSessionAdmin() && teacher != null && teacher.getId() == old.getTeacher().getId()) {
+            if (!core.isCurrentSessionAdmin() && teacher != null && teacher.getId() == old.getTeacher().getId()) {
                 UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
                     @Override
                     public void run() {
@@ -1172,9 +1172,9 @@ public class ApblPlugin {
         AcademicTeacher currentTeacher = academic.getCurrentTeacher();
         AcademicStudent currentStudent = academic.getCurrentStudent();
         AppUser currentUser = UserSession.getCurrentUser();
-        boolean currentAdmin = core.isSessionAdmin();
+        boolean currentAdmin = core.isCurrentSessionAdmin();
         List<ApblSession> sessions = new ArrayList<>();
-        if (core.isSessionAdmin()) {
+        if (currentAdmin) {
             sessions = findOpenSessions();
         } else {
             sessions = findOpenVisibleSessions();

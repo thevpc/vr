@@ -57,7 +57,7 @@ public class ObjFieldFieldSelection extends ObjFieldSelection {
         fields.clear();
         int pos = 0;
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        boolean admin = core.isUserSessionAdmin();
+        boolean admin = core.isCurrentSessionAdmin();
         I18n i18n = VrApp.getBean(I18n.class);
         for (Field field : entity.getFields()) {
             //should test on field visibility

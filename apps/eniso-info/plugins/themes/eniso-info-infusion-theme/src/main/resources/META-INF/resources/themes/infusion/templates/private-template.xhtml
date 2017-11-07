@@ -163,12 +163,12 @@ and open the template in the editor.
                                         <span class="badge vr-cnx-nbr">
                                             <h:outputLink
                                                     style="text-decoration: none; color: white; padding : 0px;"
-                                                    rendered="#{vr.userSession.admin}"
+                                                    rendered="#{vr.currentSession.admin}"
                                                     value="#{vr.context}/p/activeSessions"
                                                     >
                                                 #{vr.activeSessions.size()}
                                             </h:outputLink>
-                                            <h:outputText rendered="#{!vr.userSession.admin}"
+                                            <h:outputText rendered="#{!vr.currentSession.admin}"
                                                           value="#{vr.activeSessions.size()}"/>
                                         </span>
                                     <!--<span class="vr-cnx-label">cnx</span>-->
@@ -178,7 +178,7 @@ and open the template in the editor.
                         <li class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#" style="padding-left: 0px;">
                                 <h:outputText style="font-size: x-small;"
-                                              value="#{vr.userSession.user.contact.firstName}"/>
+                                              value="#{vr.currentSession.user.contact.firstName}"/>
                                 <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-user" style="right: 0;left: auto;">
@@ -203,7 +203,7 @@ and open the template in the editor.
                                     </li>
                                 </ui:fragment>
 
-                                <ui:fragment rendered="#{vr.userSession.admin and !vr.userSession.impersonating}">
+                                <ui:fragment rendered="#{vr.currentSession.admin and !vr.currentSession.impersonating}">
                                     <li>
                                         <p:commandLink ajax="false"
                                                        action="#{vr.gotoPage('impersonate', null)}"
@@ -212,7 +212,7 @@ and open the template in the editor.
                                         </p:commandLink>
                                     </li>
                                 </ui:fragment>
-                                <ui:fragment rendered="#{!vr.shutdown and vr.userSession.admin}">
+                                <ui:fragment rendered="#{!vr.shutdown and vr.currentSession.admin}">
                                     <li>
                                         <p:commandLink ajax="false" action="#{vr.notifyShutdown}"
                                                        value="Notifier arrêt serveur">
@@ -220,7 +220,7 @@ and open the template in the editor.
                                         </p:commandLink>
                                     </li>
                                 </ui:fragment>
-                                <ui:fragment rendered="#{vr.shutdown and vr.userSession.admin}">
+                                <ui:fragment rendered="#{vr.shutdown and vr.currentSession.admin}">
                                     <li>
                                         <p:commandLink ajax="false" action="#{vr.cancelShutdown}"
                                                        value="Annuler arrêt">
@@ -228,7 +228,7 @@ and open the template in the editor.
                                         </p:commandLink>
                                     </li>
                                 </ui:fragment>
-                                <ui:fragment rendered="#{vr.userSession.admin}">
+                                <ui:fragment rendered="#{vr.currentSession.admin}">
                                     <li>
                                         <p:commandLink ajax="false" action="#{corePlugin.invalidateCache}"
                                                        value="Invalider cache">
@@ -299,7 +299,7 @@ and open the template in the editor.
                                             </ul>
                                         </li>
                                     </ui:repeat>
-                                    <ui:repeat value="#{p0.leaves}" var="p1">
+                                    <ui:repeat value="#{p0.resolveLeaves()}" var="p1">
                                         <li>
 
                                             <h:outputLink value="#{p1.prettyURL}">

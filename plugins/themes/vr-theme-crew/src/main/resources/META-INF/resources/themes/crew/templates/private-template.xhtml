@@ -304,7 +304,7 @@
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <img src="#{vr.url(vr.currentUserPhoto)}"
                                          class="user-image" alt="User Image"/>
-                                    <span class="hidden-xs">#{vr.userSession.user.contact.fullName}</span>
+                                    <span class="hidden-xs">#{vr.currentSession.user.contact.fullName}</span>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <!-- User image -->
@@ -313,8 +313,8 @@
                                              class="img-circle" alt="User Image"/>
 
                                         <p>
-                                            #{vr.userSession.user.contact.fullName} - #{vr.userSession.user.contact.positionTitle1}
-                                            <small>Member since #{vr.date(vr.userSession.user.contact.creationDate,"MMM yyyy")}</small>
+                                            #{vr.currentSession.user.contact.fullName} - #{vr.currentSession.user.contact.positionTitle1}
+                                            <small>Member since #{vr.date(vr.currentSession.user.contact.creationDate,"MMM yyyy")}</small>
                                         </p>
                                     </li>
                                     <!-- Menu Body -->
@@ -349,8 +349,8 @@
                             </li>
                             <!-- Control Sidebar Toggle Button -->
                             <li>
-                                <ui:fragment render="#{vr.userSession.admin}">
-                                    <a href="#" data-toggle="#{vr.userSession.admin ?'control-sidebar':''}"><i
+                                <ui:fragment render="#{vr.currentSession.admin}">
+                                    <a href="#" data-toggle="#{vr.currentSession.admin ?'control-sidebar':''}"><i
                                             class="fa fa-gears"></i></a>
                                 </ui:fragment>
                             </li>
@@ -373,7 +373,7 @@
                         <img src="#{vr.url(vr.currentUserPhoto)}" class="img-circle" alt="User Image"/>
                     </div>
                     <div class="pull-left info">
-                        <p>#{vr.userSession.user.contact.fullName}</p>
+                        <p>#{vr.currentSession.user.contact.fullName}</p>
                         <a href="#"><i class="fa fa-circle text-success"></i> En Ligne</a>
                     </div>
                 </div>
@@ -393,8 +393,8 @@
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <h:form id="sidebarMenuForm">
                     <ul class="sidebar-menu">
-                        <ui:fragment render="#{!vr.isEmpty(vr.userSession.user.department.name)}">
-                            <li class="header">Depatement #{vr.userSession.user.department.name}</li>
+                        <ui:fragment render="#{!vr.isEmpty(vr.currentSession.user.department.name)}">
+                            <li class="header">Depatement #{vr.currentSession.user.department.name}</li>
                         </ui:fragment>
                         <h:inputHidden value="#{vr.buildMenu()}"/>
                         <ui:repeat value="#{vr.menu.resolveGroups()}" var="p0">
@@ -445,7 +445,7 @@
                                                                     </ul>
                                                                 </li>
                                                             </ui:repeat>
-                                                            <ui:repeat value="#{p2.leaves}" var="p3">
+                                                            <ui:repeat value="#{p2.resolveLeaves()}" var="p3">
                                                                 <li>
                                                                     <h:outputLink value="#{p3.prettyURL}"><i
                                                                             class="fa #{vr.nvl(p3.icon,vr.mapValue(p3.type,'fa-cube','obj','fa-circle-o'))}"></i> #{p3.name}
@@ -460,7 +460,7 @@
                                                         </ul>
                                                     </li>
                                                 </ui:repeat>
-                                                <ui:repeat value="#{p1.leaves}" var="p2">
+                                                <ui:repeat value="#{p1.resolveLeaves()}" var="p2">
                                                     <li>
                                                         <h:outputLink value="#{p2.prettyURL}"><i
                                                                 class="fa #{vr.nvl(p2.icon,vr.mapValue(p2.type,'fa-cube','obj','fa-circle-o'))}"></i> #{p2.name}
@@ -475,7 +475,7 @@
                                             </ul>
                                         </li>
                                     </ui:repeat>
-                                    <ui:repeat value="#{p0.leaves}" var="p1">
+                                    <ui:repeat value="#{p0.resolveLeaves()}" var="p1">
                                         <li>
                                             <h:outputLink value="#{p1.prettyURL}">
                                                 <i class="fa #{vr.nvl(p1.icon,vr.mapValue(p1.type,'fa-cube','obj','fa-circle-o'))}"></i> #{p1.name}

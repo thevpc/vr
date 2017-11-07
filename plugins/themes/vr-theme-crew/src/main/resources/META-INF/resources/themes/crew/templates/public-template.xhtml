@@ -80,11 +80,11 @@ and open the template in the editor.
 
     -->
     <link rel="stylesheet"
-          href="#{vr.themeContext}/wplugins/crew/css/#{vr.mapValue(vr.userSession.selectedSiteFilter,'blue','II','blue','MA','orange','EI','purple','NOCCS','blue','LMS','orange','SAGE','purple')}.css"/>
+          href="#{vr.themeContext}/wplugins/crew/css/#{vr.mapValue(vr.currentSession.selectedSiteFilter,'blue','II','blue','MA','orange','EI','purple','NOCCS','blue','LMS','orange','SAGE','purple')}.css"/>
 
     <!-- Styleswitcher ( This style is for demo purposes only, you may delete this anytime. ) -->
     <link rel="stylesheet" id="theme-switch"
-          href="#{vr.themeContext}/wplugins/crew/css/#{vr.mapValue(vr.userSession.selectedSiteFilter,'blue','II','blue','MA','orange','EI','purple','NOCCS','blue','LMS','orange','SAGE','purple')}.css"/>
+          href="#{vr.themeContext}/wplugins/crew/css/#{vr.mapValue(vr.currentSession.selectedSiteFilter,'blue','II','blue','MA','orange','EI','purple','NOCCS','blue','LMS','orange','SAGE','purple')}.css"/>
     <!-- End demo purposes only -->
 
 
@@ -291,9 +291,9 @@ and open the template in the editor.
                             <li><a href="#" data-nav-section="press"><span>#{vr.cmsTextService.getDispositionActionName('News')}</span></a></li>
                             </ui:fragment>
                             <li>
-                                <h:commandLink rendered="#{!vr.userSession.connected}"
+                                <h:commandLink rendered="#{!vr.currentSession.connected}"
                                                action="#{vr.gotoPage('login', '')}"><span>#{vr.getAppProperty('System.App.GotoWelcomeText')}</span></h:commandLink>
-                                <h:commandLink rendered="#{vr.userSession.connected}"
+                                <h:commandLink rendered="#{vr.currentSession.connected}"
                                                action="#{vr.gotoPage('welcome', '')}"><span>#{vr.getAppProperty('System.App.GotoLoginText')}</span></h:commandLink>
                             </li>
                         </ul>

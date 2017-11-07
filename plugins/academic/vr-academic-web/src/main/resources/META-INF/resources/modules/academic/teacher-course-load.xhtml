@@ -45,23 +45,23 @@ and open the template in the editor.
 
                                       styleClass="btn vr-form-field vr-form-fixed-width-medium vr-toolbox-menu-button">
                             <p:menuitem value="Affectations => Voeux (tous)"
-                                        disabled="#{!vr.userSession.departmentManager and !vr.userSession.admin}"
+                                        disabled="#{!vr.currentSession.departmentManager and !vr.currentSession.admin}"
                                         actionListener="#{teacherCourseLoadCtrl.assignmentsToIntentsAll()}"
                                         update=":listForm"/>
                             <p:menuitem value="Voeux => Affectations (tous)"
-                                        disabled="#{!vr.userSession.departmentManager and !vr.userSession.admin}"
+                                        disabled="#{!vr.currentSession.departmentManager and !vr.currentSession.admin}"
                                         actionListener="#{teacherCourseLoadCtrl.intentsToAssignmentsAll()}"
                                         update=":listForm"/>
                             <p:separator/>
                             <p:menuitem
                                     value="Affectations => Voeux (#{teacherCourseLoadCtrl.model.currentTeacher})"
-                                    disabled="#{!vr.userSession.departmentManager and !vr.userSession.admin}"
+                                    disabled="#{!vr.currentSession.departmentManager and !vr.currentSession.admin}"
                                     actionListener="#{teacherCourseLoadCtrl.assignmentsToIntentsMine()}"
                                     rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
                                     update=":listForm"/>
                             <p:separator/>
                             <p:menuitem
-                                    disabled="#{!vr.userSession.departmentManager and !vr.userSession.admin}"
+                                    disabled="#{!vr.currentSession.departmentManager and !vr.currentSession.admin}"
                                     value="Affecter tout (#{teacherCourseLoadCtrl.model.currentTeacher})"
                                     actionListener="#{teacherCourseLoadCtrl.intentsToAssignmentsMine()}"
                                     rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
@@ -535,7 +535,7 @@ and open the template in the editor.
                                                         actionListener="#{teacherCourseLoadCtrl.doDeleteSelected()}"
                                                         update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                             <p:menuitem value="Inverser Verouillage"
-                                                        disabled="#{!vr.userSession.managerOrAdmin}"
+                                                        disabled="#{!vr.currentSession.managerOrAdmin}"
                                                         actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignmentSelected()}"
                                                         update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                         </p:menuButton>
@@ -571,7 +571,7 @@ and open the template in the editor.
                                                     actionListener="#{teacherCourseLoadCtrl.doDeleteAssignment(i.value.assignment.id)}"
                                                     update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                         <p:menuitem value="Inverser Verouillage"
-                                                    disabled="#{!vr.userSession.managerOrAdmin}"
+                                                    disabled="#{!vr.currentSession.managerOrAdmin}"
                                                     actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignment(i.value.assignment.id)}"
                                                     update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     </p:menuButton>
@@ -908,7 +908,7 @@ and open the template in the editor.
                                                     actionListener="#{teacherCourseLoadCtrl.doDeleteSelected()}"
                                                     update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                         <p:menuitem value="Inverser Verouillage"
-                                                    disabled="#{!vr.userSession.managerOrAdmin}"
+                                                    disabled="#{!vr.currentSession.managerOrAdmin}"
                                                     actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignmentSelected()}"
                                                     update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     </p:menuButton>
@@ -947,11 +947,11 @@ and open the template in the editor.
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     <p:separator/>
                                     <p:menuitem value="Supp. Definitivement"
-                                                disabled="#{!vr.userSession.managerOrAdmin}"
+                                                disabled="#{!vr.currentSession.managerOrAdmin}"
                                                 actionListener="#{teacherCourseLoadCtrl.doDeleteAssignment(i.value.assignment.id)}"
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     <p:menuitem value="Inverser Verouillage"
-                                                disabled="#{!vr.userSession.managerOrAdmin}"
+                                                disabled="#{!vr.currentSession.managerOrAdmin}"
                                                 actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignment(i.value.assignment.id)}"
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                 </p:menuButton>

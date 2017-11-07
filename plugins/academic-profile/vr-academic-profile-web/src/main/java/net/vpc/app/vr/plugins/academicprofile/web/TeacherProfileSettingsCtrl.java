@@ -17,9 +17,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.Vr;
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsCtrl;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
@@ -66,9 +64,9 @@ public class TeacherProfileSettingsCtrl {
     @OnPageLoad
     private void onPageReload() {
         Vr vr = Vr.get();
-        getModel().setContact(vr.getUserSession().getUser().getContact());
+        getModel().setContact(vr.getCurrentSession().getUser().getContact());
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
-        getModel().setTeacher(ap.findTeacherByUser(vr.getUserSession().getUser().getId()));
+        getModel().setTeacher(ap.findTeacherByUser(vr.getCurrentSession().getUser().getId()));
         getModel().setTeacherCV(app.findOrCreateAcademicTeacherCV(getModel().getTeacher().getId()));
         ///a verifier
         getModel().setCourseSection(app.findAcademicCVSectionByName("Course"));

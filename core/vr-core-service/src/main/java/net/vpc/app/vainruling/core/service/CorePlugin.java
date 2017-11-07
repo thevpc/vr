@@ -25,7 +25,6 @@ import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.AppVersion;
 import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.common.io.FileUtils;
-import net.vpc.common.io.PathInfo;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.*;
 import net.vpc.common.vfs.*;
@@ -209,12 +208,12 @@ public class CorePlugin {
         List<AppRightName> allRigths = pu.createQuery("Select u from AppRightName u")
                 .getResultList();
         for (AppRightName r : allRigths) {
-            if(r!=null) {
+            if (r != null) {
                 allMap.put(r.getName(), r);
             }
         }
         for (AppRightName r : oldRigths) {
-            if(r!=null) {
+            if (r != null) {
                 existing.put(r.getName(), r);
                 allMap.remove(r.getName());
             }
@@ -629,6 +628,33 @@ public class CorePlugin {
 
     }
 
+    private List<AppProfile> expandProfiles(List<AppProfile> profiles) {
+        Map<String, AppProfile> found = new LinkedHashMap<>();
+        for (AppProfile profile : profiles) {
+            String code = profile.getCode();
+            if (!StringUtils.isEmpty(code)) {
+                found.put(code, profile);
+            }
+            String inherited = profile.getInherited();
+            if (!StringUtils.isEmpty(code)) {
+                String[] st = inherited.split("[ ,;]");
+                for (String s : st) {
+                    if (!found.containsKey(s)) {
+                        AppProfile p = findProfileByCode(s);
+                        if (p != null) {
+                            code = p.getCode();
+                            if (!StringUtils.isEmpty(code)) {
+                                found.put(code, p);
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        return new ArrayList<>(found.values());
+    }
+
     public List<AppProfile> findProfilesByUser(int userId) {
         final EntityCache entityCache = cacheService.get(AppUserProfileBinding.class);
         Map<Integer, List<AppProfile>> m = entityCache
@@ -659,7 +685,7 @@ public class CorePlugin {
 //        return pu.createQuery("Select u.profile from AppUserProfileBinding  u where u.userId=:userId")
 //                .setParameter("userId", userId)
 //                .getResultList();
-        return all;
+        return expandProfiles(all);
     }
 
     public List<AppUser> findUsersByTypeAndDepartment(int userType, int userDepartment) {
@@ -1802,7 +1828,7 @@ public class CorePlugin {
             AppUser u = (AppUser) up.getObject();
             return u.getLogin();
         }
-        UserSession us = getUserSession();
+        UserSession us = getCurrentSession();
         if (us != null) {
             if (us.getUser() != null) {
                 return us.getUser().getLogin();
@@ -1811,8 +1837,8 @@ public class CorePlugin {
         return null;
     }
 
-    public boolean isUserSessionAdminOrUser(String login) {
-        UserSession us = getUserSession();
+    public boolean isCurrentSessionAdminOrUser(String login) {
+        UserSession us = getCurrentSession();
         UserPrincipal up = UPA.getPersistenceUnit().getUserPrincipal();
         if (up != null && up.getObject() instanceof AppUser) {
             AppUser u = (AppUser) up;
@@ -1870,10 +1896,14 @@ public class CorePlugin {
 //        return sb.toString().trim();
 //    }
 
-    public boolean isUserSessionAdmin() {
+//    public boolean isSessionAdmin() {
+//        UserSession us = getCurrentSession();
+//        return us != null && us.isAdmin();
+//    }
+    public boolean isCurrentSessionAdmin() {
         UserSession us = null;
         try {
-            us = getUserSession();
+            us = getCurrentSession();
         } catch (Exception e) {
             //session not yet created!
             return true;
@@ -1896,11 +1926,6 @@ public class CorePlugin {
                 }
             }
         }
-        return us != null && us.isAdmin();
-    }
-
-    public boolean isSessionAdmin() {
-        UserSession us = getUserSession();
         return us != null && us.isAdmin();
     }
 
@@ -1929,11 +1954,11 @@ public class CorePlugin {
         return c;
     }
 
-    public AppUser createUser(AppContact contact, int userTypeId, int departmentId, boolean attachToExistingUser, String[] defaultProfiles,VrPasswordStrategy passwordStrategy) {
+    public AppUser createUser(AppContact contact, int userTypeId, int departmentId, boolean attachToExistingUser, String[] defaultProfiles, VrPasswordStrategy passwordStrategy) {
         AppUser u = findUserByContact(contact.getId());
         if (u == null) {
-            if(passwordStrategy==null){
-                passwordStrategy=VrPasswordStrategyRandom.INSTANCE;
+            if (passwordStrategy == null) {
+                passwordStrategy = VrPasswordStrategyRandom.INSTANCE;
             }
             String login = resolveLoginProposal(contact);
             if (StringUtils.isEmpty(login)) {
@@ -2076,7 +2101,7 @@ public class CorePlugin {
         if (StringUtils.isEmpty(login)) {
             login = getActualLogin();
         }
-        if (isUserSessionAdmin()) {
+        if (isCurrentSessionAdmin()) {
             AppUser u = findUser(login);
             if (u == null) {
                 throw new RuntimeException("User not found " + login);
@@ -2133,7 +2158,7 @@ public class CorePlugin {
     }
 
     public AppUser getCurrentUser() {
-        UserSession s = getUserSession();
+        UserSession s = getCurrentSession();
         return s == null ? null : s.getUser();
     }
 
@@ -2147,12 +2172,17 @@ public class CorePlugin {
         return s == null ? null : s.getLogin();
     }
 
-    public UserSession getUserSession() {
-        return VrApp.getContext().getBean(UserSession.class);
+    public UserSession getCurrentSession() {
+        return UserSession.get();
     }
 
+//    @Deprecated
+//    public UserSession getUserSession() {
+//        return UserSession.get();
+//    }
+
     public void logout() {
-        final UserSession s = getUserSession();
+        final UserSession s = getCurrentSession();
         AppUser user = s == null ? null : s.getUser();
         String login = user == null ? null : user.getLogin();
         int id = user == null ? -1 : user.getId();
@@ -2179,7 +2209,7 @@ public class CorePlugin {
     public void logout(String sessionId) {
         UserSession currentSession0 = null;
         try {
-            currentSession0 = getUserSession();
+            currentSession0 = getCurrentSession();
         } catch (Exception any) {
             //
         }
@@ -2203,7 +2233,7 @@ public class CorePlugin {
         }
         //login is always lower cased and trimmed!
         login = login.trim().toLowerCase();
-        UserSession s = getUserSession();
+        UserSession s = getCurrentSession();
         if (s.isAdmin() && !s.isImpersonating()) {
             AppUser user = findEnabledUser(login, password);
             if (user != null) {
@@ -2240,7 +2270,7 @@ public class CorePlugin {
         return null;
     }
 
-    public String getDomain() {
+    public String getCurrentDomain() {
         return UPA.getPersistenceUnit().getName();
     }
 
@@ -2265,9 +2295,9 @@ public class CorePlugin {
                                     return null;
                                 }
                             }), null);
-            UserSession s = getUserSession();
+            UserSession s = getCurrentSession();
             s.setDestroyed(false);
-            s.setDomain(getDomain());
+            s.setDomain(getCurrentDomain());
             final ActiveSessionsTracker activeSessionsTracker = getSessions();
             activeSessionsTracker.onCreate(s);
             //update stats
@@ -2278,12 +2308,12 @@ public class CorePlugin {
                 }
             });
             trace.trace("login", "successful", login, "/System/Access", null, null, login, user.getId(), Level.INFO, s.getClientIpAddress());
-            getUserSession().setConnexionTime(user.getLastConnexionDate());
-            getUserSession().setUser(user);
+            getCurrentSession().setConnexionTime(user.getLastConnexionDate());
+            getCurrentSession().setUser(user);
             buildSession(s, user);
             onPoll();
         } else {
-            UserSession s = getUserSession();
+            UserSession s = getCurrentSession();
             s.reset();
             AppUser user2 = findUser(login);
             if (user2 == null) {
@@ -2492,7 +2522,7 @@ public class CorePlugin {
     }
 
     public List<String> getPluginIds() {
-        List<String> plugins=new ArrayList<>();
+        List<String> plugins = new ArrayList<>();
         for (Plugin plugin : getPlugins()) {
             plugins.add(plugin.getId());
         }
@@ -2500,7 +2530,7 @@ public class CorePlugin {
     }
 
     public List<String> getPluginBeans() {
-        List<String> plugins=new ArrayList<>();
+        List<String> plugins = new ArrayList<>();
         for (Plugin plugin : getPlugins()) {
             plugins.addAll(plugin.getBeanNames());
         }
@@ -2508,33 +2538,33 @@ public class CorePlugin {
     }
 
     private String typeToString(Class cls) {
-        if(cls.isArray()){
-            return typeToString(cls.getComponentType())+"[]";
+        if (cls.isArray()) {
+            return typeToString(cls.getComponentType()) + "[]";
         }
         return cls.getName();
     }
 
-    public Map<String,List<String>> getPluginsAPI() {
+    public Map<String, List<String>> getPluginsAPI() {
         String[] beanNames = VrApp.getContext().getBeanNamesForAnnotation(AppPlugin.class);
-        Map<String,List<String>> api=new HashMap<>();
+        Map<String, List<String>> api = new HashMap<>();
         for (String beanName : beanNames) {
 
             Object bean = VrApp.getContext().getBean(beanName);
-            ArrayList<String> a=new ArrayList<>();
+            ArrayList<String> a = new ArrayList<>();
             //declared Method
             for (Method method : bean.getClass().getMethods()) {
-                StringBuilder sb=new StringBuilder();
+                StringBuilder sb = new StringBuilder();
                 sb.append(typeToString(method.getReturnType()));
                 sb.append(" ");
                 sb.append(beanName);
                 sb.append(".");
                 sb.append(method.getName());
                 sb.append("(");
-                boolean first=true;
-                for (Class t: method.getParameterTypes()) {
-                    if(first){
-                        first=false;
-                    }else{
+                boolean first = true;
+                for (Class t : method.getParameterTypes()) {
+                    if (first) {
+                        first = false;
+                    } else {
                         sb.append(", ");
                     }
                     sb.append(typeToString(t));
@@ -2542,7 +2572,7 @@ public class CorePlugin {
                 sb.append(")");
                 a.add(sb.toString());
             }
-            api.put(beanName,a);
+            api.put(beanName, a);
         }
         return api;
     }
@@ -2599,7 +2629,7 @@ public class CorePlugin {
                     }
                     //log.log(Level.INFO, "Plugin " + pluginInfo.getId() + " defines no configurator class");
                 }
-                Plugin p = new Plugin(objects, bnames,pluginInfo);
+                Plugin p = new Plugin(objects, bnames, pluginInfo);
                 plugins.add(p);
             }
             Collections.sort(plugins);
@@ -2639,15 +2669,15 @@ public class CorePlugin {
         return cacheService.get(AppProperty.class).getProperty("System.FileSystem.Path", new Action<String>() {
             @Override
             public String run() {
-                String appName="vr";//change me
+                String appName = "vr";//change me
                 String home = System.getProperty("user.home");
                 home = home.replace("\\", "/");
-                String domain = getDomain();
+                String domain = getCurrentDomain();
                 if (StringUtils.isEmpty(domain)) {
                     domain = "";
                 }
                 String path = (String) getOrCreateAppPropertyValue("System.FileSystem", null,
-                        home+"/workspace/"+appName+"/filesystem/" + domain
+                        home + "/workspace/" + appName + "/filesystem/" + domain
                 );
                 return path;
             }
@@ -2775,14 +2805,14 @@ public class CorePlugin {
                 }
                 VrFSTable t0 = getVrFSTable();
                 Map<Integer, VrFSTable> usersVrFSTable = getUsersVrFSTable();
-                List<VrFSTable> all=new ArrayList<>();
+                List<VrFSTable> all = new ArrayList<>();
                 all.add(t0);
                 all.addAll(usersVrFSTable.values());
 
                 for (AppProfile p : profiles) {
                     String profileMountPoint = "/" + normalizeFilePath(p.getName()) + " Documents";
                     VirtualFileSystem profileFileSystem = getProfileFileSystem(p.getName(), t0);
-                    if(profileFileSystem.get("/").listFiles().length>0){
+                    if (profileFileSystem.get("/").listFiles().length > 0) {
                         mfs.mount(profileMountPoint, profileFileSystem);
                     }
                 }
@@ -2888,23 +2918,23 @@ public class CorePlugin {
         }
     }
 
-    public void removeUserLinkPathEntry(int userId,String linkPath) throws IOException {
+    public void removeUserLinkPathEntry(int userId, String linkPath) throws IOException {
         VrFSTable table = getUserVrFSTable(userId);
         VrFSEntry[] entries = table.getEntries();
         for (int i = 0; i < entries.length; i++) {
             VrFSEntry e = entries[i];
             if (e.getLinkPath().equals(linkPath)) {
                 table.removeEntry(i);
-                saveUserVrFSTable(userId,table);
+                saveUserVrFSTable(userId, table);
                 return;
             }
         }
     }
 
-    public void setUserLinkPathEntry(int userId,VrFSEntry entry) throws IOException {
-        if(StringUtils.isEmpty(entry.getMountPoint())){
-            removeUserLinkPathEntry(userId,entry.getLinkPath());
-        }else {
+    public void setUserLinkPathEntry(int userId, VrFSEntry entry) throws IOException {
+        if (StringUtils.isEmpty(entry.getMountPoint())) {
+            removeUserLinkPathEntry(userId, entry.getLinkPath());
+        } else {
             VrFSTable table = getUserVrFSTable(userId);
             String lp = entry.getLinkPath();
             for (VrFSEntry e : table.getEntries()) {
@@ -2929,7 +2959,7 @@ public class CorePlugin {
 
     public void saveUserVrFSTable(int userId, VrFSTable table) throws IOException {
         AppUser u = findUser(userId);
-        if(u==null){
+        if (u == null) {
             throw new IllegalArgumentException("Invalid user");
         }
         VirtualFileSystem fs = getFileSystem();
@@ -2939,50 +2969,50 @@ public class CorePlugin {
     }
 
     public VrFSTable getUserVrFSTable(int userId) {
-        VrFSTable t=new VrFSTable();
+        VrFSTable t = new VrFSTable();
         AppUser u = findUser(userId);
-        if(u==null){
+        if (u == null) {
             return null;
         }
         VirtualFileSystem fs = getFileSystem();
         VFile file = fs.get("/Config/" + u.getLogin() + ".fstab");
-        if(file.isFile()){
+        if (file.isFile()) {
             t.loadSilently(file);
         }
         return t;
     }
 
-    private Map<Integer,VrFSTable> getUsersVrFSTable() {
+    private Map<Integer, VrFSTable> getUsersVrFSTable() {
         HashMap<Integer, VrFSTable> map = new HashMap<>();
         VirtualFileSystem fs = getFileSystem();
         if (fs.exists("/Config")) {
-            for (VFile userfstab:fs.get("/Config").listFiles(new VFileFilter() {
-                     @Override
-                     public boolean accept(VFile pathname) {
-                         return pathname.getName().endsWith(".fstab");
-                     }
-                 })) {
-                String login = userfstab.getName().substring(0,userfstab.getName().length()-".fstab".length());//PathInfo.create(userfstab.getName()).getNamePart();
+            for (VFile userfstab : fs.get("/Config").listFiles(new VFileFilter() {
+                @Override
+                public boolean accept(VFile pathname) {
+                    return pathname.getName().endsWith(".fstab");
+                }
+            })) {
+                String login = userfstab.getName().substring(0, userfstab.getName().length() - ".fstab".length());//PathInfo.create(userfstab.getName()).getNamePart();
                 AppUser u = findUser(login);
-                if(u!=null){
+                if (u != null) {
                     VrFSTable t = new VrFSTable();
                     t.loadSilently(userfstab);
 
                     for (VrFSEntry vrFSEntry : t.getEntries()) {
                         String m = vrFSEntry.getMountPoint();
-                        if(m==null){
-                            m="unknown";
+                        if (m == null) {
+                            m = "unknown";
                         }
-                        m=m.trim();
-                        if(m.endsWith("/")){
-                            m=m.substring(0,m.length()-1);
+                        m = m.trim();
+                        if (m.endsWith("/")) {
+                            m = m.substring(0, m.length() - 1);
                         }
-                        if(m.isEmpty()){
-                            m="unknown";
+                        if (m.isEmpty()) {
+                            m = "unknown";
                         }
-                        vrFSEntry.setMountPoint("/"+ m +"#"+u.getId());
+                        vrFSEntry.setMountPoint("/" + m + "#" + u.getId());
                     }
-                    map.put(u.getId(),t);
+                    map.put(u.getId(), t);
                 }
             }
         }
@@ -3090,7 +3120,7 @@ public class CorePlugin {
     }
 
     public String getCurrentUserTheme() {
-        UserSession session = getUserSession();
+        UserSession session = getCurrentSession();
         String val = null;
         if (session != null && session.getUser() != null) {
             val = UPA.getPersistenceUnit().invokePrivileged(new Action<String>() {
@@ -3104,7 +3134,7 @@ public class CorePlugin {
     }
 
     public void setCurrentUserTheme(String theme) {
-        UserSession session = getUserSession();
+        UserSession session = getCurrentSession();
         if (session != null && session.getUser() != null) {
             UPA.getContext().invokePrivileged(new VoidAction() {
                                                   @Override
@@ -3412,21 +3442,20 @@ public class CorePlugin {
                 }
                 for (ArticlesItem a : articles) {
                     ArticlesDisposition d = a.getDisposition();
-                    if(d!=null){
-                        int periodCalendarType=-1;
-                        if(d.getPeriodType()!=null && d.getMaxPeriod()>0){
-                            switch (d.getPeriodType()){
+                    if (d != null) {
+                        int periodCalendarType = -1;
+                        if (d.getPeriodType() != null && d.getMaxPeriod() > 0) {
+                            switch (d.getPeriodType()) {
                                 case DAY:
                                 case WEEK:
                                 case MONTH:
-                                case YEAR:
-                                    {
-                                    periodCalendarType=d.getPeriodType().getCalendarId();
+                                case YEAR: {
+                                    periodCalendarType = d.getPeriodType().getCalendarId();
                                     break;
                                 }
                             }
                         }
-                        if(periodCalendarType>0) {
+                        if (periodCalendarType > 0) {
                             DateTime dd = a.getSendTime();
                             Date d2 = net.vpc.common.util.DateUtils.add(new Date(), periodCalendarType, -d.getMaxPeriod());
                             if (dd.compareTo(d2) < 0) {
@@ -3677,7 +3706,7 @@ public class CorePlugin {
             if (b != null && b.booleanValue()) {
                 erase(entityName, id);
             } else {
-                UserSession session = VrApp.getContext().getBean(UserSession.class);
+                UserSession session = getCurrentSession();
                 if (entity.containsField("deleted")) {
                     t.setBoolean("deleted", true);
                 }
@@ -4116,7 +4145,7 @@ public class CorePlugin {
 
     public List<String> getAllCompletionLists(int monitorUserId) {
         String[] appPluginBeans = VrApp.getContext().getBeanNamesForType(CompletionProvider.class);
-        TreeSet<String> cats=new TreeSet<>();
+        TreeSet<String> cats = new TreeSet<>();
         for (String beanName : appPluginBeans) {
             CompletionProvider bean = (CompletionProvider) VrApp.getContext().getBean(beanName);
             cats.addAll(bean.getCompletionLists(monitorUserId));
@@ -4124,9 +4153,9 @@ public class CorePlugin {
         return new ArrayList<>(cats);
     }
 
-    public List<CompletionInfo> findAllCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel){
+    public List<CompletionInfo> findAllCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel) {
         String[] appPluginBeans = VrApp.getContext().getBeanNamesForType(CompletionProvider.class);
-        List<CompletionInfo> cats=new ArrayList<>();
+        List<CompletionInfo> cats = new ArrayList<>();
         for (String beanName : appPluginBeans) {
             CompletionProvider bean = (CompletionProvider) VrApp.getContext().getBean(beanName);
             cats.addAll(bean.findCompletions(monitorUserId, category, objectType, objectId, minLevel));

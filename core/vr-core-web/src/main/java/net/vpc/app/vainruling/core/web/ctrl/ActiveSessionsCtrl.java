@@ -50,7 +50,7 @@ public class ActiveSessionsCtrl implements PollAware {
     private final Model model = new Model();
 
     public boolean isInvalidatable(UserSession s){
-        UserSession userSession = core.getUserSession();
+        UserSession userSession = core.getCurrentSession();
         if(userSession==null || s==null){
             return false;
         }
@@ -137,7 +137,7 @@ public class ActiveSessionsCtrl implements PollAware {
                 ArrayList<TypeStat> sli = new ArrayList<TypeStat>(stats.values());
                 Collections.sort(sli);
                 getModel().setTypeStats(sli);
-                getModel().setAdmin(VrApp.getBean(CorePlugin.class).isUserSessionAdmin());
+                getModel().setAdmin(VrApp.getBean(CorePlugin.class).isCurrentSessionAdmin());
 
                 {
                     getModel().setDonut1(null);

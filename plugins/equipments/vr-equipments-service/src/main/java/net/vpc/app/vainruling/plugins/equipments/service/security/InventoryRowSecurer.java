@@ -32,7 +32,7 @@ public class InventoryRowSecurer extends DefaultEntitySecurityManager {
             return false;
         }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        UserSession us = core.getUserSession();
+        UserSession us = core.getCurrentSession();
         if (us != null) {
             if(us.isAdmin()){
                 return true;

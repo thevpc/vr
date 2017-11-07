@@ -220,29 +220,29 @@ and open the template in the editor.
                                 <img class="profile-user-img img-responsive img-circle"
                                      src="#{vr.url(vr.currentUserPhoto)}" alt="User profile picture"/>
 
-                                <h3 class="profile-username text-center">#{vr.userSession.user==null?'anonymous' : vr.userSession.user.contact.fullName}</h3>
+                                <h3 class="profile-username text-center">#{vr.currentSession.user==null?'anonymous' : vr.currentSession.user.contact.fullName}</h3>
 
-                                <p class="text-muted text-center">#{vr.userSession.user==null?'anonymous' : vr.userSession.user.contact.positionSuffix}</p>
+                                <p class="text-muted text-center">#{vr.currentSession.user==null?'anonymous' : vr.currentSession.user.contact.positionSuffix}</p>
 
                                 <ul class="list-group list-group-unbordered">
                                     <li class="list-group-item">
-                                        <b>Groupes</b> <a class="pull-right">#{vr.userSession.profiles.size()}</a>
+                                        <b>Groupes</b> <a class="pull-right">#{vr.currentSession.profiles.size()}</a>
                                     </li>
 
-                                    <ui:fragment rendered="#{vr.userSession.impersonating}">
+                                    <ui:fragment rendered="#{vr.currentSession.impersonating}">
                                         <li class="list-group-item">
                                             <b>Impersonifcation</b> <a
-                                                class="pull-right">#{vr.userSession.rootUser.contact.fullName} aka #{vr.userSession.rootUser.login}</a>
+                                                class="pull-right">#{vr.currentSession.rootUser.contact.fullName} aka #{vr.currentSession.rootUser.login}</a>
                                         </li>
 
                                     </ui:fragment>
                                     <li class="list-group-item">
                                         <b>Connexions</b> <a
-                                            class="pull-right">#{vr.userSession.user==null?'N/A' : vr.userSession.user.connexionCount}</a>
+                                            class="pull-right">#{vr.currentSession.user==null?'N/A' : vr.currentSession.user.connexionCount}</a>
                                     </li>
                                     <li class="list-group-item">
                                         <b>Dernier Accès</b> <a
-                                            class="pull-right">#{vr.userSession.user==null?'anonymous' : vr.date(vr.userSession.user.lastConnexionDate)}</a>
+                                            class="pull-right">#{vr.currentSession.user==null?'anonymous' : vr.date(vr.currentSession.user.lastConnexionDate)}</a>
                                     </li>
                                 </ul>
 
@@ -283,7 +283,7 @@ and open the template in the editor.
                                 <strong><i class="fa fa-pencil margin-r-5"></i> Groupes</strong>
 
                                 <p>
-                                    <ui:repeat value="#{vr.userSession.profiles}" var="prName">
+                                    <ui:repeat value="#{vr.currentSession.profiles}" var="prName">
                                         <span class="label label-#{vr.hashToArr(prName.name,'danger','success','info','warning','primary','default')}">#{prName.name}</span>
                                     </ui:repeat>
                                 </p>

@@ -200,7 +200,7 @@ and open the template in the editor.
                                     </p:column>
 
                                     <p:column headerText="Assign" style="width: 70px"
-                                              rendered="#{vr.userSession.allowed('TASK_VIEW_ALL')}">
+                                              rendered="#{vr.currentSession.allowed('TASK_VIEW_ALL')}">
                                         <h:outputText value="#{i.responsible.login}"/>
                                     </p:column>
 
@@ -262,7 +262,7 @@ and open the template in the editor.
                                     </p:column>
 
                                     <p:column headerText="Assign" style="width: 70px"
-                                              rendered="#{vr.userSession.allowed('TASK_VIEW_ALL')}">
+                                              rendered="#{vr.currentSession.allowed('TASK_VIEW_ALL')}">
                                         <h:outputText value="#{i.responsible.login}"/>
                                     </p:column>
 
@@ -319,7 +319,7 @@ and open the template in the editor.
                                     </p:column>
 
                                     <p:column headerText="Assign" style="width: 70px"
-                                              rendered="#{vr.userSession.allowed('TASK_VIEW_ALL')}">
+                                              rendered="#{vr.currentSession.allowed('TASK_VIEW_ALL')}">
                                         <h:outputText value="#{i.responsible.login}"/>
                                     </p:column>
 

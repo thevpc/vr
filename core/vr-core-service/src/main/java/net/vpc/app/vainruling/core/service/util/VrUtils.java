@@ -206,7 +206,7 @@ public class VrUtils {
 
     public static String fstr(String format, Object... a) {
         UserSession s = null;
-        s = CorePlugin.get().getUserSession();
+        s = CorePlugin.get().getCurrentSession();
         Locale loc = s == null ? null : s.getLocale();
         if (loc == null) {
             loc = Locale.getDefault(Locale.Category.DISPLAY);

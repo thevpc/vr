@@ -332,7 +332,7 @@ public class VrMenuManager {
             bc.add(new BreadcrumbItem("", "", "", "", ""));
         }
         getModel().setBreadcrumb(bc);
-        UserSession s = VrApp.getContext().getBean(UserSession.class);
+        UserSession s = UserSession.get();
         StringBuilder lvp = new StringBuilder();
         for (BreadcrumbItem breadcrumbItem : bc) {
             if (!StringUtils.isEmpty(breadcrumbItem.getTitle())) {

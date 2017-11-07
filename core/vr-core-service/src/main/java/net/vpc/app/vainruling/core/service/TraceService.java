@@ -121,7 +121,7 @@ public class TraceService {
                 && !entity.getEntityType().equals(AppTrace.class);
     }
 
-    private UserSession getUserSession() {
+    private UserSession getCurrentSession() {
         try {
             return VrApp.getContext().getBean(UserSession.class);
         } catch (Exception e) {
@@ -187,7 +187,7 @@ public class TraceService {
         if (isSilenced()) {
             return;
         }
-        UserSession us = getUserSession();
+        UserSession us = getCurrentSession();
         AppUser u = us == null ? null : us.getUser();
         String login = u == null ? "anonymous" : u.getLogin();
         int userId = u == null ? -1 : u.getId();

@@ -214,7 +214,7 @@ public class MailboxPlugin {
         MailboxReceived msg = pu.findById(MailboxReceived.class, mailboxReceivedId);
         DateTime now = new DateTime();
         if (msg != null && msg.isRead() != read) {
-            if (core.getUserSession().isAdmin()) {
+            if (core.isCurrentSessionAdmin()) {
                 msg.setRead(read);
                 msg.setReadTime(now);
                 pu.merge(msg);
@@ -228,7 +228,7 @@ public class MailboxPlugin {
                 }
                 return true;
             } else {
-                AppUser user = core.getUserSession().getUser();
+                AppUser user = core.getCurrentUser();
                 return UPA.getPersistenceUnit().invokePrivileged(new Action<Boolean>() {
 
                     @Override
@@ -455,7 +455,7 @@ public class MailboxPlugin {
             userId = au == null ? null : au.getId();
         }
         if (userId == null) {
-            AppUser au = VrApp.getBean(CorePlugin.class).getUserSession().getUser();
+            AppUser au = VrApp.getBean(CorePlugin.class).getCurrentUser();
             userId = au == null ? null : au.getId();
         }
         prepareBody(
@@ -679,7 +679,7 @@ public class MailboxPlugin {
 //                            message.getContent(),
 //                            m2,
 //                            message.getSender() == null
-//                                    ? core.getUserSession().getUser().getId()
+//                                    ? core.getCurrentUser().getId()
 //                                    : message.getSender().getId(), mailTemplate);
 //
 //                }
@@ -1062,7 +1062,7 @@ public class MailboxPlugin {
 //                    a.getContent(),
 //                    m,
 //                    a.getSender() == null
-//                            ? core.getUserSession().getUser().getId()
+//                            ? core.getCurrentUser().getId()
 //                            : a.getSender().getId(), mailTemplate);
 //            prepareRecipients(m, etype, a.getRecipientProfiles(), a.getFilterExpression(), false);
             MailboxPlugin emailPlugin = VrApp.getBean(MailboxPlugin.class);

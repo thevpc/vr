@@ -32,7 +32,7 @@ public class WelcomeCtrl {
     public void onLoad() {
         //site filter is no more bound to department
         //Vr vr = Vr.get();
-        //UserSession userSession = vr.getUserSession();
+        //UserSession userSession = vr.getCurrentSession();
         //vr.gotoPublicSubSite(userSession.getSelectedDepartment()==null?null:userSession.getSelectedDepartment().getCode());
         VrMenuManager menu = VrApp.getBean(VrMenuManager.class);
         menu.getModel().setCurrentPageId("welcome");

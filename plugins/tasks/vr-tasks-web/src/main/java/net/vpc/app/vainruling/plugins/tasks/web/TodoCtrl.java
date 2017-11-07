@@ -74,8 +74,8 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
     protected Todo delegated_newInstance() {
         final Todo todo = new Todo();
         todo.setArchived(false);
-        todo.setInitiator(coreService.getUserSession().getUser());
-        todo.setResponsible(coreService.getUserSession().getUser());
+        todo.setInitiator(coreService.getCurrentUser());
+        todo.setResponsible(coreService.getCurrentUser());
         todo.setPriority(TodoPriority.DEFAULT);
         TodoList list = todoService.findTodoList(getModel().getListName());
         todo.setList(list);
@@ -84,7 +84,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
 
     public boolean isCurrentOwned() {
         AppUser r = getModel().getCurrent().getResponsible();
-        AppUser me = coreService.getUserSession().getUser();
+        AppUser me = coreService.getCurrentUser();
         return r != null && me != null && r.getId() == me.getId();
     }
 
@@ -122,7 +122,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
         Todo c = getModel().getCurrent();
         TodoStatus s = todoService.findNextStatus(c.getStatus(), TodoStatusType.ASSIGNED);
         if (s != null) {
-            c.setResponsible(coreService.getUserSession().getUser());
+            c.setResponsible(coreService.getCurrentUser());
             c.setStatus(s);
             todoService.saveTodo(c);
         }
@@ -132,7 +132,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
         Todo c = getModel().getCurrent();
         TodoStatus s = todoService.findNextStatus(c.getStatus(), TodoStatusType.UNASSIGNED);
         if (s != null) {
-            c.setResponsible(coreService.getUserSession().getUser());
+            c.setResponsible(coreService.getCurrentUser());
             c.setStatus(s);
             todoService.saveTodo(c);
         }
@@ -142,7 +142,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
         Todo c = getModel().getCurrent();
         TodoStatus s = todoService.findNextStatus(c.getStatus(), TodoStatusType.DONE);
         if (s != null) {
-            c.setResponsible(coreService.getUserSession().getUser());
+            c.setResponsible(coreService.getCurrentUser());
             c.setStatus(s);
             todoService.saveTodo(c);
         }
@@ -152,7 +152,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
         Todo c = getModel().getCurrent();
         TodoStatus s = todoService.findNextStatus(c.getStatus(), TodoStatusType.TO_VERIFY);
         if (s != null) {
-            c.setResponsible(coreService.getUserSession().getUser());
+            c.setResponsible(coreService.getCurrentUser());
             c.setStatus(s);
             todoService.saveTodo(c);
         }
@@ -162,7 +162,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
         Todo c = getModel().getCurrent();
         TodoStatus s = todoService.findNextStatus(c.getStatus(), TodoStatusType.ASSIGNED);
         if (s != null) {
-            c.setResponsible(coreService.getUserSession().getUser());
+            c.setResponsible(coreService.getCurrentUser());
             c.setStatus(s);
             todoService.saveTodo(c);
         }

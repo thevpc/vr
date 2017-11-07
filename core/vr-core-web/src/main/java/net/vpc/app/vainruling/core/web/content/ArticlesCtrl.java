@@ -252,7 +252,7 @@ public class ArticlesCtrl implements CmsTextService {
                 if(a.getSender()!=null && currentUser.getId()==a.getSender().getId()){
                     return true;
                 }
-                if(core.isSessionAdmin()){
+                if(core.isCurrentSessionAdmin()){
                     return true;
                 }
             }

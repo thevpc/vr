@@ -29,7 +29,7 @@ public class PublicIndexCtrl {
     public void onLoad(String cmd) {
         Config config = VrUtils.parseJSONObject(cmd, Config.class);
         if(config!=null && StringUtils.isEmpty(config.filter)) {
-            core.getUserSession().setSelectedSiteFilter(config.filter);
+            core.getCurrentSession().setSelectedSiteFilter(config.filter);
         }
         VrApp.getBean(VrMenuManager.class).getModel().setCurrentPageId("welcome");
         VrApp.getBean(VrMenuManager.class).setPageCtrl("index");

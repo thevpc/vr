@@ -269,7 +269,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
             current.writeACL();
         }
         if (current.isSharable()) {
-            if (core.isSessionAdmin() || core.getCurrentUserLogin().equals(file.getACL().getOwner())) {
+            if (core.isCurrentSessionAdmin() || core.getCurrentUserLogin().equals(file.getACL().getOwner())) {
                 String baseFile = file.getBaseFile("vrfs").getPath();
 
                 try {
@@ -359,10 +359,10 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
                     &&
                     !getModel().getCurrent().getFile().getACL().isReadOnly()
                     &&
-                    (core.isSessionAdmin() || core.getCurrentUserLogin().equals(getModel().getCurrent().getFile().getACL().getOwner()))
+                    (core.isCurrentSessionAdmin() || core.getCurrentUserLogin().equals(getModel().getCurrent().getFile().getACL().getOwner()))
                     ;
         }
-        return UserSession.get().isAdmin();
+        return core.isCurrentSessionAdmin();
     }
 
     public boolean isEnabledButton(String buttonId, VFileInfo forFile) {

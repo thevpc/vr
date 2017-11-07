@@ -67,7 +67,7 @@ public class AcademicAppMyTeamsCtrl {
         currentTeacher = academic.getCurrentTeacher();
         currentStudent = academic.getCurrentStudent();
         currentUser = UserSession.getCurrentUser();
-        currentAdmin = core.isSessionAdmin();
+        currentAdmin = core.isCurrentSessionAdmin();
         reloadTeams();
     }
 

@@ -97,7 +97,7 @@ public class AcademicAppProjectsCtrl {
         currentTeacher = academic.getCurrentTeacher();
         currentStudent = academic.getCurrentStudent();
         currentUser = UserSession.getCurrentUser();
-        currentAdmin = core.isSessionAdmin();
+        currentAdmin = core.isCurrentSessionAdmin();
         List<ApblSession> sessions = apbl.findAvailableSessions();
         getModel().getSessionsMap().clear();
         getModel().getSessionItems().clear();

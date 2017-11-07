@@ -88,7 +88,7 @@ public class FieldPropertyViewInfo {
         if (visible && forceInvisible) {
             visible = false;
         }
-        boolean admin = VrApp.getBean(CorePlugin.class).isUserSessionAdmin();
+        boolean admin = VrApp.getBean(CorePlugin.class).isCurrentSessionAdmin();
 
         if (visible && field != null) {
             AccessLevel rl = field.getReadAccessLevel();

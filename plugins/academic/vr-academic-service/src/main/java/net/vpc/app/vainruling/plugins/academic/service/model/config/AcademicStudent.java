@@ -9,10 +9,12 @@ import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.upa.FormulaType;
+import net.vpc.upa.UPA;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Objects;
 
 /**

@@ -1797,8 +1797,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
 
 
     public AcademicTeacher findCurrentHeadOfDepartment() {
-        UserSession sm = core.getUserSession();
-        AppUser user = (sm == null) ? null : sm.getUser();
+        AppUser user = core.getCurrentUser();
         if (user == null || user.getDepartment() == null) {
             return null;
         }
@@ -1806,8 +1805,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
     }
 
     public boolean isUserSessionManager() {
-        UserSession sm = core.getUserSession();
-        AppUser user = (sm == null) ? null : sm.getUser();
+        AppUser user = core.getCurrentUser();
         if (user == null || user.getDepartment() == null) {
             return false;
         }
@@ -1836,8 +1834,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
 //    }
 
     public boolean isManagerOf(AppUser targetUser) {
-        UserSession sm = core.getUserSession();
-        AppUser user = (sm == null) ? null : sm.getUser();
+        AppUser user = core.getCurrentUser();
         if (user != null && targetUser != null && user.getId() == targetUser.getId()) {
             return true;
         }
@@ -1846,8 +1843,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
     }
 
     public boolean isManagerOf(AcademicTeacher teacher) {
-        UserSession sm = core.getUserSession();
-        AppUser user = (sm == null) ? null : sm.getUser();
+        AppUser user = core.getCurrentUser();
         if (user != null && teacher.getUser() != null && user.getId() == teacher.getUser().getId()) {
             return true;
         }
@@ -1859,8 +1855,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
     }
 
     public boolean isManagerOf(AcademicStudent student) {
-        UserSession sm = core.getUserSession();
-        AppUser user = (sm == null) ? null : sm.getUser();
+        AppUser user = core.getCurrentUser();
         if (user != null && student.getUser() != null && user.getId() == student.getUser().getId()) {
             return true;
         }
@@ -1900,8 +1895,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
 //    }
 
     public boolean isManagerOf(AppDepartment department) {
-        UserSession sm = core.getUserSession();
-        AppUser user = (sm == null) ? null : sm.getUser();
+        AppUser user = core.getCurrentUser();
         if (user == null || user.getDepartment() == null) {
             return false;
         }
@@ -3194,8 +3188,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
     }
 
     public AcademicTeacher getCurrentTeacher() {
-        UserSession sm = core.getUserSession();
-        AppUser user = (sm == null) ? null : sm.getUser();
+        AppUser user = core.getCurrentUser();
         if (user != null) {
             return findTeacherByUser(user.getId());
         }
@@ -3203,8 +3196,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
     }
 
     public AcademicStudent getCurrentStudent() {
-        UserSession sm = core.getUserSession();
-        AppUser user = (sm == null) ? null : sm.getUser();
+        AppUser user = core.getCurrentUser();
         if (user != null) {
             return findStudentByUser(user.getId());
         }

@@ -29,6 +29,8 @@ public class AppProfile {
     private String name;
     private String name2;
     private String name3;
+    @Sequence
+    private String inherited;
     @Field(max = "4000")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
@@ -37,6 +39,14 @@ public class AppProfile {
      */
     @Field(defaultValue = "false")
     private boolean custom;
+    /**
+     * if true, this is considered as a composer group.
+     * A composer group is NOT a top level group and hence
+     * should not be assigned directly to users. It is meant
+     * to be part (parent) of top level groups to help composing
+     * more
+     */
+    private boolean composer;
     /**
      * custom profiles type depends on creator plugin
      */
@@ -161,5 +171,21 @@ public class AppProfile {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    public String getInherited() {
+        return inherited;
+    }
+
+    public void setInherited(String inherited) {
+        this.inherited = inherited;
+    }
+
+    public boolean isComposer() {
+        return composer;
+    }
+
+    public void setComposer(boolean composer) {
+        this.composer = composer;
     }
 }

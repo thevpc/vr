@@ -43,10 +43,7 @@ import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -202,7 +199,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
 
                     if ("ReCalc".equals(buttonId)) {
-                        return core.isUserSessionAdmin();
+                        return core.isCurrentSessionAdmin();
                     }
 
                     ActionDialogAdapter e = actionDialogManager.findAction(buttonId);
@@ -954,7 +951,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 Entity ot = UPA.getPersistenceUnit().getEntity(getEntityName());
                 columns.clear();
                 properties.clear();
-                boolean adm = core.isUserSessionAdmin();
+                boolean adm = core.isCurrentSessionAdmin();
 
                 List<Field> fields = new ArrayList<Field>();
                 if (getModel().getFieldSelection() == null) {

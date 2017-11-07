@@ -70,7 +70,7 @@ public class InternshipsPlanningCtrl {
 
     @OnPageLoad
     public void onPageLoad() {
-        UserSession userSession = core.getUserSession();
+        UserSession userSession = core.getCurrentSession();
         getModel().setManager(userSession.isDepartmentManager());
         getModel().setGenerationDays(6);
         getModel().setGenerationMinutesPerSession(60);

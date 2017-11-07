@@ -26,7 +26,7 @@ and open the template in the editor.
 
                     <div style=" margin-bottom: 20px;" >
                         <h:outputText
-                            value="Vous êtes #{vr.userSession.user.contact eq null ? '':vr.userSession.user.contact.fullName} (#{userSession.user.login})"/>
+                            value="Vous êtes #{vr.currentSession.user.contact eq null ? '':vr.currentSession.user.contact.fullName} (#{userSession.user.login})"/>
                     </div>
                 </h:form>
                 <div class="row">
