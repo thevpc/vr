@@ -1,6 +1,6 @@
 # Vain Ruling
 
-# 1 Vain Ruling / ENISo info
+# 1. Vain Ruling / ENISo info
 Vain Ruling is a Open Source Web App Framework for building Plugin Based Extensible Web Application.
 A custom application that uses extensively VR is ENISo info which is an Open Source academic platform.
 
@@ -96,9 +96,6 @@ FLUSH PRIVILEGES;
             </connectionString>
         </connection>
     </persistenceUnit>
-    <!--<connection>-->
-        <!--<connectionString>derby://localhost/vain;structure=create;userName=vr;password=vr</connectionString>-->
-    <!--</connection>&ndash;&gt;-->
 </upa>
 ```
 
