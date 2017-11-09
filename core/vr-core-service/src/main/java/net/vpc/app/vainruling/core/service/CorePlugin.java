@@ -636,7 +636,7 @@ public class CorePlugin {
                 found.put(code, profile);
             }
             String inherited = profile.getInherited();
-            if (!StringUtils.isEmpty(code)) {
+            if (!StringUtils.isEmpty(inherited)) {
                 String[] st = inherited.split("[ ,;]");
                 for (String s : st) {
                     if (!found.containsKey(s)) {

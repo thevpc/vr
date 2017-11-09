@@ -23,12 +23,14 @@ public class AppProfile {
     @Id
     @Sequence
     private int id;
+    @Summary
     private String code;
     @Main
     @Unique
     private String name;
     private String name2;
     private String name3;
+    @Summary
     private String inherited;
     @Field(max = "4000")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
