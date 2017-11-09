@@ -29,7 +29,6 @@ public class AppProfile {
     private String name;
     private String name2;
     private String name3;
-    @Sequence
     private String inherited;
     @Field(max = "4000")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)

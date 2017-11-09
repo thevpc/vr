@@ -8,7 +8,7 @@ systemctl enable mysql
 systemctl start mysql
 
 mysqladmin -u root password "<YOUR PASSWORD>"
-or (if younedd to change password)
+or (if you need to change password)
 mysqladmin -u root -p'oldpassword' password "<YOUR PASSWORD>"
 
 mysql -u root -p"<YOUR PASSWORD>"
@@ -19,6 +19,12 @@ CREATE DATABASE enisoinfodb DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_gene
 CREATE USER 'enisoinfouser'@'localhost' IDENTIFIED BY "<YOUR PASSWORD>";
 GRANT ALL PRIVILEGES ON enisoinfodb . * TO 'enisoinfouser'@'localhost';
 FLUSH PRIVILEGES;
+
+
+CREATE DATABASE enisoinfodb2 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+GRANT ALL PRIVILEGES ON enisoinfodb2 . * TO 'enisoinfouser'@'localhost';
+FLUSH PRIVILEGES;
+
 
 
 ## Check Installation
