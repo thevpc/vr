@@ -77,8 +77,7 @@ public class AcademicTeacherDirectoryCtrl {
 
         public void setAcademicTeacherCV(AcademicTeacherCV academicTeacherCV) {
             this.academicTeacherCV = academicTeacherCV;
-        }
-        
+        }       
     }
     
     public class Model {

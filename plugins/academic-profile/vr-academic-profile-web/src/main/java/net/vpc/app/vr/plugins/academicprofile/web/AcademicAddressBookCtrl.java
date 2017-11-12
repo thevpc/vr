@@ -31,12 +31,12 @@ import java.util.List;
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+/*@VrController(
         breadcrumb = {
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")}
 //        , css = "fa-table"
 //        , title = "Address Book"
-)
+)*/
 public class AcademicAddressBookCtrl {
     @Autowired
     AcademicPlugin ap;

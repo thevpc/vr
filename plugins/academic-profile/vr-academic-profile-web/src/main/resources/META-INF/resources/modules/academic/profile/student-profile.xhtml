@@ -104,7 +104,7 @@
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-users margin-r-5"></i>Groupes</strong>
                                                                 <p>
-                                                                    <ui:repeat value="#{vr.userSession.profiles}" var="prName">
+                                                                    <ui:repeat value="#{vr.currentSession.profiles}" var="prName">
                                                                         <span class="label label-#{vr.hashToArr(prName.name,'danger','success','info','warning','primary','default')}">#{prName.name}</span>
                                                                     </ui:repeat>
                                                                 </p>
@@ -113,8 +113,8 @@
                                                         </div>
                                                         <div class="text-center">
                                                             <a href="#{vr.exurl(studentProfileSettingsCtrl.model.studentCV.socialURL1)}" target="_blank" class="btn btn-social-icon btn-twitter"><i class="fa fa-twitter"></i></a>
-                                                            <a href="#{vr.exurl(studentProfileSettingsCtrl.model.studentCV.socialURL2)}" target="_blank"  class="btn btn-social-icon btn-linkedin"><i class="fa fa-linkedin"></i></a>
-                                                            <a href="#{vr.exurl(studentProfileSettingsCtrl.model.studentCV.socialURL3)}" target="_blank"  class="btn btn-social-icon btn-google"><i class="fa fa-google-plus"></i></a>
+                                                            <a href="#{vr.exurl(studentProfileSettingsCtrl.model.studentCV.socialURL2)}" target="_blank"  class="btn btn-social-icon btn-google"><i class="fa fa-google-plus"></i></a>
+                                                            <a href="#{vr.exurl(studentProfileSettingsCtrl.model.studentCV.socialURL3)}" target="_blank"  class="btn btn-social-icon btn-linkedin"><i class="fa fa-linkedin"></i></a>
                                                             <a href="#{vr.exurl(studentProfileSettingsCtrl.model.studentCV.socialURL4)}" target="_blank"  class="btn btn-social-icon btn-github"><i class="fa fa-github"></i></a>
                                                         </div>
                                                     </div>

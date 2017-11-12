@@ -1,0 +1,39 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.vpc.app.vain-ruling.plugins</groupId>
+    <artifactId>${symbol_dollar}{artifactId}</artifactId>
+    <version>${symbol_dollar}{version}</version>
+    <packaging>jar</packaging>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <version.vr-core-web>1.12</version.vr-core-web>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>${package}</groupId>
+            <artifactId>vr-core-web</artifactId>
+            <version>${symbol_dollar}{version.vr-core-web}</version>
+        </dependency>
+        <dependency>
+            <groupId>${symbol_dollar}{project.groupId}</groupId>
+            <artifactId>${symbol_dollar}{rootArtifactId}-service</artifactId>
+            <version>${symbol_dollar}{version}</version>
+        </dependency>
+    </dependencies>
+    <name>${symbol_dollar}{artifactId}</name>
+    <repositories>
+        <repository>
+            <id>vpc-public-maven</id>
+            <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>
+            <snapshots>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+</project>

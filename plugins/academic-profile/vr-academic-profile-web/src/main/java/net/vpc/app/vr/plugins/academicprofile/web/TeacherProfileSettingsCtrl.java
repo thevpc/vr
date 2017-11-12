@@ -17,8 +17,12 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.Vr;
+import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.web.fs.files.DocumentUploadListener;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsCtrl;
+import net.vpc.app.vainruling.core.web.fs.files.DocumentsUploadDialogCtrl;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
@@ -38,15 +42,15 @@ import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VFileFilter;
 import org.primefaces.event.FileUploadEvent;
 
-//@VrController(
-//        breadcrumb = {
-//            @UPathItem(title = "Paramètres", css = "fa-dashboard", ctrl = "")},
-//        title = "Mon profil enseignant",
-//        menu = "/Config",
-//        url = "modules/academic/profile/teacher-profile-settings"
-////securityKey = "Custom.TeacherProfileSettings"
-//)
-public class TeacherProfileSettingsCtrl {
+@VrController(
+        breadcrumb = {
+            @UPathItem(title = "Paramètres", css = "fa-dashboard", ctrl = "")},
+        title = "Mon profil enseignant",
+        menu = "/Config",
+        url = "modules/academic/profile/teacher-profile-settings",
+        securityKey = "Custom.TeacherProfileSettings"
+)
+public class TeacherProfileSettingsCtrl implements DocumentUploadListener {
 
     @Autowired
     private AcademicProfilePlugin app;
@@ -74,21 +78,14 @@ public class TeacherProfileSettingsCtrl {
         getModel().setProjectSection(app.findAcademicCVSectionByName("Project"));
         getModel().setExperienceSection(app.findAcademicCVSectionByName("Experience"));
         getModel().setResearchSection(app.findAcademicCVSectionByName("Research"));
-        
-       /* getModel().setCourseList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().courseSection.getId()));
+
+        getModel().setCourseList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().courseSection.getId()));
         getModel().setEducationList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().educationSection.getId()));
         getModel().setExperienceList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().experienceSection.getId()));
         getModel().setProjectList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().projectSection.getId()));
         getModel().setResearchList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().researchSection.getId()));
-        */
-       
-        getModel().setExperienceList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), 1));
-        getModel().setCourseList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), 1));
-        getModel().setProjectList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), 1));
-        getModel().setResearchList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), 1));
-        getModel().setEducationList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), 1));
-        ///
-        
+
+
         VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
         getModel().getThemes().clear();
         getModel().getThemes().add(FacesUtils.createSelectItem("", "<Default>", null));
@@ -118,14 +115,17 @@ public class TeacherProfileSettingsCtrl {
         }
     }
 
-    public void addNewCourseItem() {
-        getModel().courseItem.setTeacherCV(getModel().teacherCV);
+    public void onSaveNewItem(AcademicCVSection section) {
+        RequestContext.getCurrentInstance().closeDialog(null);
+        getModel().item.setTeacherCV(getModel().teacherCV);
+        getModel().item.setSection(section);
+        //add section !
         UPA.getContext().invokePrivileged(new VoidAction() {
             @Override
             public void run() {
                 try {
-                    app.createAcademicTeacherCVItem(getModel().courseItem);
-                    FacesUtils.addInfoMessage("Opération d'ajout d'un nouveau cours réussie");
+                    app.createAcademicTeacherCVItem(getModel().item);
+                    FacesUtils.addInfoMessage("Opération d'ajout réussie");
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);
                     FacesUtils.addErrorMessage(ex.getMessage());
@@ -135,72 +135,8 @@ public class TeacherProfileSettingsCtrl {
         onPageReload();
     }
 
-    public void onSaveNewEducationItem() {
-        getModel().researchItem.setTeacherCV(getModel().teacherCV);
-        UPA.getContext().invokePrivileged(new VoidAction() {
-            @Override
-            public void run() {
-                try {
-                    app.createAcademicTeacherCVItem(getModel().educationItem);
-                    FacesUtils.addInfoMessage("Opération d'ajout d'une nouvelle formation réussie");
-                } catch (Exception ex) {
-                    log.log(Level.SEVERE, "Error", ex);
-                    FacesUtils.addErrorMessage(ex.getMessage());
-                }
-            }
-        });
-        onPageReload();
-    }
-
-    public void addNewExpeienceItem() {
-        getModel().experienceItem.setTeacherCV(getModel().teacherCV);
-        UPA.getContext().invokePrivileged(new VoidAction() {
-            @Override
-            public void run() {
-                try {
-                    app.createAcademicTeacherCVItem(getModel().experienceItem);
-                    FacesUtils.addInfoMessage("Opération d'ajout d'une nouvelle expérience réussie");
-                } catch (Exception ex) {
-                    log.log(Level.SEVERE, "Error", ex);
-                    FacesUtils.addErrorMessage(ex.getMessage());
-                }
-            }
-        });
-        onPageReload();
-    }
-
-    public void addNewProjectItem() {
-        getModel().projectItem.setTeacherCV(getModel().teacherCV);
-        UPA.getContext().invokePrivileged(new VoidAction() {
-            @Override
-            public void run() {
-                try {
-                    app.createAcademicTeacherCVItem(getModel().projectItem);
-                    FacesUtils.addInfoMessage("Opération d'ajout d'un nouveau projet réussie");
-                } catch (Exception ex) {
-                    log.log(Level.SEVERE, "Error", ex);
-                    FacesUtils.addErrorMessage(ex.getMessage());
-                }
-            }
-        });
-        onPageReload();
-    }
-
-    public void addNewResearchItem() {
-        getModel().researchItem.setTeacherCV(getModel().teacherCV);
-        UPA.getContext().invokePrivileged(new VoidAction() {
-            @Override
-            public void run() {
-                try {
-                    app.createAcademicTeacherCVItem(getModel().researchItem);
-                    FacesUtils.addInfoMessage("Opération d'ajout d'un nouveau axe de recherche réussie");
-                } catch (Exception ex) {
-                    log.log(Level.SEVERE, "Error", ex);
-                    FacesUtils.addErrorMessage(ex.getMessage());
-                }
-            }
-        });
-        onPageReload();
+    public void onCloseDialog() {
+        RequestContext.getCurrentInstance().closeDialog(null);
     }
 
     public void updateBasicInformationSection() {
@@ -233,7 +169,7 @@ public class TeacherProfileSettingsCtrl {
             }
         });
     }
-    
+
     public void updateCvItem(AcademicTeacherCVItem item) {
         UPA.getContext().invokePrivileged(new VoidAction() {
             @Override
@@ -249,7 +185,7 @@ public class TeacherProfileSettingsCtrl {
         });
         onPageReload();
     }
-    
+
     public void deleteCvItem(AcademicTeacherCVItem item) {
         UPA.getContext().invokePrivileged(new VoidAction() {
             @Override
@@ -266,8 +202,8 @@ public class TeacherProfileSettingsCtrl {
         onPageReload();
     }
 
-    public void onNewExperience(){
-        ///
+    public void onNewExperience() {
+        getModel().setItem(new AcademicTeacherCVItem());
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
         options.put("draggable", true);
@@ -275,8 +211,8 @@ public class TeacherProfileSettingsCtrl {
         RequestContext.getCurrentInstance().openDialog("/modules/academic/profile/add-teacher-experience-dialog", options, null);
     }
 
-    public void onNewEducation(){
-        ///
+    public void onNewEducation() {
+        getModel().setItem(new AcademicTeacherCVItem());
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
         options.put("draggable", true);
@@ -284,8 +220,8 @@ public class TeacherProfileSettingsCtrl {
         RequestContext.getCurrentInstance().openDialog("/modules/academic/profile/add-teacher-education-dialog", options, null);
     }
 
-    public void onNewProject(){
-        ///
+    public void onNewProject() {
+        getModel().setItem(new AcademicTeacherCVItem());
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
         options.put("draggable", true);
@@ -293,8 +229,8 @@ public class TeacherProfileSettingsCtrl {
         RequestContext.getCurrentInstance().openDialog("/modules/academic/profile/add-teacher-project-dialog", options, null);
     }
 
-    public void onNewCourse(){
-        ///
+    public void onNewCourse() {
+        getModel().setItem(new AcademicTeacherCVItem());
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
         options.put("draggable", true);
@@ -302,8 +238,8 @@ public class TeacherProfileSettingsCtrl {
         RequestContext.getCurrentInstance().openDialog("/modules/academic/profile/add-teacher-course-dialog", options, null);
     }
 
-    public void onNewResearch(){
-        ///
+    public void onNewResearch() {
+        getModel().setItem(new AcademicTeacherCVItem());
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
         options.put("draggable", true);
@@ -314,27 +250,27 @@ public class TeacherProfileSettingsCtrl {
     public void onRequestUploadPhoto() {
         getModel().setUploadingPhoto(true);
         getModel().setUploadingCV(false);
-        /* Vr.get().openUploadDialog(new DocumentsUploadDialogCtrl.Config()
+         Vr.get().openUploadDialog(new DocumentsUploadDialogCtrl.Config()
                 .setExtensions("jpg,png,jpeg")
                 .setSizeLimit(1024*1024)
-                , this);*/
+                , this);
     }
 
     public void onRequestUploadCV() {
         getModel().setUploadingPhoto(false);
         getModel().setUploadingCV(true);
-        /* Vr.get().openUploadDialog(new DocumentsUploadDialogCtrl.Config()
+        Vr.get().openUploadDialog(new DocumentsUploadDialogCtrl.Config()
                         .setExtensions("pdf")
                         .setSizeLimit(10*1024*1024)
-                , this);*/
+                , this);
     }
 
     public void onUpload(FileUploadEvent event) {
         try {
             if (getModel().isUploadingCV()) {
                 AcademicTeacher c = AcademicPlugin.get().getCurrentTeacher();
-                String e = PathInfo.create(event.getFile().getFileName()).getExtensionPart();
-                if (e.equals("pdf")) {
+                String e = event.getFile().getFileName().toLowerCase();
+                if (e.endsWith(".pdf")) {
                     String cvFile = c.getUser().getLogin() + "-cv.pdf";
                     VFile filePath = CorePlugin.get().getUserFolder(c.getUser().getLogin()).get("/Config/" + cvFile);
                     if (filePath != null) {
@@ -409,26 +345,21 @@ public class TeacherProfileSettingsCtrl {
         private String theme;
         private List<SelectItem> themes = new ArrayList<>();
 
-        List<SelectItem> companyItems = new ArrayList<>();
-        
-        AcademicCVSection experienceSection;
-        AcademicCVSection educationSection;
-        AcademicCVSection projectSection;
-        AcademicCVSection researchSection;
-        AcademicCVSection courseSection;
-        
-        List<AcademicTeacherCVItem> experienceList = new ArrayList<>();
-        List<AcademicTeacherCVItem> educationList = new ArrayList<>();
-        List<AcademicTeacherCVItem> projectList = new ArrayList<>();
-        List<AcademicTeacherCVItem> researchList = new ArrayList<>();
-        List<AcademicTeacherCVItem> courseList = new ArrayList<>();
-       
-        
-        private AcademicTeacherCVItem courseItem = new AcademicTeacherCVItem();
-        private AcademicTeacherCVItem educationItem = new AcademicTeacherCVItem();
-        private AcademicTeacherCVItem experienceItem = new AcademicTeacherCVItem();
-        private AcademicTeacherCVItem projectItem = new AcademicTeacherCVItem();
-        private AcademicTeacherCVItem researchItem = new AcademicTeacherCVItem();
+        private List<SelectItem> companyItems = new ArrayList<>();
+
+        private AcademicCVSection experienceSection;
+        private AcademicCVSection educationSection;
+        private AcademicCVSection projectSection;
+        private AcademicCVSection researchSection;
+        private AcademicCVSection courseSection;
+
+        private List<AcademicTeacherCVItem> experienceList = new ArrayList<>();
+        private List<AcademicTeacherCVItem> educationList = new ArrayList<>();
+        private List<AcademicTeacherCVItem> projectList = new ArrayList<>();
+        private List<AcademicTeacherCVItem> researchList = new ArrayList<>();
+        private List<AcademicTeacherCVItem> courseList = new ArrayList<>();
+
+        private AcademicTeacherCVItem item;
 
         public String getTheme() {
             return theme;
@@ -444,46 +375,6 @@ public class TeacherProfileSettingsCtrl {
 
         public void setThemes(List<SelectItem> themes) {
             this.themes = themes;
-        }
-
-        public AcademicTeacherCVItem getExperienceItem() {
-            return experienceItem;
-        }
-
-        public void setExperienceItem(AcademicTeacherCVItem experienceItem) {
-            this.experienceItem = experienceItem;
-        }
-
-        public AcademicTeacherCVItem getResearchItem() {
-            return researchItem;
-        }
-
-        public void setResearchItem(AcademicTeacherCVItem researchItem) {
-            this.researchItem = researchItem;
-        }
-
-        public AcademicTeacherCVItem getCourseItem() {
-            return courseItem;
-        }
-
-        public void setCourseItem(AcademicTeacherCVItem courseItem) {
-            this.courseItem = courseItem;
-        }
-
-        public AcademicTeacherCVItem getEducationItem() {
-            return educationItem;
-        }
-
-        public void setEducationItem(AcademicTeacherCVItem educationItem) {
-            this.educationItem = educationItem;
-        }
-
-        public AcademicTeacherCVItem getProjectItem() {
-            return projectItem;
-        }
-
-        public void setProjectItem(AcademicTeacherCVItem projectItem) {
-            this.projectItem = projectItem;
         }
 
         public AcademicTeacher getTeacher() {
@@ -612,6 +503,14 @@ public class TeacherProfileSettingsCtrl {
 
         public void setCourseSection(AcademicCVSection courseSection) {
             this.courseSection = courseSection;
+        }
+
+        public AcademicTeacherCVItem getItem() {
+            return item;
+        }
+
+        public void setItem(AcademicTeacherCVItem item) {
+            this.item = item;
         }
 
     }

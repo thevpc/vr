@@ -329,18 +329,22 @@ public class CalendarsPlugin {
     }
 
 
-    private Set<String> splitOtherNames(String value) {
-        Set<String> all = new HashSet<>();
-        if (value != null) {
-            for (String s : value.split(",|;")) {
-                if (s.trim().length() > 0) {
-                    all.add(s.trim().toLowerCase());
-                }
-            }
-        }
-        return all;
-    }
+//    private Set<String> splitOtherNames(String value) {
+//        Set<String> all = new HashSet<>();
+//        if (value != null) {
+//            for (String s : value.split(",|;")) {
+//                if (s.trim().length() > 0) {
+//                    all.add(s.trim().toLowerCase());
+//                }
+//            }
+//        }
+//        return all;
+//    }
 
+
+    public List<CalendarWeek> findMyCalenders() {
+        return loadCalendars("my-calendars", "");
+    }
 
     public List<CalendarWeek> loadCalendars(String type, String key) {
         List<CalendarWeek> all = new ArrayList<>();

@@ -14,65 +14,63 @@
 
         <ui:composition template="#{vr.themePath}/templates/dialog-template.xhtml">
             <ui:define name="dialog-title">
-                <h:outputText value="Ajouter axe de recherche"/>
+                <h:outputText value="Ajouter un cours"/>
             </ui:define>
             <ui:define name="dialog-body">
-                <h:form id="myform" enctype="multipart/form-data">
+                <h:form id="courseform" enctype="multipart/form-data">
                     <p:messages id="dialogMessages" showDetail="true"/>
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12 col-xs-12">
-                            <div class="info-box ">
-                                <ul class="timeline">
-                                    <li class="time-label"></li>
-                                    <li>
-                                        <i class="fa fa-graduation-cap bg-purple"></i>
-                                        <div class="timeline-item">
-                                            <h3 class="timeline-header bg-purple">
-                                                <div class="input-group">
-                                                    <span class="input-group-addon">Titre : </span>
-                                                    <h:inputText  value="#{teacherProfileSettingsCtrl.model.courseItem.title}" class="form-control" id="courseTitle"/>
-                                                </div>
-                                            </h3>
-                                            <div class="timeline-body">
-                                                <div class="form-group">
-                                                    <h:outputLabel class="col-sm-3 control-label text-purple"
-                                                                   value="Etablissement"
-                                                                   for="courseCompany"/>
-                                                    <div class="col-sm-7">
-                                                        <p:selectOneMenu class="form-control vr-form-control"
-                                                                         id="courseCompany"
-                                                                         value="#{teacherProfileSettingsCtrl.model.courseItem.company}"
-                                                                         converter="#{vr.entityObjConverter('AppCompany')}">
-                                                            <f:selectItems
-                                                                    value="#{vr.entitySelectItems('AppCompany',true,false)}"/>
-                                                        </p:selectOneMenu>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <h:outputLabel class="col-sm-3 control-label text-purple" value="Détails" for="courseDetails" />
-                                                    <div class="col-sm-7">
-                                                        <h:inputTextarea value="#{teacherProfileSettingsCtrl.model.courseItem.details}" rows="3" class="form-control" id="courseDetails"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
+                    <div class="row" style="margin-top: 10px;">
+                    <div class="box box-solid">
+                        <div class="box-header with-border">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-aqua"><i class="fa fa-book"></i></span>
+                                <div class="info-box-content">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">Titre : </span>
+                                        <h:inputText  value="#{teacherProfileSettingsCtrl.model.item.title}" class="form-control" id="title"/>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
+                        <div class="box-body">
+                            <div class="form-group">
+                                <h:outputLabel class="col-sm-3 control-label text-aqua"
+                                               value="Etablissement"
+                                               for="company"/>
+                                <div class="col-sm-7">
+                                    <p:selectOneMenu class="form-control vr-form-control"
+                                                     id="company"
+                                                     value="#{teacherProfileSettingsCtrl.model.item.company}"
+                                                     converter="#{vr.entityObjConverter('AppCompany')}">
+                                        <f:selectItems
+                                            value="#{vr.entitySelectItems('AppCompany',true,false)}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <h:outputLabel class="col-sm-3 control-label text-aqua" value="Détails" for="details" />
+                                <div class="col-sm-7">
+                                    <h:inputTextarea value="#{teacherProfileSettingsCtrl.model.item.details}" rows="3" class="form-control" id="details"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <h:outputLabel class="col-sm-3 control-label text-aqua" value="Mots-clés" for="keywords" />
+                                <div class="col-sm-7">
+                                    <h:inputTextarea value="#{teacherProfileSettingsCtrl.model.item.keywords}" rows="3" class="form-control" id="keywords"/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-
+                    </div>
                     <div class="row" style="margin-top: 10px;">
-                        <p:commandButton icon="ui-icon-search" actionListener="#{teacherProfileSettingsCtrl.onSaveNewCourseItem()}"
-                                         value="Appliquer" styleClass="btn btn-primary"
+                        <p:commandButton icon="ui-icon-search" actionListener="#{teacherProfileSettingsCtrl.onSaveNewItem(teacherProfileSettingsCtrl.model.courseSection)}"
+                                         value="Enregister" styleClass="btn btn-primary pull-right"
                                          style="margin-right: 10px"
-                        />
+                                         />
                         <p:commandButton icon="ui-icon-cancel"
-                                         actionListener="#{academicAppMyTeamsCtrl.fireEventExtraDialogClosed()}"
-                                         value="Fermer" styleClass="btn btn-default"
-                        />
+                                         actionListener="#{teacherProfileSettingsCtrl.onCloseDialog()}"
+                                         value="Annuler" styleClass="btn btn-default"
+                                         />
                     </div>
                 </h:form>
 
@@ -82,8 +80,4 @@
     </h:body>
 
 </html>
-
-
-
-
 

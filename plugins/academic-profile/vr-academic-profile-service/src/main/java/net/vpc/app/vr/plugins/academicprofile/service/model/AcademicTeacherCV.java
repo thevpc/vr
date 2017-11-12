@@ -70,6 +70,7 @@ public class AcademicTeacherCV {
     private String socialURL2;
     private String socialURL3;
     private String socialURL4;
+    private String socialURL5;
     private String rssURL;
     @Summary
     @Field(persistAccessLevel = AccessLevel.PROTECTED, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PUBLIC)
@@ -217,6 +218,14 @@ public class AcademicTeacherCV {
 
     public void setSocialURL4(String socialURL4) {
         this.socialURL4 = socialURL4;
+    }
+
+    public String getSocialURL5() {
+        return socialURL5;
+    }
+
+    public void setSocialURL5(String socialURL5) {
+        this.socialURL5 = socialURL5;
     }
 
     public long getViewsCounter() {

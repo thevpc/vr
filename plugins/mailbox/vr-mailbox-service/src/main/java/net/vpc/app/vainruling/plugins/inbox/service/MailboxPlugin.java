@@ -272,6 +272,9 @@ public class MailboxPlugin {
     }
 
     public List<MailboxReceived> findLocalReceivedMessages(final int userId, final int maxCount, int threadId, boolean fullThread, final boolean unreadOnly, final MailboxFolder folder) {
+        if(!core.isCurrentSessionAdmin() && core.getCurrentUserId()!=userId){
+            throw new IllegalArgumentException("Not Allowed");
+        }
         return UPA.getContext().invokePrivileged(new Action<List<MailboxReceived>>() {
 
             @Override
@@ -347,6 +350,9 @@ public class MailboxPlugin {
     }
 
     public List<MailboxSent> findLocalSentMessages(final int userId, final int maxCount, int threadId, final boolean unreadOnly, final MailboxFolder folder) {
+        if(!core.isCurrentSessionAdmin() && core.getCurrentUserId()!=userId){
+            throw new IllegalArgumentException("Not Allowed");
+        }
         return UPA.getContext().invokePrivileged(new Action<List<MailboxSent>>() {
 
             @Override
@@ -425,6 +431,9 @@ public class MailboxPlugin {
     }
 
     public int getLocalUnreadInboxCount(final int userId) {
+        if(!core.isCurrentSessionAdmin() && core.getCurrentUserId()!=userId){
+            throw new IllegalArgumentException("Not Allowed");
+        }
         return UPA.getContext().invokePrivileged(new Action<Integer>() {
 
             @Override
@@ -436,7 +445,7 @@ public class MailboxPlugin {
         }, null);
     }
 
-    public GoMail createGoMail(MailData data) throws IOException {
+    GoMail createGoMail(MailData data) throws IOException {
         GoMail m = new GoMail();
         if (data.getProperties() != null) {
             m.getProperties().putAll(data.getProperties());
@@ -472,7 +481,7 @@ public class MailboxPlugin {
         return m;
     }
 
-    public void prepareRecipients(GoMail m, RecipientType etype, String recipientProfiles, String filterExpression, boolean preferLogin) {
+    void prepareRecipients(GoMail m, RecipientType etype, String recipientProfiles, String filterExpression, boolean preferLogin) {
         MailboxPlugin emailPlugin = VrApp.getBean(MailboxPlugin.class);
         if (etype == null) {
             etype = RecipientType.TOEACH;
@@ -501,6 +510,9 @@ public class MailboxPlugin {
     }
 
     public void sendWelcomeEmail(List<AppUser> users, boolean applyFilter) {
+        if(!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.SendWelcomeEmail")){
+            throw new IllegalArgumentException("Not Allowed");
+        }
         for (AppUser u : users) {
             boolean ok = true;
             //should reload user
@@ -524,6 +536,9 @@ public class MailboxPlugin {
     }
 
     public void sendWelcomeEmail(boolean applyFilter) {
+        if(!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.SendWelcomeEmail")){
+            throw new IllegalArgumentException("Not Allowed");
+        }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         for (AppUser u : core.findUsers()) {
             boolean ok = true;
@@ -541,6 +556,9 @@ public class MailboxPlugin {
     private void sendWelcomeEmail(final AppUser u, Properties roProperties, GoMailListener listener) {
         try {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
+            if(!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.SendWelcomeEmail")){
+                throw new IllegalArgumentException("Not Allowed");
+            }
             MailData m = new MailData();
             m.setExternal(true);
             m.setTo(u.getLogin());
@@ -577,6 +595,9 @@ public class MailboxPlugin {
     }
 
     public int sendLocalMail(GoMail email, final int sentMessageId, final boolean sendExternal) throws IOException {
+        if(!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("sendLocalMail")){
+            throw new IllegalArgumentException("Not Allowed");
+        }
         return sendMailByAgent(email, null, new GoMailListener() {
             @Override
             public void onBeforeSend(GoMailMessage mail) {
@@ -605,6 +626,9 @@ public class MailboxPlugin {
     }
 
     public void sendLocalMail(MailboxSent message, Integer templateId, boolean persistOutbox) throws IOException {
+        if(!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("sendLocalMail")){
+            throw new IllegalArgumentException("Not Allowed");
+        }
         GoMail m = new GoMail();
         m.from(message.getSender().getLogin());
         message.setSendTime(new DateTime());
@@ -695,15 +719,17 @@ public class MailboxPlugin {
 //        sendExternalMail(mail, null, null);
 //    }
     public void sendExternalMail(GoMail email, Properties roProperties, GoMailListener listener) throws IOException {
+        if(!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("sendExternalMail")){
+            throw new IllegalArgumentException("Not Allowed");
+        }
 //        email.setSimulate(true);
-        email.toString();
         int count = gomailFactory.createProcessor(new VrExternalMailAgent(gomailFactory), null).sendMessage(email, roProperties, listener);
         if (count <= 0) {
             throw new IllegalArgumentException("No valid Address");
         }
     }
 
-    public int sendMailByAgent(GoMail email, Properties roProperties, GoMailListener listener, GoMailAgent agent) throws IOException {
+    int sendMailByAgent(GoMail email, Properties roProperties, GoMailListener listener, GoMailAgent agent) throws IOException {
         GoMailModuleProcessor _processor = gomailFactory.createProcessor(agent, null);
         int count = _processor.sendMessage(email, roProperties, listener);
         if (count <= 0) {

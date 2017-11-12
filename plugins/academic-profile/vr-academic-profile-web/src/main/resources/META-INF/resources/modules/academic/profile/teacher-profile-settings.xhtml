@@ -32,92 +32,89 @@
                                     <h:form id="basicInformationsForm" enctype="multipart/form-data" class="form-horizontal">
                                         <div class="box-body">
                                             <div class="form-group">
-                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Email" for="emailInput" />
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Email 1" for="email1" />
                                                 <div class="col-sm-7">
-                                                    <h:inputText  value="#{teacherProfileSettingsCtrl.model.contact.email}" class="form-control" id="emailInput"/>
+                                                    <h:inputText  value="#{teacherProfileSettingsCtrl.model.contact.email}" class="form-control" id="email1"/>
                                                 </div>
                                             </div>
                                             <br/>
                                             <div class="form-group">
-                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Tél 1" for="phone1Input" />
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Email 2" for="email2" />
                                                 <div class="col-sm-7">
-                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.contact.phone1}"  class="form-control" id="phone1Input"/>
+                                                    <h:inputText  value="#{teacherProfileSettingsCtrl.model.contact.email2}" class="form-control" id="email2"/>
+                                                    <!-- !!!!-->
+                                                </div>
+                                            </div>
+                                            <br/>
+
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Téléphones"/>
+                                                <div class="col-xs-3">
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.contact.phone1}"  styleClass="form-control"/>
+                                                </div>
+                                                <div class="col-xs-2">
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.contact.phone2}"  styleClass="form-control"/>
+                                                </div>
+                                                <div class="col-xs-2">
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.contact.phone3}"  styleClass="form-control"/>
+                                                </div>
+
+                                            </div>
+                                            <br/>
+
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Numéro du bureau" for="officeLocationNumber" />
+                                                <div class="col-sm-7">
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.contact.officeLocationNumber}"  class="form-control" id="officeLocationNumber"/>
                                                 </div>
                                             </div>
                                             <br/>
                                             <div class="form-group">
-                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Tél 2" for="phone2Input" />
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Numéro de téléphone du bureau" for="officePhoneNumber" />
                                                 <div class="col-sm-7">
-                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.contact.phone2}"  class="form-control" id="phone2Input"/>
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.contact.officePhoneNumber}"  class="form-control" id="officePhoneNumber"/>
                                                 </div>
                                             </div>
                                             <br/>
                                             <div class="form-group">
-                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Tél 3" for="phone3Input" />
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Site Web" for="webSite" />
                                                 <div class="col-sm-7">
-                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.contact.phone3}"  class="form-control" id="phone3Input"/>
-                                                </div>
-                                            </div>
-                                            <br/>
-                                            <div class="form-group">
-                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Numéro du bureau" for="officeLocationNumberInput" />
-                                                <div class="col-sm-7">
-                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.contact.officeLocationNumber}"  class="form-control" id="officeLocationNumberInput"/>
-                                                </div>
-                                            </div>
-                                            <br/>
-                                            <div class="form-group">
-                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Numéro de téléphone du bureau" for="officePhoneNumberInput" />
-                                                <div class="col-sm-7">
-                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.contact.officePhoneNumber}"  class="form-control" id="officePhoneNumberInput"/>
-                                                </div>
-                                            </div>
-                                            <br/>
-                                            <div class="form-group">
-                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Site Web" for="webSiteInput" />
-                                                <div class="col-sm-7">
-                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.teacherCV.wwwURL}" class="form-control" id="webSiteInput"/>
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.teacherCV.wwwURL}" class="form-control" id="webSite"/>
                                                 </div>
                                             </div>
                                             <br/>
                                             <div class="form-group">
                                                 <h:outputLabel class="col-sm-3 control-label text-blue" value="Twitter URL" for="twitterURL" />
                                                 <div class="col-sm-7">
-                                                    <div class="input-group">
-                                                        <span class="input-group-addon">http://</span>
-                                                        <h:inputText  value="#{teacherProfileSettingsCtrl.model.teacherCV.socialURL1}" class="form-control" id="twitterURL"/>
-                                                    </div>
+                                                    <h:inputText  value="#{teacherProfileSettingsCtrl.model.teacherCV.socialURL1}" class="form-control" id="twitterURL"/>
                                                 </div>
                                             </div>
                                             <br/>
                                             <div class="form-group">
                                                 <h:outputLabel class="col-sm-3 control-label text-blue" value="Google+ URL" for="googlePlusURL" />
                                                 <div class="col-sm-7">
-                                                    <div class="input-group">
-                                                        <span class="input-group-addon">http://</span>
-                                                        <h:inputText  value="#{teacherProfileSettingsCtrl.model.teacherCV.socialURL2}" class="form-control" id="googlePlusURL"/>
-                                                    </div>
+                                                       <h:inputText  value="#{teacherProfileSettingsCtrl.model.teacherCV.socialURL2}" class="form-control" id="googlePlusURL"/>
                                                 </div>
                                             </div>
                                             <br/>
                                             <div class="form-group">
                                                 <h:outputLabel class="col-sm-3 control-label text-blue" value="Linkedin URL" for="linkedinURL" />
                                                 <div class="col-sm-7">
-                                                    <div class="input-group">
-                                                        <span class="input-group-addon">http://</span>
                                                         <h:inputText  value="#{teacherProfileSettingsCtrl.model.teacherCV.socialURL3}" class="form-control" id="linkedinURL"/>
                                                     </div>
-                                                </div>
                                             </div>
                                             <br/>
                                             <div class="form-group">
                                                 <h:outputLabel class="col-sm-3 control-label text-blue" value="GitHub URL" for="gitHubURL" />
                                                 <div class="col-sm-7">
-                                                    <div class="input-group">
-                                                        <span class="input-group-addon">http://</span>
                                                         <h:inputText  value="#{teacherProfileSettingsCtrl.model.teacherCV.socialURL4}" class="form-control" id="gitHubURL"/>
-                                                    </div>
                                                 </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-blue" value="Facebook URL" for="facebookURL" />
+                                                <div class="col-sm-7">
+                                                        <h:inputText  value="#{teacherProfileSettingsCtrl.model.teacherCV.socialURL5}" class="form-control" id="facebookURL"/>
+                                                 </div>
                                             </div>
                                             <h:commandLink id="updateBasicInformationSection" class="btn bg-blue btn-xs pull-right" action="#{teacherProfileSettingsCtrl.updateBasicInformationSection()}" value="Mettre à jour" />
                                         </div>
@@ -125,7 +122,7 @@
                                 </div> 
                             </div>
 
-                            <!-- About section -->
+                            
                             <div class="panel box box-solid" style="border-color: #D81B60;">
                                 <div class="box-header with-border" >
                                     <h4 class="box-title">
@@ -136,9 +133,9 @@
                                     <h:form id="aboutForm" enctype="multipart/form-data" class="form-horizontal">
                                         <div class="box-body">
                                             <div class="form-group">
-                                                <h:outputLabel class="col-sm-3 control-label text-maroon" value="A propos" for="aboutTextarea" />
+                                                <h:outputLabel class="col-sm-3 control-label text-maroon" value="A propos" for="about" />
                                                 <div class="col-sm-7">
-                                                    <h:inputTextarea value="#{teacherProfileSettingsCtrl.model.contact.description}" rows="3" class="form-control" id="aboutTextarea"/>
+                                                    <h:inputTextarea value="#{teacherProfileSettingsCtrl.model.contact.description}" rows="3" class="form-control" id="about"/>
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -159,7 +156,7 @@
                                 </div>
                             </div>
 
-                            <!-- Experience section -->
+                            
                             <div class="panel box box-solid" style="border-color: #001F3F;">
                                 <div class="box-header with-border">
                                     <h4 class="box-title">
@@ -232,7 +229,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <ui:include src="add-teacher-experience.xhtml"/>
+                         
 
 
 
@@ -271,7 +268,7 @@
                                                                   <div class="form-group">
                                                                       <h:outputLabel class="col-sm-3 control-label text-purple" value="A" for="educationToDate" />
                                                                       <div class="col-sm-7">
-                                                                          <p:calendar value="#{educationItem.toDate}" id="educationToDate"  converter="vpcDateConverter"/>
+                                                                           <p:calendar value="#{educationItem.toDate}" id="educationToDate"  converter="vpcDateConverter"/>
                                                                       </div>
                                                                   </div>
                                                                 <div class="form-group">
@@ -309,7 +306,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <ui:include src="add-teacher-education-dialog.xhtml"/>
+                       
 
 
 
@@ -346,7 +343,7 @@
                                                         <div class="form-group">
                                                             <h:outputLabel class="col-sm-3 control-label text-black" value="A" for="projectToDate" />
                                                             <div class="col-sm-7">
-                                                                <p:calendar value="#{projectItem.toDate}" id="projectToDate"  converter="vpcDateConverter"/>
+                                                                 <p:calendar value="#{projectItem.toDate}" id="projectToDate"  converter="vpcDateConverter"/>
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
@@ -384,7 +381,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <ui:include src="add-teacher-project-dialog.xhtml"/>
+                          
 
 
                             <div class="panel box box-solid" style="border-color: #00a65a;">
@@ -448,7 +445,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <ui:include src="add-teacher-research-dialog.xhtml"/>
+                            
 
 
 
@@ -461,7 +458,7 @@
                                 <div id="collapseEight" class="panel-collapse collapse">
                                     <div class="box-body">
                                         <h:form id="courseForm" enctype="multipart/form-data" class="form-horizontal"> 
-                                            <p:commandButton id="addNewCourseBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter" onclick="PF('addCourse').show();"/>
+                                            <p:commandButton id="addingNewCourseBtn" class="btn btn-xs btn-primary pull-right" value="Ajouter"  actionListener="#{teacherProfileSettingsCtrl.onNewCourse}"/>
                                             <br/>
                                             <br/>
                                             <ui:repeat var="courseItem" value="#{teacherProfileSettingsCtrl.model.courseList}">
@@ -513,23 +510,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <ui:include src="add-teacher-course-dialog.xhtml"/>
-
-
-                            <!--<div class="panel box box-solid" style="border-color: #f56954;">
-                                  <div class="box-header with-border">
-                                      <h4 class="box-title">
-                                          <a class="text-red" style="text-decoration: underline;" data-toggle="collapse" data-parent="#accordion" href="#collapseNine"><i class="fa fa-language margin-r-5"></i>Compétences</a>
-                                      </h4>
-                                  </div>
-                                  <div id="collapseNine" class="panel-collapse collapse">
-                                      <div class="box-body">
-                                          <h:form id="themeForm" enctype="multipart/form-data">
-  
-                                          </h:form>
-                                      </div>
-                                  </div>
-                              </div> -->
+                            
 
                             <div class="panel box box-solid" style="border-color: #ff851b;">
                                 <div class="box-header with-border">

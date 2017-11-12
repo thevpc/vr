@@ -97,11 +97,11 @@ public class ProfileFilterExpression {
         profileListExpression = validateProfileListExpr(profileListExpression,true,null);
     }
 
-    public static void main(String[] args) {
-        String str = "( ( h)) , tt";
-//        String str = " ('taha  hammadi' ) ( ( h))";
-        System.out.println(validateProfileListExpr(str,true,null));
-    }
+//    public static void main(String[] args) {
+//        String str = "( ( h)) , tt";
+////        String str = " ('taha  hammadi' ) ( ( h))";
+//        System.out.println(validateProfileListExpr(str,true,null));
+//    }
 
     public static String validateProfileListExpr(String str,boolean trim,ProfileStringConverter converter) {
         if (str == null) {

@@ -64,11 +64,15 @@
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-university margin-r-5"></i>Discipline</strong>
                                                                 <p>#{teacherProfileSettingsCtrl.model.teacher.officialDiscipline.name}</p>
-                                                                <p>#{teacherProfileSettingsCtrl.model.teacher.discipline}</p>
+                                                                <p>
+                                                                    <ui:repeat value="#{vr.strsplit(teacherProfileSettingsCtrl.model.teacher.discipline,' ,;')}" var="prName">
+                                                                        <span class="label label-#{vr.hashToArr(prName,'danger','success','info','warning','primary','default')}">#{prName}</span>
+                                                                    </ui:repeat>
+                                                                </p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-users margin-r-5"></i>Groupes</strong>
                                                                 <p>
-                                                                    <ui:repeat value="#{vr.userSession.profiles}" var="prName">
+                                                                    <ui:repeat value="#{vr.currentSession.profiles}" var="prName">
                                                                         <span class="label label-#{vr.hashToArr(prName.name,'danger','success','info','warning','primary','default')}">#{prName.name}</span>
                                                                     </ui:repeat>
                                                                 </p>
@@ -82,10 +86,10 @@
                                                             </div>
                                                         </div>
                                                         <div class="text-center">
-                                                            <a href="http://#{teacherProfileSettingsCtrl.model.teacherCV.socialURL1}" class="btn btn-social-icon btn-twitter"><i class="fa fa-twitter"></i></a>
-                                                            <a href="http://#{teacherProfileSettingsCtrl.model.teacherCV.socialURL2}" class="btn btn-social-icon btn-linkedin"><i class="fa fa-linkedin"></i></a>
-                                                            <a href="http://#{teacherProfileSettingsCtrl.model.teacherCV.socialURL3}" class="btn btn-social-icon btn-google"><i class="fa fa-google-plus"></i></a>
-                                                            <a href="http://#{teacherProfileSettingsCtrl.model.teacherCV.socialURL4}" class="btn btn-social-icon btn-github"><i class="fa fa-github"></i></a>
+                                                            <a href="#{teacherProfileSettingsCtrl.model.teacherCV.socialURL1}" class="btn btn-social-icon btn-twitter"><i class="fa fa-twitter"></i></a>
+                                                            <a href="#{teacherProfileSettingsCtrl.model.teacherCV.socialURL2}" class="btn btn-social-icon btn-linkedin"><i class="fa fa-linkedin"></i></a>
+                                                            <a href="#{teacherProfileSettingsCtrl.model.teacherCV.socialURL3}" class="btn btn-social-icon btn-google"><i class="fa fa-google-plus"></i></a>
+                                                            <a href="#{teacherProfileSettingsCtrl.model.teacherCV.socialURL4}" class="btn btn-social-icon btn-github"><i class="fa fa-github"></i></a>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -172,7 +176,11 @@
                                                                     <p><strong>De </strong>#{item.fromDate} <strong>à </strong>#{item.toDate}</p>
                                                                     <p><strong>Etablissement : </strong>#{item.company.name}</p>
                                                                     <p><strong>Détails : </strong>#{item.details}</p>
-                                                                    <p><strong>Mots-clés : </strong>#{item.keywords}</p>
+                                                                    <p><strong>Mots-clés : </strong>
+                                                                        <ui:repeat value="#{vr.strsplit(item.keywords,' ,;')}" var="prName">
+                                                                            <span class="label label-#{vr.hashToArr(prName,'default')}">#{prName}</span>
+                                                                        </ui:repeat>
+                                                                    </p>
                                                                 </div>
                                                             </div>
                                                         </ui:repeat>
@@ -198,7 +206,11 @@
                                                                 <div class="box-body">
                                                                     <p><strong>Etablissement : </strong>#{item.company.name}</p>
                                                                     <p><strong>Détails : </strong>#{item.details}</p>
-                                                                    <p><strong>Mots-clés : </strong>#{item.keywords}</p>
+                                                                    <p><strong>Mots-clés : </strong>
+                                                                        <ui:repeat value="#{vr.strsplit(item.keywords,' ,;')}" var="prName">
+                                                                            <span class="label label-#{vr.hashToArr(prName,'success')}">#{prName}</span>
+                                                                        </ui:repeat>
+                                                                    </p>
                                                                 </div>
                                                             </div>
                                                         </ui:repeat>
@@ -223,7 +235,11 @@
                                                                 <div class="box-body">
                                                                     <p><strong>Etablissement : </strong>#{item.company.name}</p>
                                                                     <p><strong>Détails : </strong>#{item.details}</p>
-                                                                    <p><strong>Mots-clés : </strong>#{item.keywords}</p>
+                                                                    <p><strong>Mots-clés : </strong>
+                                                                        <ui:repeat value="#{vr.strsplit(item.keywords,' ,;')}" var="prName">
+                                                                            <span class="label label-#{vr.hashToArr(prName,'info')}">#{prName}</span>
+                                                                        </ui:repeat>
+                                                                    </p>
                                                                 </div>
                                                             </div>
                                                         </ui:repeat>

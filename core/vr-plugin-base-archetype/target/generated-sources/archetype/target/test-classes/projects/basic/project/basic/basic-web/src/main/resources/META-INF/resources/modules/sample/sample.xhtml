@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+<h:head>
+</h:head>
+<!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+<h:body>
+    <ui:composition template="#{vr.privateTemplatePath}">
+        <ui:define name="content">
+            <h:form id="listForm" enctype="multipart/form-data">
+                <div class="row" style="margin-left: 10px;margin-bottom: 20px;">
+                    <p:commandLink value="Rafr." value="#{sampleCtrl.model.message}"
+                                     icon="ui-ribbonicon-refresh"
+                                     styleClass="btn btn-primary vr-toolbox-button-fixed-height" ajax="true"
+                                     actionListener="#{sampleCtrl.onMyAction}" update=":listForm"/>
+                </div>
+        </ui:define>
+    </ui:composition>
+</h:body>
+</html>

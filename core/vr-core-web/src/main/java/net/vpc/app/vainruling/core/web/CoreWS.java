@@ -53,15 +53,10 @@ public class CoreWS {
         }
     }
 
-    @RequestMapping("/core/invoke")
-    public String invoke(@RequestParam("commands") WSCommand[] commands) {
-        System.out.println(commands == null ? null : Arrays.asList(commands));
-        return "thanks";
-    }
 //    @GET
 //    @Transactional
     @RequestMapping("/core/wscript")
-    public Map<String,String> rsi(@RequestParam("script") String script) {
+    public Map<String,String> rsi(@RequestParam("s") String script) {
         WebScriptServiceInvoker e=new WebScriptServiceInvoker();
         return e.invoke(script);
     }

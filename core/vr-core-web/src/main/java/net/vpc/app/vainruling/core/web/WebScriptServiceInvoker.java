@@ -9,11 +9,13 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.util.VrPlatformUtils;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UPA;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import java.lang.reflect.Method;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -34,9 +36,9 @@ public class WebScriptServiceInvoker {
         UserSession s = UserSession.get();
         if (s == null || !s.isConnected()) {
             Map out = new LinkedHashMap();
-            Map<String,Object> err=new LinkedHashMap<>();
-            err.put("type","SecurityException");
-            err.put("message","not connected");
+            Map<String, Object> err = new LinkedHashMap<>();
+            err.put("type", "SecurityException");
+            err.put("message", "not connected");
             out.put("$error", err);
             return out;
         }
@@ -48,9 +50,9 @@ public class WebScriptServiceInvoker {
                 return (Map) scriptEngine.get("out");
             } catch (Exception e) {
                 Map out = (Map) scriptEngine.get("out");
-                Map<String,Object> err=new LinkedHashMap<>();
-                err.put("type",e.getClass().getSimpleName());
-                err.put("message",e.getMessage());
+                Map<String, Object> err = new LinkedHashMap<>();
+                err.put("type", e.getClass().getSimpleName());
+                err.put("message", e.getMessage());
                 out.put("$error", err);
                 return out;
             }
@@ -78,6 +80,10 @@ public class WebScriptServiceInvoker {
             engine.eval("function typeFor(n) { return (app.typeFor(n)); }");
             engine.eval("function fromJson(t,n) { return (app.fromJson(t,n)); }");
             engine.eval("function convert(t,n) { return (app.convert(t,n)); }");
+            engine.eval("function anydate(t,f) { return (app.anydate(t,f)); }");
+            engine.eval("function date(t) { return (app.date(t)); }");
+            engine.eval("function datetime(t) { return (app.datetime(t)); }");
+            engine.eval("function time(t) { return (app.time(t)); }");
         } catch (Exception any) {
             throw new RuntimeException(any);
         }
@@ -113,50 +119,82 @@ public class WebScriptServiceInvoker {
             return VrApp.getBean(name);
         }
 
-        public Object convert(String toType,Object value) {
-            if(value==null){
-                return null;
-            }
-            return convert2(typeFor(String.valueOf(toType)),value);
+        public Object datetime(Object dte) {
+            return anydate(dte, "yyyy-MM-dd HH:mm:SS");
         }
 
-        public Object convert2(Class expectedType,Object value) {
-            if(value==null){
+        public Object date(Object dte) {
+            return anydate(dte, "yyyy-MM-dd");
+        }
+
+        public Object time(Object dte) {
+            return anydate(dte, "HH:mm:SS");
+        }
+
+        public Object anydate(Object dte, String... formats) {
+            if (dte instanceof Date) {
+                return (Object) dte;
+            }
+            if (formats == null || formats.length == 0) {
+                formats = new String[]{"yyyy-MM-dd HH:mm:SS", "yyyy-MM-dd", "HH:mm:SS"};
+            }
+            for (String format : formats) {
+                if (StringUtils.isEmpty(format)) {
+                    format = "yyyy-MM-dd HH:mm:SS";
+                }
+                try {
+                    return new SimpleDateFormat(format).parse(String.valueOf(dte));
+                } catch (ParseException e) {
+                    //ignore
+                }
+            }
+            throw new IllegalArgumentException("invalid date " + dte + " for formats " + Arrays.asList(formats));
+        }
+
+        public Object convert(String toType, Object value) {
+            if (value == null) {
                 return null;
             }
-            if(String.class.equals(expectedType)){
+            return convert2(typeFor(String.valueOf(toType)), value);
+        }
+
+        public Object convert2(Class expectedType, Object value) {
+            if (value == null) {
+                return null;
+            }
+            if (String.class.equals(expectedType)) {
                 return String.valueOf(value);
             }
-            if(JsonElement.class.isAssignableFrom(expectedType)){
-                if(value instanceof ScriptObjectMirror){
-                    ScriptObjectMirror m=(ScriptObjectMirror)value;
-                    JsonObject oo=new JsonObject();
-                    for (Map.Entry<String,Object> e : m.entrySet()) {
+            if (JsonElement.class.isAssignableFrom(expectedType)) {
+                if (value instanceof ScriptObjectMirror) {
+                    ScriptObjectMirror m = (ScriptObjectMirror) value;
+                    JsonObject oo = new JsonObject();
+                    for (Map.Entry<String, Object> e : m.entrySet()) {
                         VrPlatformUtils.PropertyInfo property = VrPlatformUtils.forType(expectedType).getProperty(e.getKey());
                         Object value1 = e.getValue();
                         Object t = convert2(property.getType().getClazz(), value1);
-                        oo.add(e.getKey(), (JsonElement) convert2(JsonElement.class,t));
+                        oo.add(e.getKey(), (JsonElement) convert2(JsonElement.class, t));
                     }
-                }else{
-                    Gson g=new Gson();
+                } else {
+                    Gson g = new Gson();
                     return g.toJsonTree(value);
                 }
                 return String.valueOf(value);
             }
-            if(value instanceof String) {
+            if (value instanceof String) {
                 return VrUtils.parseJSONObject(String.valueOf(value), expectedType);
             }
-            if(value instanceof ScriptObjectMirror){
-                ScriptObjectMirror m=(ScriptObjectMirror)value;
-                Object oo= null;
+            if (value instanceof ScriptObjectMirror) {
+                ScriptObjectMirror m = (ScriptObjectMirror) value;
+                Object oo = null;
                 try {
                     oo = expectedType.newInstance();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-                for (Map.Entry<String,Object> e : m.entrySet()) {
+                for (Map.Entry<String, Object> e : m.entrySet()) {
                     VrPlatformUtils.PropertyInfo property = VrPlatformUtils.forType(expectedType).getProperty(e.getKey());
-                    if(property.isUpdatable()) {
+                    if (property.isUpdatable()) {
                         property.set(oo, convert2(property.getType().getClazz(), e.getValue()));
                     }
                 }

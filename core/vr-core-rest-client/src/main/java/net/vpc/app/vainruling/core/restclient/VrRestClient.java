@@ -44,7 +44,7 @@ public class VrRestClient {
 
         //http://serveur/ws/wscript?script=Return(bean('calendarsPlugin').loadCalendars('my-calendars', ''));" +
         JsonObject ret = s.wscriptJson("" +
-                "Return(bean('calendarsPlugin').loadCalendars('my-calendars', ''));Return(bean('calendarsPlugin').loadCalendars('my-calendars', ''));" +
+                "Return(bean('calendarsPlugin').findMyCalendars());" +
                 "");
 //        Map ret = s.remoteScriptInvocation("" +
 //                "Return(bean('vrMenuManager').createMenu(''));" +

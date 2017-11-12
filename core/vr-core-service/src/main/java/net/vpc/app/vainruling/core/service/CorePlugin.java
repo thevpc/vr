@@ -39,6 +39,9 @@ import org.springframework.context.ApplicationContext;
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Timestamp;
@@ -2537,11 +2540,18 @@ public class CorePlugin {
         return plugins;
     }
 
-    private String typeToString(Class cls) {
-        if (cls.isArray()) {
-            return typeToString(cls.getComponentType()) + "[]";
+    private String typeToString(Type type) {
+        if(type instanceof Class) {
+            Class cls=(Class) type;
+            if (cls.isArray()) {
+                return typeToString(cls.getComponentType()) + "[]";
+            }
+            return cls.getName();
+        }else if(type instanceof ParameterizedType){
+            ParameterizedType ptype=(ParameterizedType) type;
+            return ptype.toString();
         }
-        return cls.getName();
+        return type.toString();
     }
 
     public Map<String, List<String>> getPluginsAPI() {
@@ -2553,15 +2563,46 @@ public class CorePlugin {
             ArrayList<String> a = new ArrayList<>();
             //declared Method
             for (Method method : bean.getClass().getMethods()) {
+                String mname = method.getName();
+                if(Modifier.isStatic(method.getModifiers()) || Modifier.isAbstract(method.getModifiers())){
+                    continue;
+                }
+                if(method.getParameterCount()==0){
+                    if(
+                            mname.equals("toString")
+                            || mname.equals("notify")
+                            || mname.equals("notifyAll")
+                            || mname.equals("getClass")
+                            || mname.equals("hashCode")
+                            || mname.equals("wait")
+                            ){
+                        continue;
+                    }
+                }
+                if(method.getParameterCount()==1){
+                    if(
+                            (mname.equals("wait") && method.getParameterTypes()[0].equals(Long.TYPE))
+                            || (mname.equals("equals") && method.getParameterTypes()[0].equals(Object.class))
+                            ){
+                        continue;
+                    }
+                }
+                if(method.getParameterCount()==2){
+                    if(
+                            (mname.equals("wait") && method.getParameterTypes()[0].equals(Long.TYPE)&& method.getParameterTypes()[1].equals(Integer.TYPE))
+                            ){
+                        continue;
+                    }
+                }
                 StringBuilder sb = new StringBuilder();
-                sb.append(typeToString(method.getReturnType()));
+                sb.append(typeToString(method.getGenericReturnType()));
                 sb.append(" ");
                 sb.append(beanName);
                 sb.append(".");
-                sb.append(method.getName());
+                sb.append(mname);
                 sb.append("(");
                 boolean first = true;
-                for (Class t : method.getParameterTypes()) {
+                for (Type t : method.getGenericParameterTypes()) {
                     if (first) {
                         first = false;
                     } else {
@@ -3413,13 +3454,50 @@ public class CorePlugin {
             ArticlesFile baseArt = new ArticlesFile();
             baseArt.setId(-1);
             baseArt.setName(aname);
-            baseArt.setPath(aurl);
-            baseArt.setStyle(acss);
-            att.add(baseArt);
+            boolean added=false;
+            if(aurl!=null && aurl.startsWith("/")){
+                VFile vFile = getFileSystem().get(aurl);
+                if(vFile.isDirectory()){
+                    for (VFile file : vFile.listFiles()) {
+                        ArticlesFile baseArt2 = new ArticlesFile();
+                        baseArt2.setId(-1);
+                        baseArt2.setName(file.getName());
+                        baseArt2.setPath(file.getPath());
+                        baseArt2.setStyle(acss);
+                        att.add(baseArt2);
+                    }
+                    added=true;
+                }
+            }
+            if(!added) {
+                baseArt.setPath(aurl);
+                baseArt.setStyle(acss);
+                att.add(baseArt);
+            }
         }
         List<ArticlesFile> c = findArticlesFiles(a.getId());
         if (c != null) {
-            att.addAll(c);
+            for (ArticlesFile articlesFile : c) {
+                boolean added=false;
+                aurl=articlesFile.getPath();
+                if(aurl!=null && aurl.startsWith("/")){
+                    VFile vFile = getFileSystem().get(aurl);
+                    if(vFile.isDirectory()){
+                        for (VFile file : vFile.listFiles()) {
+                            ArticlesFile baseArt2 = new ArticlesFile();
+                            baseArt2.setId(-1);
+                            baseArt2.setName(file.getName());
+                            baseArt2.setPath(file.getPath());
+                            baseArt2.setStyle(acss);
+                            att.add(baseArt2);
+                        }
+                        added=true;
+                    }
+                }
+                if(!added) {
+                    att.add(articlesFile);
+                }
+            }
         }
         FullArticle f = new FullArticle(a, att);
         return f;
@@ -3480,12 +3558,49 @@ public class CorePlugin {
                         baseArt.setName(aname);
                         baseArt.setPath(aurl);
                         baseArt.setStyle(acss);
-                        att.add(baseArt);
+                        boolean added=false;
+                        if(aurl!=null && aurl.startsWith("/")){
+                            VFile vFile = getFileSystem().get(aurl);
+                            if(vFile.isDirectory()){
+                                for (VFile file : vFile.listFiles()) {
+                                    ArticlesFile baseArt2 = new ArticlesFile();
+                                    baseArt2.setId(-1);
+                                    baseArt2.setName(file.getName());
+                                    baseArt2.setPath(file.getPath());
+                                    baseArt2.setStyle(acss);
+                                    att.add(baseArt2);
+                                }
+                                added=true;
+                            }
+                        }
+                        if(!added) {
+                            att.add(baseArt);
+                        }
                     }
 
                     List<ArticlesFile> c = articlesFilesMap.get(a.getId());
                     if (c != null) {
-                        att.addAll(c);
+                        for (ArticlesFile articlesFile : c) {
+                            boolean added=false;
+                            aurl=articlesFile.getPath();
+                            if(aurl!=null && aurl.startsWith("/")){
+                                VFile vFile = getFileSystem().get(aurl);
+                                if(vFile.isDirectory()){
+                                    for (VFile file : vFile.listFiles()) {
+                                        ArticlesFile baseArt2 = new ArticlesFile();
+                                        baseArt2.setId(-1);
+                                        baseArt2.setName(file.getName());
+                                        baseArt2.setPath(file.getPath());
+                                        baseArt2.setStyle(acss);
+                                        att.add(baseArt2);
+                                    }
+                                    added=true;
+                                }
+                            }
+                            if(!added) {
+                                att.add(articlesFile);
+                            }
+                        }
                     }
                     FullArticle f = new FullArticle(a, att);
                     all.add(f);
