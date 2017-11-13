@@ -15,7 +15,7 @@
     </parent>
 
     <properties>
-        <vr-plugin.component-type>service</vr-plugin.component-type>
+        <vr-plugin.component-type>web</vr-plugin.component-type>
         <version.vr-core-web>1.12</version.vr-core-web>
     </properties>
 

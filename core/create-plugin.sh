@@ -7,11 +7,11 @@ artifactId=$2
 archetypeVersion=$3
 
 if [ N$groupId == N ] ; then 
-    groupId=test.machin
+    groupId=test.exampleplugin
 fi
 
 if [ N$artifactId == N ] ; then 
-    artifactId=my-test
+    artifactId=my-example-plugin
 fi
 
 if [ N$archetypeVersion == N ] ; then 
@@ -22,6 +22,6 @@ fi
 #artifactId=my-test
 #archetypeVersion=1.0.0
 
-#$MVN archetype:generate -DarchetypeGroupId=net.vpc.app.vain-ruling.core -DarchetypeArtifactId=vr-sample-plugin-archetype  -DarchetypeVersion=$archetypeVersion  -DgroupId=$groupId -DartifactId=$artifactId
-$MVN archetype:generate -DarchetypeGroupId=net.vpc.app.vain-ruling.core -DarchetypeArtifactId=vr-sample-plugin-archetype
+#$MVN archetype:generate -DarchetypeGroupId=net.vpc.app.vain-ruling.core -DarchetypeArtifactId=vr-sample-plugin-archetype  -DarchetypeVersion=1.0  -DgroupId=$groupId -DartifactId=$artifactId
+$MVN archetype:generate -DarchetypeGroupId=net.vpc.app.vain-ruling.core -DarchetypeArtifactId=vr-sample-plugin-archetype $*
 

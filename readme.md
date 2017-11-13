@@ -107,3 +107,62 @@ FLUSH PRIVILEGES;
 #### 2.3.2. Default login/password
 login    : admin
 password : admin
+
+
+## 3. Developing your own plugin
+
+### 3.1 compile base plugin
+You first have to compile :
+* vr-plugin
+* vr-plugin-archetype
+
+### 3.2 Generate plugin skeleton
+In the command line, under **apps/eniso-info/plugins** directory type the following :
+```sh
+mvn archetype:generate -DarchetypeGroupId=net.vpc.app.vain-ruling.core -DarchetypeArtifactId=vr-sample-plugin-archetype
+```
+You should have maven command (mvn) in your PATH env. If not, you should use the full path of maven. For instance if maven 
+is installed under **/path/to/maven** then the command should become
+```sh
+/path/to/maven/bin/mvn archetype:generate -DarchetypeGroupId=net.vpc.app.vain-ruling.core -DarchetypeArtifactId=vr-sample-plugin-archetype
+```
+
+You will be asked for your project groupId (you may type : mycompany), your artifactId (you may type : myplugin), and your version (you may type 1.0).
+
+myplugin/myplugin-service and myplugin/myplugin-web will be created for you.
+
+### 3.2 Add plugin to build process
+In the root directory of eniso.info, open pom.xml (aka apps/eniso-info/pom.xml) and add these lines
+```xml
+        <module>plugins/myplugin/myplugin-service</module>
+        <module>plugins/myplugin/myplugin-web</module>
+```
+
+### 3.3 Add plugin to app dependency
+Open apps/eniso-info/eniso-info-service/pom.xml and add these lines in the **dependencies** tag
+```xml
+        <dependency>
+            <groupId>mycompany</groupId>
+            <artifactId>myplugin-service</artifactId>
+            <version>1.0</version>
+        </dependency>
+```
+Then open apps/eniso-info/eniso-info-web/pom.xml and add these lines in the **dependencies** tag
+```xml
+        <dependency>
+            <groupId>mycompany</groupId>
+            <artifactId>myplugin-web</artifactId>
+            <version>1.0</version>
+        </dependency>
+```
+
+### 3.4 Compile and Deploy
+After compiling eniso.info, the plugin should be loaded
+
+### 3.5 Customize your plugins
+We will see how to change Plugin description, add new Entity and add new Page
+
+
+
+
+

@@ -877,11 +877,56 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
         pu.merge(a);
     }
 
+    private boolean isTeacherOrManager(int teacher){
+        if(core.isCurrentSessionAdmin()){
+            return true;
+        }
+        AcademicTeacher r = getCurrentTeacher();
+        if(r!=null){
+            if(r.getId()==teacher) {
+                return true;
+            }
+            AppDepartment d = r.getDepartment();
+            if(d!=null) {
+                return core.getCurrentSession().isDepartmentManager(d.getId());
+            }
+        }
+        return false;
+    }
+
+    private boolean isManageable(AcademicCourseAssignment a){
+        if(core.isCurrentSessionAdmin()){
+            return true;
+        }
+        if(a==null){
+            return false;
+        }
+        AppDepartment d = a.getOwnerDepartment();
+        UserSession currentSession = core.getCurrentSession();
+        if(d!=null){
+            if(currentSession.isDepartmentManager(d.getId())){
+                return true;
+            }
+            return false;
+        }
+        d = a.resolveDepartment();
+        if(d!=null){
+            if(currentSession.isDepartmentManager(d.getId())){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void removeCourseAssignment(int assignementId, boolean hardRemoval, boolean switchToIntent) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment a = pu.findById(AcademicCourseAssignment.class, assignementId);
         if (a != null) {
+            if(!isManageable(a)){
+                throw new SecurityException("Not Allowed");
+            }
             if (hardRemoval) {
+
                 pu.remove(a);
             } else {
                 AcademicTeacher teacher = a.getTeacher();
@@ -896,6 +941,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
     }
 
     public void addIntent(int teacherId, int assignementId) {
+        if(!isTeacherOrManager(teacherId)){
+            throw new SecurityException("Not Allowed");
+        }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseIntent i = pu.createQuery("Select a from AcademicCourseIntent a where a.teacherId=:teacherId and a.assignmentId=:assignementId")
                 .setParameter("teacherId", teacherId)
@@ -913,6 +961,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
     }
 
     public void removeIntent(int teacherId, int assignementId) {
+        if(!isTeacherOrManager(teacherId)){
+            throw new SecurityException("Not Allowed");
+        }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseIntent i = pu.createQuery("Select a from AcademicCourseIntent a where a.teacherId=:teacherId and a.assignmentId=:assignementId")
                 .setParameter("teacherId", teacherId)
@@ -925,11 +976,18 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
 
     public void removeAllIntents(int assignementId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        List<AcademicCourseIntent> intentList = pu.createQuery("Select a from AcademicCourseIntent a where a.assignmentId=:assignementId")
-                .setParameter("assignementId", assignementId)
-                .getResultList();
-        for (AcademicCourseIntent ii : intentList) {
-            pu.remove(ii);
+        AcademicCourseAssignment a = pu.findById(AcademicCourseAssignment.class, assignementId);
+        if (a != null) {
+            AcademicTeacher t = a.getTeacher();
+            if(!isTeacherOrManager(t==null?-1:t.getId())){
+                throw new SecurityException("Not Allowed");
+            }
+            List<AcademicCourseIntent> intentList = pu.createQuery("Select a from AcademicCourseIntent a where a.assignmentId=:assignementId")
+                    .setParameter("assignementId", assignementId)
+                    .getResultList();
+            for (AcademicCourseIntent ii : intentList) {
+                pu.remove(ii);
+            }
         }
     }
 
@@ -2409,28 +2467,43 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
      *
      */
     public void resetModuleTeaching() {
+        if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.ResetEducation")) {
+            throw new SecurityException("Not Allowed");
+        }
         resetCurrentYear();
         resetHistAcademicYears();
         trace.trace("resetModuleTeaching", "reset Module Academic", null, "academicPlugin", Level.FINE);
     }
 
     public void resetTeachers() {
+        if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.ResetEducation")) {
+            throw new SecurityException("Not Allowed");
+        }
         resetAssignments();
         UPA.getPersistenceUnit().createQuery("delete from AcademicTeacherSemestrialLoad").executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicTeacher").executeNonQuery();
     }
 
     public void resetAssignments() {
+        if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.ResetEducation")) {
+            throw new SecurityException("Not Allowed");
+        }
         UPA.getPersistenceUnit().createQuery("delete from AcademicCourseIntent").executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicCourseAssignment").executeNonQuery();
     }
 
     public void resetCourses() {
+        if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.ResetEducation")) {
+            throw new SecurityException("Not Allowed");
+        }
         UPA.getPersistenceUnit().createQuery("delete from AcademicCoursePlan").executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicCourseGroup").executeNonQuery();
     }
 
     public void resetCurrentYear() {
+        if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.ResetEducation")) {
+            throw new SecurityException("Not Allowed");
+        }
         resetAssignments();
         resetCourses();
 //        UPA.getPersistenceUnit().createQuery("delete from AcademicCourseType").executeNonQuery();
@@ -3014,6 +3087,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
     }
 
     public void resetHistAcademicYear(int year) {
+        if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.ResetEducation")) {
+            throw new SecurityException("Not Allowed");
+        }
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistTeacherSemestrialLoad where academiYear=:y").setParameter("y", year).executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistTeacherAnnualLoad where academiYear=:y").setParameter("y", year).executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistTeacherDegree where academiYear=:y").setParameter("y", year).executeNonQuery();
@@ -3025,6 +3101,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
     }
 
     public void resetHistAcademicYears() {
+        if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.ResetEducation")) {
+            throw new SecurityException("Not Allowed");
+        }
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistTeacherSemestrialLoad").executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistTeacherAnnualLoad").executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistTeacherDegree").executeNonQuery();
@@ -4944,48 +5023,48 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
         AcademicProgram prog = internship.getBoard().getProgram();
 
         AppUserType studentType = core.findUserType("Student");
-        if(cls!=null) {
-            studentProfiles=VrUtils.combineAndProfile(studentProfiles,cls.getName());
+        if (cls != null) {
+            studentProfiles = VrUtils.combineAndProfile(studentProfiles, cls.getName());
         }
-        if(department!=null) {
-            studentProfiles=VrUtils.combineAndProfile(studentProfiles,department.getCode());
+        if (department != null) {
+            studentProfiles = VrUtils.combineAndProfile(studentProfiles, department.getCode());
         }
-        if(department2!=null) {
-            studentProfiles=VrUtils.combineAndProfile(studentProfiles,department2.getCode());
+        if (department2 != null) {
+            studentProfiles = VrUtils.combineAndProfile(studentProfiles, department2.getCode());
         }
-        if(prog!=null) {
-            studentProfiles=VrUtils.combineAndProfile(studentProfiles,prog.getName());
+        if (prog != null) {
+            studentProfiles = VrUtils.combineAndProfile(studentProfiles, prog.getName());
         }
         for (AppUser appUser : core.findUsersByProfileFilter(studentProfiles, studentType.getId())) {
             AcademicStudent student = acad.findStudentByUser(appUser.getId());
             if (student != null) {
-                if(department!=null){
-                    if((student.getDepartment() == null) || (department.getId() != student.getDepartment().getId())){
+                if (department != null) {
+                    if ((student.getDepartment() == null) || (department.getId() != student.getDepartment().getId())) {
                         continue;
                     }
                 }
-                if(department2!=null){
-                    if(student.getDepartment()==null || department2.getId()!=student.getDepartment().getId()){
+                if (department2 != null) {
+                    if (student.getDepartment() == null || department2.getId() != student.getDepartment().getId()) {
                         continue;
                     }
                 }
-                if(cls!=null){
-                    if(
-                            (student.getLastClass1()==null || cls.getId()!=student.getLastClass1().getId())
-                            &&(student.getLastClass2()==null || cls.getId()!=student.getLastClass2().getId())
-                            &&(student.getLastClass3()==null || cls.getId()!=student.getLastClass2().getId())
+                if (cls != null) {
+                    if (
+                            (student.getLastClass1() == null || cls.getId() != student.getLastClass1().getId())
+                                    && (student.getLastClass2() == null || cls.getId() != student.getLastClass2().getId())
+                                    && (student.getLastClass3() == null || cls.getId() != student.getLastClass2().getId())
 
-                            ){
+                            ) {
                         continue;
                     }
                 }
-                if(prog!=null){
-                    if(
-                            (student.getLastClass1()==null || student.getLastClass1().resolveProgramType()==null || prog.getId()!=student.getLastClass1().resolveProgramType().getId())
-                            &&(student.getLastClass2()==null || student.getLastClass2().resolveProgramType()==null || prog.getId()!=student.getLastClass2().resolveProgramType().getId())
-                            &&(student.getLastClass3()==null || student.getLastClass3().resolveProgramType()==null || prog.getId()!=student.getLastClass3().resolveProgramType().getId())
+                if (prog != null) {
+                    if (
+                            (student.getLastClass1() == null || student.getLastClass1().resolveProgramType() == null || prog.getId() != student.getLastClass1().resolveProgramType().getId())
+                                    && (student.getLastClass2() == null || student.getLastClass2().resolveProgramType() == null || prog.getId() != student.getLastClass2().resolveProgramType().getId())
+                                    && (student.getLastClass3() == null || student.getLastClass3().resolveProgramType() == null || prog.getId() != student.getLastClass3().resolveProgramType().getId())
 
-                            ){
+                            ) {
                         continue;
                     }
                 }
@@ -5612,8 +5691,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
 
     @Override
     public List<CompletionInfo> findCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel) {
-        if(minLevel==null){
-            minLevel=Level.ALL;
+        if (minLevel == null) {
+            minLevel = Level.ALL;
         }
         List<CompletionInfo> all = new ArrayList<>();
         if (category == null) {
@@ -5632,7 +5711,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
                     } else {
                         switch (objectType) {
                             case "AcademicStudent": {
-                                String objectTypeName="Eleve Ingenieur";
+                                String objectTypeName = "Eleve Ingenieur";
                                 if (objectId != null) {
                                     AcademicStudent c = null;
                                     if (objectId instanceof AcademicStudent) {
@@ -5659,8 +5738,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
                                     h.check(c.getPreClassChoice1() != null || !StringUtils.isEmpty(c.getPreClassChoice1Other()));
                                     h.check(c.getPreClassChoice2() != null || !StringUtils.isEmpty(c.getPreClassChoice2Other()));
                                     h.check(c.getPreClassChoice3() != null || !StringUtils.isEmpty(c.getPreClassChoice3Other()));
-                                    if(h.getCompletionPercent()<100){
-                                        if(Level.SEVERE.intValue()>=minLevel.intValue()) {
+                                    if (h.getCompletionPercent() < 100) {
+                                        if (Level.SEVERE.intValue() >= minLevel.intValue()) {
                                             all.add(new DefaultCompletionInfo(
                                                     category,
                                                     categoryName,
@@ -5672,9 +5751,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
                                                     "info Contact manquante",
                                                     Level.SEVERE,
                                                     new String[]{
-                                                            c.getDepartment()==null?null:c.getDepartment().getName(),
-                                                            c.getLastClass1()==null?null:c.getLastClass1().getProgram()==null?null:c.getLastClass1().getProgram().getName(),
-                                                            c.getLastClass1()==null?null:c.getLastClass1().getName()
+                                                            c.getDepartment() == null ? null : c.getDepartment().getName(),
+                                                            c.getLastClass1() == null ? null : c.getLastClass1().getProgram() == null ? null : c.getLastClass1().getProgram().getName(),
+                                                            c.getLastClass1() == null ? null : c.getLastClass1().getName()
                                                     },
                                                     Arrays.asList(new DefaultCompletionInfoAction(
                                                             "corriger",
@@ -5683,8 +5762,8 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
                                                     ))
                                             ));
                                         }
-                                    }else{
-                                        if(Level.FINEST.intValue()>=minLevel.intValue()) {
+                                    } else {
+                                        if (Level.FINEST.intValue() >= minLevel.intValue()) {
                                             all.add(new DefaultCompletionInfo(
                                                     category,
                                                     categoryName,
@@ -5696,9 +5775,9 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
                                                     "info Contact manquante",
                                                     Level.SEVERE,
                                                     new String[]{
-                                                            c.getDepartment()==null?null:c.getDepartment().getName(),
-                                                            c.getLastClass1()==null?null:c.getLastClass1().getProgram()==null?null:c.getLastClass1().getProgram().getName(),
-                                                            c.getLastClass1()==null?null:c.getLastClass1().getName()
+                                                            c.getDepartment() == null ? null : c.getDepartment().getName(),
+                                                            c.getLastClass1() == null ? null : c.getLastClass1().getProgram() == null ? null : c.getLastClass1().getProgram().getName(),
+                                                            c.getLastClass1() == null ? null : c.getLastClass1().getName()
                                                     },
                                                     Arrays.asList(new DefaultCompletionInfoAction(
                                                             "corriger",

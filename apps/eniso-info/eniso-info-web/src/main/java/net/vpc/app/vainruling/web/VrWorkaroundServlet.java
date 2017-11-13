@@ -30,15 +30,8 @@ import java.util.logging.Logger;
 @WebServlet(name = "VrWorkaroundServlet", urlPatterns = "/vr/*")
 public class VrWorkaroundServlet extends HttpServlet {
     private static final Logger log = Logger.getLogger(VrWorkaroundServlet.class.getName());
-    final int DEFAULT_BUFFER_SIZE = 4 * 1024 * 1024;
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.sendRedirect("/");
     }
-
-    @Override
-    protected long getLastModified(HttpServletRequest request) {
-        return -1;
-    }
-
 }

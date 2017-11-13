@@ -34,6 +34,8 @@
         <module>plugins/academic-profile/vr-academic-profile-service</module>
         <module>plugins/academic-profile/vr-academic-profile-web</module>
         <module>plugins/themes/vr-theme-crew</module>
+        <module>plugins/toto/toto-plugin-service</module>
+        <module>plugins/toto/toto-plugin-web</module>
     </modules>
 
 </project>
