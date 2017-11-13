@@ -5,10 +5,15 @@
     <artifactId>${artifactId}</artifactId>
     <version>${version}</version>
     <packaging>jar</packaging>
+    <parent>
+        <groupId>net.vpc.app.vain-ruling</groupId>
+        <artifactId>vr-plugin</artifactId>
+        <version>${version}</version>
+    </parent>
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <vr-plugin.component-type>service</vr-plugin.component-type>
+        <vr-plugin.name>Sample Plugin</vr-plugin.name>
+        <vr-plugin.description>Description for Sample Plugin</vr-plugin.description>
         <version.vr-core-service>1.12</version.vr-core-service>
     </properties>
     <dependencies>
@@ -18,13 +23,4 @@
             <version>${version.vr-core-service}</version>
         </dependency>
     </dependencies>
-    <repositories>
-        <repository>
-            <id>vpc-public-maven</id>
-            <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>
-            <snapshots>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
 </project>
