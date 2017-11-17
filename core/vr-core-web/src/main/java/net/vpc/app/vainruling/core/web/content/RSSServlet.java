@@ -27,7 +27,7 @@ public class RSSServlet extends HttpServlet {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         //final VirtualFileSystem fs = core.getFileSystem();
         String filename = URLDecoder.decode(request.getPathInfo().substring(1), "UTF-8");
-        VrApp.getBean(CorePlugin.class).generateRSS(null, filename, response.getOutputStream());
+        VrApp.getBean(CorePlugin.class).getRSS(filename, response.getOutputStream());
     }
 
 }

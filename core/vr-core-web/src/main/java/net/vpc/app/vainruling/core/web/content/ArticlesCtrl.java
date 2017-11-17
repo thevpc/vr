@@ -163,7 +163,7 @@ public class ArticlesCtrl implements CmsTextService {
         }
 
         AppUser u = userSession==null?null:userSession.getUser();
-        return core.findFullArticlesByUserAndCategory(u == null ? null : u.getLogin(),g==null?-1:g.getId(),true, disposition);
+        return core.findFullArticlesByUserAndCategory(g==null?-1:g.getId(),true, disposition);
     }
 
     public List<ArticlesFile> findArticlesFiles(int articleId) {
@@ -178,13 +178,13 @@ public class ArticlesCtrl implements CmsTextService {
         return null;
     }
 
-    public ArticlesItem getArticle(String disposition, int pos) {
-        FullArticle a = getFullArticle(disposition, pos);
-        if (a != null) {
-            return a.getArticlesItem();
-        }
-        return null;
-    }
+//    public ArticlesItem getArticle(String disposition, int pos) {
+//        FullArticle a = getFullArticle(disposition, pos);
+//        if (a != null) {
+//            return a.getArticlesItem();
+//        }
+//        return null;
+//    }
 
     @Override
     public List<ContentText> getContentTextList(String id) {
@@ -198,9 +198,9 @@ public class ArticlesCtrl implements CmsTextService {
     public void setSelectedContentTextById(int id) {
         getModel().setCurrent((FullArticle) core.findFullArticle(id));
         FullArticle c = getModel().getCurrent();
-        if(c!=null && c.getArticlesItem().getDisposition()!=null){
+        if(c!=null && c.getDisposition()!=null){
             updateVisit(c.getId());
-            loadContentTexts(c.getArticlesItem().getDisposition().getName());
+            loadContentTexts(c.getDisposition().getName());
         }
     }
 

@@ -22,6 +22,7 @@ import net.vpc.app.vainruling.core.service.obj.ObjSearch;
 import net.vpc.app.vainruling.core.service.obj.ObjSimpleSearch;
 import net.vpc.app.vainruling.core.service.plugins.*;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.security.UserSessionConfigurator;
 import net.vpc.app.vainruling.core.service.util.AppVersion;
 import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.common.io.FileUtils;
@@ -88,6 +89,7 @@ public class CorePlugin {
     private ActiveSessionsTracker sessions = new ActiveSessionsTracker();
     private Map<String, PluginComponent> components;
     private Map<String, PluginBundle> bundles;
+    private List<UserSessionConfigurator> userSessionConfigurators;
 
     public static CorePlugin get() {
         return VrApp.getBean(CorePlugin.class);
@@ -122,6 +124,18 @@ public class CorePlugin {
                 }
             });
         }
+    }
+
+    private List<UserSessionConfigurator> getUserSessionConfigurators() {
+        if (userSessionConfigurators == null) {
+            ArrayList all = new ArrayList<>();
+            ApplicationContext context = VrApp.getContext();
+            for (String bn : context.getBeanNamesForType(UserSessionConfigurator.class)) {
+                all.add(context.getBean(bn));
+            }
+            userSessionConfigurators = all;
+        }
+        return userSessionConfigurators;
     }
 
     public void onPoll() {
@@ -1899,7 +1913,7 @@ public class CorePlugin {
 //        return sb.toString().trim();
 //    }
 
-//    public boolean isSessionAdmin() {
+    //    public boolean isSessionAdmin() {
 //        UserSession us = getCurrentSession();
 //        return us != null && us.isAdmin();
 //    }
@@ -1931,7 +1945,6 @@ public class CorePlugin {
         }
         return us != null && us.isAdmin();
     }
-
 
 
     public String resolveLoginProposal(AppContact contact) {
@@ -2204,7 +2217,7 @@ public class CorePlugin {
                         login,
                         "/System/Access", null, null, login, id, Level.INFO, s.getClientIpAddress()
                 );
-                getSessions().onDestroy(s);
+                getSessionsTracker().onDestroy(s);
             }
         }
     }
@@ -2217,7 +2230,7 @@ public class CorePlugin {
             //
         }
         final UserSession currentSession = currentSession0;
-        UserSession s = getSessions().getUserSession(sessionId);
+        UserSession s = getSessionsTracker().getUserSession(sessionId);
         AppUser user = s == null ? null : s.getUser();
         String login = user == null ? null : user.getLogin();
         int id = user == null ? -1 : user.getId();
@@ -2226,7 +2239,11 @@ public class CorePlugin {
                     login,
                     "/System/Access", null, null, currentSession.getUser().getLogin(), id, Level.INFO, s.getClientIpAddress()
             );
-            getSessions().onDestroy(s);
+            getSessionsTracker().onDestroy(s);
+        }
+        if (s != null) {
+            s.invalidate();
+            getSessionsTracker().onDestroy(s.getSessionId());
         }
     }
 
@@ -2234,9 +2251,9 @@ public class CorePlugin {
         if (login == null) {
             login = "";
         }
+        UserSession s = getCurrentSession();
         //login is always lower cased and trimmed!
         login = login.trim().toLowerCase();
-        UserSession s = getCurrentSession();
         if (s.isAdmin() && !s.isImpersonating()) {
             AppUser user = findEnabledUser(login, password);
             if (user != null) {
@@ -2277,14 +2294,52 @@ public class CorePlugin {
         return UPA.getPersistenceUnit().getName();
     }
 
-    public AppUser login(String login, String password) {
+    public AppUser login(String login, String password, String clientAppId, String clientApp) {
+        UserSession currentSession = getCurrentSession();
+        for (UserSessionConfigurator userSessionConfigurator : getUserSessionConfigurators()) {
+            userSessionConfigurator.preConfigure(currentSession);
+        }
+        AppUser u = loginByLoginPassword(login, password, currentSession, clientAppId, clientApp);
+        AppUser appUser = onUserLoggedIn(u, currentSession, clientAppId, clientApp);
+        if (appUser != null) {
+            for (UserSessionConfigurator userSessionConfigurator : getUserSessionConfigurators()) {
+                userSessionConfigurator.postConfigure(currentSession);
+            }
+        }
+        return appUser;
+    }
+
+    private AppUser loginByLoginPassword(String login, String password, UserSession currentSession, String clientAppId, String clientApp) {
         if (login == null) {
             login = "";
         }
-        //login is always lower cased and trimmed!
         login = login.trim().toLowerCase();
+        AppUser user = findEnabledUser(login, password);
+        if (user == null) {
+            AppUser user2 = findUser(login);
+            if (user2 == null) {
+                trace.trace("login", "login not found. Failed as " + login + "/" + password, login + "/" + password, "/System/Access", null, null, (login == null || login.length() == 0) ? "anonymous" : login, -1, Level.SEVERE, currentSession.getClientIpAddress());
+            } else if (user2.isDeleted() || !user2.isEnabled()) {
+                trace.trace("login", "invalid state. Failed as " + login + "/" + password, login + "/" + password
+                        + ". deleted=" + user2.isDeleted()
+                        + ". enabled=" + user2.isEnabled(), "/System/Access", null, null, (login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE, currentSession.getClientIpAddress()
+                );
+            } else {
+                trace.trace(
+                        "login", "invalid password. Failed as " + login + "/" + password, login + "/" + password,
+                        "/System/Access", null, null, (login.length() == 0) ? "anonymous" : login, user2.getId(),
+                        Level.SEVERE, currentSession.getClientIpAddress()
+                );
+            }
+        }
+        return user;
+    }
 
-        final AppUser user = findEnabledUser(login, password);
+    private AppUser onUserLoggedIn(AppUser user, UserSession currentSession, String clientAppId, String clientApp) {
+        //login is always lower cased and trimmed!
+        if (currentSession != null && currentSession.isConnected()) {
+            throw new SecurityException("Already connected");
+        }
         if (user != null) {
             user.setConnexionCount(user.getConnexionCount() + 1);
             user.setLastConnexionDate(new DateTime());
@@ -2299,9 +2354,11 @@ public class CorePlugin {
                                 }
                             }), null);
             UserSession s = getCurrentSession();
+            s.setClientApp(StringUtils.isEmpty(clientApp) ? "default" : clientApp);
+            s.setClientAppId(StringUtils.isEmpty(clientAppId) ? "unknown" : clientAppId);
             s.setDestroyed(false);
             s.setDomain(getCurrentDomain());
-            final ActiveSessionsTracker activeSessionsTracker = getSessions();
+            final ActiveSessionsTracker activeSessionsTracker = getSessionsTracker();
             activeSessionsTracker.onCreate(s);
             //update stats
             UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
@@ -2310,7 +2367,7 @@ public class CorePlugin {
                     updateMaxAppDataStoreLong("usersCountPeak", activeSessionsTracker.getActiveSessionsCount(), true);
                 }
             });
-            trace.trace("login", "successful", login, "/System/Access", null, null, login, user.getId(), Level.INFO, s.getClientIpAddress());
+            trace.trace("login", "successful", user.getLogin(), "/System/Access", null, null, user.getLogin(), user.getId(), Level.INFO, s.getClientIpAddress());
             getCurrentSession().setConnexionTime(user.getLastConnexionDate());
             getCurrentSession().setUser(user);
             buildSession(s, user);
@@ -2318,21 +2375,6 @@ public class CorePlugin {
         } else {
             UserSession s = getCurrentSession();
             s.reset();
-            AppUser user2 = findUser(login);
-            if (user2 == null) {
-                trace.trace("login", "login not found. Failed as " + login + "/" + password, login + "/" + password, "/System/Access", null, null, (login == null || login.length() == 0) ? "anonymous" : login, -1, Level.SEVERE, s.getClientIpAddress());
-            } else if (user2.isDeleted() || !user2.isEnabled()) {
-                trace.trace("login", "invalid state. Failed as " + login + "/" + password, login + "/" + password
-                        + ". deleted=" + user2.isDeleted()
-                        + ". enabled=" + user2.isEnabled(), "/System/Access", null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE, s.getClientIpAddress()
-                );
-            } else {
-                trace.trace(
-                        "login", "invalid password. Failed as " + login + "/" + password, login + "/" + password,
-                        "/System/Access", null, null, (login == null || login.length() == 0) ? "anonymous" : login, user2.getId(),
-                        Level.SEVERE, s.getClientIpAddress()
-                );
-            }
         }
         return user;
     }
@@ -2356,21 +2398,21 @@ public class CorePlugin {
         for (AppProfile u : userProfiles) {
             userProfilesNames.add(u.getName());
         }
-        s.setProfiles(userProfiles);
-        StringBuilder ps = new StringBuilder();
-        for (AppProfile up : userProfiles) {
-            if (ps.length() > 0) {
-                ps.append(", ");
-            }
-            ps.append(up.getName());
-        }
         s.setProfileNames(userProfilesNames);
-        s.setProfilesString(ps.toString());
+//        s.setProfiles(userProfiles);
+//        StringBuilder ps = new StringBuilder();
+//        for (AppProfile up : userProfiles) {
+//            if (ps.length() > 0) {
+//                ps.append(", ");
+//            }
+//            ps.append(up.getName());
+//        }
+//        s.setProfilesString(ps.toString());
         s.setAdmin(false);
         s.setDepartmentManager(-1);
         s.setManager(false);
         s.setRights(findUserRights(user.getId()));
-        if (user.getLogin().equalsIgnoreCase("admin") || userProfilesNames.contains(CorePlugin.PROFILE_ADMIN)) {
+        if (user.getLogin().equalsIgnoreCase(CorePlugin.USER_ADMIN) || userProfilesNames.contains(CorePlugin.PROFILE_ADMIN)) {
             s.setAdmin(true);
         }
         if (userProfilesNames.contains(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT)) {
@@ -2520,7 +2562,7 @@ public class CorePlugin {
         return comp.getBundle();
     }
 
-    public List<PersistenceUnit> getPersistenceUnits() {
+    protected List<PersistenceUnit> getPersistenceUnits() {
         return new ArrayList<>(UPA.getPersistenceGroup("").getPersistenceUnits());
     }
 
@@ -2541,14 +2583,14 @@ public class CorePlugin {
     }
 
     private String typeToString(Type type) {
-        if(type instanceof Class) {
-            Class cls=(Class) type;
+        if (type instanceof Class) {
+            Class cls = (Class) type;
             if (cls.isArray()) {
                 return typeToString(cls.getComponentType()) + "[]";
             }
             return cls.getName();
-        }else if(type instanceof ParameterizedType){
-            ParameterizedType ptype=(ParameterizedType) type;
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType ptype = (ParameterizedType) type;
             return ptype.toString();
         }
         return type.toString();
@@ -2564,33 +2606,33 @@ public class CorePlugin {
             //declared Method
             for (Method method : bean.getClass().getMethods()) {
                 String mname = method.getName();
-                if(Modifier.isStatic(method.getModifiers()) || Modifier.isAbstract(method.getModifiers())){
+                if (Modifier.isStatic(method.getModifiers()) || Modifier.isAbstract(method.getModifiers())) {
                     continue;
                 }
-                if(method.getParameterCount()==0){
-                    if(
+                if (method.getParameterCount() == 0) {
+                    if (
                             mname.equals("toString")
-                            || mname.equals("notify")
-                            || mname.equals("notifyAll")
-                            || mname.equals("getClass")
-                            || mname.equals("hashCode")
-                            || mname.equals("wait")
-                            ){
+                                    || mname.equals("notify")
+                                    || mname.equals("notifyAll")
+                                    || mname.equals("getClass")
+                                    || mname.equals("hashCode")
+                                    || mname.equals("wait")
+                            ) {
                         continue;
                     }
                 }
-                if(method.getParameterCount()==1){
-                    if(
+                if (method.getParameterCount() == 1) {
+                    if (
                             (mname.equals("wait") && method.getParameterTypes()[0].equals(Long.TYPE))
-                            || (mname.equals("equals") && method.getParameterTypes()[0].equals(Object.class))
-                            ){
+                                    || (mname.equals("equals") && method.getParameterTypes()[0].equals(Object.class))
+                            ) {
                         continue;
                     }
                 }
-                if(method.getParameterCount()==2){
-                    if(
-                            (mname.equals("wait") && method.getParameterTypes()[0].equals(Long.TYPE)&& method.getParameterTypes()[1].equals(Integer.TYPE))
-                            ){
+                if (method.getParameterCount() == 2) {
+                    if (
+                            (mname.equals("wait") && method.getParameterTypes()[0].equals(Long.TYPE) && method.getParameterTypes()[1].equals(Integer.TYPE))
+                            ) {
                         continue;
                     }
                 }
@@ -3454,10 +3496,10 @@ public class CorePlugin {
             ArticlesFile baseArt = new ArticlesFile();
             baseArt.setId(-1);
             baseArt.setName(aname);
-            boolean added=false;
-            if(aurl!=null && aurl.startsWith("/")){
+            boolean added = false;
+            if (aurl != null && aurl.startsWith("/")) {
                 VFile vFile = getFileSystem().get(aurl);
-                if(vFile.isDirectory()){
+                if (vFile.isDirectory()) {
                     for (VFile file : vFile.listFiles()) {
                         ArticlesFile baseArt2 = new ArticlesFile();
                         baseArt2.setId(-1);
@@ -3466,10 +3508,10 @@ public class CorePlugin {
                         baseArt2.setStyle(acss);
                         att.add(baseArt2);
                     }
-                    added=true;
+                    added = true;
                 }
             }
-            if(!added) {
+            if (!added) {
                 baseArt.setPath(aurl);
                 baseArt.setStyle(acss);
                 att.add(baseArt);
@@ -3478,11 +3520,11 @@ public class CorePlugin {
         List<ArticlesFile> c = findArticlesFiles(a.getId());
         if (c != null) {
             for (ArticlesFile articlesFile : c) {
-                boolean added=false;
-                aurl=articlesFile.getPath();
-                if(aurl!=null && aurl.startsWith("/")){
+                boolean added = false;
+                aurl = articlesFile.getPath();
+                if (aurl != null && aurl.startsWith("/")) {
                     VFile vFile = getFileSystem().get(aurl);
-                    if(vFile.isDirectory()){
+                    if (vFile.isDirectory()) {
                         for (VFile file : vFile.listFiles()) {
                             ArticlesFile baseArt2 = new ArticlesFile();
                             baseArt2.setId(-1);
@@ -3491,19 +3533,28 @@ public class CorePlugin {
                             baseArt2.setStyle(acss);
                             att.add(baseArt2);
                         }
-                        added=true;
+                        added = true;
                     }
                 }
-                if(!added) {
+                if (!added) {
                     att.add(articlesFile);
                 }
             }
         }
-        FullArticle f = new FullArticle(a, att);
+        FullArticle f = new FullArticle(new ArticlesItemStrict(a), att);
         return f;
     }
 
-    public List<FullArticle> findFullArticlesByUserAndCategory(final String login, int dispositionGroupId, boolean includeNoDept, final String disposition) {
+    public List<FullArticle> findFullArticlesByUserAndCategory(int dispositionGroupId, boolean includeNoDept, final String disposition) {
+        AppUser u = getCurrentUser();
+        if (u == null) {
+            return findFullArticlesByUserAndCategory(null, dispositionGroupId, includeNoDept, disposition);
+        } else {
+            return findFullArticlesByUserAndCategory(u.getLogin(), dispositionGroupId, includeNoDept, disposition);
+        }
+    }
+
+    protected List<FullArticle> findFullArticlesByUserAndCategory(final String login, int dispositionGroupId, boolean includeNoDept, final String disposition) {
         return UPA.getContext().invokePrivileged(new Action<List<FullArticle>>() {
 
             @Override
@@ -3558,10 +3609,10 @@ public class CorePlugin {
                         baseArt.setName(aname);
                         baseArt.setPath(aurl);
                         baseArt.setStyle(acss);
-                        boolean added=false;
-                        if(aurl!=null && aurl.startsWith("/")){
+                        boolean added = false;
+                        if (aurl != null && aurl.startsWith("/")) {
                             VFile vFile = getFileSystem().get(aurl);
-                            if(vFile.isDirectory()){
+                            if (vFile.isDirectory()) {
                                 for (VFile file : vFile.listFiles()) {
                                     ArticlesFile baseArt2 = new ArticlesFile();
                                     baseArt2.setId(-1);
@@ -3570,10 +3621,10 @@ public class CorePlugin {
                                     baseArt2.setStyle(acss);
                                     att.add(baseArt2);
                                 }
-                                added=true;
+                                added = true;
                             }
                         }
-                        if(!added) {
+                        if (!added) {
                             att.add(baseArt);
                         }
                     }
@@ -3581,11 +3632,11 @@ public class CorePlugin {
                     List<ArticlesFile> c = articlesFilesMap.get(a.getId());
                     if (c != null) {
                         for (ArticlesFile articlesFile : c) {
-                            boolean added=false;
-                            aurl=articlesFile.getPath();
-                            if(aurl!=null && aurl.startsWith("/")){
+                            boolean added = false;
+                            aurl = articlesFile.getPath();
+                            if (aurl != null && aurl.startsWith("/")) {
                                 VFile vFile = getFileSystem().get(aurl);
-                                if(vFile.isDirectory()){
+                                if (vFile.isDirectory()) {
                                     for (VFile file : vFile.listFiles()) {
                                         ArticlesFile baseArt2 = new ArticlesFile();
                                         baseArt2.setId(-1);
@@ -3594,15 +3645,15 @@ public class CorePlugin {
                                         baseArt2.setStyle(acss);
                                         att.add(baseArt2);
                                     }
-                                    added=true;
+                                    added = true;
                                 }
                             }
-                            if(!added) {
+                            if (!added) {
                                 att.add(articlesFile);
                             }
                         }
                     }
-                    FullArticle f = new FullArticle(a, att);
+                    FullArticle f = new FullArticle(new ArticlesItemStrict(a), att);
                     all.add(f);
                 }
                 return all;
@@ -3611,7 +3662,7 @@ public class CorePlugin {
         }, null);
     }
 
-    public List<ArticlesItem> findArticlesByUserAndCategory(String login, int dispositionGroupId, boolean includeNoDept, String... dispositions) {
+    protected List<ArticlesItem> findArticlesByUserAndCategory(String login, int dispositionGroupId, boolean includeNoDept, String... dispositions) {
         if (dispositions.length == 0) {
             return Collections.EMPTY_LIST;
         }
@@ -3662,10 +3713,16 @@ public class CorePlugin {
         });
     }
 
-    public void generateRSS(String login, String rss, OutputStream out) {
+    public String getRSS(String rss) {
+        ByteArrayOutputStream o = new ByteArrayOutputStream();
+        getRSS(rss, o);
+        return new String(o.toByteArray());
+    }
+
+    public void getRSS(String rss, OutputStream out) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         ArticlesDisposition t = pu.findByMainField(ArticlesDisposition.class, "rss." + rss);
-        List<FullArticle> articles = findFullArticlesByUserAndCategory(login, -1, true, "rss." + rss);
+        List<FullArticle> articles = findFullArticlesByUserAndCategory(-1, true, "rss." + rss);
         try {
             String feedType = "rss_2.0";
 //            String fileName = "feed.xml";
@@ -3689,7 +3746,7 @@ public class CorePlugin {
                 description.setType("text/html;charset=UTF-8");
                 description.setValue(art.getContent());
                 entry.setDescription(description);
-                entry.setAuthor(art.getUser() == null ? null : art.getUser().resolveFullName());
+                entry.setAuthor(art.getUser() == null ? null : art.getUser().getFullName());
                 entries.add(entry);
             }
 
@@ -3750,7 +3807,46 @@ public class CorePlugin {
         return m;
     }
 
-    public ActiveSessionsTracker getSessions() {
+    public List<UserSession> getActiveSessions() {
+        List<UserSession> found = getSessionsTracker().getOrderedActiveSessions();
+        if (isCurrentSessionAdmin()) {
+            return found;
+        }
+        List<UserSession> valid = new ArrayList<>();
+        for (UserSession userSession : found) {
+            userSession = userSession.copy();
+            userSession.setPlatformSession(null);
+            userSession.setLastVisitedPageInfo(null);
+            userSession.setLastVisitedPage(null);
+            userSession.setRootUser(null);
+            userSession.setProfileNames(null);
+            userSession.setRights(new HashSet<>());
+            AppUser u0 = userSession.getUser();
+            if (u0 != null) {
+                AppUser u = new AppUser();
+                u.setLogin(u0.getLogin());
+                u.setType(u0.getType());
+                u.setDepartment(u0.getDepartment());
+                AppContact c0 = u0.getContact();
+                if (c0 != null) {
+                    AppContact c = new AppContact();
+                    c.setFullName(c0.getFullName());
+                    c.setCivility(c0.getCivility());
+                    c.setCompany(c0.getCompany());
+                    u.setContact(c);
+                }
+                userSession.setUser(u);
+            }
+            valid.add(userSession);
+        }
+        return valid;
+    }
+
+    public boolean containsUserSession(String sessionId) {
+        return getSessionsTracker().getUserSession(sessionId) != null;
+    }
+
+    private ActiveSessionsTracker getSessionsTracker() {
         return sessions;
     }
 
@@ -4276,6 +4372,14 @@ public class CorePlugin {
             cats.addAll(bean.findCompletions(monitorUserId, category, objectType, objectId, minLevel));
         }
         return new ArrayList<>(cats);
+    }
+
+    public PersistenceUnitInfo getPersistenceUnitInfo() {
+        return UPA.getPersistenceUnit().getInfo();
+    }
+
+    public Map getMessages() {
+        return i18n.getResourceBundleSuite().getMap();
     }
 
     private static class InitData {

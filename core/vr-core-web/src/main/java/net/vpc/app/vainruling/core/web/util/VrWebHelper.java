@@ -21,10 +21,13 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.web.context.request.FacesRequestAttributes;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
@@ -46,6 +49,20 @@ public class VrWebHelper {
                     Method m = requestAttributes.getClass().getDeclaredMethod("getHttpServletRequest");
                     m.setAccessible(true);
                     req = (HttpServletRequest) m.invoke(requestAttributes);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }else if(requestAttributes.getClass().getSimpleName().equals("FacesRequestAttributes")){
+                try {
+                    Method m = requestAttributes.getClass().getDeclaredMethod("getFacesContext");
+                    m.setAccessible(true);
+                    FacesContext fc= (FacesContext) m.invoke(requestAttributes);
+                    if(fc!=null) {
+                        ExternalContext externalContext = fc.getExternalContext();
+                        if(externalContext!=null) {
+                            req = (HttpServletRequest) externalContext.getRequest();
+                        }
+                    }
                 }catch(Exception e){
                     e.printStackTrace();
                 }

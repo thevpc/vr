@@ -3,6 +3,7 @@ package net.vpc.app.vainruling.plugins.tasks.web;
 import net.vpc.app.vainruling.core.service.content.ContentPath;
 import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 import net.vpc.app.vainruling.plugins.tasks.service.model.Todo;
 
 import java.util.Collections;
@@ -59,8 +60,8 @@ public class TodoText implements ContentText{
     }
 
     @Override
-    public AppUser getUser() {
-        return todo.getResponsible();
+    public AppUserStrict getUser() {
+        return new AppUserStrict(todo.getResponsible());
     }
 
     @Override

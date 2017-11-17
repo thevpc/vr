@@ -1,6 +1,7 @@
 package net.vpc.app.vainruling.core.service.content;
 
 import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 
 import java.util.Date;
 import java.util.List;
@@ -16,7 +17,7 @@ public class DefaultText implements ContentText {
     private String subTitle;
     private String content;
     private String imageURL;
-    private AppUser user;
+    private AppUserStrict user;
     private List<ContentPath> attachments;
     private List<ContentPath> imageAttachments;
     private List<ContentPath> nonImageAttachments;
@@ -91,11 +92,11 @@ public class DefaultText implements ContentText {
     }
 
     @Override
-    public AppUser getUser() {
+    public AppUserStrict getUser() {
         return user;
     }
 
-    public void setUser(AppUser user) {
+    public void setUser(AppUserStrict user) {
         this.user = user;
     }
 

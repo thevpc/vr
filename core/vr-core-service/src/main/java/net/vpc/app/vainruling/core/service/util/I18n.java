@@ -48,7 +48,9 @@ public class I18n implements Serializable {
         bundlesUrls.add(bundle);
     }
 
-    public ResourceBundle loadResourceBundle(String baseName,
+
+
+    public Properties loadResourceBundle(String baseName,
                                              Locale locale) {
         List<Plugin> plugins = VrApp.getBean(CorePlugin.class).getPlugins();
         Properties properties=new Properties();
@@ -81,7 +83,7 @@ public class I18n implements Serializable {
                 }
             }
         }
-        return new PropertiesResourceBundle(properties);
+        return properties;
     }
 
 
@@ -191,10 +193,16 @@ public class I18n implements Serializable {
     }
 
     public String get(UPAObject s, Object... params) {
+        if(s==null){
+            return "null!!";
+        }
         return get(s.getI18NString(), params);
     }
 
     public String get(I18NString s, Object... params) {
+        if(s==null){
+            return "null!!";
+        }
         for (String key : s.getKeys()) {
             String v = getResourceBundleSuite().get(key, null, params);
             if (v != null) {
@@ -279,7 +287,7 @@ public class I18n implements Serializable {
 //        String k = key.replace(":", ".");
 //        return get(k, new Object[0]);
 //    }
-    private static class PropertiesResourceBundle extends ResourceBundle {
+    public static class PropertiesResourceBundle extends ResourceBundle {
         private Map<String,String> lookup;
 
         @SuppressWarnings({"unchecked", "rawtypes"})

@@ -8,10 +8,7 @@ package net.vpc.app.vainruling.core.service.util;
 import org.springframework.util.PropertyPlaceholderHelper;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * @author dev01
@@ -20,10 +17,16 @@ public class ResourceBundleSuite {
 
     private int defaultDepth = 10;
     private List<ResourceBundle> all = new ArrayList<ResourceBundle>();
+    private Properties map = new Properties();
     private PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("%{", "}");
 
-    public void add(ResourceBundle r) {
-        all.add(r);
+    public void add(Properties r) {
+        all.add(new I18n.PropertiesResourceBundle(r));
+        map.putAll(r);
+    }
+
+    public Properties getMap() {
+        return map;
     }
 
     public String get(String name, String defaultValue, Object... params) {

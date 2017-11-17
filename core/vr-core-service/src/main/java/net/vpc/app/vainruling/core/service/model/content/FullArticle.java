@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.core.service.model.content;
 import net.vpc.app.vainruling.core.service.content.ContentPath;
 import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,12 +19,12 @@ import java.util.List;
  */
 public class FullArticle implements ContentText{
 
-    private ArticlesItem articlesItem;
+    private ArticlesItemStrict articlesItem;
     private List<ContentPath> attachments;
     private List<ContentPath> imageAttachments;
     private List<ContentPath> nonImageAttachments;
 
-    public FullArticle(ArticlesItem articlesItem, List<ArticlesFile> attachments) {
+    public FullArticle(ArticlesItemStrict articlesItem, List<ArticlesFile> attachments) {
         this.articlesItem = articlesItem;
         this.attachments = new ArrayList<>();
         for (ArticlesFile attachment : attachments) {
@@ -41,11 +42,17 @@ public class FullArticle implements ContentText{
         }
     }
 
-    public ArticlesItem getArticlesItem() {
+
+
+    public ArticlesDispositionStrict getDisposition() {
+        return articlesItem.getDisposition();
+    }
+
+    public ArticlesItemStrict getArticlesItem() {
         return articlesItem;
     }
 
-    public void setArticlesItem(ArticlesItem content) {
+    public void setArticlesItem(ArticlesItemStrict content) {
         this.articlesItem = content;
     }
 
@@ -109,7 +116,7 @@ public class FullArticle implements ContentText{
     }
 
     @Override
-    public AppUser getUser() {
+    public AppUserStrict getUser() {
         return articlesItem.getSender();
     }
 

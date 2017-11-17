@@ -88,6 +88,9 @@ and open the template in the editor.
                         <p:column headerText="Lang" rendered="#{activeSessionsCtrl.model.admin}" style="width: 50px;">
                             <h:outputText value="#{i.locale}"/>
                         </p:column>
+                        <p:column headerText="App" rendered="#{activeSessionsCtrl.model.admin}" style="width: 150px;">
+                            <h:outputText value="#{i.clientAppId} (#{i.clientApp})"/>
+                        </p:column>
                         <p:column headerText="" rendered="#{activeSessionsCtrl.model.admin}" style="width: 50px;">
                             <p:commandButton  icon="fa fa-trash-o" styleClass="btn btn-danger"
                                               rendered="#{activeSessionsCtrl.isInvalidatable(i)}" action="#{activeSessionsCtrl.onInvalidateSession(i)}"

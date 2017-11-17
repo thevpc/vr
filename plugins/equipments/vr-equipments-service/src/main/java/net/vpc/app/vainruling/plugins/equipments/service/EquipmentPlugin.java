@@ -53,16 +53,16 @@ public class EquipmentPlugin {
 
     }
 
-    //TODO
-    public List<Equipment> findEquipmentsByArea(int typeId, int areaId, boolean deep) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery("Select a from Equipment a where a.typeId=:typeId order by a.name")
-                .setParameter("typeId", typeId)
-                .setParameter("areaId", areaId)
-                .setParameter("deep", deep)
-                .getResultList();
-
-    }
+//    //TODO
+//    public List<Equipment> findEquipmentsByArea(int typeId, int areaId, boolean deep) {
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        return pu.createQuery("Select a from Equipment a where a.typeId=:typeId order by a.name")
+//                .setParameter("typeId", typeId)
+//                .setParameter("areaId", areaId)
+//                .setParameter("deep", deep)
+//                .getResultList();
+//
+//    }
 
     public Equipment copyEquipment(Equipment eq){
         PersistenceUnit pu = UPA.getPersistenceUnit();

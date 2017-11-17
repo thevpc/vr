@@ -1,6 +1,7 @@
 package net.vpc.app.vainruling.core.service.content;
 
 import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 
 import java.util.Date;
 import java.util.List;
@@ -23,7 +24,7 @@ public interface ContentText {
 
     String getImageURL();
 
-    AppUser getUser();
+    AppUserStrict getUser();
 
     List<ContentPath> getAttachments();
 

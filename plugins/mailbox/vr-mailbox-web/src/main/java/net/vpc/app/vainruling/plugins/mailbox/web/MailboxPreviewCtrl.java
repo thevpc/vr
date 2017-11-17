@@ -10,6 +10,7 @@ import net.vpc.app.vainruling.core.service.content.ContentPath;
 import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.service.content.MessageTextService;
 import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 import net.vpc.app.vainruling.core.service.notification.PollAware;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
@@ -108,7 +109,7 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
     public static class MessagePreview implements ContentText{
 
         private MailboxReceived mailboxReceived;
-        private AppUser user;
+        private AppUserStrict user;
         private String from;
         private String category;
         private String subject;
@@ -117,7 +118,7 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
 
         public MessagePreview(MailboxReceived mailboxReceived,AppUser user,String from, String category, String subject,String text, String date) {
             this.mailboxReceived = mailboxReceived;
-            this.user = user;
+            this.user = new AppUserStrict(user);
             this.from = from;
             this.category = category;
             this.subject = subject;
@@ -143,7 +144,7 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
             return null;
         }
 
-        public AppUser getUser() {
+        public AppUserStrict getUser() {
             return user;
         }
 

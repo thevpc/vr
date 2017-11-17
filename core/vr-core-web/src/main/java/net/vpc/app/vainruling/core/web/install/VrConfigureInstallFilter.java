@@ -20,7 +20,6 @@ import java.io.StringWriter;
 /**
  * @author taha.bensalah@gmail.com
  */
-@WebFilter(filterName = "VrConfigureInstallFilter", urlPatterns = {"/", "/index.xhtml", "/r/index.xhtml"})
 public class VrConfigureInstallFilter implements Filter {
 
     private static final boolean debug = true;

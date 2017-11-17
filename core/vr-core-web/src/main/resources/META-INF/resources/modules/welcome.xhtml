@@ -155,7 +155,7 @@ and open the template in the editor.
 
                                                             <div class="box-footer"
                                                                  title="Destination : #{a.articlesItem.recipientProfiles}">
-                                                                écrit par #{(a.user eq null)?'//inconnu//':a.user.contact.fullName} #{(a.publishTime eq null)?'' : (vr.str(' - (le ',vr.date(a.publishTime,'dd MMM yyyy') ,')'))}
+                                                                écrit par #{(a.user eq null)?'//inconnu//':a.user.fullName} #{(a.publishTime eq null)?'' : (vr.str(' - (le ',vr.date(a.publishTime,'dd MMM yyyy') ,')'))}
                                                             </div>
                                                         </div>
                                                     </ui:repeat>
@@ -178,7 +178,7 @@ and open the template in the editor.
                                                 emptyMessage=""
                                     >
                                         <p:panel header="#{a.subject}"
-                                                 footer="écrit par #{(a.user eq null)?'//inconnu//':a.user.contact.fullName} #{(a.publishTime eq null)?'' : (vr.str(' - (le ',vr.date(a.publishTime,'dd MMM yyyy') ,')'))}"
+                                                 footer="écrit par #{(a.user eq null)?'//inconnu//':a.user.fullName} #{(a.publishTime eq null)?'' : (vr.str(' - (le ',vr.date(a.publishTime,'dd MMM yyyy') ,')'))}"
                                                  style="margin-bottom:10px"
                                                  styleClass="vr-no-border-grid"
                                         >
@@ -226,7 +226,7 @@ and open the template in the editor.
 
                                 <ul class="list-group list-group-unbordered">
                                     <li class="list-group-item">
-                                        <b>Groupes</b> <a class="pull-right">#{vr.currentSession.profiles.size()}</a>
+                                        <b>Groupes</b> <a class="pull-right">#{vr.currentSession.profileNames.size()}</a>
                                     </li>
 
                                     <ui:fragment rendered="#{vr.currentSession.impersonating}">
@@ -283,8 +283,8 @@ and open the template in the editor.
                                 <strong><i class="fa fa-pencil margin-r-5"></i> Groupes</strong>
 
                                 <p>
-                                    <ui:repeat value="#{vr.currentSession.profiles}" var="prName">
-                                        <span class="label label-#{vr.hashToArr(prName.name,'danger','success','info','warning','primary','default')}">#{prName.name}</span>
+                                    <ui:repeat value="#{vr.currentSession.profileNames.toArray()}" var="prName">
+                                        <span class="label label-#{vr.hashToArr(prName,'danger','success','info','warning','primary','default')}">#{prName}</span>
                                     </ui:repeat>
                                 </p>
                                 <!--

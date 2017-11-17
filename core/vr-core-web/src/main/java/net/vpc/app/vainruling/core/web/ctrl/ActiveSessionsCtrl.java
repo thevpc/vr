@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.PlatformSession;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
@@ -48,13 +49,18 @@ public class ActiveSessionsCtrl implements PollAware {
     @Autowired
     private CorePlugin core;
     private final Model model = new Model();
+    private static int COUNT=0;
+    public ActiveSessionsCtrl() {
+        COUNT++;
+        System.out.println("ActiveSessionsCtrl "+(COUNT));
+    }
 
     public boolean isInvalidatable(UserSession s){
         UserSession userSession = core.getCurrentSession();
         if(userSession==null || s==null){
             return false;
         }
-        if(s.getPlatformSession()==null){
+        if(s.isValid() || core.containsUserSession(s.getSessionId())){
             return false;
         }
         if(StringUtils.nonNull(userSession.getSessionId()).equals(StringUtils.nonNull(s.getSessionId()))){
@@ -65,36 +71,16 @@ public class ActiveSessionsCtrl implements PollAware {
 
     public void onInvalidateSession(UserSession s){
         if(isInvalidatable(s)){
-            Object session = s.getPlatformSession();
             core.logout(s.getSessionId());
-            if(session instanceof HttpSession){
-                try {
-                    ((HttpSession) session).invalidate();
-                }catch(IllegalStateException ex){
-                    //already invalid
-                    core.getSessions().onDestroy(s.getSessionId());
-                }catch(Exception ex){
-                    //any other exception
-                    core.getSessions().onDestroy(s.getSessionId());
-                }
-            }
         }
     }
 
     public List<UserSession> getOrderedAndValidSessions(){
         List<UserSession> validOnly=new ArrayList<>();
-        for (UserSession userSession : core.getSessions().getOrderedActiveSessions()) {
+        for (UserSession userSession : core.getActiveSessions()) {
             boolean validSession=true;
             if(isInvalidatable(userSession)) {
-                Object session = userSession.getPlatformSession();
-                if (session instanceof HttpSession) {
-                    HttpSession hsession = (HttpSession) session;
-                    try {
-                        hsession.getLastAccessedTime();
-                    } catch (IllegalStateException ex) {
-                        validSession = false;
-                    }
-                }
+                validSession=userSession.isValid();
             }
             if(!validSession){
                 onInvalidateSession(userSession);

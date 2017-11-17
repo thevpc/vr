@@ -32,15 +32,33 @@ public class WebScriptServiceInvoker {
     public List<Pattern> blacklistClassNamePatterns = new ArrayList<>();
 
 
+    public static Map buildError(Throwable error,Map out) {
+        return buildError(error.getClass().getSimpleName(),error.getMessage(),out);
+    }
+
+    public static Map buildError(String type,String message,Map out) {
+        if(out==null) {
+            out = new LinkedHashMap();
+        }
+        Map<String, Object> err = new LinkedHashMap<>();
+        err.put("type", type);
+        err.put("message", message);
+        out.put("$error", err);
+        return out;
+    }
+
+    public static Map buildSimpleResult(Object result,Map out) {
+        if(out==null) {
+            out = new LinkedHashMap();
+        }
+        out.put("$1", result);
+        return out;
+    }
+
     public Map invoke(String script) {
         UserSession s = UserSession.get();
         if (s == null || !s.isConnected()) {
-            Map out = new LinkedHashMap();
-            Map<String, Object> err = new LinkedHashMap<>();
-            err.put("type", "SecurityException");
-            err.put("message", "not connected");
-            out.put("$error", err);
-            return out;
+            return buildError("SecurityException","not connected",null);
         }
         ScriptEngine scriptEngine = createScriptEngine();
         currentEngine.set(scriptEngine);
@@ -50,11 +68,7 @@ public class WebScriptServiceInvoker {
                 return (Map) scriptEngine.get("out");
             } catch (Exception e) {
                 Map out = (Map) scriptEngine.get("out");
-                Map<String, Object> err = new LinkedHashMap<>();
-                err.put("type", e.getClass().getSimpleName());
-                err.put("message", e.getMessage());
-                out.put("$error", err);
-                return out;
+                return buildError(e,out);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -25,6 +25,7 @@ import org.jsoup.nodes.Node;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.io.Reader;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -791,6 +792,59 @@ public class VrUtils {
         return sb.toString();
     }
 
+    public static String prepareParseInt(String value) {
+        if (value == null) {
+            value = "";
+        }
+        String s = value.toString().trim();
+        if (s.contains(",") && !s.contains(".")) {
+            s = s.replace(',', '.');
+        }
+        if (s.isEmpty()) {
+            s = "0";
+        }
+        return s;
+    }
+
+    public static String combineAndProfile(String oldProfile, String newProfile) {
+        boolean empty1 = StringUtils.isEmpty(oldProfile);
+        boolean empty2 = StringUtils.isEmpty(newProfile);
+        if (empty1 && empty2) {
+            return null;
+        } else if (empty1) {
+            return newProfile;
+        } else if (empty2) {
+            return oldProfile;
+        } else {
+            return "(" + oldProfile + ") + (" + newProfile + ")";
+        }
+    }
+
+    public static String combineOrProfile(String oldProfile, String newProfile) {
+        boolean empty1 = StringUtils.isEmpty(oldProfile);
+        boolean empty2 = StringUtils.isEmpty(newProfile);
+        if (empty1 && empty2) {
+            return null;
+        } else if (empty1) {
+            return newProfile;
+        } else if (empty2) {
+            return oldProfile;
+        } else {
+            return "(" + oldProfile + ") , (" + newProfile + ")";
+        }
+    }
+
+    public static String toString(Reader initialReader) throws IOException {
+        char[] arr = new char[8 * 1024];
+        StringBuilder buffer = new StringBuilder();
+        int numCharsRead;
+        while ((numCharsRead = initialReader.read(arr, 0, arr.length)) != -1) {
+            buffer.append(arr, 0, numCharsRead);
+        }
+        initialReader.close();
+        return buffer.toString();
+    }
+
     public static class KeyValStruct implements Comparable<KeyValStruct> {
 
         String n;
@@ -819,46 +873,5 @@ public class VrUtils {
             return n.compareTo(o.n);
         }
 
-    }
-
-    public static String prepareParseInt(String value){
-        if(value==null){
-            value="";
-        }
-        String s = value.toString().trim();
-        if (s.contains(",") && !s.contains(".")) {
-            s = s.replace(',', '.');
-        }
-        if (s.isEmpty()) {
-            s = "0";
-        }
-        return s;
-    }
-
-    public static String combineAndProfile(String oldProfile,String newProfile){
-        boolean empty1 = StringUtils.isEmpty(oldProfile);
-        boolean empty2 = StringUtils.isEmpty(newProfile);
-        if(empty1 && empty2){
-            return null;
-        }else if(empty1){
-            return newProfile;
-        }else if(empty2){
-            return oldProfile;
-        }else{
-            return "("+oldProfile+") + ("+newProfile+")";
-        }
-    }
-    public static String combineOrProfile(String oldProfile,String newProfile){
-        boolean empty1 = StringUtils.isEmpty(oldProfile);
-        boolean empty2 = StringUtils.isEmpty(newProfile);
-        if(empty1 && empty2){
-            return null;
-        }else if(empty1){
-            return newProfile;
-        }else if(empty2){
-            return oldProfile;
-        }else{
-            return "("+oldProfile+") , ("+newProfile+")";
-        }
     }
 }

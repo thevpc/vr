@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.service.security;
 
+import net.vpc.app.vainruling.core.service.PlatformSession;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
@@ -19,15 +20,18 @@ import java.util.*;
  */
 @Service
 @Scope(value = "session")
-public class UserSession implements Serializable {
+public class UserSession implements Serializable,Cloneable {
 
-    private transient AppUser rootUser;
-    private transient AppUser user;
+    private AppUser rootUser;
+    private AppUser user;
+    private transient PlatformSession platformSession;
     private boolean connected;
     private Date connexionTime;
     private boolean admin;
     private boolean destroyed;
     private String lang;
+    private String clientApp;
+    private String clientAppId;
     private String sessionId;
     private String clientIpAddress;
     private String lastVisitedPage;
@@ -37,16 +41,24 @@ public class UserSession implements Serializable {
     private String theme = null;
     private Locale locale;
     private Set<String> rights = new HashSet<>();
-    private List<AppProfile> profiles = new ArrayList<>();
-    private String profilesString;
     private Set<String> profileNames = new HashSet<>();
-    private Object platformSession;
-    private Map platformSessionMap;
     private int departmentManager = -1;
     private boolean manager;
     private String domain;
     private String selectedSiteFilter;
 
+    public UserSession copy(){
+        try {
+            UserSession s=((UserSession)clone());
+            s.rights=new HashSet<>(s.rights);
+            s.profileNames=new HashSet<>(s.profileNames);
+            s.user=s.user==null?null:s.user.copy();
+            s.rootUser=s.rootUser==null?null:s.rootUser.copy();
+            return s;
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalArgumentException("Unexpected");
+        }
+    }
     public String getLastVisitedPageInfo() {
         return lastVisitedPageInfo;
     }
@@ -70,6 +82,14 @@ public class UserSession implements Serializable {
     public static AppUser getCurrentUser() {
         UserSession s = get();
         return s == null ? null : s.getUser();
+    }
+
+    public String getClientAppId() {
+        return clientAppId;
+    }
+
+    public void setClientAppId(String clientAppId) {
+        this.clientAppId = clientAppId;
     }
 
     public Date getConnexionTime() {
@@ -196,22 +216,6 @@ public class UserSession implements Serializable {
         this.clientIpAddress = clientIpAddress;
     }
 
-    public List<AppProfile> getProfiles() {
-        return profiles;
-    }
-
-    public void setProfiles(List<AppProfile> profiles) {
-        this.profiles = profiles;
-    }
-
-    public String getProfilesString() {
-        return profilesString;
-    }
-
-    public void setProfilesString(String profilesString) {
-        this.profilesString = profilesString;
-    }
-
     public void reset() {
         setDomain(null);
         setLocale(null);
@@ -221,8 +225,6 @@ public class UserSession implements Serializable {
         setAdmin(false);
         setRights(new HashSet<String>());
         setProfileNames(new HashSet<String>());
-        setProfilesString(null);
-        setProfiles(new ArrayList<AppProfile>());
     }
 
     public AppUser getRootUser() {
@@ -249,20 +251,23 @@ public class UserSession implements Serializable {
 //        this.componentsTheme = componentsTheme;
 //    }
 
-    public Object getPlatformSession() {
-        return platformSession;
-    }
+//    public PlatformSession getPlatformSession() {
+//        return platformSession;
+//    }
 
-    public void setPlatformSession(Object platformSession) {
+    public void setPlatformSession(PlatformSession platformSession) {
         this.platformSession = platformSession;
     }
 
-    public Map getPlatformSessionMap() {
-        return platformSessionMap;
+    public boolean isValid(){
+        return platformSession!=null && platformSession.isValid();
     }
 
-    public void setPlatformSessionMap(Map platformSessionMap) {
-        this.platformSessionMap = platformSessionMap;
+    public boolean invalidate(){
+        if(platformSession!=null){
+            return platformSession.invalidate();
+        }
+        return false;
     }
 
     public int getDepartmentManager() {
@@ -319,5 +324,13 @@ public class UserSession implements Serializable {
 
     public void setDomain(String domain) {
         this.domain = domain;
+    }
+
+    public String getClientApp() {
+        return clientApp;
+    }
+
+    public void setClientApp(String clientApp) {
+        this.clientApp = clientApp;
     }
 }

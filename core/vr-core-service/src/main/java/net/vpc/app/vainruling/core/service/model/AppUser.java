@@ -7,11 +7,14 @@ package net.vpc.app.vainruling.core.service.model;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.upa.AccessLevel;
-import net.vpc.upa.FormulaType;
-import net.vpc.upa.PasswordStrategyType;
-import net.vpc.upa.UserFieldModifier;
+import net.vpc.upa.*;
 import net.vpc.upa.config.*;
+import net.vpc.upa.config.Entity;
+import net.vpc.upa.config.Field;
+import net.vpc.upa.config.Formula;
+import net.vpc.upa.config.Properties;
+import net.vpc.upa.config.Property;
+import net.vpc.upa.config.Sequence;
 import net.vpc.upa.types.DateTime;
 
 import java.sql.Timestamp;
@@ -31,7 +34,7 @@ import java.sql.Timestamp;
                 @Property(name = "ui.main-photo-provider", value = "net.vpc.app.vainruling.core.web.obj.photo.AppUserMainPhotoProvider"),
                 @Property(name = UIConstants.ENTITY_TEXT_SEARCH_FACTORY, value = "net.vpc.app.vainruling.core.service.obj.AppUserObjSearchFactory")
         })
-public class AppUser {
+public class AppUser implements Cloneable{
 
     @Id
     @Sequence
@@ -262,5 +265,14 @@ public class AppUser {
     @Override
     public int hashCode() {
         return id;
+    }
+    public AppUser copy(){
+        AppUser appUser = null;
+        try {
+            appUser = (AppUser) clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalArgumentException("Unexpected");
+        }
+        return appUser;
     }
 }

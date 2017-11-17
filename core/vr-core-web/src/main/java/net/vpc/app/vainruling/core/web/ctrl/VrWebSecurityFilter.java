@@ -21,8 +21,8 @@ import java.util.logging.Logger;
 /**
  * @author taha.bensalah@gmail.com
  */
-@WebFilter(filterName = "VrWebSecurityFilter",
-        urlPatterns = {"/*"})
+//@WebFilter(filterName = "VrWebSecurityFilter",
+//        urlPatterns = {"/*"})
 public class VrWebSecurityFilter implements Filter {
 
     private static final Logger log = Logger.getLogger(VrWebSecurityFilter.class.getName());

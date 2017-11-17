@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.web.HttpPlatformSession;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.PostConstruct;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -86,13 +88,13 @@ public class LoginCtrl {
                     FacesUtils.addErrorMessage("Impossible de logger. Serveur indisponible momentannément. Redémarrage en cours.");
                     return null;
                 }
-                AppUser u = core.login(finalLogin, getModel().getPassword());
+                    AppUser u = core.login(finalLogin, getModel().getPassword(),"WebSite",null);
                 if (u != null) {
                     FacesContext currentInstance = FacesContext.getCurrentInstance();
                     if(currentInstance!=null) {
                         ExternalContext externalContext = currentInstance.getExternalContext();
-                        getSession().setPlatformSession(externalContext.getSession(false));
-                        getSession().setPlatformSessionMap(externalContext.getSessionMap());
+                        getSession().setPlatformSession(new HttpPlatformSession((HttpSession) externalContext.getSession(false)));
+//                        getSession().setPlatformSessionMap(externalContext.getSessionMap());
                         VrApp.getBean(ActiveSessionsCtrl.class).onRefresh();
                         return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
                     }
