@@ -34,6 +34,7 @@ import net.vpc.upa.VoidAction;
 import org.primefaces.event.FileUploadEvent;
 
 import javax.faces.model.SelectItem;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -212,8 +213,18 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,ActionEnabler{
                     for (VFile f : old) {
                         f.delete();
                     }
-                    CorePlugin.get().uploadFile(filePath, new FileUploadEventHandler(event));
-                    FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
+                    UPA.getContext().invokePrivileged(new VoidAction() {
+                        @Override
+                        public void run() {
+                            try {
+                                CorePlugin.get().uploadFile(filePath, new FileUploadEventHandler(event));
+                                FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
+                            } catch (IOException e1) {
+                                Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, e1);
+                                FacesUtils.addErrorMessage(e1, event.getFile().getFileName() + " uploading failed.");
+                            }
+                        }
+                    });
                 }
             }else{
                 FacesUtils.addErrorMessage(event.getFile().getFileName() + " has invalid extension");

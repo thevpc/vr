@@ -43,14 +43,14 @@ public class AppUser implements Cloneable{
     @Summary
     @Unique
     @Field(
-            updateAccessLevel = AccessLevel.PROTECTED
+            updateProtectionLevel = ProtectionLevel.PROTECTED
     )
     private String login;
 
     @Password(strategyType = PasswordStrategyType.MD5)
     @Field(
-            updateAccessLevel = AccessLevel.PROTECTED,
-            readAccessLevel = AccessLevel.PROTECTED
+            updateProtectionLevel = ProtectionLevel.PROTECTED,
+            readProtectionLevel = ProtectionLevel.PROTECTED
     )
     private String password;
 
@@ -70,15 +70,15 @@ public class AppUser implements Cloneable{
     private Timestamp updateDate;
 
     @Summary
-    @Field(persistAccessLevel = AccessLevel.PRIVATE, updateAccessLevel = AccessLevel.PRIVATE, readAccessLevel = AccessLevel.PROTECTED)
+    @Field(protectionLevel = ProtectionLevel.PRIVATE)
     private DateTime lastConnexionDate;
 
     @Summary
-    @Field(persistAccessLevel = AccessLevel.PRIVATE, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PROTECTED)
+    @Field(protectionLevel = ProtectionLevel.PRIVATE)
     private long connexionCount;
 
     @Summary
-    @Field(persistAccessLevel = AccessLevel.PRIVATE, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PROTECTED)
+    @Field(protectionLevel = ProtectionLevel.PRIVATE)
     private boolean enabled;
 
     private boolean deleted;
@@ -88,14 +88,14 @@ public class AppUser implements Cloneable{
     private Timestamp deletedOn;
 
     @Summary
-    @Field(persistAccessLevel = AccessLevel.PROTECTED, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PROTECTED)
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private boolean welcomeSent;
 
     /**
      * password field generated automatically, should be reset on some event
      * though
      */
-    @Field(persistAccessLevel = AccessLevel.PROTECTED, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PROTECTED)
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private String passwordAuto;
 
     public static String getName(AppUser t) {

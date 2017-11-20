@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.plugins.equipments.web;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
-import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
 import net.vpc.app.vainruling.plugins.equipments.service.EquipmentPlugin;
@@ -32,7 +31,7 @@ public class SplitEquipmentQtyAction implements ActionDialog {
     }
 
     @Override
-    public boolean isEnabled(String actionId, Class entityType, EditCtrlMode mode, Object value) {
+    public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {
         return value != null;//value != null;
     }
 

@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.service.obj.ObjFieldSelection;
 import net.vpc.app.vainruling.core.service.obj.ObjSearch;
+import net.vpc.upa.AccessMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,14 +49,14 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
 
     }
 
-    protected void updateMode(EditCtrlMode m) {
+    protected void updateMode(AccessMode m) {
         getModel().setMode(m);
     }
 
     public void onNew() {
         try {
             getModel().setCurrent(delegated_newInstance());
-            updateMode(EditCtrlMode.NEW);
+            updateMode(AccessMode.PERSIST);
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
@@ -73,7 +74,7 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
 
     public void onSelectCurrent() {
         try {
-            updateMode(EditCtrlMode.UPDATE);
+            updateMode(AccessMode.UPDATE);
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
@@ -83,7 +84,7 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
     public void onCancelCurrent() {
         try {
             getModel().setCurrent(delegated_newInstance());
-            updateMode(EditCtrlMode.LIST);
+            updateMode(AccessMode.READ);
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
@@ -93,7 +94,7 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
     public boolean isListMode() {
         try {
 
-            return getModel().getMode() == EditCtrlMode.LIST;
+            return getModel().getMode() == AccessMode.READ;
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
@@ -102,7 +103,7 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
 
     public boolean isNewOrUpdateMode() {
         try {
-            return getModel().getMode() == EditCtrlMode.NEW || getModel().getMode() == EditCtrlMode.UPDATE;
+            return getModel().getMode() == AccessMode.PERSIST || getModel().getMode() == AccessMode.UPDATE;
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
@@ -111,7 +112,7 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
 
     public boolean isNewMode() {
         try {
-            return getModel().getMode() == EditCtrlMode.NEW;
+            return getModel().getMode() == AccessMode.PERSIST;
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
@@ -120,7 +121,7 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
 
     public boolean isUpdateMode() {
         try {
-            return getModel().getMode() == EditCtrlMode.UPDATE;
+            return getModel().getMode() == AccessMode.UPDATE;
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
@@ -130,20 +131,20 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
     public boolean isEnabledButton(String buttonId) {
         try {
             if ("Refresh".equals(buttonId)) {
-                return getModel().getMode() == EditCtrlMode.LIST;
+                return getModel().getMode() == AccessMode.READ;
             }
             if ("Persist".equals(buttonId)) {
-                return getModel().getMode() == EditCtrlMode.LIST;
+                return getModel().getMode() == AccessMode.READ;
             }
             if ("Save".equals(buttonId)) {
-                return getModel().getMode() != EditCtrlMode.LIST;
+                return getModel().getMode() != AccessMode.READ;
             }
             if ("Remove".equals(buttonId)
                     || "archive".equals(buttonId)) {
-                return getModel().getMode() == EditCtrlMode.UPDATE;
+                return getModel().getMode() == AccessMode.UPDATE;
             }
             if ("Cancel".equals(buttonId)) {
-                return getModel().getMode() != EditCtrlMode.LIST;
+                return getModel().getMode() != AccessMode.READ;
             }
             return false;
         } catch (RuntimeException ex) {
@@ -159,7 +160,7 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
 
     public static class Model<T> {
 
-        private EditCtrlMode mode = EditCtrlMode.LIST;
+        private AccessMode mode = AccessMode.READ;
         private T current;
         private String cmd;
         private ObjSearch search;
@@ -199,11 +200,11 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
             this.current = current;
         }
 
-        public EditCtrlMode getMode() {
+        public AccessMode getMode() {
             return mode;
         }
 
-        public void setMode(EditCtrlMode mode) {
+        public void setMode(AccessMode mode) {
             this.mode = mode;
         }
 

@@ -18,6 +18,7 @@ import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VFileType;
 import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.UPA;
+import net.vpc.upa.VoidAction;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 
@@ -247,29 +248,35 @@ public class DocumentsDialogCtrl {
 
 
     public void handleNewFile(FileUploadEvent event) {
-        try {
-            try {
-                CorePlugin.get().uploadFile(getModel().getCurrent().getFile(), new FileUploadEventHandler(event) {
+        UPA.getContext().invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                try {
+                    try {
+                        CorePlugin.get().uploadFile(getModel().getCurrent().getFile(), new FileUploadEventHandler(event) {
 
-                    @Override
-                    public boolean acceptOverride(VFile file) {
+                            @Override
+                            public boolean acceptOverride(VFile file) {
 //check if alreay selected
-                        for (VFileInfo ex : getModel().getFiles()) {
-                            if (ex.getFile().getName().equals(file.getName()) && ex.isSelected()) {
-                                return true;
+                                for (VFileInfo ex : getModel().getFiles()) {
+                                    if (ex.getFile().getName().equals(file.getName()) && ex.isSelected()) {
+                                        return true;
+                                    }
+                                }
+                                return false;
                             }
-                        }
-                        return false;
+                        });
+                        FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
+                    } catch (Exception ex) {
+                        Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                        FacesUtils.addErrorMessage(ex,event.getFile().getFileName() + " uploading failed.");
                     }
-                });
-                FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
-            } catch (Exception ex) {
-                Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
-                FacesUtils.addErrorMessage(ex,event.getFile().getFileName() + " uploading failed.");
+                } finally {
+                    getModel().setEditMode("");
+                }
+
             }
-        } finally {
-            getModel().setEditMode("");
-        }
+        });
         onRefresh();
     }
 

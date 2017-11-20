@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.FormulaType;
+import net.vpc.upa.ProtectionLevel;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
@@ -31,7 +32,7 @@ public class AcademicProgramType {
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
-    @Field(updateAccessLevel = AccessLevel.PRIVATE,excludeModifiers = UserFieldModifier.UPDATE)
+    @Field(protectionLevel = ProtectionLevel.PRIVATE,excludeModifiers = UserFieldModifier.UPDATE)
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})

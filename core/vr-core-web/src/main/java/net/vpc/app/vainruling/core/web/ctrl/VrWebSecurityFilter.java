@@ -42,13 +42,33 @@ public class VrWebSecurityFilter implements Filter {
         String servletPath = req.getServletPath();
         String pathInfo = req.getPathInfo();
         boolean acceptRequest = true;
-        if (r.toString().contains("/modules/") || (servletPath!=null
-                &&
-                        (servletPath.equals("/p") || servletPath.startsWith("/p/"))
-                //TODO fix me later
-                && (pathInfo==null || !pathInfo.startsWith("/news"))
-        )) {
-            UserSession sso = null;
+        UserSession sso = null;
+        boolean requireAuth=false;
+        if(r.toString().contains("/modules/")){
+            requireAuth=true;
+        }else if(servletPath!=null){
+            if((servletPath.equals("/ue") || servletPath.startsWith("/ue/"))) {
+                //no need for auth cause it will be done after expanding the url!
+                requireAuth=false;
+            }else if((servletPath.equals("/p") || servletPath.startsWith("/p/"))) {
+                if (pathInfo == null) {
+                    requireAuth = true;
+                } else if (pathInfo.startsWith("/news")) {
+                    requireAuth = false;
+                } else if (pathInfo.equals("/login") || pathInfo.equals("/loginCtrl")) {
+                    requireAuth = false;
+                } else {
+                    requireAuth = true;
+                }
+            }else if(servletPath.startsWith("/r/modules/")) {
+                requireAuth = true;
+            }else if(servletPath.startsWith("/r/")) {
+                requireAuth = false;
+            }else if(servletPath.equals("/r")) {
+                requireAuth = false;
+            }
+        }
+        if (requireAuth) {
             try {
                 sso = (UserSession) req.getSession().getAttribute("userSession");
             } catch (Exception e) {
@@ -125,9 +145,17 @@ public class VrWebSecurityFilter implements Filter {
 //                res.sendError(500);
             }
         } else {
+            if(sso!=null){
+                String ri = req.getRequestURI();
+                String qs = req.getQueryString();
+                if(qs!=null){
+                    ri=ri+"?"+qs;
+                }
+                sso.setPreConnexionURL(ri);
+            }
             HttpServletResponse res = (HttpServletResponse) response;
             if(!res.isCommitted()) {
-                res.sendRedirect(req.getContextPath()+"/");
+                res.sendRedirect(req.getContextPath()+"/p/loginCtrl");
             }
         }
     }

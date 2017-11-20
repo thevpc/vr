@@ -13,6 +13,7 @@ import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.FormulaType;
+import net.vpc.upa.ProtectionLevel;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
@@ -46,17 +47,11 @@ public class AcademicTeacher {
     private String discipline;
     private AcademicOfficialDiscipline officialDiscipline;
     @Summary
-    @Field(
-            updateAccessLevel = AccessLevel.PROTECTED,
-            readAccessLevel = AccessLevel.PROTECTED
-    )
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private AcademicTeacherDegree degree;
 
     @Summary
-    @Field(
-            updateAccessLevel = AccessLevel.PROTECTED,
-            readAccessLevel = AccessLevel.PROTECTED
-    )
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private AcademicTeacherSituation situation;
     @Summary
     private AppDepartment department;
@@ -86,19 +81,11 @@ public class AcademicTeacher {
 
     @Field(
             defaultValue = "false",
-            updateAccessLevel = AccessLevel.PROTECTED,
-            readAccessLevel = AccessLevel.PROTECTED
-    )
+            protectionLevel = ProtectionLevel.PROTECTED)
     private boolean deleted;
-    @Field(
-            updateAccessLevel = AccessLevel.PROTECTED,
-            readAccessLevel = AccessLevel.PROTECTED
-    )
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private String deletedBy;
-    @Field(
-            updateAccessLevel = AccessLevel.PROTECTED,
-            readAccessLevel = AccessLevel.PROTECTED
-    )
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private Timestamp deletedOn;
 
     public int getId() {

@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web.ctrl;
 
+import net.vpc.upa.AccessMode;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 
@@ -34,7 +35,7 @@ public abstract class AbstractNameCtrl<T> extends BasePageCtrl {
         delegated_newCurrent();
         getModel().setCurrent(nouv);
         getModel().getList().add(0, getModel().getCurrent());
-        getModel().setMode(EditCtrlMode.NEW);
+        getModel().setMode(AccessMode.PERSIST);
     }
 
     public SelectionListener<T> getListener() {
@@ -46,7 +47,7 @@ public abstract class AbstractNameCtrl<T> extends BasePageCtrl {
     }
 
     public void onSelectCurrent() {
-        getModel().setMode(EditCtrlMode.UPDATE);
+        getModel().setMode(AccessMode.UPDATE);
         if (listener != null) {
             listener.onSelect(getModel().getCurrent());
         }
@@ -56,18 +57,18 @@ public abstract class AbstractNameCtrl<T> extends BasePageCtrl {
         delegated_saveCurrent();
         onCancelCurrent();
         reloadPage();
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
     }
 
     public void onDeleteCurrent() {
         delegated_deleteCurrent();
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
         reloadPage();
     }
 
     public void onCancelCurrent() {
         getModel().setCurrent(delegated_newInstance());
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
     }
 
     public void onRowSelect(SelectEvent event) {
@@ -116,7 +117,7 @@ public abstract class AbstractNameCtrl<T> extends BasePageCtrl {
 
     public static class Model<T> {
 
-        private EditCtrlMode mode = EditCtrlMode.LIST;
+        private AccessMode mode = AccessMode.READ;
         private T current;
         private String cmd;
         private List<T> list = new ArrayList<>();
@@ -137,11 +138,11 @@ public abstract class AbstractNameCtrl<T> extends BasePageCtrl {
             this.current = current;
         }
 
-        public EditCtrlMode getMode() {
+        public AccessMode getMode() {
             return mode;
         }
 
-        public void setMode(EditCtrlMode mode) {
+        public void setMode(AccessMode mode) {
             this.mode = mode;
         }
 

@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.AccessLevel;
 import net.vpc.upa.FormulaType;
+import net.vpc.upa.ProtectionLevel;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
@@ -66,20 +67,11 @@ public class AppContact {
     private AppCompany company;
 
     @Summary
-    @Field(
-            updateAccessLevel = AccessLevel.PROTECTED,
-            readAccessLevel = AccessLevel.PROTECTED
-    )
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private String phone1;
-    @Field(
-            updateAccessLevel = AccessLevel.PROTECTED,
-            readAccessLevel = AccessLevel.PROTECTED
-    )
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private String phone2;
-    @Field(
-            updateAccessLevel = AccessLevel.PROTECTED,
-            readAccessLevel = AccessLevel.PROTECTED
-    )
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private String phone3;
 
     @Summary

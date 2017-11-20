@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.plugins.academic.web.dialog;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
-import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
@@ -15,6 +14,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCou
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
 import net.vpc.common.util.Convert;
+import net.vpc.upa.AccessMode;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
@@ -36,7 +36,7 @@ public class GenerateAssignmentsAction implements ActionDialog {
     }
 
     @Override
-    public boolean isEnabled(String actionId, Class entityType, EditCtrlMode mode, Object value) {
+    public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {
         return true;
     }
 

@@ -23,7 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.PostConstruct;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -69,6 +72,7 @@ public class LoginCtrl {
 
     public String dologin() {
         VrWebHelper.prepareUserSession();
+        UserSession s = UserSession.get();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         String login = StringUtils.trim(getModel().getLogin());
         String domain = null;
@@ -96,6 +100,19 @@ public class LoginCtrl {
                         getSession().setPlatformSession(new HttpPlatformSession((HttpSession) externalContext.getSession(false)));
 //                        getSession().setPlatformSessionMap(externalContext.getSessionMap());
                         VrApp.getBean(ActiveSessionsCtrl.class).onRefresh();
+                        if(s!=null){
+                            String lvp = s.getPreConnexionURL();
+                            if(lvp!=null){
+                                s.setPreConnexionURL(null);
+                                ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+                                try {
+                                    context.redirect(context.getRequestContextPath() + lvp);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                return null;
+                            }
+                        }
                         return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
                     }
 //            return VRApp.getBean(VrMenu.class).gotoPage("todo", "sys-labo-action");
@@ -113,7 +130,7 @@ public class LoginCtrl {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            FacesUtils.addErrorMessage("Login ou mot de passe incorrect");
+            FacesUtils.addErrorMessage(ex);
             getModel().setPassword(null);
             return null;
         }

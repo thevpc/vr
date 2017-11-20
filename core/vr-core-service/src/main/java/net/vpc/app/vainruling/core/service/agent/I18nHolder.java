@@ -17,4 +17,9 @@ public class I18nHolder implements UPAI18n {
     public String get(I18NString s, Object... params) {
         return VrApp.getBean(I18n.class).get(s,params);
     }
+
+    @Override
+    public String getEnum(Object obj) {
+        return VrApp.getBean(I18n.class).getEnum(obj);
+    }
 }

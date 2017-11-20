@@ -51,8 +51,8 @@ public class ActiveSessionsCtrl implements PollAware {
     private final Model model = new Model();
     private static int COUNT=0;
     public ActiveSessionsCtrl() {
-        COUNT++;
-        System.out.println("ActiveSessionsCtrl "+(COUNT));
+//        COUNT++;
+//        System.out.println("ActiveSessionsCtrl "+(COUNT));
     }
 
     public boolean isInvalidatable(UserSession s){
@@ -78,15 +78,16 @@ public class ActiveSessionsCtrl implements PollAware {
     public List<UserSession> getOrderedAndValidSessions(){
         List<UserSession> validOnly=new ArrayList<>();
         for (UserSession userSession : core.getActiveSessions()) {
-            boolean validSession=true;
-            if(isInvalidatable(userSession)) {
-                validSession=userSession.isValid();
-            }
-            if(!validSession){
-                onInvalidateSession(userSession);
-            }else{
-                validOnly.add(userSession);
-            }
+            validOnly.add(userSession);
+//            boolean validSession=true;
+//            if(isInvalidatable(userSession)) {
+//                validSession=userSession.isValid();
+//            }
+//            if(!validSession){
+//                onInvalidateSession(userSession);
+//            }else{
+//                validOnly.add(userSession);
+//            }
         }
         return validOnly;
     }

@@ -7,10 +7,7 @@ package net.vpc.app.vainruling.core.service.agent;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.upa.AccessLevel;
-import net.vpc.upa.Entity;
-import net.vpc.upa.Field;
-import net.vpc.upa.Relationship;
+import net.vpc.upa.*;
 import net.vpc.upa.callbacks.FieldEvent;
 import net.vpc.upa.callbacks.PersistenceUnitEvent;
 import net.vpc.upa.config.Callback;
@@ -36,9 +33,9 @@ public class VRDefaultFieldsCallback {
                 || name.equals("archived")
                 || name.equals("archivedOn")
                 || name.equals("archivedBy")) {
-            f.setPersistAccessLevel(AccessLevel.PRIVATE);
-            f.setUpdateAccessLevel(AccessLevel.PROTECTED);
-            f.setReadAccessLevel(AccessLevel.PROTECTED);
+            f.setPersistProtectionLevel(ProtectionLevel.PRIVATE);
+            f.setUpdateProtectionLevel(ProtectionLevel.PROTECTED);
+            f.setReadProtectionLevel(ProtectionLevel.PROTECTED);
         }
     }
 

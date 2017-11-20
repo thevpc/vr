@@ -5,8 +5,10 @@
  */
 package net.vpc.app.vainruling.core.service;
 
+import com.google.gson.Gson;
 import com.sun.syndication.feed.synd.*;
 import com.sun.syndication.io.SyndFeedOutput;
+import jdk.nashorn.api.scripting.JSObject;
 import net.vpc.app.vainruling.core.service.agent.ActiveSessionsTracker;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.cache.EntityCache;
@@ -1169,12 +1171,12 @@ public class CorePlugin {
                         }
                     }
                     for (Field field : entity.getFields()) {
-                        if (field.getReadAccessLevel() == AccessLevel.PROTECTED) {
-                            String rightName = entity.getAbsoluteName() + "." + field.getName() + ".Read";
+                        if (field.getUpdateProtectionLevel() == ProtectionLevel.PROTECTED || field.getPersistProtectionLevel() == ProtectionLevel.PROTECTED) {
+                            String rightName = entity.getAbsoluteName() + "." + field.getName() + ".Write";
                             createRight(rightName, rightName);
                         }
-                        if (field.getUpdateAccessLevel() == AccessLevel.PROTECTED) {
-                            String rightName = entity.getAbsoluteName() + "." + field.getName() + ".Write";
+                        if (field.getReadProtectionLevel() == ProtectionLevel.PROTECTED || field.getUpdateProtectionLevel() == ProtectionLevel.PROTECTED || field.getPersistProtectionLevel() == ProtectionLevel.PROTECTED) {
+                            String rightName = entity.getAbsoluteName() + "." + field.getName() + ".Read";
                             createRight(rightName, rightName);
                         }
                     }
@@ -3824,12 +3826,14 @@ public class CorePlugin {
             AppUser u0 = userSession.getUser();
             if (u0 != null) {
                 AppUser u = new AppUser();
+                u.setId(u0.getId());
                 u.setLogin(u0.getLogin());
                 u.setType(u0.getType());
                 u.setDepartment(u0.getDepartment());
                 AppContact c0 = u0.getContact();
                 if (c0 != null) {
                     AppContact c = new AppContact();
+                    c.setId(c0.getId());
                     c.setFullName(c0.getFullName());
                     c.setCivility(c0.getCivility());
                     c.setCompany(c0.getCompany());
@@ -3853,15 +3857,17 @@ public class CorePlugin {
     public Object resolveId(String entityName, Object t) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
+        t=VrUtils.convertDataObjectOrDocument(t,entity.getEntityType());
         if (t instanceof Document) {
             return entity.getBuilder().documentToId((Document) t);
         }
         return entity.getBuilder().objectToId(t);
     }
 
-    public void save(String entityName, Object t) {
+    public Object save(String entityName, Object t) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
+        t=VrUtils.convertDataObjectOrDocument(t,entity.getEntityType());
         Object id = resolveId(entityName, t);
         List<Field> pf = entity.getIdFields();
         boolean persist = false;
@@ -3886,15 +3892,17 @@ public class CorePlugin {
             pu.merge(entityName, t);
 //            trace.updated(t, old, getClass(), Level.FINE);
         }
+        return t;
     }
 
-    public void erase(String entityName, Object id) {
+    public RemoveTrace erase(String entityName, Object id) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
+        id=VrUtils.convertDataObject(id,entity.getIdType());
         if (trace.accept(entity)) {
             trace.removed(entityName, pu.findById(entityName, id), entity.getParent().getPath(), Level.FINE);
         }
-        pu.remove(entityName, RemoveOptions.forId(id));
+        return pu.remove(entityName, RemoveOptions.forId(id));
     }
 
     public boolean isSoftRemovable(String entityName) {
@@ -3903,19 +3911,19 @@ public class CorePlugin {
         return entity.containsField("deleted");
     }
 
-    public void remove(String entityName, Object id) {
+    public RemoveTrace remove(String entityName, Object id) {
         if (!isSoftRemovable(entityName)) {
-            erase(entityName, id);
-            return;
+            return erase(entityName, id);
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
+        id=VrUtils.convertDataObject(id,entity.getIdType());
         Document t = pu.findDocumentById(entityName, id);
         if (t != null) {
             //check if already soft deleted
             Boolean b = (Boolean) entity.getField("deleted").getValue(t);
             if (b != null && b.booleanValue()) {
-                erase(entityName, id);
+                return erase(entityName, id);
             } else {
                 UserSession session = getCurrentSession();
                 if (entity.containsField("deleted")) {
@@ -3931,8 +3939,10 @@ public class CorePlugin {
                 if (trace.accept(entity)) {
                     trace.softremoved(entityName, pu.findById(entityName, id), entity.getParent().getPath(), Level.FINE);
                 }
+                return null;
             }
         }
+        return null;
     }
 
     public String getObjectName(String entityName, Object obj) {
@@ -3942,6 +3952,7 @@ public class CorePlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         Field mf = entity.getMainField();
+        obj=VrUtils.convertDataObjectOrDocument(obj,entity.getEntityType());
         if (mf == null) {
             return obj.toString();
         }
@@ -3980,9 +3991,10 @@ public class CorePlugin {
 //
 //        return VrApp.getBean(PluginManagerService.class).invokeEntityAction(entity.getEntityType(), action, object, args);
 //    }
-    public void archive(String entityName, Object object) {
+    public boolean archive(String entityName, Object object) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
+        object=VrUtils.convertDataObjectOrDocument(object,entity.getEntityType());
         Object id = resolveId(entityName, object);
         Object t = pu.findById(entityName, id);
         if (t != null) {
@@ -3995,24 +4007,31 @@ public class CorePlugin {
             if (trace.accept(entity)) {
                 trace.archived(entityName, pu.findById(entityName, id), entity.getParent().getPath(), Level.FINE);
             }
+            return true;
 //            trace.updated(t, old, getClass(), Level.FINE);
         }
-
+        return false;
 //        invokeEntityAction(type, "Archive", object, null);
     }
 
     public Object find(Class type, Object id) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity entity = pu.getEntity(type);
+        id=VrUtils.convertDataObject(id,entity.getIdType());
         return pu.findById(type, id);
     }
 
     public Object find(String entityName, Object id) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity entity = pu.getEntity(entityName);
+        id=VrUtils.convertDataObject(id,entity.getIdType());
         return pu.findById(entityName, id);
     }
 
     public Document findDocument(String entityName, Object id) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity entity = pu.getEntity(entityName);
+        id=VrUtils.convertDataObject(id,entity.getIdType());
         return pu.findDocumentById(entityName, id);
     }
 
@@ -4030,7 +4049,10 @@ public class CorePlugin {
                 .setEntityAlias("o");
         if (criteria != null) {
             for (Map.Entry<String, Object> entrySet : criteria.entrySet()) {
-                cc.byExpression(new Equals(new UserExpression("o." + entrySet.getKey()), new Literal(entrySet.getValue(), null)));
+                Field f = entity.getField(entrySet.getKey());
+                Object value = entrySet.getValue();
+                value=VrUtils.convertDataObjectOrDocument(value,f.getDataType().getPlatformType());
+                cc.byExpression(new Equals(new UserExpression("o." + entrySet.getKey()), new Literal(value, null)));
             }
         }
         Chronometer c = new Chronometer();
@@ -4043,6 +4065,8 @@ public class CorePlugin {
 
     public List<NamedId> findAllNamedIds(Relationship r, Map<String, Object> criteria, Object currentInstance) {
         final String aliasName = "o";
+        currentInstance=VrUtils.convertDataObjectOrDocument(currentInstance,r.getSourceEntity().getEntityType());
+
         Expression relationExpression = r.createTargetListExpression(currentInstance, aliasName);
         return findAllNamedIds(r.getTargetEntity(), criteria, relationExpression);
     }
@@ -4233,15 +4257,17 @@ public class CorePlugin {
         }
         if (!StringUtils.isEmpty(textSearch)) {
 
-            list = createSearch(null, entity, textSearch).filterList(list, entityName);
+            list = createSearch(null, entity.getName(), textSearch).filterList(list, entityName);
         }
         return list;
     }
 
-    public ObjSearch createSearch(String name, Entity entity, String expression) {
+    public ObjSearch createSearch(String name, String entityName, String expression) {
         if (StringUtils.isEmpty(expression)) {
             return new ObjSimpleSearch(null);
         }
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity entity=pu.getEntity(entityName);
         String f = entity.getProperties().getString(UIConstants.ENTITY_TEXT_SEARCH_FACTORY);
         if (StringUtils.isEmpty(f)) {
             return new ObjSimpleSearch(expression);
@@ -4278,6 +4304,9 @@ public class CorePlugin {
     }
 
     public VFile uploadFile(VFile baseFile, UploadedFileHandler event) throws IOException {
+        if (!isCurrentSessionAdmin()) {
+            throw new RuntimeException("Unsupported");
+        }
         String fileName = normalizeFilePath(event.getFileName());
         VFile newFile = baseFile;//.get(fileName);
         VFile baseFolder = null;

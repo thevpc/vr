@@ -5,10 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.academic.teachereval.web.actions;
 
-import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
-import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
@@ -16,6 +14,7 @@ import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFe
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackSession;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
+import net.vpc.upa.AccessMode;
 
 import java.util.List;
 
@@ -37,7 +36,7 @@ public class GenerateFeedbackAction implements ActionDialog {
     }
 
     @Override
-    public boolean isEnabled(String actionId, Class entityType, EditCtrlMode mode, Object value) {
+    public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {
         return value != null;
     }
 

@@ -10,9 +10,10 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
-import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
+
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;
+import net.vpc.upa.AccessMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
@@ -64,14 +65,14 @@ public class TodoListCtrl extends AbstractObjectCtrl<TodoList> {
         TodoList c = getModel().getCurrent();
         todoService.saveTodoList(c);
         onCancelCurrent();
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
         reloadPage(true);
     }
 
     public void onDeleteCurrent() {
         TodoList c = getModel().getCurrent();
         todoService.removeTodoList(c.getId());
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
         reloadPage(true);
     }
 
@@ -79,7 +80,7 @@ public class TodoListCtrl extends AbstractObjectCtrl<TodoList> {
 //        Todo c = getModel().getCurrent();
 //        todoService.archiveTodo(c.getId());
 //        getModel().setCurrent(new Todo());
-//        getModel().setMode(EditCtrlMode.LIST);
+//        getModel().setMode(AccessMode.READ);
 //    }
     public void onShowCategoriesList() {
         int currentListId = getModel().getCurrent().getId();

@@ -266,71 +266,77 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener {
     }
 
     public void onUpload(FileUploadEvent event) {
-        try {
-            if (getModel().isUploadingCV()) {
-                AcademicTeacher c = AcademicPlugin.get().getCurrentTeacher();
-                String e = event.getFile().getFileName().toLowerCase();
-                if (e.endsWith(".pdf")) {
-                    String cvFile = c.getUser().getLogin() + "-cv.pdf";
-                    VFile filePath = CorePlugin.get().getUserFolder(c.getUser().getLogin()).get("/Config/" + cvFile);
-                    if (filePath != null) {
-                        filePath.getParentFile().mkdirs();
-                        VFile[] old = filePath.getParentFile().listFiles(new VFileFilter() {
-                            @Override
-                            public boolean accept(VFile pathname) {
-                                if (pathname.getName().equalsIgnoreCase(cvFile)) {
-                                    return true;
+        UPA.getContext().invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                try {
+                    if (getModel().isUploadingCV()) {
+                        AcademicTeacher c = AcademicPlugin.get().getCurrentTeacher();
+                        String e = event.getFile().getFileName().toLowerCase();
+                        if (e.endsWith(".pdf")) {
+                            String cvFile = c.getUser().getLogin() + "-cv.pdf";
+                            VFile filePath = CorePlugin.get().getUserFolder(c.getUser().getLogin()).get("/Config/" + cvFile);
+                            if (filePath != null) {
+                                filePath.getParentFile().mkdirs();
+                                VFile[] old = filePath.getParentFile().listFiles(new VFileFilter() {
+                                    @Override
+                                    public boolean accept(VFile pathname) {
+                                        if (pathname.getName().equalsIgnoreCase(cvFile)) {
+                                            return true;
+                                        }
+                                        return false;
+                                    }
+                                });
+                                for (VFile f : old) {
+                                    f.delete();
                                 }
-                                return false;
+                                CorePlugin.get().uploadFile(filePath, new FileUploadEventHandler(event));
+                                FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
                             }
-                        });
-                        for (VFile f : old) {
-                            f.delete();
+                        } else {
+                            FacesUtils.addErrorMessage(event.getFile().getFileName() + " has invalid extension");
                         }
-                        CorePlugin.get().uploadFile(filePath, new FileUploadEventHandler(event));
-                        FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
-                    }
-                } else {
-                    FacesUtils.addErrorMessage(event.getFile().getFileName() + " has invalid extension");
-                }
-            } else if (getModel().isUploadingPhoto()) {
-                AcademicTeacher c = AcademicPlugin.get().getCurrentTeacher();
-                String e = PathInfo.create(event.getFile().getFileName()).getExtensionPart();
-                if (e.equals("jpeg")) {
-                    e = "jpg";
-                }
-                if (e.equals("png") || e.equals("jpg")) {
-                    VFile filePath = CorePlugin.get().getUserFolder(c.getUser().getLogin()).get("/Config/photo." + e);
-                    if (filePath != null) {
-                        filePath.getParentFile().mkdirs();
-                        VFile[] old = filePath.getParentFile().listFiles(new VFileFilter() {
-                            @Override
-                            public boolean accept(VFile pathname) {
-                                if (pathname.getName().equalsIgnoreCase("photo.png")
-                                        || pathname.getName().equalsIgnoreCase("photo.jpg")
-                                        || pathname.getName().equalsIgnoreCase("photo.jpeg")) {
-                                    return true;
+                    } else if (getModel().isUploadingPhoto()) {
+                        AcademicTeacher c = AcademicPlugin.get().getCurrentTeacher();
+                        String e = PathInfo.create(event.getFile().getFileName()).getExtensionPart();
+                        if (e.equals("jpeg")) {
+                            e = "jpg";
+                        }
+                        if (e.equals("png") || e.equals("jpg")) {
+                            VFile filePath = CorePlugin.get().getUserFolder(c.getUser().getLogin()).get("/Config/photo." + e);
+                            if (filePath != null) {
+                                filePath.getParentFile().mkdirs();
+                                VFile[] old = filePath.getParentFile().listFiles(new VFileFilter() {
+                                    @Override
+                                    public boolean accept(VFile pathname) {
+                                        if (pathname.getName().equalsIgnoreCase("photo.png")
+                                                || pathname.getName().equalsIgnoreCase("photo.jpg")
+                                                || pathname.getName().equalsIgnoreCase("photo.jpeg")) {
+                                            return true;
+                                        }
+                                        return false;
+                                    }
+                                });
+                                for (VFile f : old) {
+                                    f.delete();
                                 }
-                                return false;
+                                CorePlugin.get().uploadFile(filePath, new FileUploadEventHandler(event));
+                                FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
                             }
-                        });
-                        for (VFile f : old) {
-                            f.delete();
+                        } else {
+                            FacesUtils.addErrorMessage(event.getFile().getFileName() + " has invalid extension");
                         }
-                        CorePlugin.get().uploadFile(filePath, new FileUploadEventHandler(event));
-                        FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
                     }
-                } else {
-                    FacesUtils.addErrorMessage(event.getFile().getFileName() + " has invalid extension");
+                } catch (Exception ex) {
+                    Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                    FacesUtils.addErrorMessage(ex, event.getFile().getFileName() + " uploading failed.");
+                    return;
                 }
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
-            FacesUtils.addErrorMessage(ex, event.getFile().getFileName() + " uploading failed.");
-            return;
-        }
 
-        FacesUtils.addErrorMessage(event.getFile().getFileName() + " uploading failed.");
+                FacesUtils.addErrorMessage(event.getFile().getFileName() + " uploading failed.");
+            }
+        });
+
     }
 
     public static class Model {

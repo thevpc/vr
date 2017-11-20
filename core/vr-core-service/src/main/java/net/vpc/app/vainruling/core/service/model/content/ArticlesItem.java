@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.core.service.model.content;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.AccessLevel;
+import net.vpc.upa.ProtectionLevel;
 import net.vpc.upa.config.*;
 import net.vpc.upa.types.DateTime;
 
@@ -55,20 +56,20 @@ public class ArticlesItem {
     )
     private ArticlesDisposition disposition;
 
-    @Field(readAccessLevel = AccessLevel.PROTECTED,defaultValue = "true")
+    @Field(readProtectionLevel = ProtectionLevel.PROTECTED,defaultValue = "true")
     private boolean includeSender=true;
-    @Field(readAccessLevel = AccessLevel.PROTECTED)
+    @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private boolean noSubject;
 
     @Summary
-    @Field(readAccessLevel = AccessLevel.PROTECTED)
+    @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private ArticlesDispositionGroup dispositionGroup;
-    @Field(readAccessLevel = AccessLevel.PROTECTED)
+    @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private String decoration;
 
     @Main
     private String subject;
-    @Field(readAccessLevel = AccessLevel.PROTECTED)
+    @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private String subTitle;
 
 
@@ -86,10 +87,10 @@ public class ArticlesItem {
     @Field(max = "1024")
     private String linkURL;
 
-    @Field(readAccessLevel = AccessLevel.PROTECTED)
+    @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private String linkText;
 
-    @Field(readAccessLevel = AccessLevel.PROTECTED)
+    @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private String linkClassStyle;
 
     @Properties({
@@ -97,29 +98,24 @@ public class ArticlesItem {
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
     )
-    @Field(readAccessLevel = AccessLevel.PROTECTED)
+    @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private String imageURL;
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Flags"))
-    @Field(readAccessLevel = AccessLevel.PROTECTED)
+    @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private int position;
 
     private boolean important;
 
     @Summary
-    @Field(persistAccessLevel = AccessLevel.PROTECTED,
-            updateAccessLevel = AccessLevel.PROTECTED
-    )
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
     private AppUser sender;
 
     @Summary
-    @Field(persistAccessLevel = AccessLevel.PROTECTED,
-            updateAccessLevel = AccessLevel.PROTECTED,
-            readAccessLevel = AccessLevel.PROTECTED
-    )
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
     @Properties(
             {
                     @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"),
@@ -129,24 +125,24 @@ public class ArticlesItem {
     )
     private int visitCount;
 
-    @Field(readAccessLevel = AccessLevel.PROTECTED)
+    @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private String filterExpression;
 
     @Summary
-    @Field(readAccessLevel = AccessLevel.PROTECTED)
+    @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private DateTime sendTime;
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     private boolean archived;
 
-    @Field(readAccessLevel = AccessLevel.PROTECTED)
+    @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private boolean deleted;
 
-    @Field(readAccessLevel = AccessLevel.PROTECTED)
+    @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private String deletedBy;
 
-    @Field(readAccessLevel = AccessLevel.PROTECTED)
+    @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private Timestamp deletedOn;
 
     public int getPosition() {

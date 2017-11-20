@@ -1,10 +1,5 @@
 package net.vpc.app.vr.plugins.academicprofile.web;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppContact;
@@ -14,19 +9,26 @@ import net.vpc.app.vainruling.core.web.fs.files.DocumentsCtrl;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsUploadDialogCtrl;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
+import net.vpc.app.vainruling.core.web.util.FileUploadEventHandler;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
 import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicStudentCV;
-import net.vpc.common.jsf.FacesUtils;
-import net.vpc.upa.UPA;
-import net.vpc.upa.VoidAction;
-import org.springframework.beans.factory.annotation.Autowired;
-import net.vpc.app.vainruling.core.web.util.FileUploadEventHandler;
 import net.vpc.common.io.PathInfo;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VFileFilter;
+import net.vpc.upa.UPA;
+import net.vpc.upa.VoidAction;
 import org.primefaces.event.FileUploadEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.faces.model.SelectItem;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @VrController(
         breadcrumb = {
@@ -36,15 +38,13 @@ import org.primefaces.event.FileUploadEvent;
         url = "modules/academic/profile/student-profile-settings"
         //securityKey = "Custom.StudentProfileSettings"
 )
-public class StudentProfileSettingsCtrl implements DocumentUploadListener,ActionEnabler{
+public class StudentProfileSettingsCtrl implements DocumentUploadListener, ActionEnabler {
 
+    private static final Logger log = Logger.getLogger(StudentProfileSettingsCtrl.class.getName());
     @Autowired
     private AcademicProfilePlugin app;
     @Autowired
     private CorePlugin cp;
-
-    private static final Logger log = Logger.getLogger(StudentProfileSettingsCtrl.class.getName());
-
     private Model model = new Model();
 
     public Model getModel() {
@@ -58,7 +58,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         getModel().setStudent(ap.findStudentByUser(vr.getCurrentSession().getUser().getId()));
         getModel().setStudentCV(app.findOrCreateAcademicStudentCV(getModel().getStudent().getId()));
-        
+
         VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
         getModel().getThemes().clear();
         getModel().getThemes().add(FacesUtils.createSelectItem("", "<Default>", null));
@@ -70,7 +70,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
 
     @Override
     public boolean isEnabled(Object data) {
-        return AcademicPlugin.get().getCurrentStudent()!=null;
+        return AcademicPlugin.get().getCurrentStudent() != null;
     }
 
     public void updateIdentityInformation() {
@@ -104,8 +104,8 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
             }
         });
     }
-    
-     public void onSelectTheme() {
+
+    public void onSelectTheme() {
         final CorePlugin t = VrApp.getBean(CorePlugin.class);
         try {
             t.setCurrentUserTheme(getModel().getTheme());
@@ -116,22 +116,22 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
         }
     }
 
-    public void onRequestUploadPhoto(){
+    public void onRequestUploadPhoto() {
         getModel().setUploadingPhoto(true);
         getModel().setUploadingCV(false);
         Vr.get().openUploadDialog(new DocumentsUploadDialogCtrl.Config()
-                .setExtensions("jpg,png,jpeg")
-                .setSizeLimit(1024*1024)
+                        .setExtensions("jpg,png,jpeg")
+                        .setSizeLimit(1024 * 1024)
                 , this);
     }
 
 
-    public void onRequestUploadCV(){
+    public void onRequestUploadCV() {
         getModel().setUploadingPhoto(false);
         getModel().setUploadingCV(true);
         Vr.get().openUploadDialog(new DocumentsUploadDialogCtrl.Config()
                         .setExtensions("pdf")
-                        .setSizeLimit(10*1024*1024)
+                        .setSizeLimit(10 * 1024 * 1024)
                 , this);
     }
 
@@ -149,10 +149,10 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
             }
         });
     }
-    
+
     public void onUpload(FileUploadEvent event) {
         try {
-            if(getModel().isUploadingCV()){
+            if (getModel().isUploadingCV()) {
                 AcademicStudent c = AcademicPlugin.get().getCurrentStudent();
                 String e = PathInfo.create(event.getFile().getFileName()).getExtensionPart();
                 if (e.equals("pdf")) {
@@ -172,13 +172,23 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
                         for (VFile f : old) {
                             f.delete();
                         }
-                        CorePlugin.get().uploadFile(filePath, new FileUploadEventHandler(event));
-                        FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
+                        UPA.getContext().invokePrivileged(new VoidAction() {
+                            @Override
+                            public void run() {
+                                try {
+                                    CorePlugin.get().uploadFile(filePath, new FileUploadEventHandler(event));
+                                    FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
+                                } catch (IOException e1) {
+                                    Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, e1);
+                                    FacesUtils.addErrorMessage(e1, event.getFile().getFileName() + " uploading failed.");
+                                }
+                            }
+                        });
                     }
                 } else {
                     FacesUtils.addErrorMessage(event.getFile().getFileName() + " has invalid extension");
                 }
-            }else if(getModel().isUploadingPhoto()) {
+            } else if (getModel().isUploadingPhoto()) {
                 AcademicStudent c = AcademicPlugin.get().getCurrentStudent();
                 String e = PathInfo.create(event.getFile().getFileName()).getExtensionPart();
                 if (e.equals("jpeg")) {
@@ -204,8 +214,18 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
                         for (VFile f : old) {
                             f.delete();
                         }
-                        CorePlugin.get().uploadFile(filePath, new FileUploadEventHandler(event));
-                        FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
+                        UPA.getContext().invokePrivileged(new VoidAction() {
+                            @Override
+                            public void run() {
+                                try {
+                                    CorePlugin.get().uploadFile(filePath, new FileUploadEventHandler(event));
+                                    FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
+                                } catch (IOException e1) {
+                                    Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, e1);
+                                    FacesUtils.addErrorMessage(e1, event.getFile().getFileName() + " uploading failed.");
+                                }
+                            }
+                        });
                     }
                 } else {
                     FacesUtils.addErrorMessage(event.getFile().getFileName() + " has invalid extension");
@@ -244,7 +264,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
         private AcademicStudent student;
         private AppContact contact;
         private AcademicStudentCV studentCV;
-        
+
         private String theme;
         private List<SelectItem> themes = new ArrayList<>();
 
@@ -302,8 +322,8 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener,Action
 
         public void setThemes(List<SelectItem> themes) {
             this.themes = themes;
-        }    
-        
+        }
+
     }
 
 }

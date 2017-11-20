@@ -130,6 +130,10 @@ public class WebScriptServiceInvoker {
 
     public static class VrJs {
         public Object bean(String name) {
+            //force the bean to be a plugin!!
+            if(!name.endsWith("Plugin")){
+                name=name+"Plugin";
+            }
             return VrApp.getBean(name);
         }
 

@@ -6,11 +6,12 @@
 package net.vpc.app.vainruling.plugins.academic.web.load;
 
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
-import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
+
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
+import net.vpc.upa.AccessMode;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -33,8 +34,8 @@ public class SplitSharesAcademicCourseAssignmentAction implements ActionDialog {
     }
 
     @Override
-    public boolean isEnabled(String actionId, Class entityType, EditCtrlMode mode, Object value) {
-        return mode!=EditCtrlMode.NEW;
+    public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {
+        return mode!=AccessMode.PERSIST;
     }
 
     @Override

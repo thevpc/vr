@@ -15,7 +15,6 @@ import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
@@ -30,10 +29,7 @@ import net.vpc.common.io.PathInfo;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
-import net.vpc.upa.Action;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.UPA;
-import net.vpc.upa.VoidAction;
+import net.vpc.upa.*;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultStreamedContent;
@@ -292,13 +288,13 @@ public class MyInternshipBoardsCtrl {
     }
 
     public void onClose() {
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
         onRefresh();
     }
 
     @OnPageLoad
     public void onPageLoad() {
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
         onUpdateBoard();
     }
 
@@ -321,7 +317,7 @@ public class MyInternshipBoardsCtrl {
 
     public void onSelectInternship(AcademicInternship internship) {
         getModel().setInternship(internship);
-        getModel().setMode(EditCtrlMode.UPDATE);
+        getModel().setMode(AccessMode.UPDATE);
         onRefresh();
     }
 
@@ -776,7 +772,7 @@ public class MyInternshipBoardsCtrl {
 
     public class Model {
 
-        private EditCtrlMode mode = EditCtrlMode.LIST;
+        private AccessMode mode = AccessMode.READ;
         private String requestUploadType;
         private boolean uploading;
         private boolean boardManager;
@@ -1077,16 +1073,16 @@ public class MyInternshipBoardsCtrl {
             this.internshipInfos = internshipInfos;
         }
 
-        public EditCtrlMode getMode() {
+        public AccessMode getMode() {
             return mode;
         }
 
-        public void setMode(EditCtrlMode mode) {
+        public void setMode(AccessMode mode) {
             this.mode = mode;
         }
 
         public boolean isList() {
-            return getMode() == EditCtrlMode.LIST;
+            return getMode() == AccessMode.READ;
         }
 
         public List<AcademicInternshipCount> getAcademicInternshipCounts() {

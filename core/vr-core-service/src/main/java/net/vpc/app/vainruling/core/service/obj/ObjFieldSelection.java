@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.service.obj;
 
+import net.vpc.upa.AccessMode;
 import net.vpc.upa.Entity;
 import net.vpc.upa.FieldModifier;
 import net.vpc.upa.filters.FieldFilters;
@@ -35,7 +36,7 @@ public class ObjFieldSelection {
         this.entity = entity;
     }
 
-    public void prepare(Entity entity) {
+    public void prepare(Entity entity,AccessMode mode) {
         this.entity = entity;
     }
 

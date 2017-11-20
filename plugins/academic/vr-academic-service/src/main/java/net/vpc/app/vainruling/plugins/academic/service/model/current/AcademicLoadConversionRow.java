@@ -6,11 +6,14 @@
 package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.upa.AccessLevel;
-import net.vpc.upa.FormulaType;
-import net.vpc.upa.RelationshipType;
-import net.vpc.upa.UserFieldModifier;
+import net.vpc.upa.*;
 import net.vpc.upa.config.*;
+import net.vpc.upa.config.Entity;
+import net.vpc.upa.config.Field;
+import net.vpc.upa.config.Formula;
+import net.vpc.upa.config.Properties;
+import net.vpc.upa.config.Property;
+import net.vpc.upa.config.Sequence;
 
 import java.sql.Timestamp;
 
@@ -50,7 +53,7 @@ public class AcademicLoadConversionRow {
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
-    @Field(updateAccessLevel = AccessLevel.PRIVATE,excludeModifiers = UserFieldModifier.UPDATE)
+    @Field(protectionLevel = ProtectionLevel.PROTECTED,excludeModifiers = UserFieldModifier.UPDATE)
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})

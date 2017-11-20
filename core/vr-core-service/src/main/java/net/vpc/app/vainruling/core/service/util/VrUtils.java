@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.service.util;
 
 import com.google.gson.Gson;
+import jdk.nashorn.api.scripting.JSObject;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
@@ -873,5 +874,48 @@ public class VrUtils {
             return n.compareTo(o.n);
         }
 
+    }
+
+    public static Object convertDataObjectOrDocument(Object t,Class toType){
+        if(t==null){
+            return null;
+        }
+        if(!toType.isInstance(t)){
+            if(t instanceof net.vpc.upa.Document) {
+                return t;
+            }else if(t instanceof JSObject){
+                Gson gson = new Gson();
+                t= gson.fromJson(gson.toJson(t),toType);
+            }else if(t instanceof String){
+                Gson gson = new Gson();
+                t= gson.fromJson(gson.toJson(t),toType);
+            }else if(t instanceof Map){
+                Gson gson = new Gson();
+                t= gson.fromJson(gson.toJson(t),toType);
+            }else{
+                throw new ClassCastException("Unable to cast to "+toType+" instance "+t.getClass().getName());
+            }
+        }
+        return t;
+    }
+    public static Object convertDataObject(Object t,Class toType){
+        if(t==null){
+            return null;
+        }
+        if(!toType.isInstance(t)){
+            if(t instanceof JSObject){
+                Gson gson = new Gson();
+                t= gson.fromJson(gson.toJson(t),toType);
+            }else if(t instanceof String){
+                Gson gson = new Gson();
+                t= gson.fromJson(gson.toJson(t),toType);
+            }else if(t instanceof Map){
+                Gson gson = new Gson();
+                t= gson.fromJson(gson.toJson(t),toType);
+            }else{
+                throw new ClassCastException("Unable to cast to "+toType+" instance "+t.getClass().getName());
+            }
+        }
+        return t;
     }
 }

@@ -7,8 +7,8 @@ package net.vpc.app.vainruling.core.web.obj;
 
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 import net.vpc.app.vainruling.core.service.util.PlatformReflector;
-import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.upa.AccessMode;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
@@ -74,7 +74,7 @@ public class ActionDialogAdapter {
         return actionName;
     }
 
-    public boolean isEnabled(Class entityType, EditCtrlMode mode, Object value) {
+    public boolean isEnabled(Class entityType, AccessMode mode, Object value) {
         boolean b = instance.isEnabled(getId(), entityType, mode, value);
         if (b) {
             PersistenceUnit e = UPA.getPersistenceUnit();

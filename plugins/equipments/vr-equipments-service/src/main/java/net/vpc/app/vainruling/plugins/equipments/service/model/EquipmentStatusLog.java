@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.plugins.equipments.service.model;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.AccessLevel;
+import net.vpc.upa.ProtectionLevel;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
@@ -39,7 +40,7 @@ public class EquipmentStatusLog {
      * technician
      */
     @Summary
-    @Field(updateAccessLevel = AccessLevel.PROTECTED,persistAccessLevel = AccessLevel.PROTECTED)
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private AppUser actor;
 
 

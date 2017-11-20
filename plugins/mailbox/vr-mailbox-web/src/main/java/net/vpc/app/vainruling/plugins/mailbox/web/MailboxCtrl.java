@@ -15,7 +15,7 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UCtrlData;
 import net.vpc.app.vainruling.core.web.UCtrlProvider;
-import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
+
 import net.vpc.app.vainruling.core.web.menu.*;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
@@ -25,6 +25,7 @@ import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.app.vainruling.plugins.inbox.service.model.*;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.upa.AccessMode;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
@@ -59,10 +60,10 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     public void onNew() {
         MailboxSent item = new MailboxSent();
         item.setRichText(true);
-        resetNewMessage(item,EditCtrlMode.NEW);
+        resetNewMessage(item,AccessMode.PERSIST);
     }
 
-    private void resetNewMessage(MailboxSent item,EditCtrlMode mode){
+    private void resetNewMessage(MailboxSent item,AccessMode mode){
         getModel().setNewItem(item);
         getModel().setNewItemAttachments(new ArrayList<>());
         getModel().setMode(mode);
@@ -249,7 +250,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         FacesUtils.clearMessages();
         getModel().setSent(false);
         getModel().setFolder(MailboxFolder.CURRENT);
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
         resetCurrent();
         onRefresh();
     }
@@ -258,7 +259,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         FacesUtils.clearMessages();
         getModel().setSent(false);
         getModel().setFolder(MailboxFolder.DELETED);
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
         resetCurrent();
         onRefresh();
     }
@@ -267,7 +268,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         FacesUtils.clearMessages();
         getModel().setSent(false);
         getModel().setFolder(MailboxFolder.ARCHIVED);
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
         resetCurrent();
         onRefresh();
     }
@@ -276,7 +277,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         FacesUtils.clearMessages();
         getModel().setSent(true);
         getModel().setFolder(MailboxFolder.CURRENT);
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
         resetCurrent();
         onRefresh();
     }
@@ -285,7 +286,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         FacesUtils.clearMessages();
         getModel().setSent(true);
         getModel().setFolder(MailboxFolder.DELETED);
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
         resetCurrent();
         onRefresh();
     }
@@ -294,7 +295,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         FacesUtils.clearMessages();
         getModel().setSent(true);
         getModel().setFolder(MailboxFolder.ARCHIVED);
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
         resetCurrent();
         onRefresh();
     }
@@ -315,7 +316,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         if (r != null) {
             getModel().setCurrent(r);
             loadThreadList(r,true);
-            getModel().setMode(EditCtrlMode.UPDATE);
+            getModel().setMode(AccessMode.UPDATE);
             if(r.isInbox()) {
                 MailboxReceived m = (MailboxReceived) r.getMsg();
                 mailboxPlugin.markRead(m.getId(), true);
@@ -330,7 +331,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         item.setRichText(true);
         getModel().setNewItem(item);
         getModel().setNewItemAttachments(new ArrayList<>());
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
     }
 
     public void onRemoveSelected() {
@@ -341,7 +342,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             @Override
             public void run() {
                 switch (getModel().getMode()) {
-                    case LIST: {
+                    case READ: {
                         if (getModel().getFolder() == MailboxFolder.DELETED) {
                             for (Row inbox : getModel().getInbox()) {
                                 if (inbox.isSelected()) {
@@ -373,7 +374,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
                             msg.setDeletedBy(currentUserLogin);
                             pu.merge(msg.getMsg());
                         }
-                        getModel().setMode(EditCtrlMode.LIST);
+                        getModel().setMode(AccessMode.READ);
                         onRefresh();
                         break;
                     }
@@ -422,7 +423,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             item.setRichText(false);
             getModel().setNewItem(item);
             getModel().setNewItemAttachments(new ArrayList<>());
-            getModel().setMode(EditCtrlMode.LIST);
+            getModel().setMode(AccessMode.READ);
             onRefresh();
             FacesUtils.addInfoMessage("Envoi réussi");
         } catch (Exception e) {
@@ -455,7 +456,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             s.setSubject(subject);
             s.setRichText(true);
             s.setThreadId(r.getOutboxMessage()==null?0:r.getOutboxMessage().getThreadId());
-            resetNewMessage(s,EditCtrlMode.NEW);
+            resetNewMessage(s,AccessMode.PERSIST);
             loadThreadList(current,false);
         }
     }
@@ -475,7 +476,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             }
             s.setThreadId(r.getOutboxMessage()==null?0:r.getOutboxMessage().getThreadId());
             s.setRichText(true);
-            resetNewMessage(s,EditCtrlMode.NEW);
+            resetNewMessage(s,AccessMode.PERSIST);
             loadThreadList(current,false);
         }
     }
@@ -487,7 +488,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     public boolean isEnabledButton(String buttonId) {
         switch (getModel().getMode()) {
-            case NEW: {
+            case PERSIST: {
                 if ("Send".equals(buttonId)) {
                     return true;
                 }
@@ -518,7 +519,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
                 }
                 return "Archive".equals(buttonId);
             }
-            case LIST: {
+            case READ: {
                 if ("Refresh".equals(buttonId)) {
                     return true;
                 }
@@ -546,7 +547,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     public boolean isListMode() {
         try {
 
-            return getModel().getMode() == EditCtrlMode.LIST;
+            return getModel().getMode() == AccessMode.READ;
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
@@ -555,7 +556,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     public boolean isNewOrUpdateMode() {
         try {
-            return getModel().getMode() == EditCtrlMode.NEW || getModel().getMode() == EditCtrlMode.UPDATE;
+            return getModel().getMode() == AccessMode.PERSIST || getModel().getMode() == AccessMode.UPDATE;
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
@@ -564,7 +565,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     public boolean isNewMode() {
         try {
-            return getModel().getMode() == EditCtrlMode.NEW;
+            return getModel().getMode() == AccessMode.PERSIST;
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
@@ -701,7 +702,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         private MailboxSent newItem = new MailboxSent();
         private List<MailboxSentAttachment> newItemAttachments = new ArrayList<>();
         private List<Row> inbox = new ArrayList<>();
-        private EditCtrlMode mode = EditCtrlMode.LIST;
+        private AccessMode mode = AccessMode.READ;
         private boolean advancedSettings;
 
         public int getToCount() {
@@ -768,11 +769,11 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             this.current = current;
         }
 
-        public EditCtrlMode getMode() {
+        public AccessMode getMode() {
             return mode;
         }
 
-        public void setMode(EditCtrlMode mode) {
+        public void setMode(AccessMode mode) {
             this.mode = mode;
         }
 

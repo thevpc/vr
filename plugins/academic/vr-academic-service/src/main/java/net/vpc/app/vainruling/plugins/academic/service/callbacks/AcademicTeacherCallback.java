@@ -39,7 +39,7 @@ public class AcademicTeacherCallback {
                         new DefaultFieldBuilder().setName("contactEmail")
                                 .addModifier(UserFieldModifier.SUMMARY)
                                 .setDataType(TypesFactory.STRING)
-                                .setAccessLevel(AccessLevel.PROTECTED)
+                                .setProtectionLevel(ProtectionLevel.PROTECTED)
                                 .setIndex(3)
                                 .setLiveSelectFormula("this.contact.email")
                 );
@@ -49,7 +49,7 @@ public class AcademicTeacherCallback {
                         new DefaultFieldBuilder()
                                 .setName("contactPhone1")
                                 .addModifier(UserFieldModifier.SUMMARY)
-                                .setAccessLevel(AccessLevel.PROTECTED)
+                                .setProtectionLevel(ProtectionLevel.PROTECTED)
                                 .setDataType(TypesFactory.STRING)
                                 .setIndex(4)
                                 .setLiveSelectFormula("this.contact.phone1")

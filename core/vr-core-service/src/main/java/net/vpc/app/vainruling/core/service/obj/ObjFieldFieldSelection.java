@@ -8,10 +8,7 @@ package net.vpc.app.vainruling.core.service.obj;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.I18n;
-import net.vpc.upa.AccessLevel;
-import net.vpc.upa.Entity;
-import net.vpc.upa.Field;
-import net.vpc.upa.FieldModifier;
+import net.vpc.upa.*;
 import net.vpc.upa.filters.FieldFilters;
 
 import java.util.*;
@@ -27,13 +24,13 @@ public class ObjFieldFieldSelection extends ObjFieldSelection {
         super("list");
     }
 
-    public ObjFieldFieldSelection(Entity entity, String[] fields) {
+    public ObjFieldFieldSelection(Entity entity, String[] fields,AccessMode mode) {
         super("list");
-        updateFields(entity, new HashSet<String>(Arrays.asList(fields)));
+        updateFields(mode,entity, new HashSet<String>(Arrays.asList(fields)));
     }
 
     @Override
-    public void prepare(Entity entity) {
+    public void prepare(Entity entity, AccessMode mode) {
         Entity old = getEntity();
         setEntity(entity);
         Set<String> oldSelection = new HashSet<>();
@@ -50,10 +47,10 @@ public class ObjFieldFieldSelection extends ObjFieldSelection {
                 }
             }
         }
-        updateFields(entity, oldSelection);
+        updateFields(mode,entity, oldSelection);
     }
 
-    private void updateFields(Entity entity, Set<String> selectedFieldNames) {
+    private void updateFields(AccessMode mode,Entity entity, Set<String> selectedFieldNames) {
         fields.clear();
         int pos = 0;
         CorePlugin core = VrApp.getBean(CorePlugin.class);
@@ -64,23 +61,37 @@ public class ObjFieldFieldSelection extends ObjFieldSelection {
             AccessLevel r = field.getReadAccessLevel();
             AccessLevel u = field.getUpdateAccessLevel();
             boolean show = false;
-            switch (r) {
-                case PRIVATE: {
-                    //dont show
-                    show = false;
+            switch (mode){
+                case READ:{
+                    show=field.getEffectiveReadAccessLevel()!=AccessLevel.INACCESSIBLE;
                     break;
                 }
-                case PROTECTED: {
-                    //show if admin
-                    show = admin || entity.getPersistenceUnit().getSecurityManager().isAllowedRead(field);
+                case UPDATE:{
+                    show=field.getEffectiveUpdateAccessLevel()!=AccessLevel.INACCESSIBLE;
                     break;
                 }
-                default: {
-
-                    show = true;
+                case PERSIST:{
+                    show=field.getEffectivePersistAccessLevel()!=AccessLevel.INACCESSIBLE;
                     break;
                 }
             }
+//            switch (r) {
+//                case PRIVATE: {
+//                    //dont show
+//                    show = false;
+//                    break;
+//                }
+//                case PROTECTED: {
+//                    //show if admin
+//                    show = admin || entity.getPersistenceUnit().getSecurityManager().isAllowedRead(field);
+//                    break;
+//                }
+//                default: {
+//
+//                    show = true;
+//                    break;
+//                }
+//            }
             if (show) {
                 SelField sf = new SelField();
                 sf.setField(field);

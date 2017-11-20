@@ -19,7 +19,7 @@ import java.net.URLDecoder;
 /**
  * @author taha.bensalah@gmail.com
  */
-@WebServlet(name = "PageServlet", urlPatterns = "/p/*")
+@WebServlet(name = "PageServlet", urlPatterns = "/p/*",loadOnStartup = 10)
 public class PageServlet extends HttpServlet {
 
     @Override

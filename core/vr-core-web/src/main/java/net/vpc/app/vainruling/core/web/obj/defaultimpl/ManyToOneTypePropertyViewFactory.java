@@ -50,9 +50,9 @@ public class ManyToOneTypePropertyViewFactory implements PropertyViewFactory {
 //        boolean insert = field.getModifiers().contains(FieldModifier.PERSIST_DEFAULT);
 //        boolean update = !id && field.getModifiers().contains(FieldModifier.UPDATE_DEFAULT);
 //        boolean nullable = dataType.isNullable();
-//        boolean listMode = objCtrl.getModel().getMode() == EditCtrlMode.LIST;
-//        boolean insertMode = objCtrl.getModel().getMode() == EditCtrlMode.NEW;
-//        boolean updateMode = objCtrl.getModel().getMode() == EditCtrlMode.UPDATE;
+//        boolean listMode = objCtrl.getModel().getMode() == AccessMode.READ;
+//        boolean insertMode = objCtrl.getModel().getMode() == AccessMode.PERSIST;
+//        boolean updateMode = objCtrl.getModel().getMode() == AccessMode.UPDATE;
 //        boolean forceDisabled = configuration != null && configuration.get("disabled") != null && (Boolean.TRUE.equals(configuration.get("disabled")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("disabled"))));
 //        boolean forceInvisible = configuration != null && configuration.get("invisible") != null && (Boolean.TRUE.equals(configuration.get("invisible")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("invisible"))));
 //        boolean visible

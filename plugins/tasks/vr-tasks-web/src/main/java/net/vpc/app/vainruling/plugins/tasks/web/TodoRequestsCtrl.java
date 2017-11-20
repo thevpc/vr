@@ -11,9 +11,10 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
-import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
+
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
 import net.vpc.app.vainruling.plugins.tasks.service.model.*;
+import net.vpc.upa.AccessMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
@@ -64,27 +65,27 @@ public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {
 
     public boolean isEnabledButton(String buttonId) {
         if ("Assign".equals(buttonId)) {
-            return getModel().getMode() == EditCtrlMode.UPDATE
+            return getModel().getMode() == AccessMode.UPDATE
                     && todoService.findNextStatus(getModel().getCurrent().getStatus(), TodoStatusType.ASSIGNED) != null;
         }
         if ("Unassign".equals(buttonId)) {
-            return getModel().getMode() == EditCtrlMode.UPDATE
+            return getModel().getMode() == AccessMode.UPDATE
                     && isCurrentOwned()
                     && todoService.findNextStatus(getModel().getCurrent().getStatus(), TodoStatusType.UNASSIGNED) != null;
         }
 
         if ("Done".equals(buttonId)) {
-            return getModel().getMode() == EditCtrlMode.UPDATE
+            return getModel().getMode() == AccessMode.UPDATE
                     && isCurrentOwned()
                     && todoService.findNextStatus(getModel().getCurrent().getStatus(), TodoStatusType.DONE) != null;
         }
         if ("Verify".equals(buttonId)) {
-            return getModel().getMode() == EditCtrlMode.UPDATE
+            return getModel().getMode() == AccessMode.UPDATE
                     && isCurrentOwned()
                     && todoService.findNextStatus(getModel().getCurrent().getStatus(), TodoStatusType.TO_VERIFY) != null;
         }
         if ("Reopen".equals(buttonId)) {
-            return getModel().getMode() == EditCtrlMode.UPDATE
+            return getModel().getMode() == AccessMode.UPDATE
                     && isCurrentOwned()
                     && (getModel().getCurrent().getStatus().getType() == TodoStatusType.TO_VERIFY || getModel().getCurrent().getStatus().getType() == TodoStatusType.DONE)
                     && todoService.findNextStatus(getModel().getCurrent().getStatus(), TodoStatusType.ASSIGNED) != null;
@@ -144,7 +145,7 @@ public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {
 
     public void onSaveCurrent() {
         switch (getModel().getMode()) {
-            case NEW: {
+            case PERSIST: {
                 Todo c = getModel().getCurrent();
                 todoService.saveTodo(c);
                 onCancelCurrent();
@@ -158,20 +159,20 @@ public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {
             }
         }
         reloadPage();
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
     }
 
     public void onDeleteCurrent() {
         Todo c = getModel().getCurrent();
         todoService.removeTodo(c.getId());
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
     }
 
     public void onArchiveCurrent() {
         Todo c = getModel().getCurrent();
         todoService.archiveTodo(c.getId());
         getModel().setCurrent(new Todo());
-        getModel().setMode(EditCtrlMode.LIST);
+        getModel().setMode(AccessMode.READ);
     }
 
     @OnPageLoad

@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.AccessLevel;
+import net.vpc.upa.ProtectionLevel;
 import net.vpc.upa.config.*;
 
 /**
@@ -53,7 +54,7 @@ public class AcademicStudentCV {
     private String socialURL4;
     private String rssURL;
     @Summary
-    @Field(persistAccessLevel = AccessLevel.PROTECTED, updateAccessLevel = AccessLevel.PROTECTED, readAccessLevel = AccessLevel.PUBLIC)
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private long viewsCounter;
 
     public String getAboutText() {

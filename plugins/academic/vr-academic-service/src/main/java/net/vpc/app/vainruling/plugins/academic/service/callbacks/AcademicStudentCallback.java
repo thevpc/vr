@@ -6,12 +6,11 @@
 package net.vpc.app.vainruling.plugins.academic.service.callbacks;
 
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.upa.AccessLevel;
-import net.vpc.upa.DefaultFieldBuilder;
+import net.vpc.upa.*;
 import net.vpc.upa.Entity;
-import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.callbacks.EntityEvent;
 import net.vpc.upa.config.*;
+import net.vpc.upa.config.Callback;
 import net.vpc.upa.exceptions.UPAException;
 import net.vpc.upa.types.TypesFactory;
 
@@ -31,7 +30,7 @@ public class AcademicStudentCallback {
                         new DefaultFieldBuilder()
                                 .setName("contactEmail")
                                 .addModifier(UserFieldModifier.SUMMARY)
-                                .setReadAccessLevel(AccessLevel.PROTECTED)
+                                .setReadProtectionLevel(ProtectionLevel.PROTECTED)
                                 .setDataType(TypesFactory.STRING)
                                 .setIndex(3)
                                 .setLiveSelectFormula("this.contact.email")
@@ -42,7 +41,7 @@ public class AcademicStudentCallback {
                         new DefaultFieldBuilder()
                                 .setName("contactPhone1")
                                 .addModifier(UserFieldModifier.SUMMARY)
-                                .setReadAccessLevel(AccessLevel.PROTECTED)
+                                .setReadProtectionLevel(ProtectionLevel.PROTECTED)
                                 .setDataType(TypesFactory.STRING)
                                 .setIndex(4)
                                 .setLiveSelectFormula("this.contact.phone1")

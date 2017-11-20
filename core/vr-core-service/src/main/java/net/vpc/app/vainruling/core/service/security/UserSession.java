@@ -35,6 +35,7 @@ public class UserSession implements Serializable,Cloneable {
     private String sessionId;
     private String clientIpAddress;
     private String lastVisitedPage;
+    private String preConnexionURL;
     private String lastVisitedPageInfo;
     //    private String componentsTheme="glass-x";
 //    private String componentsTheme = "eniso-green";
@@ -332,5 +333,13 @@ public class UserSession implements Serializable,Cloneable {
 
     public void setClientApp(String clientApp) {
         this.clientApp = clientApp;
+    }
+
+    public String getPreConnexionURL() {
+        return preConnexionURL;
+    }
+
+    public void setPreConnexionURL(String preConnexionURL) {
+        this.preConnexionURL = preConnexionURL;
     }
 }

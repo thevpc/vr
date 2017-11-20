@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web.obj;
 
-import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
+import net.vpc.upa.AccessMode;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface ActionDialog {
 
-    boolean isEnabled(String actionId, Class entityType, EditCtrlMode mode, Object value);
+    boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value);
 
     void openDialog(String actionId, List<String> itemIds);
 

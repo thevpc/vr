@@ -14,7 +14,6 @@ import net.vpc.app.vainruling.core.service.obj.*;
 import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
-import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.obj.defaultimpl.EntityDetailPropertyView;
@@ -86,7 +85,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             Config c = VrUtils.parseJSONObject(cmd, Config.class);
             Entity entity = UPA.getPersistenceUnit().getEntity(c.entity);
             UCtrlData d = new UCtrlData();
-            d.setTitle(getPageTitleString(entity, EditCtrlMode.LIST));
+            d.setTitle(getPageTitleString(entity, AccessMode.READ));
             d.setUrl("modules/obj/objects");
             d.setCss("fa-table");
             d.setSecurityKey(entity.getAbsoluteName() + ".DefaultEditor");
@@ -107,19 +106,19 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         return null;
     }
 
-    public String getPageTitleString(Entity entity, EditCtrlMode mode) {
+    public String getPageTitleString(Entity entity, AccessMode mode) {
         if (mode == null) {
-            mode = EditCtrlMode.LIST;
+            mode = AccessMode.READ;
         }
         if (entity == null) {
             switch (mode) {
-                case LIST: {
+                case READ: {
                     return ("Liste Objets");
                 }
                 case UPDATE: {
                     return ("Mise à jour Objet");
                 }
-                case NEW: {
+                case PERSIST: {
                     return ("Nouvel Objet");
                 }
             }
@@ -128,7 +127,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         String newTitleString = "???";
         String entityPlainTitle = i18n.get(entity);
         switch (mode) {
-            case LIST: {
+            case READ: {
                 newTitleString = i18n.getOrNull(entity.getI18NString().append("ListTitle"), entityPlainTitle);
                 if (newTitleString == null) {
                     newTitleString = "Liste " + entityPlainTitle;
@@ -142,7 +141,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 }
                 break;
             }
-            case NEW: {
+            case PERSIST: {
                 newTitleString = i18n.getOrNull(getEntity().getI18NString().append("NewTitle"), entityPlainTitle);
                 if (newTitleString == null) {
                     newTitleString = "Nouveau " + entityPlainTitle;
@@ -166,7 +165,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     public boolean isEnabledButtonImpl(String buttonId) {
         try {
             switch (getModel().getMode()) {
-                case LIST: {
+                case READ: {
                     if ("Select".equals(buttonId)) {
                         return isEnabledButton("Remove")
                                 || isEnabledButton("Archive");
@@ -208,7 +207,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                     break;
                 }
-                case NEW: {
+                case PERSIST: {
                     if ("Save".equals(buttonId)) {
                         return UPA.getPersistenceUnit().getSecurityManager().isAllowedPersist(getEntity());
                     }
@@ -319,7 +318,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                 }
             }
-//            updateMode(EditCtrlMode.LIST);
+//            updateMode(AccessMode.READ);
 //            currentModelToView();
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
@@ -332,7 +331,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     @Override
-    protected void updateMode(EditCtrlMode m) {
+    protected void updateMode(AccessMode m) {
         enabledButtons.clear();
         super.updateMode(m);
         updateModelFromConfig();
@@ -362,10 +361,10 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         try {
             currentViewToModel();
             switch (getModel().getMode()) {
-                case NEW: {
+                case PERSIST: {
                     Object c = getModel().getCurrentDocument();
                     core.save(getEntityName(), c);
-                    updateMode(EditCtrlMode.UPDATE);
+                    updateMode(AccessMode.UPDATE);
 //                    onCancelCurrent();
                     break;
                 }
@@ -391,10 +390,10 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         try {
             currentViewToModel();
             switch (getModel().getMode()) {
-                case NEW: {
+                case PERSIST: {
                     Object c = getModel().getCurrentDocument();
                     core.save(getEntityName(), c);
-                    updateMode(EditCtrlMode.UPDATE);
+                    updateMode(AccessMode.UPDATE);
 //                    onCancelCurrent();
                     break;
                 }
@@ -422,7 +421,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         try {
             currentViewToModel();
             switch (getModel().getMode()) {
-                case NEW: {
+                case PERSIST: {
                     Object c = getModel().getCurrentDocument();
                     core.save(getEntityName(), c);
                     onCancelCurrent();
@@ -436,7 +435,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 }
             }
             reloadPage(true);
-            updateMode(EditCtrlMode.LIST);
+            updateMode(AccessMode.READ);
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             FacesUtils.addErrorMessage(ex);
@@ -448,7 +447,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         enabledButtons.clear();
         int count = 0;
         try {
-            if (getModel().getMode() == EditCtrlMode.LIST) {
+            if (getModel().getMode() == AccessMode.READ) {
                 for (ObjRow row : getSelectedRows()) {
                         core.remove(getEntityName(), core.resolveId(getEntityName(), row.getDocument()));
                         count++;
@@ -460,10 +459,10 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 core.remove(getEntityName(), core.resolveId(getEntityName(), c));
                 count++;
                 loadList();
-                updateMode(EditCtrlMode.LIST);
+                updateMode(AccessMode.READ);
                 getModel().setCurrent(null);
 //                reloadPage(true);
-//                updateMode(EditCtrlMode.LIST);
+//                updateMode(AccessMode.READ);
             }
             if (count == 0) {
                 FacesUtils.addInfoMessage("Aucun Enregistrement supprimé");
@@ -480,7 +479,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         enabledButtons.clear();
         int count = 0;
         try {
-            if (getModel().getMode() == EditCtrlMode.LIST) {
+            if (getModel().getMode() == AccessMode.READ) {
                 for (ObjRow row : getSelectedRows()) {
                     core.archive(getEntityName(), core.resolveId(getEntityName(), row.getDocument()));
                     count++;
@@ -491,7 +490,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 Object c = getModel().getCurrentDocument();
                 core.archive(getEntityName(), core.resolveId(getEntityName(), c));
                 getModel().setCurrent(delegated_newInstance());
-                updateMode(EditCtrlMode.LIST);
+                updateMode(AccessMode.READ);
             }
             if (count == 0) {
                 FacesUtils.addInfoMessage("Aucun Enregistrement archivé");
@@ -546,19 +545,19 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                 }
                 if (cfg.selectedFields != null) {
-                    getModel().setFieldSelection(new ObjFieldFieldSelection(getEntity(), cfg.selectedFields));
+                    getModel().setFieldSelection(new ObjFieldFieldSelection(getEntity(), cfg.selectedFields,getModel().getMode()));
                 }
                 if (cfg.searchExpr != null) {
                     getModel().setSearch(new ObjSimpleSearch(cfg.searchExpr));
                 }
             }
             if (cfg.id == null || cfg.id.trim().length() == 0) {
-                updateMode(EditCtrlMode.LIST);
+                updateMode(AccessMode.READ);
                 loadList();
                 getModel().setCurrent(null);
-            } else if (enableCustomization && getModel().getMode() == EditCtrlMode.LIST) {
+            } else if (enableCustomization && getModel().getMode() == AccessMode.READ) {
                 //do nothing
-                updateMode(EditCtrlMode.LIST);
+                updateMode(AccessMode.READ);
                 loadList();
                 getModel().setCurrent(null);
             } else {
@@ -569,7 +568,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 Document curr = core.findDocument(getEntityName(), eid);
                 if (curr == null) {
                     //should not happen though!
-                    updateMode(EditCtrlMode.LIST);
+                    updateMode(AccessMode.READ);
                     getModel().setCurrent(null);
                     return;
                 }
@@ -586,7 +585,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                 }
                 getModel().setCurrent(r);
-                updateMode(EditCtrlMode.UPDATE);
+                updateMode(AccessMode.UPDATE);
                 currentModelToView();
             }
         } catch (RuntimeException ex) {
@@ -967,14 +966,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                     }
                 });
 
+                AccessMode mode = getModel().getMode();
                 for (Field field : fields) {
-                    AccessLevel ral = field.getReadAccessLevel();
-                    if (ral == AccessLevel.PRIVATE) {
+                    AccessLevel ral = field.getEffectiveAccessLevel(mode);
+                    boolean readonly=false;
+                    if (ral == AccessLevel.INACCESSIBLE) {
                         continue;
-                    } else if (ral == AccessLevel.PROTECTED) {
-                        if (!adm && !UPA.getPersistenceUnit().getSecurityManager().isAllowedRead(field)) {
-                            continue;
-                        }
+                    } else if (ral == AccessLevel.READ_ONLY) {
+                        readonly=true;
                     }
                     String type = UIConstants.Control.TEXT;
                     if (PlatformTypes.isBooleanType(field.getDataType().getPlatformType())) {
@@ -1045,7 +1044,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 //                    }
 //                }
 //            }
-                if (getModel().getMode() == EditCtrlMode.UPDATE) {
+                if (getModel().getMode() == AccessMode.UPDATE) {
                     boolean firstDetailRelation = true;
                     int counter = 0;
                     int maxPerLine = 2;
@@ -1411,7 +1410,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     public void onRefreshCurrent() {
-        if(getModel().getMode() == EditCtrlMode.LIST) {
+        if(getModel().getMode() == AccessMode.READ) {
             reloadPage(true);
         }else{
             onReloadCurrent();
@@ -1421,7 +1420,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     public void onReloadCurrent() {
         switch (getModel().getMode()) {
-            case NEW: {
+            case PERSIST: {
                 onNew();
                 break;
             }
@@ -1523,7 +1522,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
             oldSearch = new ObjFieldFieldSelection();
         }
         getModel().setFieldSelection(oldSearch);
-        oldSearch.prepare(getEntity());
+        oldSearch.prepare(getEntity(),getModel().getMode());
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
         options.put("draggable", true);
@@ -1549,7 +1548,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         enabledButtons.clear();
         try {
             getModel().setCurrent(null);//delegated_newInstance()
-            updateMode(EditCtrlMode.LIST);
+            updateMode(AccessMode.READ);
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
             throw ex;
@@ -1616,7 +1615,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                 if (r != null) {
                     switch (r) {
                         case RELOAD_CURRENT: {
-                            if (getModel().getMode() == EditCtrlMode.LIST) {
+                            if (getModel().getMode() == AccessMode.READ) {
                                 reloadPage(true);
                             } else {
                                 onReloadCurrent();
@@ -1624,11 +1623,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                             break;
                         }
                         case RELOAD_ALL: {
-                            if (getModel().getMode() == EditCtrlMode.LIST) {
+                            if (getModel().getMode() == AccessMode.READ) {
                                 reloadPage(true);
                             } else {
                                 loadList();
-                                updateMode(EditCtrlMode.LIST);
+                                updateMode(AccessMode.READ);
                                 getModel().setCurrent(null);
                             }
                             break;
@@ -1672,7 +1671,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
     public List<String> getSelectedIdStrings() {
         List<String> selected = new ArrayList<>();
-        if (getModel().getMode() == EditCtrlMode.LIST) {
+        if (getModel().getMode() == AccessMode.READ) {
             for (ObjRow r : getSelectedRows()) {
                 String iid = StringUtils.nonEmpty(core.resolveId(getEntityName(), r.getDocument()));
                 if (iid != null) {
@@ -1708,7 +1707,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                         if (r != null) {
                             switch (r) {
                                 case RELOAD_CURRENT: {
-                                    if (getModel().getMode() == EditCtrlMode.LIST) {
+                                    if (getModel().getMode() == AccessMode.READ) {
                                         reloadPage(true);
                                     } else {
                                         onReloadCurrent();
@@ -1716,11 +1715,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
                                     break;
                                 }
                                 case RELOAD_ALL: {
-                                    if (getModel().getMode() == EditCtrlMode.LIST) {
+                                    if (getModel().getMode() == AccessMode.READ) {
                                         reloadPage(true);
                                     } else {
                                         loadList();
-                                        updateMode(EditCtrlMode.LIST);
+                                        updateMode(AccessMode.READ);
                                         getModel().setCurrent(null);
                                     }
                                     break;
@@ -1911,10 +1910,10 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         public List getSelectedObjects() {
             switch (getMode()) {
                 case UPDATE:
-                case NEW: {
+                case PERSIST: {
                     return Arrays.asList(getCurrentDocument());
                 }
-                case LIST: {
+                case READ: {
                     List all = new ArrayList();
                     for (ObjRow objRow : getSelectedRows()) {
                         all.add(objRow.getDocument());

@@ -8,13 +8,9 @@ package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.app.vainruling.core.web.ctrl.EditCtrlMode;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.core.web.obj.UPAObjectHelper;
-import net.vpc.upa.AccessLevel;
-import net.vpc.upa.Field;
-import net.vpc.upa.FieldModifier;
-import net.vpc.upa.FlagSet;
+import net.vpc.upa.*;
 import net.vpc.upa.types.DataType;
 
 import java.util.Map;
@@ -56,76 +52,96 @@ public class FieldPropertyViewInfo {
         }
         nullable = dataType == null ? true : dataType.isNullable();
         ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
-        listMode = objCtrl.getModel().getMode() == EditCtrlMode.LIST;
-        insertMode = objCtrl.getModel().getMode() == EditCtrlMode.NEW;
-        updateMode = objCtrl.getModel().getMode() == EditCtrlMode.UPDATE;
+        listMode = objCtrl.getModel().getMode() == AccessMode.READ;
+        insertMode = objCtrl.getModel().getMode() == AccessMode.PERSIST;
+        updateMode = objCtrl.getModel().getMode() == AccessMode.UPDATE;
         if (field != null) {
-            visible
-                    = insertMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.Form.VISIBLE_ON_CREATE, null, !insert_seq)
-                    : updateMode ? UPAObjectHelper.findBooleanProperty(field, UIConstants.Form.VISIBLE_ON_UPDATE, null, !insert_seq)
-                    : true;
+            AccessLevel effectiveAccessLevel = field.getEffectiveAccessLevel(objCtrl.getModel().getMode());
+            switch (effectiveAccessLevel){
+                case INACCESSIBLE:{
+                    visible=false;
+                    disabled=true;
+                    break;
+                }
+                case READ_ONLY:{
+                    visible=true;
+                    disabled=true;
+                    break;
+                }
+                case READ_WRITE:{
+                    visible=true;
+                    disabled=false;
+                    break;
+                }
+            }
+//            visible
+//                    = insertMode ? !insert_seq
+//                    : updateMode ? !insert_seq
+//                    : true;
         } else {
             visible = true;
         }
         boolean forceDisabled = configuration != null && configuration.get("enabled") != null && (Boolean.FALSE.equals(configuration.get("enabled")) || "false".equalsIgnoreCase(String.valueOf(configuration.get("enabled"))));
         boolean forceInvisible = configuration != null && configuration.get("visible") != null && (Boolean.FALSE.equals(configuration.get("visible")) || "false".equalsIgnoreCase(String.valueOf(configuration.get("visible"))));
-        disabled = forceDisabled;
+        if(!disabled && forceDisabled) {
+            disabled = forceDisabled;
+        }
         submitOnChange = configuration != null && configuration.get("submitOnChange") != null && (Boolean.TRUE.equals(configuration.get("submitOnChange")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("submitOnChange"))));;
 
-        if (!disabled) {
-            if (insertMode) {
-                if (!insert) {
-                    disabled = true;
-                }
-            }
-            if (updateMode) {
-                if (!update) {
-                    disabled = true;
-                }
-            }
-        }
+//        if (!disabled) {
+//            if (insertMode) {
+//                if (!insert) {
+//                    disabled = true;
+//                }
+//            }
+//            if (updateMode) {
+//                if (!update) {
+//                    disabled = true;
+//                }
+//            }
+//        }
 
         if (visible && forceInvisible) {
             visible = false;
         }
-        boolean admin = VrApp.getBean(CorePlugin.class).isCurrentSessionAdmin();
-
-        if (visible && field != null) {
-            AccessLevel rl = field.getReadAccessLevel();
-            if (rl == AccessLevel.PRIVATE) {
-                visible = false;
-            } else if (rl == AccessLevel.PROTECTED) {
-                visible = admin || field.getPersistenceGroup().getSecurityManager().isAllowedRead(field);
-            }
-        }
-
-        if (updateMode && field != null) {
-            if (update) {
-                AccessLevel u = field.getUpdateAccessLevel();
-                if (u == AccessLevel.PRIVATE) {
-                    update = false;
-                } else if (u == AccessLevel.PROTECTED) {
-                    update = admin|| field.getPersistenceGroup().getSecurityManager().isAllowedWrite(field);
-                }
-            }
-            if (!update) {
-                disabled = true;
-            }
-        }
-
-        if (insertMode && field != null) {
-            if (insert) {
-                AccessLevel u = field.getPersistAccessLevel();
-                if (u == AccessLevel.PRIVATE) {
-                    insert = false;
-                } else if (u == AccessLevel.PROTECTED) {
-                    insert = admin|| field.getPersistenceGroup().getSecurityManager().isAllowedWrite(field);
-                }
-            }
-            if (!insert) {
-                disabled = true;
-            }
-        }
+//        boolean admin = VrApp.getBean(CorePlugin.class).isCurrentSessionAdmin();
+//
+//        if (visible && field != null) {
+//            AccessLevel rl = field.getReadAccessLevel();
+//            if (rl == AccessLevel.PRIVATE) {
+//                visible = false;
+//            } else if (rl == AccessLevel.PROTECTED) {
+//                visible = admin || field.getPersistenceGroup().getSecurityManager().isAllowedRead(field);
+//            }
+//        }
+//
+//        if (updateMode && field != null) {
+//            if (update) {
+//                AccessLevel u = field.getUpdateAccessLevel();
+//                if (u == AccessLevel.PRIVATE) {
+//                    update = false;
+//                } else if (u == AccessLevel.PROTECTED) {
+//                    update = admin|| field.getPersistenceGroup().getSecurityManager().isAllowedWrite(field);
+//                }
+//            }
+//            if (!update) {
+//                disabled = true;
+//            }
+//        }
+//
+//        if (insertMode && field != null) {
+//            if (insert) {
+//                AccessLevel u = field.getPersistAccessLevel();
+//                if (u == AccessLevel.PRIVATE) {
+//                    insert = false;
+//                } else if (u == AccessLevel.PROTECTED) {
+//                    insert = admin|| field.getPersistenceGroup().getSecurityManager().isAllowedWrite(field);
+//                }
+//            }
+//            if (!insert) {
+//                disabled = true;
+//            }
+//        }
     }
 
     public static FieldPropertyViewInfo build(Field field, DataType dataType, Map<String, Object> configuration) {
