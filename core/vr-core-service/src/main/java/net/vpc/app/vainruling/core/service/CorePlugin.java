@@ -5,10 +5,8 @@
  */
 package net.vpc.app.vainruling.core.service;
 
-import com.google.gson.Gson;
 import com.sun.syndication.feed.synd.*;
 import com.sun.syndication.io.SyndFeedOutput;
-import jdk.nashorn.api.scripting.JSObject;
 import net.vpc.app.vainruling.core.service.agent.ActiveSessionsTracker;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.cache.EntityCache;
@@ -3547,7 +3545,39 @@ public class CorePlugin {
         return f;
     }
 
-    public List<FullArticle> findFullArticlesByUserAndCategory(int dispositionGroupId, boolean includeNoDept, final String disposition) {
+    public void markArticleVisited(int articleId) {
+        UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                PersistenceUnit pu = UPA.getPersistenceUnit();
+                Entity entity = pu.getEntity(ArticlesItem.class);
+                Document document = entity.createDocument();
+                document.setObject("visitCount", new UserExpression("visitCount+1"));
+                entity.createUpdateQuery()
+                        .setValues(document)
+                        .byId(articleId)
+                        .execute();
+            }
+        });
+    }
+
+    public List<FullArticle> findFullArticlesByCategory(String disposition) {
+        UserSession userSession = UserSession.get();
+        String filter = userSession==null?null:userSession.getSelectedSiteFilter();
+        if(StringUtils.isEmpty(filter)) {
+            filter = "";
+        }
+        ArticlesDispositionGroup g = findArticleDispositionGroup(filter);
+        if(g==null){
+            g=findArticleDispositionGroup("II");
+        }
+        if(g==null){
+            return new ArrayList<>();
+        }
+        return findFullArticlesByCategory(g.getId(),true, disposition);
+    }
+
+    public List<FullArticle> findFullArticlesByCategory(int dispositionGroupId, boolean includeNoDept, final String disposition) {
         AppUser u = getCurrentUser();
         if (u == null) {
             return findFullArticlesByUserAndCategory(null, dispositionGroupId, includeNoDept, disposition);
@@ -3724,7 +3754,7 @@ public class CorePlugin {
     public void getRSS(String rss, OutputStream out) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         ArticlesDisposition t = pu.findByMainField(ArticlesDisposition.class, "rss." + rss);
-        List<FullArticle> articles = findFullArticlesByUserAndCategory(-1, true, "rss." + rss);
+        List<FullArticle> articles = findFullArticlesByCategory(-1, true, "rss." + rss);
         try {
             String feedType = "rss_2.0";
 //            String fileName = "feed.xml";
@@ -4001,13 +4031,13 @@ public class CorePlugin {
             Document r = entity.getBuilder().objectToDocument(t, true);
             if (entity.containsField("archived")) {
                 r.setBoolean("archived", true);
+                pu.merge(entityName, t);
+                if (trace.accept(entity)) {
+                    trace.archived(entityName, pu.findById(entityName, id), entity.getParent().getPath(), Level.FINE);
+                }
+                return true;
             }
 //            Object old = pu.findById(type, id);
-            pu.merge(entityName, t);
-            if (trace.accept(entity)) {
-                trace.archived(entityName, pu.findById(entityName, id), entity.getParent().getPath(), Level.FINE);
-            }
-            return true;
 //            trace.updated(t, old, getClass(), Level.FINE);
         }
         return false;

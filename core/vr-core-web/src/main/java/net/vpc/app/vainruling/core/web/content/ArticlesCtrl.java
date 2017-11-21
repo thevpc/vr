@@ -17,8 +17,6 @@ import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.*;
 import net.vpc.upa.expressions.UserExpression;
-import net.vpc.upa.types.DateTime;
-import org.primefaces.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -97,19 +95,7 @@ public class ArticlesCtrl implements CmsTextService {
 
 
     public void updateVisit(int articleId) {
-        UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
-            @Override
-            public void run() {
-                PersistenceUnit pu = UPA.getPersistenceUnit();
-                Entity entity = pu.getEntity(ArticlesItem.class);
-                Document document = entity.createDocument();
-                document.setObject("visitCount", new UserExpression("visitCount+1"));
-                entity.createUpdateQuery()
-                        .setValues(document)
-                        .byId(articleId)
-                        .execute();
-            }
-        });
+        core.markArticleVisited(articleId);
     }
 
     public void loadContentTexts(String name) {
@@ -149,21 +135,7 @@ public class ArticlesCtrl implements CmsTextService {
     }
 
     public List<FullArticle> findArticles(String disposition) {
-        UserSession userSession = UserSession.get();
-        String filter = userSession==null?null:userSession.getSelectedSiteFilter();
-        if(StringUtils.isEmpty(filter)) {
-            filter = "";
-        }
-        ArticlesDispositionGroup g = core.findArticleDispositionGroup(filter);
-        if(g==null){
-            g=core.findArticleDispositionGroup("II");
-        }
-        if(g==null){
-            return new ArrayList<>();
-        }
-
-        AppUser u = userSession==null?null:userSession.getUser();
-        return core.findFullArticlesByUserAndCategory(g==null?-1:g.getId(),true, disposition);
+        return core.findFullArticlesByCategory(disposition);
     }
 
     public List<ArticlesFile> findArticlesFiles(int articleId) {
@@ -274,18 +246,14 @@ public class ArticlesCtrl implements CmsTextService {
                 CorePlugin core = CorePlugin.get();
                 ArticlesItem a = core.findArticle(id);
                 if(a!=null && !a.isDeleted()){
-                    a.setDeleted(true);
-                    PersistenceUnit pu = UPA.getPersistenceUnit();
-                    pu.merge(a);
+                    core.remove("ArticlesItem",a.getId());
                     return true;
                 }
             }else if("archive".equals(action)){
                 CorePlugin core = CorePlugin.get();
                 ArticlesItem a = core.findArticle(id);
                 if(a!=null && !a.isArchived()){
-                    a.setArchived(true);
-                    PersistenceUnit pu = UPA.getPersistenceUnit();
-                    pu.merge(a);
+                    core.archive("ArticlesItem",a);
                     return true;
                 }
             }else if("important".equals(action)){
@@ -293,8 +261,7 @@ public class ArticlesCtrl implements CmsTextService {
                 ArticlesItem a = core.findArticle(id);
                 if(a!=null){
                     a.setImportant(!a.isImportant());
-                    PersistenceUnit pu = UPA.getPersistenceUnit();
-                    pu.merge(a);
+                    core.save("ArticlesItem",a);
                     return true;
                 }
             }

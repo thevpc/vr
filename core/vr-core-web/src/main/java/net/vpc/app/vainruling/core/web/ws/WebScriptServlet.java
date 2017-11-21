@@ -31,8 +31,11 @@ import java.util.logging.Logger;
 public class WebScriptServlet extends HttpServlet {
     private static final Logger log = Logger.getLogger(WebScriptServlet.class.getName());
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request,response);
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
         if (StringUtils.isEmpty(pathInfo)) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
