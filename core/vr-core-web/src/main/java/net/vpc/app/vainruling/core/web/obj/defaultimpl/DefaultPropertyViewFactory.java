@@ -115,6 +115,11 @@ public class DefaultPropertyViewFactory implements PropertyViewFactory {
             }
         }
         if (propView != null) {
+            if(nfo.id) {
+                propView.setPrependNewLine(true);
+                propView.setColspan(Integer.MAX_VALUE);
+                propView.setAppendNewLine(true);
+            }
             UPAObjectHelper.applyLayout(field, propView,viewContext);
             if (nfo.disabled) {
                 propView.setDisabled(nfo.disabled);

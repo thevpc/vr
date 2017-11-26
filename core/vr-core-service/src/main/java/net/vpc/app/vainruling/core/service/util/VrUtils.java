@@ -935,6 +935,12 @@ public class VrUtils {
         }
     }
 
+    public static void requireAdminOrProfile(String profileName) {
+        if (!CorePlugin.get().isCurrentSessionAdminOrProfile(profileName)) {
+            throw new SecurityException("Not Allowed");
+        }
+    }
+
     public static void requireAdminOrUser(int userId) {
         if (!CorePlugin.get().isCurrentSessionAdminOrUser(userId)) {
             throw new SecurityException("Not Allowed");

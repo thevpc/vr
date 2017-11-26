@@ -246,8 +246,7 @@
                                                     var="e">
 
                                                 <li>
-                                                    <h:outputLink value="#{vr.context}/p/activeSessions"
-                                                                  disabled="#{not vr.allowed('Custom.Admin.ActiveSessions')}">
+                                                    <h:outputLink value="#{vr.allowed('Custom.Admin.ActiveSessions') ? vr.strcat(vr.context,'/p/activeSessions') : '#'}">
                                                         <h4>
                                                             #{e.key}
                                                             <small><i

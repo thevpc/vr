@@ -1882,24 +1882,29 @@ public class CorePlugin {
         }
         UserSession us = getCurrentSession();
         UserPrincipal up = UPA.getPersistenceUnit().getUserPrincipal();
-        if (up != null && up.getObject() instanceof AppUser) {
-            AppUser u = (AppUser) up.getObject();
-            if (us.getUser() != null) {
-                String login2 = u.getLogin();
-                if (login2.equals(login)) {
-                    return true;
-                }
-                if (login2.equals(us.getUser().getLogin())) {
-                    return us.isAdmin();
-                }
+        if (up != null) {
+            if (up.getName().equals(VRSecurityManager.INTERNAL_LOGIN)) {
+                return true;
             }
-            List<AppProfile> profiles = findProfilesByUser(u.getId());
-            for (AppProfile p : profiles) {
-                if (PROFILE_ADMIN.equals(p.getCode())) {
-                    return true;
+            if (up.getObject() instanceof AppUser) {
+                AppUser u = (AppUser) up.getObject();
+                if (us.getUser() != null) {
+                    String login2 = u.getLogin();
+                    if (login2.equals(login)) {
+                        return true;
+                    }
+                    if (login2.equals(us.getUser().getLogin())) {
+                        return us.isAdmin();
+                    }
                 }
+                List<AppProfile> profiles = findProfilesByUser(u.getId());
+                for (AppProfile p : profiles) {
+                    if (PROFILE_ADMIN.equals(p.getCode())) {
+                        return true;
+                    }
+                }
+                return false;
             }
-            return false;
         }
         if (us != null) {
             if (us.isAdmin()) {
@@ -1947,6 +1952,47 @@ public class CorePlugin {
                 return true;
             }
             if (us.getUser().getId() == userId) {
+                return true;
+            }
+        }
+        return us != null && us.isAdmin();
+    }
+
+    public boolean isCurrentSessionAdminOrProfile(String profileName) {
+        if (StringUtils.isEmpty(profileName)) {
+            return isCurrentSessionAdmin();
+        }
+        UserSession us = getCurrentSession();
+        UserPrincipal up = UPA.getPersistenceUnit().getUserPrincipal();
+        if (up != null) {
+            if (up.getName().equals(VRSecurityManager.INTERNAL_LOGIN)) {
+                return true;
+            }
+            if (up.getObject() instanceof AppUser) {
+                AppUser u = (AppUser) up.getObject();
+                if (us.getUser() != null) {
+                    String login2 = u.getLogin();
+                    if (login2.equals(us.getUser().getLogin())) {
+                        return us.isAdmin();
+                    }
+                }
+                if(us.getProfileNames().contains(profileName)){
+                    return true;
+                }
+                List<AppProfile> profiles = findProfilesByUser(u.getId());
+                for (AppProfile p : profiles) {
+                    if (PROFILE_ADMIN.equals(p.getCode())) {
+                        return true;
+                    }
+                    if (profileName.equals(p.getCode())) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+        if (us != null) {
+            if (us.isAdmin()) {
                 return true;
             }
         }
@@ -2361,8 +2407,8 @@ public class CorePlugin {
     }
 
     public AppUser login(String login, String password, String clientAppId, String clientApp) {
-        AppUser appUser=null;
-        UserSession currentSession=null;
+        AppUser appUser = null;
+        UserSession currentSession = null;
         try {
             currentSession = getCurrentSession();
             for (UserSessionConfigurator userSessionConfigurator : getUserSessionConfigurators()) {
@@ -2375,10 +2421,10 @@ public class CorePlugin {
                     userSessionConfigurator.postConfigure(currentSession);
                 }
             }
-            appUser=appUser0;
-        }finally {
-            if(appUser==null) {
-                if(currentSession!=null){
+            appUser = appUser0;
+        } finally {
+            if (appUser == null) {
+                if (currentSession != null) {
                     currentSession.invalidate();
                     getSessionsTracker().onDestroy(currentSession.getSessionId());
                 }
@@ -2972,59 +3018,58 @@ public class CorePlugin {
         VrUtils.requireAdminOrUser(login);
         AppUser u = findUser(login);
         if (u != null) {
-            VFile home = getUserFolder(login);
-            final VirtualFileSystem me = getRootFileSystem0().subfs(home.getPath());
-            MountableFS mfs = VFS.createMountableFS("user:" + login);
-            try {
-                mfs.mount("/" + FOLDER_MY_DOCUMENTS, me);
-                List<AppProfile> profiles = findProfilesByUser(u.getId());
-                for (AppProfile p : profiles) {
-                    if (CorePlugin.PROFILE_ADMIN.equals(p.getName())) {
-                        //this is admin
-                        mfs.mount("/" + FOLDER_ALL_DOCUMENTS, getRootFileSystem0());
-                    }
-                }
-                VrFSTable t0 = getVrFSTable();
-                Map<Integer, VrFSTable> usersVrFSTable = getUsersVrFSTable();
-                List<VrFSTable> all = new ArrayList<>();
-                all.add(t0);
-                all.addAll(usersVrFSTable.values());
+            return UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
+                @Override
+                public VirtualFileSystem run() {
+                    VFile home = getUserFolder(login);
+                    final VirtualFileSystem me = getRootFileSystem0().subfs(home.getPath());
+                    MountableFS mfs = VFS.createMountableFS("user:" + login);
+                    try {
+                        mfs.mount("/" + FOLDER_MY_DOCUMENTS, me);
+                        List<AppProfile> profiles = findProfilesByUser(u.getId());
+                        for (AppProfile p : profiles) {
+                            if (CorePlugin.PROFILE_ADMIN.equals(p.getName())) {
+                                //this is admin
+                                mfs.mount("/" + FOLDER_ALL_DOCUMENTS, getRootFileSystem0());
+                            }
+                        }
+                        VrFSTable t0 = getVrFSTable();
+                        Map<Integer, VrFSTable> usersVrFSTable = getUsersVrFSTable();
+                        List<VrFSTable> all = new ArrayList<>();
+                        all.add(t0);
+                        all.addAll(usersVrFSTable.values());
 
-                for (AppProfile p : profiles) {
-                    String profileMountPoint = "/" + VrUtils.normalizeFilePath(p.getName()) + " Documents";
-                    VirtualFileSystem profileFileSystem = getProfileFileSystem(p.getName(), t0);
-                    if (profileFileSystem.get("/").listFiles().length > 0) {
-                        mfs.mount(profileMountPoint, profileFileSystem);
-                    }
-                }
+                        for (AppProfile p : profiles) {
+                            String profileMountPoint = "/" + VrUtils.normalizeFilePath(p.getName()) + " Documents";
+                            VirtualFileSystem profileFileSystem = getProfileFileSystem(p.getName(), t0);
+                            if (profileFileSystem.get("/").listFiles().length > 0) {
+                                mfs.mount(profileMountPoint, profileFileSystem);
+                            }
+                        }
 
-                for (VrFSTable t : all) {
-                    for (VrFSEntry e : t.getEntries(login, "User")) {
-                        mfs.mount("/" + e.getMountPoint(), getRootFileSystem0().subfs(e.getLinkPath()));
-                    }
-                    for (VrFSEntry e : t.getEntriesByType("Profile")) {
-                        //if (isComplexProfileExpr(e.getFilterName())) {
-                        if (userMatchesProfileFilter(u.getId(), e.getFilterName())) {
-                            UPA.getContext().invokePrivileged(new VoidAction() {
-
-                                @Override
-                                public void run() {
+                        for (VrFSTable t : all) {
+                            for (VrFSEntry e : t.getEntries(login, "User")) {
+                                mfs.mount("/" + e.getMountPoint(), getRootFileSystem0().subfs(e.getLinkPath()));
+                            }
+                            for (VrFSEntry e : t.getEntriesByType("Profile")) {
+                                //if (isComplexProfileExpr(e.getFilterName())) {
+                                if (userMatchesProfileFilter(u.getId(), e.getFilterName())) {
                                     try {
                                         mountSubFS(mfs, e);
                                     } catch (IOException ex) {
                                         log.log(Level.SEVERE, null, ex);
                                     }
                                 }
-                            });
+                                //}
+                            }
                         }
-                        //}
-                    }
-                }
 
-            } catch (IOException ex) {
-                log.log(Level.SEVERE, null, ex);
-            }
-            return mfs;
+                    } catch (IOException ex) {
+                        log.log(Level.SEVERE, null, ex);
+                    }
+                    return mfs;
+                }
+            });
         } else {
             return VFS.createEmptyFS();
         }
@@ -3053,51 +3098,51 @@ public class CorePlugin {
         return getProfileFileSystem(profileName, null);
     }
 
-    public VirtualFileSystem getProfileFileSystem(String profileName, VrFSTable t) {
+    protected VirtualFileSystem getProfileFileSystem(String profileName, final VrFSTable t) {
+        VrUtils.requireAdminOrProfile(profileName);
         AppProfile u = findProfileByName(profileName);
         if (u != null) {
-            final String path = "/Documents/ByProfile/" + VrUtils.normalizeFilePath(profileName);
-            UPA.getContext().invokePrivileged(new Action<Object>() {
+            return UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
 
                 @Override
-                public Object run() {
+                public VirtualFileSystem run() {
+                    final String path = "/Documents/ByProfile/" + VrUtils.normalizeFilePath(profileName);
+
                     getRootFileSystem0().mkdirs(path);
-//                    VrACL v = (VrACL) getRootFileSystem().getACL(path);
-//                    v.setOwner(login);
-                    return null;
-                }
-
-            }, null);
-            VirtualFileSystem pfs = getRootFileSystem0().subfs(path);
-            MountableFS mfs = null;
-            try {
-                if (t == null) {
-                    t = getVrFSTable();
-                }
-                mfs = VFS.createMountableFS("profile:" + profileName);
-                mfs.mount("/", pfs);
-                for (VrFSEntry e : t.getEntries(profileName, "Profile")) {
-                    MountableFS finalMfs = mfs;
-                    UPA.getContext().invokePrivileged(new VoidAction() {
-
-                        @Override
-                        public void run() {
-                            try {
-                                mountSubFS(finalMfs, e);
-                            } catch (IOException ex) {
-                                log.log(Level.SEVERE, null, ex);
-                            }
+//
+                    VirtualFileSystem pfs = getRootFileSystem0().subfs(path);
+                    MountableFS mfs = null;
+                    try {
+                        VrFSTable t2=t;
+                        if (t2 == null) {
+                            t2 = getVrFSTable();
                         }
-                    });
+                        mfs = VFS.createMountableFS("profile:" + profileName);
+                        mfs.mount("/", pfs);
+                        for (VrFSEntry e : t2.getEntries(profileName, "Profile")) {
+                            MountableFS finalMfs = mfs;
+                            UPA.getContext().invokePrivileged(new VoidAction() {
+
+                                @Override
+                                public void run() {
+                                    try {
+                                        mountSubFS(finalMfs, e);
+                                    } catch (IOException ex) {
+                                        log.log(Level.SEVERE, null, ex);
+                                    }
+                                }
+                            });
+                        }
+                    } catch (IOException ex) {
+                        log.log(Level.SEVERE, null, ex);
+                    }
+                    if (mfs == null) {
+                        return pfs;
+                    }
+                    //VFile[] all = mfs.listFiles("/");
+                    return mfs;
                 }
-            } catch (IOException ex) {
-                log.log(Level.SEVERE, null, ex);
-            }
-            if (mfs == null) {
-                return pfs;
-            }
-            //VFile[] all = mfs.listFiles("/");
-            return mfs;
+            });
         } else {
             return VFS.createEmptyFS();
         }
@@ -4486,7 +4531,7 @@ public class CorePlugin {
                 throw new IOException(fileName + " already exists please select to force override.");
             }
         }
-        MirroredPath temp=createTempUploadFolder();
+        MirroredPath temp = createTempUploadFolder();
         File f = new File(temp.getNativePath(), fileName);
         try {
             event.write(f.getPath());
@@ -4533,14 +4578,14 @@ public class CorePlugin {
     }
 
 
-    public MirroredPath createTempUploadFolder(){
+    public MirroredPath createTempUploadFolder() {
         String login = UserSession.getCurrentLogin();
         String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
                 + "-" + login;
         String p = getNativeFileSystemPath() + tempPath;
         File file = new File(VrPlatformUtils.validatePath(p));
         file.mkdirs();
-        return new MirroredPath(getRootFileSystem().get(tempPath),file);
+        return new MirroredPath(getRootFileSystem().get(tempPath), file);
     }
 
     private static class InitData {
