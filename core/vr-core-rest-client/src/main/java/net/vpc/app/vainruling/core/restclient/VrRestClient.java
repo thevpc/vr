@@ -34,12 +34,12 @@ public class VrRestClient {
     private CloseableHttpClient httpClient;
     private CookieStore cookieStore = new BasicCookieStore();
     private HttpContext httpContext = new BasicHttpContext();
-    private String url = "http://eniso.info/";
+    private String url = "http://localhost:8080/";
     private String wsContext = "ws";
 
     public static void main(String[] args) {
         VrRestClient s = new VrRestClient();
-        s.login("houssemeddine.benhmida", "houssem5902");
+        s.login("admin", "admin");
 
 
         //http://serveur/ws/wscript?script=Return(bean('calendarsPlugin').loadCalendars('my-calendars', ''));" +
