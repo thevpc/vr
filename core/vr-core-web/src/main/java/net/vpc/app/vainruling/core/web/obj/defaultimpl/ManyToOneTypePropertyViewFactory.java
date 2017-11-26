@@ -76,7 +76,7 @@ public class ManyToOneTypePropertyViewFactory implements PropertyViewFactory {
         propView.update(viewContext);
 
         propView.setDisabled(nfo.disabled);
-        UPAObjectHelper.applyLayout(field, propView);
+        UPAObjectHelper.applyLayout(field, propView,viewContext);
         List<PropertyView> all = new ArrayList<>();
         String ih = UPAObjectHelper.findStringProperty(me, UIConstants.ENTITY_ID_HIERARCHY, null, null);
         if (ih != null) {

@@ -22,6 +22,7 @@ import net.vpc.upa.types.DateTime;
 @Path("Education/History")
 public class AcademicHistInternship {
 
+    @Path("Main")
     @Id
     @Sequence
 

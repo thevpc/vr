@@ -16,6 +16,7 @@ import net.vpc.upa.config.*;
 @Path("Education/Projects/Internships")
 public class AcademicInternshipTeacherRole {
 
+    @Path("Main")
     @Id
     @Sequence
 

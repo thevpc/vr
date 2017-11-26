@@ -33,6 +33,7 @@ import net.vpc.upa.types.DateTime;
 )
 public class AcademicCourseIntent {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

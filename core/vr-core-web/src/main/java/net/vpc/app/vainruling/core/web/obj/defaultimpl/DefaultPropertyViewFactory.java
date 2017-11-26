@@ -115,7 +115,7 @@ public class DefaultPropertyViewFactory implements PropertyViewFactory {
             }
         }
         if (propView != null) {
-            UPAObjectHelper.applyLayout(field, propView);
+            UPAObjectHelper.applyLayout(field, propView,viewContext);
             if (nfo.disabled) {
                 propView.setDisabled(nfo.disabled);
             }

@@ -17,6 +17,7 @@ import net.vpc.upa.config.*;
 @Path("Education/Load")
 public class AcademicTeacherSemestrialLoad {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

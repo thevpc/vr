@@ -22,6 +22,7 @@ import net.vpc.upa.config.*;
 )
 public class AcademicTeacherPeriod {
 
+    @Path("Main")
     @Id
     @Sequence
 

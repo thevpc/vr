@@ -18,6 +18,7 @@ import java.util.Objects;
 @Path("Education/History")
 public class AcademicHistTeacherDegree {
 
+    @Path("Main")
     @Id
     @Sequence
 

@@ -38,7 +38,7 @@ public final class UIConstants {
          * number or cells prefixing control that should be emptied
          */
         public static final String EMPTY_PREFIX = "ui.form.empty.prefix";
-        public static final String SEPARATOR = "ui.form.separator";
+//        public static final String SEPARATOR = "ui.form.separator";
 
         /**
          * number or cells suffixing control that should be emptied

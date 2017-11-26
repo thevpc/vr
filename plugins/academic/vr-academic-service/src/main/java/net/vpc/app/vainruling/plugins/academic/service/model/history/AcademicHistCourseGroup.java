@@ -19,6 +19,7 @@ import net.vpc.upa.config.*;
 @Path("Education/History")
 public class AcademicHistCourseGroup {
 
+    @Path("Main")
     @Id
     @Sequence
 

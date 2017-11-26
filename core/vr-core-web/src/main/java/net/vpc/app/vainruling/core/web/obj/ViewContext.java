@@ -10,6 +10,11 @@ import java.util.Map;
  */
 public class ViewContext {
     private Map<String, Object> cache = new HashMap<>();
+    private Map<String, Object> properties = new HashMap<>();
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
 
     public <T> T getCacheItem(String v, Action<T> action) {
         if (cache.containsKey(v)) {

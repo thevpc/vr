@@ -19,6 +19,7 @@ import java.util.Date;
 @Path("Education/Config")
 public class AcademicInternshipBoardMessage {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

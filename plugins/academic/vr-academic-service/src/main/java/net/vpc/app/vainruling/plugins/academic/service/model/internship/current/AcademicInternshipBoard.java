@@ -28,6 +28,7 @@ import net.vpc.upa.config.*;
         })
 public class AcademicInternshipBoard {
 
+    @Path("Main")
     @Id
     @Sequence
 

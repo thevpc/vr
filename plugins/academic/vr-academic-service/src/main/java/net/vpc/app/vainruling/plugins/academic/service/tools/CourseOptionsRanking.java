@@ -78,11 +78,11 @@ public class CourseOptionsRanking {
         double bonus_mastere = 0.05;
         return (o1.moyg + bonus_mastere * Math.max(o1.master - 10, 0))*(o1.redoublement?(1- penal_redoulement):1);
     }
-
-    public static void main(String[] args) {
-//        generateOptionsFile();
-        evaluateAssignments();
-    }
+//
+//    public static void main(String[] args) {
+////        generateOptionsFile();
+//        evaluateAssignments();
+//    }
 
     public static List<StudentInfo> listPrincipal() {
         return listStudents(new java.io.File(file_principal.replace("${user.home}",System.getProperty("user.home"))), false);

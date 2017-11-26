@@ -1,5 +1,3 @@
-package net.vpc.app.vainruling.plugins.academic.test;
-
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
@@ -14,7 +12,7 @@ import java.io.IOException;
 public class TestImport {
     public static void main(String[] args) {
         Chronometer ch = new Chronometer();
-        VrApp.runStandalone("taha.bensalah", "myâssword");
+        VrApp.runStandalone("taha.bensalah", "mypassword");
         TraceService trace = TraceService.get();
         AcademicPlugin aca = VrApp.getBean(AcademicPlugin.class);
         try {

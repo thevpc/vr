@@ -21,6 +21,7 @@ import net.vpc.upa.config.*;
 
 public class AcademicInternshipGroup {
 
+    @Path("Main")
     @Id
     @Sequence
 

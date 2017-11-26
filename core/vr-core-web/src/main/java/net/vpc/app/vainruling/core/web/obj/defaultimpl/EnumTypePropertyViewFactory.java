@@ -74,7 +74,7 @@ public class EnumTypePropertyViewFactory implements PropertyViewFactory {
         }
         propView.setItems(items);
         propView.setDisabled(nfo.disabled);
-        UPAObjectHelper.applyLayout(field, propView);
+        UPAObjectHelper.applyLayout(field, propView,viewContext);
         return new PropertyView[]{propView};
     }
 
