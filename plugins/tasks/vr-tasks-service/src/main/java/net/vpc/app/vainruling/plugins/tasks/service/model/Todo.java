@@ -27,6 +27,7 @@ import java.sql.Timestamp;
 )
 public class Todo {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

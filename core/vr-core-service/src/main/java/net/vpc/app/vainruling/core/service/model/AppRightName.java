@@ -17,6 +17,7 @@ import java.util.Objects;
 @Path("Admin/Security")
 public class AppRightName {
 
+    @Path("Main")
     @Id
     @Main
     private String name;

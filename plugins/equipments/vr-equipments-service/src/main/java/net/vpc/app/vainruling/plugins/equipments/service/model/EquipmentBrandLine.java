@@ -16,6 +16,7 @@ import net.vpc.upa.config.*;
 @Property(name = UIConstants.ENTITY_ID_HIERARCHY, value = "brand")
 public class EquipmentBrandLine {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

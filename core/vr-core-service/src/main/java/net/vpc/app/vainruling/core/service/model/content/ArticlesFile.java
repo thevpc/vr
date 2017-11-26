@@ -17,6 +17,7 @@ import net.vpc.upa.config.*;
 @Path("Social")
 public class ArticlesFile implements AppFile{
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

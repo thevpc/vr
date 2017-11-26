@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 @Path("Admin/Config")
 public class AppDataStore {
 
+    @Path("Main")
     @Id
     @Main
     @Field(max = "255")

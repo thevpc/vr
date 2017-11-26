@@ -38,20 +38,16 @@ public class ApblTeam {
     private AppUser owner;
 
     @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Evaluation"),
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Evaluation"),
             @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
     )
     @Path("Evaluation")
     private String report;
-    @Path("Evaluation")
     private boolean lockedMembers;
-    @Path("Evaluation")
     private boolean freeMembers;
-    @Path("Evaluation")
     private boolean lockedCoaches;
-    @Path("Evaluation")
     private boolean excludeFromLoad;
 
     public boolean isFreeMembers() {

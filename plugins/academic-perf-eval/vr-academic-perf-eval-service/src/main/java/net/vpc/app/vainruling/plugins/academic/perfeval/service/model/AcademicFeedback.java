@@ -22,6 +22,7 @@ import net.vpc.upa.config.*;
         }
 )public class AcademicFeedback {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;
@@ -36,6 +37,8 @@ import net.vpc.upa.config.*;
     private AcademicCourseAssignment course;
     @Summary
     private AcademicStudent student;
+
+    @Path("Trace")
     @Field(defaultValue = "true")
     private boolean validated;
     private boolean archived;

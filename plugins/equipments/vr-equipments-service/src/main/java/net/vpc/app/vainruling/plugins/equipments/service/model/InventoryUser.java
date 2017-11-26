@@ -16,6 +16,7 @@ import net.vpc.upa.config.*;
 @Path("Equipment/Inventory")
 public class InventoryUser {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

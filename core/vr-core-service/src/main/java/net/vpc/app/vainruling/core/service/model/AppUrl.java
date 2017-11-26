@@ -17,6 +17,7 @@ import java.sql.Timestamp;
 @Path("Social")
 public class AppUrl {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

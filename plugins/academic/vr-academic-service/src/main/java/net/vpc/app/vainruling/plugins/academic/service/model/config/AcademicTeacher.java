@@ -37,6 +37,7 @@ import java.sql.Timestamp;
 )
 public class AcademicTeacher {
 
+    @Path("Main")
     @Id
     @Sequence
 
@@ -71,26 +72,27 @@ public class AcademicTeacher {
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String privateObservations;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
-    @Path("Trace")
+
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
-    @Path("Trace")
+
     private Timestamp updateDate;
 
     @Field(
             defaultValue = "false",
             protectionLevel = ProtectionLevel.PROTECTED)
-    @Path("Trace")
+
     private boolean deleted;
     @Field(protectionLevel = ProtectionLevel.PROTECTED)
-    @Path("Trace")
+
     private String deletedBy;
     @Field(protectionLevel = ProtectionLevel.PROTECTED)
-    @Path("Trace")
+
     private Timestamp deletedOn;
 
     public int getId() {

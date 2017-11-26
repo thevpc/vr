@@ -9,11 +9,11 @@ import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.OpinionType;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipDuration;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipStatus;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipVariant;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
@@ -34,8 +34,10 @@ import java.sql.Timestamp;
                 @Property(name = "ui.auto-filter.internshipStatus", value = "{expr='this.internshipStatus',order=6}"),
                 @Property(name = "ui.auto-filter.sessionType", value = "{expr='this.sessionType',order=7}"),
         }
-)public class AcademicInternship {
+)
+public class AcademicInternship {
 
+    @Path("Main")
     @Id
     @Sequence
 
@@ -68,9 +70,10 @@ import java.sql.Timestamp;
 
     private AcademicInternshipVariant internshipVariant;
 
-    @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Details"),}
-    )
+    @Path("Details")
+//    @Properties({
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Details"),}
+//    )
     @Summary
     @Field(max = "4000")
     private AcademicStudent student;
@@ -97,8 +100,10 @@ import java.sql.Timestamp;
     private AcademicInternshipDuration duration;
     private java.util.Date startDate;
     private java.util.Date endDate;
+
+    @Path("Evaluation")
     @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Evaluation"),
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Evaluation"),
             @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
@@ -154,17 +159,11 @@ import java.sql.Timestamp;
     private AcademicInternshipSessionType sessionType;
     private boolean preEmployment;
 
-    @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace")}
-    )
-    private Timestamp lastStudentUpdateTime;
-    private Timestamp lastTeacherUpdateTime;
-    @Summary
-    private Timestamp lastUpdateTime;
 
-    @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Observations")}
-    )
+    @Path("Observations")
+//    @Properties({
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Observations")}
+//    )
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     @Field(max = "512")
     private String studentObservations;
@@ -174,6 +173,15 @@ import java.sql.Timestamp;
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     @Field(max = "512")
     private String evaluationObservations;
+
+    @Path("Trace")
+//    @Properties({
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace")}
+//    )
+    private Timestamp lastStudentUpdateTime;
+    private Timestamp lastTeacherUpdateTime;
+    @Summary
+    private Timestamp lastUpdateTime;
 
     public int getId() {
         return id;

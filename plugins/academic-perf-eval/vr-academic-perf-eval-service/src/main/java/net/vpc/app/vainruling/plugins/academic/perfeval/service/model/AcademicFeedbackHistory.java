@@ -45,6 +45,7 @@ public class AcademicFeedbackHistory {
     private int position;
     @Summary
     private String response;
+    @Path("Trace")
     private Timestamp updateDate;
 
     public int getId() {

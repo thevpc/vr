@@ -24,6 +24,7 @@ import java.sql.Timestamp;
         })
 public class AppBankGroup {
 
+    @Path("Main")
     @Id
     @Sequence
 
@@ -46,8 +47,9 @@ public class AppBankGroup {
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String about;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
     @Temporal(TemporalOption.DATETIME)

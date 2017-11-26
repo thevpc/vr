@@ -20,6 +20,7 @@ import java.util.Date;
 @Path("Equipment/Inventory")
 public class InventoryRow {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

@@ -14,6 +14,7 @@ import net.vpc.upa.config.*;
 @Path("Todo/Config")
 public class TodoStatus {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

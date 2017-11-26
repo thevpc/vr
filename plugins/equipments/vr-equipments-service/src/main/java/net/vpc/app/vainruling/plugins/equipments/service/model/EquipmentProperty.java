@@ -15,6 +15,7 @@ import net.vpc.upa.config.*;
 @Path("Equipment")
 public class EquipmentProperty {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

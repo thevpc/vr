@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 @Path("Education/Config")
 public class AcademicLoadConversionRule {
 
+    @Path("Main")
     @Id
     @Sequence
 
@@ -29,14 +30,13 @@ public class AcademicLoadConversionRule {
     @Unique
     private String name;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Field(updateProtectionLevel = ProtectionLevel.PRIVATE,excludeModifiers = UserFieldModifier.UPDATE)
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
-    @Path("Trace")
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
-    @Path("Trace")
     private Timestamp updateDate;
 
     public AcademicLoadConversionRule() {

@@ -31,6 +31,7 @@ import java.sql.Timestamp;
 )
 public class ArticlesItem {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;
@@ -78,8 +79,9 @@ public class ArticlesItem {
     @Field(max = "max")
     private String content;
 
+    @Path("Attachment")
     @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Attachment"),
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Attachment"),
             @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
@@ -101,24 +103,26 @@ public class ArticlesItem {
     @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private String imageURL;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Flags"))
+    @Path("Flags")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Flags"))
     @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private int position;
 
     private boolean important;
 
     @Summary
+    @Path("SourceAndDestination")
     @Field(protectionLevel = ProtectionLevel.PROTECTED)
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
     private AppUser sender;
 
     @Summary
     @Field(protectionLevel = ProtectionLevel.PROTECTED)
     @Properties(
             {
-                    @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"),
+//                    @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"),
                     @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
 
             }
@@ -132,8 +136,9 @@ public class ArticlesItem {
     @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private DateTime sendTime;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     private boolean archived;
 
     @Field(readProtectionLevel = ProtectionLevel.PROTECTED)

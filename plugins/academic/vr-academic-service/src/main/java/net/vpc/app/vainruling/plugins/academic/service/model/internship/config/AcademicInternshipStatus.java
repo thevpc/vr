@@ -16,6 +16,7 @@ import net.vpc.upa.config.*;
 @Path("Education/Config")
 public class AcademicInternshipStatus {
 
+    @Path("Main")
     @Id
     @Sequence
 
@@ -28,15 +29,17 @@ public class AcademicInternshipStatus {
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
 
-    @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "General")}
-    )
+    @Path("Misc")
+//    @Properties({
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "General")}
+//    )
     @Field(defaultValue = "false")
     private boolean studentUpdatesDescr;
 
-    @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Encadrants")}
-    )
+    @Path("Supervisors")
+//    @Properties({
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Encadrants")}
+//    )
 
     @Field(defaultValue = "false")
     private boolean studentSeesSupervisors;
@@ -44,10 +47,11 @@ public class AcademicInternshipStatus {
     @Field(defaultValue = "false")
     private boolean studentUpdatesSupervisors;
 
-    @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Rapports")}
-    )
-
+    @Path("Rapports")
+//    @Properties({
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Rapports")}
+//    )
+//
     @Field(defaultValue = "false")
     private boolean enabledReport1;
 
@@ -66,22 +70,25 @@ public class AcademicInternshipStatus {
     @Field(defaultValue = "false")
     private boolean studentUpdatesReport3;
 
-    @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Evaluation")}
-    )
+    @Path("Evaluation")
+//    @Properties({
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Evaluation")}
+//    )
 
     @Field(defaultValue = "false")
     private boolean studentSeesEvaluators;
 
-    @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Enseignants")}
-    )
+    @Path("Teachers")
+//    @Properties({
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Enseignants")}
+//    )
     @Field(defaultValue = "false")
     private boolean supervisorRequestable;
 
-    @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Comité")}
-    )
+    @Path("Committee")
+//    @Properties({
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Comité")}
+//    )
     @Field(defaultValue = "false")
     private boolean boardUpdatesDescr;
 
@@ -91,9 +98,10 @@ public class AcademicInternshipStatus {
     @Field(defaultValue = "false")
     private boolean boardUpdatesEvaluators;
 
-    @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Cloture")}
-    )
+    @Path("Trace")
+//    @Properties({
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Cloture")}
+//    )
     @Field(defaultValue = "false")
     private boolean closed;
 

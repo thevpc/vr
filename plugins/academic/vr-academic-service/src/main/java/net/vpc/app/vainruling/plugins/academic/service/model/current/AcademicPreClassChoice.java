@@ -24,6 +24,7 @@ import java.sql.Timestamp;
 @Path("Education/Config")
 public class AcademicPreClassChoice {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;
@@ -37,8 +38,9 @@ public class AcademicPreClassChoice {
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private Timestamp creationDate;

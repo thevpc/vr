@@ -15,6 +15,7 @@ import net.vpc.upa.config.*;
 @Path("Todo/Config")
 public class TodoListProfile {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

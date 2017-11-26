@@ -17,6 +17,7 @@ import java.util.Date;
 @Path("Equipment/Inventory")
 public class Inventory {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

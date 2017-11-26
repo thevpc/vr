@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 @Path("Education/Config")
 public class AcademicBac {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;
@@ -35,14 +36,15 @@ public class AcademicBac {
     private AcademicBac parent;
     private AppGovernorate governorate;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
-    @Path("Trace")
+
     private Timestamp creationDate;
+
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
-    @Path("Trace")
     private Timestamp updateDate;
 
     public AcademicBac() {

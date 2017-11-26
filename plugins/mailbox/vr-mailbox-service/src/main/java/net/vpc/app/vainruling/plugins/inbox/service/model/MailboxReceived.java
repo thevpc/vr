@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 @Path("Social")
 public class MailboxReceived {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;
@@ -34,17 +35,11 @@ public class MailboxReceived {
     @Field(max = "max")
     private String content;
 
-    @Summary
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Flags"))
-    private boolean read;
 
     @Summary
-    private boolean important;
-
-    @Summary
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
+    @Path("SourceAndDestination")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
     private AppUser sender;
 
     @Summary
@@ -54,19 +49,27 @@ public class MailboxReceived {
 
     @Summary
     private AppUser owner;
+    @Summary
+    private String category;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Time"))
+    @Path("Trace")
+    @Summary
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Flags"))
+    private boolean read;
+
+    @Summary
+    private boolean important;
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Time"))
     @Summary
     private DateTime sendTime;
 
     private DateTime readTime;
 
-    @Summary
-    private String category;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     private boolean archived;
 
     private boolean deleted;

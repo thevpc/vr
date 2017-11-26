@@ -41,6 +41,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSeme
 )
 public class AcademicCoursePlan {
 
+    @Path("Main")
     @Id
     @Sequence
 
@@ -187,16 +188,15 @@ public class AcademicCoursePlan {
 
     @Properties(
             {
-                @Property(name = UIConstants.Form.SEPARATOR, value = "Contenu")
-                ,
+//                @Property(name = UIConstants.Form.SEPARATOR, value = "Contenu")
+//                ,
                     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
             }
     )
     @Field(max = "max")
-    @Path("Trace")
+    @Path("Details")
     private String overviewDetails;
     @Field(max = "512")
-    @Path("Trace")
     private String prerequisites;
 
     @Properties(
@@ -231,14 +231,13 @@ public class AcademicCoursePlan {
     @Field(max = "max")
     private String referenceDetails;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
-    @Path("Trace")
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
-    @Path("Trace")
     private Timestamp updateDate;
 
     public int getId() {

@@ -15,6 +15,7 @@ import net.vpc.upa.config.*;
 @Path("Admin/Config")
 public class AppGender {
 
+    @Path("Main")
     @Id
     @Sequence
 

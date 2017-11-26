@@ -25,6 +25,7 @@ import net.vpc.app.vainruling.core.service.model.AppDepartment;
 @Path("Education/StudyPlan")
 public class AcademicCourseLevel {
 
+    @Path("Main")
     @Id
     @Sequence
 
@@ -39,14 +40,14 @@ public class AcademicCourseLevel {
     @Summary
     private AcademicSemester semester;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
-    @Path("Trace")
     private Timestamp creationDate;
+
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
-    @Path("Trace")
     private Timestamp updateDate;
 
     public AcademicCourseLevel() {

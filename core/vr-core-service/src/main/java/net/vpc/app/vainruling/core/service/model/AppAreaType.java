@@ -14,6 +14,7 @@ import net.vpc.upa.config.*;
 @Path("Admin/Config")
 public class AppAreaType {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

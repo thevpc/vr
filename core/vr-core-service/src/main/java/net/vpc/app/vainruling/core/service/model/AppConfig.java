@@ -14,6 +14,7 @@ import net.vpc.upa.config.*;
 @Path("Admin/Config")
 public class AppConfig {
 
+    @Path("Main")
     @Id
     private int id = 1;
     @Main

@@ -14,6 +14,7 @@ import net.vpc.upa.config.*;
 @Path("Todo/Config")
 public class TodoCategory {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

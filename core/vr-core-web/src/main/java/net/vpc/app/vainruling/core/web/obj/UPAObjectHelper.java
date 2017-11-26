@@ -43,7 +43,7 @@ public class UPAObjectHelper {
         return Convert.toString(findObjectProperty(f, property, context, defaultValue));
     }
 
-    public static void applyLayout(UPAObject f, PropertyView pv) {
+    public static void applyLayout(UPAObject f, PropertyView pv,ViewContext viewContext) {
         String newline = findStringProperty(f, UIConstants.Form.NEWLINE, null, "");
         for (String s : newline.split(", ")) {
             if (s.equalsIgnoreCase("before")) {
@@ -75,20 +75,41 @@ public class UPAObjectHelper {
         }
         pv.setPrependEmptyCells(findIntProperty(f, UIConstants.Form.EMPTY_PREFIX, null, pv.getPrependEmptyCells()));
         pv.setAppendEmptyCells(findIntProperty(f, UIConstants.Form.EMPTY_SUFFIX, null, pv.getAppendEmptyCells()));
-        pv.setSeparatorText(findStringProperty(f, UIConstants.Form.SEPARATOR, null, pv.getSeparatorText()));
+        if(f instanceof Field){
+            EntityPart parent = ((Field) f).getParent();
+            if(parent!=null && parent instanceof Section){
+                String path = parent.getPath();
+                String name=VrApp.getBean(I18n.class).get(parent);
+                if(((Section) parent).getParts().get(0).getName().equals(f.getName())){
+                    //first field in the section
+                    pv.setSeparatorText(path);
+                }
+            }
+        }
+        //pv.setSeparatorText(findStringProperty(f, UIConstants.Form.SEPARATOR, null, pv.getSeparatorText()));
         if (f instanceof Field) {
             Field ff = (Field) f;
             Entity ffe = ((Field) f).getEntity();
             EntityPart p1 = ff.getParent();
+            String separatorText=null;
+            String toStoreSeparatorText=null;
             if (p1 != null && p1 instanceof Section) {
-                int i = ffe.indexOfField(ff.getName());
-                if (i > 0) {
-                    Field ffp = ffe.getField(i - 1);
-                    EntityPart p0 = ffp.getParent();
-                    if (p0 != p1) {
-                        pv.setSeparatorText(VrApp.getBean(I18n.class).get(p1));
-                    }
+                separatorText = VrApp.getBean(I18n.class).get(p1);
+                String lastSeparatorText = (String) viewContext.getProperties().get("lastSeparatorText");
+                toStoreSeparatorText=separatorText;
+                if(separatorText.equals(lastSeparatorText)){
+                    separatorText=null;
                 }
+            }else{
+                toStoreSeparatorText="";
+                String lastSeparatorText = (String) viewContext.getProperties().get("lastSeparatorText");
+                if("".equals(lastSeparatorText)){
+                    separatorText=null;
+                }
+            }
+            pv.setSeparatorText(separatorText);
+            if(pv.isVisible()) {
+                viewContext.getProperties().put("lastSeparatorText", toStoreSeparatorText);
             }
         }
     }

@@ -15,6 +15,7 @@ import net.vpc.upa.config.*;
 @Path("/Social/Config")
 public class ArticlesDispositionGroup {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

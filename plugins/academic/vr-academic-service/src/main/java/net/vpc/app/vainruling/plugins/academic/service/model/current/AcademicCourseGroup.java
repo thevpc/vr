@@ -24,6 +24,7 @@ import java.sql.Timestamp;
 @Path("Education/StudyPlan")
 public class AcademicCourseGroup {
 
+    @Path("Main")
     @Id
     @Sequence
 
@@ -51,14 +52,13 @@ public class AcademicCourseGroup {
     @Summary
     private double credits;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
-    @Path("Trace")
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
-    @Path("Trace")
     private Timestamp updateDate;
 
     public AcademicCourseGroup() {

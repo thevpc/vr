@@ -18,6 +18,7 @@ import net.vpc.upa.types.DateTime;
 @Path("Admin/Config")
 public class AppPeriod {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;
@@ -30,8 +31,10 @@ public class AppPeriod {
     private boolean readOnly = false;
     @Summary
     private String snapshotName;
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private DateTime creationTime;

@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 @Path("Education/Config")
 public class AcademicTeacherDegree {
 
+    @Path("Main")
     @Id
     @Sequence
 
@@ -46,8 +47,9 @@ public class AcademicTeacherDegree {
 //    @Summary
     private int position;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private Timestamp creationDate;

@@ -25,6 +25,7 @@ import java.sql.Timestamp;
 )
 public class AppTrace {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

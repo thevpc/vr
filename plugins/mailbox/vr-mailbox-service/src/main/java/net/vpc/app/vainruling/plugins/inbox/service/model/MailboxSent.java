@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 @Path("Social")
 public class MailboxSent {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;
@@ -32,18 +33,9 @@ public class MailboxSent {
     private String content;
 
     @Summary
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Flags"))
-    private boolean read;
-
-    @Summary
-    private boolean important;
-
-    private boolean deleteOnRead;
-
-    @Summary
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
+    @Path("SourceAndDestination")
     private AppUser sender;
 
     @Summary
@@ -60,19 +52,30 @@ public class MailboxSent {
 
     private String bccProfiles;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Time"))
-    @Summary
-    private DateTime sendTime;
-
-    private DateTime readTime;
 
     @Summary
     private String category;
     private int threadId;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+    @Summary
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Flags"))
+    private boolean read;
+
+    @Summary
+    private boolean important;
+
+    private boolean deleteOnRead;
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Time"))
+    @Summary
+    private DateTime sendTime;
+
+    private DateTime readTime;
+
+    //    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     private boolean archived;
     private boolean richText;
     private boolean deleted;

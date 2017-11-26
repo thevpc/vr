@@ -27,6 +27,7 @@ import java.util.Date;
         })
 public class EquipmentAcquisition {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

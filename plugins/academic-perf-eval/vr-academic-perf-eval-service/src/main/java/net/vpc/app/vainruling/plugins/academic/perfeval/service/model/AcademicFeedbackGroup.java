@@ -16,6 +16,7 @@ import net.vpc.upa.config.*;
 @Path("/Education/Evaluation")
 public class AcademicFeedbackGroup {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

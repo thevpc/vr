@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 @Path("Education/Config")
 public class AcademicProgramType {
 
+    @Path("Main")
     @Id
     @Sequence
 
@@ -30,8 +31,9 @@ public class AcademicProgramType {
     @Unique
     private String name;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Field(protectionLevel = ProtectionLevel.PRIVATE,excludeModifiers = UserFieldModifier.UPDATE)
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     private Timestamp creationDate;

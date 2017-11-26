@@ -15,6 +15,7 @@ import net.vpc.upa.config.*;
 @Path("/Admin/Config")
 public class AppSettlement {
 
+    @Path("Main")
     @Id
     @Sequence
 

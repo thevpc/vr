@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 @Path("Social")
 public class ForumThread {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;
@@ -27,13 +28,16 @@ public class ForumThread {
             @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
     @Field(max = "max")
     private String content;
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
+
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "SourceAndDestination"))
+    @Path("SourceAndDestination")
     private AppUser user;
     private String recipientProfiles;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     private boolean archived;
     private boolean deleted;
     private String deletedBy;

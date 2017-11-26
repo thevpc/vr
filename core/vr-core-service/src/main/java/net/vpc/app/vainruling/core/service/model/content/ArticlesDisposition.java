@@ -16,6 +16,7 @@ import net.vpc.upa.config.*;
 @Path("/Social/Config")
 public class ArticlesDisposition implements CmsTextDisposition {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

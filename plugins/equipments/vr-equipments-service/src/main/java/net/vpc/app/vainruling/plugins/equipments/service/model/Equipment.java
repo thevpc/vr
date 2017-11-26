@@ -35,6 +35,7 @@ import java.sql.Timestamp;
         })
 public class Equipment {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;
@@ -62,11 +63,12 @@ public class Equipment {
     private String photo;
 
     @Summary
-    @Properties(
-            {@Property(name = UIConstants.Form.SEPARATOR, value = "Category"),
-
-            }
-    )
+    @Path("Category")
+//    @Properties(
+//            {@Property(name = UIConstants.Form.SEPARATOR, value = "Category"),
+//
+//            }
+//    )
     private EquipmentType type;
     private AppDepartment department;
 
@@ -90,8 +92,9 @@ public class Equipment {
     private Equipment relativeTo;
 
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     private boolean archived;
     private boolean deleted;
     private String deletedBy;

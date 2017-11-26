@@ -13,6 +13,7 @@ import net.vpc.upa.config.*;
 @Entity(listOrder = "name")
 @Path("Equipment/Config")
 public class EquipmentBrand {
+    @Path("Main")
     @Id
     @Sequence
     private int id;

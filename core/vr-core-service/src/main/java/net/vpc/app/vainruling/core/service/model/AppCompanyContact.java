@@ -24,6 +24,7 @@ import java.sql.Timestamp;
         })
 public class AppCompanyContact {
 
+    @Path("Main")
     @Id
     @Sequence
 
@@ -37,8 +38,9 @@ public class AppCompanyContact {
     private boolean mainCompanyContact;
     private boolean mainContactCompany;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private Timestamp creationDate;

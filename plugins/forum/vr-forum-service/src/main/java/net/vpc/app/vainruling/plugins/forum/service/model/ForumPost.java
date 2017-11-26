@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 @Path("Social")
 public class ForumPost {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;
@@ -32,15 +33,6 @@ public class ForumPost {
     @Field(max = "max")
     private String content;
 
-    @Summary
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Flags"))
-    private boolean read;
-
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Time"))
-    @Summary
-    private DateTime sendTime;
 
     @Summary
     private AppUser user;
@@ -51,8 +43,18 @@ public class ForumPost {
 
     private ForumPost baseMessage;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+    @Summary
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Flags"))
+    private boolean read;
+
+    //    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Time"))
+    @Summary
+    private DateTime sendTime;
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     private boolean archived;
     private boolean deleted;
     private String deletedBy;

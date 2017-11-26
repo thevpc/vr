@@ -16,6 +16,7 @@ import net.vpc.upa.config.*;
 @Path("Equipment/Config")
 public class EquipmentAcquisitionStatus {
 
+    @Path("Main")
     @Id
     @Sequence
 

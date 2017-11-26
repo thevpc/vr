@@ -34,7 +34,7 @@ public class ApblProject {
     private String description;
 
     @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Specifications"),
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Specifications"),
             @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }

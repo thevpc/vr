@@ -15,6 +15,7 @@ import net.vpc.upa.config.*;
 @Path("Admin/Security")
 public class AppUserProfileBinding {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

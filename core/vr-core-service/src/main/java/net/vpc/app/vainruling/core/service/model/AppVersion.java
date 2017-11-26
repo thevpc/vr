@@ -15,6 +15,7 @@ import net.vpc.upa.types.Timestamp;
 @Path("Admin")
 public class AppVersion {
 
+    @Path("Main")
     @Id
     @Main
     private String serviceName;

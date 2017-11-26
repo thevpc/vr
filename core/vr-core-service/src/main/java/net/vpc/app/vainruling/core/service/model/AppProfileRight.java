@@ -16,6 +16,7 @@ import net.vpc.upa.config.*;
 @Path("Admin/Security")
 public class AppProfileRight {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

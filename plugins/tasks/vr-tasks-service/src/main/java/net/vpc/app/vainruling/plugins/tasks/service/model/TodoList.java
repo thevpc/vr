@@ -19,6 +19,7 @@ public class TodoList {
 
     public static final String LABO_ACTION = "sys-labo-action";
     public static final String LABO_TICKET = "sys-labo-ticket";
+    @Path("Main")
     @Id
     @Sequence
     private int id;

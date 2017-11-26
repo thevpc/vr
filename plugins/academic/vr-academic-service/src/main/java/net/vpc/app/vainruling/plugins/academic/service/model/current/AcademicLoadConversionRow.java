@@ -29,6 +29,7 @@ import java.sql.Timestamp;
 )
 public class AcademicLoadConversionRow {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;
@@ -51,14 +52,13 @@ public class AcademicLoadConversionRow {
     @Summary
     private double valuePM;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Field(protectionLevel = ProtectionLevel.PROTECTED,excludeModifiers = UserFieldModifier.UPDATE)
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
-    @Path("Trace")
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
-    @Path("Trace")
     private Timestamp updateDate;
 
     public AcademicLoadConversionRow() {

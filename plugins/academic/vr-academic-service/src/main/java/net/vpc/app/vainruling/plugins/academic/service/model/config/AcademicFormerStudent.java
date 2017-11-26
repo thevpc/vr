@@ -29,6 +29,7 @@ import java.util.Objects;
 )
 public class AcademicFormerStudent {
 
+    @Path("Main")
     @Id
     @Main
     private AcademicStudent student;
@@ -59,7 +60,7 @@ public class AcademicFormerStudent {
     private int lastSalary;
     private String lastJobPosition;
     @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "CurriculumVitae"),
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "CurriculumVitae"),
             @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }

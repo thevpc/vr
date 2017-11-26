@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 @Path("Admin/Config")
 public class AppProperty {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;
@@ -35,8 +36,9 @@ public class AppProperty {
     private AppUser user;
     private boolean enabled = true;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private Timestamp creationDate;

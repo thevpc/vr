@@ -16,6 +16,7 @@ import net.vpc.upa.config.*;
 @Path("Admin/Config")
 public class AppCountryRegion {
 
+    @Path("Main")
     @Id
     @Sequence
 

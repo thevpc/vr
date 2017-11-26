@@ -35,6 +35,7 @@ import java.util.Objects;
 )
 public class AcademicStudent {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;
@@ -79,7 +80,7 @@ public class AcademicStudent {
     private double baccalaureateScore;
     private double preClassScore;
     @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "CurriculumVitae"),
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "CurriculumVitae"),
             @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
@@ -87,22 +88,23 @@ public class AcademicStudent {
     @Path("CurriculumVitae")
     private String curriculumVitae;
 
-    @Properties(
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
+    @Path("Trace")
+//    @Properties(
+//            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
-    @Path("Trace")
+
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
-    @Path("Trace")
+
     private Timestamp updateDate;
 
     @Field(defaultValue = "false")
-    @Path("Trace")
+
     private boolean deleted;
-    @Path("Trace")
+
     private String deletedBy;
-    @Path("Trace")
+
     private Timestamp deletedOn;
 
     public int getId() {

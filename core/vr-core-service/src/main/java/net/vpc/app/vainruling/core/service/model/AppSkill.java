@@ -8,6 +8,8 @@ import net.vpc.upa.config.*;
 @Entity()
 @Path("Admin/Config")
 public class AppSkill {
+
+    @Path("Main")
     @Id
     @Sequence
     private int id;

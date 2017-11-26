@@ -26,6 +26,7 @@ import java.sql.Timestamp;
 )
 public class TodoProgress {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;

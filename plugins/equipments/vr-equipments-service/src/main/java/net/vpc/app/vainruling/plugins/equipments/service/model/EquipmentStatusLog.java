@@ -29,6 +29,7 @@ import java.sql.Timestamp;
         })
 public class EquipmentStatusLog {
 
+    @Path("Main")
     @Id
     @Sequence
     private int id;
