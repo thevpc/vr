@@ -1,11 +1,19 @@
-package net.vpc.app.vainruling.core.web.util;
+package net.vpc.app.vainruling.core.service.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
 public class VrPlatformUtils {
+    public static final String SLASH=System.getProperty("file.separator");
     private static final Map<Class, ClassInfo> classInfos = new HashMap<>();
+
+    public static String validatePath(String path){
+        if(path==null || SLASH.equals("/")){
+            return path;
+        }
+        return path.replace('/',path.charAt(0));
+    }
 
     private static String toPropName(String r) {
         char[] chars = r.toCharArray();

@@ -29,7 +29,12 @@ import java.net.URLDecoder;
 public class UrlRewriteServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String file = getPathRewritten(request);
+        String path = getPath(request);
+        if(StringUtils.isEmpty(path)){
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        String file = getPathRewritten(path);
         if (file != null) {
             if(file.startsWith("/")){
                 //file=request.getContextPath()+file;
@@ -65,8 +70,7 @@ public class UrlRewriteServlet extends HttpServlet {
 //        }
 //    }
 
-    protected String getPathRewritten(HttpServletRequest request) {
-        String path = getPath(request);
+    protected String getPathRewritten(String path) {
         if(StringUtils.isEmpty(path)){
             return null;
         }
@@ -80,11 +84,6 @@ public class UrlRewriteServlet extends HttpServlet {
     protected String getPath(HttpServletRequest request) {
         String pathInfo = request.getPathInfo();
         if (StringUtils.isEmpty(pathInfo)) {
-            return null;
-        }
-        CorePlugin core = VrApp.getBean(CorePlugin.class);
-        final VirtualFileSystem fs = core.getFileSystem();
-        if(fs==null){
             return null;
         }
         String filename = null;

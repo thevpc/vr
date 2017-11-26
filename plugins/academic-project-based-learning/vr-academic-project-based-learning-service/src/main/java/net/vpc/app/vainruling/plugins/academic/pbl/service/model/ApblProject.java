@@ -39,6 +39,7 @@ public class ApblProject {
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
     )
+    @Path("Specifications")
     private String specFilePath;
 
     public int getId() {

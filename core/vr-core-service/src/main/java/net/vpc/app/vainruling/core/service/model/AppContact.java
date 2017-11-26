@@ -33,78 +33,114 @@ public class AppContact {
 
     @Id
     @Sequence
+    @Path("Main")
     private int id;
 
     /**
      * National Identity Number
      */
+    @Path("Main")
     private String nin;
+    @Path("Main")
     private String passportNumber;
 
+    @Path("Main")
     private AppCivility civility;
 
+    @Path("Main")
     private String fullName;
+    @Path("Main")
     private String firstName;
+    @Path("Main")
     private String lastName;
+
     @Main
     @Formula(value = "concat(Coalesce(this.fullName,''),' - ',Coalesce(this.positionSuffix,'?'))",formulaOrder = 1)
+    @Path("Main")
     private String fullTitle;
 
+    @Path("Main")
     private String positionSuffix;
 
     @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+    @Path("Main")
     private String fullName2;
+    @Path("Main")
     private String firstName2;
+    @Path("Main")
     private String lastName2;
+    @Path("Main")
     private AppGender gender;
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Details"))
     @Summary
+    @Path("Main")
     private String email;
+    @Path("Main")
     private String email2;
 
+    @Path("Main")
     private AppCompany company;
 
     @Summary
     @Field(protectionLevel = ProtectionLevel.PROTECTED)
+    @Path("Main")
     private String phone1;
+    @Path("Main")
     @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private String phone2;
+
     @Field(protectionLevel = ProtectionLevel.PROTECTED)
+    @Path("Main")
     private String phone3;
 
     @Summary
+    @Path("Main")
     private String officeLocationNumber;
     @Summary
+    @Path("Main")
     private String officePhoneNumber;
 
     @Summary
+    @Path("Main")
     private String positionTitle1;
     @Summary
+    @Path("Main")
     private String positionTitle2;
+    @Path("Main")
     private String positionTitle3;
     @Field(max = "4000")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
+    @Path("Main")
     private String description;
 
+    @Path("Main")
     private Date birthDate;
+    @Path("Main")
     private String birthLocation;
+    @Path("Main")
     private AppGovernorate birthGovernorate;
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
+    @Path("Trace")
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    @Path("Trace")
     private Timestamp updateDate;
 
 //    @Summary
+@Path("Trace")
     private boolean enabled;
     @Summary
+    @Path("Trace")
     private boolean deleted;
+    @Path("Trace")
     private String deletedBy;
+    @Path("Trace")
     private Timestamp deletedOn;
 
     public static String getName(AppContact t) {

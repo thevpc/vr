@@ -9,6 +9,8 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.util.MirroredPath;
+import net.vpc.app.vainruling.core.service.util.VrPlatformUtils;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
@@ -17,6 +19,7 @@ import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.vfs.VFS;
 import net.vpc.upa.UPA;
+import net.vpc.upa.VoidAction;
 import org.primefaces.event.FileUploadEvent;
 
 import java.io.File;
@@ -57,34 +60,35 @@ public class AcademicAdminToolsCtrl {
     }
 
     public void handleTeachingLoadFileUpload(FileUploadEvent event) {
-        try {
-            String p = VrApp.getBean(CorePlugin.class).getNativeFileSystemPath()
-                    + CorePlugin.PATH_TEMP + "/Import/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
-                    + "-" + UserSession.getCurrentLogin();
-            new File(p).mkdirs();
-            File f = new File(p, event.getFile().getFileName());
-            try {
-                event.getFile().write(f.getPath());
-                AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-                CorePlugin core = VrApp.getBean(CorePlugin.class);
-                AppConfig appConfig = core.getCurrentConfig();
-                int count=0;
-                if(appConfig!=null && appConfig.getMainPeriod()!=null) {
-                    int periodId = appConfig.getMainPeriod().getId();
-                    count = a.importFile(periodId, VFS.createNativeFS().get(f.getPath()), null);
+        UPA.getContext().invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                try {
+                    MirroredPath temp=CorePlugin.get().createTempUploadFolder();
+                    File f = new File(temp.getNativePath(), event.getFile().getFileName());
+                    try {
+                        event.getFile().write(f.getPath());
+                        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+                        CorePlugin core = VrApp.getBean(CorePlugin.class);
+                        AppConfig appConfig = core.getCurrentConfig();
+                        int count = 0;
+                        if (appConfig != null && appConfig.getMainPeriod() != null) {
+                            int periodId = appConfig.getMainPeriod().getId();
+                            count = a.importFile(periodId, VFS.createNativeFS().get(f.getPath()), null);
+                        }
+                        if (count > 0) {
+                            FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully imported.");
+                        } else {
+                            FacesUtils.addWarnMessage(event.getFile().getFileName() + " is uploaded but nothing is imported.");
+                        }
+                    } finally {
+                        //should not delete the file!
+                    }
+                } catch (Exception ex) {
+                    Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                    FacesUtils.addErrorMessage(ex, event.getFile().getFileName() + " uploading failed.");
                 }
-                if (count > 0) {
-                    FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully imported.");
-                } else {
-                    FacesUtils.addWarnMessage(event.getFile().getFileName() + " is uploaded but nothing is imported.");
-                }
-            } finally {
-                //should not delete the file!
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);
-            FacesUtils.addErrorMessage(ex,event.getFile().getFileName() + " uploading failed.");
-        }
+            }});
     }
 
     public void importTeachingLoad() {

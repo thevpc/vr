@@ -25,7 +25,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
     public static final Set<String> denyAdmin = new HashSet<String>();
     public static final Set<String> allowOthers = new HashSet<String>();
     public static final Set<String> denyOthers = new HashSet<String>();
-    private static final String INTERNAL_LOGIN = "<internal>";
+    public static final String INTERNAL_LOGIN = "<internal>";
 
     static {
         for (String e : CorePlugin.ADMIN_ENTITIES) {

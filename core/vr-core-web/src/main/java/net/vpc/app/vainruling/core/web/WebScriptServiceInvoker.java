@@ -8,7 +8,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.util.VrPlatformUtils;
+import net.vpc.app.vainruling.core.service.util.VrPlatformUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UPA;
 
@@ -194,8 +194,7 @@ public class WebScriptServiceInvoker {
                         oo.add(e.getKey(), (JsonElement) convert2(JsonElement.class, t));
                     }
                 } else {
-                    Gson g = new Gson();
-                    return g.toJsonTree(value);
+                    return VrUtils.GSON.toJsonTree(value);
                 }
                 return String.valueOf(value);
             }

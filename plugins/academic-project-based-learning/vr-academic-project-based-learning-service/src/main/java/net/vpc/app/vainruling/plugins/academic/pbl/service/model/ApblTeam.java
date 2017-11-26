@@ -43,10 +43,15 @@ public class ApblTeam {
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
     )
+    @Path("Evaluation")
     private String report;
+    @Path("Evaluation")
     private boolean lockedMembers;
+    @Path("Evaluation")
     private boolean freeMembers;
+    @Path("Evaluation")
     private boolean lockedCoaches;
+    @Path("Evaluation")
     private boolean excludeFromLoad;
 
     public boolean isFreeMembers() {

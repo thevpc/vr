@@ -8,7 +8,7 @@
             <persistenceUnit name="main">
                 <connection>
                     <connectionString>
-                        derby:embedded://localhost/enisoinfo;structure=create;userName=enisoinfo;password=enisoinfo
+                        derby:embedded://${user.home}/workspace/eniso.info/db/enisoinfo;structure=create;userName=enisoinfo;password=enisoinfo
                     </connectionString>
                 </connection>
             </persistenceUnit>

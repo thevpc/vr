@@ -59,14 +59,17 @@ public class AcademicFormerStudent {
     private int lastSalary;
     private String lastJobPosition;
     @Properties({
-            @Property(name = UIConstants.Form.SEPARATOR, value = "Curriculum Vitae"),
+            @Property(name = UIConstants.Form.SEPARATOR, value = "CurriculumVitae"),
             @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
     )
+    @Path("CurriculumVitae")
     private String curriculumVitae;
+    @Path("CurriculumVitae")
     private EmploymentDelay employmentDelay;
     @Summary
+    @Path("CurriculumVitae")
     private AppCompany lastJobCompany;
 
     public String getLastJobPosition() {

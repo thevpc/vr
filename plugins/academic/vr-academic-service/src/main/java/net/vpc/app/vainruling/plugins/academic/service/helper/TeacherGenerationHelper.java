@@ -94,7 +94,7 @@ public class TeacherGenerationHelper {
             Integer semesterId = StringUtils.isEmpty(semester) ? null : academicPlugin.findSemester(semester).getId();
             String templateFolder = options.getTemplateFolder();
             String outputFolder = options.getOutputFolder();
-            net.vpc.common.vfs.VirtualFileSystem fs = core.getFileSystem();
+            net.vpc.common.vfs.VirtualFileSystem fs = core.getRootFileSystem();
             fs.get(outputFolder).mkdirs();
 
             String _outputNamePattern = options.getOutputNamePattern();
@@ -610,7 +610,7 @@ public class TeacherGenerationHelper {
         for (TeacherPeriodStat st : stats) {
             monitor.setProgress(i++,max);
             String pp = soutput.replace("*", AppContact.getName(st.getTeacher().getContact()));
-            VFile f2 = core.getFileSystem().get(pp);
+            VFile f2 = core.getRootFileSystem().get(pp);
             f2.getParentFile().mkdirs();
             Map<String, Object> p = preparePrintableTeacherLoadProperties(periodId, st);
             if (writeVars) {

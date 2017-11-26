@@ -12,6 +12,7 @@ import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
 import net.vpc.common.io.IOUtils;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.util.Utils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.CustomDefaultObject;
 import net.vpc.upa.filters.ObjectFilter;
@@ -36,7 +37,7 @@ import java.util.*;
  * @author taha.bensalah@gmail.com
  */
 public class VrUtils {
-
+    public static final Gson GSON = new Gson();
     public static final CustomDefaultObject DEFAULT_OBJECT_CURRENT_USER = new CustomDefaultObject() {
 
         @Override
@@ -259,8 +260,7 @@ public class VrUtils {
     }
 
     public static String formatJSONObject(Object cmd) {
-        Gson gson = new Gson();
-        return gson.toJson(cmd);
+        return GSON.toJson(cmd);
     }
 
     public static String dformat(Number nbr, String format) {
@@ -306,8 +306,7 @@ public class VrUtils {
             } else if (pt.isInstance(Number.class)) {
                 throw new IllegalArgumentException("Not yet supported");
             } else {
-                Gson gson = new Gson();
-                arg = gson.fromJson(cmd, pt);
+                arg = GSON.fromJson(cmd, pt);
             }
         }
         return (T) arg;
@@ -846,6 +845,102 @@ public class VrUtils {
         return buffer.toString();
     }
 
+    public static String normalizeFilePath(String path) {
+        char[] chars = StringUtils.normalize(path).toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            switch (chars[i]) {
+                case '°': {
+                    chars[i] = 'o';
+                    break;
+                }
+                case '"':
+                case '\'':
+                case '?':
+                case '*':
+                case ':':
+                case '%':
+                case '|':
+                case '<':
+                case '>': {
+                    chars[i] = ' ';
+                    break;
+                }
+            }
+        }
+        return new String(chars);
+    }
+
+
+    public static Object convertDataObject(Object t, Class toType) {
+        if (t == null) {
+            return null;
+        }
+        if (!Utils.toRefType(toType).isInstance(t)) {
+            if (t instanceof JSObject) {
+                t = convertThroughJson(t, toType);
+            } else if (t instanceof String) {
+                t = convertThroughJson(t, toType);
+            } else if (t instanceof Map) {
+                t = convertThroughJson(t, toType);
+            } else {
+                throw new ClassCastException("Unable to cast to " + toType + " instance " + t.getClass().getName());
+            }
+        }
+        return t;
+    }
+
+    private static Object convertThroughJson(Object t, Class toType) {
+        return GSON.fromJson(GSON.toJson(t), toType);
+    }
+
+    public static Object convertDataObjectOrDocument(Object t, Class toType) {
+        if (t == null) {
+            return null;
+        }
+        if (!Utils.toRefType(toType).isInstance(t)) {
+            if (t instanceof net.vpc.upa.Document) {
+                return t;
+            } else if (t instanceof JSObject) {
+                t = convertThroughJson(t, toType);
+            } else if (t instanceof String) {
+                t = convertThroughJson(t, toType);
+            } else if (t instanceof Map) {
+                t = convertThroughJson(t, toType);
+            } else {
+                throw new ClassCastException("Unable to cast to " + toType + " instance " + t.getClass().getName());
+            }
+        }
+        return t;
+    }
+
+    public static void requireRight(String right) {
+        if (right == null) {
+            return;
+        }
+        UserSession currentSession = CorePlugin.get().getCurrentSession();
+        if (currentSession != null && currentSession.getRights().contains(right)) {
+            throw new SecurityException("Not Allowed");
+        }
+    }
+
+    public static void requireAdmin() {
+        if (!CorePlugin.get().isCurrentSessionAdmin()) {
+            throw new SecurityException("Not Allowed");
+        }
+    }
+
+    public static void requireAdminOrUser(String login) {
+        if (!CorePlugin.get().isCurrentSessionAdminOrUser(login)) {
+            throw new SecurityException("Not Allowed");
+        }
+    }
+
+    public static void requireAdminOrUser(int userId) {
+        if (!CorePlugin.get().isCurrentSessionAdminOrUser(userId)) {
+            throw new SecurityException("Not Allowed");
+        }
+    }
+
     public static class KeyValStruct implements Comparable<KeyValStruct> {
 
         String n;
@@ -876,46 +971,5 @@ public class VrUtils {
 
     }
 
-    public static Object convertDataObjectOrDocument(Object t,Class toType){
-        if(t==null){
-            return null;
-        }
-        if(!toType.isInstance(t)){
-            if(t instanceof net.vpc.upa.Document) {
-                return t;
-            }else if(t instanceof JSObject){
-                Gson gson = new Gson();
-                t= gson.fromJson(gson.toJson(t),toType);
-            }else if(t instanceof String){
-                Gson gson = new Gson();
-                t= gson.fromJson(gson.toJson(t),toType);
-            }else if(t instanceof Map){
-                Gson gson = new Gson();
-                t= gson.fromJson(gson.toJson(t),toType);
-            }else{
-                throw new ClassCastException("Unable to cast to "+toType+" instance "+t.getClass().getName());
-            }
-        }
-        return t;
-    }
-    public static Object convertDataObject(Object t,Class toType){
-        if(t==null){
-            return null;
-        }
-        if(!toType.isInstance(t)){
-            if(t instanceof JSObject){
-                Gson gson = new Gson();
-                t= gson.fromJson(gson.toJson(t),toType);
-            }else if(t instanceof String){
-                Gson gson = new Gson();
-                t= gson.fromJson(gson.toJson(t),toType);
-            }else if(t instanceof Map){
-                Gson gson = new Gson();
-                t= gson.fromJson(gson.toJson(t),toType);
-            }else{
-                throw new ClassCastException("Unable to cast to "+toType+" instance "+t.getClass().getName());
-            }
-        }
-        return t;
-    }
+
 }

@@ -16,12 +16,12 @@ public class AppUserStrict {
         if (u != null) {
             id = u.getId();
             login = u.getLogin();
-        }
-        if (u.getContact() != null) {
-            fullName = u.getContact().getFullName();
-            fullTitle = u.getContact().getFullTitle();
-            if (u.getContact().getGender() != null) {
-                genderCode = u.getContact().getGender().getCode();
+            if (u.getContact() != null) {
+                fullName = u.getContact().getFullName();
+                fullTitle = u.getContact().getFullTitle();
+                if (u.getContact().getGender() != null) {
+                    genderCode = u.getContact().getGender().getCode();
+                }
             }
         }
     }

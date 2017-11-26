@@ -25,6 +25,7 @@ import net.vpc.app.vainruling.core.web.util.FileUploadEventHandler;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.*;
+import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 import org.primefaces.context.RequestContext;
@@ -120,12 +121,17 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
     @OnPageLoad
     public void init(Config cmd) {
         getModel().setConfig(cmd);
-        CorePlugin fsp = VrApp.getBean(CorePlugin.class);
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
         Config c = getModel().getConfig();
         if (c == null) {
             c = new Config();
         }
-        VirtualFileSystem rootfs = fsp.getFileSystem();
+        VirtualFileSystem rootfs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
+            @Override
+            public VirtualFileSystem run() {
+                return core.getRootFileSystem();
+            }
+        });
         VirtualFileSystem fs = null;
         String login = UserSession.getCurrentLogin();
         if (StringUtils.isEmpty(login)) {
@@ -134,21 +140,21 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
             if ("root".equals(c.getType())) {
                 fs = rootfs;
             } else if ("home".equals(c.getType())) {
-                fs = fsp.getUserHomeFileSystem(login);
+                fs = core.getUserHomeFileSystem(login);
             } else if ("user".equals(c.getType())) {
                 String v = c.getValue();
                 if (StringUtils.isEmpty(v)) {
                     v = login;
                 }
-                fs = fsp.getUserHomeFileSystem(v);
+                fs = core.getUserHomeFileSystem(v);
             } else if ("profile".equals(c.getType())) {
                 String v = c.getValue();
                 if (StringUtils.isEmpty(v)) {
                     v = "user";
                 }
-                fs = fsp.getProfileFileSystem(v);
+                fs = core.getProfileFileSystem(v);
             } else {
-                fs = fsp.getUserFileSystem(login);
+                fs = core.getUserFileSystem(login);
             }
         }
         getModel().setFileSystem(fs);
@@ -170,12 +176,12 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
         onRefresh();
     }
 
-    protected VirtualFileSystem createFS() {
-        CorePlugin fsp = VrApp.getBean(CorePlugin.class);
-        VirtualFileSystem rootfs = fsp.getFileSystem();
-        VirtualFileSystem userfs = rootfs.filter(null);
-        return userfs;
-    }
+//    protected VirtualFileSystem createFS() {
+//        CorePlugin fsp = VrApp.getBean(CorePlugin.class);
+//        VirtualFileSystem rootfs = fsp.getRootFileSystem();
+//        VirtualFileSystem userfs = rootfs.filter(null);
+//        return userfs;
+//    }
 
     public void updateCurrent(VFile file) {
         getModel().setCurrent(DocumentsUtils.createFileInfo(file));
@@ -186,10 +192,15 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
     public StreamedContent downloadPath(String path) {
         InputStream stream = null;
         try {
-            CorePlugin fsp = VrApp.getBean(CorePlugin.class);
-            final VFile f = fsp.getFileSystem().get(path);
+            CorePlugin core = VrApp.getBean(CorePlugin.class);
+            final VFile f = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
+                @Override
+                public VirtualFileSystem run() {
+                    return core.getRootFileSystem();
+                }
+            }).get(path);
             if (f.exists() && f.isFile()) {
-                fsp.markDownloaded(f);
+                core.markDownloaded(f);
                 stream = f.getInputStream();
                 return new DefaultStreamedContent(stream, f.probeContentType(), f.getName());
             }
@@ -285,7 +296,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
 
     public void onSave() {
         if (getModel().isNewFile()) {
-            String n = core.normalizeFilePath(getModel().getNewName().trim());
+            String n = VrUtils.normalizeFilePath(getModel().getNewName().trim());
             VFile f2 = getModel().getCurrent().getFile().get(n);
             try {
                 f2.writeBytes(new byte[0]);
@@ -294,7 +305,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
                 FacesUtils.addErrorMessage("Empty File " + f2.getPath() + " could not be created.");
             }
         } else if (getModel().isNewFolder()) {
-            String n = core.normalizeFilePath(getModel().getNewName().trim());
+            String n = VrUtils.normalizeFilePath(getModel().getNewName().trim());
             VFile f2 = getModel().getCurrent().getFile().get(n);
             try {
                 if (!f2.mkdirs()) {

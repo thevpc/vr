@@ -59,7 +59,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     public void onNew() {
         MailboxSent item = new MailboxSent();
-        item.setRichText(true);
+        item.setRichText(getModel().isNewTextRichMode());
         resetNewMessage(item,AccessMode.PERSIST);
     }
 
@@ -328,7 +328,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     public void onCancelCurrent() {
         FacesUtils.clearMessages();
         MailboxSent item = new MailboxSent();
-        item.setRichText(true);
+        item.setRichText(getModel().isNewTextRichMode());
         getModel().setNewItem(item);
         getModel().setNewItemAttachments(new ArrayList<>());
         getModel().setMode(AccessMode.READ);
@@ -420,7 +420,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             MailboxMessageFormat mailboxMessageFormat = (MailboxMessageFormat) getModel().getMailboxMessageFormat().getValue();
             mailboxPlugin.sendLocalMail(getModel().getNewItem(), mailboxMessageFormat == null ? null : mailboxMessageFormat.getId(), true);
             MailboxSent item = new MailboxSent();
-            item.setRichText(false);
+            item.setRichText(getModel().isNewTextRichMode());
             getModel().setNewItem(item);
             getModel().setNewItemAttachments(new ArrayList<>());
             getModel().setMode(AccessMode.READ);
@@ -454,7 +454,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
                 subject="RE:" + subject;
             }
             s.setSubject(subject);
-            s.setRichText(true);
+            s.setRichText(getModel().isNewTextRichMode());
             s.setThreadId(r.getOutboxMessage()==null?0:r.getOutboxMessage().getThreadId());
             resetNewMessage(s,AccessMode.PERSIST);
             loadThreadList(current,false);
@@ -475,7 +475,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
                 subject="RE:" + subject;
             }
             s.setThreadId(r.getOutboxMessage()==null?0:r.getOutboxMessage().getThreadId());
-            s.setRichText(true);
+            s.setRichText(getModel().isNewTextRichMode());
             resetNewMessage(s,AccessMode.PERSIST);
             loadThreadList(current,false);
         }
@@ -691,6 +691,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         private MailboxFolder folder = MailboxFolder.CURRENT;
         private boolean sent = false;
         private String title = "Inbox";
+        private boolean newTextRichMode = false;
         private int countInbox = 0;
         private int countOutbox = 0;
         private int toCount = 0;
@@ -704,6 +705,14 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         private List<Row> inbox = new ArrayList<>();
         private AccessMode mode = AccessMode.READ;
         private boolean advancedSettings;
+
+        public boolean isNewTextRichMode() {
+            return newTextRichMode;
+        }
+
+        public void setNewTextRichMode(boolean newTextRichMode) {
+            this.newTextRichMode = newTextRichMode;
+        }
 
         public int getToCount() {
             return toCount;

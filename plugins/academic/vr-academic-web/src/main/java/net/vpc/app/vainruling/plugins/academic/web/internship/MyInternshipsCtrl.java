@@ -11,6 +11,7 @@ import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.OpinionType;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.util.MirroredPath;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
@@ -383,11 +384,11 @@ public class MyInternshipsCtrl implements DocumentUploadListener{
             public StreamedContent run() {
                 VFile f = null;
                 if ("report1".equals(report)) {
-                    f = fs.getFileSystem().get(getModel().getInternship().getSpecFilePath());
+                    f = fs.getRootFileSystem().get(getModel().getInternship().getSpecFilePath());
                 } else if ("report2".equals(report)) {
-                    f = fs.getFileSystem().get(getModel().getInternship().getMidTermReportFilePath());
+                    f = fs.getRootFileSystem().get(getModel().getInternship().getMidTermReportFilePath());
                 } else if ("report3".equals(report)) {
-                    f = fs.getFileSystem().get(getModel().getInternship().getReportFilePath());
+                    f = fs.getRootFileSystem().get(getModel().getInternship().getReportFilePath());
                 }
                 if (f != null) {
                     InputStream stream = null;
@@ -417,11 +418,8 @@ public class MyInternshipsCtrl implements DocumentUploadListener{
                     String report = getModel().getRequestUploadType();
                     CorePlugin fs = VrApp.getBean(CorePlugin.class);
                     String login = UserSession.getCurrentLogin();
-                    String tempPath = CorePlugin.PATH_TEMP + "/Import/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
-                            + "-" + login;
-                    String p = fs.getNativeFileSystemPath() + tempPath;
-                    new File(p).mkdirs();
-                    File f = new File(p, event.getFile().getFileName());
+                    MirroredPath temp=CorePlugin.get().createTempUploadFolder();
+                    File f = new File(temp.getNativePath(), event.getFile().getFileName());
                     event.getFile().write(f.getPath());
                     AcademicInternship internship = getModel().getInternship();
 
@@ -435,18 +433,18 @@ public class MyInternshipsCtrl implements DocumentUploadListener{
                     if ("report1".equals(report)) {
                         String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-spec." + extensionPart;
                         VFile ff = userHome.get(validName);
-                        fs.getFileSystem().get(tempPath + "/" + event.getFile().getFileName()).copyTo(ff);
+                        temp.getPath().get(event.getFile().getFileName()).copyTo(ff);
                         internship.setSpecFilePath(ff.getBaseFile("vrfs").getPath());
                     } else if ("report2".equals(report)) {
                         String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-mid." + extensionPart;
                         VFile ff = userHome.get(validName);
-                        fs.getFileSystem().get(tempPath + "/" + event.getFile().getFileName()).copyTo(ff);
+                        temp.getPath().get(event.getFile().getFileName()).copyTo(ff);
                         internship.setMidTermReportFilePath(ff.getBaseFile("vrfs").getPath());
 
                     } else if ("report3".equals(report)) {
                         String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-final." + extensionPart;
                         VFile ff = userHome.get(validName);
-                        fs.getFileSystem().get(tempPath + "/" + event.getFile().getFileName()).copyTo(ff);
+                        temp.getPath().get(event.getFile().getFileName()).copyTo(ff);
                         internship.setReportFilePath(ff.getBaseFile("vrfs").getPath());
                     } else {
                         return;

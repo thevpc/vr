@@ -17,6 +17,7 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VFileType;
 import net.vpc.common.vfs.VirtualFileSystem;
+import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 import org.primefaces.context.RequestContext;
@@ -144,7 +145,7 @@ public class DocumentsDialogCtrl {
     public void initContent(Config cmd) {
         getModel().setEditMode("");
         getModel().setConfig(cmd);
-        CorePlugin fsp = VrApp.getBean(CorePlugin.class);
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
         Config c = getModel().getConfig();
         if (c == null) {
             c = new Config();
@@ -159,7 +160,12 @@ public class DocumentsDialogCtrl {
         if(StringUtils.isEmpty(fspath)){
             fspath="";
         }
-        VirtualFileSystem rootfs = fsp.getFileSystem();
+        VirtualFileSystem rootfs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
+            @Override
+            public VirtualFileSystem run() {
+                return core.getRootFileSystem();
+            }
+        });
         VirtualFileSystem fs = null;
         String login = UserSession.getCurrentLogin();
         if ("root".equals(c.getType())) {
@@ -169,15 +175,15 @@ public class DocumentsDialogCtrl {
             if (StringUtils.isEmpty(v)) {
                 v = login;
             }
-            fs = fsp.getUserFileSystem(v);
+            fs = core.getUserFileSystem(v);
         } else if ("profile".equals(c.getType())) {
             String v = c.getValue();
             if (StringUtils.isEmpty(v)) {
                 v = "user";
             }
-            fs = fsp.getProfileFileSystem(v);
+            fs = core.getProfileFileSystem(v);
         } else {
-            fs = fsp.getUserFileSystem(login);
+            fs = core.getUserFileSystem(login);
         }
         if(fspath.isEmpty()||fspath.equals("/")){
             //okkay
@@ -210,12 +216,12 @@ public class DocumentsDialogCtrl {
         onRefresh();
     }
 
-    protected VirtualFileSystem createFS() {
-        CorePlugin fsp = VrApp.getBean(CorePlugin.class);
-        VirtualFileSystem rootfs = fsp.getFileSystem();
-        VirtualFileSystem userfs = rootfs.filter(null);
-        return userfs;
-    }
+//    protected VirtualFileSystem createFS() {
+//        CorePlugin fsp = VrApp.getBean(CorePlugin.class);
+//        VirtualFileSystem rootfs = fsp.getRootFileSystem();
+//        VirtualFileSystem userfs = rootfs.filter(null);
+//        return userfs;
+//    }
 
     public void selectDirectory(VFile file) {
         getModel().setCurrent(DocumentsUtils.createFileInfo(file.getName(), VFileKind.ORDINARY, file));

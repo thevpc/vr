@@ -355,7 +355,12 @@ public class Vr {
     }
 
     public List<String> findValidFiles(String expression,boolean positive, String... paths) {
-        VirtualFileSystem fs = core.getFileSystem();
+        VirtualFileSystem fs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
+            @Override
+            public VirtualFileSystem run() {
+                return core.getRootFileSystem();
+            }
+        });
         LinkedHashSet<String> all = new LinkedHashSet<>();
         Pattern patternObj = Pattern.compile(StringUtils.wildcardToRegex(expression, '/'), Pattern.CASE_INSENSITIVE);
         VFileFilter filter = new VFileFilter() {

@@ -144,8 +144,7 @@ public class VrUPAUtils {
             }
             return null;
         }
-        Gson g = new Gson();
-        JsonElement jsonElement = g.fromJson(value, JsonElement.class);
+        JsonElement jsonElement = VrUtils.GSON.fromJson(value, JsonElement.class);
         return jsonToObj(jsonElement, type);
     }
 

@@ -67,12 +67,12 @@ public class DocumentsUtils {
     }
 
 
-    public static VirtualFileSystem createFS() {
-        CorePlugin fsp = VrApp.getBean(CorePlugin.class);
-        VirtualFileSystem rootfs = fsp.getFileSystem();
-        VirtualFileSystem userfs = rootfs.filter(null);
-        return userfs;
-    }
+//    public static VirtualFileSystem createFS() {
+//        CorePlugin fsp = VrApp.getBean(CorePlugin.class);
+//        VirtualFileSystem rootfs = fsp.getRootFileSystem();
+//        VirtualFileSystem userfs = rootfs.filter(null);
+//        return userfs;
+//    }
 
 
     public static StreamedContent getContent(VFileInfo i) {

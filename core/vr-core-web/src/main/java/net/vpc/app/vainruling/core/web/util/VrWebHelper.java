@@ -9,11 +9,15 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.util.VrPlatformUtils;
 import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.common.io.FileUtils;
 import net.vpc.common.strings.StringConverter;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
+import net.vpc.common.vfs.VirtualFileSystem;
+import net.vpc.upa.Action;
+import net.vpc.upa.UPA;
 import net.vpc.upa.exceptions.UPAIllegalArgumentException;
 import org.primefaces.event.FileUploadEvent;
 import org.springframework.context.expression.BeanFactoryResolver;
@@ -21,7 +25,6 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.web.context.request.FacesRequestAttributes;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -171,7 +174,7 @@ public class VrWebHelper {
         String p = core.getNativeFileSystemPath()+ path;
 
 
-        File f = new File(p);
+        File f = new File(VrPlatformUtils.validatePath(p));
         if(f.exists() && !override){
            int index=2;
             while(true) {
@@ -185,6 +188,11 @@ public class VrWebHelper {
         }
         f.getParentFile().mkdirs();
         event.getFile().write(f.getPath());
-        return core.getFileSystem().get(path).getParentFile().get(f.getName());
+        return UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
+            @Override
+            public VirtualFileSystem run() {
+                return core.getRootFileSystem();
+            }
+        }).get(path).getParentFile().get(f.getName());
     }
 }

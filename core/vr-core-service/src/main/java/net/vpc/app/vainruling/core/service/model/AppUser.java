@@ -38,6 +38,7 @@ public class AppUser implements Cloneable{
 
     @Id
     @Sequence
+    @Path("Main")
     private int id;
 
     @Summary
@@ -45,6 +46,7 @@ public class AppUser implements Cloneable{
     @Field(
             updateProtectionLevel = ProtectionLevel.PROTECTED
     )
+    @Path("Main")
     private String login;
 
     @Password(strategyType = PasswordStrategyType.MD5)
@@ -52,43 +54,56 @@ public class AppUser implements Cloneable{
             updateProtectionLevel = ProtectionLevel.PROTECTED,
             readProtectionLevel = ProtectionLevel.PROTECTED
     )
+    @Path("Main")
     private String password;
 
     @Main
+    @Path("Main")
     private AppContact contact;
     @Summary
+    @Path("Main")
     private AppDepartment department;
     @Summary
+    @Path("Main")
     private AppUserType type;
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
+    @Path("Trace")
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    @Path("Trace")
     private Timestamp updateDate;
 
     @Summary
     @Field(protectionLevel = ProtectionLevel.PRIVATE)
+    @Path("Trace")
     private DateTime lastConnexionDate;
 
     @Summary
     @Field(protectionLevel = ProtectionLevel.PRIVATE)
+    @Path("Trace")
     private long connexionCount;
 
     @Summary
     @Field(protectionLevel = ProtectionLevel.PRIVATE)
+    @Path("Trace")
     private boolean enabled;
 
+    @Path("Trace")
     private boolean deleted;
 
+    @Path("Trace")
     private String deletedBy;
 
+    @Path("Trace")
     private Timestamp deletedOn;
 
     @Summary
     @Field(protectionLevel = ProtectionLevel.PROTECTED)
+    @Path("Trace")
     private boolean welcomeSent;
 
     /**
@@ -96,6 +111,7 @@ public class AppUser implements Cloneable{
      * though
      */
     @Field(protectionLevel = ProtectionLevel.PROTECTED)
+    @Path("Trace")
     private String passwordAuto;
 
     public static String getName(AppUser t) {

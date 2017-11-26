@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.core.service;
 import net.vpc.app.vainruling.core.service.model.AppTrace;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.util.VrPlatformUtils;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.*;
@@ -399,8 +400,8 @@ public class TraceService {
                         .getResultList();
                 int currRows = -1;
                 String rootFolder = VrApp.getBean(CorePlugin.class).getNativeFileSystemPath();
-                String rootLog = (StringUtils.isEmpty(rootFolder) ? System.getProperty("user.home") : rootFolder) + "/logs";
-                new File(rootLog).mkdirs();
+                String rootLog = (StringUtils.isEmpty(rootFolder) ? System.getProperty("user.home") : rootFolder) + VrPlatformUtils.SLASH+ "Logs";
+                new File(VrPlatformUtils.validatePath(rootLog)).mkdirs();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss.S");
                 DataWriter f = null;
                 ImportExportManager importExportManager = pu.getImportExportManager();

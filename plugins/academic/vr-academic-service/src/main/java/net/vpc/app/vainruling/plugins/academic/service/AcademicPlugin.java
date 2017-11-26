@@ -307,19 +307,24 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
         });
     }
 
-    public void generateTeacherAssignementDocumentsFolder(int periodId) {
-        generateTeacherAssignementDocumentsFolder(periodId, "/Documents/Services/Supports Pedagogiques/Par Enseignant");
+    public void generateTeacherAssignmentDocumentsFolder(int periodId) {
+        generateTeacherAssignmentDocumentsFolder(periodId, "/Documents/Services/Supports Pedagogiques/Par Enseignant");
     }
 
-    public void generateTeacherAssignementDocumentsFolder(int periodId, String path) {
-        for (AcademicCourseAssignment a : findAcademicCourseAssignments(periodId)) {
-            if (a.getTeacher() != null && a.getTeacher().getContact() != null) {
-                String n = VrUtils.toValidFileName(a.getTeacher().resolveFullName());
-                String c = VrUtils.toValidFileName(a.getFullName());
-                VFile r = core.getFileSystem().get(path + "/" + n + "/" + c);
-                r.mkdirs();
+    public void generateTeacherAssignmentDocumentsFolder(int periodId, String path) {
+        UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                for (AcademicCourseAssignment a : findAcademicCourseAssignments(periodId)) {
+                    if (a.getTeacher() != null && a.getTeacher().getContact() != null) {
+                        String n = VrUtils.toValidFileName(a.getTeacher().resolveFullName());
+                        String c = VrUtils.toValidFileName(a.getFullName());
+                        VFile r = core.getRootFileSystem().get(path + "/" + n + "/" + c);
+                        r.mkdirs();
+                    }
+                }
             }
-        }
+        });
     }
 
     public TeacherPeriodStat evalTeacherStat(
@@ -877,41 +882,41 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
         pu.merge(a);
     }
 
-    private boolean isTeacherOrManager(int teacher){
-        if(core.isCurrentSessionAdmin()){
+    private boolean isTeacherOrManager(int teacher) {
+        if (core.isCurrentSessionAdmin()) {
             return true;
         }
         AcademicTeacher r = getCurrentTeacher();
-        if(r!=null){
-            if(r.getId()==teacher) {
+        if (r != null) {
+            if (r.getId() == teacher) {
                 return true;
             }
             AppDepartment d = r.getDepartment();
-            if(d!=null) {
+            if (d != null) {
                 return core.getCurrentSession().isDepartmentManager(d.getId());
             }
         }
         return false;
     }
 
-    private boolean isManageable(AcademicCourseAssignment a){
-        if(core.isCurrentSessionAdmin()){
+    private boolean isManageable(AcademicCourseAssignment a) {
+        if (core.isCurrentSessionAdmin()) {
             return true;
         }
-        if(a==null){
+        if (a == null) {
             return false;
         }
         AppDepartment d = a.getOwnerDepartment();
         UserSession currentSession = core.getCurrentSession();
-        if(d!=null){
-            if(currentSession.isDepartmentManager(d.getId())){
+        if (d != null) {
+            if (currentSession.isDepartmentManager(d.getId())) {
                 return true;
             }
             return false;
         }
         d = a.resolveDepartment();
-        if(d!=null){
-            if(currentSession.isDepartmentManager(d.getId())){
+        if (d != null) {
+            if (currentSession.isDepartmentManager(d.getId())) {
                 return true;
             }
         }
@@ -922,7 +927,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment a = pu.findById(AcademicCourseAssignment.class, assignementId);
         if (a != null) {
-            if(!isManageable(a)){
+            if (!isManageable(a)) {
                 throw new SecurityException("Not Allowed");
             }
             if (hardRemoval) {
@@ -941,7 +946,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
     }
 
     public void addIntent(int teacherId, int assignementId) {
-        if(!isTeacherOrManager(teacherId)){
+        if (!isTeacherOrManager(teacherId)) {
             throw new SecurityException("Not Allowed");
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -961,7 +966,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
     }
 
     public void removeIntent(int teacherId, int assignementId) {
-        if(!isTeacherOrManager(teacherId)){
+        if (!isTeacherOrManager(teacherId)) {
             throw new SecurityException("Not Allowed");
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -979,7 +984,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
         AcademicCourseAssignment a = pu.findById(AcademicCourseAssignment.class, assignementId);
         if (a != null) {
             AcademicTeacher t = a.getTeacher();
-            if(!isTeacherOrManager(t==null?-1:t.getId())){
+            if (!isTeacherOrManager(t == null ? -1 : t.getId())) {
                 throw new SecurityException("Not Allowed");
             }
             List<AcademicCourseIntent> intentList = pu.createQuery("Select a from AcademicCourseIntent a where a.assignmentId=:assignementId")
@@ -3488,6 +3493,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
     }
 
     public void importTeachingLoad(int periodId) {
+        VrUtils.requireAdminOrUser(null);
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         try {
             AppPeriod mainPeriod = core.findPeriodOrMain(periodId);
@@ -3505,7 +3511,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
 
             AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
 
-            net.vpc.common.vfs.VirtualFileSystem fs = core.getFileSystem();
+            net.vpc.common.vfs.VirtualFileSystem fs = core.getRootFileSystem();
             s.resetModuleTeaching();
             s.importFile(mainPeriod.getId(),
                     fs.get(dataFolder),
@@ -4149,7 +4155,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
         for (AcademicTeacher s : findTeachers()) {
             validateAcademicData_Teacher(s.getId(), periodId);
         }
-        generateTeacherAssignementDocumentsFolder(periodId);
+        generateTeacherAssignmentDocumentsFolder(periodId);
     }
 
     public List<AcademicClass> findStudentClasses(int studentId, boolean down, boolean up) {
@@ -4231,6 +4237,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
     }
 
     public void generateTeachingLoad(int periodId, CourseAssignmentFilter courseAssignmentFilter, String version0, String oldVersion, ProgressMonitor monitor) throws IOException {
+        VrUtils.requireRight("Custom.Education.AdminTools");
         teacherGenerationHelper.generateTeachingLoad(periodId, courseAssignmentFilter, version0, oldVersion, monitor);
     }
 

@@ -272,7 +272,7 @@ public class MailboxPlugin {
     }
 
     public List<MailboxReceived> findLocalReceivedMessages(final int userId, final int maxCount, int threadId, boolean fullThread, final boolean unreadOnly, final MailboxFolder folder) {
-        if(!core.isCurrentSessionAdmin() && core.getCurrentUserId()!=userId){
+        if (!core.isCurrentSessionAdmin() && core.getCurrentUserId() != userId) {
             throw new IllegalArgumentException("Not Allowed");
         }
         return UPA.getContext().invokePrivileged(new Action<List<MailboxReceived>>() {
@@ -350,7 +350,7 @@ public class MailboxPlugin {
     }
 
     public List<MailboxSent> findLocalSentMessages(final int userId, final int maxCount, int threadId, final boolean unreadOnly, final MailboxFolder folder) {
-        if(!core.isCurrentSessionAdmin() && core.getCurrentUserId()!=userId){
+        if (!core.isCurrentSessionAdmin() && core.getCurrentUserId() != userId) {
             throw new IllegalArgumentException("Not Allowed");
         }
         return UPA.getContext().invokePrivileged(new Action<List<MailboxSent>>() {
@@ -431,7 +431,7 @@ public class MailboxPlugin {
     }
 
     public int getLocalUnreadInboxCount(final int userId) {
-        if(!core.isCurrentSessionAdmin() && core.getCurrentUserId()!=userId){
+        if (!core.isCurrentSessionAdmin() && core.getCurrentUserId() != userId) {
             throw new IllegalArgumentException("Not Allowed");
         }
         return UPA.getContext().invokePrivileged(new Action<Integer>() {
@@ -510,7 +510,7 @@ public class MailboxPlugin {
     }
 
     public void sendWelcomeEmail(List<AppUser> users, boolean applyFilter) {
-        if(!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.SendWelcomeEmail")){
+        if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.SendWelcomeEmail")) {
             throw new IllegalArgumentException("Not Allowed");
         }
         for (AppUser u : users) {
@@ -536,7 +536,7 @@ public class MailboxPlugin {
     }
 
     public void sendWelcomeEmail(boolean applyFilter) {
-        if(!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.SendWelcomeEmail")){
+        if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.SendWelcomeEmail")) {
             throw new IllegalArgumentException("Not Allowed");
         }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
@@ -556,7 +556,7 @@ public class MailboxPlugin {
     private void sendWelcomeEmail(final AppUser u, Properties roProperties, GoMailListener listener) {
         try {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
-            if(!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.SendWelcomeEmail")){
+            if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Admin.SendWelcomeEmail")) {
                 throw new IllegalArgumentException("Not Allowed");
             }
             MailData m = new MailData();
@@ -595,7 +595,7 @@ public class MailboxPlugin {
     }
 
     public int sendLocalMail(GoMail email, final int sentMessageId, final boolean sendExternal) throws IOException {
-        if(!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("sendLocalMail")){
+        if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("sendLocalMail")) {
             throw new IllegalArgumentException("Not Allowed");
         }
         return sendMailByAgent(email, null, new GoMailListener() {
@@ -626,7 +626,7 @@ public class MailboxPlugin {
     }
 
     public void sendLocalMail(MailboxSent message, Integer templateId, boolean persistOutbox) throws IOException {
-        if(!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("sendLocalMail")){
+        if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("sendLocalMail")) {
             throw new IllegalArgumentException("Not Allowed");
         }
         GoMail m = new GoMail();
@@ -719,7 +719,7 @@ public class MailboxPlugin {
 //        sendExternalMail(mail, null, null);
 //    }
     public void sendExternalMail(GoMail email, Properties roProperties, GoMailListener listener) throws IOException {
-        if(!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("sendExternalMail")){
+        if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("sendExternalMail")) {
             throw new IllegalArgumentException("Not Allowed");
         }
 //        email.setSimulate(true);
@@ -965,28 +965,37 @@ public class MailboxPlugin {
         m.body().add(emailContent, richText ? GoMail.HTML_CONTENT_TYPE : GoMail.TEXT_CONTENT_TYPE, true);
 
         if (richText) {
-            try {
+
 
                 if (u != null) {
-                    if (!StringUtils.isEmpty(footerEmbeddedImage)) {
-                        CorePlugin fs = VrApp.getBean(CorePlugin.class);
-                        VirtualFileSystem ufs = fs.getUserFileSystem(u.getLogin());
-                        VirtualFileSystem allfs = fs.getFileSystem();
-                        if (ufs.exists(footerEmbeddedImage)) {
-                            m.footer("<img src=\"cid:part1\" alt=\"ATTACHMENT\"/>", GoMail.HTML_CONTENT_TYPE);
-                            VFile img = ufs.get(footerEmbeddedImage);
-                            m.attachment(img.readBytes(), img.probeContentType());
-                        } else if (allfs.exists(footerEmbeddedImage)) {
-                            m.footer("<img src=\"cid:part1\" alt=\"ATTACHMENT\"/>", GoMail.HTML_CONTENT_TYPE);
-                            VFile img = allfs.get(footerEmbeddedImage);
-                            m.attachment(img.readBytes(), img.probeContentType());
+                    AppUser finalU = u;
+                    UPA.getContext().invokePrivileged(new VoidAction() {
+                        @Override
+                        public void run() {
+                            try {
+                                if (!StringUtils.isEmpty(footerEmbeddedImage)) {
+                                    CorePlugin fs = VrApp.getBean(CorePlugin.class);
+                                    VirtualFileSystem ufs = fs.getUserFileSystem(finalU.getLogin());
+                                    VirtualFileSystem allfs = fs.getRootFileSystem();
+                                    if (ufs.exists(footerEmbeddedImage)) {
+                                        m.footer("<img src=\"cid:part1\" alt=\"ATTACHMENT\"/>", GoMail.HTML_CONTENT_TYPE);
+                                        VFile img = ufs.get(footerEmbeddedImage);
+                                        m.attachment(img.readBytes(), img.probeContentType());
+                                    } else if (allfs.exists(footerEmbeddedImage)) {
+                                        m.footer("<img src=\"cid:part1\" alt=\"ATTACHMENT\"/>", GoMail.HTML_CONTENT_TYPE);
+                                        VFile img = allfs.get(footerEmbeddedImage);
+                                        m.attachment(img.readBytes(), img.probeContentType());
+                                    }
+
+                                }
+                            } catch (IOException ex) {
+                                Logger.getLogger(MailboxPlugin.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         }
-                    }
+                    });
 
                 }
-            } catch (IOException ex) {
-                Logger.getLogger(MailboxPlugin.class.getName()).log(Level.SEVERE, null, ex);
-            }
+
         }
     }
 //    public MailboxMessageFormat getExternalMailTemplate() {

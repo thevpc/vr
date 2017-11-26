@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.web.install;
 
 import net.vpc.app.vainruling.core.service.model.AppProperty;
+import net.vpc.app.vainruling.core.service.util.VrPlatformUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.QueryBuilder;
@@ -40,13 +41,13 @@ public class VrConfigureInstall {
             return false;
         }
         String rp = servletContext.getRealPath("/") + LOCK_PATH;
-        File lockFile = new File(rp);
+        File lockFile = new File(VrPlatformUtils.validatePath(rp));
         if (lockFile.exists()) {
             return false;
         }
         AppProperty p = findSystemProperty("System.FileSystem");
         getModel().setRootPath(p == null ? null : p.getPropertyValue());
-        String s = getModel().getRootPath();
+        String s = VrPlatformUtils.validatePath(getModel().getRootPath());
         if (StringUtils.isEmpty(s) || !new File(s).exists() || !new File(s).isDirectory()) {
             return true;
         }
@@ -94,7 +95,7 @@ public class VrConfigureInstall {
 
         ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
         String rp = servletContext.getRealPath("/") + LOCK_PATH;
-        File f = new File(rp);
+        File f = new File(VrPlatformUtils.validatePath(rp));
         try {
             f.getParentFile().mkdirs();
             f.createNewFile();

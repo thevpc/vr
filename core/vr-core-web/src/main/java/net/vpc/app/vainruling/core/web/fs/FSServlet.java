@@ -11,6 +11,9 @@ import net.vpc.common.io.FileUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VirtualFileSystem;
+import net.vpc.upa.Action;
+import net.vpc.upa.UPA;
+import org.apache.commons.fileupload.MultipartStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -31,8 +34,7 @@ import java.util.logging.Logger;
 public class FSServlet extends HttpServlet {
     private static final Logger log = Logger.getLogger(FSServlet.class.getName());
     final int DEFAULT_BUFFER_SIZE = 4 * 1024 * 1024;
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         VFile file = getFile(request);
         if (file != null) {
 //            response.setHeader("Content-Type", file.probeContentType());
@@ -69,6 +71,51 @@ public class FSServlet extends HttpServlet {
         }
     }
 
+    private static String extractBoundary(String contentTypeHeader, String defaultValue) {
+        if (contentTypeHeader == null) return defaultValue;
+        String[] headerSections = contentTypeHeader.split(";");
+        for (String section: headerSections) {
+            String[] subHeaderSections = section.split("=");
+            String headerName = subHeaderSections[0].trim();
+            if (headerName.toLowerCase().equals("boundary")) {
+                return subHeaderSections[1];
+            }
+        }
+        return defaultValue;
+    }
+
+    public static boolean isMultipart(String mimetype) {
+        if(mimetype==null){
+            mimetype="";
+        }
+        String b=extractBoundary(mimetype,null);
+        return b!=null && !b.isEmpty()
+                && mimetype.toLowerCase().startsWith("multipart/");
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        VFile file = getFile(request);
+        if (file != null) {
+            String contentType = request.getContentType();
+            if(!isMultipart(contentType)){
+                response.setStatus(400);
+                return;
+            }
+            MultipartStream stream=new MultipartStream(request.getInputStream(),extractBoundary(contentType,"").getBytes(),DEFAULT_BUFFER_SIZE,
+                    null);
+
+            boolean hasNextPart = stream.skipPreamble();
+            while (hasNextPart) {
+                stream.readHeaders();
+                stream.readBodyData(file.getOutputStream());
+                hasNextPart = stream.readBoundary();
+            }
+            response.setStatus(200);
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
     @Override
     protected long getLastModified(HttpServletRequest request) {
         VFile file = getFile(request);
@@ -97,7 +144,12 @@ public class FSServlet extends HttpServlet {
             return null;
         }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        final VirtualFileSystem fs = core.getFileSystem();
+        final VirtualFileSystem fs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
+            @Override
+            public VirtualFileSystem run() {
+                return core.getRootFileSystem();
+            }
+        });
         if(fs==null){
             return null;
         }

@@ -58,7 +58,7 @@ public class TeachersLoadTest {
 //            CorePlugin core = VRApp.getBean(CorePlugin.class);
 //            AcademicPlugin s = VRApp.getBean(AcademicPlugin.class);
 //            s.resetModuleTeaching();
-//            s.importFolder(core.getFileSystem().get(dir + "/data"),
+//            s.importFolder(core.getRootFileSystem().get(dir + "/data"),
 //                    new ImportOptions()
 //            );
 //            Integer[] teachers = new Integer[]{s.findTeacher(StringComparators.ilike("*khiroun*")).getId()};
@@ -99,7 +99,7 @@ public class TeachersLoadTest {
 
             AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
             s.generateTeachingLoad(-1, CourseAssignmentFilter.NO_INTENTS, null,null,null);
-//            net.vpc.vfs.VirtualFileSystem fs = core.getFileSystem();
+//            net.vpc.vfs.VirtualFileSystem fs = core.getRootFileSystem();
 //            fs = new NativeVFS();
 //            VFS.copy(fs.get(dataFolder), fs.get(outputFolder), new VFileFilter() {
 //

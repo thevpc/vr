@@ -53,18 +53,18 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
     public List<CalendarWeek> findUserPublicCalendars(int userId) {
         AcademicTeacher teacherByUser = academicPlugin.findTeacherByUser(userId);
         AcademicStudent student = academicPlugin.findStudentByUser(userId);
-        List<CalendarWeek> all=new ArrayList<>();
-        if(teacherByUser!=null){
+        List<CalendarWeek> all = new ArrayList<>();
+        if (teacherByUser != null) {
             CalendarWeek e = loadTeacherPlanning(teacherByUser.getId());
-            if(e!=null) {
+            if (e != null) {
                 all.add(e);
             }
         }
-        if(student!=null){
+        if (student != null) {
             List<CalendarWeek> e = loadStudentPlanningList(student.getId());
-            if(e!=null) {
+            if (e != null) {
                 for (CalendarWeek calendarWeek : e) {
-                    if(calendarWeek !=null){
+                    if (calendarWeek != null) {
                         all.add(calendarWeek);
                     }
                 }
@@ -75,22 +75,22 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
 
     @Override
     public Set<Integer> retainUsersWithPublicCalendars(Set<Integer> users) {
-        HashSet<Integer> all=new HashSet<>();
-        HashSet<Integer> teachers=new HashSet<>();
-        HashSet<Integer> students=new HashSet<>();
-        Map<Integer,AcademicTeacher> userToTeachers=new HashMap<>();
-        Map<Integer,AcademicStudent> userToStudents=new HashMap<>();
+        HashSet<Integer> all = new HashSet<>();
+        HashSet<Integer> teachers = new HashSet<>();
+        HashSet<Integer> students = new HashSet<>();
+        Map<Integer, AcademicTeacher> userToTeachers = new HashMap<>();
+        Map<Integer, AcademicStudent> userToStudents = new HashMap<>();
         for (AcademicTeacher teacher : academicPlugin.findTeachers()) {
             AppUser u = teacher.getUser();
-            if(u!=null && users.contains(u.getId())){
-                userToTeachers.put(u.getId(),teacher);
+            if (u != null && users.contains(u.getId())) {
+                userToTeachers.put(u.getId(), teacher);
                 teachers.add(teacher.getId());
             }
         }
         for (AcademicStudent student : academicPlugin.findStudents()) {
             AppUser u = student.getUser();
-            if(u!=null && users.contains(u.getId())){
-                userToStudents.put(u.getId(),student);
+            if (u != null && users.contains(u.getId())) {
+                userToStudents.put(u.getId(), student);
                 students.add(student.getId());
             }
         }
@@ -114,17 +114,17 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
     }
 
     public Set<Integer> retainTeachersWithPublicCalendars(Set<Integer> teacherIds) {
-        Set<Integer> validTeachers=new HashSet<>();
-        ListValueMap<String,Integer> teacherNames = new ListValueMap<>();
+        Set<Integer> validTeachers = new HashSet<>();
+        ListValueMap<String, Integer> teacherNames = new ListValueMap<>();
         for (Integer teacherId : teacherIds) {
             //
             AcademicTeacher teacher = academicPlugin.findTeacher(teacherId);
 
             String teacherName = teacher == null ? "" : teacher.resolveFullName();
-            teacherNames.put(teacherName.toLowerCase(),teacherId);
+            teacherNames.put(teacherName.toLowerCase(), teacherId);
             if (teacher != null) {
                 for (String s : splitOtherNames(teacher.getOtherNames())) {
-                    teacherNames.put(s,teacherId);
+                    teacherNames.put(s, teacherId);
                 }
             }
         }
@@ -190,17 +190,17 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
         VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
         if (p != null && p.exists()) {
             try {
-                FETXmlParser parser=new FETXmlParser(p,"Teacher","Formation Ingénieur");
+                FETXmlParser parser = new FETXmlParser(p, "Teacher", "Formation Ingénieur");
                 CalendarWeekParser week;
                 try {
-                    int counter=0;
+                    int counter = 0;
                     while ((week = parser.next()) != null) {
                         if (teacherNames.contains(week.getName().trim().toLowerCase().trim())) {
                             counter++;
                             return week.parse("Teacher-" + counter);
                         }
                     }
-                }finally{
+                } finally {
                     parser.close();
                 }
             } catch (Exception e) {
@@ -211,27 +211,26 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
     }
 
     private VFile getEmploiFolder() {
-        final String academicPlanningPluginPlanningRoot = "AcademicPlanningPlugin.PlanningRoot";
-        Object t = core.getAppPropertyValue(academicPlanningPluginPlanningRoot, null);
-        String ts = StringUtils.nonNull(t);
-        if (ts.trim().length() > 0) {
-            return core.getFileSystem().get(ts);
-        } else {
-            final String defaultPath = core.getProfileFileSystem("DirectorOfStudies").get("/Emplois").getBaseFile("vrfs").getPath();
-            t = UPA.getPersistenceUnit().invokePrivileged(new Action<Object>() {
-                @Override
-                public Object run() {
-                    return core.getOrCreateAppPropertyValue(academicPlanningPluginPlanningRoot, null, defaultPath);
+        return UPA.getPersistenceUnit().invokePrivileged(new Action<VFile>() {
+            @Override
+            public VFile run() {
+                final String academicPlanningPluginPlanningRoot = "AcademicPlanningPlugin.PlanningRoot";
+                Object t = core.getAppPropertyValue(academicPlanningPluginPlanningRoot, null);
+                String ts = StringUtils.nonNull(t);
+                if (ts.trim().length() > 0) {
+                    return core.getRootFileSystem().get(ts);
+                } else {
+                    final String defaultPath = core.getProfileFileSystem("DirectorOfStudies").get("/Emplois").getBaseFile("vrfs").getPath();
+                    t = core.getOrCreateAppPropertyValue(academicPlanningPluginPlanningRoot, null, defaultPath);
+                    return core.getRootFileSystem().get(StringUtils.nonNull(t));
                 }
-
-            });
-            return core.getFileSystem().get(StringUtils.nonNull(t));
-        }
+            }
+        });
     }
 
 
     public Set<Integer> retainStudentsWithPublicCalendars(Set<Integer> studentIds) {
-        Set<Integer> all=new HashSet<>();
+        Set<Integer> all = new HashSet<>();
         SetValueMap<String, Integer> nameMapping = new SetValueMap<>();
         for (Integer studentId : studentIds) {
             AcademicStudent student = academicPlugin.findStudent(studentId);
@@ -314,17 +313,17 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
             try {
 
                 try {
-                    FETXmlParser parser=new FETXmlParser(p,"Subgroup","Formation Ingénieur");
+                    FETXmlParser parser = new FETXmlParser(p, "Subgroup", "Formation Ingénieur");
                     CalendarWeekParser week;
                     try {
-                        int counter=0;
+                        int counter = 0;
                         while ((week = parser.next()) != null) {
                             if (nameMapping.containsKey(week.getName().trim().toLowerCase().trim())) {
                                 counter++;
                                 list.add(week.parse("Class-" + counter));
                             }
                         }
-                    }finally{
+                    } finally {
                         parser.close();
                     }
                 } catch (Exception e) {
@@ -352,17 +351,17 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
         VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
         if (p != null && p.exists()) {
             try {
-                FETXmlParser parser=new FETXmlParser(p,"Subgroup","Formation Ingénieur");
+                FETXmlParser parser = new FETXmlParser(p, "Subgroup", "Formation Ingénieur");
                 CalendarWeekParser week;
                 try {
-                    int counter=0;
+                    int counter = 0;
                     while ((week = parser.next()) != null) {
                         if (uniformClassName.equals(week.getName().trim().toLowerCase().trim())) {
                             counter++;
                             return week.parse("Class-" + counter);
                         }
                     }
-                }finally{
+                } finally {
                     parser.close();
                 }
             } catch (Exception e) {
@@ -391,7 +390,7 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
                 String n1 = StringUtils.nonNull(o1.getName());
                 String n2 = StringUtils.nonNull(o2.getName());
                 int i = n1.compareTo(n2);
-                if(i!=0){
+                if (i != 0) {
                     return i;
                 }
                 return StringUtils.nonNull(o1.getId()).compareTo(StringUtils.nonNull(o2.getId()));
@@ -408,15 +407,15 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
         VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
         if (p != null && p.exists()) {
             try {
-                FETXmlParser parser=new FETXmlParser(p,"Subgroup","Formation Ingénieur");
+                FETXmlParser parser = new FETXmlParser(p, "Subgroup", "Formation Ingénieur");
                 CalendarWeekParser week;
                 try {
-                    int counter=0;
+                    int counter = 0;
                     while ((week = parser.next()) != null) {
                         String tn = week.getName().trim().toLowerCase();
-                        all.add(new NamedId(tn,week.getName()));
+                        all.add(new NamedId(tn, week.getName()));
                     }
-                }finally{
+                } finally {
                     parser.close();
                 }
             } catch (Exception e) {
@@ -428,20 +427,20 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
 
     @Override
     public List<CalendarWeek> findCalendars(String type, String key) {
-        if("class-calendar".equals(type)){
+        if ("class-calendar".equals(type)) {
             CalendarWeek calendarWeek = loadClassPlanning(key);
-            if(calendarWeek !=null){
+            if (calendarWeek != null) {
                 return Arrays.asList(calendarWeek);
             }
         }
-        if("teacher-calendar".equals(type)){
+        if ("teacher-calendar".equals(type)) {
             CalendarWeek calendarWeek = loadTeacherPlanning(Integer.parseInt(key));
-            if(calendarWeek !=null){
+            if (calendarWeek != null) {
                 return Arrays.asList(calendarWeek);
             }
         }
-        if("student-calendar".equals(type)){
-            return  loadStudentPlanningList(Integer.parseInt(key));
+        if ("student-calendar".equals(type)) {
+            return loadStudentPlanningList(Integer.parseInt(key));
         }
         return Collections.EMPTY_LIST;
     }

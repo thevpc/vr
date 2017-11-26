@@ -112,7 +112,7 @@ and open the template in the editor.
                     </div>
                     <!-- /.col -->
                     <div class="col-md-9">
-                        <ui:fragment rendered="#{mailboxCtrl.model.mode.toString() eq 'LIST'}">
+                        <ui:fragment rendered="#{mailboxCtrl.model.mode.toString() eq 'READ'}">
                             <div class="box box-primary">
 
                                 <div class="box-header with-border">
@@ -458,7 +458,7 @@ and open the template in the editor.
                             <!-- /.box-footer -->
                         </ui:fragment>
 
-                        <ui:fragment rendered="#{mailboxCtrl.model.mode.toString() eq 'NEW'}">
+                        <ui:fragment rendered="#{mailboxCtrl.model.mode.toString() eq 'PERSIST'}">
                             <div class="box box-primary">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Nouveau Message</h3>
