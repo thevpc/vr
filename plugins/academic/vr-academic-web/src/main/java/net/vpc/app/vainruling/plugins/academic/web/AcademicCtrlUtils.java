@@ -71,7 +71,6 @@ public class AcademicCtrlUtils {
     public static VFile getTeacherAbsoluteFile(int id, String path) {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = ap.findTeacher(id);
-        CorePlugin fs = VrApp.getBean(CorePlugin.class);
         if (t != null && t.getUser() != null) {
             return VrApp.getBean(Vr.class).getUserAbsoluteFile(t.getId(),path);
         }

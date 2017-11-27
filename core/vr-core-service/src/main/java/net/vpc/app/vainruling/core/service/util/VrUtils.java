@@ -8,6 +8,8 @@ package net.vpc.app.vainruling.core.service.util;
 import com.google.gson.Gson;
 import jdk.nashorn.api.scripting.JSObject;
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
 import net.vpc.common.io.IOUtils;
@@ -975,6 +977,47 @@ public class VrUtils {
             return n.compareTo(o.n);
         }
 
+    }
+
+
+    public static VFile getUserAbsoluteFile(int id, String... path) {
+        VFile[] p = getUserAbsoluteFiles(id, path);
+        if (p.length == 0) {
+            return null;
+        }
+        return p[0];
+    }
+
+    public static VFile[] getUserAbsoluteFiles(int id, String[] path) {
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        AppUser t = core.findUser(id);
+        List<VFile> files = new ArrayList<VFile>();
+        if (t != null) {
+            VFile userFolder = core.getUserFolder(t.getLogin());
+            for (String p : path) {
+                VFile ff = userFolder.get(p);
+                if (ff.exists()) {
+                    files.add(ff);
+                }
+            }
+            if (t.getType() != null) {
+                VFile userTypeFolder = core.getUserTypeFolder(t.getType().getId());
+                for (String p : path) {
+                    VFile ff = userTypeFolder.get(p);
+                    if (ff.exists()) {
+                        files.add(ff);
+                    }
+                }
+            }
+        }
+        VFile userSharedFolder = core.getUserSharedFolder();
+        for (String p : path) {
+            VFile ff = userSharedFolder.get(p);
+            if (ff.exists()) {
+                files.add(ff);
+            }
+        }
+        return files.toArray(new VFile[files.size()]);
     }
 
 

@@ -4588,6 +4588,59 @@ public class CorePlugin {
         return new MirroredPath(getRootFileSystem().get(tempPath), file);
     }
 
+
+    public String getCurrentUserPhoto() {
+        UserSession s = getCurrentSession();
+        if (s != null && s.getUser() != null) {
+            return getUserPhoto(s.getUser().getId());
+        }
+        return null;
+    }
+
+    public String getUnknownUserPhoto() {
+        return getUserPhoto(-1);
+    }
+
+    public String getUserPhoto(int id) {
+        return UPA.getContext().invokePrivileged(new Action<String>() {
+            @Override
+            public String run() {
+                AppUser t = findUser(id);
+                AppContact c = t == null ? null : t.getContact();
+                boolean female = false;
+                if (c != null) {
+                    AppGender g = c.getGender();
+                    if (g != null) {
+                        if ("F".equals(g.getCode())) {
+                            female = true;
+                        }
+                    }
+                }
+                List<String> paths = new ArrayList<String>();
+                for (String p : new String[]{"Config/photo.png", "Config/photo.jpg", "Config/photo.gif"}) {
+                    paths.add(p);
+                }
+                if (female) {
+                    for (String p : new String[]{"Config/photo-women.png", "Config/photo-women.jpg", "Config/photo-women.gif"}) {
+                        paths.add(p);
+                    }
+                } else {
+                    for (String p : new String[]{"Config/photo-men.png", "Config/photo-men.jpg", "Config/photo-men.gif"}) {
+                        paths.add(p);
+                    }
+                }
+                VFile file = VrUtils.getUserAbsoluteFile(t == null ? -1 : t.getId(), paths.toArray(new String[paths.size()]));
+
+                String photo = (file == null) ? null : (file.getPath());
+                if (photo == null) {
+                    return "theme-context://images/person.png";
+                }
+                return photo;
+            }
+        });
+
+    }
+
     private static class InitData {
 
         long now;

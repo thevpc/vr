@@ -8,7 +8,9 @@ package net.vpc.app.vainruling.core.web;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.*;
-import net.vpc.app.vainruling.core.service.model.*;
+import net.vpc.app.vainruling.core.service.model.AppProperty;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.AppUserType;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
@@ -68,7 +70,7 @@ import java.util.regex.Pattern;
 @VrController
 @Scope(value = "singleton")
 public class Vr {
-    public static final Object NullSelected=new Object();
+    public static final Object NullSelected = new Object();
 
     public static final Map<String, String> extensionsToCss = new HashMap<String, String>();
     public static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.00");
@@ -305,7 +307,7 @@ public class Vr {
     }
 
     public List<ContentPath> findImageAttachments(List<ContentPath> paths) {
-        List<ContentPath> filtered=new ArrayList<>();
+        List<ContentPath> filtered = new ArrayList<>();
         if (paths != null) {
             LinkedHashSet<String> all = new LinkedHashSet<>();
             for (ContentPath path : paths) {
@@ -315,9 +317,9 @@ public class Vr {
                     }
                 }
             }
-            HashSet<String> ok=new HashSet<>(findValidImages(all.toArray(new String[all.size()])));
+            HashSet<String> ok = new HashSet<>(findValidImages(all.toArray(new String[all.size()])));
             for (ContentPath path : paths) {
-                if (path != null && ok.contains(path.getPath())){
+                if (path != null && ok.contains(path.getPath())) {
                     filtered.add(path);
                 }
             }
@@ -326,7 +328,7 @@ public class Vr {
     }
 
     public List<ContentPath> findNonImageAttachments(List<ContentPath> paths) {
-        List<ContentPath> filtered=new ArrayList<>();
+        List<ContentPath> filtered = new ArrayList<>();
         if (paths != null) {
             LinkedHashSet<String> all = new LinkedHashSet<>();
             for (ContentPath path : paths) {
@@ -336,9 +338,9 @@ public class Vr {
                     }
                 }
             }
-            HashSet<String> ok=new HashSet<>(findNonImages(all.toArray(new String[all.size()])));
+            HashSet<String> ok = new HashSet<>(findNonImages(all.toArray(new String[all.size()])));
             for (ContentPath path : paths) {
-                if (path != null && ok.contains(path.getPath())){
+                if (path != null && ok.contains(path.getPath())) {
                     filtered.add(path);
                 }
             }
@@ -347,70 +349,71 @@ public class Vr {
     }
 
     public List<String> findValidImages(String... paths) {
-        return findValidFiles("**.(png|jpg|jpeg|gif)", true,paths);
+        return findValidFiles("**.(png|jpg|jpeg|gif)", true, paths);
     }
 
     public List<String> findNonImages(String... paths) {
-        return findValidFiles("**.(png|jpg|jpeg|gif)", false,paths);
+        return findValidFiles("**.(png|jpg|jpeg|gif)", false, paths);
     }
 
-    public List<String> findValidFiles(String expression,boolean positive, String... paths) {
-        VirtualFileSystem fs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
+    public List<String> findValidFiles(String expression, boolean positive, String... paths) {
+        return UPA.getContext().invokePrivileged(new Action<List<String>>() {
             @Override
-            public VirtualFileSystem run() {
-                return core.getRootFileSystem();
-            }
-        });
-        LinkedHashSet<String> all = new LinkedHashSet<>();
-        Pattern patternObj = Pattern.compile(StringUtils.wildcardToRegex(expression, '/'), Pattern.CASE_INSENSITIVE);
-        VFileFilter filter = new VFileFilter() {
-            @Override
-            public boolean accept(VFile pathname) {
-                return pathname.isDirectory() || (positive==patternObj.matcher(pathname.getPath()).matches());
-            }
-        };
-        for (String path : paths) {
-            if (positive==(patternObj.matcher(path).matches())) {
-                if (!all.contains(path)) {
-                    all.add(path);
-                }
-            } else {
-                String urlProtocol = IOUtils.getUrlProtocol(path);
-                if (urlProtocol == null) {
-                    //ok;
-                } else if (urlProtocol.equals("file")) {
-                    path = IOUtils.getUrlFile(path);
-                }else{
-                    continue;
-                }
-                VFile vFile = fs.get(path);
-                if (vFile != null) {
-                    if (vFile.isFile()) {
-                        //check match
-                        if (filter.accept(vFile)) {
-                            String p = vFile.getPath();
-                            if (!all.contains(p)) {
-                                all.add(p);
-                            }
+            public List<String> run() {
+                VirtualFileSystem fs = core.getRootFileSystem();
+                LinkedHashSet<String> all = new LinkedHashSet<>();
+                Pattern patternObj = Pattern.compile(StringUtils.wildcardToRegex(expression, '/'), Pattern.CASE_INSENSITIVE);
+                VFileFilter filter = new VFileFilter() {
+                    @Override
+                    public boolean accept(VFile pathname) {
+                        return pathname.isDirectory() || (positive == patternObj.matcher(pathname.getPath()).matches());
+                    }
+                };
+                for (String path : paths) {
+                    if (positive == (patternObj.matcher(path).matches())) {
+                        if (!all.contains(path)) {
+                            all.add(path);
                         }
-                    } else if (vFile.isDirectory()) {
-                        vFile.visit(new VFileVisitor() {
-                            @Override
-                            public boolean visit(VFile pathname) {
-                                if (pathname.isFile()) {
-                                    String p = pathname.getPath();
+                    } else {
+                        String urlProtocol = IOUtils.getUrlProtocol(path);
+                        if (urlProtocol == null) {
+                            //ok;
+                        } else if (urlProtocol.equals("file")) {
+                            path = IOUtils.getUrlFile(path);
+                        } else {
+                            continue;
+                        }
+                        VFile vFile = fs.get(path);
+                        if (vFile != null) {
+                            if (vFile.isFile()) {
+                                //check match
+                                if (filter.accept(vFile)) {
+                                    String p = vFile.getPath();
                                     if (!all.contains(p)) {
                                         all.add(p);
                                     }
                                 }
-                                return true;
+                            } else if (vFile.isDirectory()) {
+                                vFile.visit(new VFileVisitor() {
+                                    @Override
+                                    public boolean visit(VFile pathname) {
+                                        if (pathname.isFile()) {
+                                            String p = pathname.getPath();
+                                            if (!all.contains(p)) {
+                                                all.add(p);
+                                            }
+                                        }
+                                        return true;
+                                    }
+                                }, filter);
                             }
-                        }, filter);
+                        }
                     }
                 }
+                return new ArrayList<>(all);
             }
-        }
-        return new ArrayList<>(all);
+        });
+
     }
 
     public boolean isFSPath(String path) {
@@ -523,6 +526,7 @@ public class Vr {
         }
         return ret;
     }
+
     public List<String> fsurlList(List<String> paths) {
         List<String> ret = new ArrayList<>(paths.size());
         for (String path : paths) {
@@ -551,7 +555,7 @@ public class Vr {
         if (path.startsWith("article://")) {
             String s = path.substring("article://".length());
             if (!s.startsWith("/")) {
-                s = "/p/news?a={id="+s+"}";
+                s = "/p/news?a={id=" + s + "}";
             }
             return getContext() + s;
         }
@@ -591,14 +595,14 @@ public class Vr {
         if (StringUtils.isEmpty(path)) {
             return "";
         }
-        path=path.trim();
+        path = path.trim();
         if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("ftp://")) {
             return path;
         }
-        if(path.contains("://")){
+        if (path.contains("://")) {
             return path;
         }
-        return "http://"+path;
+        return "http://" + path;
     }
 
     /**
@@ -869,7 +873,7 @@ public class Vr {
 
     public String getFullContext() {
         FacesContext currentInstance = FacesContext.getCurrentInstance();
-        if(currentInstance==null){
+        if (currentInstance == null) {
             return null;
         }
         HttpServletRequest req = (HttpServletRequest) currentInstance.getExternalContext().getRequest();
@@ -882,7 +886,7 @@ public class Vr {
 
     public String getContext() {
         FacesContext currentInstance = FacesContext.getCurrentInstance();
-        if(currentInstance==null){
+        if (currentInstance == null) {
             return null;
         }
         HttpServletRequest req = (HttpServletRequest) currentInstance.getExternalContext().getRequest();
@@ -891,7 +895,7 @@ public class Vr {
 
     public String getCurrentRequestURI() {
         FacesContext currentInstance = FacesContext.getCurrentInstance();
-        if(currentInstance==null){
+        if (currentInstance == null) {
             return null;
         }
         HttpServletRequest req = (HttpServletRequest) currentInstance.getExternalContext().getRequest();
@@ -911,7 +915,7 @@ public class Vr {
 
     public String getThemeContext() {
         FacesContext currentInstance = FacesContext.getCurrentInstance();
-        if(currentInstance==null){
+        if (currentInstance == null) {
             return null;
         }
         HttpServletRequest req = (HttpServletRequest) currentInstance.getExternalContext().getRequest();
@@ -971,7 +975,7 @@ public class Vr {
     }
 
     public String gotoHome() {
-        return gotoPage("welcome","");
+        return gotoPage("welcome", "");
     }
 
     public String gotoPage(String command, String arguments) {
@@ -1075,7 +1079,7 @@ public class Vr {
         if (property != null) {
             return property.getPropertyValue();
         }
-        return "$$"+name;
+        return "$$" + name;
     }
 
     public int getPollInterval() {
@@ -1140,7 +1144,7 @@ public class Vr {
                 TaskTextService s = (TaskTextService) c.getBean(n);
                 return taskTextService = s;
             }
-            return taskTextService= new DummyTaskTextService();
+            return taskTextService = new DummyTaskTextService();
         }
         return taskTextService;
     }
@@ -1152,55 +1156,21 @@ public class Vr {
                 MessageTextService s = (MessageTextService) c.getBean(n);
                 return messageTextService = s;
             }
-            return messageTextService= new DummyMessageTextService();
+            return messageTextService = new DummyMessageTextService();
         }
         return messageTextService;
     }
 
     public String getCurrentUserPhoto() {
-        UserSession s = getCurrentSession();
-        if (s != null && s.getUser() != null) {
-            return getUserPhoto(s.getUser().getId());
-        }
-        return null;
+        return core.getCurrentUserPhoto();
     }
 
-    public String getUnknownUserPhoto(String login) {
-        return getUserPhoto(-1);
+    public String getUnknownUserPhoto() {
+        return core.getUnknownUserPhoto();
     }
 
     public String getUserPhoto(int id) {
-        AppUser t = core.findUser(id);
-        AppContact c = t == null ? null : t.getContact();
-        boolean female = false;
-        if (c != null) {
-            AppGender g = c.getGender();
-            if (g != null) {
-                if ("F".equals(g.getCode())) {
-                    female = true;
-                }
-            }
-        }
-        List<String> paths = new ArrayList<String>();
-        for (String p : new String[]{"Config/photo.png", "Config/photo.jpg", "Config/photo.gif"}) {
-            paths.add(p);
-        }
-        if (female) {
-            for (String p : new String[]{"Config/photo-women.png", "Config/photo-women.jpg", "Config/photo-women.gif"}) {
-                paths.add(p);
-            }
-        } else {
-            for (String p : new String[]{"Config/photo-men.png", "Config/photo-men.jpg", "Config/photo-men.gif"}) {
-                paths.add(p);
-            }
-        }
-        VFile file = getUserAbsoluteFile(t == null ? -1 : t.getId(), paths.toArray(new String[paths.size()]));
-
-        String photo = (file == null) ? null : (file.getPath());
-        if (photo == null) {
-            return "theme-context://images/person.png";
-        }
-        return photo;
+        return core.getUserPhoto(id);
     }
 
     public String getUserPhotoFullURL(int id) {
@@ -1243,42 +1213,11 @@ public class Vr {
     }
 
     public VFile getUserAbsoluteFile(int id, String... path) {
-        VFile[] p = getUserAbsoluteFiles(id, path);
-        if (p.length == 0) {
-            return null;
-        }
-        return p[0];
+        return VrUtils.getUserAbsoluteFile(id, path);
     }
 
     public VFile[] getUserAbsoluteFiles(int id, String[] path) {
-        AppUser t = core.findUser(id);
-        List<VFile> files = new ArrayList<VFile>();
-        if (t != null) {
-            VFile userFolder = core.getUserFolder(t.getLogin());
-            for (String p : path) {
-                VFile ff = userFolder.get(p);
-                if (ff.exists()) {
-                    files.add(ff);
-                }
-            }
-            if (t.getType() != null) {
-                VFile userTypeFolder = core.getUserTypeFolder(t.getType().getId());
-                for (String p : path) {
-                    VFile ff = userTypeFolder.get(p);
-                    if (ff.exists()) {
-                        files.add(ff);
-                    }
-                }
-            }
-        }
-        VFile userSharedFolder = core.getUserSharedFolder();
-        for (String p : path) {
-            VFile ff = userSharedFolder.get(p);
-            if (ff.exists()) {
-                files.add(ff);
-            }
-        }
-        return files.toArray(new VFile[files.size()]);
+        return VrUtils.getUserAbsoluteFiles(id, path);
     }
 
     public List<StrLabel> extractLabels(String expr) {
@@ -1640,16 +1579,16 @@ public class Vr {
         return labels.toArray(new String[labels.size()]);
     }
 
-    public List<SelectItem> entitySelectItems(String entityName,boolean selectNone,boolean selectNull){
+    public List<SelectItem> entitySelectItems(String entityName, boolean selectNone, boolean selectNull) {
         //should cache this?
         List<SelectItem> list = new ArrayList<>();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(entityName);
-        if(selectNone){
+        if (selectNone) {
             list.add(new SelectItem("", "Non Spécifié"));
         }
-        if(selectNull){
-            list.add(new SelectItem(NULL_VALUE_STR,"--Valeur Nulle--"));
+        if (selectNull) {
+            list.add(new SelectItem(NULL_VALUE_STR, "--Valeur Nulle--"));
         }
         for (Object x : pu.findAll(entityName)) {
             String name = e.getMainFieldValue(x);
@@ -1659,38 +1598,38 @@ public class Vr {
         return list;
     }
 
-    public Converter entityObjConverter(String entityName){
+    public Converter entityObjConverter(String entityName) {
         return new EntityConverter(entityName);
     }
 
-    public String fileExtensionPattern(String extensions){
-        HashSet<String> all=new HashSet<>();
-        if(StringUtils.isEmpty(extensions)){
+    public String fileExtensionPattern(String extensions) {
+        HashSet<String> all = new HashSet<>();
+        if (StringUtils.isEmpty(extensions)) {
             return "";
         }
         for (String s : extensions.split("[ ,|]")) {
-            if(!StringUtils.isEmpty(s)){
+            if (!StringUtils.isEmpty(s)) {
                 all.add(s);
             }
         }
-        if(all.isEmpty()){
+        if (all.isEmpty()) {
             return "";
         }
-        StringBuilder sb=new StringBuilder("/(\\.|\\/)(");
+        StringBuilder sb = new StringBuilder("/(\\.|\\/)(");
 
         String[] ext = all.toArray(new String[all.size()]);
         for (int i = 0; i < ext.length; i++) {
-         if(i>0){
-             sb.append("|");
-         }
-         sb.append(ext[i]);
+            if (i > 0) {
+                sb.append("|");
+            }
+            sb.append(ext[i]);
         }
         sb.append(")$/");
         return sb.toString();
     }
 
     public void openUploadDialog(DocumentsUploadDialogCtrl.Config config, DocumentUploadListener listener) {
-        VrApp.getBean(DocumentsUploadDialogCtrl.class).openCustomDialog(config,listener);
+        VrApp.getBean(DocumentsUploadDialogCtrl.class).openCustomDialog(config, listener);
     }
 
 
