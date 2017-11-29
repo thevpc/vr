@@ -11,6 +11,10 @@ public class HttpPlatformSession implements PlatformSession {
         this.session = session;
     }
 
+    public HttpSession unwrap(){
+        return session;
+    }
+
     public boolean isValid(){
         try {
             session.getLastAccessedTime();

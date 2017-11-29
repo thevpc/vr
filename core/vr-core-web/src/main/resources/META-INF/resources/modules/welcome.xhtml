@@ -110,7 +110,7 @@ and open the template in the editor.
                                                                     <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('important',a.articlesItem.id)}">
                                                                         <p:commandLink action="#{vr.cmsTextService.onAction('important',a.articlesItem.id)}" update=":itemForm">
                                                                         <button type="button" class="btn btn-box-tool">
-                                                                            <i class="fa #{a.articlesItem.important ? 'fa-bookmark':'fa-bookmark-o'}"></i>
+                                                                            <i class="fa #{a.articlesItem.important ? 'fa-bookmark':'fa-bookmark-o'}" style="#{a.articlesItem.important ? 'color: #dd4b39;':''}"></i>
                                                                         </button>
                                                                         </p:commandLink>
                                                                     </ui:fragment>

@@ -3008,6 +3008,10 @@ public class CorePlugin {
         return null;
     }
 
+    public VirtualFileSystem getMyHomeFileSystem() {
+        return getUserHomeFileSystem(getCurrentUserLogin());
+    }
+
     public VirtualFileSystem getUserHomeFileSystem(final String login) {
         VrUtils.requireAdminOrUser(login);
         VFile home = getUserFolder(login);
@@ -4046,7 +4050,7 @@ public class CorePlugin {
         return getSessionsTracker().getUserSession(sessionId) != null;
     }
 
-    private ActiveSessionsTracker getSessionsTracker() {
+    public ActiveSessionsTracker getSessionsTracker() {
         return sessions;
     }
 

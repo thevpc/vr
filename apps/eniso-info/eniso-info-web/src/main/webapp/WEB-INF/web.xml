@@ -26,6 +26,16 @@
         <param-value>net.vpc.app.vainruling.core.web.util.VrWebContextSwitch</param-value>
     </context-param>
 
+    <filter>
+        <filter-name>TokenFilter</filter-name>
+        <filter-class>net.vpc.app.vainruling.core.web.ws.TokenFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>TokenFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+
     <listener>
         <listener-class>net.vpc.upa.web.UPAServletContextListener</listener-class>
     </listener>
@@ -78,6 +88,7 @@
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+
 
     <filter>
         <filter-name>security</filter-name>

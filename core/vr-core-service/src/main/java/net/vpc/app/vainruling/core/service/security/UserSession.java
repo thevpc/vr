@@ -252,9 +252,9 @@ public class UserSession implements Serializable,Cloneable {
 //        this.componentsTheme = componentsTheme;
 //    }
 
-//    public PlatformSession getPlatformSession() {
-//        return platformSession;
-//    }
+    public PlatformSession resolvePlatformSession() {
+        return platformSession;
+    }
 
     public void setPlatformSession(PlatformSession platformSession) {
         this.platformSession = platformSession;

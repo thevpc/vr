@@ -13,7 +13,7 @@ import net.vpc.upa.config.*;
  *
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "name")
+@Entity(listOrder = "index, name")
 @Path("Education/Config")
 public class AcademicSemester {
 
@@ -22,6 +22,7 @@ public class AcademicSemester {
     @Sequence
 
     private int id;
+    private int index;
     private String code;
     @Main
     private String name;
@@ -65,6 +66,14 @@ public class AcademicSemester {
 
     public void setName2(String name2) {
         this.name2 = name2;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     @Override
