@@ -61,7 +61,8 @@ class VrLocalMailAgent implements GoMailAgent {
             ms.setToProfiles(email.getProperties().getProperty(MailboxPlugin.HEADER_TO_PROFILES));
             ms.setCcProfiles(email.getProperties().getProperty(MailboxPlugin.HEADER_CC_PROFILES));
             ms.setBccProfiles(email.getProperties().getProperty(MailboxPlugin.HEADER_BCC_PROFILES));
-            ms.setSender(email.from() == null ? null : email.from().contains("$") ? UserSession.getCurrentUser() : VrApp.getBean(CorePlugin.class).findUser(email.from()));
+            CorePlugin core = CorePlugin.get();
+            ms.setSender(email.from() == null ? null : email.from().contains("$") ? core.getCurrentUser() : core.findUser(email.from()));
             ms.setCategory(email.getProperties().getProperty(MailboxPlugin.HEADER_CATEGORY));
             ms.setSendTime(new DateTime());
             ms.setThreadId(threadId);

@@ -14,6 +14,8 @@ import net.vpc.app.vainruling.core.service.plugins.InstallDemo;
 import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.plugins.tasks.service.model.*;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.common.util.Utils;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
@@ -57,7 +59,7 @@ public class TaskPlugin {
         List<AppProfile> up = null;
         if (!session.allowed("TASK_VIEW_ALL")) {
             if (user == null) {
-                user = session.getUser() == null ? null : session.getUser().getId();
+                user = core.getCurrentUserId();
             } else {
                 //error
                 //user = session.getUser().getId();
@@ -100,10 +102,10 @@ public class TaskPlugin {
         HashSet<Integer> fnd = null;
         if (!session.allowed("TASK_VIEW_ALL")) {
             if (user == null) {
-                user = session.getUser().getId();
+                user = core.getCurrentUserId();
             } else {
                 //error
-                user = session.getUser().getId();
+                user = core.getCurrentUserId();
             }
         }
 
@@ -198,9 +200,8 @@ public class TaskPlugin {
         Todo t = pu.findById(Todo.class, todoId);
         if (t != null) {
             if (!t.isDeleted()) {
-                UserSession session = core.getCurrentSession();
                 t.setDeleted(true);
-                t.setDeletedBy(session.getUser().getLogin());
+                t.setDeletedBy(core.getCurrentUserLogin());
                 t.setDeletedOn(new Timestamp(System.currentTimeMillis()));
                 pu.merge(t);
                 trace.softremoved(Todo.class.getSimpleName(), pu.findById(Todo.class, todoId), e.getParent().getPath(), Level.FINE);
@@ -275,8 +276,7 @@ public class TaskPlugin {
     public void saveTodo(Todo t) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (t.getId() == 0) {
-            UserSession session = core.getCurrentSession();
-            t.setInitiator(session.getUser());
+            t.setInitiator(core.getCurrentUser());
             t.setCreationTime(new Timestamp(System.currentTimeMillis()));
             t.setStatus(findStartStatus(t.getList().getId()));
             pu.persist(t);
@@ -354,7 +354,7 @@ public class TaskPlugin {
         }
         if (!session.allowed("TASK_VIEW_ALL")) {
             q.append(" and a.responsibleId=:i");
-            params.put("i", session.getUser()==null?-1:session.getUser().getId());
+            params.put("i", Convert.toInt(core.getCurrentUser(), IntegerParserConfig.LENIENT_F));
         } else {
             if (responsible != null) {
                 q.append(" and a.responsibleId=:i");
@@ -382,7 +382,7 @@ public class TaskPlugin {
         }
         if (!session.allowed("TASK_VIEW_ALL")) {
             q.append(" and a.initiatorId=:i");
-            params.put("i", session.getUser().getId());
+            params.put("i", Convert.toInt(core.getCurrentUserId(),IntegerParserConfig.LENIENT_F));
         } else {
             if (initiator != null) {
                 q.append(" and a.initiatorId=:i");

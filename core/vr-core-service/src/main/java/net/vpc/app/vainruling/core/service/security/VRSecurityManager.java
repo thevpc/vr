@@ -103,8 +103,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
 
     @Override
     public UserPrincipal getUserPrincipal() throws UPAException {
-        UserSession sm = UserSession.get();
-        AppUser user = (sm == null) ? null : sm.getUser();
+        AppUser user = CorePlugin.get().getCurrentUser();
         return new DefaultUserPrincipal(user == null ? "anonymous" : user.getLogin(), user);
     }
 

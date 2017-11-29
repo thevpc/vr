@@ -303,7 +303,7 @@
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <img src="#{vr.url(vr.currentUserPhoto)}"
                                          class="user-image" alt="User Image"/>
-                                    <span class="hidden-xs">#{vr.currentSession.user.contact.fullName}</span>
+                                    <span class="hidden-xs">#{vr.currentSession.fullName}</span>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <!-- User image -->
@@ -312,8 +312,8 @@
                                              class="img-circle" alt="User Image"/>
 
                                         <p>
-                                            #{vr.currentSession.user.contact.fullName} - #{vr.currentSession.user.contact.positionTitle1}
-                                            <small>Member since #{vr.date(vr.currentSession.user.contact.creationDate,"MMM yyyy")}</small>
+                                            #{vr.currentSession.fullName} - #{corePlugin.currentUser.contact.positionTitle1}
+                                            <small>Member since #{vr.date(corePlugin.currentUser.contact.creationDate,"MMM yyyy")}</small>
                                         </p>
                                     </li>
                                     <!-- Menu Body -->
@@ -372,7 +372,7 @@
                         <img src="#{vr.url(vr.currentUserPhoto)}" class="img-circle" alt="User Image"/>
                     </div>
                     <div class="pull-left info">
-                        <p>#{vr.currentSession.user.contact.fullName}</p>
+                        <p>#{corePlugin.currentUser.contact.fullName}</p>
                         <a href="#"><i class="fa fa-circle text-success"></i> En Ligne</a>
                     </div>
                 </div>
@@ -392,8 +392,8 @@
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <h:form id="sidebarMenuForm">
                     <ul class="sidebar-menu">
-                        <ui:fragment render="#{!vr.isEmpty(vr.currentSession.user.department.name)}">
-                            <li class="header">Depatement #{vr.currentSession.user.department.name}</li>
+                        <ui:fragment render="#{!vr.isEmpty(corePlugin.currentUser.department.name)}">
+                            <li class="header">Depatement #{corePlugin.currentUser.department.name}</li>
                         </ui:fragment>
                         <h:inputHidden value="#{vr.buildMenu()}"/>
                         <ui:repeat value="#{vr.menu.resolveGroups()}" var="p0">

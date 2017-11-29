@@ -221,11 +221,10 @@ public class TeacherStatFeedbackCtrl {
     }
 
     public int getSelectedOwnerDepartmentId() {
-        UserSession sm = core.getCurrentSession();
         if (core.isCurrentSessionAdmin()) {
             return -1;
         }
-        AppUser user = (sm == null) ? null : sm.getUser();
+        AppUser user = core.getCurrentUser();
         if (user == null || user.getDepartment() == null) {
             return 99999;
         }

@@ -216,7 +216,7 @@ public class ArticlesCtrl implements CmsTextService {
 
     @Override
     public boolean isEnabledAction(String action,int id) {
-        AppUser currentUser = UserSession.getCurrentUser();
+        AppUser currentUser = core.getCurrentUser();
         if(currentUser!=null){
             CorePlugin core = CorePlugin.get();
             ArticlesItem a = core.findArticle(id);

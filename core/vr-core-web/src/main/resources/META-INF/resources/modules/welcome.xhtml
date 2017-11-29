@@ -220,9 +220,9 @@ and open the template in the editor.
                                 <img class="profile-user-img img-responsive img-circle"
                                      src="#{vr.url(vr.currentUserPhoto)}" alt="User profile picture"/>
 
-                                <h3 class="profile-username text-center">#{vr.currentSession.user==null?'anonymous' : vr.currentSession.user.contact.fullName}</h3>
+                                <h3 class="profile-username text-center">#{corePlugin.currentUser==null?'anonymous' : corePlugin.currentUser.contact.fullName}</h3>
 
-                                <p class="text-muted text-center">#{vr.currentSession.user==null?'anonymous' : vr.currentSession.user.contact.positionSuffix}</p>
+                                <p class="text-muted text-center">#{corePlugin.currentUser==null?'anonymous' : corePlugin.currentUser.contact.positionSuffix}</p>
 
                                 <ul class="list-group list-group-unbordered">
                                     <li class="list-group-item">
@@ -238,11 +238,11 @@ and open the template in the editor.
                                     </ui:fragment>
                                     <li class="list-group-item">
                                         <b>Connexions</b> <a
-                                            class="pull-right">#{vr.currentSession.user==null?'N/A' : vr.currentSession.user.connexionCount}</a>
+                                            class="pull-right">#{corePlugin.currentUser==null?'N/A' : corePlugin.currentUser.connexionCount}</a>
                                     </li>
                                     <li class="list-group-item">
                                         <b>Dernier Accès</b> <a
-                                            class="pull-right">#{vr.currentSession.user==null?'anonymous' : vr.date(vr.currentSession.user.lastConnexionDate)}</a>
+                                            class="pull-right">#{corePlugin.currentUser==null?'anonymous' : vr.date(corePlugin.currentUser.lastConnexionDate)}</a>
                                     </li>
                                 </ul>
 

@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.mailbox.web;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.ContentPath;
 import net.vpc.app.vainruling.core.service.content.ContentText;
@@ -50,7 +51,7 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
     public void onRefresh() {
         if(true) return; //TODO FIX ME!!!!
         MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
-        AppUser user = UserSession.getCurrentUser();
+        AppUser user = CorePlugin.get().getCurrentUser();
         MailboxPreviewModel model = getModel();
         if (user != null) {
             int userId = user.getId();

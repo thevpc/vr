@@ -20,6 +20,6 @@ public class SamplePlugin {
     }
 
     public String getMySampleHelloWorldServiceMethod(){
-        return "Hello "+core.getCurrentUser().getLogin();
+        return "Hello "+core.getCurrentUserLogin();
     }
 }

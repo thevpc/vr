@@ -80,25 +80,28 @@ public class VrWebHelper {
     public static void prepareUserSession() {
 
         UserSession s = UserSession.get();
-        if (s != null && s.getUser() != null) {
-            s.setTheme(Vr.get().getUserTheme(s.getUser().getLogin()).getId());
-        } else {
-            s.setTheme(Vr.get().getAppTheme().getId());
-        }
-        HttpServletRequest req = getHttpServletRequest();
-        if (s.getSessionId() == null) {
-            HttpSession session = req.getSession(true); // true == allow create
-            s.setSessionId(session.getId());
-        }
-        if (s.getLocale() == null) {
-            s.setLocale(req.getLocale());
-        }
-        if (s.getClientIpAddress() == null) {
-            String ipAddress = req.getHeader("X-FORWARDED-FOR");
-            if (ipAddress == null) {
-                ipAddress = req.getRemoteAddr();
+        AppUser u = CorePlugin.get().getCurrentUser();
+        if (s != null) {
+            if(u != null) {
+                s.setTheme(Vr.get().getUserTheme(u.getLogin()).getId());
+            }else{
+                s.setTheme(Vr.get().getAppTheme().getId());
             }
-            s.setClientIpAddress(ipAddress);
+            HttpServletRequest req = getHttpServletRequest();
+            if (s.getSessionId() == null) {
+                HttpSession session = req.getSession(true); // true == allow create
+                s.setSessionId(session.getId());
+            }
+            if (s.getLocale() == null) {
+                s.setLocale(req.getLocale());
+            }
+            if (s.getClientIpAddress() == null) {
+                String ipAddress = req.getHeader("X-FORWARDED-FOR");
+                if (ipAddress == null) {
+                    ipAddress = req.getRemoteAddr();
+                }
+                s.setClientIpAddress(ipAddress);
+            }
         }
     }
 
@@ -158,9 +161,7 @@ public class VrWebHelper {
 
         String path="";
         if(userhome) {
-            UserSession s = UserSession.get();
-            AppUser user = null;
-            user = s==null?null:s.getUser();
+            AppUser user = core.getCurrentUser();
             if (user == null) {
                 return null;
             }

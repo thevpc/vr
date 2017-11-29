@@ -44,7 +44,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, Actio
     @Autowired
     private AcademicProfilePlugin app;
     @Autowired
-    private CorePlugin cp;
+    private CorePlugin core;
     private Model model = new Model();
 
     public Model getModel() {
@@ -54,9 +54,9 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, Actio
     @OnPageLoad
     private void onPageReload() {
         Vr vr = Vr.get();
-        getModel().setContact(vr.getCurrentSession().getUser().getContact());
+        getModel().setContact(core.getCurrentUser().getContact());
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
-        getModel().setStudent(ap.findStudentByUser(vr.getCurrentSession().getUser().getId()));
+        getModel().setStudent(ap.findStudentByUser(core.getCurrentUserId()));
         getModel().setStudentCV(app.findOrCreateAcademicStudentCV(getModel().getStudent().getId()));
 
         VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);

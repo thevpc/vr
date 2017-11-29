@@ -236,7 +236,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
     public List<VRMenuDef> createVRMenuDefList() {
         List<VRMenuDef> ok = new ArrayList<>();
         for (TodoList findTodoListsByResp : todoService.findTodoListsByResp(null)) {
-            AppUser user = UserSession.get().getUser();
+            AppUser user = coreService.getCurrentUser();
             int count=user==null?0:todoService.findTodosByResponsible(findTodoListsByResp.getId(),
                     user.getId(),
                     new TodoStatusType[]{

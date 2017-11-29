@@ -37,7 +37,7 @@ public class InventoryRowSecurer extends DefaultEntitySecurityManager {
             if(us.isAdmin()){
                 return true;
             }
-            AppDepartment d = us.getUser().getDepartment();
+            AppDepartment d = core.getCurrentUser().getDepartment();
             if (d != null) {
                 if (value instanceof Document) {
                     value = entity.getBuilder().documentToObject((Document) value);

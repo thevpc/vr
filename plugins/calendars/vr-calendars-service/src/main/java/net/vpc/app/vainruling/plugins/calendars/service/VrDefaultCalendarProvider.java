@@ -128,7 +128,7 @@ public class VrDefaultCalendarProvider implements VrCalendarProvider {
     @Override
     public List<CalendarWeek> findCalendars(String type, String key) {
         if ("my-calendars".equals(type)) {
-            AppUser user = UserSession.getCurrentUser();
+            AppUser user = core.getCurrentUser();
             if (user != null) {
                 return calendarsPlugin.findUserPublicCalendars(user.getId(), true);
             }

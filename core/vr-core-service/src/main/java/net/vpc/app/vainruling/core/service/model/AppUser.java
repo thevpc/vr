@@ -255,6 +255,16 @@ public class AppUser implements Cloneable{
         return c==null?String.valueOf(getId()): c.getFullName();
     }
 
+    public String resolveFirstName(){
+        AppContact c = getContact();
+        return c==null?String.valueOf(getId()): c.getFirstName();
+    }
+
+    public String resolveLastName(){
+        AppContact c = getContact();
+        return c==null?String.valueOf(getId()): c.getLastName();
+    }
+
     public String resolveFullTitle(){
         AppContact c = getContact();
         return c==null?String.valueOf(getId()): c.getFullTitle();

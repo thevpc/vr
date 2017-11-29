@@ -44,7 +44,7 @@ public class VrUtils {
 
         @Override
         public Object getObject() {
-            return UserSession.getCurrentUser();
+            return CorePlugin.get().getCurrentUser();
         }
     };
     public static final CustomDefaultObject DEFAULT_OBJECT_CURRENT_DATETIME = new CustomDefaultObject() {

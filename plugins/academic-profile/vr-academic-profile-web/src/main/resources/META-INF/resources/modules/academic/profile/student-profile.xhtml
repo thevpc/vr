@@ -104,8 +104,8 @@
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-users margin-r-5"></i>Groupes</strong>
                                                                 <p>
-                                                                    <ui:repeat value="#{vr.currentSession.profiles}" var="prName">
-                                                                        <span class="label label-#{vr.hashToArr(prName.name,'danger','success','info','warning','primary','default')}">#{prName.name}</span>
+                                                                    <ui:repeat value="#{core.currentSession.profileNames.toArray()}" var="prName">
+                                                                        <span class="label label-#{vr.hashToArr(prName,'danger','success','info','warning','primary','default')}">#{prName}</span>
                                                                     </ui:repeat>
                                                                 </p>
                                                                 <hr/>

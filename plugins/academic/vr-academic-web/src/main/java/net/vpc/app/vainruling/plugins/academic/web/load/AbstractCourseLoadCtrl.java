@@ -550,11 +550,12 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public boolean isAllowedUpdateMineIntents(Integer assignmentId) {
-        UserSession userSession = VrApp.getBean(CorePlugin.class).getCurrentSession();
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        UserSession userSession = core.getCurrentSession();
         if (userSession == null) {
             return false;
         }
-        AppUser user = userSession.getUser();
+        AppUser user = core.getCurrentUser();
         if (user == null) {
             return false;
         }
@@ -562,7 +563,7 @@ public abstract class AbstractCourseLoadCtrl {
             return true;
         }
 
-        AppPeriod period = VrApp.getBean(CorePlugin.class).findPeriod(getTeacherFilter().getPeriodId());
+        AppPeriod period = core.findPeriod(getTeacherFilter().getPeriodId());
         if (period == null || period.isReadOnly()) {
             return false;
         }
@@ -599,15 +600,16 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public boolean isAllowedUpdateMineAssignments(Integer assignementId) {
-        UserSession userSession = VrApp.getBean(CorePlugin.class).getCurrentSession();
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        UserSession userSession = core.getCurrentSession();
         if (userSession == null) {
             return false;
         }
-        AppUser user = userSession.getUser();
+        AppUser user = core.getCurrentUser();
         if (user == null) {
             return false;
         }
-        AppPeriod period = VrApp.getBean(CorePlugin.class).findPeriod(getTeacherFilter().getPeriodId());
+        AppPeriod period = core.findPeriod(getTeacherFilter().getPeriodId());
 
         if (userSession.isSuperAdmin()) {
             return true;
@@ -625,7 +627,7 @@ public abstract class AbstractCourseLoadCtrl {
                 AppDepartment d = t.getOwnerDepartment();
                 if (d != null) {
                     if (userSession.allowed("Custom.Education.CourseLoadUpdateAssignments")) {
-                        AppDepartment d2 = userSession.getUser().getDepartment();
+                        AppDepartment d2 = user.getDepartment();
                         if (d2 != null && d2.getId() == d.getId()) {
                             return true;
                         }
@@ -634,7 +636,7 @@ public abstract class AbstractCourseLoadCtrl {
                 d = t.resolveDepartment();
                 if (d != null) {
                     if (userSession.allowed("Custom.Education.CourseLoadUpdateAssignments")) {
-                        AppDepartment d2 = userSession.getUser().getDepartment();
+                        AppDepartment d2 = user.getDepartment();
                         if (d2 != null && d2.getId() == d.getId()) {
                             return true;
                         }

@@ -96,7 +96,7 @@ public class AcademicAppProjectsCtrl {
     private void onPageLoad() {
         currentTeacher = academic.getCurrentTeacher();
         currentStudent = academic.getCurrentStudent();
-        currentUser = UserSession.getCurrentUser();
+        currentUser = core.getCurrentUser();
         currentAdmin = core.isCurrentSessionAdmin();
         List<ApblSession> sessions = apbl.findAvailableSessions();
         getModel().getSessionsMap().clear();
@@ -666,7 +666,7 @@ public class AcademicAppProjectsCtrl {
         getModel().setSelectedTeam(new ApblTeam());
         getModel().setViewOnly(false);
         getModel().setEditMode(false);
-        getModel().getSelectedTeam().setOwner(UserSession.getCurrentUser());
+        getModel().getSelectedTeam().setOwner(core.getCurrentUser());
         getModel().getSelectedTeam().setSession(getModel().getSession());
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
@@ -680,7 +680,7 @@ public class AcademicAppProjectsCtrl {
             ApblProject project = ((ProjectNode) node.getValue()).getProject();
             getModel().setSelectedProject(project);
             getModel().setEditMode(true);
-            AppUser currentUser = UserSession.getCurrentUser();
+            AppUser currentUser = core.getCurrentUser();
             getModel().setViewOnly(!(currentAdmin || currentUser != null && project != null && project.getOwner() != null && project.getOwner().getId() == currentUser.getId()));
             Map<String, Object> options = new HashMap<String, Object>();
             options.put("resizable", false);

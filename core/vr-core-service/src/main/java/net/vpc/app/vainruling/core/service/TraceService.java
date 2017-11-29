@@ -129,6 +129,13 @@ public class TraceService {
             return null;
         }
     }
+    private AppUser getCurrentUser() {
+        try {
+            return VrApp.getContext().getBean(CorePlugin.class).getCurrentUser();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     public void trace(String action, String message, String data, String module, Level level) {
         if (isSilenced()) {
@@ -189,7 +196,7 @@ public class TraceService {
             return;
         }
         UserSession us = getCurrentSession();
-        AppUser u = us == null ? null : us.getUser();
+        AppUser u = getCurrentUser();
         String login = u == null ? "anonymous" : u.getLogin();
         int userId = u == null ? -1 : u.getId();
         String ip = us == null ? "" : us.getClientIpAddress();

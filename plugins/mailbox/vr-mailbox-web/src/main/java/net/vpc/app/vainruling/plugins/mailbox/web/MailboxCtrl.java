@@ -25,6 +25,8 @@ import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.app.vainruling.plugins.inbox.service.model.*;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.upa.AccessMode;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
@@ -52,7 +54,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     @Autowired
     private MailboxPlugin mailboxPlugin;
     @Autowired
-    private CorePlugin corePlugin;
+    private CorePlugin core;
 
     @Autowired
     private PropertyViewManager propertyViewManager;
@@ -162,7 +164,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     @Override
     public List<VRMenuDef> createVRMenuDefList() {
         List<Row> list = new ArrayList<>();
-        AppUser currentUser = UserSession.getCurrentUser();
+        AppUser currentUser = core.getCurrentUser();
         int userId = currentUser == null ? -1 : currentUser.getId();
         int count = userId < 0 ? 0 : mailboxPlugin.findLocalReceivedMessages(userId, -1, true, MailboxFolder.CURRENT).size();
         return Arrays.asList(
@@ -196,7 +198,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
             FacesUtils.clearMessages();
         }
         List<Row> list = new ArrayList<>();
-        int userId = UserSession.getCurrentUser().getId();
+        int userId = Convert.toInt(core.getCurrentUserId(), IntegerParserConfig.LENIENT_F);
         getModel().setTitle(getPreferredTitle());
         VrApp.getBean(VrMenuManager.class).getModel().getTitleCrumb().setTitle(getModel().getTitle());
         if (getModel().isSent()) {
@@ -235,7 +237,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     }
 
     public List<String> completeProfileExpr(String query) {
-        return corePlugin.autoCompleteProfileExpression(query);
+        return core.autoCompleteProfileExpression(query);
     }
 
     public List<String> completeCategoryExpr(String query) {
@@ -303,7 +305,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
     private void loadThreadList(Message r,boolean ignoreThis) {
         ArrayList<Message> messages = new ArrayList<>();
         if(r.getThreadId()>0){
-            for (MailboxReceived mailboxReceived : mailboxPlugin.findLocalReceivedMessagesThread(corePlugin.getCurrentUserId(), -1, r.getThreadId(),false,getModel().getFolder())) {
+            for (MailboxReceived mailboxReceived : mailboxPlugin.findLocalReceivedMessagesThread(core.getCurrentUserId(), -1, r.getThreadId(),false,getModel().getFolder())) {
                 if(!ignoreThis || mailboxReceived.getId()!=r.getId()) {
                     messages.add(new Message(mailboxReceived, loadMailboxFiles(mailboxReceived.getId())));
                 }
@@ -336,7 +338,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     public void onRemoveSelected() {
         FacesUtils.clearMessages();
-        String currentUserLogin = corePlugin.getCurrentUserLogin();
+        String currentUserLogin = core.getCurrentUserLogin();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         pu.invokePrivileged(new VoidAction() {
             @Override
@@ -386,7 +388,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     public void onArchiveSelected() {
         FacesUtils.clearMessages();
-//        String currentUserLogin = corePlugin.getCurrentUserLogin();
+//        String currentUserLogin = core.getCurrentUserLogin();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         pu.invokePrivileged(new VoidAction() {
             @Override
@@ -414,7 +416,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
 
     public void onSend() {
         FacesUtils.clearMessages();
-        getModel().getNewItem().setSender(UserSession.getCurrentUser());
+        getModel().getNewItem().setSender(core.getCurrentUser());
         FacesUtils.clearMessages();
         try {
             MailboxMessageFormat mailboxMessageFormat = (MailboxMessageFormat) getModel().getMailboxMessageFormat().getValue();
@@ -581,7 +583,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         } else if ("bcc".equals(action)) {
             e = getModel().getNewItem().getBccProfiles();
         }
-        return corePlugin.findUsersByProfileFilter(e, null).size();
+        return core.findUsersByProfileFilter(e, null).size();
     }
 
     public void openProfileExprDialog(String action) {

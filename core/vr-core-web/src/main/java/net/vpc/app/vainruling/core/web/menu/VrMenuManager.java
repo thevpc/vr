@@ -47,6 +47,8 @@ public class VrMenuManager {
 //    private TaskPlugin todoService;
     @Autowired
     private I18n i18n;
+    @Autowired
+    private CorePlugin core;
     private LinkedList<PageInfo> pageHistory = new LinkedList<>();
 
     public Object getPageCtrl() {
@@ -305,14 +307,14 @@ public class VrMenuManager {
                     if ("publicIndex".equals(command)) {
                         throw new SecurityException("Page is Inaccessible");
                     } else {
-                        log.warning("Illegal Access to " + command + " by " + UserSession.getCurrentUser());
+                        log.warning("Illegal Access to " + command + " by " + core.getCurrentUser());
                         return gotoPage("publicIndex", "");
                     }
                 }
             }
             if(d.getEnabler()!=null){
                 if(!d.getEnabler().isEnabled(d)){
-                    log.warning("Illegal Access to " + command + " by " + UserSession.getCurrentUser());
+                    log.warning("Illegal Access to " + command + " by " + core.getCurrentUser());
                     return gotoPage("publicIndex", "");
                 }
             }

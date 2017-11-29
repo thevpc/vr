@@ -102,7 +102,7 @@ public class ApblPlugin {
     }
 
     public void removeTeam(int teamId) {
-        AppUser user = core.getCurrentSession().getUser();
+        AppUser user = core.getCurrentUser();
         ApblTeam team = findTeam(teamId);
         if (team == null) {
             return;
@@ -877,7 +877,7 @@ public class ApblPlugin {
                 ApblTeam newTeam = new ApblTeam();
                 newTeam.setName(gen.nextName());
                 newTeam.setSession(session);
-                newTeam.setOwner(UserSession.getCurrentUser());
+                newTeam.setOwner(core.getCurrentUser());
                 addTeam(newTeam);
 
                 TeamNode node = new TeamNode();
@@ -1171,7 +1171,7 @@ public class ApblPlugin {
     public List<ApblSession> findAvailableSessions() {
         AcademicTeacher currentTeacher = academic.getCurrentTeacher();
         AcademicStudent currentStudent = academic.getCurrentStudent();
-        AppUser currentUser = UserSession.getCurrentUser();
+        AppUser currentUser = core.getCurrentUser();
         boolean currentAdmin = core.isCurrentSessionAdmin();
         List<ApblSession> sessions = new ArrayList<>();
         if (currentAdmin) {

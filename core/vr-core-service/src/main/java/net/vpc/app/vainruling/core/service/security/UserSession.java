@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.PlatformSession;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.AppUserType;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -80,6 +81,7 @@ public class UserSession implements Serializable,Cloneable {
         AppUser u = getCurrentUser();
         return u == null ? null : u.getLogin();
     }
+
     public static AppUser getCurrentUser() {
         UserSession s = get();
         return s == null ? null : s.getUser();
@@ -139,6 +141,34 @@ public class UserSession implements Serializable,Cloneable {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public String getTypeName() {
+        AppUser u = getUser();
+        if(u==null){
+            return null;
+        }
+        AppUserType t = u.getType();
+        if(t==null){
+            return null;
+        }
+        return t.getName();
+    }
+
+    public String getFirstName() {
+        return user==null ?null: user.resolveFullName();
+    }
+
+    public String getLastName() {
+        return user==null ?null: user.resolveLastName();
+    }
+
+    public String getFullName() {
+        return user==null ?null: user.resolveFullName();
+    }
+
+    public String getUserLogin() {
+        return user==null?null:user.getLogin();
     }
 
     public AppUser getUser() {
@@ -280,7 +310,8 @@ public class UserSession implements Serializable,Cloneable {
     }
 
     public boolean isDepartmentManager() {
-        return getUser() != null && getUser().getDepartment() != null && isDepartmentManager(getUser().getDepartment().getId());
+        AppUser u = getUser();
+        return u != null && u.getDepartment() != null && isDepartmentManager(u.getDepartment().getId());
     }
 
     public void setDepartmentManager(int departmentManager) {

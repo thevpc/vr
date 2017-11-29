@@ -55,7 +55,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener {
     @Autowired
     private AcademicProfilePlugin app;
     @Autowired
-    private CorePlugin cp;
+    private CorePlugin core;
 
     private static final Logger log = Logger.getLogger(TeacherProfileSettingsCtrl.class.getName());
 
@@ -68,9 +68,9 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener {
     @OnPageLoad
     private void onPageReload() {
         Vr vr = Vr.get();
-        getModel().setContact(vr.getCurrentSession().getUser().getContact());
+        getModel().setContact(core.getCurrentUser().getContact());
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
-        getModel().setTeacher(ap.findTeacherByUser(vr.getCurrentSession().getUser().getId()));
+        getModel().setTeacher(ap.findTeacherByUser(core.getCurrentUserId()));
         getModel().setTeacherCV(app.findOrCreateAcademicTeacherCV(getModel().getTeacher().getId()));
         ///a verifier
         getModel().setCourseSection(app.findAcademicCVSectionByName("Course"));
@@ -97,7 +97,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener {
         List<SelectItem> list = null;
 
         list = new ArrayList<>();
-        for (AppCompany x : cp.findCompanies()) {
+        for (AppCompany x : core.findCompanies()) {
             list.add(new SelectItem(x.getId(), x.getName()));
         }
         getModel().setCompanyItems(list);

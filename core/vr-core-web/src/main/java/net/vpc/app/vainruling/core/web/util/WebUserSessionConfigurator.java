@@ -32,8 +32,8 @@ public class WebUserSessionConfigurator implements UserSessionConfigurator {
 
     @Override
     public void postConfigure(UserSession s) {
-        if (s != null && s.getUser() != null) {
-            s.setTheme(Vr.get().getUserTheme(s.getUser().getLogin()).getId());
+        if (s != null && s.getUserLogin() != null) {
+            s.setTheme(Vr.get().getUserTheme(s.getUserLogin()).getId());
         } else {
             s.setTheme(Vr.get().getAppTheme().getId());
         }
