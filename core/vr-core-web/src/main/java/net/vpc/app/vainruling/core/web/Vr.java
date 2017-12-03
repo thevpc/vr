@@ -180,16 +180,9 @@ public class Vr {
     }
 
     public AppUser getCurrentUser() {
-        UserToken s = CorePlugin.get().getCurrentToken();
-        if (s != null) {
-            Integer id = s.getUserId();
-            if(id==null){
-                return null;
-            }
-            return core.findUser(id);
-        }
-        return null;
+        return CorePlugin.get().getCurrentUser();
     }
+
     public AppUser getCurrentRootUser() {
         UserToken s = CorePlugin.get().getCurrentToken();
         if (s != null) {
