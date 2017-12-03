@@ -59,7 +59,7 @@
 //        AppUser t = ap.findUser(userId);
 //        CorePlugin fs = VrApp.getBean(CorePlugin.class);
 //        if (t != null) {
-//            VFile thisTeacherPhoto = fs.getUserFolder(t.getLogin()).get(path);
+//            VFile thisTeacherPhoto = fs.getUserFolder(t.getUserLogin()).get(path);
 //            if (thisTeacherPhoto.exists()) {
 //                return thisTeacherPhoto;
 //            } else {
@@ -76,7 +76,7 @@
 //
 //    public VFile handleFileUploadEvent(FileUploadEvent event) throws Exception {
 //        String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
-//                + "-" + UserSession.getCurrentLogin();
+//                + "-" + UserSession.getUserLogin();
 //        CorePlugin fsp = VrApp.getBean(CorePlugin.class);
 //        String p = fsp.getNativeFileSystemPath() + tempPath;
 //        new File(p).mkdirs();

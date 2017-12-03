@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.web.HttpPlatformSession;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
@@ -72,7 +73,7 @@ public class LoginCtrl {
 
     public String dologin() {
         VrWebHelper.prepareUserSession();
-        UserSession s = UserSession.get();
+        UserToken s = CorePlugin.get().getCurrentToken();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         String login = StringUtils.trim(getModel().getLogin());
         String domain = null;
@@ -97,13 +98,15 @@ public class LoginCtrl {
                     FacesContext currentInstance = FacesContext.getCurrentInstance();
                     if(currentInstance!=null) {
                         ExternalContext externalContext = currentInstance.getExternalContext();
-                        getSession().setPlatformSession(new HttpPlatformSession((HttpSession) externalContext.getSession(false)));
+                        UserSession currentSession = CorePlugin.get().getCurrentSession();
+                        currentSession.setPlatformSession(new HttpPlatformSession((HttpSession) externalContext.getSession(false)));
 //                        getSession().setPlatformSessionMap(externalContext.getSessionMap());
                         VrApp.getBean(ActiveSessionsCtrl.class).onRefresh();
                         if(s!=null){
-                            String lvp = s.getPreConnexionURL();
+
+                            String lvp = currentSession.getPreConnexionURL();
                             if(lvp!=null){
-                                s.setPreConnexionURL(null);
+                                currentSession.setPreConnexionURL(null);
                                 ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
                                 try {
                                     context.redirect(context.getRequestContextPath() + lvp);
@@ -137,7 +140,7 @@ public class LoginCtrl {
     }
 
     public String dologout() {
-        boolean impersonating = getSession().isImpersonating();
+        boolean impersonating = CorePlugin.get().getCurrentToken().getRootLogin()!=null;
         core.logout();
         if (impersonating) {
             return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
@@ -149,10 +152,6 @@ public class LoginCtrl {
 
     public Model getModel() {
         return model;
-    }
-
-    public UserSession getSession() {
-        return UserSession.get();
     }
 
     public static class Model {

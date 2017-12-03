@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.core.service;
 
 import com.sun.syndication.feed.synd.*;
 import com.sun.syndication.io.SyndFeedOutput;
-import net.vpc.app.vainruling.core.service.agent.ActiveSessionsTracker;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.cache.EntityCache;
 import net.vpc.app.vainruling.core.service.fs.VrFS;
@@ -17,13 +16,12 @@ import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.model.content.*;
 import net.vpc.app.vainruling.core.service.notification.PollAware;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
+import net.vpc.app.vainruling.core.service.obj.AutoFilterData;
 import net.vpc.app.vainruling.core.service.obj.EntityObjSearchFactory;
 import net.vpc.app.vainruling.core.service.obj.ObjSearch;
 import net.vpc.app.vainruling.core.service.obj.ObjSimpleSearch;
 import net.vpc.app.vainruling.core.service.plugins.*;
-import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.security.UserSessionConfigurator;
-import net.vpc.app.vainruling.core.service.security.VRSecurityManager;
+import net.vpc.app.vainruling.core.service.security.*;
 import net.vpc.app.vainruling.core.service.util.AppVersion;
 import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.common.io.FileUtils;
@@ -32,9 +30,7 @@ import net.vpc.common.util.*;
 import net.vpc.common.vfs.*;
 import net.vpc.upa.*;
 import net.vpc.upa.expressions.*;
-import net.vpc.upa.types.DataType;
-import net.vpc.upa.types.DateTime;
-import net.vpc.upa.types.ManyToOneType;
+import net.vpc.upa.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -48,6 +44,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.Date;
 import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -87,7 +84,6 @@ public class CorePlugin {
     private List<Plugin> plugins;
     private AppVersion appVersion;
     private Set<String> managerProfiles = new HashSet<>(Arrays.asList("Director"));
-    private ActiveSessionsTracker sessions = new ActiveSessionsTracker();
     private Map<String, PluginComponent> components;
     private Map<String, PluginBundle> bundles;
     private List<UserSessionConfigurator> userSessionConfigurators;
@@ -643,7 +639,7 @@ public class CorePlugin {
 //                    if(list==null){
 //                        list=new HashSet<>();
 //                        if(includeLogin){
-//                            list.add(o.getUser().getLogin().toLowerCase());
+//                            list.add(o.getUser().getUserLogin().toLowerCase());
 //                        }
 //                        all.put(o.getUser().getId(), list);
 //                    }
@@ -949,8 +945,7 @@ public class CorePlugin {
         return all;
     }
 
-    @Install
-    private void installService() {
+    private AppCountry installDefaultCountry() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AppCountry tunisia = pu.findByMainField(AppCountry.class, "Tunisie");
         if (tunisia == null) {
@@ -958,21 +953,37 @@ public class CorePlugin {
             tunisia.setName("Tunisie");
             pu.persist(tunisia);
         }
+        return tunisia;
+    }
+
+    private AppIndustry installDefaultIndustry() {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
         AppIndustry eduIndustry = pu.findByMainField(AppIndustry.class, "Education");
         if (eduIndustry == null) {
             eduIndustry = new AppIndustry();
             eduIndustry.setName("Education");
             pu.persist(eduIndustry);
         }
+        return eduIndustry;
+    }
 
+    private AppCompany installDefaultCompany() {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
         AppCompany eniso = pu.findByMainField(AppIndustry.class, "ENISo");
         if (eniso == null) {
             eniso = new AppCompany();
             eniso.setName("ENISo");
-            eniso.setIndustry(eduIndustry);
-            eniso.setCountry(tunisia);
+            eniso.setIndustry(installDefaultIndustry());
+            eniso.setCountry(installDefaultCountry());
             pu.persist(eniso);
         }
+        return eniso;
+    }
+
+    @Install
+    private void installService() {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+
 
         AppProfile oldAdmin = pu.findByMainField(AppProfile.class, "admin");
         if (oldAdmin != null) {
@@ -1039,7 +1050,7 @@ public class CorePlugin {
         }
         AppConfig mainConfig = new AppConfig();
         mainConfig.setId(1);
-        mainConfig.setMainCompany(eniso);
+        mainConfig.setMainCompany(installDefaultCompany());
         mainConfig.setMainPeriod(new AppPeriod("2015-2016"));
         findOrCreate(mainConfig, "id");
 //        validateRightsDefinitions();
@@ -1090,6 +1101,9 @@ public class CorePlugin {
 
     @Start
     private void onStart() {
+        if (findUser("admin") == null) {
+            installService();
+        }
         createRight("Custom.FileSystem.RootFileSystem", "Root FileSystem Access");
         createRight("Custom.FileSystem.MyFileSystem", "My FileSystem Access");
         createRight(RIGHT_FILESYSTEM_ASSIGN_RIGHTS, "Assign Access Rights for File System");
@@ -1114,7 +1128,9 @@ public class CorePlugin {
                 public void run() {
                     String path = getNativeFileSystemPath();
                     try {
-                        FileHandler handler = new FileHandler(path + PATH_LOG + "/application-stats.log", 5 * 1024 * 1024, 5, true);
+                        String pp = path + PATH_LOG;
+                        new File(pp).mkdirs();
+                        FileHandler handler = new FileHandler(pp + "/application-stats.log", 5 * 1024 * 1024, 5, true);
                         handler.setFormatter(new CustomTextFormatter());
                         LOG_APPLICATION_STATS.addHandler(handler);
                     } catch (IOException e) {
@@ -1857,30 +1873,28 @@ public class CorePlugin {
             AppUser u = (AppUser) up.getObject();
             return u.getLogin();
         }
-        UserSession us = getCurrentSession();
-        if (us != null) {
-            if (us.getUser() != null) {
-                return us.getUser().getLogin();
-            }
-        }
-        return null;
+        return getCurrentUserLogin();
     }
 
 
-//    public List<AppContact> findContacts(String name){
-//        PersistenceUnit pu = UPA.getPersistenceUnit();
-//        return pu.createQuery("Select u.contact from AppUser where " +
-//                " u.contact.fullName like :name "
-//                +" and u.type.name ='Teacher'"
-//        ).setParameter("name","%"+name+"%")
-//                .getResultList();
-//    }
+    public List<AppContact> findContacts(String name, String type) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery(
+                "Select u.contact from AppUser u where 1=1 "
+                        + (StringUtils.isEmpty(name) ? "" : " u.contact.fullName like :name ")
+                        + (StringUtils.isEmpty(type) ? "" : " and u.type.name =:type ")
+        )
+                .setParameter("name", "%" + name + "%", !StringUtils.isEmpty(name))
+                .setParameter("name", name, !StringUtils.isEmpty(name))
+                .getResultList();
+    }
 
     public boolean isCurrentSessionAdminOrUser(String login) {
         if (StringUtils.isEmpty(login)) {
             return isCurrentSessionAdmin();
         }
-        UserSession us = getCurrentSession();
+        UserToken token = getCurrentToken();
+//        UserSession us = getCurrentSession();
         UserPrincipal up = UPA.getPersistenceUnit().getUserPrincipal();
         if (up != null) {
             if (up.getName().equals(VRSecurityManager.INTERNAL_LOGIN)) {
@@ -1888,13 +1902,13 @@ public class CorePlugin {
             }
             if (up.getObject() instanceof AppUser) {
                 AppUser u = (AppUser) up.getObject();
-                if (us.getUser() != null) {
-                    String login2 = u.getLogin();
+                if (token.getUserLogin() != null) {
+                    String login2 = token.getUserLogin();
                     if (login2.equals(login)) {
                         return true;
                     }
-                    if (login2.equals(us.getUser().getLogin())) {
-                        return us.isAdmin();
+                    if (login2.equals(token.getUserLogin())) {
+                        return token.isAdmin();
                     }
                 }
                 List<AppProfile> profiles = findProfilesByUser(u.getId());
@@ -1906,22 +1920,22 @@ public class CorePlugin {
                 return false;
             }
         }
-        if (us != null) {
-            if (us.isAdmin()) {
+        if (token != null) {
+            if (token.isAdmin()) {
                 return true;
             }
-            if (us.getUser().getLogin().equals(login)) {
+            if (token.getUserLogin().equals(login)) {
                 return true;
             }
         }
-        return us != null && us.isAdmin();
+        return token != null && token.isAdmin();
     }
 
     public boolean isCurrentSessionAdminOrUser(int userId) {
         if (userId <= 0) {
             return isCurrentSessionAdmin();
         }
-        UserSession us = getCurrentSession();
+        UserToken us = getCurrentToken();
         UserPrincipal up = UPA.getPersistenceUnit().getUserPrincipal();
         if (up != null) {
             if (up.getName().equals(VRSecurityManager.INTERNAL_LOGIN)) {
@@ -1929,12 +1943,12 @@ public class CorePlugin {
             }
             if (up.getObject() instanceof AppUser) {
                 AppUser u = (AppUser) up.getObject();
-                if (us.getUser() != null) {
+                if (us.getUserLogin() != null) {
                     String login2 = u.getLogin();
                     if (u.getId() == userId) {
                         return true;
                     }
-                    if (login2.equals(us.getUser().getLogin())) {
+                    if (login2.equals(us.getUserLogin())) {
                         return us.isAdmin();
                     }
                 }
@@ -1951,7 +1965,7 @@ public class CorePlugin {
             if (us.isAdmin()) {
                 return true;
             }
-            if (us.getUser().getId() == userId) {
+            if (us.getUserId() == userId) {
                 return true;
             }
         }
@@ -1962,7 +1976,7 @@ public class CorePlugin {
         if (StringUtils.isEmpty(profileName)) {
             return isCurrentSessionAdmin();
         }
-        UserSession us = getCurrentSession();
+        UserToken us = getCurrentToken();
         UserPrincipal up = UPA.getPersistenceUnit().getUserPrincipal();
         if (up != null) {
             if (up.getName().equals(VRSecurityManager.INTERNAL_LOGIN)) {
@@ -1970,13 +1984,13 @@ public class CorePlugin {
             }
             if (up.getObject() instanceof AppUser) {
                 AppUser u = (AppUser) up.getObject();
-                if (us.getUser() != null) {
+                if (us.getUserLogin() != null) {
                     String login2 = u.getLogin();
-                    if (login2.equals(us.getUser().getLogin())) {
+                    if (login2.equals(us.getUserLogin())) {
                         return us.isAdmin();
                     }
                 }
-                if(us.getProfileNames().contains(profileName)){
+                if (us.getProfileNames().contains(profileName)) {
                     return true;
                 }
                 List<AppProfile> profiles = findProfilesByUser(u.getId());
@@ -2029,10 +2043,36 @@ public class CorePlugin {
 //        UserSession us = getCurrentSession();
 //        return us != null && us.isAdmin();
 //    }
+    public boolean isCurrentSessionAdminOrManager() {
+        if (isCurrentSessionAdmin()) {
+            return true;
+        }
+        UserToken us = getCurrentToken();
+        return us.isManager();
+    }
+
+    public boolean isCurrentSessionAdminOrManagerOf(int depId) {
+        if (isCurrentSessionAdmin()) {
+            return true;
+        }
+        UserToken us = getCurrentToken();
+        if (us.isManager()) {
+            int[] managedDepartments = us.getManagedDepartments();
+            if (managedDepartments != null) {
+                for (int d : managedDepartments) {
+                    if (d == depId) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean isCurrentSessionAdmin() {
-        UserSession us = null;
+        UserToken us = null;
         try {
-            us = getCurrentSession();
+            us = getCurrentToken();
         } catch (Exception e) {
             //session not yet created!
             return true;
@@ -2044,7 +2084,7 @@ public class CorePlugin {
             }
             if (up.getObject() instanceof AppUser) {
                 AppUser u = (AppUser) up.getObject();
-                if (us.getUser() != null && u.getLogin().equals(us.getUser().getLogin())) {
+                if (us.getUserLogin() != null && u.getLogin().equals(us.getUserLogin())) {
                     return us.isAdmin();
                 }
                 List<AppProfile> profiles = findProfilesByUser(u.getId());
@@ -2286,22 +2326,46 @@ public class CorePlugin {
     }
 
     public AppUser getCurrentUser() {
-        UserSession s = getCurrentSession();
-        return s == null ? null : s.getUser();
+        UserToken t = getCurrentToken();
+        if (t == null || t.getUserId() == null) {
+            return null;
+        }
+        return findUser(t.getUserId());
     }
 
     public Integer getCurrentUserId() {
-        AppUser s = getCurrentUser();
-        return s == null ? null : s.getId();
+        UserToken s = getCurrentToken();
+        return s == null ? null : s.getUserId();
     }
 
     public String getCurrentUserLogin() {
-        AppUser s = getCurrentUser();
-        return s == null ? null : s.getLogin();
+        UserToken s = getCurrentToken();
+        return s == null ? null : s.getUserLogin();
     }
 
     public UserSession getCurrentSession() {
-        return UserSession.get();
+        UserSession s = UserSession.get();
+        if (s != null) {
+            s.setToken(getCurrentToken());
+        }
+        return s;
+    }
+
+    public UserToken getCurrentToken() {
+        try {
+            UserTokenProvider p = VrApp.getBean(UserTokenProvider.class);
+            UserToken token = p.getToken();
+            if (token != null) {
+                return token;
+            }
+        } catch (Exception ex) {
+        }
+        try {
+            UserSession s = UserSession.get();
+            return s == null ? null : s.getToken();
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
 //    @Deprecated
@@ -2310,52 +2374,57 @@ public class CorePlugin {
 //    }
 
     public void logout() {
-        final UserSession s = getCurrentSession();
-        AppUser user = s == null ? null : s.getUser();
-        String login = user == null ? null : user.getLogin();
-        int id = user == null ? -1 : user.getId();
-        if (s != null && user != null) {
-            if (s.isImpersonating()) {
-                trace.trace("logout", "successful logout " + login + " to " + s.getRootUser().getLogin(),
+        final UserToken s = getCurrentToken();
+//        AppUser user = s == null ? null : s.getUser();
+        String login = s == null ? null : s.getUserLogin();
+        int id = s == null ? -1 : s.getUserId() == null ? -1 : s.getUserId();
+        if (login != null) {
+
+            if (s.getRootUserId() != null) {
+                trace.trace("logout", "successful logout " + login + " to " + s.getRootLogin(),
                         login + " => "
-                                + s.getRootUser().getLogin(),
-                        "/System/Access", null, null, login, id, Level.INFO, s.getClientIpAddress()
+                                + s.getRootLogin(),
+                        "/System/Access", null, null, login, id, Level.INFO, s.getIpAddress()
                 );
-                s.setUser(s.getRootUser());
-                s.setRootUser(null);
-                buildSession(s, s.getUser());
+                s.setUserId(s.getRootUserId());
+                s.setRootUserId(null);
+                buildToken(s);
             } else {
                 trace.trace("logout", "successful logout " + login,
                         login,
-                        "/System/Access", null, null, login, id, Level.INFO, s.getClientIpAddress()
+                        "/System/Access", null, null, login, id, Level.INFO, s.getIpAddress()
                 );
-                getSessionsTracker().onDestroy(s);
+                invalidateToken(s.getSessionId());
             }
         }
     }
 
     public void logout(String sessionId) {
-        UserSession currentSession0 = null;
-        try {
-            currentSession0 = getCurrentSession();
-        } catch (Exception any) {
-            //
-        }
-        final UserSession currentSession = currentSession0;
-        UserSession s = getSessionsTracker().getUserSession(sessionId);
-        AppUser user = s == null ? null : s.getUser();
-        String login = user == null ? null : user.getLogin();
-        int id = user == null ? -1 : user.getId();
-        if (s != null && user != null && currentSession != null) {
-            trace.trace("logout", "force logout " + login,
-                    login,
-                    "/System/Access", null, null, currentSession.getUser().getLogin(), id, Level.INFO, s.getClientIpAddress()
-            );
-            getSessionsTracker().onDestroy(s);
-        }
-        if (s != null) {
-            s.invalidate();
-            getSessionsTracker().onDestroy(s.getSessionId());
+        VrUtils.requireAdmin();
+//        UserSession currentSession0 = null;
+//        try {
+//            currentSession0 = getCurrentSession();
+//        } catch (Exception any) {
+//            //
+//        }
+//        final UserSession currentSession = currentSession0;
+        SessionStore sessionStore = VrApp.getBean(SessionStoreProvider.class).resolveSessionStore();
+        PlatformSession s = sessionStore.get(sessionId);
+        UserToken t = s == null ? null : s.getToken();
+        String login = t == null ? null : t.getUserLogin();
+        int id = t == null || t.getUserId() == null ? -1 : t.getUserId();
+        if (t != null) {
+            if (login != null) {
+                trace.trace("logout", "force logout " + login,
+                        login,
+                        "/System/Access", null, null, login, id, Level.INFO, t.getIpAddress()
+                );
+            }
+            invalidateToken(s.getToken().getSessionId());
+        }else{
+            if(s!=null) {
+                invalidateToken(s.getSessionId());
+            }
         }
     }
 
@@ -2363,40 +2432,41 @@ public class CorePlugin {
         if (login == null) {
             login = "";
         }
-        UserSession s = getCurrentSession();
+        UserToken s = getCurrentToken();
         //login is always lower cased and trimmed!
         login = login.trim().toLowerCase();
-        if (s.isAdmin() && !s.isImpersonating()) {
+        if (s.isAdmin() && s.getRootUserId() == null) {
             AppUser user = findEnabledUser(login, password);
             if (user != null) {
-                trace.trace("impersonate", "successfull impersonate of " + login, login, "/System/Access", null, null, s.getUser().getLogin(),
-                        s.getUser().getId(), Level.INFO, s.getClientIpAddress()
+                trace.trace("impersonate", "successfull impersonate of " + login, login, "/System/Access", null, null, s.getUserLogin(),
+                        s.getUserId(), Level.INFO, s.getIpAddress()
                 );
             } else {
                 user = findUser(login);
                 if (user != null) {
                     if (!user.isEnabled()) {
-                        trace.trace("impersonate", "successful impersonate of " + login + ". but user is not enabled!", login, "/System/Access", null, null, s.getUser().getLogin(), s.getUser().getId(), Level.WARNING, s.getClientIpAddress()
+                        trace.trace("impersonate", "successful impersonate of " + login + ". but user is not enabled!", login, "/System/Access", null, null, s.getUserLogin(), s.getUserId(), Level.WARNING, s.getIpAddress()
                         );
                     } else {
-                        trace.trace("impersonate", "successful impersonate of " + login + ". but password " + password + " seems not to be correct", login, "/System/Access", null, null, s.getUser().getLogin(), s.getUser().getId(), Level.WARNING, s.getClientIpAddress());
+                        trace.trace("impersonate", "successful impersonate of " + login + ". but password " + password + " seems not to be correct", login, "/System/Access", null, null, s.getUserLogin(), s.getUserId(), Level.WARNING, s.getIpAddress());
                     }
                 } else {
                     trace.trace(
-                            "impersonate", "failed impersonate of " + login, login, "/System/Access", null, null, s.getUser().getLogin(), s.getUser().getId(), Level.SEVERE, s.getClientIpAddress()
+                            "impersonate", "failed impersonate of " + login, login, "/System/Access", null, null, s.getUserLogin(), s.getUserId(), Level.SEVERE, s.getIpAddress()
                     );
                 }
             }
             if (user != null) {
-                s.setRootUser(s.getUser());
-                s.setUser(user);
-                buildSession(s, user);
+                s.setRootUserId(s.getUserId());
+                s.setRootLogin(s.getUserLogin());
+                s.setUserId(user.getId());
+                buildToken(s);
             }
             onPoll();
             return user;
         } else {
             trace.trace(
-                    "impersonate", "failed impersonate of " + login + ". not admin or already impersonating", login, "/System/Access", null, null, s.getUser().getLogin(), s.getUser().getId(), Level.WARNING, s.getClientIpAddress()
+                    "impersonate", "failed impersonate of " + login + ". not admin or already impersonating", login, "/System/Access", null, null, s.getUserLogin(), s.getUserId(), Level.WARNING, s.getIpAddress()
             );
         }
         return null;
@@ -2408,32 +2478,38 @@ public class CorePlugin {
 
     public AppUser login(String login, String password, String clientAppId, String clientApp) {
         AppUser appUser = null;
-        UserSession currentSession = null;
+        UserToken token = null;
         try {
-            currentSession = getCurrentSession();
+            token = getCurrentToken();
             for (UserSessionConfigurator userSessionConfigurator : getUserSessionConfigurators()) {
-                userSessionConfigurator.preConfigure(currentSession);
+                userSessionConfigurator.preConfigure(token);
             }
-            AppUser u = loginByLoginPassword(login, password, currentSession, clientAppId, clientApp);
-            AppUser appUser0 = onUserLoggedIn(u, currentSession, clientAppId, clientApp);
+            AppUser u = loginByLoginPassword(login, password, token, clientAppId, clientApp);
+            AppUser appUser0 = onUserLoggedIn(u, token, clientAppId, clientApp);
             if (appUser0 != null) {
                 for (UserSessionConfigurator userSessionConfigurator : getUserSessionConfigurators()) {
-                    userSessionConfigurator.postConfigure(currentSession);
+                    userSessionConfigurator.postConfigure(token);
                 }
             }
             appUser = appUser0;
         } finally {
             if (appUser == null) {
-                if (currentSession != null) {
-                    currentSession.invalidate();
-                    getSessionsTracker().onDestroy(currentSession.getSessionId());
+                if (token != null) {
+                    invalidateToken(token.getSessionId());
                 }
             }
         }
         return appUser;
     }
 
-    private AppUser loginByLoginPassword(String login, String password, UserSession currentSession, String clientAppId, String clientApp) {
+    private void invalidateToken(String sessionId) {
+        if (sessionId != null) {
+            SessionStore sessionStore = VrApp.getBean(SessionStoreProvider.class).resolveSessionStore();
+            sessionStore.get(sessionId).invalidate();
+        }
+    }
+
+    private AppUser loginByLoginPassword(String login, String password, UserToken token, String clientAppId, String clientApp) {
         if (login == null) {
             login = "";
         }
@@ -2442,27 +2518,30 @@ public class CorePlugin {
         if (user == null) {
             AppUser user2 = findUser(login);
             if (user2 == null) {
-                trace.trace("login", "login not found. Failed as " + login + "/" + password, login + "/" + password, "/System/Access", null, null, (login == null || login.length() == 0) ? "anonymous" : login, -1, Level.SEVERE, currentSession.getClientIpAddress());
+                trace.trace("login", "login not found. Failed as " + login + "/" + password, login + "/" + password, "/System/Access", null, null, (login == null || login.length() == 0) ? "anonymous" : login, -1, Level.SEVERE, token.getIpAddress());
             } else if (user2.isDeleted() || !user2.isEnabled()) {
                 trace.trace("login", "invalid state. Failed as " + login + "/" + password, login + "/" + password
                         + ". deleted=" + user2.isDeleted()
-                        + ". enabled=" + user2.isEnabled(), "/System/Access", null, null, (login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE, currentSession.getClientIpAddress()
+                        + ". enabled=" + user2.isEnabled(), "/System/Access", null, null, (login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE, token.getIpAddress()
                 );
             } else {
                 trace.trace(
                         "login", "invalid password. Failed as " + login + "/" + password, login + "/" + password,
                         "/System/Access", null, null, (login.length() == 0) ? "anonymous" : login, user2.getId(),
-                        Level.SEVERE, currentSession.getClientIpAddress()
+                        Level.SEVERE, token.getIpAddress()
                 );
             }
         }
         return user;
     }
 
-    private AppUser onUserLoggedIn(AppUser user, UserSession currentSession, String clientAppId, String clientApp) {
+    private AppUser onUserLoggedIn(AppUser user, UserToken token, String clientAppId, String clientApp) {
+        if (token == null) {
+            throw new SecurityException("No Session Found");
+        }
         //login is always lower cased and trimmed!
-        if (currentSession != null && currentSession.isConnected()) {
-            throw new SecurityException("Already connected");
+        if (token.getUserId() != null) {
+            //throw new SecurityException("Already connected");
         }
         if (user != null) {
             user.setConnexionCount(user.getConnexionCount() + 1);
@@ -2477,28 +2556,26 @@ public class CorePlugin {
                                     return null;
                                 }
                             }), null);
-            UserSession s = getCurrentSession();
-            s.setClientApp(StringUtils.isEmpty(clientApp) ? "default" : clientApp);
-            s.setClientAppId(StringUtils.isEmpty(clientAppId) ? "unknown" : clientAppId);
-            s.setDestroyed(false);
-            s.setDomain(getCurrentDomain());
-            final ActiveSessionsTracker activeSessionsTracker = getSessionsTracker();
-            activeSessionsTracker.onCreate(s);
+            token.setClientApp(StringUtils.isEmpty(clientApp) ? "default" : clientApp);
+            token.setClientAppId(StringUtils.isEmpty(clientAppId) ? "unknown" : clientAppId);
+            token.setDestroyed(false);
+            token.setDomain(getCurrentDomain());
+            token.setConnexionTime(user.getLastConnexionDate());
+            token.setUserId(user.getId());
+            buildToken(token);
+
+//            activeSessionsTracker.onCreate(currentSession);
             //update stats
+            trace.trace("login", "successful", user.getLogin(), "/System/Access", null, null, user.getLogin(), user.getId(), Level.INFO, token.getIpAddress());
             UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
                 @Override
                 public void run() {
-                    updateMaxAppDataStoreLong("usersCountPeak", activeSessionsTracker.getActiveSessionsCount(), true);
+                    updateMaxAppDataStoreLong("usersCountPeak", getActiveSessionsCount(), true);
                 }
             });
-            trace.trace("login", "successful", user.getLogin(), "/System/Access", null, null, user.getLogin(), user.getId(), Level.INFO, s.getClientIpAddress());
-            getCurrentSession().setConnexionTime(user.getLastConnexionDate());
-            getCurrentSession().setUser(user);
-            buildSession(s, user);
             onPoll();
         } else {
-            UserSession s = getCurrentSession();
-            s.reset();
+            invalidateToken(token.getSessionId());
         }
         return user;
     }
@@ -2516,13 +2593,32 @@ public class CorePlugin {
 //                .getEntity();
 //    }
 
-    protected void buildSession(UserSession s, AppUser user) {
+    protected void buildToken(UserToken token) {
+        AppUser user = findUser(token.getUserId());
+        token.setUserLogin(user.getLogin());
+        if(token.getRootUserId()!=null){
+            AppUser user1 = UPA.getContext().invokePrivileged(new Action<AppUser>() {
+                @Override
+                public AppUser run() {
+                    return findUser(token.getRootUserId());
+                }
+            });
+            token.setRootLogin(user1==null?null:user1.getLogin());
+        }else{
+            token.setRootLogin(null);
+        }
+        token.setUserTypeName(user.getType() == null ? null : user.getType().getName());
+        if (user.getContact() == null || user.getContact().getGender() == null) {
+            token.setFemale(false);
+        } else {
+            token.setFemale("F".equals(user.getContact().getGender().getName()));
+        }
         final List<AppProfile> userProfiles = findProfilesByUser(user.getId());
         Set<String> userProfilesNames = new HashSet<>();
         for (AppProfile u : userProfiles) {
             userProfilesNames.add(u.getName());
         }
-        s.setProfileNames(userProfilesNames);
+        token.setProfileNames(userProfilesNames);
 //        s.setProfiles(userProfiles);
 //        StringBuilder ps = new StringBuilder();
 //        for (AppProfile up : userProfiles) {
@@ -2532,30 +2628,34 @@ public class CorePlugin {
 //            ps.append(up.getName());
 //        }
 //        s.setProfilesString(ps.toString());
-        s.setAdmin(false);
-        s.setDepartmentManager(-1);
-        s.setManager(false);
-        s.setRights(UPA.getContext().invokePrivileged(new Action<Set<String>>() {
+        token.setAdmin(false);
+        token.setManagedDepartments(new int[0]);
+        token.setManager(false);
+        token.setRights(UPA.getContext().invokePrivileged(new Action<Set<String>>() {
             @Override
             public Set<String> run() {
                 return findUserRights(user.getId());
             }
         }));
         if (user.getLogin().equalsIgnoreCase(CorePlugin.USER_ADMIN) || userProfilesNames.contains(CorePlugin.PROFILE_ADMIN)) {
-            s.setAdmin(true);
+            token.setAdmin(true);
         }
         if (userProfilesNames.contains(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT)) {
             if (user.getDepartment() != null) {
                 AppUser d = findHeadOfDepartment(user.getDepartment().getId());
                 if (d != null && d.getId() == user.getId()) {
-                    s.setManager(true);
-                    s.setDepartmentManager(d.getDepartment().getId());
+                    token.setManager(true);
+                    if (token.getManagedDepartments() == null) {
+                        token.setManagedDepartments(new int[]{d.getDepartment().getId()});
+                    } else {
+                        token.setManagedDepartments(VrUtils.append(token.getManagedDepartments(), d.getDepartment().getId()));
+                    }
                 }
             }
         }
         for (String mp : getManagerProfiles()) {
             if (userProfilesNames.contains(mp)) {
-                s.setManager(true);
+                token.setManager(true);
             }
         }
     }
@@ -2863,6 +2963,7 @@ public class CorePlugin {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                _appVersion.setId(p.getProperty("id"));
                 _appVersion.setShortName(p.getProperty("short-name"));
                 _appVersion.setLongName(p.getProperty("long-name"));
                 _appVersion.setVersion(p.getProperty("version"));
@@ -2878,13 +2979,12 @@ public class CorePlugin {
     }
 
     public String getNativeFileSystemPath() {
-        if (!isCurrentSessionAdmin()) {
-            throw new RuntimeException("Not Allowed");
-        }
+        VrUtils.requireAdmin();
         return cacheService.get(AppProperty.class).getProperty("System.FileSystem.Path", new Action<String>() {
             @Override
             public String run() {
-                String appName = "vr";//change me
+                AppVersion appVersion = getAppVersion();
+                String appName = appVersion.getId().toLowerCase();
                 String home = System.getProperty("user.home");
                 home = home.replace("\\", "/");
                 String domain = getCurrentDomain();
@@ -3117,7 +3217,7 @@ public class CorePlugin {
                     VirtualFileSystem pfs = getRootFileSystem0().subfs(path);
                     MountableFS mfs = null;
                     try {
-                        VrFSTable t2=t;
+                        VrFSTable t2 = t;
                         if (t2 == null) {
                             t2 = getVrFSTable();
                         }
@@ -3365,6 +3465,7 @@ public class CorePlugin {
     }
 
     public void invalidateCache() {
+        VrUtils.requireAdmin();
         cacheService.invalidate();
     }
 
@@ -3373,13 +3474,13 @@ public class CorePlugin {
     }
 
     public String getCurrentUserTheme() {
-        UserSession session = getCurrentSession();
+        String login = getCurrentUserLogin();
         String val = null;
-        if (session != null && session.getUser() != null) {
+        if (login != null) {
             val = UPA.getPersistenceUnit().invokePrivileged(new Action<String>() {
                 @Override
                 public String run() {
-                    return (String) getOrCreateAppPropertyValue("System.DefaultTheme", session.getUser().getLogin(), "");
+                    return (String) getOrCreateAppPropertyValue("System.DefaultTheme", login, "");
                 }
             });
         }
@@ -3387,12 +3488,12 @@ public class CorePlugin {
     }
 
     public void setCurrentUserTheme(String theme) {
-        UserSession session = getCurrentSession();
-        if (session != null && session.getUser() != null) {
+        String login = getCurrentUserLogin();
+        if (login != null) {
             UPA.getContext().invokePrivileged(new VoidAction() {
                                                   @Override
                                                   public void run() {
-                                                      setAppProperty("System.DefaultTheme", session.getUser().getLogin(), theme);
+                                                      setAppProperty("System.DefaultTheme", login, theme);
                                                   }
                                               }
             );
@@ -3732,7 +3833,7 @@ public class CorePlugin {
     }
 
     public List<FullArticle> findFullArticlesByCategory(String disposition) {
-        UserSession userSession = UserSession.get();
+        UserSession userSession = getCurrentSession();
         String filter = userSession == null ? null : userSession.getSelectedSiteFilter();
         if (StringUtils.isEmpty(filter)) {
             filter = "";
@@ -4009,49 +4110,155 @@ public class CorePlugin {
         return m;
     }
 
-    public List<UserSession> getActiveSessions() {
-        List<UserSession> found = getSessionsTracker().getOrderedActiveSessions();
-        if (isCurrentSessionAdmin()) {
-            return found;
-        }
-        List<UserSession> valid = new ArrayList<>();
-        for (UserSession userSession : found) {
-            userSession = userSession.copy();
-            userSession.setPlatformSession(null);
-            userSession.setLastVisitedPageInfo(null);
-            userSession.setLastVisitedPage(null);
-            userSession.setRootUser(null);
-            userSession.setProfileNames(null);
-            userSession.setRights(new HashSet<>());
-            AppUser u0 = userSession.getUser();
-            if (u0 != null) {
-                AppUser u = new AppUser();
-                u.setId(u0.getId());
-                u.setLogin(u0.getLogin());
-                u.setType(u0.getType());
-                u.setDepartment(u0.getDepartment());
-                AppContact c0 = u0.getContact();
-                if (c0 != null) {
-                    AppContact c = new AppContact();
-                    c.setId(c0.getId());
-                    c.setFullName(c0.getFullName());
-                    c.setCivility(c0.getCivility());
-                    c.setCompany(c0.getCompany());
-                    u.setContact(c);
+    public int getActiveSessionsCount() {
+        SessionStore sessionStore = VrApp.getBean(SessionStoreProvider.class).resolveSessionStore();
+        return sessionStore.size();
+    }
+
+    public List<UserSessionInfo> getActiveSessions(boolean groupSessions, boolean groupAnonymous, boolean showAnonymous) {
+        boolean currentSessionAdmin = isCurrentSessionAdmin();
+        List<UserSessionInfo> found = new ArrayList<>();
+        SessionStore sessionStore = VrApp.getBean(SessionStoreProvider.class).resolveSessionStore();
+        UserSessionInfo anonymous = new UserSessionInfo();
+        anonymous.setUserFullTitle("Anonymous");
+        Map<Integer, UserSessionInfo> grouped = new HashMap<>();
+        for (PlatformSession p : sessionStore.getAll()) {
+            UserToken t = p.getToken();
+            if (t != null && t.getUserId() != null) {
+                Integer userId = t.getUserId();
+                String login = t.getUserLogin();
+                if(!currentSessionAdmin && t.getRootUserId()!=null){
+                    userId=t.getRootUserId();
+                    login=t.getRootLogin();
                 }
-                userSession.setUser(u);
+                UserSessionInfo i = null;
+                if (groupSessions) {
+                    i = grouped.get(userId);
+                    if (i == null) {
+                        i = new UserSessionInfo();
+                        i.setUserId(userId);
+                        grouped.put(userId, i);
+                        found.add(i);
+                    }
+                } else {
+                    i = new UserSessionInfo();
+                    i.setUserId(userId);
+                    found.add(i);
+                }
+                if (i.getUserLogin() == null) {
+                    i.setSessionId(t.getSessionId());
+//                        if(i.getSessionId()!=null && ! i.getSessionId().equals(p.getSessionId())){
+//                            i.setSessionId(i.getSessionId()+"/"+p.getSessionId());
+//                        }
+                    i.setUserLogin(login);
+                    AppUser u = findUser(userId);
+                    i.setUserFullTitle(u == null ? null : u.resolveFullTitle());
+                    i.setFemale(t.isFemale());
+                    i.setUserTypeName(t.getUserTypeName());
+                    i.setDomain(t.getDomain());
+                    i.setLocale(t.getLocale());
+                    if (currentSessionAdmin) {
+                        i.setIpAddress(t.getIpAddress());
+                        i.setClientApp(t.getClientApp());
+                        i.setClientAppId(t.getClientAppId());
+                        i.setRootUserId(t.getRootUserId());
+                        i.setRootLogin(t.getRootLogin());
+                        i.setManagedDepartments(t.getManagedDepartments());
+                        i.setAdmin(t.isAdmin());
+                        i.setConnexionTime(t.getConnexionTime());
+                        i.setTheme(t.getTheme());
+                        i.setDestroyed(t.isDestroyed());
+                        i.setProfileNames(new HashSet<>(t.getProfileNames()));
+                    }
+                }
+                if (i.getLastAccessTime() == null || i.getLastAccessTime().compareTo(p.getLastAccessedTime()) < 0) {
+                    i.setLastAccessTime(p.getLastAccessedTime());
+                }
+                i.incCount();
+            } else {
+                if (groupAnonymous) {
+                    if (anonymous.getSessionId() == null) {
+                        anonymous.setSessionId(p.getSessionId());
+                    }
+                    anonymous.setSessionId(p.getSessionId());
+                    anonymous.incCount();
+                    if (anonymous.getConnexionTime() == null || (p.getConnexionTime() != null && anonymous.getConnexionTime().compareTo(p.getConnexionTime()) > 0)) {
+                        anonymous.setConnexionTime(p.getConnexionTime());
+                    }
+                    if (anonymous.getLastAccessTime() == null || (p.getLastAccessedTime() != null && anonymous.getLastAccessTime().compareTo(p.getLastAccessedTime()) < 0)) {
+                        anonymous.setLastAccessTime(p.getLastAccessedTime());
+                    }
+                } else {
+                    UserSessionInfo i = new UserSessionInfo();
+                    i.setSessionId(p.getSessionId());
+                    i.setUserFullTitle("Anonymous");
+                    i.setConnexionTime(p.getConnexionTime());
+                    i.setLastAccessTime(p.getLastAccessedTime());
+                    found.add(i);
+                }
             }
-            valid.add(userSession);
         }
-        return valid;
-    }
+        if (showAnonymous) {
+            if (anonymous.getCount() > 0) {
+                found.add(anonymous);
+            }
+        }
+        Collections.sort(found, new Comparator<UserSessionInfo>() {
 
-    public boolean containsUserSession(String sessionId) {
-        return getSessionsTracker().getUserSession(sessionId) != null;
-    }
+            @Override
+            public int compare(UserSessionInfo o1, UserSessionInfo o2) {
+                Date t1 = o2.getConnexionTime();
+                Date t2 = o2.getConnexionTime();
+                if (t1 != t2) {
+                    if (t2 == null) {
+                        return -1;
+                    }
+                    if (t1 == null) {
+                        return -1;
+                    }
+                    int x = t2.compareTo(t1);
+                    if (x != 0) {
+                        return x;
+                    }
+                }
+                return 0;
+            }
+        });
+        return found;
 
-    public ActiveSessionsTracker getSessionsTracker() {
-        return sessions;
+//        if (currentSessionAdmin) {
+//            return found;
+//        }
+//        List<UserSession> valid = new ArrayList<>();
+//        for (UserSession userSession : found) {
+//            userSession = userSession.copy();
+//            userSession.setPlatformSession(null);
+//            userSession.setLastVisitedPageInfo(null);
+//            userSession.setLastVisitedPage(null);
+//            userSession.setRootUser(null);
+//            userSession.setProfileNames(null);
+//            userSession.setRights(new HashSet<>());
+//            AppUser u0 = userSession.getUser();
+//            if (u0 != null) {
+//                AppUser u = new AppUser();
+//                u.setId(u0.getId());
+//                u.setLogin(u0.getLogin());
+//                u.setType(u0.getType());
+//                u.setDepartment(u0.getDepartment());
+//                AppContact c0 = u0.getContact();
+//                if (c0 != null) {
+//                    AppContact c = new AppContact();
+//                    c.setId(c0.getId());
+//                    c.setFullName(c0.getFullName());
+//                    c.setCivility(c0.getCivility());
+//                    c.setCompany(c0.getCompany());
+//                    u.setContact(c);
+//                }
+//                userSession.setUser(u);
+//            }
+//            valid.add(userSession);
+//        }
+//        return valid;
     }
 
     public Object resolveId(String entityName, Object t) {
@@ -4125,12 +4332,12 @@ public class CorePlugin {
             if (b != null && b.booleanValue()) {
                 return erase(entityName, id);
             } else {
-                UserSession session = getCurrentSession();
                 if (entity.containsField("deleted")) {
                     t.setBoolean("deleted", true);
                 }
                 if (entity.containsField("deletedBy")) {
-                    t.setString("deletedBy", session.getUser().getLogin());
+                    String login = getCurrentUserLogin();
+                    t.setString("deletedBy", login);
                 }
                 if (entity.containsField("deletedOn")) {
                     t.setDate("deletedOn", new Timestamp(System.currentTimeMillis()));
@@ -4504,9 +4711,7 @@ public class CorePlugin {
     }
 
     public VFile uploadFile(VFile baseFile, UploadedFileHandler event) throws IOException {
-        if (!isCurrentSessionAdmin()) {
-            throw new RuntimeException("Not Allowed");
-        }
+        VrUtils.requireAdmin();
         String fileName = VrUtils.normalizeFilePath(event.getFileName());
         VFile newFile = baseFile;//.get(fileName);
         VFile baseFolder = null;
@@ -4583,7 +4788,7 @@ public class CorePlugin {
 
 
     public MirroredPath createTempUploadFolder() {
-        String login = UserSession.getCurrentLogin();
+        String login = getCurrentUserLogin();
         String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
                 + "-" + login;
         String p = getNativeFileSystemPath() + tempPath;
@@ -4594,9 +4799,10 @@ public class CorePlugin {
 
 
     public String getCurrentUserPhoto() {
-        UserSession s = getCurrentSession();
-        if (s != null && s.getUser() != null) {
-            return getUserPhoto(s.getUser().getId());
+        UserToken token = getCurrentToken();
+        Integer s = token == null ? null : token.getUserId();
+        if (s != null) {
+            return getUserPhoto(s);
         }
         return null;
     }
@@ -4643,6 +4849,92 @@ public class CorePlugin {
             }
         });
 
+    }
+
+    public List<AutoFilterData> getEntityFilters(String entityName) {
+        Entity entity = UPA.getPersistenceUnit().getEntity(entityName);
+        List<AutoFilterData> autoFilterDatas = new ArrayList<>();
+        //autoFilters.clear();
+        for (Map.Entry<String, Object> entry : entity.getProperties().toMap().entrySet()) {
+            if (entry.getKey().startsWith("ui.auto-filter.")) {
+                String name = entry.getKey().substring("ui.auto-filter.".length());
+                AutoFilterData d = VrUtils.parseJSONObject((String) entry.getValue(), AutoFilterData.class);
+                d.setName(name);
+                d.setBaseEntityName(entity.getName());
+                autoFilterDatas.add(d);
+            }
+        }
+        Collections.sort(autoFilterDatas);
+        return autoFilterDatas;
+    }
+
+    public List<NamedId> getFieldValues(String entityName, String fieldName, Map<String, Object> constraints, Object currentInstance) {
+
+        List<NamedId> all = new ArrayList<>();
+        Entity e = UPA.getPersistenceUnit().getEntity(entityName);
+        Field f = e.getField(fieldName);
+        DataType t = f.getDataType();
+        if (t instanceof BooleanType) {
+            all.add(new NamedId(true, String.valueOf(true)));
+            all.add(new NamedId(true, String.valueOf(false)));
+        } else if (t instanceof EnumType) {
+            I18n i18n = VrApp.getBean(I18n.class);
+            for (Object value : ((EnumType) t).getValues()) {
+                all.add(new NamedId(VrUPAUtils.objToJson(value, t).toString(), i18n.getEnum(value)));
+            }
+        } else if (t instanceof KeyType) {
+            KeyType mtype = (KeyType) t;
+            return findAllNamedIds(mtype.getEntity(), constraints, currentInstance);
+        } else if (t instanceof ManyToOneType) {
+            ManyToOneType m = (ManyToOneType) t;
+            final Entity me = m.getRelationship().getTargetEntity();
+            if (m.getRelationship().getFilter() == null) {
+                List<NamedId> cacheItem = findAllNamedIds(m.getRelationship(), constraints, currentInstance);
+                List<NamedId> cacheItem2 = new ArrayList<>(cacheItem.size());
+                for (NamedId namedId : cacheItem) {
+                    Object id = namedId.getId();
+                    Object id2 = VrUPAUtils.objToJson(id, me.getDataType()).toString();
+                    cacheItem2.add(new NamedId(id2, namedId.getName()));
+                }
+                return cacheItem2;
+            }
+            return findAllNamedIds(m.getRelationship(), constraints, currentInstance);
+        }
+        return all;
+    }
+
+    private TraceService getTrace() {
+        return trace;
+    }
+
+    private I18n getI18n() {
+        return i18n;
+    }
+
+    private VrApp getApp() {
+        return app;
+    }
+
+    private CacheService getCacheService() {
+        return cacheService;
+    }
+
+    public boolean isCurrentAllowed(String key) {
+        return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(key);
+    }
+
+    public List<AppTrace> findTraceByUser(int userId, int maxRows) {
+        List<AppTrace> found=new ArrayList<>();
+        for (AppTrace t : UPA.getPersistenceUnit()
+                .createQuery("Select Top " + maxRows + " u from AppTrace u where u.userId=:userId order by u.time desc")
+                .setParameter("userId",userId)
+                .<AppTrace>getResultList()) {
+            found.add(t);
+            if(found.size()>=maxRows){
+                break;
+            }
+        }
+        return found;
     }
 
     private static class InitData {

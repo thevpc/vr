@@ -12,6 +12,8 @@ import net.vpc.app.vainruling.core.service.model.AppProperty;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.AppUserType;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.security.UserSessionInfo;
+import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
@@ -177,13 +179,41 @@ public class Vr {
         throw new IllegalArgumentException("Invalid Theme");
     }
 
+    public AppUser getCurrentUser() {
+        UserToken s = CorePlugin.get().getCurrentToken();
+        if (s != null) {
+            Integer id = s.getUserId();
+            if(id==null){
+                return null;
+            }
+            return core.findUser(id);
+        }
+        return null;
+    }
+    public AppUser getCurrentRootUser() {
+        UserToken s = CorePlugin.get().getCurrentToken();
+        if (s != null) {
+            Integer id = s.getRootUserId();
+            if(id==null){
+                return null;
+            }
+            return UPA.getPersistenceUnit().invokePrivileged(new Action<AppUser>() {
+                @Override
+                public AppUser run() {
+                    return core.findUser(id);
+                }
+            });
+        }
+        return null;
+    }
+
     public VrTheme getTheme() {
-        UserSession s = UserSession.get();
+        UserToken s = CorePlugin.get().getCurrentToken();
         if (s != null) {
             VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
             String themeId = s.getTheme();
             if (StringUtils.isEmpty(themeId)) {
-                themeId = (String) core.getAppPropertyValue("System.DefaultTheme", s.getUser() == null ? null : s.getUser().getLogin());
+                themeId = (String) core.getAppPropertyValue("System.DefaultTheme", s.getUserLogin());
                 if (StringUtils.isEmpty(themeId)) {
                     themeId = getAppTheme().getId();
                 }
@@ -711,37 +741,16 @@ public class Vr {
     }
 
     public String fstr(String format, Object... a) {
-        UserSession s = null;
-        s = UserSession.get();
-        Locale loc = s == null ? null : s.getLocale();
-        if (loc == null) {
-            loc = Locale.getDefault(Locale.Category.DISPLAY);
-        }
-        MessageFormat mf = new MessageFormat(format, loc);
+        MessageFormat mf = new MessageFormat(format, getLocale(null));
         return mf.format(a);
     }
 
     public String date(Date dte) {
-        UserSession s = null;
-        try {
-            s = UserSession.get();
-        } catch (Exception e) {
-            //ignore error
-        }
-        return VrUtils.getRelativeDateMessage(dte, s == null ? null : s.getLocale());
+        return VrUtils.getRelativeDateMessage(dte, getLocale(null));
     }
 
     public String date(Date dte, Locale loc) {
-        UserSession s = null;
-        try {
-            s = UserSession.get();
-        } catch (Exception e) {
-            //ignore error
-        }
-        if (loc == null && s != null) {
-            loc = s.getLocale();
-        }
-        return VrUtils.getRelativeDateMessage(dte, loc);
+        return VrUtils.getRelativeDateMessage(dte, getLocale(null));
     }
 
     public String date(Date d, String format) {
@@ -954,14 +963,14 @@ public class Vr {
     public Locale getLocale(String preferred) {
         Locale loc = StringUtils.isEmpty(preferred) ? null : new Locale(preferred);
         if (loc == null) {
-            UserSession s = null;
+            UserToken s = null;
             try {
-                s = UserSession.get();
+                s = CorePlugin.get().getCurrentToken();
             } catch (Exception e) {
                 //ignore error
             }
             if (loc == null && s != null) {
-                loc = s.getLocale();
+                loc = s.getLocale()==null?null:new Locale(s.getLocale());
             }
             if (loc == null) {
                 loc = Locale.getDefault();
@@ -986,8 +995,8 @@ public class Vr {
         return VrApp.getBean(VrMenuManager.class).gotoPageObjItem(entity, id);
     }
 
-    public UserSession getCurrentSession() {
-        return UserSession.get();
+    public UserToken getCurrentToken() {
+        return CorePlugin.get().getCurrentToken();
     }
 
     public String buildMenu() {
@@ -1030,16 +1039,16 @@ public class Vr {
         return VrApp.getBean(AppGlobalCtrl.class).getHeadMessageStyle();
     }
 
-    public List<UserSession> getActiveSessions() {
+    public List<UserSessionInfo> getActiveSessions() {
         return VrApp.getBean(ActiveSessionsCtrl.class).getModel().getSessions();
     }
 
-    public List<UserSession> getActiveSessionsByType(String type) {
-        List<UserSession> r = new ArrayList<>();
-        List<UserSession> activeSessions = getActiveSessions();
+    public List<UserSessionInfo> getActiveSessionsByType(String type) {
+        List<UserSessionInfo> r = new ArrayList<>();
+        List<UserSessionInfo> activeSessions = getActiveSessions();
         if (activeSessions != null) {
-            for (UserSession userSession : activeSessions) {
-                String name = (userSession != null && userSession.getUser() != null && userSession.getUser().getType() != null) ? AppUserType.getCodeOrName(userSession.getUser().getType()) : null;
+            for (UserSessionInfo userSession : activeSessions) {
+                String name = userSession.getUserTypeName();
                 if (type == null || (
                         type.equals(name)
                 )) {
@@ -1050,16 +1059,16 @@ public class Vr {
         return r;
     }
 
-    public Map<String, List<UserSession>> getActiveSessionsGroupedByType() {
-        Map<String, List<UserSession>> r = new HashMap<>();
-        List<UserSession> activeSessions = getActiveSessions();
+    public Map<String, List<UserSessionInfo>> getActiveSessionsGroupedByType() {
+        Map<String, List<UserSessionInfo>> r = new HashMap<>();
+        List<UserSessionInfo> activeSessions = getActiveSessions();
         if (activeSessions != null) {
-            for (UserSession userSession : activeSessions) {
-                String name = (userSession != null && userSession.getUser() != null && userSession.getUser().getType() != null) ? (userSession.getUser().getType().getName()) : null;
+            for (UserSessionInfo userSession : activeSessions) {
+                String name = (userSession != null && userSession.getUserId() != null && userSession.getUserTypeName() != null) ? (userSession.getUserTypeName()) : null;
                 if (StringUtils.isEmpty(name)) {
                     name = "Autres";
                 }
-                List<UserSession> userSessions = r.get(name);
+                List<UserSessionInfo> userSessions = r.get(name);
                 if (userSessions == null) {
                     userSessions = new ArrayList<>();
                     r.put(name, userSessions);
@@ -1067,7 +1076,7 @@ public class Vr {
                 userSessions.add(userSession);
             }
         }
-        LinkedHashMap<String, List<UserSession>> r2 = new LinkedHashMap<>();
+        LinkedHashMap<String, List<UserSessionInfo>> r2 = new LinkedHashMap<>();
         for (String s : new TreeSet<String>(r.keySet())) {
             r2.put(s, r.get(s));
         }
@@ -1263,7 +1272,7 @@ public class Vr {
     }
 
     public String gotoPublicSubSite(String siteFilter) {
-        getCurrentSession().setSelectedSiteFilter(siteFilter);
+        CorePlugin.get().getCurrentSession().setSelectedSiteFilter(siteFilter);
         return gotoPage("publicIndex", "");
     }
 

@@ -1,12 +1,11 @@
 package net.vpc.app.vainruling.core.web;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.service.util.VrPlatformUtils;
 import net.vpc.common.strings.StringUtils;
@@ -56,8 +55,8 @@ public class WebScriptServiceInvoker {
     }
 
     public Map invoke(String script) {
-        UserSession s = UserSession.get();
-        if (s == null || !s.isConnected()) {
+        UserToken s = CorePlugin.get().getCurrentToken();
+        if (s == null || s.getUserLogin()==null) {
             return buildError("SecurityException","not connected",null);
         }
         ScriptEngine scriptEngine = createScriptEngine();

@@ -25,13 +25,13 @@ and open the template in the editor.
                                      icon="ui-ribbonicon-refresh"
                                      styleClass="btn btn-primary vr-toolbox-button-fixed-height" ajax="true"
                                      actionListener="#{activeSessionsCtrl.onRefresh}" update=":listForm"/>
-                    <p:commandLink rendered="#{!vr.shutdown and vr.currentSession.admin}" action="#{vr.notifyShutdown}"
+                    <p:commandLink rendered="#{!vr.shutdown and vr.currentToken.admin}" action="#{vr.notifyShutdown}"
                                    styleClass="btn btn-danger vr-toolbox-button-fixed-height"
                                    value="Notifier arrêt serveur">
                         <i class="fa fa-sign-out fa-fw"></i>
                     </p:commandLink>
 
-                    <p:commandLink rendered="#{vr.shutdown and vr.currentSession.admin}" action="#{vr.cancelShutdown}"
+                    <p:commandLink rendered="#{vr.shutdown and vr.currentToken.admin}" action="#{vr.cancelShutdown}"
                                    styleClass="btn btn-danger vr-toolbox-button-fixed-height"
                                    value="Annuler arrêt">
                         <i class="fa fa-sign-out fa-fw"></i>
@@ -60,16 +60,16 @@ and open the template in the editor.
                                  rowsPerPageTemplate="20,50,100,200,1000"
                     >
                         <p:column headerText="Login" style="width: 30%;">
-                            <img src="#{vr.url(vr.getUserPhoto(i.user.id))}"
+                            <img src="#{vr.url(vr.getUserPhoto(i.userId))}"
                                  style="width: 40px ; height: 40px; margin-right: 10px;"
                                  alt="User Image"/>
-                            <h:outputText value="#{i.user.login}"/>
+                            <h:outputText value="#{i.userLogin}#{i.count gt 1 ? vr.strcat('( x ',i.count,' )'):''}"/>
                         </p:column>
                         <p:column headerText="Nom">
-                            <h:outputText value="#{i.user.contact.fullTitle}"/>
+                            <h:outputText value="#{i.userFullTitle}"/>
                         </p:column>
                         <p:column headerText="Groupe">
-                            <h:outputText value="#{i.user.type}"/>
+                            <h:outputText value="#{i.userTypeName}"/>
                         </p:column>
                         <!--                            <p:column headerText="Connexion" rendered="# {activeSessionsCtrl.model.admin}">
                                                         <h:outputText value="# {i.connexionTime}" >
@@ -81,15 +81,19 @@ and open the template in the editor.
                         </p:column>
                         <p:column headerText="Activité" rendered="#{activeSessionsCtrl.model.admin}">
                             <span title="#{i.lastVisitedPageInfo}"> <h:outputText value="#{i.lastVisitedPage}"/></span>
+                            <p:commandButton  icon="fa fa-file-text-o" styleClass="btn btn-info"
+                                              rendered="#{activeSessionsCtrl.model.admin and i.userId ne null}" action="#{activeSessionsCtrl.onShowLog(i)}"
+                                              update=":listForm"
+                            />
                         </p:column>
                         <p:column headerText="IP" rendered="#{activeSessionsCtrl.model.admin}">
-                            <h:outputText value="#{i.clientIpAddress}"/>
+                            <h:outputText value="#{i.ipAddress}"/>
                         </p:column>
                         <p:column headerText="Lang" rendered="#{activeSessionsCtrl.model.admin}" style="width: 50px;">
                             <h:outputText value="#{i.locale}"/>
                         </p:column>
                         <p:column headerText="App" rendered="#{activeSessionsCtrl.model.admin}" style="width: 150px;">
-                            <h:outputText value="#{i.clientAppId} (#{i.clientApp})"/>
+                            <h:outputText rendered="#{i.clientAppId ne null}" value="#{i.clientAppId} (#{i.clientApp})"/>
                         </p:column>
                         <p:column headerText="" rendered="#{activeSessionsCtrl.model.admin}" style="width: 50px;">
                             <p:commandButton  icon="fa fa-trash-o" styleClass="btn btn-danger"
@@ -100,6 +104,38 @@ and open the template in the editor.
                         <!--                            <p:column headerText="Flags">
                                                         <h:outputText value="# {' '+(i.admin?'A':'-')+(i.connected?'C':'-')+(i.destroyed?'D':'-')}" />
                                                     </p:column>-->
+                    </p:dataTable>
+                </div>
+                <div class="row">
+                    <h3>
+                        <h:outputText rendered="#{activeSessionsCtrl.model.currentUserSession ne null}" value="Activité de #{activeSessionsCtrl.model.currentUserSession.userLogin}" />
+                    </h3>
+                </div>
+                <div class="row">
+                    <p:dataTable id="logTable" rendered="#{activeSessionsCtrl.model.currentLog ne null}" var="li" value="#{activeSessionsCtrl.model.currentLog}"
+                                 class="table table-bordered table-hover"
+                                 paginatorAlwaysVisible="false"
+                                 paginator="true"
+                                 paginatorPosition="bottom"
+                                 rows="100"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="20,50,100,200,1000"
+                    >
+                        <p:column headerText="Date/Heure" style="width: 200px;">
+                            <h:outputText value="#{li.time}"/>
+                        </p:column>
+                        <p:column headerText="Module" style="width: 200px;">
+                            <h:outputText value="#{li.module}"/>
+                        </p:column>
+                        <p:column headerText="Action" style="width: 200px;">
+                            <h:outputText value="#{li.action}"/>
+                        </p:column>
+                        <p:column headerText="Message">
+                            <h:outputText value="#{li.message}"/>
+                        </p:column>
+                        <p:column headerText="Data">
+                            <h:outputText value="#{li.data}"/>
+                        </p:column>
                     </p:dataTable>
                 </div>
                 <p:poll interval="15" listener="#{activeSessionsCtrl.onUpdate}" update=":listForm"/>

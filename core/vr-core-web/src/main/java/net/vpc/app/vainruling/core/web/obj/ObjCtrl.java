@@ -1140,20 +1140,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
 
                 }
 
-                List<AutoFilterData> autoFilterDatas = new ArrayList<>();
                 List<AutoFilter> newAutoFilters = new ArrayList<>();
-                //autoFilters.clear();
-                for (Map.Entry<String, Object> entry : entity.getProperties().toMap().entrySet()) {
-                    if (entry.getKey().startsWith("ui.auto-filter.")) {
-                        String name = entry.getKey().substring("ui.auto-filter.".length());
-                        AutoFilterData d = VrUtils.parseJSONObject((String) entry.getValue(), AutoFilterData.class);
-                        d.setName(name);
-                        d.setBaseEntityName(entity.getName());
-                        autoFilterDatas.add(d);
-                    }
-                }
-                Collections.sort(autoFilterDatas);
-                for (AutoFilterData autoFilterData : autoFilterDatas) {
+                for (AutoFilterData autoFilterData : core.getEntityFilters(entity.getName())) {
                     String type = autoFilterData.getFilterType();
                     if (StringUtils.isEmpty(type) || type.equals("single-selection")) {
                         String expr = autoFilterData.getExpr();

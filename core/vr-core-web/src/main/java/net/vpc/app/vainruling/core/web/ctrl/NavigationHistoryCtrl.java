@@ -32,8 +32,8 @@ public class NavigationHistoryCtrl  {
     private static final Comparator<UserSession> SESSION_COMPARATOR = new Comparator<UserSession>() {
         @Override
         public int compare(UserSession o1, UserSession o2) {
-            Date d1=(o1!=null && o1.getConnexionTime()!=null)?o1.getConnexionTime(): MIN_DATE;
-            Date d2=(o2!=null && o2.getConnexionTime()!=null)?o2.getConnexionTime(): MIN_DATE;
+            Date d1=(o1!=null && o1.getToken().getConnexionTime()!=null)?o1.getToken().getConnexionTime(): MIN_DATE;
+            Date d2=(o2!=null && o2.getToken().getConnexionTime()!=null)?o2.getToken().getConnexionTime(): MIN_DATE;
             return -d1.compareTo(d2);
         }
     };

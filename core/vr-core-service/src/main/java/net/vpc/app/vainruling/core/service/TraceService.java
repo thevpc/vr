@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.core.service;
 import net.vpc.app.vainruling.core.service.model.AppTrace;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.util.VrPlatformUtils;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.common.strings.StringUtils;
@@ -122,20 +123,20 @@ public class TraceService {
                 && !entity.getEntityType().equals(AppTrace.class);
     }
 
-    private UserSession getCurrentSession() {
-        try {
-            return VrApp.getContext().getBean(UserSession.class);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-    private AppUser getCurrentUser() {
-        try {
-            return VrApp.getContext().getBean(CorePlugin.class).getCurrentUser();
-        } catch (Exception e) {
-            return null;
-        }
-    }
+//    private UserSession getCurrentSession() {
+//        try {
+//            return VrApp.getContext().getBean(UserSession.class);
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
+//    private AppUser getCurrentUser() {
+//        try {
+//            return VrApp.getContext().getBean(CorePlugin.class).getCurrentUser();
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
 
     public void trace(String action, String message, String data, String module, Level level) {
         if (isSilenced()) {
@@ -195,11 +196,10 @@ public class TraceService {
         if (isSilenced()) {
             return;
         }
-        UserSession us = getCurrentSession();
-        AppUser u = getCurrentUser();
-        String login = u == null ? "anonymous" : u.getLogin();
-        int userId = u == null ? -1 : u.getId();
-        String ip = us == null ? "" : us.getClientIpAddress();
+        UserToken us = CorePlugin.get().getCurrentToken();
+        String login = us == null ? "anonymous" : us.getUserLogin();
+        int userId = us == null ? -1 : us.getUserId()==null?-1:us.getUserId();
+        String ip = us == null ? "" : us.getIpAddress();
         trace(action, message, data, module, objectName, objectId, login, userId, level, ip);
     }
 

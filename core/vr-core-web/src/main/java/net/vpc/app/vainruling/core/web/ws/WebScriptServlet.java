@@ -5,11 +5,13 @@
  */
 package net.vpc.app.vainruling.core.web.ws;
 
+import com.google.gson.Gson;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
-import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.security.UserToken;
+import net.vpc.app.vainruling.core.service.security.UserTokenProvider;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.WebScriptServiceInvoker;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
@@ -17,13 +19,10 @@ import net.vpc.common.strings.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 /**
@@ -44,6 +43,26 @@ public class WebScriptServlet extends HttpServlet {
         prepareHeaders(req,resp);
     }
 
+    private void updateSessionHeaders(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        TokenManagerFilter tokenManagerFilter =(TokenManagerFilter) request.getServletContext().getAttribute(TokenManagerFilter.class.getName());
+        HttpSessionId old = tokenManagerFilter.resolveSessionId();
+        HttpSessionId newSessionId = (HttpSessionId) request.getAttribute(HttpSessionId.class.getName());
+        if(newSessionId==null) {
+
+            UserToken token = VrApp.getBean(UserTokenProvider.class).getToken();
+            String sessionId = null;
+            if (token != null) {
+                sessionId = token.getSessionId();
+            }
+            newSessionId=new HttpSessionId_XJSESSIONID(sessionId);
+        }
+        String oldStr=old==null?null:new Gson().toJson(old);
+        String newStr=new Gson().toJson(newSessionId);
+        if(!Objects.equals(oldStr,newStr)) {
+            tokenManagerFilter.updateHeaders(newSessionId, request, response);
+        }
+    }
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
         if (StringUtils.isEmpty(pathInfo)) {
@@ -61,10 +80,10 @@ public class WebScriptServlet extends HttpServlet {
                     login=pathInfo.substring(("/login/").length());
                 }
                 VrWebHelper.prepareUserSession();
-                UserSession userSession = UserSession.get();
                 AppUser u = VrApp.getBean(CorePlugin.class).login(login, request.getParameter("password"),"WS/S",request.getParameter("app"));
                 if (u != null) {
-                    response.setHeader("X-JSESSIONID",userSession.getSessionId());
+                    updateSessionHeaders(request,response);
+//                    response.setHeader("X-JSESSIONID",userSession.getSessionId());
                     sendSimpleResult(request,response, new AppUserStrict(u));
                 } else {
                     sendError(request,response, "SecurityException", "Invalid login or password");
@@ -80,6 +99,9 @@ public class WebScriptServlet extends HttpServlet {
                 sendError(request,response,e);
             }
         } else if (pathInfo.equals("/core/wscript") || pathInfo.equals("/wscript")) {
+            TokenManagerFilter tokenManagerFilter =(TokenManagerFilter) request.getServletContext().getAttribute(TokenManagerFilter.class.getName());
+            Gson g=new Gson();
+            String before = g.toJson(tokenManagerFilter.resolveSessionId());
             WebScriptServiceInvoker e=new WebScriptServiceInvoker();
             String s=request.getParameter("s");
             if(s==null){
@@ -88,7 +110,9 @@ public class WebScriptServlet extends HttpServlet {
                     s=VrUtils.toString(request.getReader());
                 }
             }
-            sendResult(request,response,e.invoke(s));
+            Map invoke = e.invoke(s);
+            updateSessionHeaders(request,response);
+            sendResult(request,response, invoke);
 
         } else {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -108,17 +132,17 @@ public class WebScriptServlet extends HttpServlet {
     }
 
     private void prepareHeaders(HttpServletRequest request,HttpServletResponse response){
-        String receivedCookie = request.getHeader("Cookie");
-        if(receivedCookie==null){
-            response.addHeader("X-RECEIVED-COOKIE","NONE");
-        }else{
-            response.addHeader("X-RECEIVED-COOKIE",receivedCookie);
-        }
-        response.addHeader("Access-Control-Allow-Origin","http://localhost:4200");
-        response.addHeader("Access-Control-Allow-Credentials","true");
-        response.addHeader("Access-Control-Allow-Methods","GET,POST");
-        response.addHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept, Cookie, X-JSESSIONID, X-RECEIVED-COOKIE");
-        response.addHeader("Access-Control-Expose-Headers","Content-Length, Set-Cookie, Server, Date, X-JSESSIONID, X-RECEIVED-COOKIE");
+//        String receivedCookie = request.getHeader("Cookie");
+//        if(receivedCookie==null){
+//            response.addHeader("X-RECEIVED-COOKIE","NONE");
+//        }else{
+//            response.addHeader("X-RECEIVED-COOKIE",receivedCookie);
+//        }
+//        response.addHeader("Access-Control-Allow-Origin","http://localhost:4200");
+//        response.addHeader("Access-Control-Allow-Credentials","true");
+//        response.addHeader("Access-Control-Allow-Methods","GET,POST");
+//        response.addHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept, Cookie, X-JSESSIONID, X-RECEIVED-COOKIE");
+//        response.addHeader("Access-Control-Expose-Headers","Content-Length, Set-Cookie, Server, Date, X-JSESSIONID, X-RECEIVED-COOKIE");
     }
 
     private void sendResult(HttpServletRequest request,HttpServletResponse response,Map m) throws IOException {

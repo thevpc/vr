@@ -4,6 +4,7 @@ package net.vpc.app.vainruling.core.service.util;
  * Created by vpc on 6/18/16.
  */
 public class AppVersion {
+    private String id = "vr";
     private String shortName = "VR";
     private String longName = "Vain Ruling";
     private String version = "1.0.54";
@@ -11,6 +12,14 @@ public class AppVersion {
     private String buildNumber = "54";
     private String author = "Taha BEN SALAH (c)";
     private String defaultTheme = "default";
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getVersion() {
         return version;

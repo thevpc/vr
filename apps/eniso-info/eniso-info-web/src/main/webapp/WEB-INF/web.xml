@@ -28,7 +28,7 @@
 
     <filter>
         <filter-name>TokenFilter</filter-name>
-        <filter-class>net.vpc.app.vainruling.core.web.ws.TokenFilter</filter-class>
+        <filter-class>net.vpc.app.vainruling.core.web.ws.TokenManagerFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>TokenFilter</filter-name>

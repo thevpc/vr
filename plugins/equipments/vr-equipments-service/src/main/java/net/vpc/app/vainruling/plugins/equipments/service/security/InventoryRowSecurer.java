@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.plugins.equipments.service.model.Inventory;
 import net.vpc.app.vainruling.plugins.equipments.service.model.InventoryRow;
 import net.vpc.upa.DefaultEntitySecurityManager;
@@ -32,7 +33,7 @@ public class InventoryRowSecurer extends DefaultEntitySecurityManager {
             return false;
         }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        UserSession us = core.getCurrentSession();
+        UserToken us = core.getCurrentToken();
         if (us != null) {
             if(us.isAdmin()){
                 return true;

@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.web.internship;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
@@ -70,8 +71,8 @@ public class InternshipsPlanningCtrl {
 
     @OnPageLoad
     public void onPageLoad() {
-        UserSession userSession = core.getCurrentSession();
-        getModel().setManager(userSession.isDepartmentManager());
+        UserToken token = core.getCurrentToken();
+        getModel().setManager(token.isManager());
         getModel().setGenerationDays(6);
         getModel().setGenerationMinutesPerSession(60);
         getModel().setGenerationSessionsPerDay(6);

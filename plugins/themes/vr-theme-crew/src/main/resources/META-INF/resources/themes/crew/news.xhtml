@@ -243,10 +243,10 @@ and open the template in the editor.
                             <li class="active"><a href="#" data-nav-section="about"><span
                                     style="color: #777;">Article</span></a></li>
                             <li>
-                                <h:commandLink rendered="#{!vr.currentSession.connected}"
+                                <h:commandLink rendered="#{vr.currentToken.userLogin eq null}"
                                                action="#{vr.gotoPage('login', '')}"><span
                                         style="color: #777;">My Space</span></h:commandLink>
-                                <h:commandLink rendered="#{vr.currentSession.connected}"
+                                <h:commandLink rendered="#{vr.currentToken.userLogin ne null}"
                                                action="#{vr.gotoPage('welcome', '')}"><span
                                         style="color: #777;">My Space</span></h:commandLink>
                             </li>

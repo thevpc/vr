@@ -5,8 +5,10 @@
  */
 package net.vpc.app.vainruling.core.web.converters;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
+import net.vpc.app.vainruling.core.web.Vr;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -28,13 +30,7 @@ public class RelativeDateConverter implements Converter {
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
         Date dte = (java.util.Date) o;
-        UserSession s = null;
-        try {
-            s = UserSession.get();
-        } catch (Exception e) {
-            //ignore error
-        }
-        return VrUtils.getRelativeDateMessage(dte, s == null ? null : s.getLocale());
+        return VrUtils.getRelativeDateMessage(dte, Vr.get().getLocale(null));
     }
 
 }

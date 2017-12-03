@@ -262,8 +262,7 @@ public abstract class AbstractCourseLoadCtrl {
                     }
                 }
                 if (accepted) {
-                    UserSession userSession = UserSession.get();
-                    boolean powerUser = userSession!=null && (userSession.isManagerOrAdmin());
+                    boolean powerUser = CorePlugin.get().isCurrentSessionAdminOrManager();
                     if((c.getAssignment().isLocked() || c.getAssignment().getCoursePlan().isLocked()) && !powerUser){
                         //dont add
                     }else {
@@ -434,7 +433,7 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public void doDeleteAssignment(Integer assignementId) {
-        if(UserSession.get().isManagerOrAdmin()){
+        if(CorePlugin.get().isCurrentSessionAdminOrManager()){
             AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
             a.removeCourseAssignment(assignementId,true,false);
         }
@@ -473,7 +472,7 @@ public abstract class AbstractCourseLoadCtrl {
 
     public void doSwitchLockAssignment(Integer assignementId) {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        if(UserSession.get().isManagerOrAdmin()) {
+        if(CorePlugin.get().isCurrentSessionAdminOrManager()) {
             if (assignementId != null) {
                 AcademicCourseAssignment assignment = a.findCourseAssignment(assignementId);
                 if(assignment!=null) {
@@ -487,7 +486,7 @@ public abstract class AbstractCourseLoadCtrl {
 
     public void doSwitchLockAssignmentSelected() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        if(UserSession.get().isManagerOrAdmin()) {
+        if(CorePlugin.get().isCurrentSessionAdminOrManager()) {
             for (SelectableAssignment s : getModel().getAll().values()) {
                 if (s.isSelected()) {
                     AcademicCourseAssignment assignment = s.getValue().getAssignment();
@@ -514,7 +513,7 @@ public abstract class AbstractCourseLoadCtrl {
 
     public void doDeleteSelected() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        if(UserSession.get().isManagerOrAdmin()) {
+        if(CorePlugin.get().isCurrentSessionAdminOrManager()) {
 //        AcademicTeacher t = getModel().getCurrentTeacher();
 //        if (t != null) {
             for (SelectableAssignment s : getModel().getAll().values()) {
@@ -551,15 +550,11 @@ public abstract class AbstractCourseLoadCtrl {
 
     public boolean isAllowedUpdateMineIntents(Integer assignmentId) {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        UserSession userSession = core.getCurrentSession();
-        if (userSession == null) {
+        Integer userId = core.getCurrentUserId();
+        if (userId == null) {
             return false;
         }
-        AppUser user = core.getCurrentUser();
-        if (user == null) {
-            return false;
-        }
-        if (userSession.isSuperAdmin()) {
+        if (core.isCurrentSessionAdmin()) {
             return true;
         }
 
@@ -568,7 +563,7 @@ public abstract class AbstractCourseLoadCtrl {
             return false;
         }
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher teacher = a.findTeacherByUser(user.getId());
+        AcademicTeacher teacher = a.findTeacherByUser(userId);
         if (teacher == null) {
             return false;
         }
@@ -576,21 +571,24 @@ public abstract class AbstractCourseLoadCtrl {
             SelectableAssignment t0 = getModel().getAll().get(assignmentId);
             AcademicCourseAssignment t = t0 == null ? null : t0.getValue().getAssignment();
             if (t != null) {
-                AppDepartment d = t.getOwnerDepartment();
-                if (d != null) {
-                    if (userSession.allowed("Custom.Education.CourseLoadUpdateIntents")) {
-                        AppDepartment d2 = user.getDepartment();
-                        if (d2 != null && d2.getId() == d.getId()) {
-                            return true;
+                AppUser user=core.findUser(userId);
+                if(user!=null) {
+                    AppDepartment d = t.getOwnerDepartment();
+                    if (d != null) {
+                        if (core.isCurrentAllowed("Custom.Education.CourseLoadUpdateIntents")) {
+                            AppDepartment d2 = user.getDepartment();
+                            if (d2 != null && d2.getId() == d.getId()) {
+                                return true;
+                            }
                         }
                     }
-                }
-                d = t.resolveDepartment();
-                if (d != null) {
-                    if (userSession.allowed("Custom.Education.CourseLoadUpdateIntents")) {
-                        AppDepartment d2 = user.getDepartment();
-                        if (d2 != null && d2.getId() == d.getId()) {
-                            return true;
+                    d = t.resolveDepartment();
+                    if (d != null) {
+                        if (core.isCurrentAllowed("Custom.Education.CourseLoadUpdateIntents")) {
+                            AppDepartment d2 = user.getDepartment();
+                            if (d2 != null && d2.getId() == d.getId()) {
+                                return true;
+                            }
                         }
                     }
                 }
@@ -601,17 +599,13 @@ public abstract class AbstractCourseLoadCtrl {
 
     public boolean isAllowedUpdateMineAssignments(Integer assignementId) {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        UserSession userSession = core.getCurrentSession();
-        if (userSession == null) {
-            return false;
-        }
-        AppUser user = core.getCurrentUser();
-        if (user == null) {
+        Integer userId = core.getCurrentUserId();
+        if (userId == null) {
             return false;
         }
         AppPeriod period = core.findPeriod(getTeacherFilter().getPeriodId());
 
-        if (userSession.isSuperAdmin()) {
+        if (core.isCurrentSessionAdmin()) {
             return true;
         }
 
@@ -623,11 +617,12 @@ public abstract class AbstractCourseLoadCtrl {
         if (assignementId != null) {
             SelectableAssignment t0 = getModel().getAll().get(assignementId);
             AcademicCourseAssignment t = t0 == null ? null : t0.getValue().getAssignment();
-            if (t != null) {
+            AppUser u=core.findUser(userId);
+            if (u!=null && t != null) {
                 AppDepartment d = t.getOwnerDepartment();
                 if (d != null) {
-                    if (userSession.allowed("Custom.Education.CourseLoadUpdateAssignments")) {
-                        AppDepartment d2 = user.getDepartment();
+                    if (core.isCurrentAllowed("Custom.Education.CourseLoadUpdateAssignments")) {
+                        AppDepartment d2 = u.getDepartment();
                         if (d2 != null && d2.getId() == d.getId()) {
                             return true;
                         }
@@ -635,8 +630,8 @@ public abstract class AbstractCourseLoadCtrl {
                 }
                 d = t.resolveDepartment();
                 if (d != null) {
-                    if (userSession.allowed("Custom.Education.CourseLoadUpdateAssignments")) {
-                        AppDepartment d2 = user.getDepartment();
+                    if (core.isCurrentAllowed("Custom.Education.CourseLoadUpdateAssignments")) {
+                        AppDepartment d2 = u.getDepartment();
                         if (d2 != null && d2.getId() == d.getId()) {
                             return true;
                         }

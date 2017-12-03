@@ -893,7 +893,7 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
             }
             AppDepartment d = r.getDepartment();
             if (d != null) {
-                return core.getCurrentSession().isDepartmentManager(d.getId());
+                return core.isCurrentSessionAdminOrManagerOf(d.getId());
             }
         }
         return false;
@@ -907,16 +907,15 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
             return false;
         }
         AppDepartment d = a.getOwnerDepartment();
-        UserSession currentSession = core.getCurrentSession();
         if (d != null) {
-            if (currentSession.isDepartmentManager(d.getId())) {
+            if (core.isCurrentSessionAdminOrManagerOf(d.getId())) {
                 return true;
             }
             return false;
         }
         d = a.resolveDepartment();
         if (d != null) {
-            if (currentSession.isDepartmentManager(d.getId())) {
+            if (core.isCurrentSessionAdminOrManagerOf(d.getId())) {
                 return true;
             }
         }

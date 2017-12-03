@@ -83,7 +83,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
             d.setUrl("modules/files/documents");
             d.setCss("fa-table");
 
-            String login = UserSession.getCurrentLogin();
+            String login = core.getCurrentUserLogin();
             if ("root".equals(c.getType())) {
                 d.setTitle("Documents Racine");
                 d.setSecurityKey("Custom.FileSystem.RootFileSystem");
@@ -133,7 +133,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
             }
         });
         VirtualFileSystem fs = null;
-        String login = UserSession.getCurrentLogin();
+        String login = core.getCurrentUserLogin();
         if (StringUtils.isEmpty(login)) {
             fs = VFS.EMPTY_FS;
         } else {
@@ -172,7 +172,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
         } else {
             getModel().setCurrent(DocumentsUtils.createFileInfo("/", VFileKind.ROOT, getModel().getFileSystem().get("/")));
         }
-        UserSession.get().setLastVisitedPageInfo(getModel().getCurrent().getFile().getPath());
+        CorePlugin.get().getCurrentSession().setLastVisitedPageInfo(getModel().getCurrent().getFile().getPath());
         onRefresh();
     }
 
@@ -185,7 +185,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
 
     public void updateCurrent(VFile file) {
         getModel().setCurrent(DocumentsUtils.createFileInfo(file));
-        UserSession.get().setLastVisitedPageInfo(getModel().getCurrent().getFile().getPath());
+        CorePlugin.get().getCurrentSession().setLastVisitedPageInfo(getModel().getCurrent().getFile().getPath());
         onRefresh();
     }
 

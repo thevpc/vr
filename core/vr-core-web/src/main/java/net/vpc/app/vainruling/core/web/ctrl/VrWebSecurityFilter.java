@@ -5,7 +5,9 @@
  */
 package net.vpc.app.vainruling.core.web.ctrl;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.security.UserToken;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -42,7 +44,8 @@ public class VrWebSecurityFilter implements Filter {
         String servletPath = req.getServletPath();
         String pathInfo = req.getPathInfo();
         boolean acceptRequest = true;
-        UserSession sso = null;
+        CorePlugin sso = null;
+        UserToken currentToken=null;
         boolean requireAuth=false;
         if(r.toString().contains("/modules/")){
             requireAuth=true;
@@ -70,11 +73,12 @@ public class VrWebSecurityFilter implements Filter {
         }
         if (requireAuth) {
             try {
-                sso = (UserSession) req.getSession().getAttribute("userSession");
+                sso = (CorePlugin) CorePlugin.get();
+                currentToken = sso.getCurrentToken();
             } catch (Exception e) {
 
             }
-            if (sso == null || sso.getUser() == null) {
+            if (currentToken == null || currentToken.getUserId() == null) {
                 acceptRequest = false;
 //                //make sso authentification!
 //                String ssotoken = request.getParameter("ssotoken");
@@ -151,7 +155,8 @@ public class VrWebSecurityFilter implements Filter {
                 if(qs!=null){
                     ri=ri+"?"+qs;
                 }
-                sso.setPreConnexionURL(ri);
+                UserSession currentSession = sso.getCurrentSession();
+                currentSession.setPreConnexionURL(ri);
             }
             HttpServletResponse res = (HttpServletResponse) response;
             if(!res.isCommitted()) {

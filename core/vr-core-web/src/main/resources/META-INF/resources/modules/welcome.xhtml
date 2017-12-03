@@ -226,13 +226,13 @@ and open the template in the editor.
 
                                 <ul class="list-group list-group-unbordered">
                                     <li class="list-group-item">
-                                        <b>Groupes</b> <a class="pull-right">#{vr.currentSession.profileNames.size()}</a>
+                                        <b>Groupes</b> <a class="pull-right">#{vr.currentToken.profileNames.size()}</a>
                                     </li>
 
-                                    <ui:fragment rendered="#{vr.currentSession.impersonating}">
+                                    <ui:fragment rendered="#{vr.currentToken.rootLogin!=null}">
                                         <li class="list-group-item">
                                             <b>Impersonifcation</b> <a
-                                                class="pull-right">#{vr.currentSession.rootUser.contact.fullName} aka #{vr.currentSession.rootUser.login}</a>
+                                                class="pull-right">#{vr.currentToken.rootLogin}</a>
                                         </li>
 
                                     </ui:fragment>
@@ -283,7 +283,7 @@ and open the template in the editor.
                                 <strong><i class="fa fa-pencil margin-r-5"></i> Groupes</strong>
 
                                 <p>
-                                    <ui:repeat value="#{vr.currentSession.profileNames.toArray()}" var="prName">
+                                    <ui:repeat value="#{vr.currentToken.profileNames.toArray()}" var="prName">
                                         <span class="label label-#{vr.hashToArr(prName,'danger','success','info','warning','primary','default')}">#{prName}</span>
                                     </ui:repeat>
                                 </p>

@@ -11,6 +11,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
 import net.vpc.common.io.IOUtils;
 import net.vpc.common.strings.StringUtils;
@@ -210,9 +211,8 @@ public class VrUtils {
     }
 
     public static String fstr(String format, Object... a) {
-        UserSession s = null;
-        s = CorePlugin.get().getCurrentSession();
-        Locale loc = s == null ? null : s.getLocale();
+        UserToken s =  CorePlugin.get().getCurrentToken();
+        Locale loc = s == null ? null : s.getLocale()==null?null:new Locale(s.getLocale());
         if (loc == null) {
             loc = Locale.getDefault(Locale.Category.DISPLAY);
         }
@@ -919,8 +919,7 @@ public class VrUtils {
         if (right == null) {
             return;
         }
-        UserSession currentSession = CorePlugin.get().getCurrentSession();
-        if (currentSession != null && currentSession.getRights().contains(right)) {
+        if (!CorePlugin.get().isCurrentAllowed(right)) {
             throw new SecurityException("Not Allowed");
         }
     }
@@ -1020,5 +1019,27 @@ public class VrUtils {
         return files.toArray(new VFile[files.size()]);
     }
 
+    public static <T> T checkBean(T instance,Class<T> t){
+        if(instance==null){
+            instance=VrApp.getBean(t);
+        }
+        return instance;
+    }
 
+
+
+
+    public static int[] append(int[] array,int value){
+        int[] array2=new int[array.length+1];
+        System.arraycopy(array,0,array2,0,array.length);
+        array2[array.length]=value;
+        return array2;
+    }
+
+    public static int[] append(int[] array1,int[] array2){
+        int[] rarray=new int[array1.length+array2.length];
+        System.arraycopy(array1,0,rarray,0,array1.length);
+        System.arraycopy(array2,0,rarray,array1.length,array2.length);
+        return rarray;
+    }
 }

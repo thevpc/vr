@@ -1,7 +1,7 @@
 package net.vpc.app.vainruling.core.service.security;
 
 public interface UserSessionConfigurator {
-    void preConfigure(UserSession s);
+    void preConfigure(UserToken s);
 
-    void postConfigure(UserSession s);
+    void postConfigure(UserToken s);
 }

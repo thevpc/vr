@@ -1,21 +1,47 @@
 package net.vpc.app.vainruling.core.web;
 
 import net.vpc.app.vainruling.core.service.PlatformSession;
+import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.security.UserToken;
 
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 
 public class HttpPlatformSession implements PlatformSession {
     private HttpSession session;
+    private String sessionId;
+    private long connexionTime;
 
     public HttpPlatformSession(HttpSession session) {
         this.session = session;
+        this.sessionId=session.getId();
+        this.connexionTime=session.getCreationTime();
     }
 
-    public HttpSession unwrap(){
+    @Override
+    public Date getConnexionTime() {
+        return new Date(connexionTime);
+    }
+
+    @Override
+    public Date getLastAccessedTime() {
+        try {
+            return new Date(session.getLastAccessedTime());
+        } catch (IllegalStateException ex) {
+            return null;
+        }
+    }
+
+    public HttpSession unwrap() {
         return session;
     }
 
-    public boolean isValid(){
+    @Override
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public boolean isValid() {
         try {
             session.getLastAccessedTime();
         } catch (IllegalStateException ex) {
@@ -25,12 +51,34 @@ public class HttpPlatformSession implements PlatformSession {
     }
 
     @Override
+    public UserToken getToken() {
+        try {
+            UserSession us = (UserSession) session.getAttribute("userSession");
+            if (us == null) {
+                return null;
+            }
+            return us.getToken();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
     public boolean invalidate() {
+        boolean err=false;
+        try {
+            UserSession us = (UserSession) session.getAttribute("userSession");
+            if (us != null) {
+                us.reset();
+            }
+        } catch (Exception e) {
+            err=true;
+        }
         try {
             session.invalidate();
-        }catch (Exception e){
-            return false;
+        } catch (Exception e) {
+            err=true;
         }
-        return true;
+        return !err;
     }
 }

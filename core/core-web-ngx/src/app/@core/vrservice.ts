@@ -27,7 +27,7 @@ export class VrService {
     alert('authenticate : ' + apiURL);
     return this.http.get(apiURL).map(res => {
       const jsessionid = res.headers.get('x-jsessionid');
-      // alert('found session : ' + jsessionid);
+      alert('found session : ' + jsessionid);
       if (jsessionid == null) {
         return;
       }

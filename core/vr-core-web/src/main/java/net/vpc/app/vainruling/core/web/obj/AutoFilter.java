@@ -1,6 +1,7 @@
 package net.vpc.app.vainruling.core.web.obj;
 
-import java.util.HashMap;
+import net.vpc.app.vainruling.core.service.obj.AutoFilterData;
+
 import java.util.Map;
 
 /**

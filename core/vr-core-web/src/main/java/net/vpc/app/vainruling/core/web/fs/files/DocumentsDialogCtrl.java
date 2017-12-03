@@ -123,7 +123,7 @@ public class DocumentsDialogCtrl {
                     &&
                     !getModel().getCurrent().getFile().getACL().isReadOnly();
         }
-        return UserSession.get().isAdmin();
+        return CorePlugin.get().getCurrentToken().isAdmin();
     }
 
     public void fireEventExtraDialogClosed() {
@@ -167,7 +167,7 @@ public class DocumentsDialogCtrl {
             }
         });
         VirtualFileSystem fs = null;
-        String login = UserSession.getCurrentLogin();
+        String login = core.getCurrentUserLogin();
         if ("root".equals(c.getType())) {
             fs = rootfs;
         } else if ("user".equals(c.getType())) {

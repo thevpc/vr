@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.core.web.util;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.util.VrPlatformUtils;
 import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.common.io.FileUtils;
@@ -32,9 +32,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.Locale;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -79,11 +81,10 @@ public class VrWebHelper {
     }
     public static void prepareUserSession() {
 
-        UserSession s = UserSession.get();
-        AppUser u = CorePlugin.get().getCurrentUser();
+        UserToken s = CorePlugin.get().getCurrentToken();
         if (s != null) {
-            if(u != null) {
-                s.setTheme(Vr.get().getUserTheme(u.getLogin()).getId());
+            if(s.getUserLogin() != null) {
+                s.setTheme(Vr.get().getUserTheme(s.getUserLogin()).getId());
             }else{
                 s.setTheme(Vr.get().getAppTheme().getId());
             }
@@ -93,14 +94,15 @@ public class VrWebHelper {
                 s.setSessionId(session.getId());
             }
             if (s.getLocale() == null) {
-                s.setLocale(req.getLocale());
+                Locale locale = req.getLocale();
+                s.setLocale(locale==null?null:locale.toString());
             }
-            if (s.getClientIpAddress() == null) {
+            if (s.getIpAddress() == null) {
                 String ipAddress = req.getHeader("X-FORWARDED-FOR");
                 if (ipAddress == null) {
                     ipAddress = req.getRemoteAddr();
                 }
-                s.setClientIpAddress(ipAddress);
+                s.setIpAddress(ipAddress);
             }
         }
     }

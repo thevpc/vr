@@ -1,4 +1,4 @@
-package net.vpc.app.vainruling.core.web.obj;
+package net.vpc.app.vainruling.core.service.obj;
 
 /**
  * Created by vpc on 8/20/16.

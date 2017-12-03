@@ -7,12 +7,15 @@ package net.vpc.app.vainruling.core.service.security;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
+import net.vpc.app.vainruling.core.service.model.AppProfileRight;
+import net.vpc.app.vainruling.core.service.model.AppRightName;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.upa.*;
 import net.vpc.upa.config.SecurityContext;
 import net.vpc.upa.exceptions.UPAException;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -46,7 +49,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
         if (CorePlugin.USER_ADMIN.equals(login)) {
             return true;
         }
-        UserSession s = UserSession.get();
+        UserToken s = CorePlugin.get().getCurrentToken();
         if (s == null) {
             return false;
         }
@@ -86,7 +89,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
         if (denyOthers.contains(key)) {
             return false;
         }
-        UserSession s = UserSession.get();
+        UserToken s = CorePlugin.get().getCurrentToken();
         if (s == null) {
             return false;
         }
@@ -122,9 +125,9 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
             return new DefaultUserPrincipal(INTERNAL_LOGIN, user);
         } else {
             PersistenceUnit pu = UPA.getPersistenceUnit();
-            UserSession sm = null;
+            UserToken sm = null;
             try {
-                sm = UserSession.get();
+                sm = CorePlugin.get().getCurrentToken();
             } catch (Exception e) {
                 //
             }
@@ -132,10 +135,10 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
                     .setParameter("login", login)
                     .getFirstResultOrNull();
             if (user != null) {
-                trace.trace("login-privileged", "successful", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO, sm == null ? null : sm.getClientIpAddress());
+                trace.trace("login-privileged", "successful", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO, sm == null ? null : sm.getIpAddress());
                 return new DefaultUserPrincipal(login, user);
             } else {
-                trace.trace("login-privileged", "failed", login, getClass().getSimpleName(), null, null, "anonymous", -1, Level.SEVERE, sm == null ? null : sm.getClientIpAddress());
+                trace.trace("login-privileged", "failed", login, getClass().getSimpleName(), null, null, "anonymous", -1, Level.SEVERE, sm == null ? null : sm.getIpAddress());
                 throw new UPAException("InvalidLogin");
             }
         }
@@ -155,17 +158,17 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
                 .setParameter("password", credentials)
                 .getFirstResultOrNull();
         TraceService trace = TraceService.get();
-        UserSession sm = null;
+        UserToken sm = null;
         try {
-            sm = UserSession.get();
+            sm = CorePlugin.get().getCurrentToken();
         } catch (Exception e) {
             //
         }
         if (user != null) {
-            trace.trace("login", "successful", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO, sm == null ? null : sm.getClientIpAddress());
+            trace.trace("login", "successful", login, getClass().getSimpleName(), null, null, login, user.getId(), Level.INFO, sm == null ? null : sm.getIpAddress());
             return new DefaultUserPrincipal(login, user);
         } else {
-            trace.trace("login", "failed", login + "/" + credentials, getClass().getSimpleName(), null, null, "anonymous", -1, Level.SEVERE, sm == null ? null : sm.getClientIpAddress());
+            trace.trace("login", "failed", login + "/" + credentials, getClass().getSimpleName(), null, null, "anonymous", -1, Level.SEVERE, sm == null ? null : sm.getIpAddress());
             throw new UPAException("InvalidLogin");
         }
     }

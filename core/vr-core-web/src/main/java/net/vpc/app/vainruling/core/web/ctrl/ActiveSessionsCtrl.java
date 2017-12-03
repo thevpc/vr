@@ -9,15 +9,20 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.PlatformSession;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppTrace;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.AppUserType;
 import net.vpc.app.vainruling.core.service.notification.PollAware;
 import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.security.UserSessionInfo;
+import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
+import net.vpc.upa.Action;
+import net.vpc.upa.UPA;
 import org.primefaces.model.chart.DonutChartModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -37,9 +42,9 @@ import java.util.*;
 @Scope(value = "singleton")
 public class ActiveSessionsCtrl implements PollAware {
     public static final Date MIN_DATE = new Date(Long.MIN_VALUE);
-    private static final Comparator<UserSession> SESSION_COMPARATOR = new Comparator<UserSession>() {
+    private static final Comparator<UserSessionInfo> SESSION_COMPARATOR = new Comparator<UserSessionInfo>() {
         @Override
-        public int compare(UserSession o1, UserSession o2) {
+        public int compare(UserSessionInfo o1, UserSessionInfo o2) {
             Date d1=(o1!=null && o1.getConnexionTime()!=null)?o1.getConnexionTime(): MIN_DATE;
             Date d2=(o2!=null && o2.getConnexionTime()!=null)?o2.getConnexionTime(): MIN_DATE;
             return -d1.compareTo(d2);
@@ -55,29 +60,40 @@ public class ActiveSessionsCtrl implements PollAware {
 //        System.out.println("ActiveSessionsCtrl "+(COUNT));
     }
 
-    public boolean isInvalidatable(UserSession s){
-        UserSession userSession = core.getCurrentSession();
-        if(userSession==null || s==null){
+    public boolean isInvalidatable(UserSessionInfo s){
+        if(s==null || s.getSessionId()==null){
             return false;
         }
-        if(s.isValid() || core.containsUserSession(s.getSessionId())){
-            return false;
-        }
-        if(StringUtils.nonNull(userSession.getSessionId()).equals(StringUtils.nonNull(s.getSessionId()))){
-            return false;
+        UserToken userSession = core.getCurrentToken();
+        if(userSession!=null) {
+            if (StringUtils.nonNull(userSession.getSessionId()).equals(StringUtils.nonNull(s.getSessionId()))) {
+                return false;
+            }
         }
         return true;
     }
 
-    public void onInvalidateSession(UserSession s){
+    public void onShowLog(UserSessionInfo s){
+        if(s==null || s.getUserId()==null){
+            getModel().setCurrentUserSession(null);
+            getModel().setCurrentLog(new ArrayList<>());
+        }else{
+            getModel().setCurrentUserSession(s);
+            getModel().setCurrentLog(core.findTraceByUser(s.getUserId(),100));
+        }
+
+    }
+    public void onInvalidateSession(UserSessionInfo s){
         if(isInvalidatable(s)){
             core.logout(s.getSessionId());
+            onRefresh();
         }
     }
 
-    public List<UserSession> getOrderedAndValidSessions(){
-        List<UserSession> validOnly=new ArrayList<>();
-        for (UserSession userSession : core.getActiveSessions()) {
+    public List<UserSessionInfo> getOrderedAndValidSessions(){
+        List<UserSessionInfo> validOnly=new ArrayList<>();
+        boolean admin = core.isCurrentSessionAdmin();
+        for (UserSessionInfo userSession : core.getActiveSessions(!admin,!admin,admin)) {
             validOnly.add(userSession);
 //            boolean validSession=true;
 //            if(isInvalidatable(userSession)) {
@@ -100,24 +116,22 @@ public class ActiveSessionsCtrl implements PollAware {
         synchronized (model) {
             model.updating = true;
             try {
-                List<UserSession> list = getOrderedAndValidSessions();
-                Map<Integer, TypeStat> stats = new HashMap<Integer, TypeStat>();
-                for (UserSession i : list) {
-                    if (i != null && i.getUser() != null) {
-                        AppUserType t = i.getUser().getType();
+                List<UserSessionInfo> list = getOrderedAndValidSessions();
+                Map<String, TypeStat> stats = new HashMap<String, TypeStat>();
+                int typeCounter=0;
+                for (UserSessionInfo i : list) {
+                    if (i != null && i.getUserId() != null) {
+                        String t = i.getUserTypeName();
                         if (t != null) {
-                            TypeStat s = stats.get(t.getId());
+                            TypeStat s = stats.get(t);
                             if (s == null) {
-                                s = new TypeStat(t.getId(), t.getName(), 0);
-                                stats.put(t.getId(), s);
+                                s = new TypeStat(++typeCounter, t, 0);
+                                stats.put(t, s);
                             }
                             s.count++;
                         }
-                    } else if (i != null && i.getUser() == null) {
-                        AppUser uu = new AppUser();
-                        uu.setId(-1);
-                        uu.setLogin("<anonymous>");
-                        i.setUser(uu);
+                    } else if (i != null && i.getUserId() == null) {
+                        i.setUserLogin("<anonymous>");
                     }
                 }
                 getModel().setSessions(list);
@@ -138,20 +152,36 @@ public class ActiveSessionsCtrl implements PollAware {
                     getModel().setDonut1(d);
                     Map<String, Number> circle1 = new LinkedHashMap<String, Number>();
                     Map<String, Number> circle2 = new LinkedHashMap<String, Number>();
-                    for (Map.Entry<Integer, TypeStat> entry : stats.entrySet()) {
+                    for (Map.Entry<String, TypeStat> entry : stats.entrySet()) {
                         circle1.put(entry.getValue().getType(), entry.getValue().getCount());
                     }
-                    for (UserSession i : list) {
-                        if (i != null && i.getUser() != null && i.getUser().getDepartment() != null) {
-                            AppDepartment c = i.getUser().getDepartment();
-                            if (c!=null && !StringUtils.isEmpty(c.getName())) {
-                                VrUtils.incKey(circle2, c.getName());
+                    for (UserSessionInfo i : list) {
+                        if (i != null && i.getUserId() != null) {
+                            AppUser u = UPA.getContext().invokePrivileged(new Action<AppUser>() {
+                                @Override
+                                public AppUser run() {
+                                    return core.findUser(i.getUserId());
+                                }
+                            });
+                            if(u!=null) {
+                                AppDepartment c = u.getDepartment();
+                                if (c != null && !StringUtils.isEmpty(c.getName())) {
+                                    VrUtils.incKey(circle2, c.getName());
+                                }
                             }
                         }
                     }
                     VrUtils.reverseSortCount(circle1);
                     VrUtils.reverseSortCount(circle2);
                     VrUtils.mergeMapKeys(circle1, circle2);
+
+                    //workaround
+                    if(circle1.isEmpty()){
+                        circle1.put("No Data", 0);
+                    }
+                    if(circle2.isEmpty()){
+                        circle2.put("No Data", 0);
+                    }
                     d.addCircle(circle1);
                     d.addCircle(circle2);
                 }
@@ -167,19 +197,32 @@ public class ActiveSessionsCtrl implements PollAware {
                     getModel().setDonut2(d);
                     Map<String, Number> circle1 = new LinkedHashMap<String, Number>();
                     Map<String, Number> circle2 = new LinkedHashMap<String, Number>();
-                    for (UserSession i : list) {
+                    for (UserSessionInfo i : list) {
                         if (i.getLocale() != null) {
-                            if (!StringUtils.isEmpty(i.getLocale().getLanguage())) {
-                                VrUtils.incKey(circle1, i.getLocale().getLanguage());
+                            String language = new Locale(i.getLocale()).getLanguage();
+                            if (!StringUtils.isEmpty(language)) {
+                                VrUtils.incKey(circle1, language);
                             }
                         }
                         if (!StringUtils.isEmpty(i.getLastVisitedPage())) {
                             VrUtils.incKey(circle2, i.getLastVisitedPage());
                         }
                     }
+                    if(circle1.size()==0){
+                        circle1.put("EN",0);
+                    }
                     VrUtils.reverseSortCount(circle1);
                     VrUtils.reverseSortCount(circle2, 12, null);
                     VrUtils.mergeMapKeys(circle1, circle2);
+
+                    //workaround
+//                    if(circle1.isEmpty()){
+//                        circle1.put("No Data", 0);
+//                    }
+//                    if(circle2.isEmpty()){
+//                        circle2.put("No Data", 0);
+//                    }
+
                     d.addCircle(circle1);
                     d.addCircle(circle2);
                 }
@@ -202,7 +245,7 @@ public class ActiveSessionsCtrl implements PollAware {
         onRefresh();
     }
 
-    public String connectionPeriod(UserSession s) {
+    public String connectionPeriod(UserSessionInfo s) {
         if (s == null) {
             return "";
         }
@@ -254,28 +297,46 @@ public class ActiveSessionsCtrl implements PollAware {
 
     public static class Model {
 
-        private List<UserSession> sessions = new ArrayList<>();
+        private List<UserSessionInfo> sessions = new ArrayList<>();
         private List<TypeStat> typeStats = new ArrayList<>();
         private boolean updating = false;
         private boolean admin = false;
         private DonutChartModel donut1;
         private DonutChartModel donut2;
+        private List<AppTrace> currentLog;
+        private UserSessionInfo currentUserSession;
 
-        public List<UserSession> getOrderedSessions() {
-            List<UserSession> arr=new ArrayList<>(getSessions());
-            UserSession curr = UserSession.get();
+        public UserSessionInfo getCurrentUserSession() {
+            return currentUserSession;
+        }
+
+        public void setCurrentUserSession(UserSessionInfo currentUserSession) {
+            this.currentUserSession = currentUserSession;
+        }
+
+        public void setCurrentLog(List<AppTrace> currentLog) {
+            this.currentLog = currentLog;
+        }
+
+        public List<AppTrace> getCurrentLog() {
+            return currentLog;
+        }
+
+        public List<UserSessionInfo> getOrderedSessions() {
+            List<UserSessionInfo> arr=new ArrayList<>(getSessions());
+            UserToken curr = CorePlugin.get().getCurrentToken();
             if(curr!=null) {
                 Collections.sort(arr, SESSION_COMPARATOR);
                 if (!curr.isAdmin()) {
                     HashSet<Integer> visited = new HashSet<>();
-                    for (Iterator<UserSession> iterator = arr.iterator(); iterator.hasNext(); ) {
-                        UserSession userSession = iterator.next();
-                        if (userSession.getUser() == null) {
+                    for (Iterator<UserSessionInfo> iterator = arr.iterator(); iterator.hasNext(); ) {
+                        UserSessionInfo userSession = iterator.next();
+                        if (userSession.getUserId() == null) {
                             iterator.remove();
-                        } else if (visited.contains(userSession.getUser().getId())) {
+                        } else if (visited.contains(userSession.getUserId())) {
                             iterator.remove();
                         } else {
-                            visited.add(userSession.getUser().getId());
+                            visited.add(userSession.getUserId());
                         }
                     }
                 }
@@ -283,11 +344,11 @@ public class ActiveSessionsCtrl implements PollAware {
             return arr;
         }
 
-        public List<UserSession> getSessions() {
+        public List<UserSessionInfo> getSessions() {
             return sessions;
         }
 
-        public void setSessions(List<UserSession> sessions) {
+        public void setSessions(List<UserSessionInfo> sessions) {
             this.sessions = sessions;
         }
 

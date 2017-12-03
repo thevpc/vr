@@ -35,7 +35,7 @@ public class FSUtils {
 //        AppUser t = ap.findUser(userId);
 //        CorePlugin fs = VrApp.getBean(CorePlugin.class);
 //        if (t != null) {
-//            VFile thisTeacherPhoto = fs.getUserFolder(t.getLogin()).get(path);
+//            VFile thisTeacherPhoto = fs.getUserFolder(t.getUserLogin()).get(path);
 //            if (thisTeacherPhoto.exists()) {
 //                return thisTeacherPhoto;
 //            } else {

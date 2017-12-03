@@ -705,7 +705,7 @@ public class MyInternshipBoardsCtrl {
             public void run() {
                 try {
                     String report = getModel().getRequestUploadType();
-                    String login = UserSession.getCurrentLogin();
+                    String login = core.getCurrentUserLogin();
                     MirroredPath temp=CorePlugin.get().createTempUploadFolder();
 
 

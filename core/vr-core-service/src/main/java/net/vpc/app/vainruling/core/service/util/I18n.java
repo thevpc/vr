@@ -9,7 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.plugins.Plugin;
 import net.vpc.app.vainruling.core.service.plugins.PluginComponent;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.security.UserSession;
+import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UPAObject;
 import net.vpc.upa.types.I18NString;
@@ -155,15 +155,15 @@ public class I18n implements Serializable {
     }
 
     public ResourceBundleSuite getResourceBundleSuite() {
-        UserSession s = null;
+        UserToken s = null;
         try {
-            s = CorePlugin.get().getCurrentSession();
+            s = CorePlugin.get().getCurrentToken();
         } catch (Exception e) {
             // not in session context!
         }
         Locale lang = null;
-        if (s != null && s.getUser() != null && s.getLang() != null) {
-            lang = new Locale(s.getLang());
+        if (s != null && s.getUserLogin() != null && s.getLocale() != null) {
+            lang = new Locale(s.getLocale());
         }
         if (lang == null) {
             lang = Locale.getDefault();

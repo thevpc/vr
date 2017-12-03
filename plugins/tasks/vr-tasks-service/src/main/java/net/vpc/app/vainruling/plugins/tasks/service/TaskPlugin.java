@@ -55,9 +55,8 @@ public class TaskPlugin {
     }
 
     public List<TodoList> findTodoListsByResp(Integer user) {
-        UserSession session = core.getCurrentSession();
         List<AppProfile> up = null;
-        if (!session.allowed("TASK_VIEW_ALL")) {
+        if (!core.isCurrentAllowed("TASK_VIEW_ALL")) {
             if (user == null) {
                 user = core.getCurrentUserId();
             } else {
@@ -98,9 +97,8 @@ public class TaskPlugin {
     }
 
     public List<TodoList> findTodoListsByInitiator(Integer user) {
-        UserSession session = core.getCurrentSession();
         HashSet<Integer> fnd = null;
-        if (!session.allowed("TASK_VIEW_ALL")) {
+        if (!core.isCurrentAllowed("TASK_VIEW_ALL")) {
             if (user == null) {
                 user = core.getCurrentUserId();
             } else {
@@ -216,7 +214,7 @@ public class TaskPlugin {
             pu.remove(TodoList.class, RemoveOptions.forId(t.getId()));
 //            UserSession session = core.getCurrentSession();
 //            t.setDeleted(true);
-//            t.setDeletedBy(session.getUser().getLogin());
+//            t.setDeletedBy(session.getUser().getUserLogin());
 //            t.setDeletedOn(new Timestamp(System.currentTimeMillis()));
 //            pu.merge(t);
         }
@@ -242,7 +240,6 @@ public class TaskPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Todo t = pu.findById(Todo.class, todoId);
         if (t != null) {
-            UserSession session = core.getCurrentSession();
             t.setArchived(true);
             pu.merge(t);
         }
@@ -328,7 +325,6 @@ public class TaskPlugin {
 
     public List<Todo> findTodosByResponsible(Integer listId, Integer responsible, TodoStatusType[] statuses) {
 
-        UserSession session = core.getCurrentSession();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         HashMap<String, Object> params = new HashMap<String, Object>();
         StringBuilder q = new StringBuilder("Select a from Todo a where a.deleted=:d and a.archived=:r");
@@ -352,7 +348,7 @@ public class TaskPlugin {
             q.append(" and a.listId=:li");
             params.put("li", listId);
         }
-        if (!session.allowed("TASK_VIEW_ALL")) {
+        if (!core.isCurrentAllowed("TASK_VIEW_ALL")) {
             q.append(" and a.responsibleId=:i");
             params.put("i", Convert.toInt(core.getCurrentUser(), IntegerParserConfig.LENIENT_F));
         } else {
@@ -365,7 +361,6 @@ public class TaskPlugin {
     }
 
     public List<Todo> findTodosByInitiator(Integer listId, Integer initiator, TodoStatusType status) {
-        UserSession session = core.getCurrentSession();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         HashMap<String, Object> params = new HashMap<String, Object>();
         StringBuilder q = new StringBuilder("Select a from Todo a where a.deleted=:d and a.archived=:r");
@@ -380,7 +375,7 @@ public class TaskPlugin {
             q.append(" and a.listId=:li");
             params.put("li", listId);
         }
-        if (!session.allowed("TASK_VIEW_ALL")) {
+        if (!core.isCurrentAllowed("TASK_VIEW_ALL")) {
             q.append(" and a.initiatorId=:i");
             params.put("i", Convert.toInt(core.getCurrentUserId(),IntegerParserConfig.LENIENT_F));
         } else {

@@ -7,7 +7,8 @@ package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.agent.ActiveSessionsTracker;
+import net.vpc.upa.UPA;
+import net.vpc.upa.VoidAction;
 
 import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionEvent;
@@ -27,7 +28,12 @@ public class AppSessionListener implements HttpSessionListener {
     public void sessionDestroyed(HttpSessionEvent se) {
         try {
             String sid = se.getSession().getId();
-            VrApp.getBean(CorePlugin.class).logout(sid);
+            UPA.getContext().invokePrivileged(new VoidAction() {
+                @Override
+                public void run() {
+                    VrApp.getBean(CorePlugin.class).logout(sid);
+                }
+            });
         } catch (Exception e) {
             System.err.println(e);
         }

@@ -604,7 +604,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
                 &&
                 (getModel().getNewItem().isExternalMessage()
                         ||
-                        UserSession.get().isAdmin()
+                        CorePlugin.get().getCurrentToken().isAdmin()
                 )) {
             c.setEmails(true);
         }

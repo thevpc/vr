@@ -416,14 +416,14 @@ public class MyInternshipsCtrl implements DocumentUploadListener{
             public void run() {
                 try {
                     String report = getModel().getRequestUploadType();
-                    CorePlugin fs = VrApp.getBean(CorePlugin.class);
-                    String login = UserSession.getCurrentLogin();
+                    CorePlugin core = VrApp.getBean(CorePlugin.class);
+                    String login = core.getCurrentUserLogin();
                     MirroredPath temp=CorePlugin.get().createTempUploadFolder();
                     File f = new File(temp.getNativePath(), event.getFile().getFileName());
                     event.getFile().write(f.getPath());
                     AcademicInternship internship = getModel().getInternship();
 
-                    VFile userHome = fs.getUserFolder(login).get("MesRapports");
+                    VFile userHome = core.getUserFolder(login).get("MesRapports");
                     userHome.mkdirs();
                     PathInfo uu = PathInfo.create(f);
                     String extensionPart = uu.getExtensionPart();

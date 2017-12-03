@@ -122,9 +122,7 @@ public class VrHtmlRenderer extends HtmlRenderer {
     @Override
     public void visit(WtSignature n)
     {
-        UserSession s = CorePlugin.get().getCurrentSession();
-
-        String usr = (s == null || s.getUser() == null) ? "anonymous" : s.getUser().getLogin();
+        String usr = CorePlugin.get().getCurrentUserLogin();
         switch (n.getTildeCount()){
             case 3:{
                 p.print(usr);

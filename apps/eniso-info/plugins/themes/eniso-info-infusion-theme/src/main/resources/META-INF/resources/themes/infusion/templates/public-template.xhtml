@@ -45,6 +45,7 @@ and open the template in the editor.
 
     </ui:insert>
 </h:head>
+<!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
 <h:body>
 
     <header class="clearfix">
@@ -70,7 +71,7 @@ and open the template in the editor.
                     <li><h:outputLink style="padding: 25px 43px 23px 5px;"
                                       styleClass="#{vrMenuManager.isCurrentPageId('news')?'active':''}"
                                       value="#{vr.context}/p/news">news</h:outputLink></li>
-                    <ui:fragment rendered="#{!loginCtrl.session.connected}">
+                    <ui:fragment rendered="#{corePlugin.currentUserLogin eq null}">
                         <li>
                             <p:outputPanel>
                                 <h:commandLink style="padding: 25px 43px 23px 5px;" value="sign-in"
@@ -78,7 +79,7 @@ and open the template in the editor.
                             </p:outputPanel>
                         </li>
                     </ui:fragment>
-                    <ui:fragment rendered="#{loginCtrl.session.connected}">
+                    <ui:fragment rendered="#{corePlugin.currentUserLogin==null}">
                         <li>
                             <p:outputPanel>
                                 <h:outputLink style="padding: 25px 43px 23px 5px;"
@@ -88,7 +89,7 @@ and open the template in the editor.
                         <li>
                             <p:outputPanel>
                                 <h:commandLink style="padding: 25px 43px 23px 5px;"
-                                               value="sign-out #{loginCtrl.session.firstName}"
+                                               value="sign-out #{corePlugin.currentUser.contact.firstName}"
                                                action="#{loginCtrl.dologout}"/>
                             </p:outputPanel>
                         </li>
