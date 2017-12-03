@@ -2409,21 +2409,23 @@ public class CorePlugin {
 //        }
 //        final UserSession currentSession = currentSession0;
         SessionStore sessionStore = VrApp.getBean(SessionStoreProvider.class).resolveSessionStore();
-        PlatformSession s = sessionStore.get(sessionId);
-        UserToken t = s == null ? null : s.getToken();
-        String login = t == null ? null : t.getUserLogin();
-        int id = t == null || t.getUserId() == null ? -1 : t.getUserId();
-        if (t != null) {
-            if (login != null) {
-                trace.trace("logout", "force logout " + login,
-                        login,
-                        "/System/Access", null, null, login, id, Level.INFO, t.getIpAddress()
-                );
-            }
-            invalidateToken(s.getToken().getSessionId());
-        }else{
-            if(s!=null) {
-                invalidateToken(s.getSessionId());
+        if(sessionStore!=null) {
+            PlatformSession s = sessionStore.get(sessionId);
+            UserToken t = s == null ? null : s.getToken();
+            String login = t == null ? null : t.getUserLogin();
+            int id = t == null || t.getUserId() == null ? -1 : t.getUserId();
+            if (t != null) {
+                if (login != null) {
+                    trace.trace("logout", "force logout " + login,
+                            login,
+                            "/System/Access", null, null, login, id, Level.INFO, t.getIpAddress()
+                    );
+                }
+                invalidateToken(s.getToken().getSessionId());
+            } else {
+                if (s != null) {
+                    invalidateToken(s.getSessionId());
+                }
             }
         }
     }
@@ -2505,7 +2507,12 @@ public class CorePlugin {
     private void invalidateToken(String sessionId) {
         if (sessionId != null) {
             SessionStore sessionStore = VrApp.getBean(SessionStoreProvider.class).resolveSessionStore();
-            sessionStore.get(sessionId).invalidate();
+            if(sessionStore!=null) {
+                PlatformSession platformSession = sessionStore.get(sessionId);
+                if(platformSession!=null) {
+                    platformSession.invalidate();
+                }
+            }
         }
     }
 
