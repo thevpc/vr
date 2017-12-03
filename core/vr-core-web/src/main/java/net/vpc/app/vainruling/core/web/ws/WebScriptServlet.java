@@ -147,7 +147,7 @@ public class WebScriptServlet extends HttpServlet {
 
     private void sendResult(HttpServletRequest request,HttpServletResponse response,Map m) throws IOException {
         prepareHeaders(request,response);
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=utf-8");
         String s = "";
         try{
             s=VrUtils.formatJSONObject(m);

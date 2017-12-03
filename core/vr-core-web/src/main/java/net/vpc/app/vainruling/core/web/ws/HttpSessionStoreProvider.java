@@ -6,10 +6,16 @@ import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Service
 public class HttpSessionStoreProvider implements SessionStoreProvider {
     @Override
     public SessionStore resolveSessionStore() {
-        return (SessionStore) VrWebHelper.getHttpServletRequest().getServletContext().getAttribute(SessionStore.class.getName());
+        HttpServletRequest httpServletRequest = VrWebHelper.getHttpServletRequest();
+        if(httpServletRequest==null){
+            return null;
+        }
+        return (SessionStore) httpServletRequest.getServletContext().getAttribute(SessionStore.class.getName());
     }
 }
