@@ -5,16 +5,17 @@ import {NbAuthModule} from '@nebular/auth';
 import {throwIfAlreadyLoaded} from './module-import-guard';
 import {DataModule} from './data/data.module';
 import {AnalyticsService} from './utils/analytics.service';
-import {NbAppAuthProvider} from './app.auth-provider';
-import {VrService} from './vrservice';
-import {VrModelState} from './vrmodelstate';
+import {VrAuthProvider} from './vr.auth-provider';
+import {VrService} from './vr.service';
+import {VrSharedState} from './vr.shared-state';
+import {VrHttp} from "./vr.http";
 
 const NB_CORE_PROVIDERS = [
   ...DataModule.forRoot().providers,
   ...NbAuthModule.forRoot({
     providers: {
       email: {
-        service: NbAppAuthProvider,
+        service: VrAuthProvider,
         config: {
           delay: 3000,
           login: {
@@ -46,9 +47,10 @@ export class CoreModule {
       ngModule: CoreModule,
       providers: [
         ...NB_CORE_PROVIDERS,
-        // @author vpc, added provider
-        NbAppAuthProvider,
-        VrModelState,
+        // @author vpc, added providers
+        VrHttp,
+        VrAuthProvider,
+        VrSharedState,
         VrService,
       ],
     };

@@ -1,0 +1,36 @@
+
+<div class="row">
+  <div class="col-md-12">
+    <nb-card>
+      <nb-card-header>
+        <span><span>{{entityInfo.title}}</span></span>
+      </nb-card-header>
+
+      <nb-card-body>
+        <div class="row">
+          <div class="example-container col-sm-1 col-md-1 col-xl-1 col-xxxl-1" *ngFor="let hb of settings">
+            <button class="btn {{ hb.class }} btn-demo" style="width: 100%">{{ hb.buttonTitle }}</button>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+</div>
+
+<div *ngFor="let row of editorRows" class="row">
+  <div *ngFor="let col of row.children" class="{{row.cols}}">
+    <nb-card *ngFor="let panel of col.children" class="inline-form-card">
+      <nb-card-header>{{panel.title}}</nb-card-header>
+      <nb-card-body>
+        <form>
+          <div *ngFor="let f of panel.children" class="form-group row">
+            <label class="col-sm-3 col-form-label">{{f.title}}</label>
+            <div class="col-sm-9">
+              <input type="email" class="form-control" placeholder="{{f.title}}">
+            </div>
+          </div>
+        </form>
+      </nb-card-body>
+    </nb-card>
+  </div>
+</div>

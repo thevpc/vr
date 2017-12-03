@@ -4,7 +4,7 @@ import {NbAuthResult} from '../../../node_modules/@nebular/auth/services/auth.se
 import {NbAbstractAuthProvider} from '../../../node_modules/@nebular/auth/providers/abstract-auth.provider';
 import {HttpModule, Http, Response} from '@angular/http';
 import {Injectable} from '@angular/core';
-import {VrService} from './vrservice';
+import {VrService} from './vr.service';
 import {NbMenuItem} from '@nebular/theme';
 export interface NbAppAuthProviderConfig {
   delay?: number;
@@ -13,7 +13,7 @@ export interface NbAppAuthProviderConfig {
 
 
 @Injectable()
-export class NbAppAuthProvider extends NbAbstractAuthProvider {
+export class VrAuthProvider extends NbAbstractAuthProvider {
   protected defaultConfig: NbAppAuthProviderConfig;
   constructor(private vrService: VrService) {
     super();
@@ -21,7 +21,7 @@ export class NbAppAuthProvider extends NbAbstractAuthProvider {
   authenticate(data?: any): Observable<NbAuthResult> {
     return this.vrService.authenticate(data.email, data.password)
       .map(currentUser => {
-        if ( currentUser.connected ) {
+        if ( currentUser && currentUser.connected ) {
           return new NbAuthResult(true, this.createSuccessResponse(currentUser), '/', ['Successfully logged in.']);
         } else {
           return new NbAuthResult(false, this.createFailResponse(data), null, ['Something went wrong.']);

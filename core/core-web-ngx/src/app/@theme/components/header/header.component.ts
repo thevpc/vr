@@ -3,7 +3,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NbMenuService, NbSidebarService } from '@nebular/theme';
 import { UserService } from '../../../@core/data/users.service';
 import { AnalyticsService } from '../../../@core/utils/analytics.service';
-import {VrService} from '../../../@core/vrservice';
+import {VrService} from '../../../@core/vr.service';
+import {VrSharedState} from "../../../@core/vr.shared-state";
 
 @Component({
   selector: 'ngx-header',
@@ -24,11 +25,12 @@ export class HeaderComponent implements OnInit {
               private userService: UserService,
               private analyticsService: AnalyticsService,
               private vrService: VrService,
+              private vrModeState: VrSharedState,
               ) {
   }
 
   ngOnInit() {
-    this.vrService.getCurrentUser().subscribe((u: any) => this.user = u.name);
+    this.vrModeState.currentUser.subscribe((u: any) => this.user = u.name);
     // this.userService.getUsers()
     //   .subscribe((users: any) => this.user = users.nick);
   }
