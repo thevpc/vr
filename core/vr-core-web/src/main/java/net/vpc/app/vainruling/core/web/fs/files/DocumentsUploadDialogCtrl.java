@@ -73,7 +73,7 @@ public class DocumentsUploadDialogCtrl {
             cmd=new Config();
         }
         if(cmd.getSizeLimit()<=0){
-            cmd.setSizeLimit(1024*1024*10);
+            cmd.setSizeLimit(1024*1024*30);
         }
         getModel().setConfig(cmd);
         Config c = getModel().getConfig();
