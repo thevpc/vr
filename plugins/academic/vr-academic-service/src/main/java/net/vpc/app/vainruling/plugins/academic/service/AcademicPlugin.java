@@ -3288,12 +3288,20 @@ public class AcademicPlugin implements AppEntityExtendedPropertiesProvider, Comp
 
     @Start
     private void startService() {
+        //this is workaround, because
+        if(core==null){
+            core=CorePlugin.get();
+        }
         core.getManagerProfiles().add("Director");
         core.getManagerProfiles().add("DirectorOfStudies");
     }
 
     @Install
     private void installService() {
+        //this is workaround, because
+        if(core==null){
+            core=CorePlugin.get();
+        }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         core.createRight("Custom.Education.CourseLoadUpdateIntents", "Mettre à jours les voeux de autres");
         core.createRight("Custom.Education.CourseLoadUpdateAssignments", "Mettre à jours les affectations");
