@@ -1,7 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {VrSharedState} from "../../../@core/vr.shared-state";
 import {VrService} from "../../../@core/vr.service";
 import {NbThemeService} from "@nebular/theme";
+import {ActivatedRoute, ParamMap} from "@angular/router";
+import { Location } from '@angular/common';
 
 export class FormEntitySectionRow {
   title: string = 'Empty Row';
@@ -45,7 +47,11 @@ export class FormEntityComponent implements OnInit {
     title: 'Outline Buttons',
     key: 'outline',
   }];
-  constructor(private vrService: VrService, private vrSharedModel: VrSharedState,private themeService: NbThemeService) {
+  constructor(private vrService: VrService,
+              private vrSharedModel: VrSharedState,
+              private themeService: NbThemeService,
+              private route: ActivatedRoute,
+              private location: Location) {
     this.themeSubscription = this.themeService.getJsTheme().subscribe(theme => {
       this.themeName = theme.name;
       this.init(theme.variables);
@@ -62,7 +68,7 @@ export class FormEntityComponent implements OnInit {
       title: 'Primary Button',
       buttonTitle: 'Enregistrer',
       default: {
-        gradientLeft: `adjust-hue(${colors.primary}, 20deg)`,
+        gradientLeft: `adjust-hue(${colors.primary}, 30deg)`,
         gradientRight: colors.primary,
       },
       cosmic: {
@@ -158,16 +164,20 @@ export class FormEntityComponent implements OnInit {
   }
 
 
-
-
-
-
   ngOnInit(): void {
-    this.vrService.getPersistenceUnitInfo().subscribe(s => {
-      this.entityInfo = this.vrService.findEntityInfo(s, this.entityName);
-      this.onChangedEntityInfo();
-    })
-  }
+    this.route.paramMap
+      .map((p: ParamMap) => {
+        let v = p.get('name');
+        this.entityName = v;
+        this.vrService.getPersistenceUnitInfo().subscribe(s =>{
+            if(s && s.type) {
+              this.entityInfo = this.vrService.findEntityInfo(s, this.entityName);
+              this.onChangedEntityInfo();
+
+            }
+          });
+        }).subscribe();
+      }
 
 
   private createFormEntityField(field): FormEntityField {
