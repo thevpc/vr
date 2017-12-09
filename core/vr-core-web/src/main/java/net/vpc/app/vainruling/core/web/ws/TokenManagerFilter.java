@@ -96,7 +96,8 @@ public class TokenManagerFilter implements Filter {
         }
         HttpServletResponse hresponse = (HttpServletResponse) response;
 
-        hresponse.addHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+//        hresponse.addHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+        hresponse.addHeader("Access-Control-Allow-Origin", "*");
         hresponse.addHeader("Access-Control-Allow-Credentials", "true");
         hresponse.addHeader("Access-Control-Allow-Methods", "GET,POST");
         hresponse.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cookie, X-JSESSIONID, X-RECEIVED-COOKIE");

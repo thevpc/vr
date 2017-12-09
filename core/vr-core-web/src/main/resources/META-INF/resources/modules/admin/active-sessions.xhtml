@@ -22,9 +22,9 @@ and open the template in the editor.
             <h:form id="listForm" enctype="multipart/form-data">
                 <div class="row" style="margin-left: 10px;margin-bottom: 20px;">
                     <p:commandLink value="Rafr."
-                                     icon="ui-ribbonicon-refresh"
-                                     styleClass="btn btn-primary vr-toolbox-button-fixed-height" ajax="true"
-                                     actionListener="#{activeSessionsCtrl.onRefresh}" update=":listForm"/>
+                                   icon="ui-ribbonicon-refresh"
+                                   styleClass="btn btn-primary vr-toolbox-button-fixed-height" ajax="true"
+                                   actionListener="#{activeSessionsCtrl.onRefresh}" update=":listForm"/>
                     <p:commandLink rendered="#{!vr.shutdown and vr.currentToken.admin}" action="#{vr.notifyShutdown}"
                                    styleClass="btn btn-danger vr-toolbox-button-fixed-height"
                                    value="Notifier arrêt serveur">
@@ -63,7 +63,8 @@ and open the template in the editor.
                             <img src="#{vr.url(vr.getUserPhoto(i.userId))}"
                                  style="width: 40px ; height: 40px; margin-right: 10px;"
                                  alt="User Image"/>
-                            <h:outputText value="#{i.userLogin}#{i.count gt 1 ? vr.strcat('( x ',i.count,' )'):''}"/>
+                            <h:outputText
+                                    value="#{i.userLogin}#{(vr.currentToken.admin and i.count) gt 1 ? vr.strcat('( x ',i.count,' )'):''}"/>
                         </p:column>
                         <p:column headerText="Nom">
                             <h:outputText value="#{i.userFullTitle}"/>
@@ -81,9 +82,10 @@ and open the template in the editor.
                         </p:column>
                         <p:column headerText="Activité" rendered="#{activeSessionsCtrl.model.admin}">
                             <span title="#{i.lastVisitedPageInfo}"> <h:outputText value="#{i.lastVisitedPage}"/></span>
-                            <p:commandButton  icon="fa fa-file-text-o" styleClass="btn btn-info"
-                                              rendered="#{activeSessionsCtrl.model.admin and i.userId ne null}" action="#{activeSessionsCtrl.onShowLog(i)}"
-                                              update=":listForm"
+                            <p:commandButton icon="fa fa-file-text-o" styleClass="btn btn-info"
+                                             rendered="#{activeSessionsCtrl.model.admin and i.userId ne null}"
+                                             action="#{activeSessionsCtrl.onShowLog(i)}"
+                                             update=":listForm"
                             />
                         </p:column>
                         <p:column headerText="IP" rendered="#{activeSessionsCtrl.model.admin}">
@@ -93,12 +95,14 @@ and open the template in the editor.
                             <h:outputText value="#{i.locale}"/>
                         </p:column>
                         <p:column headerText="App" rendered="#{activeSessionsCtrl.model.admin}" style="width: 150px;">
-                            <h:outputText rendered="#{i.clientAppId ne null}" value="#{i.clientAppId} (#{i.clientApp})"/>
+                            <h:outputText rendered="#{i.clientAppId ne null}"
+                                          value="#{i.clientAppId} (#{i.clientApp})"/>
                         </p:column>
                         <p:column headerText="" rendered="#{activeSessionsCtrl.model.admin}" style="width: 50px;">
-                            <p:commandButton  icon="fa fa-trash-o" styleClass="btn btn-danger"
-                                              rendered="#{activeSessionsCtrl.isInvalidatable(i)}" action="#{activeSessionsCtrl.onInvalidateSession(i)}"
-                                              update=":listForm"
+                            <p:commandButton icon="fa fa-trash-o" styleClass="btn btn-danger"
+                                             rendered="#{activeSessionsCtrl.isInvalidatable(i)}"
+                                             action="#{activeSessionsCtrl.onInvalidateSession(i)}"
+                                             update=":listForm"
                             />
                         </p:column>
                         <!--                            <p:column headerText="Flags">
@@ -108,11 +112,13 @@ and open the template in the editor.
                 </div>
                 <div class="row">
                     <h3>
-                        <h:outputText rendered="#{activeSessionsCtrl.model.currentUserSession ne null}" value="Activité de #{activeSessionsCtrl.model.currentUserSession.userLogin}" />
+                        <h:outputText rendered="#{activeSessionsCtrl.model.currentUserSession ne null}"
+                                      value="Activité de #{activeSessionsCtrl.model.currentUserSession.userLogin}"/>
                     </h3>
                 </div>
                 <div class="row">
-                    <p:dataTable id="logTable" rendered="#{activeSessionsCtrl.model.currentLog ne null}" var="li" value="#{activeSessionsCtrl.model.currentLog}"
+                    <p:dataTable id="logTable" rendered="#{activeSessionsCtrl.model.currentLog ne null}" var="li"
+                                 value="#{activeSessionsCtrl.model.currentLog}"
                                  class="table table-bordered table-hover"
                                  paginatorAlwaysVisible="false"
                                  paginator="true"
