@@ -2422,10 +2422,12 @@ public class CorePlugin {
                     );
                 }
                 invalidateToken(s.getToken().getSessionId());
+                invalidateToken(sessionId);
             } else {
                 if (s != null) {
                     invalidateToken(s.getSessionId());
                 }
+                invalidateToken(sessionId);
             }
         }
     }
@@ -3839,32 +3841,40 @@ public class CorePlugin {
         });
     }
 
+    @Deprecated
     public List<FullArticle> findFullArticlesByCategory(String disposition) {
-        UserSession userSession = getCurrentSession();
-        String filter = userSession == null ? null : userSession.getSelectedSiteFilter();
-        if (StringUtils.isEmpty(filter)) {
-            filter = "";
+        return findFullArticlesByDisposition(null,disposition);
+    }
+
+    public List<FullArticle> findFullArticlesByDisposition(String group,String disposition) {
+        if(group==null) {
+            UserSession userSession = getCurrentSession();
+            group = userSession == null ? null : userSession.getSelectedSiteFilter();
         }
-        ArticlesDispositionGroup g = findArticleDispositionGroup(filter);
+        if (StringUtils.isEmpty(group)) {
+            group = "";
+        }
+        ArticlesDispositionGroup g = findArticleDispositionGroup(group);
         if (g == null) {
             g = findArticleDispositionGroup("II");
         }
-        if (g == null) {
-            return new ArrayList<>();
-        }
-        return findFullArticlesByCategory(g.getId(), true, disposition);
+        return findFullArticlesByDisposition(g==null?-1:g.getId(), true, disposition);
     }
 
-    public List<FullArticle> findFullArticlesByCategory(int dispositionGroupId, boolean includeNoDept, final String disposition) {
+    public List<FullArticle> findFullArticlesByDisposition(int dispositionGroupId, boolean includeNoDept, final String disposition) {
         AppUser u = getCurrentUser();
         if (u == null) {
-            return findFullArticlesByUserAndCategory(null, dispositionGroupId, includeNoDept, disposition);
+            return findFullArticlesByUserAndDisposition(null, dispositionGroupId, includeNoDept, disposition);
         } else {
-            return findFullArticlesByUserAndCategory(u.getLogin(), dispositionGroupId, includeNoDept, disposition);
+            return findFullArticlesByUserAndDisposition(u.getLogin(), dispositionGroupId, includeNoDept, disposition);
         }
     }
 
-    protected List<FullArticle> findFullArticlesByUserAndCategory(final String login, int dispositionGroupId, boolean includeNoDept, final String disposition) {
+    public List<FullArticle> findFullArticlesByAnonymousDisposition(int dispositionGroupId, boolean includeNoDept, final String disposition) {
+        return findFullArticlesByUserAndDisposition(null, dispositionGroupId, includeNoDept, disposition);
+    }
+
+    protected List<FullArticle> findFullArticlesByUserAndDisposition(final String login, int dispositionGroupId, boolean includeNoDept, final String disposition) {
         return UPA.getContext().invokePrivileged(new Action<List<FullArticle>>() {
 
             @Override
@@ -3990,12 +4000,14 @@ public class CorePlugin {
             disps.put("disposition" + i, disposition);
         }
         queryStr.append(" )");
-        if (includeNoDept) {
-            queryStr.append(" and (u.dispositionGroupId=:dispositionGroupId or u.dispositionGroupId=null)");
-            disps.put("dispositionGroupId", dispositionGroupId);
-        } else {
-            queryStr.append(" and (u.dispositionGroupId=:dispositionGroupId)");
-            disps.put("dispositionGroupId", dispositionGroupId);
+        if(dispositionGroupId>=0) {
+            if (includeNoDept) {
+                queryStr.append(" and (u.dispositionGroupId=:dispositionGroupId or u.dispositionGroupId=null)");
+                disps.put("dispositionGroupId", dispositionGroupId);
+            } else {
+                queryStr.append(" and (u.dispositionGroupId=:dispositionGroupId)");
+                disps.put("dispositionGroupId", dispositionGroupId);
+            }
         }
 
         queryStr.append(" order by "
@@ -4032,7 +4044,7 @@ public class CorePlugin {
     public void getRSS(String rss, OutputStream out) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         ArticlesDisposition t = pu.findByMainField(ArticlesDisposition.class, "rss." + rss);
-        List<FullArticle> articles = findFullArticlesByCategory(-1, true, "rss." + rss);
+        List<FullArticle> articles = findFullArticlesByDisposition(-1, true, "rss." + rss);
         try {
             String feedType = "rss_2.0";
 //            String fileName = "feed.xml";
@@ -4040,11 +4052,11 @@ public class CorePlugin {
             SyndFeed feed = new SyndFeedImpl();
             feed.setFeedType(feedType);
 
-            feed.setTitle("ENISo Computer Engeneering Department");
+            feed.setTitle(t==null?"Vr RSS "+rss:t.getTitle());
             feed.setLink("http://www.eniso.info");
             feed.setDescription(t == null ? null : t.getDescription());
 
-            List entries = new ArrayList();
+            List<SyndEntry> entries = new ArrayList<>();
             SyndEntry entry;
             SyndContent description;
             for (FullArticle art : articles) {

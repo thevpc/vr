@@ -64,7 +64,7 @@ and open the template in the editor.
                                  style="width: 40px ; height: 40px; margin-right: 10px;"
                                  alt="User Image"/>
                             <h:outputText
-                                    value="#{i.userLogin}#{(vr.currentToken.admin and i.count) gt 1 ? vr.strcat('( x ',i.count,' )'):''}"/>
+                                    value="#{i.userLogin}#{(vr.currentToken.admin and (i.count gt 1))  ? vr.strcat('( x ',i.count,' )'):''}"/>
                         </p:column>
                         <p:column headerText="Nom">
                             <h:outputText value="#{i.userFullTitle}"/>
