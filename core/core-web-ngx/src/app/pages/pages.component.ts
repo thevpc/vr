@@ -45,6 +45,20 @@ export class PagesComponent implements OnInit {
         home: true,
       }
     );
+// //***********
+//     r.push(
+//       {
+//         title: 'Mes etudiants',
+//       icon: 'nb-home',
+//       children : [
+//       {
+//         title: 'Mon etudiant',
+//         icon: 'nb-home',
+//         link: '/pages/etudiant',
+//       }
+//         ]
+//       }
+//     );
     if (domain.root) {
       let rootMenu = this.createMenu(domain.root);
       rootMenu.children.forEach((element) => {
@@ -126,19 +140,20 @@ export class PagesComponent implements OnInit {
           r.push(rr);
         }
       });
-      if(r.length>0) {
+      //***********
+      // if(r.length>0) {
+      //   return {
+      //     title: item.title,
+      //     icon: 'nb-keypad',
+      //     children:r
+      //   };
+      //}else{
         return {
           title: item.title,
           icon: 'nb-keypad',
-          children:r
+          link:'/pages/forms/entity/'+item.name,
         };
-      }else{
-        return {
-          title: item.title,
-          icon: 'nb-keypad',
-          link: '/pages/forms/entity'
-        };
-      }
+      //}
     }else if (item.type == 'section') {
       item.children.forEach((element) => {
         let rr = this.createMenu(element);
