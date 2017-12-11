@@ -5,4 +5,5 @@ package net.vpc.app.vainruling.core.web.obj;
  */
 public interface MainPhotoProvider {
     String getMainPhotoPath(Object id,Object valueOrNull);
+    String getMainIconPath(Object id, Object valueOrNull);
 }

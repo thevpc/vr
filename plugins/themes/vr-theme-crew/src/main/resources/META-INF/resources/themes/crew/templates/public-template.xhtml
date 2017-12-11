@@ -921,17 +921,17 @@ and open the template in the editor.
         </footer>
 
 
-        <ui:fragment rendered="#{vr.core.findArticleDispositionGroupTypes().size() gt 0}">
+        <ui:fragment rendered="#{corePlugin.findArticleDispositionGroupTypes().size() gt 0}">
         <div id="colour-variations" class="sleep">
             <a class="option-toggle"><i class="icon-gear"></i></a>
             <ui:repeat
-                    value="#{vr.core.findArticleDispositionGroupTypes()}"
+                    value="#{corePlugin.findArticleDispositionGroupTypes()}"
                     var="grpName">
                 <h3>#{grpName.title}</h3>
                 <hr style="margin-top: 0px;margin-bottom: 0px;"/>
                 <ul class="deplist">
                     <ui:repeat
-                            value="#{vr.core.findArticleDispositionGroups(grpName.id)}"
+                            value="#{corePlugin.findArticleDispositionGroups(grpName.id)}"
                             var="site">
                         <li><h:commandLink action="#{vr.gotoPublicSubSite(site.name)}"
                                            style="color: #{site.mainColor}">

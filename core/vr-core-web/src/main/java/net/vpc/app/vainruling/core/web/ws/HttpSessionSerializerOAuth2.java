@@ -26,24 +26,24 @@ public class HttpSessionSerializerOAuth2 implements HttpSessionSerializer {
 //    private String key = "Bar12345Bar12345"; // 128 bit key
     private byte[] key = "ABABABABABABABAB".getBytes(); // 128 bit key
     private boolean compress=true;
-    public static void main(String[] args) {
-        HttpSessionSerializerOAuth2 a=new HttpSessionSerializerOAuth2();
-        for (boolean b:new boolean[]{false,true}) {
-            a.compress=b;
-            a.init(null);
-
-            HashMap<String, Object> h = new HashMap<>();
-            h.put("one", "un");
-            for (int i = 0; i < 100000; i++) {
-                h.put(String.valueOf(i), String.valueOf(i + 1));
-            }
-            HttpSessionIdOAuth2 e = new HttpSessionIdOAuth2("rrr", h);
-
-            String encrypted = a.encrypt(e);
-            System.out.println("Encoded bytes are " + encrypted.length());
-            HttpSessionIdOAuth2 e2 = a.decrypt(encrypted);
-        }
-    }
+//    public static void main(String[] args) {
+//        HttpSessionSerializerOAuth2 a=new HttpSessionSerializerOAuth2();
+//        for (boolean b:new boolean[]{false,true}) {
+//            a.compress=b;
+//            a.init(null);
+//
+//            HashMap<String, Object> h = new HashMap<>();
+//            h.put("one", "un");
+//            for (int i = 0; i < 500; i++) {
+//                h.put("tototototototo.tototototot"+String.valueOf(i), String.valueOf(i + 1));
+//            }
+//            HttpSessionIdOAuth2 e = new HttpSessionIdOAuth2("rrr", h);
+//
+//            String encrypted = a.encrypt(e);
+//            System.out.println("Encoded bytes are " + encrypted.length());
+//            HttpSessionIdOAuth2 e2 = a.decrypt(encrypted);
+//        }
+//    }
 
     public String getType(){
         return "OAuth2";
@@ -82,7 +82,7 @@ public class HttpSessionSerializerOAuth2 implements HttpSessionSerializer {
         return null;
     }
 
-    // jsonZip->->AES->B64
+    // json->Zip->->AES->B64
     private String encrypt(HttpSessionIdOAuth2 token) {
         byte[] bytes = new Gson().toJson(token).getBytes();
 //        System.out.println(key.getBytes().length);
