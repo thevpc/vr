@@ -89,21 +89,39 @@ public class TokenManagerFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         httpServletResponseThreadLocal.set((HttpServletResponse) response);
-        HttpSessionId httpSessionId = resolveSessionId((HttpServletRequest) request);
+        final HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpSessionId httpSessionId = resolveSessionId(httpRequest);
         if (httpSessionId != null) {
             request.setAttribute(HttpSessionId.class.getName(), httpSessionId);
             serializers.get(httpSessionId.getType()).write((HttpServletResponse) response,httpSessionId);
         }
         HttpServletResponse hresponse = (HttpServletResponse) response;
-
-//        hresponse.addHeader("Access-Control-Allow-Origin", "http://localhost:4200");
-        hresponse.addHeader("Access-Control-Allow-Origin", "*");
+        String referer = ((HttpServletRequest) request).getHeader("referer");
+        String origin=null;
+        if(referer!=null){
+            if(referer.toLowerCase().startsWith("http://")){
+                int ii = referer.indexOf("/", "http://".length());
+                origin=(ii<0?referer:referer.substring(0,ii));
+            }else if(referer.toLowerCase().startsWith("https://")){
+                int ii = referer.indexOf("/", "https://".length());
+                origin=(ii<0?referer:referer.substring(0,ii));
+            }
+        }
+        hresponse.addHeader("Access-Control-Allow-Origin", origin!=null?origin:"http://localhost:4200");
+//        hresponse.addHeader("Access-Control-Allow-Origin", "*");
         hresponse.addHeader("Access-Control-Allow-Credentials", "true");
         hresponse.addHeader("Access-Control-Allow-Methods", "GET,POST");
         hresponse.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cookie, X-JSESSIONID, X-RECEIVED-COOKIE");
         hresponse.addHeader("Access-Control-Expose-Headers", "Content-Length, Set-Cookie, Server, Date, X-JSESSIONID, X-RECEIVED-COOKIE");
 
-        HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper((HttpServletRequest) request) {
+
+        String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = httpRequest.getRemoteAddr();
+        }
+
+        String finalIpAddress = ipAddress;
+        HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(httpRequest) {
             @Override
             public HttpSession getSession() {
                 return getSession(true);
@@ -137,7 +155,7 @@ public class TokenManagerFilter implements Filter {
                 ///wrap Session into adapter so that it can be invalidated correctly
                 HttpSessionAdapter adaptedSession = new HttpSessionAdapter(s, store);
                 theID = s.getId();
-                store.put(theID, new HttpPlatformSession(adaptedSession));
+                store.put(theID, new HttpPlatformSession(adaptedSession, finalIpAddress));
                 return adaptedSession;
             }
         };

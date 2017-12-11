@@ -344,8 +344,6 @@ public class VrMenuManager {
                 lvp.append(breadcrumbItem.getTitle());
             }
         }
-        s.setLastVisitedPage(lvp.toString());
-        s.setLastVisitedPageInfo(null);
         String data = command;
         if (!StringUtils.isEmpty(arguments)) {
             data += " ; " + arguments;

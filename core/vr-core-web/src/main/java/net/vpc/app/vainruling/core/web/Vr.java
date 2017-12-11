@@ -10,8 +10,6 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.*;
 import net.vpc.app.vainruling.core.service.model.AppProperty;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.model.AppUserType;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.security.UserSessionInfo;
 import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
@@ -1171,12 +1169,20 @@ public class Vr {
         return core.getUnknownUserPhoto();
     }
 
+    public String getUnknownUserIcon() {
+        return core.getUnknownUserIcon();
+    }
+
+    public String getUserIcon(int id) {
+        return core.getUserIcon(id);
+    }
+
     public String getUserPhoto(int id) {
         return core.getUserPhoto(id);
     }
 
     public String getUserPhotoFullURL(int id) {
-        String userPhoto = getUserPhoto(id);
+        String userPhoto = core.getUserPhoto(id);
         if (userPhoto == null) {
             return null;
         }

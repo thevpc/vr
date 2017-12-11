@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.web.fs.files;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.fs.VrFSEntry;
 import net.vpc.app.vainruling.core.service.fs.VrFSTable;
@@ -172,7 +173,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
         } else {
             getModel().setCurrent(DocumentsUtils.createFileInfo("/", VFileKind.ROOT, getModel().getFileSystem().get("/")));
         }
-        CorePlugin.get().getCurrentSession().setLastVisitedPageInfo(getModel().getCurrent().getFile().getPath());
+        TraceService.get().trace("visit-document", "path visited " + getModel().getCurrent().getFile().getPath(), getModel().getCurrent().getFile().getPath(), "/System/Access", Level.FINE);
         onRefresh();
     }
 
@@ -185,7 +186,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
 
     public void updateCurrent(VFile file) {
         getModel().setCurrent(DocumentsUtils.createFileInfo(file));
-        CorePlugin.get().getCurrentSession().setLastVisitedPageInfo(getModel().getCurrent().getFile().getPath());
+        TraceService.get().trace("visit-document", "path visited " + getModel().getCurrent().getFile().getPath(), getModel().getCurrent().getFile().getPath(), "/System/Access", Level.FINE);
         onRefresh();
     }
 

@@ -1,18 +1,28 @@
 package net.vpc.app.vainruling.core.service.util;
 
+import net.vpc.common.io.PathInfo;
+import net.vpc.common.vfs.VFile;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
 public class VrPlatformUtils {
-    public static final String SLASH=System.getProperty("file.separator");
+    public static final String SLASH = System.getProperty("file.separator");
     private static final Map<Class, ClassInfo> classInfos = new HashMap<>();
 
-    public static String validatePath(String path){
-        if(path==null || SLASH.equals("/")){
+    public static String validatePath(String path) {
+        if (path == null || SLASH.equals("/")) {
             return path;
         }
-        return path.replace('/',path.charAt(0));
+        return path.replace('/', path.charAt(0));
     }
 
     private static String toPropName(String r) {
@@ -33,6 +43,48 @@ public class VrPlatformUtils {
                 u.buid();
             }
             return u;
+        }
+    }
+
+    public static File changeFileSuffix(File file, String suffix) {
+        PathInfo p = PathInfo.create(file);
+        return new File(
+                PathInfo.formatPath(p.getDirName(), p.getNamePart() + suffix, p.getExtensionPart())
+        );
+    }
+
+    public static File changeFileExtension(File file, String suffix) {
+        PathInfo p = PathInfo.create(file);
+        return new File(
+                PathInfo.formatPath(p.getDirName(), p.getNamePart(), suffix)
+        );
+    }
+
+    public static VFile changeFileSuffix(VFile file, String suffix) {
+        PathInfo p = PathInfo.create(file.getPath());
+        return file.getFileSystem().get(
+                PathInfo.formatPath(p.getDirName(), p.getNamePart() + suffix, p.getExtensionPart())
+        );
+    }
+
+    public static VFile changeFileExtension(VFile file, String suffix) {
+        PathInfo p = PathInfo.create(file.getPath());
+        return file.getFileSystem().get(
+                PathInfo.formatPath(p.getDirName(), p.getNamePart(), suffix)
+        );
+    }
+
+    public static BufferedImage readImage(VFile input) throws IOException {
+        try (InputStream in = input.getInputStream()) {
+            return ImageIO.read(in);
+        }
+    }
+
+    public static boolean writeImage(RenderedImage im,
+                                String formatName,
+                                VFile output) throws IOException {
+        try (OutputStream in = output.getOutputStream()) {
+            return ImageIO.write(im, formatName, in);
         }
     }
 
@@ -247,7 +299,7 @@ public class VrPlatformUtils {
             ClassInfo classInfo = forType(clazz.getSuperclass());
             if (classInfo != null) {
                 PropertyInfo p = classInfo.getProperty(name);
-                if(p!=null){
+                if (p != null) {
                     return p;
                 }
             }

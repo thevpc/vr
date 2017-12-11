@@ -8,6 +8,7 @@ public interface PlatformSession {
     String getSessionId();
     Date getLastAccessedTime();
     Date getConnexionTime();
+    String getIpAddress();
     UserToken getToken();
     boolean isValid();
     boolean invalidate();

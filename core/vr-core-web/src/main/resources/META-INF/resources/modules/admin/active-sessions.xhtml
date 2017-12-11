@@ -60,7 +60,7 @@ and open the template in the editor.
                                  rowsPerPageTemplate="20,50,100,200,1000"
                     >
                         <p:column headerText="Login" style="width: 30%;">
-                            <img src="#{vr.url(vr.getUserPhoto(i.userId))}"
+                            <img src="#{vr.url(corePlugin.getUserPhoto(i.userId))}"
                                  style="width: 40px ; height: 40px; margin-right: 10px;"
                                  alt="User Image"/>
                             <h:outputText
@@ -80,14 +80,6 @@ and open the template in the editor.
                         <p:column headerText="Durée" rendered="#{activeSessionsCtrl.model.admin}">
                             <h:outputText value="#{activeSessionsCtrl.connectionPeriod(i)}"/>
                         </p:column>
-                        <p:column headerText="Activité" rendered="#{activeSessionsCtrl.model.admin}">
-                            <span title="#{i.lastVisitedPageInfo}"> <h:outputText value="#{i.lastVisitedPage}"/></span>
-                            <p:commandButton icon="fa fa-file-text-o" styleClass="btn btn-info"
-                                             rendered="#{activeSessionsCtrl.model.admin and i.userId ne null}"
-                                             action="#{activeSessionsCtrl.onShowLog(i)}"
-                                             update=":listForm"
-                            />
-                        </p:column>
                         <p:column headerText="IP" rendered="#{activeSessionsCtrl.model.admin}">
                             <h:outputText value="#{i.ipAddress}"/>
                         </p:column>
@@ -97,6 +89,13 @@ and open the template in the editor.
                         <p:column headerText="App" rendered="#{activeSessionsCtrl.model.admin}" style="width: 150px;">
                             <h:outputText rendered="#{i.clientAppId ne null}"
                                           value="#{i.clientAppId} (#{i.clientApp})"/>
+                        </p:column>
+                        <p:column headerText="Activité" rendered="#{activeSessionsCtrl.model.admin}" style="width: 50px;">
+                            <p:commandButton icon="fa fa-file-text-o" styleClass="btn btn-info"
+                                             rendered="#{activeSessionsCtrl.model.admin and i.userId ne null}"
+                                             action="#{activeSessionsCtrl.onShowLog(i)}"
+                                             update=":listForm"
+                            />
                         </p:column>
                         <p:column headerText="" rendered="#{activeSessionsCtrl.model.admin}" style="width: 50px;">
                             <p:commandButton icon="fa fa-trash-o" styleClass="btn btn-danger"
@@ -117,7 +116,7 @@ and open the template in the editor.
                     </h3>
                 </div>
                 <div class="row">
-                    <p:dataTable id="logTable" rendered="#{activeSessionsCtrl.model.currentLog ne null}" var="li"
+                    <p:dataTable id="logTable" rendered="#{activeSessionsCtrl.model.admin and activeSessionsCtrl.model.currentLog ne null}" var="li"
                                  value="#{activeSessionsCtrl.model.currentLog}"
                                  class="table table-bordered table-hover"
                                  paginatorAlwaysVisible="false"

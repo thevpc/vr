@@ -611,6 +611,10 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
         return mainPhotoProvider.getMainPhotoPath(getEntity().getBuilder().documentToId(row.getDocument()), row.getDocument());
     }
 
+    public String getMainIcon(ObjRow row) {
+        return mainPhotoProvider.getMainIconPath(getEntity().getBuilder().documentToId(row.getDocument()), row.getDocument());
+    }
+
     public void loadList() {
         String _listFilter = getModel().getConfig().listFilter;
         if (!StringUtils.isEmpty(_listFilter)) {
