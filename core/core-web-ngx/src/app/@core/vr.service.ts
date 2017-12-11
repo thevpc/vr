@@ -3,7 +3,8 @@ import {Observable} from 'rxjs/Rx';
 import {Injectable} from '@angular/core';
 import {CurrentUser, VrSharedState} from './vr.shared-state';
 import {VrHttp} from "./vr.http";
-
+import {AsyncLocalStorage} from 'angular-async-local-storage';
+// import {PersistentBehaviorSubject} from "./PersistentBehaviorSubject";
 
 /**
  * Http REST Client Service Implementation for Vain Ruling WebScript Services.
@@ -13,11 +14,15 @@ import {VrHttp} from "./vr.http";
  */
 @Injectable()
 export class VrService {
-  constructor(private model: VrSharedState, private vrHttp: VrHttp) {
+  constructor(private model: VrSharedState, private vrHttp: VrHttp, protected storage: AsyncLocalStorage) {
 
   }
 
-  public getCurrentUser(): Observable<any> {
+   public findArticlesByCategory(dispo:string) : Observable<any>{
+     return this.vrHttp.invokeBeanMethod('core',`findArticlesByCategory('${dispo}')`);
+   }
+
+    public getCurrentUser(): Observable<any> {
     return this.vrHttp.invokeBeanMethod('core', 'getCurrentUser()').map(
       r => {
         this.model.currentUser.next(new CurrentUser(r.contact.fullName, '', r, true));
@@ -27,8 +32,8 @@ export class VrService {
   }
 
   public getEntityInfo(entityName: string): Observable<any> {
-    return this.getPersistenceUnitInfo().map(v=>{
-      return this.findEntityInfo(v,entityName);
+    return this.getPersistenceUnitInfo().map(v => {
+      return this.findEntityInfo(v, entityName);
     })
   }
 
@@ -47,7 +52,7 @@ export class VrService {
       return null;
     }
     if (node.type == 'entity') {
-      if (node.name==entityName) {
+      if (node.name == entityName) {
         return node;
       }
       return null;
@@ -78,16 +83,8 @@ export class VrService {
   //   return null;
   // }
 
-  public getPersistenceUnitInfo(): Observable<any> {
-    if (this.model.domainModel.getValue() != null && this.model.domainModel.getValue().root) {
-      return this.model.domainModel;
-    }
-    return this.vrHttp.invokeBeanMethod('core', 'getPersistenceUnitInfo()').map(
-      r => {
-        this.model.domainModel.next(r);
-        return r;
-      }
-    );
+  public getPersistenceUnitInfo(forceReload: boolean = false): Observable<any> {
+    return this.model.domainModel.getOrReload(forceReload,this.vrHttp.invokeBeanMethod('core', 'getPersistenceUnitInfo()'));
   }
 
   public isValidSession(): boolean {
@@ -98,7 +95,7 @@ export class VrService {
     return this.vrHttp.authenticate(username, password)
       .map(cu => {
         this.getCurrentUser().subscribe();
-        this.getPersistenceUnitInfo().subscribe();
+        this.getPersistenceUnitInfo(true).subscribe();
         return cu;
       });
   }

@@ -47,7 +47,7 @@ export class VrHttp {
       const item = res.json();
       let ret: CurrentUser;
       if (item['$1'] != null) {
-        this.model.currentUser.next(ret = new CurrentUser(item['$1'].fullName, '', item['$1'], true));
+        this.model.currentUser.next(ret = new CurrentUser(item['$1'].userFullName, '', item['$1'], true));
         this.model.credentials = new Credentials(username, password);
         // alert('received okkay ' + JSON.stringify(item['$1']));
       } else if (item['$error'] != null) {
