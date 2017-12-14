@@ -10,6 +10,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
+import net.vpc.app.vainruling.core.service.security.UserSessionInfo;
 import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.security.UserTokenProvider;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
@@ -73,18 +74,38 @@ public class WebScriptServlet extends HttpServlet {
         request.getSession(true);
         if (pathInfo.equals("/core/login") || pathInfo.equals("/login") || pathInfo.startsWith("/core/login/") || pathInfo.startsWith("/login")) {
             try {
-                String login=request.getParameter("login");
-                if(pathInfo.startsWith("/core/login/")){
-                    login=pathInfo.substring(("/core/login/").length());
-                }else if(pathInfo.startsWith("/login/")){
-                    login=pathInfo.substring(("/login/").length());
+                String login = request.getParameter("login");
+                if (pathInfo.startsWith("/core/login/")) {
+                    login = pathInfo.substring(("/core/login/").length());
+                } else if (pathInfo.startsWith("/login/")) {
+                    login = pathInfo.substring(("/login/").length());
                 }
                 VrWebHelper.prepareUserSession();
-                AppUser u = VrApp.getBean(CorePlugin.class).login(login, request.getParameter("password"),"WS/S",request.getParameter("app"));
+                UserSessionInfo u = VrApp.getBean(CorePlugin.class).authenticate(login, request.getParameter("password"), "WS/S", request.getParameter("app"));
+                if (u != null) {
+                    updateSessionHeaders(request, response);
+//                    response.setHeader("X-JSESSIONID",userSession.getSessionId());
+                    sendSimpleResult(request, response, u);
+                } else {
+                    sendError(request, response, "SecurityException", "Invalid login or password");
+                }
+            } catch (Exception e) {
+                sendResult(request, response, WebScriptServiceInvoker.buildError(e, null));
+            }
+        }else if (pathInfo.equals("/core/authenticate") || pathInfo.equals("/authenticate") || pathInfo.startsWith("/core/authenticate/") || pathInfo.startsWith("/authenticate")) {
+            try {
+                String login=request.getParameter("login");
+                if(pathInfo.startsWith("/core/authenticate/")){
+                    login=pathInfo.substring(("/core/authenticate/").length());
+                }else if(pathInfo.startsWith("/authenticate/")){
+                    login=pathInfo.substring(("/authenticate/").length());
+                }
+                VrWebHelper.prepareUserSession();
+                UserSessionInfo u = VrApp.getBean(CorePlugin.class).authenticate(login, request.getParameter("password"),"WS/S",request.getParameter("app"));
                 if (u != null) {
                     updateSessionHeaders(request,response);
 //                    response.setHeader("X-JSESSIONID",userSession.getSessionId());
-                    sendSimpleResult(request,response, new AppUserStrict(u));
+                    sendSimpleResult(request,response, u);
                 } else {
                     sendError(request,response, "SecurityException", "Invalid login or password");
                 }
@@ -95,6 +116,24 @@ public class WebScriptServlet extends HttpServlet {
             try {
                 VrApp.getBean(CorePlugin.class).logout();
                 sendSimpleResult(request,response,"bye");
+            } catch (Exception e) {
+                sendError(request,response,e);
+            }
+        } else if (pathInfo.startsWith("/core/rss/")) {
+            try {
+                sendSimpleResult(request,response,VrApp.getBean(CorePlugin.class).getRSS(pathInfo.substring(("/core/rss/").length())));
+            } catch (Exception e) {
+                sendError(request,response,e);
+            }
+        } else if (pathInfo.startsWith("/core/articles/")) {
+            try {
+                String disposition = pathInfo.substring(("/core/articles/").length());
+                String group = null;
+                if(disposition.indexOf("/")>0){
+                    group=disposition.substring(0,disposition.indexOf("/"));
+                    disposition=disposition.substring(disposition.indexOf("/")+1);
+                }
+                sendSimpleResult(request,response,VrApp.getBean(CorePlugin.class).findFullArticlesByDisposition(group,disposition));
             } catch (Exception e) {
                 sendError(request,response,e);
             }

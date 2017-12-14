@@ -5,20 +5,18 @@
  */
 package net.vpc.app.vainruling.core.web.obj.defaultimpl;
 
-import com.google.gson.Gson;
-import jersey.repackaged.com.google.common.base.Objects;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.app.vainruling.core.web.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
-import net.vpc.common.util.Convert;
-import net.vpc.upa.*;
-import net.vpc.upa.types.*;
+import net.vpc.upa.Entity;
+import net.vpc.upa.Field;
+import net.vpc.upa.Relationship;
+import net.vpc.upa.types.DataType;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -80,10 +78,10 @@ public class FieldPropertyView extends PropertyView {
                 Field field = sv.entity.getField(n);
                 Object oo = sv.value == null ? null : field.getValue(sv.value);
                 Relationship manyToOneRelationship = field.getManyToOneRelationship();
-                if (manyToOneRelationship!=null) {
-                    sv = new SelectValue(oo,VrUPAUtils.objToJson(oo,field.getDataType()).toString(), manyToOneRelationship.getTargetEntity());
+                if (manyToOneRelationship != null) {
+                    sv = new SelectValue(oo, VrUPAUtils.objToJson(oo, field.getDataType()).toString(), manyToOneRelationship.getTargetEntity());
                 } else {
-                    sv = new SelectValue(oo,VrUPAUtils.objToJson(oo,field.getDataType()).toString(), null);
+                    sv = new SelectValue(oo, VrUPAUtils.objToJson(oo, field.getDataType()).toString(), null);
                 }
             }
         }
@@ -91,15 +89,14 @@ public class FieldPropertyView extends PropertyView {
             sv = new SelectValue(null, null, null);
         }
         boolean someUpdates = false;
-        someUpdates |= !Objects.equal(this.value, sv.value);
-        someUpdates |= !Objects.equal(this.selectedItem, sv.selectedItem);
+        someUpdates |= !Objects.equals(this.value, sv.value);
+        someUpdates |= !Objects.equals(this.selectedItem, sv.selectedItem);
         this.value = sv.value;
         this.selectedItem = sv.selectedItem;
         if (someUpdates) {
             onChange(null);
         }
     }
-
 
 
     protected static class SelectValue {

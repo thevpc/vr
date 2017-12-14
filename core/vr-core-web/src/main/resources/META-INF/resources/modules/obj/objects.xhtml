@@ -332,7 +332,7 @@ and open the template in the editor.
 
                                 <p:column exportable="false" headerText="" style="width: 65px;"
                                           rendered="#{objCtrl.enabledMainPhoto}">
-                                    <img src="#{vr.url(objCtrl.getMainPhoto(i))}"
+                                    <img src="#{vr.url(objCtrl.getMainIcon(i))}"
                                          style="width: 40px ; height: 40px; margin-right: 10px;"
                                          alt="Image"
                                          onclick="document.getElementById('mainPhotoImg').src='#{vr.url(objCtrl.getMainPhoto(i))}';$('#'+PF('photodlg').id).find('.ui-dialog-title')[0].textContent='#{objCtrl.getMainName(i)}';PF('photodlg').show();"/>

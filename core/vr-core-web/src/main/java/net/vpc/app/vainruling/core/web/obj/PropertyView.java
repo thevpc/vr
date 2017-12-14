@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web.obj;
 
-import jersey.repackaged.com.google.common.base.Objects;
+//import jersey.repackaged.com.google.common.base.Objects;
 import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.upa.Entity;
@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -219,7 +220,7 @@ public class PropertyView implements Serializable {
 
     public void setSelectedItem(Object selectedItem) {
         DataType dataType = getDataType();
-        boolean someUpdates = !Objects.equal(this.selectedItem, selectedItem);
+        boolean someUpdates = !Objects.equals(this.selectedItem, selectedItem);
         this.selectedItem = selectedItem;
         this.value = null;
         if (selectedItem != null) {
@@ -255,7 +256,7 @@ public class PropertyView implements Serializable {
                         if(targetEntityToLoadFrom!=null) {
                             v = targetEntityToLoadFrom.findById(id);
                         }
-                        someUpdates |= !Objects.equal(value, id0);
+                        someUpdates |= !Objects.equals(value, id0);
                         value = v;
                         break;
                     }

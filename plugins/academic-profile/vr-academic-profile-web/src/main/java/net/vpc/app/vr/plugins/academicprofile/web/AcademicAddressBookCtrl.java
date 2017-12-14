@@ -243,7 +243,7 @@ public class AcademicAddressBookCtrl {
     public String findTeacherPhoto(int id) {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = ap.findTeacher(id);
-        return Vr.get().getUserPhoto(t.getUser()==null?-1:t.getUser().getId());
+        return CorePlugin.get().getUserPhoto(t.getUser()==null?-1:t.getUser().getId());
     }
 
     public Model getModel() {

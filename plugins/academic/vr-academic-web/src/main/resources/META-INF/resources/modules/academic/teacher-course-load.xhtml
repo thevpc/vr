@@ -535,7 +535,7 @@ and open the template in the editor.
                                                         actionListener="#{teacherCourseLoadCtrl.doDeleteSelected()}"
                                                         update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                             <p:menuitem value="Inverser Verouillage"
-                                                        disabled="#{!vr.currentToken.admin && !vr.currentToken.manager}"
+                                                        disabled="#{!vr.currentToken.admin and !vr.currentToken.manager}"
                                                         actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignmentSelected()}"
                                                         update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                         </p:menuButton>
@@ -571,7 +571,7 @@ and open the template in the editor.
                                                     actionListener="#{teacherCourseLoadCtrl.doDeleteAssignment(i.value.assignment.id)}"
                                                     update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                         <p:menuitem value="Inverser Verouillage"
-                                                    disabled="#{!vr.currentToken.admin && !vr.currentToken.manager}"
+                                                    disabled="#{!vr.currentToken.admin and !vr.currentToken.manager}"
                                                     actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignment(i.value.assignment.id)}"
                                                     update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     </p:menuButton>
@@ -908,7 +908,7 @@ and open the template in the editor.
                                                     actionListener="#{teacherCourseLoadCtrl.doDeleteSelected()}"
                                                     update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                         <p:menuitem value="Inverser Verouillage"
-                                                    disabled="#{!vr.currentToken.admin && !vr.currentToken.manager}"
+                                                    disabled="#{!vr.currentToken.admin and !vr.currentToken.manager}"
                                                     actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignmentSelected()}"
                                                     update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     </p:menuButton>
@@ -947,11 +947,11 @@ and open the template in the editor.
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     <p:separator/>
                                     <p:menuitem value="Supp. Definitivement"
-                                                disabled="#{!vr.currentToken.admin && !vr.currentToken.manager}"
+                                                disabled="#{!vr.currentToken.admin and !vr.currentToken.manager}"
                                                 actionListener="#{teacherCourseLoadCtrl.doDeleteAssignment(i.value.assignment.id)}"
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                     <p:menuitem value="Inverser Verouillage"
-                                                disabled="#{!vr.currentToken.admin && !vr.currentToken.manager}"
+                                                disabled="#{!vr.currentToken.admin and !vr.currentToken.manager}"
                                                 actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignment(i.value.assignment.id)}"
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                 </p:menuButton>

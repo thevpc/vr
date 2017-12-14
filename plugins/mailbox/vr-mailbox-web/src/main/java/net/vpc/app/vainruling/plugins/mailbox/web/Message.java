@@ -1,5 +1,6 @@
 package net.vpc.app.vainruling.plugins.mailbox.web;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.obj.AppFile;
 import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
@@ -226,9 +227,9 @@ public class Message {
 
     public String getUserPhoto() {
         if (received) {
-            return Vr.get().getUserPhoto(((MailboxReceived) msg).getSender() == null ? -1 : ((MailboxReceived) msg).getSender().getId());
+            return CorePlugin.get().getUserIcon(((MailboxReceived) msg).getSender() == null ? -1 : ((MailboxReceived) msg).getSender().getId());
         }
-        return Vr.get().getUserPhoto(((MailboxSent) msg).getSender() == null ? -1 : ((MailboxSent) msg).getSender().getId());
+        return CorePlugin.get().getUserIcon(((MailboxSent) msg).getSender() == null ? -1 : ((MailboxSent) msg).getSender().getId());
         //return Vr.get().getUnknownUserPhoto(((MailboxSent) msg).getToProfiles());
     }
 

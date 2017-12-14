@@ -1,11 +1,8 @@
 // @author vpc, vr auth ws
-import {Observable} from 'rxjs/Observable';
-import {NbAuthResult} from '../../../node_modules/@nebular/auth/services/auth.service';
-import {NbAbstractAuthProvider} from '../../../node_modules/@nebular/auth/providers/abstract-auth.provider';
-import {HttpModule, Http, Response, RequestOptions, RequestOptionsArgs, Headers} from '@angular/http';
-import {Injectable} from '@angular/core';
-import {Subject} from "rxjs/Subject";
+import {Injectable, OnInit} from '@angular/core';
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {PersistentBehaviorSubject} from "./PersistentBehaviorSubject";
+import {AsyncLocalStorage} from "angular-async-local-storage";
 
 /**
  * Application Shared State. This state should be persisted (Redux,...) to overcome an F5/Refresh invocation!
@@ -26,6 +23,7 @@ export class CurrentUser {
     this.connected = connected;
   }
 }
+
 export class Credentials {
   public name: String = null;
   public pwd: String = null;
@@ -37,10 +35,24 @@ export class Credentials {
 }
 
 @Injectable()
-export class VrSharedState {
-  public apiRoot : string = 'http://localhost:8080/ws/core';
-  public sessionId : BehaviorSubject<string>=new BehaviorSubject<string>('');
-  public credentials : Credentials;
-  public currentUser: BehaviorSubject<CurrentUser>=new BehaviorSubject<CurrentUser>({name:'',obj:'',picture:'',connected:false});
-  public domainModel: BehaviorSubject<any>=new BehaviorSubject<any>({});
+export class VrSharedState{
+  public apiRoot: string = 'http://localhost:8080/ws/core';
+  public sessionId: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  public credentials: Credentials;
+  public currentUser: BehaviorSubject<CurrentUser> = new BehaviorSubject<CurrentUser>({
+    name: '',
+    obj: '',
+    picture: '',
+    connected: false
+  });
+  public domainModel: PersistentBehaviorSubject<any> = new PersistentBehaviorSubject<any>('domainModel', {});
+
+
+  constructor(protected storage: AsyncLocalStorage) {
+    this.domainModel.storage = this.storage;
+  }
+
+  public reset() {
+    this.domainModel.next(null);
+  }
 }

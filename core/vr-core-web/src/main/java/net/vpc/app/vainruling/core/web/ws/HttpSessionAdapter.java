@@ -21,7 +21,12 @@ class HttpSessionAdapter implements HttpSession {
     }
 
     public long getCreationTime() {
-        return base.getCreationTime();
+        try {
+            return base.getCreationTime();
+        }catch (IllegalStateException ex){
+            silentPropagateInvalidation();
+          throw ex;
+        }
     }
 
     public String getId() {
@@ -29,7 +34,12 @@ class HttpSessionAdapter implements HttpSession {
     }
 
     public long getLastAccessedTime() {
-        return base.getLastAccessedTime();
+        try {
+            return base.getLastAccessedTime();
+        }catch (IllegalStateException ex){
+            silentPropagateInvalidation();
+            throw ex;
+        }
     }
 
     public ServletContext getServletContext() {
@@ -44,65 +54,123 @@ class HttpSessionAdapter implements HttpSession {
         base.setMaxInactiveInterval(interval);
     }
 
-    public HttpSessionContext getSessionContext() {
-        return base.getSessionContext();
+    public Object getAttribute(String name) {
+        try {
+            return base.getAttribute(name);
+        }catch (IllegalStateException ex){
+            silentPropagateInvalidation();
+            throw ex;
+        }
     }
 
-    public Object getAttribute(String name) {
-        return base.getAttribute(name);
+    public Enumeration<String> getAttributeNames() {
+        try {
+            return base.getAttributeNames();
+        }catch (IllegalStateException ex){
+            silentPropagateInvalidation();
+            throw ex;
+        }
+    }
+
+    public void removeAttribute(String name) {
+        try {
+            base.removeAttribute(name);
+        }catch (IllegalStateException ex){
+            silentPropagateInvalidation();
+            throw ex;
+        }
+    }
+
+    public void invalidate() {
+        IllegalStateException ex0 = null;
+        Exception ex1 = null;
+        String id = getId();
+        try {
+            base.invalidate();
+        } catch (IllegalStateException ex) {
+            ex0 = ex;
+        }
+        try {
+            propagateInvalidation();
+        } catch (Exception ex) {
+            ex1 = ex;
+        }
+        if (ex0 != null) {
+            throw ex0;
+        }
+        if (ex1 != null) {
+            throw new IllegalStateException(ex1);
+        }
+    }
+
+    private boolean silentPropagateInvalidation() {
+        try {
+            propagateInvalidation();
+            return true;
+        } catch (Exception ex) {
+            //
+        }
+        return false;
+    }
+
+    private void propagateInvalidation() {
+        String id = getId();
+        store.remove(id);
+    }
+
+    public boolean isNew() {
+        try {
+            return base.isNew();
+        }catch (IllegalStateException ex){
+            silentPropagateInvalidation();
+            throw ex;
+        }
+    }
+
+    public void setAttribute(String name, Object value) {
+        try {
+            base.setAttribute(name, value);
+        }catch (IllegalStateException ex){
+            silentPropagateInvalidation();
+            throw ex;
+        }
+    }
+
+
+    //deprecated!!
+    public HttpSessionContext getSessionContext() {
+        return base.getSessionContext();
     }
 
     public Object getValue(String name) {
         return base.getValue(name);
     }
 
-    public Enumeration<String> getAttributeNames() {
-        return base.getAttributeNames();
-    }
-
     public String[] getValueNames() {
-        return base.getValueNames();
-    }
-
-    public void setAttribute(String name, Object value) {
-        base.setAttribute(name, value);
+        try {
+            return base.getValueNames();
+        }catch (IllegalStateException ex){
+            silentPropagateInvalidation();
+            throw ex;
+        }
     }
 
     public void putValue(String name, Object value) {
-        base.putValue(name, value);
-    }
-
-    public void removeAttribute(String name) {
-        base.removeAttribute(name);
+        try {
+            base.putValue(name, value);
+        }catch (IllegalStateException ex){
+            silentPropagateInvalidation();
+            throw ex;
+        }
     }
 
     public void removeValue(String name) {
-        base.removeValue(name);
-    }
-
-    public void invalidate() {
-        IllegalStateException ex0=null;
-        Exception ex1=null;
-        String id = getId();
         try {
-            base.invalidate();
+            base.removeValue(name);
         }catch (IllegalStateException ex){
-            ex0=ex;
-        }
-        try {
-            store.remove(id);
-        }catch (Exception ex){
-            ex1=ex;
-        }
-        if(ex0!=null){
-            throw ex0;
-        }
-        if(ex1!=null){
-            throw new IllegalStateException(ex1);
+            silentPropagateInvalidation();
+            throw ex;
         }
     }
 
-    public boolean isNew() {
-        return base.isNew();
-    }
 }

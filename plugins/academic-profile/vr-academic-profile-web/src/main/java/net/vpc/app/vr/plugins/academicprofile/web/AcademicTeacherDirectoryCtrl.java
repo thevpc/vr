@@ -2,6 +2,8 @@ package net.vpc.app.vr.plugins.academicprofile.web;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UPathItem;
@@ -46,7 +48,7 @@ public class AcademicTeacherDirectoryCtrl {
     public String findTeacherPhoto(int id) {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = ap.findTeacher(id);
-        return Vr.get().getUserPhoto(t.getUser()==null?-1:t.getUser().getId());
+        return CorePlugin.get().getUserPhoto(t.getUser()==null?-1:t.getUser().getId());
     }
     
     public static class TeacherContact {

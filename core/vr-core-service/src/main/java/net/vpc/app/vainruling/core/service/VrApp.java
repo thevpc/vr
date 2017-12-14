@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.core.service;
 
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.TransactionType;
@@ -67,7 +66,7 @@ public class VrApp implements ApplicationContextAware {
         if (!StringUtils.isEmpty(login)) {
             CorePlugin core = CorePlugin.get();
             core.getCurrentSession().setSessionId("custom");
-            core.login(login, password,"Standalone",null);
+            core.authenticate(login, password,"Standalone",null);
         }
         PersistenceUnit persistenceUnit = UPA.getPersistenceUnit();
         persistenceUnit.openSession();

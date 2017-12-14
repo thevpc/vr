@@ -14,6 +14,7 @@ import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
 import net.vpc.common.io.IOUtils;
+import net.vpc.common.io.PathInfo;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Utils;
 import net.vpc.common.vfs.VFile;
@@ -27,6 +28,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -35,6 +38,7 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -1042,4 +1046,31 @@ public class VrUtils {
         System.arraycopy(array2,0,rarray,array1.length,array2.length);
         return rarray;
     }
+
+
+    public static VFile getOrResizeIcon(VFile file) throws IOException {
+        return getOrResizePhoto(file,128);
+    }
+
+    public static VFile getOrResizePhoto(VFile file, int width) throws IOException {
+        if (!file.isFile()) {
+            return file;
+        }
+        VFile validFile = VrPlatformUtils.changeFileSuffix(file, "-" + width);
+        if (validFile.exists() && validFile.lastModified() > file.lastModified()) {
+            return validFile;
+        }
+        PathInfo pathInfo = PathInfo.create(file.getPath());
+        System.out.println(pathInfo.getExtensionPart());
+        Image originalImage = VrPlatformUtils.readImage(file);
+        BufferedImage resizedImage = new BufferedImage(width, width, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = resizedImage.createGraphics();
+        g.drawImage(originalImage, 0, 0, width, width, null);
+
+        g.dispose();
+        VrPlatformUtils.writeImage(resizedImage, pathInfo.getExtensionPart(), validFile);
+        return validFile;
+
+    }
+
 }

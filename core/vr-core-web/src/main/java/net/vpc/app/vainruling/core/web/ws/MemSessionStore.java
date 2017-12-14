@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MemSessionStore implements SessionStore {
-    private Map<String, PlatformSession> sessions = new HashMap<>();
+    private final  Map<String, PlatformSession> sessions = new HashMap<>();
 
     public void remove(String id) {
         synchronized (sessions) {

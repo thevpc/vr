@@ -46,7 +46,7 @@ and open the template in the editor.
                     </div>
                     <div class="col-md-3 col-sm-6 col-xs-12">
                         <div class="card text-white bg-dark mb-3" style="width: 20rem;">
-                            <img src="#{myStudentInfoCtrl.model.student.user eq null ? '' : vr.url(vr.getUserPhoto(myStudentInfoCtrl.model.student.user.id))}"
+                            <img src="#{myStudentInfoCtrl.model.student.user eq null ? '' : vr.url(corePlugin.getUserPhoto(myStudentInfoCtrl.model.student.user.id))}"
                                  class="img-circle" alt="User Image"
                                  style="height: 100px;"
                             />

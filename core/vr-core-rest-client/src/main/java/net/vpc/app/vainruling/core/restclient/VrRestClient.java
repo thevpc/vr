@@ -1,7 +1,9 @@
 package net.vpc.app.vainruling.core.restclient;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -39,38 +41,27 @@ public class VrRestClient {
 
     public static void main(String[] args) {
         VrRestClient s = new VrRestClient();
-        s.login("admin", "admin");
 
+        System.out.println(s.login("admin", "admin"));
+        try {
 
-        //http://serveur/ws/wscript?script=Return(bean('calendarsPlugin').loadCalendars('my-calendars', ''));" +
-        JsonObject ret = s.wscriptJson("" +
-                "Return(bean('calendarsPlugin').findMyCalendars());" +
-                "");
-//        Map ret = s.remoteScriptInvocation("" +
-//                "Return(bean('vrMenuManager').createMenu(''));" +
-//                "");
-//        Map ret = s.remoteScriptInvocation("" +
-//                "Return(bean('corePlugin').getPluginBeans());" +
-//                "var y=(bean('corePlugin').getPluginBeans());" +
-//                "for(i=0;i<y.length;i++){" +
-//                " var oo={};" +
-//                " var b=bean(y[i]);" +
-//                " oo.cls=b.getClass().getDeclaredMethods();" +
-//                " Return(oo);" +
-//                "}" +
-//                "");
-        System.out.println(ret);
+            JsonObject ret = s.wscriptJson("" +
+                    "Return(bean('core').findFullArticlesByCategory('Featured'))" +
+                    "");
 
-        s.logout();
+            System.out.println(ret);
+        }finally {
+            System.out.println( s.logout());
+        }
 
     }
 
-    public void logout() {
-        invokePost("/core/logout");
+    public String logout() {
+        return (invokePostJson1("/core/logout")).toString();
     }
 
-    public void login(String login, String password) {
-        invokePost("/core/login"
+    public JsonObject login(String login, String password) {
+        return (JsonObject) invokePostJson1("/core/login"
                 , "login", login
                 , "password", password
         );
@@ -195,15 +186,26 @@ public class VrRestClient {
 //        return ret.toString();
 //    }
 
+    public JsonElement invokePostJson1(String path, Object... args) {
+        JsonObject jsonObject = invokePostJson(path, args);
+        return (JsonElement) jsonObject.get("$1");
+    }
+
+    public JsonObject invokePostJson(String path, Object... args) {
+        String s = invokePost(path, args);
+        Gson g=new Gson();
+        JsonObject jsonObject = g.fromJson(s, JsonObject.class);
+        if(jsonObject.get("$error")!=null){
+            throw new RuntimeException(jsonObject.get("$error").toString());
+        }
+        return jsonObject;
+    }
+
     public String invokePost(String path, Object... args) {
         check();
         StringBuilder ret = new StringBuilder();
         try {
-//            org.apache.http.client.utils.URIBuilder
             URIBuilder builder = new URIBuilder(url+"/"+wsContext+"/" + path);
-//            for (int i = 0; i < args.length; i += 2) {
-//                builder.setParameter((String) args[i], toJson(args[i + 1]));
-//            }
 
             HttpPost httpPost = new HttpPost(builder.build());
 
@@ -226,21 +228,15 @@ public class VrRestClient {
                     new InputStreamReader((response.getEntity().getContent())));
 
             String output;
-            System.out.println("Output from Server .... \n");
             while ((output = br.readLine()) != null) {
                 ret.append(output).append("\n");
             }
 
-
         } catch (URISyntaxException e) {
-
             e.printStackTrace();
         } catch (ClientProtocolException e) {
-
             e.printStackTrace();
-
         } catch (IOException e) {
-
             e.printStackTrace();
         }
         return ret.toString();

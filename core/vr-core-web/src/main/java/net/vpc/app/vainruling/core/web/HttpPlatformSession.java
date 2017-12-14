@@ -10,13 +10,17 @@ import java.util.Date;
 public class HttpPlatformSession implements PlatformSession {
     private HttpSession session;
     private String sessionId;
+    private String ipAddress;
     private long connexionTime;
 
-    public HttpPlatformSession(HttpSession session) {
+    public HttpPlatformSession(HttpSession session,String ipAddress) {
         this.session = session;
+        this.ipAddress = ipAddress;
         this.sessionId=session.getId();
         this.connexionTime=session.getCreationTime();
     }
+
+
 
     @Override
     public Date getConnexionTime() {
@@ -30,6 +34,11 @@ public class HttpPlatformSession implements PlatformSession {
         } catch (IllegalStateException ex) {
             return null;
         }
+    }
+
+    @Override
+    public String getIpAddress() {
+        return ipAddress;
     }
 
     public HttpSession unwrap() {

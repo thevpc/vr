@@ -6,10 +6,10 @@
 package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.PlatformSession;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.security.UserToken;
+import net.vpc.app.vainruling.core.service.security.*;
 import net.vpc.app.vainruling.core.web.HttpPlatformSession;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
@@ -25,7 +25,6 @@ import javax.annotation.PostConstruct;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
@@ -93,13 +92,24 @@ public class LoginCtrl {
                     FacesUtils.addErrorMessage("Impossible de logger. Serveur indisponible momentannément. Redémarrage en cours.");
                     return null;
                 }
-                    AppUser u = core.login(finalLogin, getModel().getPassword(),"WebSite",null);
+                    UserSessionInfo u = core.authenticate(finalLogin, getModel().getPassword(),"WebSite",null);
                 if (u != null) {
                     FacesContext currentInstance = FacesContext.getCurrentInstance();
                     if(currentInstance!=null) {
-                        ExternalContext externalContext = currentInstance.getExternalContext();
                         UserSession currentSession = CorePlugin.get().getCurrentSession();
-                        currentSession.setPlatformSession(new HttpPlatformSession((HttpSession) externalContext.getSession(false)));
+                        String sessionId = currentSession.getSessionId();
+                        SessionStore sessionStore = VrApp.getBean(SessionStoreProvider.class).resolveSessionStore();
+                        PlatformSession platformSession = sessionStore.get(sessionId);
+                        if(platformSession==null){
+                            ExternalContext externalContext = currentInstance.getExternalContext();
+                            HttpServletRequest httpRequest = (HttpServletRequest) externalContext.getRequest();
+                            String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
+                            if (ipAddress == null) {
+                                ipAddress = httpRequest.getRemoteAddr();
+                            }
+                            platformSession=new HttpPlatformSession((HttpSession) externalContext.getSession(false),ipAddress);
+                        }
+                        currentSession.setPlatformSession(platformSession);
 //                        getSession().setPlatformSessionMap(externalContext.getSessionMap());
                         VrApp.getBean(ActiveSessionsCtrl.class).onRefresh();
                         if(s!=null){
