@@ -5012,6 +5012,18 @@ public class CorePlugin {
         }
         return all;
     }
+    public List<Event> findAllEventsByCurrentMonth(){
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+
+        return UPA.getPersistenceUnit().createQuery("Select e * from Event where"
+                +"datepart(month,e.beginDate )=:month and datepart(year,e.beginDate )=:year "
+        )
+                .setParameter("month", month)
+                .setParameter("year",year)
+                .getResultList();
+    }
 
     private TraceService getTrace() {
         return trace;
