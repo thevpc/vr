@@ -2,8 +2,12 @@ import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {VrSharedState} from "../../../@core/vr.shared-state";
 import {VrService} from "../../../@core/vr.service";
 import {NbThemeService} from "@nebular/theme";
-import {ActivatedRoute, ParamMap} from "@angular/router";
+import 'ckeditor';
+import '../../editors/ckeditor/ckeditor.loader';
+import {ActivatedRoute, ParamMap,Router,NavigationExtras} from "@angular/router";
 import { Location } from '@angular/common';
+
+import {STRING_TYPE} from "@angular/compiler/src/output/output_ast";
 
 export class FormEntitySectionRow {
   title: string = 'Empty Row';
@@ -19,12 +23,47 @@ export class FormEntitySectionColumn {
 export class FormEntitySectionPanel {
   title: string = 'Empty Panel';
   children: FormEntityField[] = [];
+
 }
 
 export class FormEntityField {
   title: string = 'No Field Title';
   name: string = 'No Field Name';
-  info: any;
+  effectivePersistAccessLevel: string;
+  simpleProperties: string;
+  dataType: any;
+  manyToOne: boolean;
+  system: boolean;
+  enabled: boolean = true;
+  control: FControl = FControl.TEXT;
+  vals: any;
+}
+
+export enum EditorMode {
+  PERSIST,
+  UPDATE,
+  READ
+}
+
+export enum FControl {
+  TEXT,
+  TEXTAREA,
+  EDITOR,
+  CHECKBOX,
+  DROPDOWNLIST,
+  RATING,
+  FILE,
+}
+
+export class FormEntityConfig {
+
+  id:string;
+  listFilter:string ;
+  values:{};
+  disabledFields:string[];
+  selectedFields:string[];
+  searchExpr:string;
+  ignoreAutoFilter:string;
 }
 
 @Component({
@@ -32,10 +71,15 @@ export class FormEntityField {
   styleUrls: ['./form-entity.component.scss'],
   templateUrl: './form-entity.component.html',
 })
+
+
 export class FormEntityComponent implements OnInit {
   public entityName: string = 'AppUser';
   public entityInfo: any = {};
   public editorRows: FormEntitySectionRow[] = [];
+  public editorMode: EditorMode = EditorMode.PERSIST;
+  public editorConfig:FormEntityConfig=new FormEntityConfig();
+  public objs:any={};
 
   themeName = 'default';
   settings: Array<any>;
@@ -47,11 +91,13 @@ export class FormEntityComponent implements OnInit {
     title: 'Outline Buttons',
     key: 'outline',
   }];
+
   constructor(private vrService: VrService,
               private vrSharedModel: VrSharedState,
               private themeService: NbThemeService,
               private route: ActivatedRoute,
-              private location: Location) {
+              private location: Location,
+              private router: Router) {
     this.themeSubscription = this.themeService.getJsTheme().subscribe(theme => {
       this.themeName = theme.name;
       this.init(theme.variables);
@@ -59,16 +105,15 @@ export class FormEntityComponent implements OnInit {
   }
 
 
-
   init(colors: any) {
-    this.settings= [];
+    this.settings = [];
     this.settings = [{
       class: 'btn-hero-primary',
       container: 'primary-container',
       title: 'Primary Button',
       buttonTitle: 'Enregistrer',
       default: {
-        gradientLeft: `adjust-hue(${colors.primary}, 30deg)`,
+        gradientLeft: `adjust-hue(${colors.primary}, 20deg)`,
         gradientRight: colors.primary,
       },
       cosmic: {
@@ -165,26 +210,109 @@ export class FormEntityComponent implements OnInit {
 
 
   ngOnInit(): void {
+   // alert('jamais...');
+    this.route.queryParamMap.subscribe(pm=>{
+      let v = pm.get('object');
+      if(v) {
+      //  console.log(v); // v = {id:'1' , name: 'manel'}
+        this.editorConfig = Object.assign(new FormEntityConfig(), JSON.parse(v));
+      }
+    });
     this.route.paramMap
       .map((p: ParamMap) => {
         let v = p.get('name');
+      //  alert('name='+v);
         this.entityName = v;
         this.vrService.getPersistenceUnitInfo().subscribe(s =>{
-            if(s && s.type) {
-              this.entityInfo = this.vrService.findEntityInfo(s, this.entityName);
-              this.onChangedEntityInfo();
-
-            }
-          });
-        }).subscribe();
-      }
+          if(s && s.type) {
+            this.entityInfo = this.vrService.findEntityInfo(s, this.entityName);
+            this.onChangedEntityInfo();
+          }
+        });
+      }).subscribe();
+  }
 
 
   private createFormEntityField(field): FormEntityField {
     var f = new FormEntityField();
     f.name = field.name;
     f.title = field.title;
-    //f.info = field;
+
+    f.dataType = field.dataType;
+    // console.log(JSON.stringify(field.dataType.type));
+    f.effectivePersistAccessLevel = field.effectivePersistAccessLevel;
+    f.simpleProperties = field.simpleProperties;
+    f.system = field.system;
+   //  console.log('system = '+f.system);
+    //  field.info.effectiveReadAccessLevel
+    // if (field.info.main || field.info.summary ){
+    // }
+
+    if (field.system) {
+      return null;
+    }
+    let accessLevel = this.editorMode == EditorMode.PERSIST ? field.effectivePersistAccessLevel : this.editorMode == EditorMode.UPDATE ? field.effectiveUpdateAccessLevel : field.effectiveReadAccessLevel;
+    if (accessLevel == "INACCESSIBLE") {
+      return null;
+    } else if (accessLevel == "READ_ONLY") {
+      f.enabled = false;
+    } else if (accessLevel == "READ_WRITE") {
+      f.enabled = true;
+    }
+    // if(this.editorConfig.disabledFields.indexOf(f.name)>=0){
+    //   f.enabled=false;
+    // }
+    switch (field.dataType.type) {
+      case "net.vpc.upa.types.StringType":
+      case "net.vpc.upa.types.IntType":
+      case "net.vpc.upa.types.LongType":
+      case "net.vpc.upa.types.DoubleType":
+      case "net.vpc.upa.types.DateTimeType":
+      case "net.vpc.upa.types.TimestampType":{
+        f.control = FControl.TEXT;
+       // alert( "yes text");
+        break;
+      }
+
+      case "net.vpc.upa.types.EnumType" :
+      case "net.vpc.upa.types.ManyToOneType": {
+        f.control = FControl.DROPDOWNLIST;
+        break;
+      }
+      case "net.vpc.upa.types.BooleanType" : {
+        f.control = FControl.CHECKBOX;
+        break;
+      }
+    }
+
+    if (field.manyToOne) {
+      f.control = FControl.DROPDOWNLIST;
+    }
+    //console.log(JSON.stringify(field.simpleProperties));
+    if (field.simpleProperties["ui.form.control"] != null) {
+     var result = FControl[<string>(field.simpleProperties["ui.form.control"])];
+      if ( result == "rating" ){
+        f.control= FControl.RATING;
+      } else if ( result == "file" ){
+        f.control= FControl.FILE;
+      } else if ( result == "richtextarea" ){
+        f.control= FControl.EDITOR;
+      }else {
+        f.control= FControl.TEXTAREA ;
+      }
+
+    }
+
+    if (f.control == FControl.DROPDOWNLIST) {
+     this.vrService.getSelectList(this.entityName, f.name, null, null).subscribe(val => {
+       f.vals = val
+          // console.log('these are fvalues = ' + JSON.stringify(f.values));
+       console.log("F values = "+JSON.stringify(f.vals));
+       }
+     );
+    }
+    //f.vals = field.vals ;
+   // console.log('Types = '+JSON.stringify(f.dataType.type));
     return f;
   }
 
@@ -196,36 +324,43 @@ export class FormEntityComponent implements OnInit {
     if (entityInfo.children) {
       for (let obj of entityInfo.children) {
         if (obj.type == 'section') {
-          rows.push(this.createFormEntitySectionRow(obj));
+          let row = this.createFormEntitySectionRow(obj);
+        //  console.log ('the row under create section rowS = '+JSON.stringify(row));
+          if (row != null && row.children.length > 0) {
+            rows.push(row);
+          }
         } else {
-          // alert('createFormEntitySectionRows why '+obj.type);
           if (emptyRow == null) {
             emptyRow = new FormEntitySectionRow();
-
             emptyColumn = new FormEntitySectionColumn();
             emptyRow.children.push(emptyColumn);
-
             emptySection = new FormEntitySectionPanel();
-            emptyColumn.title='No Section';
+            emptyColumn.title = 'No Section';
             emptyColumn.children.push(emptySection);
 
-            rows.push(emptyRow);
           }
-          emptySection.children.push(this.createFormEntityField(obj));
+
+          let field = this.createFormEntityField(obj);
+          if (field != null) {
+            if (emptySection.children.length == 0) {
+              rows.push(emptyRow);
+            }
+            emptySection.children.push(field);
+          }
         }
       }
-
-      if(rows.length==1 && emptySection!=null){
+      if (rows.length == 1 && emptySection != null) {
         //this section contains no sub sections!
-        emptySection.title='Général';
+        emptySection.title = 'Général';
       }
 
+      // the following code devides the cells
       for (let obj of rows) {
-        let cols = 12/obj.children.length;
-        obj.cols= 'col-md-'+Math.ceil(cols);
+        let cols = 12 / obj.children.length;
+        obj.cols = 'col-md-' + Math.ceil(cols);
       }
     }
-    //alert('createFormEntitySectionRows result '+JSON.stringify(rows));
+   // console.log('createFormEntitySectionRows result '+JSON.stringify(rows));
     return rows;
   }
 
@@ -236,23 +371,39 @@ export class FormEntityComponent implements OnInit {
     var emptySection: FormEntitySectionPanel = null;
     for (let obj of sectionInfo.children) {
       if (obj.type == 'section') {
-        currentRow.children.push(this.createFormEntitySectionColumn(obj));
+        let col = this.createFormEntitySectionColumn(obj);
+       // console.log ('the cols under create section row = '+JSON.stringify(col));
+        if (col != null && col.children.length > 0) {
+          currentRow.children.push(col);
+        }
         //new FormEntitySectionRow()
       } else {
         //alert('createFormEntitySectionRow why '+obj.type);
         if (emptyColumn == null) {
           emptyColumn = new FormEntitySectionColumn();
-          currentRow.children.push(emptyColumn);
           emptySection = new FormEntitySectionPanel();
           emptyColumn.children.push(emptySection);
+
         }
-        emptySection.children.push(this.createFormEntityField(obj));
+        let field = this.createFormEntityField(obj);
+        if (field != null) {
+          if (currentRow.children.length == 0) {
+            currentRow.children.push(emptyColumn);
+          }
+          emptySection.children.push(field);
+        }
+
       }
     }
-    if(currentRow.children.length==1 && emptySection!=null){
+    if (currentRow.children.length == 1 && emptySection != null) {
       //this section contains no sub sections!
-      emptySection.title=sectionInfo.title;
+      emptySection.title = sectionInfo.title;
     }
+    if (currentRow.children.length == 0) {
+      return null;
+
+    }
+   // console.log('createFormEntitySectionRow result '+JSON.stringify(currentRow));
     return currentRow;
   }
 
@@ -261,20 +412,32 @@ export class FormEntityComponent implements OnInit {
     var emptySection: FormEntitySectionPanel = null;
     for (let obj of sectionInfo.children) {
       if (obj.type == 'section') {
-        currentColumn.children.push(this.createFormEntitySectionPanel(obj));
+        let section = this.createFormEntitySectionPanel(obj);
+        if (section != null && section.children.length > 0) {
+          currentColumn.children.push(section);
+        }
         //new FormEntitySectionRow()
       } else {
-        //alert('createFormEntitySectionColumn why '+obj.type);
         if (emptySection == null) {
           emptySection = new FormEntitySectionPanel();
-          currentColumn.children.push(emptySection);
+
         }
-        emptySection.children.push(this.createFormEntityField(obj));
+        let field = this.createFormEntityField(obj);
+        if (field != null) {
+          if (emptySection.children.length == 0) {
+            currentColumn.children.push(emptySection);
+          }
+          emptySection.children.push(field);
+        }
       }
     }
-    if(currentColumn.children.length==1 && emptySection!=null){
+    if (currentColumn.children.length == 1 && emptySection != null) {
       //this section contains no sub sections!
-      emptySection.title=sectionInfo.title;
+      emptySection.title = sectionInfo.title;
+    }
+    if (currentColumn.children.length == 0) {
+    //  return currentColumn; // houni mochkla
+    return null ;
     }
     return currentColumn;
   }
@@ -292,20 +455,30 @@ export class FormEntityComponent implements OnInit {
   }
 
   private createFormEntitySectionPanel(sectionInfo): FormEntitySectionPanel {
-    alert('createFormEntitySectionPanel '+sectionInfo.name);
+   // alert('createFormEntitySectionPanel ' + sectionInfo.name);
     let currentPanel: FormEntitySectionPanel = new FormEntitySectionPanel();
-    currentPanel.title=sectionInfo.title;
+    currentPanel.title = sectionInfo.title;
     for (let obj of sectionInfo.children) {
       if (obj.type == 'section') {
         var t: any[] = [];
         //alert('before flattenFields '+sectionInfo.name);
         this.flattenFields(obj, t).forEach((element) => {
-          currentPanel.children.push(this.createFormEntityField(element));
+          let field = this.createFormEntityField(element);
+          if (field != null) {
+            currentPanel.children.push(field);
+          }
+
         });
         //new FormEntitySectionRow()
       } else {
-        currentPanel.children.push(this.createFormEntityField(obj));
+        let field = this.createFormEntityField(obj);
+        if (field != null) {
+          currentPanel.children.push(field);
+        }
       }
+    }
+    if (currentPanel.children.length == 0) {
+      return null;
     }
     return currentPanel;
   }
@@ -315,6 +488,7 @@ export class FormEntityComponent implements OnInit {
     console.clear();
     console.log(this.entityInfo);
     this.editorRows = this.createFormEntitySectionRows(this.entityInfo);
+  //  console.log(' HERE '+JSON.stringify(this.editorRows));
   }
 
 
