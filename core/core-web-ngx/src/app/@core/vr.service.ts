@@ -99,6 +99,9 @@ export class VrService {
         return cu;
       });
   }
+  public getSelectList(entityName:string, fieldName:string, constraints:any, currentInstance:any):Observable<any> {
+    return this.vrHttp.invokeBeanMethod('core', `getFieldValues('${entityName}', '${fieldName}',${constraints}, ${currentInstance} )`);
+  }
 
   public logout(): Observable<any> {
     return this.vrHttp.logout();

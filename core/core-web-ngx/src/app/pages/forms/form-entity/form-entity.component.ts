@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {VrSharedState} from "../../../@core/vr.shared-state";
-import {VrService} from "../../../@core/vr.service";
-import {NbThemeService} from "@nebular/theme";
+import {VrService} from '../../../@core/vr.service';
+import {NbThemeService} from '@nebular/theme';
 import 'ckeditor';
 import '../../editors/ckeditor/ckeditor.loader';
 import {ActivatedRoute, ParamMap,Router,NavigationExtras} from "@angular/router";

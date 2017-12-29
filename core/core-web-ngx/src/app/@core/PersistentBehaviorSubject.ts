@@ -60,7 +60,7 @@ export class PersistentBehaviorSubject<T> extends BehaviorSubject<T> {
     if(v==null){
       v=this.createDefaultValue();
     }
-    alert('next '+JSON.stringify(v));
+    // alert('next '+JSON.stringify(v));
     super.next(v);
   }
 
