@@ -8,7 +8,7 @@ import {AnalyticsService} from './utils/analytics.service';
 import {VrAuthProvider} from './vr.auth-provider';
 import {VrService} from './vr.service';
 import {VrSharedState} from './vr.shared-state';
-import {VrHttp} from "./vr.http";
+import {VrHttp} from './vr.http';
 
 const NB_CORE_PROVIDERS = [
   ...DataModule.forRoot().providers,
