@@ -35,7 +35,7 @@ export class Credentials {
 }
 
 @Injectable()
-export class VrSharedState{
+  export class VrSharedState{
   public apiRoot: string = 'http://localhost:8080/ws/core';
   public sessionId: BehaviorSubject<string> = new BehaviorSubject<string>('');
   public credentials: Credentials;
