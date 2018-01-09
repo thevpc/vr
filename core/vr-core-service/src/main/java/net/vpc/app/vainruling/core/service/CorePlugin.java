@@ -3116,7 +3116,56 @@ public class CorePlugin {
         }
         return null;
     }
+  public static class FileInfo{
+        private String name;
+        private VFileType type;
+        private long lastModif;
+        private  FileInfo[] liste;
+        public FileInfo(String name, VFileType type, long lastModif){
+            this.name=name;
+            this.type=type;
+            this.lastModif=lastModif;
+        }
+        public FileInfo(){}
+      public String getName() {
+          return name;
+      }
 
+      public VFileType getType() {
+          return type;
+      }
+
+      public long getLastModif() {
+          return lastModif;
+      }
+
+      public void setLastModif(long lastModif) {
+          this.lastModif = lastModif;
+      }
+
+      public void setType(VFileType type) {
+          this.type = type;
+      }
+
+      public void setName(String name) {
+          this.name = name;
+      }
+  }
+   public FileInfo getMyHomeFile(String path){
+       VFile f=getMyHomeFileSystem().get(path);
+       FileInfo fileInfo = new FileInfo();
+       fileInfo.name=f.getName();
+       FileInfo[] liste=null ;
+       int i= 0;
+       VFile[] listeFile=  f.listFiles();
+       for (VFile vf: listeFile){
+           liste[i]=new FileInfo(vf.getName(),vf.getFileType(),vf.lastModified());
+           i++;
+       }
+       fileInfo.setLastModif(f.lastModified());
+       fileInfo.setType( f.getFileType());
+       return fileInfo;
+   }
     public VirtualFileSystem getMyHomeFileSystem() {
         return getUserHomeFileSystem(getCurrentUserLogin());
     }
@@ -4962,6 +5011,18 @@ public class CorePlugin {
             return findAllNamedIds(m.getRelationship(), constraints, currentInstance);
         }
         return all;
+    }
+    public List<Event> findAllEventsByCurrentMonth(){
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+
+        return UPA.getPersistenceUnit().createQuery("Select e * from Event where"
+                +"datepart(month,e.beginDate )=:month and datepart(year,e.beginDate )=:year "
+        )
+                .setParameter("month", month)
+                .setParameter("year",year)
+                .getResultList();
     }
 
     private TraceService getTrace() {
