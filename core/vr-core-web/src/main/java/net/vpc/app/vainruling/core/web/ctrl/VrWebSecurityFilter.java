@@ -140,6 +140,7 @@ public class VrWebSecurityFilter implements Filter {
                     if(!webresponse.isCommitted()) {
                         webresponse.sendRedirect(contextPath + "/r/index.xhtml?faces-redirect=true");
                     }
+                    return;
                 }
                 log.log(Level.SEVERE, "Unhandled Error", e);
                 if(!webresponse.isCommitted()) {

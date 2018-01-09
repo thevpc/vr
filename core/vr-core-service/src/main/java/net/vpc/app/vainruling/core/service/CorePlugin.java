@@ -98,6 +98,7 @@ public class CorePlugin {
 //        return VrApp.getContext().getBean(UserSession.class);
 //    }
 
+
     @PostConstruct
     public void prepare() {
         //LogUtils.configure(Level.FINE,"net.vpc");
@@ -492,16 +493,6 @@ public class CorePlugin {
         return p;
     }
 
-    public AppProfile findOrCreateProfile(String profileName) {
-        AppProfile p = findProfileByName(profileName);
-        if (p == null) {
-            p = new AppProfile();
-            p.setName(profileName);
-            UPA.getPersistenceUnit().persist(p);
-        }
-        return p;
-    }
-
 
 //    public Object getGlobalCache(String name){
 //        synchronized (globalCache){
@@ -520,6 +511,16 @@ public class CorePlugin {
 //            globalCache.remove(name);
 //        }
 //    }
+
+    public AppProfile findOrCreateProfile(String profileName) {
+        AppProfile p = findProfileByName(profileName);
+        if (p == null) {
+            p = new AppProfile();
+            p.setName(profileName);
+            UPA.getPersistenceUnit().persist(p);
+        }
+        return p;
+    }
 
     public AppProfile findProfileByName(String profileName) {
         final EntityCache entityCache = cacheService.get(AppProfile.class);
@@ -544,6 +545,23 @@ public class CorePlugin {
 
     }
 
+//    public Map<Integer,List<AppProfile>> findProfilesMapByUserId() {
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        List<AppUserProfileBinding> appUserProfileBindings = pu.createQuery("Select u from AppUserProfileBinding  u").getResultList();
+//        HashMap<Integer, List<AppProfile>> all = new HashMap<>();
+//        for (AppUserProfileBinding o : appUserProfileBindings) {
+//            if(o.getUser()!=null && o.getProfile()!=null){
+//                List<AppProfile> list = all.get(o.getUser().getId());
+//                if(list==null){
+//                    list=new ArrayList<>();
+//                    all.put(o.getUser().getId(), list);
+//                }
+//                list.add(o.getProfile());
+//            }
+//        }
+//        return all;
+//    }
+
     public AppProfile findProfileByCode(String profileCode) {
         final EntityCache entityCache = cacheService.get(AppProfile.class);
         Map<String, AppProfile> m = entityCache.getProperty("findProfileByCode", new Action<Map<String, AppProfile>>() {
@@ -566,23 +584,6 @@ public class CorePlugin {
 //                .getEntity();
 
     }
-
-//    public Map<Integer,List<AppProfile>> findProfilesMapByUserId() {
-//        PersistenceUnit pu = UPA.getPersistenceUnit();
-//        List<AppUserProfileBinding> appUserProfileBindings = pu.createQuery("Select u from AppUserProfileBinding  u").getResultList();
-//        HashMap<Integer, List<AppProfile>> all = new HashMap<>();
-//        for (AppUserProfileBinding o : appUserProfileBindings) {
-//            if(o.getUser()!=null && o.getProfile()!=null){
-//                List<AppProfile> list = all.get(o.getUser().getId());
-//                if(list==null){
-//                    list=new ArrayList<>();
-//                    all.put(o.getUser().getId(), list);
-//                }
-//                list.add(o.getProfile());
-//            }
-//        }
-//        return all;
-//    }
 
     protected Set<String> findUniformProfileNamesMapByUserId(int userId, boolean includeLogin) {
         Map<Integer, Set<String>> uniformProfileNamesMapByUserId = findUniformProfileNamesMapByUserId(includeLogin);
@@ -1256,10 +1257,6 @@ public class CorePlugin {
         return userMatchesProfileFilter(null, userLogin, profileExpr, null);
     }
 
-    public boolean userMatchesProfileFilter(Integer userId, String login, String profile, String whereClause) {
-        return userMatchesProfileFilter(userId, login, profile, whereClause, null);
-    }
-
     //    public List<AppProfile> resolveProfilesByProfileFilter(String profile) {
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        if (profile != null && profile.trim().length() > 0) {
@@ -1288,6 +1285,10 @@ public class CorePlugin {
 //            }
 //        }
 //    }
+
+    public boolean userMatchesProfileFilter(Integer userId, String login, String profile, String whereClause) {
+        return userMatchesProfileFilter(userId, login, profile, whereClause, null);
+    }
 
     private boolean userMatchesProfileFilter(Integer userId, String login, String profile, String whereClause, Map<String, Object> cache) {
         return userMatchesProfileFilter(userId, login, new ProfileFilterExpression(profile, whereClause), cache);
@@ -1441,6 +1442,21 @@ public class CorePlugin {
     public List<AppUser> findUsersByProfileFilter(String profilePattern, Integer userType) {
         return filterUsersByProfileFilter(findEnabledUsers(), profilePattern, userType);
     }
+//    public List<AppUser> resolveUsersByProfileFilter(String profile) {
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        if (profile != null && profile.trim().length() > 0) {
+//            StringBuilder x = new StringBuilder();
+//            for (String p : profile.split(" , |;")) {
+//                if (p != null) {
+//                    x.append("/").append(p);
+//                }
+//            }
+//            return pu.createQuery("Select u.user from AppUserProfileBinding u where :expr like concat('/',u.profile.name,'/')")
+//                    .setParameter("expr", x.toString())
+//                    .getResultList();
+//        }
+//        return Collections.EMPTY_LIST;
+//    }
 
     private List<AppUser> filterUsersByExpression(List<AppUser> all, String expression) {
         if (all.isEmpty()) {
@@ -1460,21 +1476,6 @@ public class CorePlugin {
                 .createQuery("Select x from AppUser x where x.id in (" + ids + ") " + expression)
                 .getResultList();
     }
-//    public List<AppUser> resolveUsersByProfileFilter(String profile) {
-//        PersistenceUnit pu = UPA.getPersistenceUnit();
-//        if (profile != null && profile.trim().length() > 0) {
-//            StringBuilder x = new StringBuilder();
-//            for (String p : profile.split(" , |;")) {
-//                if (p != null) {
-//                    x.append("/").append(p);
-//                }
-//            }
-//            return pu.createQuery("Select u.user from AppUserProfileBinding u where :expr like concat('/',u.profile.name,'/')")
-//                    .setParameter("expr", x.toString())
-//                    .getResultList();
-//        }
-//        return Collections.EMPTY_LIST;
-//    }
 
     private List<AppUser> filterUsersByExpression(int[] all, String expression) {
         if (all.length == 0) {
@@ -1876,7 +1877,6 @@ public class CorePlugin {
         return getCurrentUserLogin();
     }
 
-
     public List<AppContact> findContacts(String name, String type) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery(
@@ -1972,6 +1972,32 @@ public class CorePlugin {
         return us != null && us.isAdmin();
     }
 
+//    public String validateName(String text) {
+//        //make it kamel based
+//        boolean wasWhite = true;
+//        char[] chars = (text == null ? "" : text).toCharArray();
+//        StringBuilder sb = new StringBuilder();
+//        for (int i = 0; i < chars.length; i++) {
+//            char aChar = chars[i];
+//            if (Character.isWhitespace(aChar)) {
+//                if (!(aChar == ' ' || aChar == '\t')) {
+//                    aChar = ' ';
+//                }
+//                if (!wasWhite) {
+//                    sb.append(aChar);
+//                }
+//                wasWhite = true;
+//            } else if (wasWhite) {
+//                sb.append(Character.toUpperCase(aChar));
+//                wasWhite = false;
+//            } else {
+//                sb.append(Character.toLowerCase(aChar));
+//                wasWhite = false;
+//            }
+//        }
+//        return sb.toString().trim();
+//    }
+
     public boolean isCurrentSessionAdminOrProfile(String profileName) {
         if (StringUtils.isEmpty(profileName)) {
             return isCurrentSessionAdmin();
@@ -2012,32 +2038,6 @@ public class CorePlugin {
         }
         return us != null && us.isAdmin();
     }
-
-//    public String validateName(String text) {
-//        //make it kamel based
-//        boolean wasWhite = true;
-//        char[] chars = (text == null ? "" : text).toCharArray();
-//        StringBuilder sb = new StringBuilder();
-//        for (int i = 0; i < chars.length; i++) {
-//            char aChar = chars[i];
-//            if (Character.isWhitespace(aChar)) {
-//                if (!(aChar == ' ' || aChar == '\t')) {
-//                    aChar = ' ';
-//                }
-//                if (!wasWhite) {
-//                    sb.append(aChar);
-//                }
-//                wasWhite = true;
-//            } else if (wasWhite) {
-//                sb.append(Character.toUpperCase(aChar));
-//                wasWhite = false;
-//            } else {
-//                sb.append(Character.toLowerCase(aChar));
-//                wasWhite = false;
-//            }
-//        }
-//        return sb.toString().trim();
-//    }
 
     //    public boolean isSessionAdmin() {
 //        UserSession us = getCurrentSession();
@@ -2097,7 +2097,6 @@ public class CorePlugin {
         }
         return us != null && us.isAdmin();
     }
-
 
     public String resolveLoginProposal(AppContact contact) {
         String fn = contact.getFirstName();
@@ -2351,6 +2350,11 @@ public class CorePlugin {
         return s;
     }
 
+//    @Deprecated
+//    public UserSession getUserSession() {
+//        return UserSession.get();
+//    }
+
     public UserToken getCurrentToken() {
         try {
             UserTokenProvider p = VrApp.getBean(UserTokenProvider.class);
@@ -2367,11 +2371,6 @@ public class CorePlugin {
             return null;
         }
     }
-
-//    @Deprecated
-//    public UserSession getUserSession() {
-//        return UserSession.get();
-//    }
 
     public void logout() {
         final UserToken s = getCurrentToken();
@@ -2409,7 +2408,7 @@ public class CorePlugin {
 //        }
 //        final UserSession currentSession = currentSession0;
         SessionStore sessionStore = VrApp.getBean(SessionStoreProvider.class).resolveSessionStore();
-        if(sessionStore!=null) {
+        if (sessionStore != null) {
             PlatformSession s = sessionStore.get(sessionId);
             UserToken t = s == null ? null : s.getToken();
             String login = t == null ? null : t.getUserLogin();
@@ -2422,10 +2421,12 @@ public class CorePlugin {
                     );
                 }
                 invalidateToken(s.getToken().getSessionId());
+                invalidateToken(sessionId);
             } else {
                 if (s != null) {
                     invalidateToken(s.getSessionId());
                 }
+                invalidateToken(sessionId);
             }
         }
     }
@@ -2478,7 +2479,7 @@ public class CorePlugin {
         return UPA.getPersistenceUnit().getName();
     }
 
-    public AppUser login(String login, String password, String clientAppId, String clientApp) {
+    public UserSessionInfo authenticate(String login, String password, String clientAppId, String clientApp) {
         AppUser appUser = null;
         UserToken token = null;
         try {
@@ -2486,7 +2487,7 @@ public class CorePlugin {
             for (UserSessionConfigurator userSessionConfigurator : getUserSessionConfigurators()) {
                 userSessionConfigurator.preConfigure(token);
             }
-            AppUser u = loginByLoginPassword(login, password, token, clientAppId, clientApp);
+            AppUser u = authenticateByLoginPassword(login, password, token, clientAppId, clientApp);
             AppUser appUser0 = onUserLoggedIn(u, token, clientAppId, clientApp);
             if (appUser0 != null) {
                 for (UserSessionConfigurator userSessionConfigurator : getUserSessionConfigurators()) {
@@ -2501,22 +2502,23 @@ public class CorePlugin {
                 }
             }
         }
-        return appUser;
+        return populateSessionInfo(token,new UserSessionInfo(), true,new Date());
     }
+
 
     private void invalidateToken(String sessionId) {
         if (sessionId != null) {
             SessionStore sessionStore = VrApp.getBean(SessionStoreProvider.class).resolveSessionStore();
-            if(sessionStore!=null) {
+            if (sessionStore != null) {
                 PlatformSession platformSession = sessionStore.get(sessionId);
-                if(platformSession!=null) {
+                if (platformSession != null) {
                     platformSession.invalidate();
                 }
             }
         }
     }
 
-    private AppUser loginByLoginPassword(String login, String password, UserToken token, String clientAppId, String clientApp) {
+    private AppUser authenticateByLoginPassword(String login, String password, UserToken token, String clientAppId, String clientApp) {
         if (login == null) {
             login = "";
         }
@@ -2541,6 +2543,19 @@ public class CorePlugin {
         }
         return user;
     }
+
+
+//    private AppUser findUser(String login, String password) {
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        return (AppUser) pu
+//                .createQuery("Select u from AppUser u "
+//                        + "where "
+//                        + "u.login=:login "
+//                        + "and u.password=:password")
+//                .setParameter("login", login)
+//                .setParameter("password", password)
+//                .getEntity();
+//    }
 
     private AppUser onUserLoggedIn(AppUser user, UserToken token, String clientAppId, String clientApp) {
         if (token == null) {
@@ -2587,31 +2602,18 @@ public class CorePlugin {
         return user;
     }
 
-
-//    private AppUser findUser(String login, String password) {
-//        PersistenceUnit pu = UPA.getPersistenceUnit();
-//        return (AppUser) pu
-//                .createQuery("Select u from AppUser u "
-//                        + "where "
-//                        + "u.login=:login "
-//                        + "and u.password=:password")
-//                .setParameter("login", login)
-//                .setParameter("password", password)
-//                .getEntity();
-//    }
-
     protected void buildToken(UserToken token) {
         AppUser user = findUser(token.getUserId());
         token.setUserLogin(user.getLogin());
-        if(token.getRootUserId()!=null){
+        if (token.getRootUserId() != null) {
             AppUser user1 = UPA.getContext().invokePrivileged(new Action<AppUser>() {
                 @Override
                 public AppUser run() {
                     return findUser(token.getRootUserId());
                 }
             });
-            token.setRootLogin(user1==null?null:user1.getLogin());
-        }else{
+            token.setRootLogin(user1 == null ? null : user1.getLogin());
+        } else {
             token.setRootLogin(null);
         }
         token.setUserTypeName(user.getType() == null ? null : user.getType().getName());
@@ -3114,7 +3116,56 @@ public class CorePlugin {
         }
         return null;
     }
+  public static class FileInfo{
+        private String name;
+        private VFileType type;
+        private long lastModif;
+        private  FileInfo[] liste;
+        public FileInfo(String name, VFileType type, long lastModif){
+            this.name=name;
+            this.type=type;
+            this.lastModif=lastModif;
+        }
+        public FileInfo(){}
+      public String getName() {
+          return name;
+      }
 
+      public VFileType getType() {
+          return type;
+      }
+
+      public long getLastModif() {
+          return lastModif;
+      }
+
+      public void setLastModif(long lastModif) {
+          this.lastModif = lastModif;
+      }
+
+      public void setType(VFileType type) {
+          this.type = type;
+      }
+
+      public void setName(String name) {
+          this.name = name;
+      }
+  }
+   public FileInfo getMyHomeFile(String path){
+       VFile f=getMyHomeFileSystem().get(path);
+       FileInfo fileInfo = new FileInfo();
+       fileInfo.name=f.getName();
+       FileInfo[] liste=null ;
+       int i= 0;
+       VFile[] listeFile=  f.listFiles();
+       for (VFile vf: listeFile){
+           liste[i]=new FileInfo(vf.getName(),vf.getFileType(),vf.lastModified());
+           i++;
+       }
+       fileInfo.setLastModif(f.lastModified());
+       fileInfo.setType( f.getFileType());
+       return fileInfo;
+   }
     public VirtualFileSystem getMyHomeFileSystem() {
         return getUserHomeFileSystem(getCurrentUserLogin());
     }
@@ -3421,6 +3472,16 @@ public class CorePlugin {
         });
     }
 
+//    public boolean isUserSessionHeadOfDepartment() {
+//        UserSession sm = UserSession.get();
+//        AppUser user = (sm == null) ? null : sm.getUser();
+//        if (user == null || user.getDepartment() == null) {
+//            return false;
+//        }
+//        AppUser d = findHeadOfDepartment(user.getDepartment().getId());
+//        return d != null && d.getId() == user.getId();
+//    }
+
     public void markDownloaded(final VFile file) {
         UPA.getPersistenceUnit().invokePrivileged(new Action<Object>() {
 
@@ -3447,16 +3508,6 @@ public class CorePlugin {
 
         });
     }
-
-//    public boolean isUserSessionHeadOfDepartment() {
-//        UserSession sm = UserSession.get();
-//        AppUser user = (sm == null) ? null : sm.getUser();
-//        if (user == null || user.getDepartment() == null) {
-//            return false;
-//        }
-//        AppUser d = findHeadOfDepartment(user.getDepartment().getId());
-//        return d != null && d.getId() == user.getId();
-//    }
 
     public AppUser findHeadOfDepartment(int depId) {
         for (AppUser u : findUsersByProfile(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT)) {
@@ -3839,32 +3890,40 @@ public class CorePlugin {
         });
     }
 
+    @Deprecated
     public List<FullArticle> findFullArticlesByCategory(String disposition) {
-        UserSession userSession = getCurrentSession();
-        String filter = userSession == null ? null : userSession.getSelectedSiteFilter();
-        if (StringUtils.isEmpty(filter)) {
-            filter = "";
+        return findFullArticlesByDisposition(null, disposition);
+    }
+
+    public List<FullArticle> findFullArticlesByDisposition(String group, String disposition) {
+        if (group == null) {
+            UserSession userSession = getCurrentSession();
+            group = userSession == null ? null : userSession.getSelectedSiteFilter();
         }
-        ArticlesDispositionGroup g = findArticleDispositionGroup(filter);
+        if (StringUtils.isEmpty(group)) {
+            group = "";
+        }
+        ArticlesDispositionGroup g = findArticleDispositionGroup(group);
         if (g == null) {
             g = findArticleDispositionGroup("II");
         }
-        if (g == null) {
-            return new ArrayList<>();
-        }
-        return findFullArticlesByCategory(g.getId(), true, disposition);
+        return findFullArticlesByDisposition(g == null ? -1 : g.getId(), true, disposition);
     }
 
-    public List<FullArticle> findFullArticlesByCategory(int dispositionGroupId, boolean includeNoDept, final String disposition) {
+    public List<FullArticle> findFullArticlesByDisposition(int dispositionGroupId, boolean includeNoDept, final String disposition) {
         AppUser u = getCurrentUser();
         if (u == null) {
-            return findFullArticlesByUserAndCategory(null, dispositionGroupId, includeNoDept, disposition);
+            return findFullArticlesByUserAndDisposition(null, dispositionGroupId, includeNoDept, disposition);
         } else {
-            return findFullArticlesByUserAndCategory(u.getLogin(), dispositionGroupId, includeNoDept, disposition);
+            return findFullArticlesByUserAndDisposition(u.getLogin(), dispositionGroupId, includeNoDept, disposition);
         }
     }
 
-    protected List<FullArticle> findFullArticlesByUserAndCategory(final String login, int dispositionGroupId, boolean includeNoDept, final String disposition) {
+    public List<FullArticle> findFullArticlesByAnonymousDisposition(int dispositionGroupId, boolean includeNoDept, final String disposition) {
+        return findFullArticlesByUserAndDisposition(null, dispositionGroupId, includeNoDept, disposition);
+    }
+
+    protected List<FullArticle> findFullArticlesByUserAndDisposition(final String login, int dispositionGroupId, boolean includeNoDept, final String disposition) {
         return UPA.getContext().invokePrivileged(new Action<List<FullArticle>>() {
 
             @Override
@@ -3990,12 +4049,14 @@ public class CorePlugin {
             disps.put("disposition" + i, disposition);
         }
         queryStr.append(" )");
-        if (includeNoDept) {
-            queryStr.append(" and (u.dispositionGroupId=:dispositionGroupId or u.dispositionGroupId=null)");
-            disps.put("dispositionGroupId", dispositionGroupId);
-        } else {
-            queryStr.append(" and (u.dispositionGroupId=:dispositionGroupId)");
-            disps.put("dispositionGroupId", dispositionGroupId);
+        if (dispositionGroupId >= 0) {
+            if (includeNoDept) {
+                queryStr.append(" and (u.dispositionGroupId=:dispositionGroupId or u.dispositionGroupId=null)");
+                disps.put("dispositionGroupId", dispositionGroupId);
+            } else {
+                queryStr.append(" and (u.dispositionGroupId=:dispositionGroupId)");
+                disps.put("dispositionGroupId", dispositionGroupId);
+            }
         }
 
         queryStr.append(" order by "
@@ -4029,10 +4090,15 @@ public class CorePlugin {
         return new String(o.toByteArray());
     }
 
+//    @EntityActionList(entityType = ArticlesItem.class)
+//    public String[] findArticleActions(){
+//        return new String[]{"SendEmail"};
+//    }
+
     public void getRSS(String rss, OutputStream out) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         ArticlesDisposition t = pu.findByMainField(ArticlesDisposition.class, "rss." + rss);
-        List<FullArticle> articles = findFullArticlesByCategory(-1, true, "rss." + rss);
+        List<FullArticle> articles = findFullArticlesByDisposition(-1, true, "rss." + rss);
         try {
             String feedType = "rss_2.0";
 //            String fileName = "feed.xml";
@@ -4040,11 +4106,11 @@ public class CorePlugin {
             SyndFeed feed = new SyndFeedImpl();
             feed.setFeedType(feedType);
 
-            feed.setTitle("ENISo Computer Engeneering Department");
+            feed.setTitle(t == null ? "Vr RSS " + rss : t.getTitle());
             feed.setLink("http://www.eniso.info");
             feed.setDescription(t == null ? null : t.getDescription());
 
-            List entries = new ArrayList();
+            List<SyndEntry> entries = new ArrayList<>();
             SyndEntry entry;
             SyndContent description;
             for (FullArticle art : articles) {
@@ -4070,11 +4136,6 @@ public class CorePlugin {
             ex.printStackTrace();
         }
     }
-
-//    @EntityActionList(entityType = ArticlesItem.class)
-//    public String[] findArticleActions(){
-//        return new String[]{"SendEmail"};
-//    }
 
     public String getArticlesProperty(String value) {
         return getArticlesProperties().get(value);
@@ -4122,21 +4183,61 @@ public class CorePlugin {
         return sessionStore.size();
     }
 
+    private UserSessionInfo populateSessionInfo(UserToken t, UserSessionInfo i, boolean currentSessionAdmin, Date lastAccessedTime) {
+        Integer userId = t.getUserId();
+        String login = t.getUserLogin();
+        if (!currentSessionAdmin && t.getRootUserId() != null) {
+            userId = t.getRootUserId();
+            login = t.getRootLogin();
+        }
+        i.setUserId(userId);
+        if (i.getUserLogin() == null) {
+            i.setUserLogin(login);
+            i.setSessionId(t.getSessionId());
+            AppUser u = findUser(userId);
+            i.setUserFullTitle(u == null ? null : u.resolveFullTitle());
+            i.setUserFullName(u == null ? null : u.resolveFullName());
+            i.setFemale(t.isFemale());
+            i.setUserTypeName(t.getUserTypeName());
+            i.setDomain(t.getDomain());
+            i.setLocale(t.getLocale());
+            i.setIconURL(getUserIcon(t.getUserId()));
+            if (currentSessionAdmin) {
+                i.setIpAddress(t.getIpAddress());
+                i.setClientApp(t.getClientApp());
+                i.setClientAppId(t.getClientAppId());
+                i.setRootUserId(t.getRootUserId());
+                i.setRootLogin(t.getRootLogin());
+                i.setManagedDepartments(t.getManagedDepartments());
+                i.setAdmin(t.isAdmin());
+                i.setConnexionTime(t.getConnexionTime());
+                i.setTheme(t.getTheme());
+                i.setDestroyed(t.isDestroyed());
+                i.setProfileNames(new HashSet<>(t.getProfileNames()));
+            }
+        }
+        if (i.getLastAccessTime() == null || i.getLastAccessTime().compareTo(lastAccessedTime) < 0) {
+            i.setLastAccessTime(lastAccessedTime);
+        }
+        i.incCount();
+        return i;
+    }
+
+
     public List<UserSessionInfo> getActiveSessions(boolean groupSessions, boolean groupAnonymous, boolean showAnonymous) {
         boolean currentSessionAdmin = isCurrentSessionAdmin();
         List<UserSessionInfo> found = new ArrayList<>();
         SessionStore sessionStore = VrApp.getBean(SessionStoreProvider.class).resolveSessionStore();
         UserSessionInfo anonymous = new UserSessionInfo();
         anonymous.setUserFullTitle("Anonymous");
+        anonymous.setUserFullName("Anonymous");
         Map<Integer, UserSessionInfo> grouped = new HashMap<>();
         for (PlatformSession p : sessionStore.getAll()) {
             UserToken t = p.getToken();
             if (t != null && t.getUserId() != null) {
                 Integer userId = t.getUserId();
-                String login = t.getUserLogin();
-                if(!currentSessionAdmin && t.getRootUserId()!=null){
-                    userId=t.getRootUserId();
-                    login=t.getRootLogin();
+                if (!currentSessionAdmin && t.getRootUserId() != null) {
+                    userId = t.getRootUserId();
                 }
                 UserSessionInfo i = null;
                 if (groupSessions) {
@@ -4152,35 +4253,7 @@ public class CorePlugin {
                     i.setUserId(userId);
                     found.add(i);
                 }
-                if (i.getUserLogin() == null) {
-                    i.setSessionId(t.getSessionId());
-//                        if(i.getSessionId()!=null && ! i.getSessionId().equals(p.getSessionId())){
-//                            i.setSessionId(i.getSessionId()+"/"+p.getSessionId());
-//                        }
-                    i.setUserLogin(login);
-                    AppUser u = findUser(userId);
-                    i.setUserFullTitle(u == null ? null : u.resolveFullTitle());
-                    i.setFemale(t.isFemale());
-                    i.setUserTypeName(t.getUserTypeName());
-                    i.setDomain(t.getDomain());
-                    i.setLocale(t.getLocale());
-                    if (currentSessionAdmin) {
-                        i.setIpAddress(t.getIpAddress());
-                        i.setClientApp(t.getClientApp());
-                        i.setClientAppId(t.getClientAppId());
-                        i.setRootUserId(t.getRootUserId());
-                        i.setRootLogin(t.getRootLogin());
-                        i.setManagedDepartments(t.getManagedDepartments());
-                        i.setAdmin(t.isAdmin());
-                        i.setConnexionTime(t.getConnexionTime());
-                        i.setTheme(t.getTheme());
-                        i.setDestroyed(t.isDestroyed());
-                        i.setProfileNames(new HashSet<>(t.getProfileNames()));
-                    }
-                }
-                if (i.getLastAccessTime() == null || i.getLastAccessTime().compareTo(p.getLastAccessedTime()) < 0) {
-                    i.setLastAccessTime(p.getLastAccessedTime());
-                }
+                populateSessionInfo(t,i,currentSessionAdmin,p.getLastAccessedTime());
                 i.incCount();
             } else {
                 if (groupAnonymous) {
@@ -4198,8 +4271,11 @@ public class CorePlugin {
                 } else {
                     UserSessionInfo i = new UserSessionInfo();
                     i.setSessionId(p.getSessionId());
+                    i.setUserFullName("Anonymous");
                     i.setUserFullTitle("Anonymous");
                     i.setConnexionTime(p.getConnexionTime());
+                    i.setUserTypeName("Anonymous");
+                    i.setIpAddress(p.getIpAddress());
                     i.setLastAccessTime(p.getLastAccessedTime());
                     found.add(i);
                 }
@@ -4793,7 +4869,6 @@ public class CorePlugin {
         return i18n.getResourceBundleSuite().getMap();
     }
 
-
     public MirroredPath createTempUploadFolder() {
         String login = getCurrentUserLogin();
         String tempPath = CorePlugin.PATH_TEMP + "/Files/" + VrUtils.date(new Date(), "yyyy-MM-dd-HH-mm")
@@ -4804,7 +4879,6 @@ public class CorePlugin {
         return new MirroredPath(getRootFileSystem().get(tempPath), file);
     }
 
-
     public String getCurrentUserPhoto() {
         UserToken token = getCurrentToken();
         Integer s = token == null ? null : token.getUserId();
@@ -4814,11 +4888,32 @@ public class CorePlugin {
         return null;
     }
 
+    public String getCurrentUserIcon() {
+        UserToken token = getCurrentToken();
+        Integer s = token == null ? null : token.getUserId();
+        if (s != null) {
+            return getUserIcon(s);
+        }
+        return null;
+    }
+
     public String getUnknownUserPhoto() {
         return getUserPhoto(-1);
     }
 
+    public String getUnknownUserIcon() {
+        return getUserPhoto(-1, true);
+    }
+
     public String getUserPhoto(int id) {
+        return getUserPhoto(id, false);
+    }
+
+    public String getUserIcon(int id) {
+        return getUserPhoto(id, true);
+    }
+
+    public String getUserPhoto(int id, boolean icon) {
         return UPA.getContext().invokePrivileged(new Action<String>() {
             @Override
             public String run() {
@@ -4847,7 +4942,15 @@ public class CorePlugin {
                     }
                 }
                 VFile file = VrUtils.getUserAbsoluteFile(t == null ? -1 : t.getId(), paths.toArray(new String[paths.size()]));
-
+                if (icon) {
+                    if (file != null && file.isFile() && file.exists()) {
+                        try {
+                            return VrUtils.getOrResizeIcon(file).getPath();
+                        } catch (IOException e) {
+                            //
+                        }
+                    }
+                }
                 String photo = (file == null) ? null : (file.getPath());
                 if (photo == null) {
                     return "theme-context://images/person.png";
@@ -4909,6 +5012,18 @@ public class CorePlugin {
         }
         return all;
     }
+    public List<Event> findAllEventsByCurrentMonth(){
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+
+        return UPA.getPersistenceUnit().createQuery("Select e * from Event where"
+                +"datepart(month,e.beginDate )=:month and datepart(year,e.beginDate )=:year "
+        )
+                .setParameter("month", month)
+                .setParameter("year",year)
+                .getResultList();
+    }
 
     private TraceService getTrace() {
         return trace;
@@ -4931,13 +5046,13 @@ public class CorePlugin {
     }
 
     public List<AppTrace> findTraceByUser(int userId, int maxRows) {
-        List<AppTrace> found=new ArrayList<>();
+        List<AppTrace> found = new ArrayList<>();
         for (AppTrace t : UPA.getPersistenceUnit()
                 .createQuery("Select Top " + maxRows + " u from AppTrace u where u.userId=:userId order by u.time desc")
-                .setParameter("userId",userId)
+                .setParameter("userId", userId)
                 .<AppTrace>getResultList()) {
             found.add(t);
-            if(found.size()>=maxRows){
+            if (found.size() >= maxRows) {
                 break;
             }
         }

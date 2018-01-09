@@ -11,6 +11,7 @@ public class UserSessionInfo {
     private Integer rootUserId;
     private String rootLogin;
     private String userLogin;
+    private String userFullName;
     private String userFullTitle;
     private String ipAddress;
     private String clientApp;
@@ -18,17 +19,24 @@ public class UserSessionInfo {
     private String theme;
     private String userTypeName;
     private String locale;
+    private String iconURL;
     private Date connexionTime;
     private Date lastAccessTime;
     private boolean admin;
     private boolean destroyed;
     private boolean female;
     private int count;
-    private String lastVisitedPageInfo;
-    private String lastVisitedPage;
     private int[] managedDepartments = {};
     private boolean manager;
     private Set<String> profileNames = new HashSet<>();
+
+    public String getUserFullName() {
+        return userFullName;
+    }
+
+    public void setUserFullName(String userFullName) {
+        this.userFullName = userFullName;
+    }
 
     public String getUserFullTitle() {
         return userFullTitle;
@@ -56,6 +64,14 @@ public class UserSessionInfo {
 
     public Integer getUserId() {
         return userId;
+    }
+
+    public String getIconURL() {
+        return iconURL;
+    }
+
+    public void setIconURL(String iconURL) {
+        this.iconURL = iconURL;
     }
 
     public void setUserId(Integer userId) {
@@ -200,22 +216,6 @@ public class UserSessionInfo {
 
     public void incCount() {
         count++;
-    }
-
-    public String getLastVisitedPageInfo() {
-        return lastVisitedPageInfo;
-    }
-
-    public void setLastVisitedPageInfo(String lastVisitedPageInfo) {
-        this.lastVisitedPageInfo = lastVisitedPageInfo;
-    }
-
-    public String getLastVisitedPage() {
-        return lastVisitedPage;
-    }
-
-    public void setLastVisitedPage(String lastVisitedPage) {
-        this.lastVisitedPage = lastVisitedPage;
     }
 
     public Date getLastAccessTime() {

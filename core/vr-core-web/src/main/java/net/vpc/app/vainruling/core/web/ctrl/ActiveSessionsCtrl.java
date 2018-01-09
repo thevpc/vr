@@ -204,9 +204,6 @@ public class ActiveSessionsCtrl implements PollAware {
                                 VrUtils.incKey(circle1, language);
                             }
                         }
-                        if (!StringUtils.isEmpty(i.getLastVisitedPage())) {
-                            VrUtils.incKey(circle2, i.getLastVisitedPage());
-                        }
                     }
                     if(circle1.size()==0){
                         circle1.put("EN",0);

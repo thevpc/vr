@@ -11,9 +11,9 @@ Author  : Taha BEN SALAH
 
 ## 2.1. How to compile
 To compile eniso.info the following projects must be compiled in this order :
-1.  **vr-plugin** is the parent plugin project for all vr plugins
-2.  **vain-ruling** is the parent project for all VR plugins
-2.  **eniso-info** is the eniso.info parent project for all eniso.info academic platform
+1.  **vr-plugin** is the parent plugin project for all vr plugins (mvn install)
+2.  **vain-ruling** is the parent project for all VR plugins (mvn install)
+2.  **eniso-info** is the eniso.info parent project for all eniso.info academic platform  (mvn install)
 
 
 ## 2.2. configuration :

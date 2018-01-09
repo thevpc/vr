@@ -16,7 +16,7 @@ const routes: Routes = [{
     path: 'layouts',
     component: FormLayoutsComponent,
   }, {
-    path: 'entity',
+    path: 'entity/:name',
     component: FormEntityComponent,
   }],
 }];
