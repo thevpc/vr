@@ -5,6 +5,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       >
 
+<!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
     <h:head>
     </h:head>
 
@@ -12,13 +13,13 @@
 
         <ui:composition template="#{vr.privateTemplatePath}">
             <ui:define name="links">
-                <h:outputStylesheet name="#{vr.themeContext}/scroll/css/coda-slider.css"/>
-                <h:outputScript name="#{vr.themeContext}/scroll/js/coda-slider.js" target="head" />
-                <!-- <h:outputScript name="#{vr.themeContext}/scroll/js/jquery-3.1.1.min.js" target="head" /> -->
-                <h:outputScript name="#{vr.themeContext}/scroll/js/jquery.scrollTo-1.3.3.js" target="head" />
-                <h:outputScript name="#{vr.themeContext}/scroll/js/jquery.localscroll-1.2.5.js" target="head" />
-                <h:outputScript name="#{vr.themeContext}/scroll/js/jquery.serialScroll-1.2.1.js" target="head" />
-                <h:outputScript name="#{vr.themeContext}/scroll/js/jquery.easing.1.3.js" target="head" />
+                <h:outputStylesheet name="#{vr.privateThemeContext}/scroll/css/coda-slider.css"/>
+                <h:outputScript name="#{vr.privateThemeContext}/scroll/js/coda-slider.js" target="head" />
+                <!-- <h:outputScript name="#{vr.privateThemeContext}/scroll/js/jquery-3.1.1.min.js" target="head" /> -->
+                <h:outputScript name="#{vr.privateThemeContext}/scroll/js/jquery.scrollTo-1.3.3.js" target="head" />
+                <h:outputScript name="#{vr.privateThemeContext}/scroll/js/jquery.localscroll-1.2.5.js" target="head" />
+                <h:outputScript name="#{vr.privateThemeContext}/scroll/js/jquery.serialScroll-1.2.1.js" target="head" />
+                <h:outputScript name="#{vr.privateThemeContext}/scroll/js/jquery.easing.1.3.js" target="head" />
             </ui:define>
 
             <ui:define name="content">
@@ -72,7 +73,7 @@
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-users margin-r-5"></i>Groupes</strong>
                                                                 <p>
-                                                                    <ui:repeat value="#{vr.currentSession.profileNames.toArray()}" var="prName">
+                                                                    <ui:repeat value="#{corePlugin.currentToken.profileNames.toArray()}" var="prName">
                                                                         <span class="label label-#{vr.hashToArr(prName,'danger','success','info','warning','primary','default')}">#{prName}</span>
                                                                     </ui:repeat>
                                                                 </p>

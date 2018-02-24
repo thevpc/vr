@@ -13,12 +13,12 @@ import net.vpc.app.vainruling.core.service.content.MessageTextService;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 import net.vpc.app.vainruling.core.service.notification.PollAware;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
+import net.vpc.app.vainruling.plugins.inbox.service.MailboxPluginSecurity;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
 
@@ -36,7 +36,7 @@ import java.util.List;
                 @UPathItem(title = "Site", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Apercu Messages",
-        securityKey = "Custom.Inbox"
+        securityKey = MailboxPluginSecurity.RIGHT_CUSTOM_INBOX
 )
 public class MailboxPreviewCtrl implements PollAware,MessageTextService {
 

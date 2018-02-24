@@ -4,10 +4,12 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.web.*;
+import net.vpc.app.vainruling.core.web.ctrl.MyProfileAlternative;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentUploadListener;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsCtrl;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsUploadDialogCtrl;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
+import net.vpc.app.vainruling.core.web.themes.VrThemeFace;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
 import net.vpc.app.vainruling.core.web.util.FileUploadEventHandler;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
@@ -38,7 +40,7 @@ import java.util.logging.Logger;
         url = "modules/academic/profile/student-profile-settings"
         //securityKey = "Custom.StudentProfileSettings"
 )
-public class StudentProfileSettingsCtrl implements DocumentUploadListener, ActionEnabler {
+public class StudentProfileSettingsCtrl implements DocumentUploadListener, ActionEnabler, MyProfileAlternative {
 
     private static final Logger log = Logger.getLogger(StudentProfileSettingsCtrl.class.getName());
     @Autowired
@@ -60,12 +62,20 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, Actio
         getModel().setStudentCV(app.findOrCreateAcademicStudentCV(getModel().getStudent().getId()));
 
         VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
-        getModel().getThemes().clear();
-        getModel().getThemes().add(FacesUtils.createSelectItem("", "<Default>", null));
-        for (VrTheme vrTheme : tfactory.getThemes()) {
-            getModel().getThemes().add(FacesUtils.createSelectItem(vrTheme.getId(), vrTheme.getName(), null));
+
+        getModel().getPublicThemes().clear();
+        getModel().getPublicThemes().add(FacesUtils.createSelectItem("", "<Default>", null));
+        for (VrTheme vrTheme : tfactory.getThemes(VrThemeFace.PUBLIC)) {
+            getModel().getPublicThemes().add(FacesUtils.createSelectItem(vrTheme.getId(), vrTheme.getName(), null));
         }
-        getModel().setTheme(CorePlugin.get().getCurrentUserTheme());
+        getModel().setPublicTheme(CorePlugin.get().getCurrentUserPublicTheme());
+
+        getModel().getPrivateThemes().clear();
+        getModel().getPrivateThemes().add(FacesUtils.createSelectItem("", "<Default>", null));
+        for (VrTheme vrTheme : tfactory.getThemes(VrThemeFace.PRIVATE)) {
+            getModel().getPrivateThemes().add(FacesUtils.createSelectItem(vrTheme.getId(), vrTheme.getName(), null));
+        }
+        getModel().setPublicTheme(CorePlugin.get().getCurrentUserPublicTheme());
     }
 
     @Override
@@ -108,7 +118,8 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, Actio
     public void onSelectTheme() {
         final CorePlugin t = VrApp.getBean(CorePlugin.class);
         try {
-            t.setCurrentUserTheme(getModel().getTheme());
+            t.setCurrentUserPublicTheme(getModel().getPublicTheme());
+            t.setCurrentUserPrivateTheme(getModel().getPrivateTheme());
             FacesUtils.addInfoMessage("Theme mis a jour");
         } catch (Exception ex) {
             log.log(Level.SEVERE, "Error", ex);
@@ -265,8 +276,10 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, Actio
         private AppContact contact;
         private AcademicStudentCV studentCV;
 
-        private String theme;
-        private List<SelectItem> themes = new ArrayList<>();
+        private String privateTheme;
+        private List<SelectItem> privateThemes = new ArrayList<>();
+        private String publicTheme;
+        private List<SelectItem> publicThemes = new ArrayList<>();
 
         public AcademicStudent getStudent() {
             return student;
@@ -308,22 +321,37 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, Actio
             this.uploadingCV = uploadingCV;
         }
 
-        public String getTheme() {
-            return theme;
+        public String getPrivateTheme() {
+            return privateTheme;
         }
 
-        public void setTheme(String theme) {
-            this.theme = theme;
+        public void setPrivateTheme(String privateTheme) {
+            this.privateTheme = privateTheme;
         }
 
-        public List<SelectItem> getThemes() {
-            return themes;
+        public List<SelectItem> getPrivateThemes() {
+            return privateThemes;
         }
 
-        public void setThemes(List<SelectItem> themes) {
-            this.themes = themes;
+        public void setPrivateThemes(List<SelectItem> privateThemes) {
+            this.privateThemes = privateThemes;
         }
 
+        public String getPublicTheme() {
+            return publicTheme;
+        }
+
+        public void setPublicTheme(String publicTheme) {
+            this.publicTheme = publicTheme;
+        }
+
+        public List<SelectItem> getPublicThemes() {
+            return publicThemes;
+        }
+
+        public void setPublicThemes(List<SelectItem> publicThemes) {
+            this.publicThemes = publicThemes;
+        }
     }
 
 }

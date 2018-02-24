@@ -41,16 +41,8 @@ public class CreateInternshipsActionCtrl {
 
     public void openDialog() {
         getModel().setDisabled(false);
-        getModel().setMessage("");
-        getModel().setProfile("");
-        AcademicInternship internship = new AcademicInternship();
-        getModel().setInternship(internship);
-        initModel();
 
-        getModel().setBoard((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipBoard.class));
-        getModel().setGroup((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipGroup.class));
-        getModel().setInternshipVariant((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipVariant.class));
-        getModel().setStatus((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipStatus.class));
+        initModel();
 
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("resizable", false);
@@ -61,9 +53,23 @@ public class CreateInternshipsActionCtrl {
     }
 
     private void initModel(){
+        getModel().setMessage("");
+        getModel().setProfile("");
+        AcademicInternship internship = new AcademicInternship();
+        getModel().setInternship(internship);
+        getModel().setBoard((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipBoard.class));
+        getModel().setGroup((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipGroup.class));
+        getModel().setInternshipVariant((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipVariant.class));
+        getModel().setStatus((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipStatus.class));
         getModel().getInternship().setName("Ecrire le titre de ton PFE ici");
         getModel().getInternship().setDescription("Ecrire une description longue de ton PFE ici. N'oublie pas par contre d'attacher le PDF de cahier des charges de ton  PFE. Tous les champs doivent etre remplis correctement.");
-//        getModel().getInternship().setInternshipStatus();
+        if(getModel().getInternshipVariant().getValues().size()>0) {
+            getModel().getInternshipVariant().setSelectedItem(getModel().getInternshipVariant().getValues().get(0).getId());
+        }
+        if(getModel().getStatus().getValues().size()>0) {
+            getModel().getStatus().setSelectedItem(getModel().getStatus().getValues().get(0).getId());
+        }
+        //        getModel().getInternship().setInternshipStatus();
     }
 
     public void save() {
@@ -76,8 +82,12 @@ public class CreateInternshipsActionCtrl {
         } else if (getModel().getInternship().getInternshipStatus() == null) {
             getModel().setMessage("Merci de preciser l'étape");
         } else {
-            VrApp.getBean(AcademicPlugin.class).generateInternships(getModel().getInternship(), getModel().getProfile());
-            fireEventExtraDialogClosed();
+            int count=VrApp.getBean(AcademicPlugin.class).generateInternships(getModel().getInternship(), getModel().getProfile());
+            if(count>0) {
+                fireEventExtraDialogClosed();
+            }else{
+                getModel().setMessage("Aucun Stage généré");
+            }
         }
     }
 

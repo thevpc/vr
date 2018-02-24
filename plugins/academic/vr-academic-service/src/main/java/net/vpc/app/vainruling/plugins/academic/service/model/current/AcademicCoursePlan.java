@@ -22,7 +22,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSeme
  *
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "period.name desc, fullName,name")
+@Entity(listOrder = "this.period.name desc, this.fullName, this.name")
 @Path("Education/StudyPlan")
 @Properties(
         {
@@ -91,17 +91,7 @@ public class AcademicCoursePlan {
     @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "#{concat('width:60px;','background-color:',"
-                    + " if(this.courseGroup.name like '%UE1') then '{bgcolor1}'"
-                    + "  elseif (this.courseGroup.name like '%UE2') then '{bgcolor2}' "
-                    + "  elseif (this.courseGroup.name like '%UE3') then '{bgcolor3}' "
-                    + "  elseif (this.courseGroup.name like '%UE4') then '{bgcolor4}' "
-                    + "  elseif (this.courseGroup.name like '%UE5') then '{bgcolor5}' "
-                    + "  elseif (this.courseGroup.name like '%UE6') then '{bgcolor6}' "
-                    + "  elseif (this.courseGroup.name like '%UE7') then '{bgcolor7}' "
-                    + "  elseif (this.courseGroup.name like '%UE8') then '{bgcolor8}' "
-                    + "  elseif (this.courseGroup.name like '%UE9') then '{bgcolor9}' "
-                    + "  elseif (this.courseGroup.name like '%UE10') then '{bgcolor10}' "
-                    + " end"
+                    + " hashToStringArr(this.courseGroup.name,'{bgcolor1}','{bgcolor2}','{bgcolor3}','{bgcolor4}','{bgcolor5}','{bgcolor6}','{bgcolor7}','{bgcolor8}','{bgcolor9}','{bgcolor10}')"
                     + ")"
                     + "}")
     )

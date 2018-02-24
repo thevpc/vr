@@ -1,16 +1,10 @@
 package net.vpc.app.vainruling.plugins.academic.service.util;
 
-import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.AbstractEntityObjSearchFactory;
-import net.vpc.app.vainruling.core.service.obj.EntityObjSearchFactory;
-import net.vpc.app.vainruling.core.service.obj.ObjSearch;
-import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.upa.Document;
-import net.vpc.upa.Entity;
-import net.vpc.upa.EntityBuilder;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by vpc on 6/25/17.
@@ -19,6 +13,7 @@ public class AcademicStudentObjSearchFactory extends AbstractEntityObjSearchFact
 
     @Override
     protected List filterContactsByProfileFilter0(List objects, String profileSearchText) {
-        return VrApp.getBean(AcademicPlugin.class).filterStudents(objects,profileSearchText);
+        AcademicStudentProfileFilter filter=new AcademicStudentProfileFilter(profileSearchText);
+        return (List) objects.stream().filter(x -> filter.accept((AcademicStudent) x)).collect(Collectors.toList());
     }
 }

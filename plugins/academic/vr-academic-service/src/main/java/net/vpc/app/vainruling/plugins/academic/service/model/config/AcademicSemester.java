@@ -8,6 +8,8 @@ package net.vpc.app.vainruling.plugins.academic.service.model.config;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.config.*;
 
+import java.util.Objects;
+
 /**
  * semester 1 or 2 ...
  *
@@ -20,15 +22,36 @@ public class AcademicSemester {
     @Path("Main")
     @Id
     @Sequence
-
     private int id;
+    @Summary
     private int index;
+    @Summary
     private String code;
     @Main
     private String name;
     private String name2;
+    @Summary
+    private String fromDate;
+    @Summary
+    private String toDate;
 
     public AcademicSemester() {
+    }
+
+    public String getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(String fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public String getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(String toDate) {
+        this.toDate = toDate;
     }
 
     public AcademicSemester(int id, String name) {
@@ -79,5 +102,19 @@ public class AcademicSemester {
     @Override
     public String toString() {
         return StringUtils.nonNull(name);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AcademicSemester that = (AcademicSemester) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id);
     }
 }

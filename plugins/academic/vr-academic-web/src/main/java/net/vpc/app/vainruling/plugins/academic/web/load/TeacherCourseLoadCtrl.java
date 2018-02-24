@@ -10,7 +10,8 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.TeacherFilter;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
+import net.vpc.app.vainruling.plugins.academic.service.util.TeacherPeriodFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
 import net.vpc.common.jsf.FacesUtils;
@@ -29,7 +30,7 @@ import java.util.List;
 //        title = "Charge par Enseignant",
         url = "modules/academic/teacher-course-load",
         menu = "/Education/Load",
-        securityKey = "Custom.Education.TeacherCourseLoad"
+        securityKey = AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_COURSE_LOAD
 )
 public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
 
@@ -44,11 +45,11 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         getModel().setTeachers(new ArrayList<SelectItem>());
         int periodId = getTeacherFilter().getPeriodId();
-        TeacherFilter teacherFilter = getTeacherFilter().getTeacherFilter();
+        TeacherPeriodFilter teacherFilter = getTeacherFilter().getTeacherFilter();
         for (AcademicTeacher t : p.findTeachers()) {
             AcademicTeacherPeriod tp = p.findAcademicTeacherPeriod(periodId, t);
             if (tp.isEnabled() && teacherFilter.acceptTeacher(tp)) {
-                getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), t.resolveFullName()));
+                getModel().getTeachers().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), t.resolveFullName()));
             }
         }
         onRefresh();

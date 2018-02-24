@@ -2,15 +2,16 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>net.vpc.app.vain-ruling</groupId>
+    <groupId>net.vpc.app.vain-ruling.core</groupId>
     <artifactId>vr-app-service-test</artifactId>
+    <name>net.vpc.app.vain-ruling.vr-app-service-test</name>
     <version>1.0</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <version.vr-core-service>1.12</version.vr-core-service>
+        <version.vr-core-service>1.13.0</version.vr-core-service>
     </properties>
     <dependencies>
         <dependency>
@@ -30,7 +31,7 @@
         </dependency>
         <!--<dependency>-->
             <!--<groupId>net.vpc.app.vain-ruling.apps.eniso-info</groupId>-->
-            <!--<artifactId>eniso-info-service</artifactId>-->
+            <!--<artifactId>eniso-info-app-service</artifactId>-->
             <!--<version>1.0</version>-->
         <!--</dependency>-->
         <dependency>
@@ -127,5 +128,4 @@
             </plugins>
 
         </reporting>-->
-    <name>vr-app-service-test</name>
 </project>

@@ -10,7 +10,7 @@ import net.vpc.upa.config.*;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "name")
+@Entity(listOrder = "this.name")
 @Path("Todo/Config")
 public class TodoStatus {
 

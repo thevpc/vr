@@ -13,7 +13,7 @@ import java.util.Date;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "startDate desc, name")
+@Entity(listOrder = "this.startDate desc, name")
 @Path("Equipment/Inventory")
 public class Inventory {
 

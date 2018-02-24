@@ -28,7 +28,7 @@ and open the template in the editor.
                                  /.row
                                 <div >
                                     <p:outputLabel id="buttons">
-                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
                                     </p:outputLabel>
                                 </div>
 
@@ -42,22 +42,22 @@ and open the template in the editor.
                             <p:tab title="Général">
                                 <p:commandButton rendered="#{internshipsPlanningCtrl.model.manager}" title="Générer"
                                                  icon="fa fa-search"
-                                                 styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
+                                                 styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
                                                  ajax="true" actionListener="#{internshipsPlanningCtrl.onGenerateJury}"
                                                  update=":listForm" alt=""/>
                                 <p:commandButton rendered="#{internshipsPlanningCtrl.model.manager}" title="Enregister"
                                                  icon="fa fa-save"
-                                                 styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
+                                                 styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
                                                  ajax="true" actionListener="#{internshipsPlanningCtrl.onSaveJury}"
                                                  update=":listForm" alt=""/>
                                 <p:commandButton rendered="#{internshipsPlanningCtrl.model.manager}" title="Recharger"
                                                  icon="fa fa-refresh"
-                                                 styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
+                                                 styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
                                                  ajax="true" actionListener="#{internshipsPlanningCtrl.onReloadJury}"
                                                  update=":listForm" alt=""/>
                                 <p:commandButton rendered="#{internshipsPlanningCtrl.model.manager}"
                                                  title="Réinitialiser" icon="fa fa-trash-o"
-                                                 styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
+                                                 styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
                                                  ajax="true" actionListener="#{internshipsPlanningCtrl.onResetJury}"
                                                  update=":listForm" alt=""/>
 
@@ -234,7 +234,7 @@ and open the template in the editor.
                             <p:tab title="Options">
                                 <p:commandButton
                                         title="Enregister" icon="fa fa-save"
-                                        styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button"
+                                        styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
                                         ajax="true" actionListener="#{internshipsPlanningCtrl.onSaveOptions}"
                                         update=":listForm" alt="" disabled="#{!internshipsPlanningCtrl.model.manager}"/>
                                 <p:panelGrid id="options" styleClass="vr-no-border-grid"

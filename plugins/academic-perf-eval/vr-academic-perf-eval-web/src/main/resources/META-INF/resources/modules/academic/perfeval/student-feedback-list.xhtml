@@ -28,7 +28,7 @@ and open the template in the editor.
                                  /.row
                                 <div class="row">
                                     <p:outputLabel id="buttons">
-                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
                                     </p:outputLabel>
                                 </div>
 
@@ -56,14 +56,29 @@ and open the template in the editor.
                         <f:selectItems value="#{studentFeedbackListCtrl.model.students}"/>
                     </p:selectOneMenu>
                 </div>
-                <p:dataTable id="feedbacks" value="#{studentFeedbackListCtrl.model.feedbacks}" var="f"
+                completion:
+                <p:outputLabel value="#{studentFeedbackListCtrl.model.stats.countResponseCompletion/100}">
+                    <f:convertNumber type="percent"
+                                     maxIntegerDigits="3"
+                                     maxFractionDigits="2"/>
+                </p:outputLabel>
+                <p:outputLabel value=" evals=#{studentFeedbackListCtrl.model.stats.countFeedbacks} / questions=#{studentFeedbackListCtrl.model.stats.countQuestions}">
+                </p:outputLabel>
+                <p:dataTable id="feedbacks" value="#{studentFeedbackListCtrl.model.feedbackExts}" var="f"
                              emptyMessage="Il ny'a aucune fiche à renseigner"
                 >
                     <p:column headerText="Module">
-                        <p:outputLabel value="#{f.course.fullName}"/>
+                        <p:outputLabel value="#{f.data.course.fullName}"/>
                     </p:column>
                     <p:column headerText="Enseignant">
-                        <p:outputLabel value="#{f.course.teacher.contact.fullName}"/>
+                        <p:outputLabel value="#{f.data.course.teacher.user.contact.fullName}"/>
+                    </p:column>
+                    <p:column headerText="Completion">
+                        <p:outputLabel value="#{f.completion/100}">
+                            <f:convertNumber type="percent"
+                                             maxIntegerDigits="3"
+                                             maxFractionDigits="2"/>
+                        </p:outputLabel>
                     </p:column>
                 </p:dataTable>
             </h:form>

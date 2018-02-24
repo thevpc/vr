@@ -10,11 +10,11 @@ import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.InstallDemo;
+import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.equipments.service.model.*;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Utils;
 import net.vpc.upa.Entity;
-import net.vpc.upa.EntityBuilder;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +32,14 @@ public class EquipmentPlugin {
 
     @Autowired
     CorePlugin core;
+
+    @Start
+    private void start(){
+        //EquipmentPluginHelper
+        for (AppDepartment d : core.findDepartments()) {
+            EquipmentPluginHelper.ensureCreatedEquipmentDepartmentUpdateRight(d);
+        }
+    }
 
     public Equipment findEquipment(int id) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -146,20 +154,14 @@ public class EquipmentPlugin {
         headOfDepartment.setName(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT);
         headOfDepartment = core.findOrCreate(headOfDepartment);
 
-//        core.profileAddRight(headOfDepartment.getId(),"Custom.Education.MyCourseLoad");
+//        core.profileAddRight(headOfDepartment.getId(),AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_COURSE_LOAD);
         for (net.vpc.upa.Entity ee : UPA.getPersistenceUnit().getPackage("Equipment").getEntities(true)) {
-            core.addProfileRight(headOfDepartment.getId(), ee.getAbsoluteName() + ".Persist");
-            core.addProfileRight(headOfDepartment.getId(), ee.getAbsoluteName() + ".Remove");
-            core.addProfileRight(headOfDepartment.getId(), ee.getAbsoluteName() + ".Update");
-            core.addProfileRight(headOfDepartment.getId(), ee.getAbsoluteName() + ".Navigate");
-            core.addProfileRight(headOfDepartment.getId(), ee.getAbsoluteName() + ".Load");
-            core.addProfileRight(headOfDepartment.getId(), ee.getAbsoluteName() + ".DefaultEditor");
-
-            core.addProfileRight(technicianProfile.getId(), ee.getAbsoluteName() + ".Persist");
-            core.addProfileRight(technicianProfile.getId(), ee.getAbsoluteName() + ".Update");
-            core.addProfileRight(technicianProfile.getId(), ee.getAbsoluteName() + ".Navigate");
-            core.addProfileRight(technicianProfile.getId(), ee.getAbsoluteName() + ".Load");
-            core.addProfileRight(technicianProfile.getId(), ee.getAbsoluteName() + ".DefaultEditor");
+            for (String right : CorePluginSecurity.getEntityRights(ee, true, true, true, false, false)) {
+                core.addProfileRight(headOfDepartment.getId(),right);
+            }
+            for (String right : CorePluginSecurity.getEntityRights(ee, true, true, false, false, false)) {
+                core.addProfileRight(technicianProfile.getId(),right);
+            }
         }
 
 //        AppContact techContact = new AppContact();

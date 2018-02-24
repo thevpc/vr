@@ -8,7 +8,7 @@ import net.vpc.upa.config.*;
 /**
  * Created by vpc on 6/26/17.
  */
-@Entity
+@Entity(listOrder = "this.name desc")
 @Path("/Education/Evaluation")
 public class AcademicFeedbackSession {
     @Id
@@ -19,7 +19,10 @@ public class AcademicFeedbackSession {
     private AppPeriod period;
 //    private AppDepartment department;
     private AcademicSemester semester;
+
+    @Summary
     private boolean read;
+    @Summary
     private boolean write;
 
     public AcademicFeedbackSession() {

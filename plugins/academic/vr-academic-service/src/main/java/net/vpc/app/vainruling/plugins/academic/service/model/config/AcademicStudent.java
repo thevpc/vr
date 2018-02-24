@@ -20,7 +20,7 @@ import java.util.Objects;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "contact.fullName")
+@Entity(listOrder = "this.user.contact.fullName")
 @Path("Contact")
 @Properties(
         {
@@ -39,10 +39,9 @@ public class AcademicStudent {
     @Id
     @Sequence
     private int id;
-    @Main
-    private AppContact contact;
     private String subscriptionNumber;
     private AppDepartment department;
+    @Main
     private AppUser user;
     private AppPeriod firstSubscription;
     private AppPeriod lastSubscription;
@@ -113,14 +112,6 @@ public class AcademicStudent {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public AppContact getContact() {
-        return contact;
-    }
-
-    public void setContact(AppContact contact) {
-        this.contact = contact;
     }
 
     public AppPeriod getFirstSubscription() {
@@ -207,7 +198,6 @@ public class AcademicStudent {
     public int hashCode() {
         int hash = 3;
         hash = 41 * hash + this.id;
-        hash = 41 * hash + Objects.hashCode(this.contact);
         hash = 41 * hash + Objects.hashCode(this.subscriptionNumber);
         hash = 41 * hash + Objects.hashCode(this.department);
         hash = 41 * hash + Objects.hashCode(this.firstSubscription);
@@ -231,9 +221,6 @@ public class AcademicStudent {
         }
         final AcademicStudent other = (AcademicStudent) obj;
         if (this.id != other.id) {
-            return false;
-        }
-        if (!Objects.equals(this.contact, other.contact)) {
             return false;
         }
         if (!Objects.equals(this.subscriptionNumber, other.subscriptionNumber)) {
@@ -268,10 +255,10 @@ public class AcademicStudent {
 
     @Override
     public String toString() {
-        if (contact != null) {
-            return contact.toString();
+        if (user != null) {
+            return user.toString();
         }
-        return "AcademicStudent{" + "id=" + id + ", contact=" + contact + ", subscriptionNumber=" + subscriptionNumber + ", department=" + department + ", firstSubscription=" + firstSubscription + ", lastClass1=" + lastClass1 + ", lastClass2=" + lastClass2 + ", lastClass3=" + lastClass3 + ", user=" + user + ", deleted=" + deleted + ", deletedBy=" + deletedBy + ", deletedOn=" + deletedOn + '}';
+        return "AcademicStudent{" + "id=" + id + ", user=" + user + ", subscriptionNumber=" + subscriptionNumber + ", department=" + department + ", firstSubscription=" + firstSubscription + ", lastClass1=" + lastClass1 + ", lastClass2=" + lastClass2 + ", lastClass3=" + lastClass3 + ", user=" + user + ", deleted=" + deleted + ", deletedBy=" + deletedBy + ", deletedOn=" + deletedOn + '}';
     }
 
     public AcademicStudentStage getStage() {
@@ -388,12 +375,12 @@ public class AcademicStudent {
     }
 
     public String resolveFullName(){
-        AppContact c = getContact();
+        AppContact c = resolveContact();
         return c==null?String.valueOf(getId()): c.getFullName();
     }
 
     public String resolveFullTitle(){
-        AppContact c = getContact();
+        AppContact c = resolveContact();
         return c==null?String.valueOf(getId()): c.getFullTitle();
     }
 
@@ -491,5 +478,10 @@ public class AcademicStudent {
 
     public void setBaccalaureateGovernorate(AppGovernorate baccalaureateGovernorate) {
         this.baccalaureateGovernorate = baccalaureateGovernorate;
+    }
+
+    public AppContact resolveContact(){
+        AppUser c = getUser();
+        return c==null?null: c.getContact();
     }
 }

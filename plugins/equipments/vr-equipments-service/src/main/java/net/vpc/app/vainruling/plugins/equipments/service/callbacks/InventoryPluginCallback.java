@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.equipments.service.model.*;
 import net.vpc.upa.CustomDefaultObject;
+import net.vpc.upa.Document;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.callbacks.FieldEvent;
@@ -98,6 +99,7 @@ public class InventoryPluginCallback {
                 if (eq.getAcquisition() != null && eq.getType() == EquipmentStatusType.ACQUISITION) {
                     eq.getEquipment().setAcquisition(eq.getAcquisition());
                 }
+                eq.getEquipment().setActor(eq.getActor());
                 pu.merge(eq.getEquipment());
             }
         }
@@ -108,20 +110,19 @@ public class InventoryPluginCallback {
         PersistenceUnit pu = event.getPersistenceUnit();
         Entity entity = event.getEntity();
         if (entity.getName().equals("EquipmentStatusLog")) {
-            EquipmentStatusLog eq = (EquipmentStatusLog) event.getUpdatesObject();
-            if (eq != null) {
-                EquipmentStatusType type = eq.getType();
+            Document updatesDocument = event.getUpdatesDocument();
+            if (updatesDocument != null && updatesDocument.isSet("type") && updatesDocument.isSet("quantity")) {
+                EquipmentStatusType type = updatesDocument.get("type");
                 if (type != null) {
                     if (type.getSign() == 0) {
-                        eq.setQuantity(0);
-                    } else if (type.getSign() * eq.getQuantity() < 0) {
-                        double quantity = -eq.getQuantity();
-                        eq.setQuantity(quantity);
-                        event.getUpdatesDocument().setDouble("quantity", quantity);
+                        updatesDocument.setDouble("quantity", 0.0);
+                    } else if (type.getSign() * updatesDocument.getDouble("quantity",0) < 0) {
+                        double quantity = -updatesDocument.getDouble("quantity",0);
+                        updatesDocument.setDouble("quantity", quantity);
                     }
                 }
             }
-            if (eq != null && eq.getEquipment() != null) {
+            if (updatesDocument != null && updatesDocument.isSet("equipment")) {
                 event.getContext().setObject("EquipmentStatusLog.Updated", pu.createQueryBuilder("EquipmentStatusLog").byExpression(event.getFilterExpression()).getIdList());
             } else {
                 event.getContext().setObject("EquipmentStatusLog.Updated", new ArrayList<>());
@@ -141,6 +142,7 @@ public class InventoryPluginCallback {
                         .getResultList();
                 for (EquipmentStatusLog current : currents) {
                     current.getEquipment().setStatusType(current.getType());
+                    current.getEquipment().setActor(current.getActor());
                     pu.merge(current.getEquipment());
                 }
             }

@@ -21,6 +21,8 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
 import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicTeacherCV;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.upa.Action;
+import net.vpc.upa.UPA;
 import net.vpc.upa.filters.ObjectFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -132,7 +134,14 @@ public class AcademicAddressBookCtrl {
                     CorePlugin core = VrApp.getBean(CorePlugin.class);
                     AppPeriod mainPeriod = core.getCurrentPeriod();
 
-                    for (AcademicTeacher t : ap.findEnabledTeachers(mainPeriod.getId())) {
+                    List<AcademicTeacher> teachers =  UPA.getPersistenceUnit().invokePrivileged(new Action<List<AcademicTeacher>>() {
+                        @Override
+                        public List<AcademicTeacher> run() {
+                            return ap.findEnabledTeachers(mainPeriod.getId());
+                        }
+                    });
+
+                    for (AcademicTeacher t : teachers) {
                         if (query.accept(t)) {
                             Contact ct = new Contact();
                             ct.setName(t.resolveFullName());
@@ -153,8 +162,8 @@ public class AcademicAddressBookCtrl {
                             if (!StringUtils.isEmpty(t1)) {
                                 ct.getTitles().add(t1);
                             }
-                            if (!StringUtils.isEmpty(t.getContact().getEmail())) {
-                                ct.getTitles().add(t.getContact().getEmail());
+                            if (!StringUtils.isEmpty(t.resolveContact().getEmail())) {
+                                ct.getTitles().add(t.resolveContact().getEmail());
                             }
                             ct.setUrlCommand("teacherCurriculum");
                             ct.setUrlArgs("{teacherId:'" + t.getId() + "'}");
@@ -163,7 +172,14 @@ public class AcademicAddressBookCtrl {
                         }
                     }
                 } else if (qt.endsWith("students")) {
-                    for (AcademicStudent t : VrApp.getBean(AcademicPlugin.class).findStudents()) {
+                    List<AcademicStudent> listStudents=UPA.getPersistenceUnit().invokePrivileged(new Action<List<AcademicStudent>>() {
+                        @Override
+                        public List<AcademicStudent> run() {
+                            return VrApp.getBean(AcademicPlugin.class).findStudents();
+                        }
+                    });
+
+                    for (AcademicStudent t : listStudents) {
                         if (query.accept(t)) {
                             Contact ct = new Contact();
                             ct.setName(t.resolveFullName());
@@ -192,8 +208,8 @@ public class AcademicAddressBookCtrl {
                                                 t.getLastClass3().getName(), t.getLastClass3().getName2(), null
                                         ));
                             }
-                            if (!StringUtils.isEmpty(t.getContact().getEmail())) {
-                                ct.getTitles().add(t.getContact().getEmail());
+                            if (!StringUtils.isEmpty(t.resolveContact().getEmail())) {
+                                ct.getTitles().add(t.resolveContact().getEmail());
                             }
                             ct.setUrlCommand("");
                             cc.add(ct);
@@ -227,8 +243,8 @@ public class AcademicAddressBookCtrl {
                             if (t.getLastJobCompany() != null) {
                                 ct.getTitles().add("@ " + t.getLastJobCompany().getName());
                             }
-                            if (!StringUtils.isEmpty(t.getStudent().getContact().getEmail())) {
-                                ct.getTitles().add(t.getStudent().getContact().getEmail());
+                            if (!StringUtils.isEmpty(t.getStudent().resolveContact().getEmail())) {
+                                ct.getTitles().add(t.getStudent().resolveContact().getEmail());
                             }
                             ct.setUrlCommand("");
                             cc.add(ct);

@@ -10,7 +10,6 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.service.content.TaskTextService;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
 
@@ -18,8 +17,11 @@ import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
 import net.vpc.app.vainruling.core.web.menu.VRMenuDefFactory;
 import net.vpc.app.vainruling.core.web.menu.VRMenuLabel;
+import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
+import net.vpc.app.vainruling.plugins.tasks.service.TaskPluginSecurity;
 import net.vpc.app.vainruling.plugins.tasks.service.model.*;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.AccessMode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -216,20 +218,9 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
         getModel().setDone(todoService.findTodosByResponsible(currentListId, null, new TodoStatusType[]{TodoStatusType.DONE}));
 
         getModel().setStatuses(todoService.findTodoStatuses(currentListId));
-        ArrayList<SelectItem> st = new ArrayList<SelectItem>();
-//        st.add(new SelectItem(null, "-"));
-        for (TodoStatus s : getModel().getStatuses()) {
-            st.add(new SelectItem(s.getId(), s.getName()));
-        }
-        getModel().setStatusItems(st);
-
+        getModel().setStatusItems(VrWebHelper.toSelectItemList(getModel().getStatuses()));
         getModel().setCategories(todoService.findTodoCategories(currentListId));
-        st = new ArrayList<SelectItem>();
-//        st.add(new SelectItem(null, "-"));
-        for (TodoCategory s : getModel().getCategories()) {
-            st.add(new SelectItem(s.getId(), s.getName()));
-        }
-        getModel().setCategoryItems(st);
+        getModel().setCategoryItems(VrWebHelper.toSelectItemList(getModel().getCategories()));
     }
 
     @Override
@@ -245,7 +236,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
                     }
                     ).size();
             final VRMenuDef vrMenuDef = new VRMenuDef(findTodoListsByResp.getName(), "/Todo", "todo", findTodoListsByResp.getName(),
-                    "Custom.Todo." + findTodoListsByResp.getName(), null,"",100,
+                    TaskPluginSecurity.PREFIX_RIGHT_CUSTOM_TODO + findTodoListsByResp.getName(), null,"",100,
                     new VRMenuLabel[]{
                         new VRMenuLabel(String.valueOf(count),"severe")
                     }
@@ -272,7 +263,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
         d.setUrl("modules/todo/todos");
         d.setCss("fa-table");
         d.setTitle(title);
-        d.setSecurityKey("Custom.Todo." + listName);
+        d.setSecurityKey(TaskPluginSecurity.PREFIX_RIGHT_CUSTOM_TODO + listName);
         List<BreadcrumbItem> items = new ArrayList<>();
         items.add(new BreadcrumbItem("Todo","Mes taches à faire","fa-dashboard", "", ""));
         d.setBreadcrumb(items.toArray(new BreadcrumbItem[items.size()]));

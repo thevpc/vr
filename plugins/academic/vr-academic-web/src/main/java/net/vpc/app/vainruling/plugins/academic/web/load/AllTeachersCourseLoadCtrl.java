@@ -11,8 +11,9 @@ import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.VrColorTable;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
-import net.vpc.app.vainruling.plugins.academic.service.TeacherFilter;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
+import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
+import net.vpc.app.vainruling.plugins.academic.service.util.TeacherPeriodFilter;
 import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherBaseStat;
 import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherPeriodStat;
@@ -35,7 +36,7 @@ import java.util.*;
 //        title = "Charge Enseignants",
         url = "modules/academic/all-teachers-course-load",
         menu = "/Education/Load",
-        securityKey = "Custom.Education.AllTeachersCourseLoad"
+        securityKey = AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ALL_TEACHERS_COURSE_LOAD
 )
 public class AllTeachersCourseLoadCtrl {
     private static Comparator<TeacherSemesterStat> teacherSemesterStatComparatorByTeacher = new Comparator<TeacherSemesterStat>() {
@@ -124,7 +125,7 @@ public class AllTeachersCourseLoadCtrl {
         int periodId = getTeacherFilter().getPeriodId();
         CourseAssignmentFilter filter = getCourseFilter().getCourseAssignmentFilter();
         reset();
-        TeacherFilter customTeacherFilter = getTeacherFilter().getTeacherFilter();
+        TeacherPeriodFilter customTeacherFilter = getTeacherFilter().getTeacherFilter();
         DeviationConfig deviationConfig = getCourseFilter().getDeviationConfig();
         if (periodId >= -1) {
             //ordered semesters

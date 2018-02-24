@@ -10,10 +10,12 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanningPlugin;
+import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanningPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
 import net.vpc.app.vainruling.plugins.calendars.web.AbstractPlanningCtrl;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.NamedId;
 
@@ -31,7 +33,7 @@ import java.util.List;
 //        title = "Emploi par Groupe",
         url = "modules/academic/planning/class-planning",
         menu = "/Calendars",
-        securityKey = "Custom.Education.ClassPlanning"
+        securityKey = AcademicPlanningPluginSecurity.RIGHT_CUSTOM_EDUCATION_CLASS_PLANNING
 )
 public class ClassPlanningCtrl extends AbstractPlanningCtrl {
 
@@ -49,7 +51,7 @@ public class ClassPlanningCtrl extends AbstractPlanningCtrl {
         getModel().setGroups(new ArrayList<SelectItem>());
         AcademicPlanningPlugin pl = VrApp.getBean(AcademicPlanningPlugin.class);
         for (NamedId t : pl.loadStudentPlanningListNames()) {
-            getModel().getGroups().add(new SelectItem(String.valueOf(t.getId()), StringUtils.nonNull(t.getName())));
+            getModel().getGroups().add(FacesUtils.createSelectItem(t.getStringId(), StringUtils.nonNull(t.getName())));
         }
         CalendarWeek plannings = pl.loadClassPlanning(getModel().getGroupName());
         if (plannings == null) {

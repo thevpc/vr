@@ -11,7 +11,7 @@ import net.vpc.upa.config.*;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "name")
+@Entity(listOrder = "this.name")
 @Path("Equipment/Config")
 @Property(name = UIConstants.ENTITY_ID_HIERARCHY, value = "brand")
 public class EquipmentBrandLine {

@@ -5,13 +5,6 @@
  */
 package net.vpc.app.vr.plugins.academicprofile.web;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
@@ -20,45 +13,53 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.web.ctrl.MyProfileAlternative;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentUploadListener;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsCtrl;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsUploadDialogCtrl;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
+import net.vpc.app.vainruling.core.web.themes.VrThemeFace;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
+import net.vpc.app.vainruling.core.web.util.FileUploadEventHandler;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
+import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicCVSection;
 import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicTeacherCV;
 import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicTeacherCVItem;
+import net.vpc.common.io.PathInfo;
 import net.vpc.common.jsf.FacesUtils;
+import net.vpc.common.vfs.VFile;
+import net.vpc.common.vfs.VFileFilter;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 import org.primefaces.context.RequestContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import net.vpc.app.vainruling.core.web.util.FileUploadEventHandler;
-import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicCVSection;
-import net.vpc.common.io.PathInfo;
-import net.vpc.common.vfs.VFile;
-import net.vpc.common.vfs.VFileFilter;
 import org.primefaces.event.FileUploadEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.faces.model.SelectItem;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @VrController(
         breadcrumb = {
-            @UPathItem(title = "Paramètres", css = "fa-dashboard", ctrl = "")},
+                @UPathItem(title = "Paramètres", css = "fa-dashboard", ctrl = "")},
         title = "Mon profil enseignant",
         menu = "/Config",
         url = "modules/academic/profile/teacher-profile-settings",
         securityKey = "Custom.TeacherProfileSettings"
 )
-public class TeacherProfileSettingsCtrl implements DocumentUploadListener {
+public class TeacherProfileSettingsCtrl implements DocumentUploadListener, MyProfileAlternative {
 
+    private static final Logger log = Logger.getLogger(TeacherProfileSettingsCtrl.class.getName());
     @Autowired
     private AcademicProfilePlugin app;
     @Autowired
     private CorePlugin core;
-
-    private static final Logger log = Logger.getLogger(TeacherProfileSettingsCtrl.class.getName());
-
     private Model model = new Model();
 
     public Model getModel() {
@@ -70,35 +71,60 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener {
         Vr vr = Vr.get();
         getModel().setContact(core.getCurrentUser().getContact());
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
-        getModel().setTeacher(ap.findTeacherByUser(core.getCurrentUserId()));
-        getModel().setTeacherCV(app.findOrCreateAcademicTeacherCV(getModel().getTeacher().getId()));
-        ///a verifier
-        getModel().setCourseSection(app.findAcademicCVSectionByName("Course"));
-        getModel().setEducationSection(app.findAcademicCVSectionByName("Education"));
-        getModel().setProjectSection(app.findAcademicCVSectionByName("Project"));
-        getModel().setExperienceSection(app.findAcademicCVSectionByName("Experience"));
-        getModel().setResearchSection(app.findAcademicCVSectionByName("Research"));
+        AcademicTeacher currentTeacher = ap.getCurrentTeacher();
+        if (currentTeacher != null) {
+            getModel().setTeacher(currentTeacher);
+            getModel().setTeacherCV(app.findOrCreateAcademicTeacherCV(getModel().getTeacher().getId()));
+            ///a verifier
+            getModel().setCourseSection(app.findAcademicCVSectionByName("Course"));
+            getModel().setEducationSection(app.findAcademicCVSectionByName("Education"));
+            getModel().setProjectSection(app.findAcademicCVSectionByName("Project"));
+            getModel().setExperienceSection(app.findAcademicCVSectionByName("Experience"));
+            getModel().setResearchSection(app.findAcademicCVSectionByName("Research"));
 
-        getModel().setCourseList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().courseSection.getId()));
-        getModel().setEducationList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().educationSection.getId()));
-        getModel().setExperienceList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().experienceSection.getId()));
-        getModel().setProjectList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().projectSection.getId()));
-        getModel().setResearchList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().researchSection.getId()));
+            getModel().setCourseList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().courseSection.getId()));
+            getModel().setEducationList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().educationSection.getId()));
+            getModel().setExperienceList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().experienceSection.getId()));
+            getModel().setProjectList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().projectSection.getId()));
+            getModel().setResearchList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().researchSection.getId()));
+        } else {
+            getModel().setTeacher(null);
+            getModel().setTeacherCV(null);
+            ///a verifier
+            getModel().setCourseSection(null);
+            getModel().setEducationSection(null);
+            getModel().setProjectSection(null);
+            getModel().setExperienceSection(null);
+            getModel().setResearchSection(null);
 
+            getModel().setCourseList(null);
+            getModel().setEducationList(null);
+            getModel().setExperienceList(null);
+            getModel().setProjectList(null);
+            getModel().setResearchList(null);
+        }
 
         VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
-        getModel().getThemes().clear();
-        getModel().getThemes().add(FacesUtils.createSelectItem("", "<Default>", null));
-        for (VrTheme vrTheme : tfactory.getThemes()) {
-            getModel().getThemes().add(FacesUtils.createSelectItem(vrTheme.getId(), vrTheme.getName(), null));
+
+        getModel().getPublicThemes().clear();
+        getModel().getPublicThemes().add(FacesUtils.createSelectItem("", "<Default>", null));
+        for (VrTheme vrTheme : tfactory.getThemes(VrThemeFace.PUBLIC)) {
+            getModel().getPublicThemes().add(FacesUtils.createSelectItem(vrTheme.getId(), vrTheme.getName(), null));
         }
-        getModel().setTheme(CorePlugin.get().getCurrentUserTheme());
+        getModel().setPublicTheme(CorePlugin.get().getCurrentUserPublicTheme());
+
+        getModel().getPrivateThemes().clear();
+        getModel().getPrivateThemes().add(FacesUtils.createSelectItem("", "<Default>", null));
+        for (VrTheme vrTheme : tfactory.getThemes(VrThemeFace.PRIVATE)) {
+            getModel().getPrivateThemes().add(FacesUtils.createSelectItem(vrTheme.getId(), vrTheme.getName(), null));
+        }
+        getModel().setPrivateTheme(CorePlugin.get().getCurrentUserPrivateTheme());
 
         List<SelectItem> list = null;
 
         list = new ArrayList<>();
         for (AppCompany x : core.findCompanies()) {
-            list.add(new SelectItem(x.getId(), x.getName()));
+            list.add(FacesUtils.createSelectItem(String.valueOf(x.getId()), x.getName()));
         }
         getModel().setCompanyItems(list);
 
@@ -107,7 +133,8 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener {
     public void onSelectTheme() {
         final CorePlugin t = VrApp.getBean(CorePlugin.class);
         try {
-            t.setCurrentUserTheme(getModel().getTheme());
+            t.setCurrentUserPublicTheme(getModel().getPublicTheme());
+            t.setCurrentUserPrivateTheme(getModel().getPrivateTheme());
             FacesUtils.addInfoMessage("Theme mis a jour");
         } catch (Exception ex) {
             log.log(Level.SEVERE, "Error", ex);
@@ -250,9 +277,9 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener {
     public void onRequestUploadPhoto() {
         getModel().setUploadingPhoto(true);
         getModel().setUploadingCV(false);
-         Vr.get().openUploadDialog(new DocumentsUploadDialogCtrl.Config()
-                .setExtensions("jpg,png,jpeg")
-                .setSizeLimit(1024*1024)
+        Vr.get().openUploadDialog(new DocumentsUploadDialogCtrl.Config()
+                        .setExtensions("jpg,png,jpeg")
+                        .setSizeLimit(1024 * 1024)
                 , this);
     }
 
@@ -261,7 +288,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener {
         getModel().setUploadingCV(true);
         Vr.get().openUploadDialog(new DocumentsUploadDialogCtrl.Config()
                         .setExtensions("pdf")
-                        .setSizeLimit(10*1024*1024)
+                        .setSizeLimit(10 * 1024 * 1024)
                 , this);
     }
 
@@ -348,8 +375,11 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener {
         private boolean uploadingPhoto;
         private boolean uploadingCV;
 
-        private String theme;
-        private List<SelectItem> themes = new ArrayList<>();
+        private String publicTheme;
+        private List<SelectItem> publicThemes = new ArrayList<>();
+
+        private String privateTheme;
+        private List<SelectItem> privateThemes = new ArrayList<>();
 
         private List<SelectItem> companyItems = new ArrayList<>();
 
@@ -367,20 +397,36 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener {
 
         private AcademicTeacherCVItem item;
 
-        public String getTheme() {
-            return theme;
+        public String getPublicTheme() {
+            return publicTheme;
         }
 
-        public void setTheme(String theme) {
-            this.theme = theme;
+        public void setPublicTheme(String publicTheme) {
+            this.publicTheme = publicTheme;
         }
 
-        public List<SelectItem> getThemes() {
-            return themes;
+        public List<SelectItem> getPublicThemes() {
+            return publicThemes;
         }
 
-        public void setThemes(List<SelectItem> themes) {
-            this.themes = themes;
+        public void setPublicThemes(List<SelectItem> publicThemes) {
+            this.publicThemes = publicThemes;
+        }
+
+        public String getPrivateTheme() {
+            return privateTheme;
+        }
+
+        public void setPrivateTheme(String privateTheme) {
+            this.privateTheme = privateTheme;
+        }
+
+        public List<SelectItem> getPrivateThemes() {
+            return privateThemes;
+        }
+
+        public void setPrivateThemes(List<SelectItem> privateThemes) {
+            this.privateThemes = privateThemes;
         }
 
         public AcademicTeacher getTeacher() {

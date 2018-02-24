@@ -1,0 +1,5 @@
+drop table vr.MAILBOX_RECEIVED
+drop table vr.MAILBOX_SENT
+drop table vr.RAW_MESSAGE
+emploi page externe
+emploi des salles

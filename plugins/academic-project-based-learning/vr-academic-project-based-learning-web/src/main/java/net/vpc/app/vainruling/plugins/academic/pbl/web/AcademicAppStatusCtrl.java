@@ -9,13 +9,14 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPlugin;
+import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblSessionListInfo;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblStudentInfo;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblTeacherInfo;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
+import net.vpc.app.vainruling.plugins.academic.pbl.service.model.ApblSession;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
@@ -30,7 +31,9 @@ import net.vpc.upa.filters.ObjectFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.faces.model.SelectItem;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -60,20 +63,22 @@ public class AcademicAppStatusCtrl {
 
     public double getValidStudentsPercent() {
         int max = getModel().getFilteredStudents().size();
-        double i = getValidStudentsCount()* 100.0;
-        return max==0?0:i/max;
+        double i = getValidStudentsCount() * 100.0;
+        return max == 0 ? 0 : i / max;
     }
 
-    public String[] getSelectedSessions(){
-        if(getModel().isMultipleSessionSelection()){
+    public String[] getSelectedSessions() {
+        if (getModel().isMultipleSessionSelection()) {
             return getModel().getSelectedSessions();
         }
         String currentSessionId = getModel().getCurrentSessionId();
-        return net.vpc.common.strings.StringUtils.isEmpty(currentSessionId)?new String[0] : new String[]{currentSessionId};
+        return net.vpc.common.strings.StringUtils.isEmpty(currentSessionId) ? new String[0] : new String[]{currentSessionId};
     }
-    public String getPreferredFileName(){
+
+    public String getPreferredFileName() {
         String[] selectedSessions = getSelectedSessions();
         int[] selectedSessionsInts = Convert.toPrimitiveIntArray(selectedSessions, null);
+        StringBuilder sb = new StringBuilder();
         if (selectedSessionsInts.length == 0) {
 //            List<ApblSession> availableSessions = apbl.findAvailableSessions();
 //            selectedSessionsInts = new int[availableSessions.size()];
@@ -82,19 +87,19 @@ public class AcademicAppStatusCtrl {
 //                selectedSessionsInts[i] = availableSession.getId();
 //                i++;
 //            }
-            return "empty-session";
-        }
-        StringBuilder sb=new StringBuilder();
-        for (int selectedSessionsInt : selectedSessionsInts) {
-            ApblSession session0 = apbl.findSession(selectedSessionsInt);
-            if(session0!=null){
-                if(sb.length()>0){
-                    sb.append("__");
+            sb.append("empty-session");
+        } else {
+            for (int selectedSessionsInt : selectedSessionsInts) {
+                ApblSession session0 = apbl.findSession(selectedSessionsInt);
+                if (session0 != null) {
+                    if (sb.length() > 0) {
+                        sb.append("__");
+                    }
+                    sb.append(session0.getName());
                 }
-                sb.append(session0.getName());
             }
         }
-        return sb.toString();
+        return core.getPreferredFileName(sb.toString());
     }
 
     public int getInterDepartmentCount(boolean validOnly) {
@@ -106,17 +111,18 @@ public class AcademicAppStatusCtrl {
         }
         return count;
     }
+
     public double getInterDepartmentPercent(boolean validOnly) {
-        int count=getInterDepartmentCount(validOnly);
-        double i=(double)count * 100.0;
-        int max = validOnly? getValidStudentsCount(): getModel().getFilteredStudents().size();
-        return max==0?0:i/max;
+        int count = getInterDepartmentCount(validOnly);
+        double i = (double) count * 100.0;
+        int max = validOnly ? getValidStudentsCount() : getModel().getFilteredStudents().size();
+        return max == 0 ? 0 : i / max;
     }
 
     public int getHomogenousCount(boolean validOnly) {
-        int count=0;
+        int count = 0;
         for (ApblStudentInfo studentInfo : getModel().getFilteredStudents()) {
-            if(!validOnly || studentInfo.isInvalid()) {
+            if (!validOnly || studentInfo.isInvalid()) {
                 if (!studentInfo.isInterDepartments() && !studentInfo.isInterClasses()) {
                     count++;
                 }
@@ -126,16 +132,16 @@ public class AcademicAppStatusCtrl {
     }
 
     public double getHomogenousPercent(boolean validOnly) {
-        int count=getHomogenousCount(validOnly);
-        double i=(double)count * 100.0;
-        int max = validOnly? getValidStudentsCount(): getModel().getFilteredStudents().size();
-        return max==0?0:i/max;
+        int count = getHomogenousCount(validOnly);
+        double i = (double) count * 100.0;
+        int max = validOnly ? getValidStudentsCount() : getModel().getFilteredStudents().size();
+        return max == 0 ? 0 : i / max;
     }
 
     public int getInterClassCount(boolean validOnly) {
-        int count=0;
+        int count = 0;
         for (ApblStudentInfo studentInfo : getModel().getFilteredStudents()) {
-            if(!validOnly || studentInfo.isInvalid()) {
+            if (!validOnly || studentInfo.isInvalid()) {
                 if (!studentInfo.isInterDepartments() && studentInfo.isInterClasses()) {
                     count++;
                 }
@@ -145,21 +151,21 @@ public class AcademicAppStatusCtrl {
     }
 
     public double getInterClassPercent(boolean validOnly) {
-        int count=getInterClassCount(validOnly);
+        int count = getInterClassCount(validOnly);
         for (ApblStudentInfo studentInfo : getModel().getFilteredStudents()) {
-            if(!studentInfo.isInterDepartments() && studentInfo.isInterClasses()){
+            if (!studentInfo.isInterDepartments() && studentInfo.isInterClasses()) {
                 count++;
             }
         }
-        double i=(double)count* 100.0;
-        int max = validOnly? getValidStudentsCount(): getModel().getFilteredStudents().size();
-        return max==0?0:i/max;
+        double i = (double) count * 100.0;
+        int max = validOnly ? getValidStudentsCount() : getModel().getFilteredStudents().size();
+        return max == 0 ? 0 : i / max;
     }
 
     public int getValidStudentsCount() {
-        int count=0;
+        int count = 0;
         for (ApblStudentInfo studentInfo : getModel().getFilteredStudents()) {
-            if(!studentInfo.isInvalid()){
+            if (!studentInfo.isInvalid()) {
                 count++;
             }
         }
@@ -179,12 +185,12 @@ public class AcademicAppStatusCtrl {
     public void reloadSessions() {
         getModel().getSessions().clear();
         for (ApblSession session : apbl.findAvailableSessions()) {
-            getModel().getSessions().add(new SelectItem(session.getId(), session.getName()));
+            getModel().getSessions().add(FacesUtils.createSelectItem(String.valueOf(session.getId()), session.getName()));
         }
 
         getModel().getDepartments().clear();
         for (AppDepartment dep : core.findDepartments()) {
-            getModel().getDepartments().add(new SelectItem(dep.getId(), dep.getName()));
+            getModel().getDepartments().add(FacesUtils.createSelectItem(String.valueOf(dep.getId()), dep.getName()));
         }
 
         reloadTeacherAndStudentInfos();
@@ -230,11 +236,11 @@ public class AcademicAppStatusCtrl {
                 return true;
             }
         });
-        studentInfos.removeIf(a->
-                (getModel().isFilterStudentsNoCoach() && ! a.isErrNoCoach())
-                || (getModel().isFilterStudentsNoProject() && ! a.isErrNoProject())
-                || (getModel().isFilterStudentsNoTeam() && ! a.isErrNoTeam())
-                || (getModel().isFilterStudentsMultiTeam() && ! a.isErrTooManyTeams())
+        studentInfos.removeIf(a ->
+                (getModel().isFilterStudentsNoCoach() && !a.isErrNoCoach())
+                        || (getModel().isFilterStudentsNoProject() && !a.isErrNoProject())
+                        || (getModel().isFilterStudentsNoTeam() && !a.isErrNoTeam())
+                        || (getModel().isFilterStudentsMultiTeam() && !a.isErrTooManyTeams())
         );
         getModel().setStudents(studentInfos);
 
@@ -265,16 +271,16 @@ public class AcademicAppStatusCtrl {
                             public boolean accept(ApblStudentInfo value) {
                                 return filter.matches(
                                         value.getStudent().resolveFullTitle()
-                                        +" "
-                                        + (value.getCoach()!=null?value.getCoach().resolveFullTitle():"")
-                                        +" "
-                                        + (value.getTeam()!=null && value.getTeam().getTeam()!=null ?value.getTeam().getTeam().getName():"")
-                                        +" "
-                                        + ((value.getProject()!=null && value.getProject().getProject()!=null) ?value.getProject().getProject().getName():"")
-                                        +" "
-                                        + (value.getStudent().getLastClass1()!=null ?value.getStudent().getLastClass1().getName():"")
-                                        +" "
-                                        + (value.getInvalidObservations())
+                                                + " "
+                                                + (value.getCoach() != null ? value.getCoach().resolveFullTitle() : "")
+                                                + " "
+                                                + (value.getTeam() != null && value.getTeam().getTeam() != null ? value.getTeam().getTeam().getName() : "")
+                                                + " "
+                                                + ((value.getProject() != null && value.getProject().getProject() != null) ? value.getProject().getProject().getName() : "")
+                                                + " "
+                                                + (value.getStudent().getLastClass1() != null ? value.getStudent().getLastClass1().getName() : "")
+                                                + " "
+                                                + (value.getInvalidObservations())
                                 );
                             }
                         }
@@ -285,9 +291,9 @@ public class AcademicAppStatusCtrl {
     public void onApplyLoadAll() {
         String[] selectedSessions = getSelectedSessions();
         if (selectedSessions.length == 1) {
-            HashSet<Integer> accepted=new HashSet<>();
+            HashSet<Integer> accepted = new HashSet<>();
             for (ApblTeacherInfo t : getModel().getTeachers().getTeachers()) {
-                if(t.getTeacher()!=null) {
+                if (t.getTeacher() != null) {
                     accepted.add(t.getTeacher().getId());
                 }
             }
@@ -300,26 +306,27 @@ public class AcademicAppStatusCtrl {
             FacesUtils.addInfoMessage("Application reussie");
         }
     }
-    public void onApplyLoad(int teacherId){
+
+    public void onApplyLoad(int teacherId) {
         String[] selectedSessions = getSelectedSessions();
-        if (selectedSessions.length==1) {
-            AcademicTeacher t=academic.findTeacher(teacherId);
-            if(t!=null) {
+        if (selectedSessions.length == 1) {
+            AcademicTeacher t = academic.findTeacher(teacherId);
+            if (t != null) {
                 apbl.applyTeacherLoad(Integer.parseInt(selectedSessions[0]), new ObjectFilter<AcademicTeacher>() {
                     @Override
                     public boolean accept(AcademicTeacher value) {
                         return value.getId() == teacherId;
                     }
                 });
-                FacesUtils.addInfoMessage("Application reussie : "+t.resolveFullName());
+                FacesUtils.addInfoMessage("Application reussie : " + t.resolveFullName());
             }
         }
     }
 
     public boolean isEnabledButton(String id) {
-        switch (StringUtils.trim(id)){
-            case "ApplyLoad":{
-                return UPA.getPersistenceUnit().getSecurityManager().isAllowedKey("Custom.Education.Apbl.ApplyLoad");
+        switch (StringUtils.trim(id)) {
+            case "ApplyLoad": {
+                return UPA.getPersistenceUnit().getSecurityManager().isAllowedKey(ApblPluginSecurity.RIGHT_CUSTOM_EDUCATION_APBL_APPLY_LOAD);
             }
         }
         return false;

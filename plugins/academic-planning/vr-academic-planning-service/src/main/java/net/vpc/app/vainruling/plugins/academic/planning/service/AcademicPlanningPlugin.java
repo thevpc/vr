@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
+import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
@@ -37,81 +38,28 @@ import java.util.*;
  * @author taha.bensalah@gmail.com
  */
 @AppPlugin()
-public class AcademicPlanningPlugin implements VrCalendarProvider {
+public class AcademicPlanningPlugin {
 
     @Autowired
     CorePlugin core;
     @Autowired
     AcademicPlugin academicPlugin;
 
-    @Override
-    public List<CalendarWeek> findUserPrivateCalendars(int userId) {
-        return Collections.EMPTY_LIST;
+    public static AcademicPlanningPlugin get(){
+        return VrApp.getBean(AcademicPlanningPlugin.class);
     }
 
-    @Override
-    public List<CalendarWeek> findUserPublicCalendars(int userId) {
-        AcademicTeacher teacherByUser = academicPlugin.findTeacherByUser(userId);
-        AcademicStudent student = academicPlugin.findStudentByUser(userId);
-        List<CalendarWeek> all = new ArrayList<>();
-        if (teacherByUser != null) {
-            CalendarWeek e = loadTeacherPlanning(teacherByUser.getId());
-            if (e != null) {
-                all.add(e);
-            }
+    @Start
+    private void onStart(){
+        if (core == null) {
+            core = CorePlugin.get();
         }
-        if (student != null) {
-            List<CalendarWeek> e = loadStudentPlanningList(student.getId());
-            if (e != null) {
-                for (CalendarWeek calendarWeek : e) {
-                    if (calendarWeek != null) {
-                        all.add(calendarWeek);
-                    }
-                }
-            }
-        }
-        return all;
+        core.createRight(AcademicPlanningPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_PLANNING, "TeacherPlanning");
+        core.createRight(AcademicPlanningPluginSecurity.RIGHT_CUSTOM_EDUCATION_CLASS_PLANNING, "ClassPlanning");
     }
 
-    @Override
-    public Set<Integer> retainUsersWithPublicCalendars(Set<Integer> users) {
-        HashSet<Integer> all = new HashSet<>();
-        HashSet<Integer> teachers = new HashSet<>();
-        HashSet<Integer> students = new HashSet<>();
-        Map<Integer, AcademicTeacher> userToTeachers = new HashMap<>();
-        Map<Integer, AcademicStudent> userToStudents = new HashMap<>();
-        for (AcademicTeacher teacher : academicPlugin.findTeachers()) {
-            AppUser u = teacher.getUser();
-            if (u != null && users.contains(u.getId())) {
-                userToTeachers.put(u.getId(), teacher);
-                teachers.add(teacher.getId());
-            }
-        }
-        for (AcademicStudent student : academicPlugin.findStudents()) {
-            AppUser u = student.getUser();
-            if (u != null && users.contains(u.getId())) {
-                userToStudents.put(u.getId(), student);
-                students.add(student.getId());
-            }
-        }
-//        for (Integer user : users) {
-//            AcademicTeacher u = academicPlugin.findTeacherByUser(user);
-//            if(u!=null) {
-//                teachers.add(u.getId());
-//            }
-//            AcademicStudent s = academicPlugin.findStudentByUser(user);
-//            if(s!=null) {
-//                students.add(s.getId());
-//            }
-//        }
-        for (Integer id : retainTeachersWithPublicCalendars(teachers)) {
-            all.add(academicPlugin.findTeacher(id).getUser().getId());
-        }
-        for (Integer id : retainStudentsWithPublicCalendars(students)) {
-            all.add(academicPlugin.findStudent(id).getUser().getId());
-        }
-        return all;
-    }
+
+
 
     public Set<Integer> retainTeachersWithPublicCalendars(Set<Integer> teacherIds) {
         Set<Integer> validTeachers = new HashSet<>();
@@ -425,24 +373,6 @@ public class AcademicPlanningPlugin implements VrCalendarProvider {
         return new ArrayList<>(all);
     }
 
-    @Override
-    public List<CalendarWeek> findCalendars(String type, String key) {
-        if ("class-calendar".equals(type)) {
-            CalendarWeek calendarWeek = loadClassPlanning(key);
-            if (calendarWeek != null) {
-                return Arrays.asList(calendarWeek);
-            }
-        }
-        if ("teacher-calendar".equals(type)) {
-            CalendarWeek calendarWeek = loadTeacherPlanning(Integer.parseInt(key));
-            if (calendarWeek != null) {
-                return Arrays.asList(calendarWeek);
-            }
-        }
-        if ("student-calendar".equals(type)) {
-            return loadStudentPlanningList(Integer.parseInt(key));
-        }
-        return Collections.EMPTY_LIST;
-    }
+
 
 }

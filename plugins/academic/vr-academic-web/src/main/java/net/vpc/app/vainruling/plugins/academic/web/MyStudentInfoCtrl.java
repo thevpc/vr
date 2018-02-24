@@ -17,6 +17,7 @@ import net.vpc.app.vainruling.core.web.fs.files.DocumentsCtrl;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsUploadDialogCtrl;
 import net.vpc.app.vainruling.core.web.util.FileUploadEventHandler;
 import net.vpc.app.vainruling.core.service.util.ValidatorProgressHelper;
+import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicBac;
@@ -70,7 +71,7 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,ActionEnabler{
                             AcademicPlugin.get().importStudent(CorePlugin.get().getCurrentPeriod().getId(),new AcademicStudentImport(getModel().getStudent()));
                         } else {
                             pu.merge(getModel().getStudent());
-                            pu.merge(getModel().getStudent().getContact());
+                            pu.merge(getModel().getStudent().resolveContact());
                         }
                         //p.importStudent(-1, getModel().getStudent());
                     } catch (Exception e) {
@@ -96,26 +97,24 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,ActionEnabler{
         AcademicStudent c = AcademicPlugin.get().getCurrentStudent();
         if (c == null) {
             c = new AcademicStudent();
-            c.setContact(new AppContact());
             c.setUser(new AppUser());
         }
         getModel().setStudent(c);
         ValidatorProgressHelper h=new ValidatorProgressHelper();
-        h.checkNotDefault(c.getContact().getFirstName());
-        h.checkNotDefault(c.getContact().getLastName());
-        h.checkNotDefault(c.getContact().getEmail());
-        h.checkNotDefault(c.getContact().getPhone1());
-        h.checkNotDefault(c.getContact().getCivility());
-        h.checkNotDefault(c.getContact().getGender());
-        h.checkNotDefault(c.getDepartment());
-        h.checkNotDefault(c.getBaccalaureateClass());
-        h.checkNotDefault(c.getBaccalaureateScore());
-        h.checkNotDefault(c.getPreClassType());
-        h.checkNotDefault(c.getPreClass());
-        h.checkNotDefault(c.getPreClassRank());
-        h.checkNotDefault(c.getPreClassRank2());
-        h.checkNotDefault(c.getPreClassRankByProgram());
-        h.checkNotDefault(c.getPreClassScore());
+        h.checkNotDefault(c.resolveContact().getFirstName(),"Missing FirstName");
+        h.checkNotDefault(c.resolveContact().getLastName(),"Missing LastName");
+        h.checkNotDefault(c.resolveContact().getEmail(),"Missing Email");
+        h.checkNotDefault(c.resolveContact().getPhone1(),"Missing Phone1");
+        h.checkNotDefault(c.resolveContact().getCivility(),"Missing Civility");
+        h.checkNotDefault(c.resolveContact().getGender(),"Missing Gender");
+        h.checkNotDefault(c.getDepartment(),"Missing Department");
+        h.checkNotDefault(c.getBaccalaureateClass(),"Missing BaccalaureateClass");
+        h.checkNotDefault(c.getBaccalaureateScore(),"Missing BaccalaureateScore");
+        h.checkNotDefault(c.getPreClassType(),"Missing PreClassType");
+        h.checkNotDefault(c.getPreClass(),"Missing PreClass");
+        h.checkNotDefault(c.getPreClassRankByProgram(),"Missing PreClassRankByProgram");
+        h.checkNotDefault(c.getPreClassScore(),"Missing PreClassScore");
+        h.check(c.getPreClassRank()>0 ||c.getPreClassRank2()>0,"Missing ");
         h.check(c.getPreClassChoice1()!=null || !StringUtils.isEmpty(c.getPreClassChoice1Other()));
         h.check(c.getPreClassChoice2()!=null || !StringUtils.isEmpty(c.getPreClassChoice2Other()));
         h.check(c.getPreClassChoice3()!=null || !StringUtils.isEmpty(c.getPreClassChoice3Other()));
@@ -130,50 +129,13 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,ActionEnabler{
     public void updateLists() {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-
-        List<SelectItem> list = null;
-
-        list = new ArrayList<>();
-        for (AppPeriod x : core.findValidPeriods()) {
-            list.add(new SelectItem(x.getId(), x.getName()));
-        }
-        getModel().setPeriodItems(list);
-
-        list = new ArrayList<>();
-        for (AppCivility x : core.findCivilities()) {
-            list.add(new SelectItem(x.getId(), x.getName()));
-        }
-        getModel().setCivilityItems(list);
-
-        list = new ArrayList<>();
-        for (AppGender x : core.findGenders()) {
-            list.add(new SelectItem(x.getId(), x.getName()));
-        }
-        getModel().setGenderItems(list);
-
-        list = new ArrayList<>();
-        for (AcademicBac x : p.findAcademicBacs()) {
-            list.add(new SelectItem(x.getId(), x.getName()));
-        }
-        getModel().setBacItems(list);
-
-        list = new ArrayList<>();
-        for (AcademicPreClass x : p.findAcademicPreClasses()) {
-            list.add(new SelectItem(x.getId(), x.getName()));
-        }
-        getModel().setPrepItems(list);
-
-        list = new ArrayList<>();
-        for (AppDepartment x : core.findDepartments()) {
-            list.add(new SelectItem(x.getId(), x.getName()));
-        }
-        getModel().setDepartmentItems(list);
-
-        list = new ArrayList<>();
-        for (AcademicClass x : p.findAcademicClasses()) {
-            list.add(new SelectItem(x.getId(), x.getName()));
-        }
-        getModel().setClassItems(list);
+        getModel().setPeriodItems(VrWebHelper.toSelectItemList(core.findValidPeriods()));
+        getModel().setCivilityItems(VrWebHelper.toSelectItemList(core.findCivilities()));
+        getModel().setGenderItems(VrWebHelper.toSelectItemList(core.findGenders()));
+        getModel().setBacItems(VrWebHelper.toSelectItemList(p.findAcademicBacs()));
+        getModel().setPrepItems(VrWebHelper.toSelectItemList(p.findAcademicPreClasses()));
+        getModel().setDepartmentItems(VrWebHelper.toSelectItemList(core.findDepartments()));
+        getModel().setClassItems(VrWebHelper.toSelectItemList(p.findAcademicClasses()));
 
     }
 

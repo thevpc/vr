@@ -73,7 +73,7 @@ and open the template in the editor.
                                 <div class="form-group">
                                     <label>CIN</label>
                                     <p:inputText class="form-control vr-form-control"
-                                                 value="#{myStudentInfoCtrl.model.student.contact.nin}"/>
+                                                 value="#{myStudentInfoCtrl.model.student.user.contact.nin}"/>
                                 </div>
                                 <div class="form-group">
                                     <label>N° Inscription</label>
@@ -85,7 +85,7 @@ and open the template in the editor.
                                 <div class="form-group">
                                     <label>Prénom</label>
                                     <p:inputText class="form-control vr-form-control"
-                                                 value="#{myStudentInfoCtrl.model.student.contact.firstName}"
+                                                 value="#{myStudentInfoCtrl.model.student.user.contact.firstName}"
                                                  disabled="#{myStudentInfoCtrl.model.insertMode}"
                                     />
                                 </div>
@@ -93,7 +93,7 @@ and open the template in the editor.
                                 <div class="form-group">
                                     <label>Nom</label>
                                     <p:inputText class="form-control vr-form-control"
-                                                 value="#{myStudentInfoCtrl.model.student.contact.lastName}"
+                                                 value="#{myStudentInfoCtrl.model.student.user.contact.lastName}"
                                                  disabled="#{myStudentInfoCtrl.model.insertMode}"
                                     />
                                 </div>
@@ -101,7 +101,7 @@ and open the template in the editor.
                                 <div class="form-group">
                                     <label>Nom (ar)</label>
                                     <p:inputText class="form-control vr-form-control"
-                                                 value="#{myStudentInfoCtrl.model.student.contact.lastName2}"
+                                                 value="#{myStudentInfoCtrl.model.student.user.contact.lastName2}"
                                                  disabled="#{myStudentInfoCtrl.model.insertMode}"
                                     />
                                 </div>
@@ -109,14 +109,14 @@ and open the template in the editor.
                                 <div class="form-group">
                                     <label>Prénom (ar)</label>
                                     <p:inputText class="form-control vr-form-control"
-                                                 value="#{myStudentInfoCtrl.model.student.contact.firstName2}"
+                                                 value="#{myStudentInfoCtrl.model.student.user.contact.firstName2}"
                                                  disabled="#{myStudentInfoCtrl.model.insertMode}"
                                     />
                                 </div>
                                 <div class="form-group">
                                     <label>Genre</label>
                                     <p:selectOneRadio class=""
-                                                      value="#{myStudentInfoCtrl.model.student.contact.gender}"
+                                                      value="#{myStudentInfoCtrl.model.student.user.contact.gender}"
                                                       filter="true" filterMatchMode="contains"
                                                       converter="#{vr.entityObjConverter('AppGender')}"
                                                       disabled="#{myStudentInfoCtrl.model.insertMode}"
@@ -128,7 +128,7 @@ and open the template in the editor.
                                 <div class="form-group">
                                     <label>Civitlité</label>
                                     <p:selectOneRadio class=""
-                                                      value="#{myStudentInfoCtrl.model.student.contact.civility}"
+                                                      value="#{myStudentInfoCtrl.model.student.user.contact.civility}"
                                                       filter="true" filterMatchMode="contains"
                                                       converter="#{vr.entityObjConverter('AppCivility')}"
                                     >
@@ -143,25 +143,25 @@ and open the template in the editor.
                                 <div class="form-group">
                                     <label>GSM (98 222 333)</label>
                                     <p:inputText class="form-control vr-form-control"
-                                                 value="#{myStudentInfoCtrl.model.student.contact.phone1}"/>
+                                                 value="#{myStudentInfoCtrl.model.student.user.contact.phone1}"/>
                                 </div>
 
                                 <div class="form-group">
                                     <label>Autre Numero (98 222 333)</label>
                                     <p:inputText class="form-control vr-form-control"
-                                                 value="#{myStudentInfoCtrl.model.student.contact.phone2}"/>
+                                                 value="#{myStudentInfoCtrl.model.student.user.contact.phone2}"/>
                                 </div>
 
                                 <div class="form-group">
                                     <label>Email</label>
                                     <p:inputText class="form-control vr-form-control"
-                                                 value="#{myStudentInfoCtrl.model.student.contact.email}"/>
+                                                 value="#{myStudentInfoCtrl.model.student.user.contact.email}"/>
                                 </div>
 
                                 <div class="form-group">
                                     <label>Autre Email</label>
                                     <p:inputText class="form-control vr-form-control"
-                                                 value="#{myStudentInfoCtrl.model.student.contact.email2}"/>
+                                                 value="#{myStudentInfoCtrl.model.student.user.contact.email2}"/>
                                 </div>
 
                             </p:tab>

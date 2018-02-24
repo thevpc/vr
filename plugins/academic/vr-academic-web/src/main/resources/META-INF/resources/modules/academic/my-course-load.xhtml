@@ -36,7 +36,7 @@ and open the template in the editor.
                 <div >
                     <p:outputLabel id="buttons">
                         <p:commandButton value="Rafr." icon="vr-form-field vr-form-fixed-width-medium ui-ribbonicon-refresh"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton " ajax="true"
                                          actionListener="#{myCourseLoadCtrl.onRefresh}" update=":listForm"/>
                     </p:outputLabel>
                 </div>
@@ -156,7 +156,7 @@ and open the template in the editor.
                     <div class="table-responsive">
                         <h1><p:outputLabel style="font-weight: bold"
                                            rendered="#{myCourseLoadCtrl.model.currentTeacher ne null}"
-                                           value="#{myCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{myCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{myCourseLoadCtrl.model.stat.val.teacher.situation.name} (#{myCourseLoadCtrl.teacherFilter.periodName}) "/>
+                                           value="#{myCourseLoadCtrl.model.currentTeacher.user.contact.fullName} - #{myCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{myCourseLoadCtrl.model.stat.val.teacher.situation.name} (#{myCourseLoadCtrl.teacherFilter.periodName}) "/>
                         </h1>
                         <p:panelGrid rendered="#{myCourseLoadCtrl.model.currentTeacher ne null}">
                             <p:row>

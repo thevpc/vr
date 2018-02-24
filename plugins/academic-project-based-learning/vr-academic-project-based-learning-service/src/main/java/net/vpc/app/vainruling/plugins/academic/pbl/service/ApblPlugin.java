@@ -5,13 +5,14 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.NameGenerator;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.*;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
+import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.common.strings.StringComparator;
@@ -34,8 +35,8 @@ public class ApblPlugin {
     public static final Comparator<ApblTeacherInfo> APBL_TEACHER_INFO_COMPARATOR = new Comparator<ApblTeacherInfo>() {
         @Override
         public int compare(ApblTeacherInfo o1, ApblTeacherInfo o2) {
-            String s1 = o1.getTeacher().getContact() != null ? o1.getTeacher().resolveFullTitle() : "";
-            String s2 = o2.getTeacher().getContact() != null ? o2.getTeacher().resolveFullTitle() : "";
+            String s1 = o1.getTeacher().resolveFullTitle();
+            String s2 = o2.getTeacher().resolveFullTitle();
             return s1.compareTo(s2);
         }
     };
@@ -43,6 +44,10 @@ public class ApblPlugin {
     private CorePlugin core;
     @Autowired
     private AcademicPlugin academic;
+
+    public static ApblPlugin get(){
+        return VrApp.getBean(ApblPlugin.class);
+    }
 
     public List<ApblTeam> findTeamsByOwner(int sessionId, int userId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -322,7 +327,7 @@ public class ApblPlugin {
                                 AcademicCoursePlan p = academicCourseAssignment.getCoursePlan();
                                 return (p != null && p.getId() == coursePlan.getId()
                                         && String.valueOf(t.getTeacher().getId()).equals(academicCourseAssignment.getDiscriminator())
-                                        && academic.buildCoursePlanLabelsFromString(academicCourseAssignment.getLabels()).contains("Pbl"));
+                                        && VrUtils.splitLabels(academicCourseAssignment.getLabels()).contains("Pbl"));
                             }
 
                             @Override
@@ -389,7 +394,7 @@ public class ApblPlugin {
                 teamsBasedLoad = ApblSessionLoadStrategy.ALL_STUDENTS_COUNT;
             }
 
-            int maxStudents = academic.findStudents(currentSession.getMemberProfiles(), null).size();
+            int maxStudents = academic.findStudents(currentSession.getMemberProfiles(),AcademicStudentStage.ATTENDING, null).size();
             int teamsCount = 0; // may include duplicates
             int teamedStudents = 0; // may include duplicates
             int coachedStudents = 0; // may include duplicates
@@ -599,7 +604,7 @@ public class ApblPlugin {
             for (Integer sessionId : new HashSet<Integer>(Arrays.asList(Utils.toIntArray(sessionIds)))) {
                 ApblSession s = findSession(sessionId);
                 if (s != null) {
-                    for (AcademicStudent ss : academic.findStudents(s.getMemberProfiles(), null)) {
+                    for (AcademicStudent ss : academic.findStudents(s.getMemberProfiles(), AcademicStudentStage.ATTENDING, null)) {
                         ApblStudentInfo r = rows.get(ss.getId());
                         if (r == null) {
                             if (studentFilter == null || studentFilter.accept(ss)) {
@@ -616,8 +621,8 @@ public class ApblPlugin {
         Collections.sort(apblStudentInfos, new Comparator<ApblStudentInfo>() {
             @Override
             public int compare(ApblStudentInfo o1, ApblStudentInfo o2) {
-                String s1 = o1.getStudent().getContact() != null ? o1.getStudent().resolveFullTitle() : "";
-                String s2 = o2.getStudent().getContact() != null ? o2.getStudent().resolveFullTitle() : "";
+                String s1 = o1.getStudent().resolveContact() != null ? o1.getStudent().resolveFullTitle() : "";
+                String s2 = o2.getStudent().resolveContact() != null ? o2.getStudent().resolveFullTitle() : "";
                 return s1.compareTo(s2);
             }
         });
@@ -815,7 +820,7 @@ public class ApblPlugin {
         TeamConstraintsChecker teamConstraintsChecker = new TeamConstraintsChecker(sessionId);
         Map<Integer, AcademicStudent> studentsMap = new HashMap<>();
         Set<Integer> studentsVisited = new HashSet<>();
-        for (AcademicStudent s : academic.findStudents(session.getMemberProfiles(), null)) {
+        for (AcademicStudent s : academic.findStudents(session.getMemberProfiles(),AcademicStudentStage.ATTENDING, null)) {
             studentsMap.put(s.getId(), s);
         }
         HashSet<String> teamNames = new HashSet<>();
@@ -1166,6 +1171,12 @@ public class ApblPlugin {
     public ApblSession findSession(int sessionId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.findById(ApblSession.class, sessionId);
+    }
+
+    public List<ApblProgramSession> findProgramSessionsByCoursePlan(int coursePlan) {
+        return UPA.getPersistenceUnit().createQueryBuilder(ApblProgramSession.class)
+                .byField("courseId",coursePlan)
+                .getResultList();
     }
 
     public List<ApblSession> findAvailableSessions() {

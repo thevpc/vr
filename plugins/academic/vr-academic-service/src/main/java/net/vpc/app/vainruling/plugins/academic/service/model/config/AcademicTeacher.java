@@ -22,7 +22,7 @@ import java.sql.Timestamp;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "contact.fullName")
+@Entity(listOrder = "this.user.contact.fullName")
 @Path("Contact")
 @Properties(
         {
@@ -43,7 +43,6 @@ public class AcademicTeacher {
 
     private int id;
     @Main
-    private AppContact contact;
     private AppUser user;
     private String discipline;
     private AcademicOfficialDiscipline officialDiscipline;
@@ -101,14 +100,6 @@ public class AcademicTeacher {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public AppContact getContact() {
-        return contact;
-    }
-
-    public void setContact(AppContact contact) {
-        this.contact = contact;
     }
 
     public AppUser getUser() {
@@ -209,10 +200,10 @@ public class AcademicTeacher {
 
     @Override
     public String toString() {
-        if (contact != null) {
-            return contact.toString();
+        if (user != null) {
+            return user.toString();
         }
-        return "AcademicTeacher{" + "id=" + id + ", contact=" + contact + '}';
+        return "AcademicTeacher{" + "id=" + id + ", user=" + user + '}';
     }
 
     public String getOtherNames() {
@@ -263,13 +254,18 @@ public class AcademicTeacher {
         this.officialDiscipline = officialDiscipline;
     }
 
+    public AppContact resolveContact(){
+        AppUser c = getUser();
+        return c==null?null: c.getContact();
+    }
+
     public String resolveFullName(){
-        AppContact c = getContact();
+        AppContact c = resolveContact();
         return c==null?String.valueOf(getId()): c.getFullName();
     }
 
     public String resolveFullTitle(){
-        AppContact c = getContact();
+        AppContact c = resolveContact();
         return c==null?String.valueOf(getId()): c.getFullTitle();
     }
 

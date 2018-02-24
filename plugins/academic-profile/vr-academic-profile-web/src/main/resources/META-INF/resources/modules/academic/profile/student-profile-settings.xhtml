@@ -143,7 +143,7 @@ and open the template in the editor.
                                                            for="gender"/>
                                             <div class="col-sm-7">
                                                 <p:selectOneRadio id="gender"
-                                                                  value="#{studentProfileSettingsCtrl.model.student.contact.gender}"
+                                                                  value="#{studentProfileSettingsCtrl.model.student.user.contact.gender}"
                                                                   converter="#{vr.entityObjConverter('AppGender')}">
                                                     <f:selectItems
                                                             value="#{vr.entitySelectItems('AppGender',true,false)}"/>
@@ -655,14 +655,26 @@ and open the template in the editor.
                                     <div class="box-body">
                                         <h:form id="theme1Form" enctype="multipart/form-data">
                                             <div class="form-group">
-                                                <h:outputLabel class="col-sm-3 control-label text-orange" value="Thème"
-                                                               for="theme"/>
+                                                <h:outputLabel class="col-sm-3 control-label text-orange" value="Thème Externe"
+                                                               for="publicTheme"/>
                                                 <div class="col-sm-7">
                                                     <p:selectOneMenu class="form-control vr-form-control"
-                                                                     id="theme"
-                                                                     value="#{studentProfileSettingsCtrl.model.theme}">
+                                                                     id="publicTheme"
+                                                                     value="#{studentProfileSettingsCtrl.model.publicTheme}">
                                                         <f:selectItems
-                                                            value="#{studentProfileSettingsCtrl.model.themes}"/>
+                                                            value="#{studentProfileSettingsCtrl.model.publicThemes}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-orange" value="Thème Interne"
+                                                               for="privateTheme"/>
+                                                <div class="col-sm-7">
+                                                    <p:selectOneMenu class="form-control vr-form-control"
+                                                                     id="privateTheme"
+                                                                     value="#{studentProfileSettingsCtrl.model.privateTheme}">
+                                                        <f:selectItems
+                                                            value="#{studentProfileSettingsCtrl.model.privateThemes}"/>
                                                     </p:selectOneMenu>
                                                 </div>
                                             </div>

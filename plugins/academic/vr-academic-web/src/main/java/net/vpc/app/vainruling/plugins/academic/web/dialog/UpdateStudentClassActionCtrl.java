@@ -13,6 +13,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicForm
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
@@ -58,7 +59,7 @@ public class UpdateStudentClassActionCtrl {
         List<AcademicClass> internshipBoards = ap.findAcademicClasses();
         for (AcademicClass t : internshipBoards) {
             String n = t.getName();
-            items.add(new SelectItem(String.valueOf(t.getId()), n));
+            items.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
         }
         getModel().setClasses(items);
 
@@ -66,7 +67,7 @@ public class UpdateStudentClassActionCtrl {
         List<AppPeriod> periods = core.findNavigatablePeriods();
         for (AppPeriod t : periods) {
             String n = t.getName();
-            items.add(new SelectItem(String.valueOf(t.getId()), n));
+            items.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
         }
         getModel().setPeriods(items);
 
@@ -100,7 +101,7 @@ public class UpdateStudentClassActionCtrl {
                             AcademicStudent st = ap.findStudent(studentId);
                             st.setLastSubscription(period);
                             st.setStage(AcademicStudentStage.GRADUATED);
-                            ap.update(st);
+                            core.save(null,st);
                         }
                     } catch (Exception ex) {
                         log.log(Level.SEVERE, "Error", ex);
@@ -141,10 +142,10 @@ public class UpdateStudentClassActionCtrl {
                             AcademicStudent st = ap.findStudent(studentId);
                             st.setLastSubscription(period);
                             st.setStage(AcademicStudentStage.ELIMINATED);
-                            ap.update(st);
+                            core.save(null,st);
                             AcademicFormerStudent formerStudent = ap.findFormerStudent(studentId);
                             formerStudent.setEliminationReason(getModel().getEliminationReason());
-                            ap.update(formerStudent);
+                            core.save(null,formerStudent);
                         }
                     } catch (Exception ex) {
                         log.log(Level.SEVERE, "Error", ex);
@@ -184,7 +185,7 @@ public class UpdateStudentClassActionCtrl {
                             int studentId = Convert.toInt(studentIdStr, IntegerParserConfig.LENIENT_F);
                             AcademicStudent st = ap.findStudent(studentId);
                             st.setFailureCount(st.getFailureCount()+1);
-                            ap.update(st);
+                            core.save(null,st);
                         }
                     } catch (Exception ex) {
                         log.log(Level.SEVERE, "Error", ex);
@@ -196,7 +197,7 @@ public class UpdateStudentClassActionCtrl {
                 try {
                     for (AcademicStudent st : ap.findStudentsByClass(fromId, getModel().getClassNumber())) {
                         st.setFailureCount(st.getFailureCount()+1);
-                        ap.update(st);
+                        core.save(null,st);
                     }
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);
@@ -234,7 +235,7 @@ public class UpdateStudentClassActionCtrl {
                             ap.updateStudentClass(studentId, getModel().getClassNumber(), cls.getId());
                             AcademicStudent st = ap.findStudent(studentId);
                             st.setLastSubscription(period);
-                            ap.update(st);
+                            core.save(null,st);
                         }
                     } catch (Exception ex) {
                         log.log(Level.SEVERE, "Error", ex);

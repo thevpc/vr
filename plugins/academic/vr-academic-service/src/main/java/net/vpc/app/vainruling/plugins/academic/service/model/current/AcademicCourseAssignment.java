@@ -20,7 +20,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSeme
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "name")
+@Entity(listOrder = "this.name")
 @Path("Education/Load")
 @Properties(
         {
@@ -408,7 +408,7 @@ public class AcademicCourseAssignment {
     public AppContact resolveContact() {
         AcademicTeacher sc = getTeacher();
         if (sc != null) {
-            return sc.getContact();
+            return sc.resolveContact();
         }
         return null;
     }

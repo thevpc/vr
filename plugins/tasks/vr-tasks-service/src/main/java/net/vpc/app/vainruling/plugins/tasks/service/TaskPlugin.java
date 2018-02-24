@@ -12,7 +12,6 @@ import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.InstallDemo;
 import net.vpc.app.vainruling.core.service.plugins.Start;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.plugins.tasks.service.model.*;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
@@ -465,7 +464,7 @@ public class TaskPlugin {
     @Start
     private void startService() {
         for (TodoList findTodoListsByResp : findTodoLists()) {
-            VrApp.getBean(CorePlugin.class).createRight("Custom.Todo." + findTodoListsByResp.getName(), "TODO " + findTodoListsByResp.getName());
+            VrApp.getBean(CorePlugin.class).createRight(TaskPluginSecurity.PREFIX_RIGHT_CUSTOM_TODO + findTodoListsByResp.getName(), "TODO " + findTodoListsByResp.getName());
         }
     }
 

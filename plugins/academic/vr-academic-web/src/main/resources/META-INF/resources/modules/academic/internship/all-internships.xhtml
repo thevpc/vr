@@ -17,6 +17,7 @@ and open the template in the editor.
 </h:head>
 
 <h:body>
+    <!--@elvariable id="allInternshipBoardsCtrl" type="net.vpc.app.vainruling.plugins.academic.web.internship.AllInternshipBoardsCtrl"-->
 
 
     <ui:composition template="#{vr.privateTemplatePath}">
@@ -26,7 +27,7 @@ and open the template in the editor.
                                  /.row
                                 <div class="row">
                                     <p:outputLabel id="buttons">
-                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
                                     </p:outputLabel>
                                 </div>
 
@@ -77,9 +78,9 @@ and open the template in the editor.
                                 </p:commandLink>
                             </p:column>
                             <p:column headerText="Elève Ing" style="width: 10%;"
-                                      sortBy="#{i.internship.student.contact.fullName}"
+                                      sortBy="#{i.internship.student.user.contact.fullName}"
                                     >
-                                <p:outputLabel value="#{i.internship.student.contact.fullName}"/>
+                                <p:outputLabel value="#{i.internship.student.user.contact.fullName}"/>
                             </p:column>
                             <p:column headerText="Entreprise" style="width: 10%;"
                                       sortBy="#{i.internship.company.name}"
@@ -118,9 +119,9 @@ and open the template in the editor.
                                         <p:row>
                                             <p:column><p:outputLabel value="Elève"/></p:column>
                                             <p:column colspan="2"><h:outputText style="width: 100%"
-                                                                                value="#{allInternshipBoardsCtrl.model.internship.student.contact.fullName}"/></p:column>
+                                                                                value="#{allInternshipBoardsCtrl.model.internship.student.user.contact.fullName}"/></p:column>
                                             <p:column colspan="1"><h:outputText style="width: 100%"
-                                                                                value="#{allInternshipBoardsCtrl.model.internship.secondStudent.contact.fullName}"/></p:column>
+                                                                                value="#{allInternshipBoardsCtrl.model.internship.secondStudent.user.contact.fullName}"/></p:column>
                                         </p:row>
                                         <p:row>
                                             <p:column><p:outputLabel value="Intitulé"/></p:column>
@@ -182,7 +183,8 @@ and open the template in the editor.
                                         </p:row>
                                         <p:row>
                                             <p:column><p:outputLabel value="Technologies"/></p:column>
-                                            <p:column colspan="3"><h:outputText style="width: 100%"
+                                            <p:column colspan="3">
+                                            <h:outputText style="width: 100%"
                                                                                 value="#{allInternshipBoardsCtrl.model.internship.technologies}"
                                                     /></p:column>
                                         </p:row>

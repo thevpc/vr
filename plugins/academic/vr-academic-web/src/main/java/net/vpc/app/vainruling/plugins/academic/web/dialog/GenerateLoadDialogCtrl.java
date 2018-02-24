@@ -12,13 +12,11 @@ import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.web.admin.AcademicAdminToolsCtrl;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.mon.AbstractProgressMonitor;
-import net.vpc.common.util.mon.DefaultProgressMonitor;
 import net.vpc.common.util.mon.ProgressMessage;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
@@ -104,7 +102,7 @@ public class GenerateLoadDialogCtrl {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         AppPeriod curr = core.getCurrentPeriod();
         for (AppPeriod period : core.findNavigatablePeriods()) {
-            SelectItem item = new SelectItem(String.valueOf(period.getId()), period.getName());
+            SelectItem item = FacesUtils.createSelectItem(String.valueOf(period.getId()), period.getName());
             //if (!period.isReadOnly()) {
                 getModel().getPeriodItems().add(item);
             //}

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+>
+
+<h:head>
+</h:head>
+
+<h:body>
+
+
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <!--@elvariable id="studentFeedbackCtrl" type="net.vpc.app.vainruling.plugins.academic.teachereval.web.StudentFeedbackCtrl"-->
+    <ui:composition template="#{vr.privateTemplatePath}">
+        <ui:define name="content">
+            <h:form id="listForm">
+                <p:messages id="pageMessages" showDetail="true"/>
+
+                <div>
+                    <p:selectOneMenu value="#{studentFeedbackCtrl.model.periodId}" style="margin-bottom: 20px; margin-right: 20px;">
+                        <p:ajax listener="#{studentFeedbackCtrl.onUpdatePeriod}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
+                        <f:selectItems value="#{studentFeedbackCtrl.model.periods}"/>
+                    </p:selectOneMenu>
+
+                    <p:selectOneMenu value="#{studentFeedbackCtrl.model.selectedFeedback}">
+                        <p:ajax listener="#{studentFeedbackCtrl.onFeedbackChange}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner..." itemValue=""/>
+                        <f:selectItems value="#{studentFeedbackCtrl.model.feedbacks}"/>
+                    </p:selectOneMenu>
+                </div>
+                <p:outputLabel value="Vous n'avez aucune fiche à renseigner"
+                               rendered="#{empty studentFeedbackCtrl.model.rows}"/>
+                <ui:repeat var="r" value="#{studentFeedbackCtrl.model.rows}">
+                    <div>
+                        <div class="table-responsive">
+                            <p:dataTable value="#{r.questions}" var="i" style="margin-top: 20px;">
+                                <p:column headerText="#{r.title}">
+                                    <p:outputLabel value="#{i.response.question.name}"/>
+                                </p:column>
+                                <p:column headerText="" width="30%">
+                                    <h:inputHidden id="txt2" value="#{i.response.response}"/>
+                                    <h:inputHidden id="responseId" value="#{i.response.id}"/>
+                                    <p:slider disabled="true" for="txt2" style="width: 100%" step="1" minValue="0" maxValue="4">
+                                        <p:ajax event="slideEnd" listener="#{studentFeedbackCtrl.onSlideEnd}"
+                                                update="label2"/>
+                                    </p:slider>
+                                    <!--<p:selectOneRadio id="customRadio" value="# {i.response.response}"-->
+                                    <!--style="font-size: xx-small">-->
+                                    <!--<f:selectItem itemLabel="Tout à fait en désaccord" itemValue="1"/>-->
+                                    <!--<f:selectItem itemLabel="Plutot en désaccord" itemValue="2"/>-->
+                                    <!--<f:selectItem itemLabel="Plutot d'accord" itemValue="3"/>-->
+                                    <!--<f:selectItem itemLabel="Tout à fait en accord" itemValue="4"/>-->
+                                    <!--</p:selectOneRadio>-->
+                                </p:column>
+                                <p:column headerText="" width="20%">
+                                    <p:outputLabel id="label2"
+                                                   styleClass="#{vr.mapValue(i.response.response,'','1','label-danger','2','label-warning','3','label-info','4','label-success')}"
+                                                   value="#{vr.mapValue(i.response.response,'Je ne sais pas','1','Tout à fait en désaccord','2','Plutot en désaccord','3','Plutot en accord','4','Tout à fait en accord')}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+                </ui:repeat>
+            </h:form>
+            <style>
+                .ui-slider-handle{
+                    background:var(--vr-color-main12)  !important;
+                }
+            </style>
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>

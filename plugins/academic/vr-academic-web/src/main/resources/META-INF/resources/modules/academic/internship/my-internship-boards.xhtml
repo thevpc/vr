@@ -76,9 +76,9 @@ and open the template in the editor.
                                         </p:commandLink>
                                     </p:column>
                                     <p:column headerText="Elève Ing" style="width: 10%;"
-                                              sortBy="#{i.internship.student.contact.fullName}"
+                                              sortBy="#{i.internship.student.user.contact.fullName}"
                                             >
-                                        <p:outputLabel value="#{i.internship.student.contact.fullName}"/>
+                                        <p:outputLabel value="#{i.internship.student.user.contact.fullName}"/>
                                     </p:column>
                                     <p:column headerText="Entreprise" style="width: 10%;"
                                               sortBy="#{i.internship.company.name}"
@@ -225,9 +225,9 @@ and open the template in the editor.
                                         </p:commandLink>
                                     </p:column>
                                     <p:column headerText="Etud."
-                                              sortBy="#{i.internship.student.contact.fullName}"
+                                              sortBy="#{i.internship.student.user.contact.fullName}"
                                               style="width: 10%;">
-                                        <p:outputLabel value="#{i.internship.student.contact.fullName}"/>
+                                        <p:outputLabel value="#{i.internship.student.user.contact.fullName}"/>
                                     </p:column>
                                     <p:column headerText="Ens."
                                               sortBy="#{i.boardTeacher.teacher.contact.fullName}"
@@ -291,9 +291,9 @@ and open the template in the editor.
                                         <p:row>
                                             <p:column><p:outputLabel value="Elève"/></p:column>
                                             <p:column colspan="2"><p:outputLabel style="width: 100%"
-                                                                                 value="#{myInternshipBoardsCtrl.model.internship.student.contact.fullName}"/></p:column>
+                                                                                 value="#{myInternshipBoardsCtrl.model.internship.student.user.contact.fullName}"/></p:column>
                                             <p:column colspan="1"><p:outputLabel style="width: 100%"
-                                                                                 value="#{myInternshipBoardsCtrl.model.internship.secondStudent.contact.fullName}"/></p:column>
+                                                                                 value="#{myInternshipBoardsCtrl.model.internship.secondStudent.user.contact.fullName}"/></p:column>
                                         </p:row>
                                         <p:row>
                                             <p:column><p:outputLabel value="Intitulé"/></p:column>

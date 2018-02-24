@@ -20,9 +20,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherPeriodStat;
 import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherSemesterStat;
-import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilterAnd;
-import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
-import net.vpc.app.vainruling.plugins.academic.service.util.TeacherFilterFactory;
+import net.vpc.app.vainruling.plugins.academic.service.util.*;
 import net.vpc.common.io.PathInfo;
 import net.vpc.common.strings.MapStringConverter;
 import net.vpc.common.strings.StringUtils;
@@ -126,7 +124,7 @@ public class TeacherGenerationHelper {
                 requestedContents.addAll(Arrays.asList(GeneratedContent.values()));
             }
             boolean writeVars = requestedContents.contains(GeneratedContent.Vars);
-            TeacherFilter teacherIdsFilter = TeacherFilterFactory.teacherIds(teacherIds);
+            TeacherPeriodFilter teacherIdsFilter = TeacherFilterFactory.teacherIds(teacherIds);
             String teacherAssignments_template = templateFolder + "/teacher-assignments-template.xls";
             String teacherAssignments_filename = outputFolder + File.separator + outputNamePattern.replace("*", "teacher-assignments") + ".xls";
             PathInfo uu = PathInfo.create(teacherAssignments_filename);
@@ -283,7 +281,7 @@ public class TeacherGenerationHelper {
                 int count = count0;
                 for (TeacherPeriodStat st : stats) {
                     monitor.setProgress(count,stats.length);
-                    copy.copySheet(0, AppContact.getName(st.getTeacher().getContact()), count);
+                    copy.copySheet(0, AppContact.getName(st.getTeacher().resolveContact()), count);
                     WritableSheet sheet2 = copy.getSheet(count);
 //                    sheet2.setName(st.getTeacher().getName());
                     ExcelTemplate.generateExcelSheet(sheet2, preparePrintableTeacherLoadProperties(periodId, st));
@@ -479,9 +477,9 @@ public class TeacherGenerationHelper {
         if (period != null) {
             p.put("period.name", period.getName());
         }
-        p.put("teacher.name", AppContact.getName(t.getContact()));
-        p.put("teacher.firstName", t.getContact().getFirstName());
-        p.put("teacher.lastName", t.getContact().getLastName());
+        p.put("teacher.name", AppContact.getName(t.resolveContact()));
+        p.put("teacher.firstName", t.resolveContact().getFirstName());
+        p.put("teacher.lastName", t.resolveContact().getLastName());
         AcademicTeacherPeriod academicTeacherPeriod = academicPlugin.findAcademicTeacherPeriod(periodId, tal);
         AcademicTeacherDegree degree = academicTeacherPeriod.getDegree();
         p.put("teacher.degree", degree == null ? null : degree.getName());
@@ -576,9 +574,9 @@ public class TeacherGenerationHelper {
             p.put("department.name3", department.getName3());
         }
         if (headOfDepartment != null) {
-            p.put("head-of-department.name", AppContact.getName(headOfDepartment.getContact()));
-            p.put("head-of-department.firstName", headOfDepartment.getContact().getFirstName());
-            p.put("head-of-department.lastName", headOfDepartment.getContact().getLastName());
+            p.put("head-of-department.name", AppContact.getName(headOfDepartment.resolveContact()));
+            p.put("head-of-department.firstName", headOfDepartment.resolveContact().getFirstName());
+            p.put("head-of-department.lastName", headOfDepartment.resolveContact().getLastName());
         } else {
             p.put("head-of-department.name", "Unknown");
             p.put("head-of-department.firstName", "Unknown");
@@ -609,7 +607,7 @@ public class TeacherGenerationHelper {
         int max=stats.length;
         for (TeacherPeriodStat st : stats) {
             monitor.setProgress(i++,max);
-            String pp = soutput.replace("*", AppContact.getName(st.getTeacher().getContact()));
+            String pp = soutput.replace("*", AppContact.getName(st.getTeacher().resolveContact()));
             VFile f2 = core.getRootFileSystem().get(pp);
             f2.getParentFile().mkdirs();
             Map<String, Object> p = preparePrintableTeacherLoadProperties(periodId, st);
@@ -831,7 +829,7 @@ public class TeacherGenerationHelper {
         }
         AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
         p.put(prefix + "teacher.name", c.getTeacher() == null ? null : academicPlugin.getValidName(c.getTeacher()));
-        p.put(prefix + "teacher.name2", (c.getTeacher() == null || c.getTeacher().getContact() == null) ? null : c.getTeacher().getContact().getFullName2());
+        p.put(prefix + "teacher.name2", (c.getTeacher() == null || c.getTeacher().resolveContact() == null) ? null : c.getTeacher().resolveContact().getFullName2());
         p.put(prefix + "teacher.discipline", c.getTeacher() == null ? null : c.getTeacher().getDiscipline());
     }
 

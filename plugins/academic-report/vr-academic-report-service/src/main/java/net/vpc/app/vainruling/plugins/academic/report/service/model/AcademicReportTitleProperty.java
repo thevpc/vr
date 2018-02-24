@@ -12,7 +12,7 @@ import net.vpc.upa.config.*;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "propertyName")
+@Entity(listOrder = "this.propertyName")
 @Path("Education/Evaluation")
 public class AcademicReportTitleProperty {
 

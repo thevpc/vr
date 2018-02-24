@@ -168,8 +168,8 @@ public class AcademicAppMyTeamsCtrl {
         ArrayList<SelectItem> teamItems = new ArrayList<>();
         if (currentUser != null) {
             for (ApblTeam apblTeam : apbl.findOpenTeamsByUser(currentUser.getId(),true,false)) {
-                teamItems.add(new SelectItem(
-                        apblTeam.getId(),
+                teamItems.add(FacesUtils.createSelectItem(
+                        String.valueOf(apblTeam.getId()),
                         apblTeam.getName()
                 ));
             }

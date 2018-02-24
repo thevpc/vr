@@ -28,7 +28,7 @@ and open the template in the editor.
                                  /.row
                                 <div class="row">
                                     <p:outputLabel id="buttons">
-                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
                                     </p:outputLabel>
                                 </div>
 
@@ -75,6 +75,7 @@ and open the template in the editor.
                                 </p:column>
                                 <p:column headerText="" width="20%">
                                     <p:outputLabel id="label2"
+                                                   styleClass="#{vr.mapValue(i.response.response,'','1','label-danger','2','label-warning','3','label-info','4','label-success')}"
                                                    value="#{vr.mapValue(i.response.response,'Je ne sais pas','1','Tout à fait en désaccord','2','Plutot en désaccord','3','Plutot en accord','4','Tout à fait en accord')}"/>
                                 </p:column>
                             </p:dataTable>
@@ -85,9 +86,11 @@ and open the template in the editor.
                     <div class="row" style="margin-left: 0px;margin-top: 20px;">
                         <p:commandButton value="Enregistrer Brouillon"
                                          class="btn btn-default"
+                                         rendered="#{!studentFeedbackCtrl.model.feedback.validated}"
                                          action="#{studentFeedbackCtrl.onSave}" update=":listForm"/>
                         <p:commandButton style="margin-left: 10px;" value="Enregistrer et Valider"
                                          class="btn btn-primary"
+                                         rendered="#{!studentFeedbackCtrl.model.feedback.validated}"
                                          action="#{studentFeedbackCtrl.onSaveAndValidate}" update="listForm"/>
                     </div>
                 </ui:fragment>

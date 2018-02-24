@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.plugins.inbox.service;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
@@ -33,10 +34,7 @@ import net.vpc.common.io.OutputStreamSource;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VirtualFileSystem;
-import net.vpc.upa.Action;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.UPA;
-import net.vpc.upa.VoidAction;
+import net.vpc.upa.*;
 import net.vpc.upa.types.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -45,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,6 +52,7 @@ import java.util.logging.Logger;
  */
 @AppPlugin
 public class MailboxPlugin {
+    public static final String SEND_EXTERNAL_MAIL_QUEUE = "sendExternalMailQueue";
 
     //    public void
     public static final String HEADER_THREAD_ID = "header.X-Thread";
@@ -91,28 +91,35 @@ public class MailboxPlugin {
     @Start
     private void start() {
         VrApp.getBean(VrNotificationManager.class).register(SEND_WELCOME_MAIL_QUEUE, SEND_WELCOME_MAIL_QUEUE, 200);
+        VrApp.getBean(VrNotificationManager.class).register(SEND_EXTERNAL_MAIL_QUEUE, SEND_EXTERNAL_MAIL_QUEUE, 200);
     }
 
     @Install
     private void installService() {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        core.createRight("Custom.Site.Mailbox", "Mailbox");
+        core.createRight(MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX, "Mailbox");
         HashSet<String> goodProfiles = new HashSet<String>(Arrays.asList(
-                "Teacher", "HeadOfDepartment", "DirectorOfStudies", "Director", "Student"
+                "LocalMailUser", "HeadOfDepartment", "DirectorOfStudies", "Director", "Student"
         ));
+        PersistenceUnit pu = UPA.getPersistenceUnit();
         for (AppProfile prof : core.findProfiles()) {
             if (goodProfiles.contains(prof.getName())) {
-                core.addProfileRight(prof.getId(), "Custom.Site.Mailbox");
-                core.addProfileRight(prof.getId(), "MailboxReceived.Load");
-                core.addProfileRight(prof.getId(), "MailboxReceived.Persist");
-                core.addProfileRight(prof.getId(), "MailboxReceived.Update");
-                core.addProfileRight(prof.getId(), "MailboxReceived.Remove");
-                core.addProfileRight(prof.getId(), "MailboxReceived.Navigate");
-                core.addProfileRight(prof.getId(), "MailboxSent.Load");
-                core.addProfileRight(prof.getId(), "MailboxSent.Persist");
-                core.addProfileRight(prof.getId(), "MailboxSent.Update");
-                core.addProfileRight(prof.getId(), "MailboxSent.Remove");
-                core.addProfileRight(prof.getId(), "MailboxSent.Navigate");
+                core.addProfileRight(prof.getId(), MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX);
+                for (String entityName : new String[]{"MailboxReceived","MailboxSent"}) {
+                    Entity entity=pu.getEntity(entityName);
+                    for (String right : CorePluginSecurity.getEntityRights(
+                            entity,
+                            true,
+                            true,
+                            true,
+                            false,
+                            false
+                    )) {
+                        if(!CorePluginSecurity.getEntityRightEditor(entity).equals(right)) {
+                            core.addProfileRight(prof.getId(), right);
+                        }
+                    }
+                }
             }
         }
 
@@ -154,7 +161,7 @@ public class MailboxPlugin {
                     + " <p>Restez connectés sur http://www.eniso.info </p>");
             w.setFooterEmbeddedImage("/Config/VisualIdentity/Institution.jpg");
             w.setPreferFormattedText(true);
-            UPA.getPersistenceUnit().persist(w);
+            pu.persist(w);
         }
         {
             MailboxMessageFormat m = new MailboxMessageFormat();
@@ -207,6 +214,8 @@ public class MailboxPlugin {
             m.setFooterEmbeddedImage("/Config/VisualIdentity/Institution.jpg");
             core.findOrCreate(m);
         }
+        core.createRight(MailboxPluginSecurity.RIGHT_CUSTOM_ARTICLE_SEND_EXTERNAL_EMAIL, "Send External Email");
+        core.createRight(MailboxPluginSecurity.RIGHT_CUSTOM_ARTICLE_SEND_INTERNAL_EMAIL, "Send Internal Email");
     }
 
     public boolean markRead(int mailboxReceivedId, boolean read) {
@@ -872,7 +881,7 @@ public class MailboxPlugin {
 
     public void prepareSender(GoMail email) {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        email.from((String) core.getOrCreateAppPropertyValue("System.Email.Default.From", null, "enisovr.admin@gmail.com"));
+        email.from((String) core.getOrCreateAppPropertyValue("System.Email.Default.From", null, "vr.admin@gmail.com"));
         email.setCredentials(
                 (String) core.getOrCreateAppPropertyValue("System.Email.Default.Credentials.User", null, "enisovr.admin"),
                 (String) core.getOrCreateAppPropertyValue("System.Email.Default.Credentials.Password", null, "enisovr")
@@ -1062,7 +1071,7 @@ public class MailboxPlugin {
         if (obj == null) {
             return;
         }
-        if (!UPA.getPersistenceGroup().getSecurityManager().isAllowedKey("Custom.Article.SendExternalEmail")) {
+        if (!UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(MailboxPluginSecurity.RIGHT_CUSTOM_ARTICLE_SEND_EXTERNAL_EMAIL)) {
             return;
         }
         SendExternalMailConfig c = VrUtils.parseJSONObject(config, SendExternalMailConfig.class);
@@ -1111,15 +1120,15 @@ public class MailboxPlugin {
 
                     @Override
                     public void onAfterSend(GoMailMessage mail) {
-                        VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(CorePlugin.SEND_EXTERNAL_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject(), null, Level.INFO));
+                        VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_EXTERNAL_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject(), null, Level.INFO));
                     }
 
                     @Override
                     public void onSendError(GoMailMessage mail, Throwable exc) {
-                        VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(CorePlugin.SEND_EXTERNAL_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject() + " : " + exc, null, Level.SEVERE));
+                        VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_EXTERNAL_MAIL_QUEUE, 60, null, "to:" + mail.to() + " ; " + mail.subject() + " : " + exc, null, Level.SEVERE));
                     }
                 });
-                VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(CorePlugin.SEND_EXTERNAL_MAIL_QUEUE, 60, null, "Send Finished", null, Level.INFO));
+                VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_EXTERNAL_MAIL_QUEUE, 60, null, "Send Finished", null, Level.INFO));
 
             } catch (IOException ex) {
                 Logger.getLogger(CorePlugin.class.getName()).log(Level.SEVERE, null, ex);
@@ -1134,7 +1143,7 @@ public class MailboxPlugin {
         if (obj == null) {
             return;
         }
-        if (!UPA.getPersistenceGroup().getSecurityManager().isAllowedKey("Custom.Article.SendInternalEmail")) {
+        if (!UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(MailboxPluginSecurity.RIGHT_CUSTOM_ARTICLE_SEND_INTERNAL_EMAIL)) {
             return;
         }
         ArticlesItem a = obj;

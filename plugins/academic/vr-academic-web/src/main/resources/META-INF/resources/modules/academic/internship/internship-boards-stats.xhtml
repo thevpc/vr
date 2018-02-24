@@ -28,7 +28,7 @@ and open the template in the editor.
                                  /.row
                                 <div class="row">
                                     <p:outputLabel id="buttons">
-                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
                                     </p:outputLabel>
                                 </div>
 
@@ -54,7 +54,7 @@ and open the template in the editor.
                         <f:selectItem itemLabel="Selectionner Type Stage..." itemValue=""/>
                         <f:selectItems value="#{internshipBoardsStatsCtrl.model.internshipTypes}"/>
                     </p:selectOneMenu>
-                    <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
+                    <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
                 </div>
 
 
@@ -64,7 +64,7 @@ and open the template in the editor.
                                             <f:selectItem itemLabel="Selectionner Stage..." itemValue="" />
                                             <f:selectItems value="# {internshipBoardsStatsCtrl.model.internshipItems}" />
                                         </p:selectOneMenu>
-                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>
+                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>
                                     </div>-->
                 <p:tabView>
                     <p:tab title="Etat">
@@ -138,7 +138,7 @@ and open the template in the editor.
                                                            value="#{di.userValue.get(0).code}"
                                             />
                                             <p:tooltip for="go1"
-                                                       value="#{di.userValue.get(0).student.contact.fullName}"/>
+                                                       value="#{di.userValue.get(0).student.user.contact.fullName}"/>
                                         </p:column>
                                     </p:dataTable>
                                 </div>
@@ -177,7 +177,7 @@ and open the template in the editor.
                                                            value="#{di.userValue.get(0).code}"
                                             />
                                             <p:tooltip for="go2"
-                                                       value="#{di.userValue.get(0).student.contact.fullName}"/>
+                                                       value="#{di.userValue.get(0).student.user.contact.fullName}"/>
                                         </p:column>
                                     </p:dataTable>
                                 </div>
@@ -242,7 +242,7 @@ and open the template in the editor.
                                                            value="#{di.userValue.get(0).code}"
                                             />
                                             <p:tooltip for="go3"
-                                                       value="#{di.userValue.get(0).student.contact.fullName}"/>
+                                                       value="#{di.userValue.get(0).student.user.contact.fullName}"/>
                                         </p:column>
                                     </p:dataTable>
                                 </div>
@@ -281,7 +281,7 @@ and open the template in the editor.
                                                            value="#{di.userValue.get(0).code}"
                                             />
                                             <p:tooltip for="go"
-                                                       value="#{di.userValue.get(0).student.contact.fullName}"/>
+                                                       value="#{di.userValue.get(0).student.user.contact.fullName}"/>
                                         </p:column>
                                     </p:dataTable>
                                 </div>
@@ -314,7 +314,7 @@ and open the template in the editor.
                                                            value="#{di.userValue.get(0).code}"
                                             />
                                             <p:tooltip for="go4"
-                                                       value="#{di.userValue.get(0).student.contact.fullName}"/>
+                                                       value="#{di.userValue.get(0).student.user.contact.fullName}"/>
                                         </p:column>
                                     </p:dataTable>
                                 </div>

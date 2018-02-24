@@ -8,12 +8,10 @@ package net.vpc.app.vainruling.plugins.equipments.service.security;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.security.UserToken;
+import net.vpc.app.vainruling.plugins.equipments.service.EquipmentPluginHelper;
 import net.vpc.app.vainruling.plugins.equipments.service.model.Equipment;
-import net.vpc.upa.DefaultEntitySecurityManager;
-import net.vpc.upa.Document;
-import net.vpc.upa.Entity;
+import net.vpc.upa.*;
 import net.vpc.upa.config.SecurityContext;
 
 /**
@@ -48,7 +46,10 @@ public class EquipmentSecurer extends DefaultEntitySecurityManager {
                     if (d.getId() == d2.getId()) {
                         return true;
                     }
+                    EquipmentPluginHelper.ensureCreatedEquipmentDepartmentUpdateRight(d);
+                    return core.isCurrentAllowed(EquipmentPluginHelper.getEquipmentDepartmentUpdateRight(d));
                 }
+
             }
         }
         return false;

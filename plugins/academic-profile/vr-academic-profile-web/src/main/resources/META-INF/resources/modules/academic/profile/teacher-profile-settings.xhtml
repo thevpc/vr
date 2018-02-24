@@ -522,14 +522,26 @@
                                     <div class="box-body">
                                         <h:form id="theme1Form" enctype="multipart/form-data">
                                             <div class="form-group">
-                                                <h:outputLabel class="col-sm-3 control-label text-orange" value="Thème"
-                                                               for="theme"/>
+                                                <h:outputLabel class="col-sm-3 control-label text-orange" value="Thème Externe"
+                                                               for="publicTheme"/>
                                                 <div class="col-sm-7">
                                                     <p:selectOneMenu class="form-control vr-form-control"
-                                                                     id="theme"
-                                                                     value="#{teacherProfileSettingsCtrl.model.theme}">
+                                                                     id="publicTheme"
+                                                                     value="#{teacherProfileSettingsCtrl.model.publicTheme}">
                                                         <f:selectItems
-                                                            value="#{teacherProfileSettingsCtrl.model.themes}"/>
+                                                            value="#{teacherProfileSettingsCtrl.model.publicThemes}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <h:outputLabel class="col-sm-3 control-label text-orange" value="Thème Interne"
+                                                               for="privateTheme"/>
+                                                <div class="col-sm-7">
+                                                    <p:selectOneMenu class="form-control vr-form-control"
+                                                                     id="privateTheme"
+                                                                     value="#{teacherProfileSettingsCtrl.model.privateTheme}">
+                                                        <f:selectItems
+                                                            value="#{teacherProfileSettingsCtrl.model.privateThemes}"/>
                                                     </p:selectOneMenu>
                                                 </div>
                                             </div>

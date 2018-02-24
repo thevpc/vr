@@ -10,7 +10,6 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.MirroredPath;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
@@ -18,6 +17,7 @@ import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.*;
@@ -59,7 +59,7 @@ import java.util.logging.Logger;
 //        css = "fa-table",
 //        title = "Mes Comités de Stage",
         menu = "/Education/Projects/Internships",
-        securityKey = "Custom.Education.MyInternshipBoards",
+        securityKey = AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_INTERNSHIP_BOARDS,
         url = "modules/academic/internship/my-internship-boards"
 )
 public class MyInternshipBoardsCtrl {
@@ -355,7 +355,7 @@ public class MyInternshipBoardsCtrl {
         AcademicInternshipExtList internships = new AcademicInternshipExtList();
         List<AcademicInternshipBoard> internshipBoards = new ArrayList<>();
         for (AppPeriod period : core.findNavigatablePeriods()) {
-            getModel().getPeriods().add(new SelectItem(String.valueOf(period.getId()), period.getName()));
+            getModel().getPeriods().add(FacesUtils.createSelectItem(String.valueOf(period.getId()), period.getName()));
         }
 
         if (currentTeacher != null) {
@@ -381,7 +381,7 @@ public class MyInternshipBoardsCtrl {
 
         for (AcademicInternshipBoard t : internshipBoards) {
             String n = t.getName();
-            getModel().getBoards().add(new SelectItem(String.valueOf(t.getId()), n));
+            getModel().getBoards().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
         }
 
         AcademicPlugin pp = VrApp.getBean(AcademicPlugin.class);
@@ -392,7 +392,7 @@ public class MyInternshipBoardsCtrl {
             AcademicStudent s = t.getInternship().getStudent();
             String sname = pp.getValidName(s);
             n = (t.getInternship().getBoard() == null ? "?" : t.getInternship().getBoard().getName()) + "-" + t.getInternship().getCode() + "-" + sname + "-" + t.getInternship().getName();
-            internshipItemsToAddTo.add(new SelectItem(String.valueOf(t.getInternship().getId()), n));
+            internshipItemsToAddTo.add(FacesUtils.createSelectItem(String.valueOf(t.getInternship().getId()), n));
             internshipInfosToAddTo.add(new AcademicInternshipInfo(t, getCurrentTeacher()));
 //            System.out.println(t);
         }
@@ -414,11 +414,11 @@ public class MyInternshipBoardsCtrl {
         getModel().setBoardManager(false);
 
         for (AppCompany t : c.findCompanies()) {
-            getModel().getCompanies().add(new SelectItem(String.valueOf(t.getId()), t.getName()));
+            getModel().getCompanies().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), t.getName()));
         }
 
         for (AcademicInternshipType t : pi.findInternshipTypes()) {
-            getModel().getInternshipTypes().add(new SelectItem(String.valueOf(t.getId()), t.getName()));
+            getModel().getInternshipTypes().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), t.getName()));
         }
         getModel().setFilterInternshipTypeVisible(StringUtils.isEmpty(getModel().getBoardId()));
 
@@ -532,7 +532,7 @@ public class MyInternshipBoardsCtrl {
                         countSuffix += " (" + s1 + "<" + s2 + ")";
                     }
                 }
-                getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), n + countSuffix));
+                getModel().getTeachers().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n + countSuffix));
             }
 
             data = VrUtils.reverseSortCount(data);
@@ -620,15 +620,15 @@ public class MyInternshipBoardsCtrl {
             AcademicInternshipType internshipType = getModel().getInternship().getBoard().getInternshipType();
             for (AcademicInternshipVariant t : pi.findInternshipVariantsByType(internshipType.getId())) {
                 String n = t.getName();
-                getModel().getTypeVariants().add(new SelectItem(String.valueOf(t.getId()), n));
+                getModel().getTypeVariants().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
             }
             for (AcademicInternshipDuration t : pi.findInternshipDurationsByType(internshipType.getId())) {
                 String n = t.getName();
-                getModel().getDurations().add(new SelectItem(String.valueOf(t.getId()), n));
+                getModel().getDurations().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
             }
             for (AcademicInternshipStatus t : pi.findInternshipStatusesByType(internshipType.getId())) {
                 String n = t.getName();
-                getModel().getInternshipStatuses().add(new SelectItem(String.valueOf(t.getId()), n));
+                getModel().getInternshipStatuses().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
             }
             getModel().setBoardTeachers(pi.findInternshipTeachersByBoard(getModel().getInternship().getBoard().getId()));
             getModel().setBoardMessages(pi.findInternshipMessagesByInternship(getModel().getInternship().getId()));

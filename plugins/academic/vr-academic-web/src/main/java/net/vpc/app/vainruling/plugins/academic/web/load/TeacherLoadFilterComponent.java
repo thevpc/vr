@@ -9,7 +9,7 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
-import net.vpc.app.vainruling.plugins.academic.service.util.DefaultTeacherFilter;
+import net.vpc.app.vainruling.plugins.academic.service.util.DefaultTeacherPeriodFilter;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 
@@ -58,7 +58,7 @@ public class TeacherLoadFilterComponent {
         getModel().setSelectedPeriod(null);
         getModel().getPeriodItems().clear();
         for (AppPeriod p : navigatablePeriods) {
-            getModel().getPeriodItems().add(new SelectItem(String.valueOf(p.getId()), p.getName()));
+            getModel().getPeriodItems().add(FacesUtils.createSelectItem(String.valueOf(p.getId()), p.getName()));
             if (mainPeriod != null && p.getId() == mainPeriod.getId()) {
                 getModel().setSelectedPeriod(String.valueOf(p.getId()));
             }
@@ -95,8 +95,8 @@ public class TeacherLoadFilterComponent {
 
     }
 
-    public DefaultTeacherFilter getTeacherFilter() {
-        DefaultTeacherFilter defaultTeacherFilter = new DefaultTeacherFilter();
+    public DefaultTeacherPeriodFilter getTeacherFilter() {
+        DefaultTeacherPeriodFilter defaultTeacherFilter = new DefaultTeacherPeriodFilter();
         for (String s : getModel().getSelectedDegrees()) {
             defaultTeacherFilter.addAcceptedDegree(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
         }

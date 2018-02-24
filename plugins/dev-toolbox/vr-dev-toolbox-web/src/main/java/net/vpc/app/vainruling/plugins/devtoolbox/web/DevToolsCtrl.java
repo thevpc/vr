@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.devtoolbox.web;
 
+import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Document;
@@ -20,7 +21,7 @@ import java.util.*;
  */
 @VrController(
         //title = "Developer Tools", css = "fa-dashboard",
-        url = "modules/devtoolbox/dev-ql", menu = "/Admin", securityKey = "Custom.DevTools"
+        url = "modules/devtoolbox/dev-ql", menu = "/Admin", securityKey = CorePluginSecurity.RIGHT_CUSTOM_DEV_TOOLS
 )
 @Scope(value = "session")
 public class DevToolsCtrl {

@@ -77,7 +77,7 @@ public class SendExternalMailActionCtrl {
     }
 
     public void startExec() {
-        VrApp.getBean(VrNotificationSession.class).clear(CorePlugin.SEND_EXTERNAL_MAIL_QUEUE);
+        VrApp.getBean(VrNotificationSession.class).clear(MailboxPlugin.SEND_EXTERNAL_MAIL_QUEUE);
         SendExternalMailConfig c = new SendExternalMailConfig();
         c.setEmailType((RecipientType) getModel().getEmailType().getValue());
         Object value = getModel().getMailboxMessageFormat().getValue();
@@ -106,7 +106,7 @@ public class SendExternalMailActionCtrl {
     }
 
     public void fireEventExtraDialogClosed() {
-        VrApp.getBean(VrNotificationSession.class).clear(CorePlugin.SEND_EXTERNAL_MAIL_QUEUE);
+        VrApp.getBean(VrNotificationSession.class).clear(MailboxPlugin.SEND_EXTERNAL_MAIL_QUEUE);
         RequestContext.getCurrentInstance().closeDialog(null);
     }
 
@@ -146,7 +146,7 @@ public class SendExternalMailActionCtrl {
         private PropertyView mailboxMessageFormat;
 
         public List<VrNotificationEvent> getEvents() {
-            List<VrNotificationEvent> evts = VrApp.getBean(VrNotificationSession.class).findAll(CorePlugin.SEND_EXTERNAL_MAIL_QUEUE);
+            List<VrNotificationEvent> evts = VrApp.getBean(VrNotificationSession.class).findAll(MailboxPlugin.SEND_EXTERNAL_MAIL_QUEUE);
             if (errorsOnly) {
                 for (Iterator<VrNotificationEvent> i = evts.iterator(); i.hasNext(); ) {
                     VrNotificationEvent v = i.next();

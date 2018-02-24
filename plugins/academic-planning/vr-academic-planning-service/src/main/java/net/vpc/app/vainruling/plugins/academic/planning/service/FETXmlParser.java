@@ -1,6 +1,5 @@
 package net.vpc.app.vainruling.plugins.academic.planning.service;
 
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.Closeable;
 import org.w3c.dom.Document;
@@ -22,16 +21,17 @@ public class FETXmlParser implements Closeable {
     private String tagName;
     private NodeList nList;
     private InputStream inputStream;
-    private int pos=-1;
+    private int pos = -1;
 
-    public FETXmlParser(VFile p, String tagName,String sourceName) {
+    public FETXmlParser(VFile p, String tagName, String sourceName) {
         this.p = p;
         this.sourceName = sourceName;
         this.tagName = tagName;
     }
-    public CalendarWeekParser next(){
+
+    public CalendarWeekParser next() {
         try {
-            if(nList==null) {
+            if (nList == null) {
                 DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
                 inputStream = p.getInputStream();
@@ -40,7 +40,7 @@ public class FETXmlParser implements Closeable {
                 doc.getDocumentElement().normalize();
 
                 nList = doc.getElementsByTagName(tagName);
-                pos=0;
+                pos = 0;
             }
             while (pos < nList.getLength()) {
                 Node nNode = nList.item(pos);
@@ -48,7 +48,7 @@ public class FETXmlParser implements Closeable {
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode;
                     String tn = eElement.getAttribute("name");
-                    return new CalendarWeekParser(tn.trim(),sourceName,nNode);
+                    return new CalendarWeekParser(tn.trim(), sourceName, nNode);
                 }
             }
             close();
@@ -61,7 +61,7 @@ public class FETXmlParser implements Closeable {
 
     @Override
     public void close() {
-        if(inputStream!=null){
+        if (inputStream != null) {
             try {
                 inputStream.close();
             } catch (IOException e) {

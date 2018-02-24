@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.plugins.equipments.web;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.plugins.equipments.service.EquipmentPluginSecurity;
 
 import javax.annotation.PostConstruct;
 
@@ -18,7 +19,7 @@ import javax.annotation.PostConstruct;
         breadcrumb = {
                 @UPathItem(title = "Site", css = "fa-dashboard", ctrl = "")},
         url = "modules/equipments/maintenance",
-        securityKey = "Custom.Equipment.EquipmentMaintenance"
+        securityKey = EquipmentPluginSecurity.RIGHT_CUSTOM_EQUIPMENT_EQUIPMENT_MAINTENANCE
 )
 public class EquipmentMaintenanceCtrl {
 

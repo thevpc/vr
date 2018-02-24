@@ -34,76 +34,76 @@ and open the template in the editor.
                 <div >
                     <p:outputLabel id="buttons">
                         <p:commandButton value="Rafr." rendered="#{todoCtrl.isEnabledButton('Refresh')}"
-                                         icon="a-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws btn btn-default" ajax="true"
+                                         icon="a-refresh" styleClass="ui-ribbon-bigbutton  btn btn-default" ajax="true"
                                          actionListener="#{todoCtrl.onRefresh}" update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Nouv." rendered="#{todoCtrl.isEnabledButton('New')}" icon="fa-plus"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws btn btn-primary" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton  btn btn-primary" ajax="true"
                                          actionListener="#{todoCtrl.onNew}" update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Enreg." rendered="#{todoCtrl.isEnabledButton('Save')}"
-                                         icon="ui-ribbonicon-save" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-save" styleClass="ui-ribbon-bigbutton "
                                          ajax="true" onclick="processOnSaveCurrent()"
                                          update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Supp." rendered="#{todoCtrl.isEnabledButton('Remove')}"
-                                         icon="ui-ribbonicon-del" styleClass="ui-ribbon-bigbutton vr-icon-aws btn btn-danger"
+                                         icon="ui-ribbonicon-del" styleClass="ui-ribbon-bigbutton  btn btn-danger"
                                          ajax="true" onclick="PF('confirmationDelete').show();"
                                          update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Arch." rendered="#{todoCtrl.isEnabledButton('Archive')}"
-                                         icon="ui-ribbonicon-arch" styleClass="ui-ribbon-bigbutto vr-icon-aws"
+                                         icon="ui-ribbonicon-arch" styleClass="ui-ribbon-bigbutto "
                                          ajax="true" onclick="processOnArchiveCurrent()"
                                          update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Ann." rendered="#{todoCtrl.isEnabledButton('Cancel')}"
-                                         icon="fa-arrow-left" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"
+                                         icon="fa-arrow-left" styleClass="ui-ribbon-bigbutton " ajax="true"
                                          actionListener="#{todoCtrl.onCancelCurrent}"
                                          update="buttons :listForm :itemForm"/>
 
                         <p:commandButton value="Ann." rendered="#{todoCtrl.isEnabledButton('Assign')}"
-                                         icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton "
                                          ajax="true" actionListener="#{todoCtrl.onAssignCurrent}"
                                          update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Ann." rendered="#{todoCtrl.isEnabledButton('Unassign')}"
-                                         icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton "
                                          ajax="true" actionListener="#{todoCtrl.onUnassignCurrent}"
                                          update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Ann." rendered="#{todoCtrl.isEnabledButton('Done')}"
-                                         icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton "
                                          ajax="true" actionListener="#{todoCtrl.onDoneCurrent}"
                                          update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Ann." rendered="#{todoCtrl.isEnabledButton('Verify')}"
-                                         icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton "
                                          ajax="true" actionListener="#{todoCtrl.onVerifyCurrent}"
                                          update="buttons :listForm :itemForm"/>
 
                         <p:commandButton value="Cop." rendered="#{todoCtrl.isEnabledButton('Copy')}"
-                                         icon="ui-ribbonicon-copy" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-copy" styleClass="ui-ribbon-bigbutton "
                                          update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Coll." rendered="#{todoCtrl.isEnabledButton('Paste')}"
-                                         icon="ui-ribbonicon-paste" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-paste" styleClass="ui-ribbon-bigbutton "
                                          update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Coup." rendered="#{todoCtrl.isEnabledButton('Cut')}"
-                                         icon="ui-ribbonicon-cut" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-cut" styleClass="ui-ribbon-bigbutton "
                                          update="buttons :listForm :itemForm"/>
 
                         <p:commandButton value="impr." rendered="#{todoCtrl.isEnabledButton('Print')}"
-                                         icon="ui-ribbonicon-print" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-print" styleClass="ui-ribbon-bigbutton "
                                          update="buttons :listForm :itemForm"/>
 
                         <p:commandButton value="imp." rendered="#{todoCtrl.isEnabledButton('Import')}"
-                                         icon="ui-ribbonicon-import" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-import" styleClass="ui-ribbon-bigbutton "
                                          update="buttons :listForm :itemForm"/>
                         <p:commandButton value="csv" rendered="#{todoCtrl.isEnabledButton('Export-csv')}"
-                                         icon="ui-ribbonicon-csv" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-csv" styleClass="ui-ribbon-bigbutton "
                                          update="buttons :listForm :itemForm"/>
                         <p:commandButton value="xls" rendered="#{todoCtrl.isEnabledButton('Export-xls')}"
-                                         icon="ui-ribbonicon-xls" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-xls" styleClass="ui-ribbon-bigbutton "
                                          update="buttons :listForm :itemForm"/>
                         <p:commandButton value="pdf" rendered="#{todoCtrl.isEnabledButton('Export-pdf')}"
-                                         icon="ui-ribbonicon-pdf" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-pdf" styleClass="ui-ribbon-bigbutton "
                                          update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Auth." rendered="#{todoCtrl.isEnabledButton('Authorization')}"
-                                         icon="ui-ribbonicon-acl" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-acl" styleClass="ui-ribbon-bigbutton "
                                          type="button" update="buttons :listForm :itemForm"/>
                         <p:commandButton value="Trace" rendered="#{todoCtrl.isEnabledButton('Log')}"
-                                         icon="ui-ribbonicon-log" styleClass="ui-ribbon-bigbutton vr-icon-aws"
+                                         icon="ui-ribbonicon-log" styleClass="ui-ribbon-bigbutton "
                                          type="button" update="buttons :listForm :itemForm"/>
                     </p:outputLabel>
                 </div>

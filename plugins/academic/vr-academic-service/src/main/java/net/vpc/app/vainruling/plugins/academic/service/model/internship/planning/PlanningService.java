@@ -3,7 +3,7 @@ package net.vpc.app.vainruling.plugins.academic.service.model.internship.plannin
 
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
-import net.vpc.scholar.hadrumaths.Complex;
+//import net.vpc.scholar.hadrumaths.Complex;
 import net.vpc.upa.UPA;
 import net.vpc.upa.bulk.*;
 import org.jgap.Configuration;
@@ -517,21 +517,21 @@ public class PlanningService {
     }
 
     public PlanningResult matchActivitiesGeneticAlgo(PlanningActivityTable activityTable, int maxSeconds, boolean teachers, boolean spaceTime) {
-        net.vpc.scholar.hadrumaths.Plot.update("activityTable").plot(net.vpc.scholar.hadrumaths.Maths.matrix(
-                activityTable.getActivities().size(), 3,
-                (r,c) -> {
-                    PlanningActivity planningActivity = activityTable.getActivities().get(r);
-                    switch (c) {
-                        case 0:
-                            return Complex.valueOf(activityTable.getTeachers().indexOf(planningActivity.getExaminer()));
-                        case 1:
-                            return Complex.valueOf(activityTable.getTeachers().indexOf(planningActivity.getChair()));
-                        case 2:
-                            return Complex.valueOf(activityTable.getTeachers().indexOf(planningActivity.getInternship().getSupervisors().get(0)));
-                    }
-                    return Complex.valueOf(-1);
-                }
-        ));
+//        net.vpc.scholar.hadrumaths.Plot.update("activityTable").plot(net.vpc.scholar.hadrumaths.Maths.matrix(
+//                activityTable.getActivities().size(), 3,
+//                (r,c) -> {
+//                    PlanningActivity planningActivity = activityTable.getActivities().get(r);
+//                    switch (c) {
+//                        case 0:
+//                            return Complex.valueOf(activityTable.getTeachers().indexOf(planningActivity.getExaminer()));
+//                        case 1:
+//                            return Complex.valueOf(activityTable.getTeachers().indexOf(planningActivity.getChair()));
+//                        case 2:
+//                            return Complex.valueOf(activityTable.getTeachers().indexOf(planningActivity.getInternship().getSupervisors().get(0)));
+//                    }
+//                    return Complex.valueOf(-1);
+//                }
+//        ));
 
         PlanningActivityTableExt activityTable2 = null;
         PlanningActivityTable bestActivityTable = null;
@@ -612,24 +612,24 @@ public class PlanningService {
                     good = 0;
                 }
 
-                List<List<Complex>> rows = new ArrayList<>();
 
                 PlanningActivityTable finalBestActivityTable = bestActivityTable;
-                net.vpc.scholar.hadrumaths.Plot.update("Current").plot(net.vpc.scholar.hadrumaths.Maths.matrix(
-                        activityTable.getActivities().size(), 3,
-                        (r,c) -> {
-                            PlanningActivity planningActivity = finalBestActivityTable.getActivities().get(r);
-                            switch (c) {
-                                case 0:
-                                    return Complex.valueOf(finalBestActivityTable.getTeachers().indexOf(planningActivity.getExaminer()));
-                                case 1:
-                                    return Complex.valueOf(finalBestActivityTable.getTeachers().indexOf(planningActivity.getChair()));
-                                case 2:
-                                    return Complex.valueOf(finalBestActivityTable.getTeachers().indexOf(planningActivity.getInternship().getSupervisors().get(0)));
-                            }
-                            return Complex.valueOf(-1);
-                        }
-                ));
+//                List<List<Complex>> rows = new ArrayList<>();
+//                net.vpc.scholar.hadrumaths.Plot.update("Current").plot(net.vpc.scholar.hadrumaths.Maths.matrix(
+//                        activityTable.getActivities().size(), 3,
+//                        (r,c) -> {
+//                            PlanningActivity planningActivity = finalBestActivityTable.getActivities().get(r);
+//                            switch (c) {
+//                                case 0:
+//                                    return Complex.valueOf(finalBestActivityTable.getTeachers().indexOf(planningActivity.getExaminer()));
+//                                case 1:
+//                                    return Complex.valueOf(finalBestActivityTable.getTeachers().indexOf(planningActivity.getChair()));
+//                                case 2:
+//                                    return Complex.valueOf(finalBestActivityTable.getTeachers().indexOf(planningActivity.getInternship().getSupervisors().get(0)));
+//                            }
+//                            return Complex.valueOf(-1);
+//                        }
+//                ));
 
                 long elapsed = chronometer.getTime() / 1000;
                 if (maxSeconds > 0 && elapsed > maxSeconds) {

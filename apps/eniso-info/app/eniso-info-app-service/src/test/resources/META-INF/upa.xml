@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<upa xmlns="http://github.com/thevpc/upa/upa-1.0.xsd" version="1.0">
+    <scan types="net.vpc.app.**"/>
+    <include>
+        <file path="${user.home}/workspace/eniso.info/config/upa.xml" failSafe="true"/>
+        <!-- this is a fallback if no 'failSafe' config is loadable -->
+        <default>
+            <persistenceUnit name="main">
+                <connection>
+                    <connectionString>
+                        derby:embedded://runtime/derby-enisoinfo;structure=create;userName=enisoinfo;password=enisoinfo
+                    </connectionString>
+                </connection>
+            </persistenceUnit>
+        </default>
+
+    </include>
+    <persistenceUnit name="main">
+        <property name="QueryHints.maxNavigationDepth" value="1"/>
+    </persistenceUnit>
+
+</upa>

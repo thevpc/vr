@@ -12,7 +12,7 @@ import java.sql.Timestamp;
  * @author me
  */
 //uncomment @Entity to enable Table creation!
-//@Entity(listOrder = "name")
+//@Entity(listOrder = "this.name")
 @Path("/CustomPlugins")
 @Properties(
         {

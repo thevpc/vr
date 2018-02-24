@@ -18,7 +18,8 @@ import net.vpc.upa.config.*;
         {
                 @Property(name = "ui.auto-filter.session", value = "{expr='this.session',order=1}"),
                 @Property(name = "ui.auto-filter.model", value = "{expr='this.model',order=2}"),
-                @Property(name = "ui.auto-filter.student", value = "{expr='this.student',order=3}"),
+                @Property(name = "ui.auto-filter.course", value = "{expr='this.course',order=3}"),
+                @Property(name = "ui.auto-filter.student", value = "{expr='this.student',order=4}"),
         }
 )public class AcademicFeedback {
 
@@ -31,7 +32,7 @@ import net.vpc.upa.config.*;
     @Summary
     private AcademicFeedbackModel model;
     @Main
-    @Formula(value = "concat(coalesce(this.session.name),' - ',this.course.fullName,' - ',Coalesce(this.student.contact.fullTitle,''))",formulaOrder = 1)
+    @Formula(value = "concat(coalesce(this.session.name),' - ',this.course.fullName,' - ',Coalesce(this.student.user.contact.fullTitle,''))",formulaOrder = 1)
     private String name;
     @Summary
     private AcademicCourseAssignment course;

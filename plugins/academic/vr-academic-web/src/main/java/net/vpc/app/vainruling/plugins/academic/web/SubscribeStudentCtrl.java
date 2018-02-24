@@ -14,6 +14,7 @@ import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicBac;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
@@ -87,50 +88,13 @@ public class SubscribeStudentCtrl {
     public void updateLists() {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-
-        List<SelectItem> list = null;
-
-        list = new ArrayList<>();
-        for (AppPeriod x : core.findValidPeriods()) {
-            list.add(new SelectItem(x.getId(), x.getName()));
-        }
-        getModel().setPeriodItems(list);
-
-        list = new ArrayList<>();
-        for (AppCivility x : core.findCivilities()) {
-            list.add(new SelectItem(x.getId(), x.getName()));
-        }
-        getModel().setCivilityItems(list);
-
-        list = new ArrayList<>();
-        for (AppGender x : core.findGenders()) {
-            list.add(new SelectItem(x.getId(), x.getName()));
-        }
-        getModel().setGenderItems(list);
-
-        list = new ArrayList<>();
-        for (AcademicBac x : p.findAcademicBacs()) {
-            list.add(new SelectItem(x.getId(), x.getName()));
-        }
-        getModel().setBacItems(list);
-
-        list = new ArrayList<>();
-        for (AcademicPreClass x : p.findAcademicPreClasses()) {
-            list.add(new SelectItem(x.getId(), x.getName()));
-        }
-        getModel().setPrepItems(list);
-
-        list = new ArrayList<>();
-        for (AppDepartment x : core.findDepartments()) {
-            list.add(new SelectItem(x.getId(), x.getName()));
-        }
-        getModel().setDepartmentItems(list);
-
-        list = new ArrayList<>();
-        for (AcademicClass x : p.findAcademicClasses()) {
-            list.add(new SelectItem(x.getId(), x.getName()));
-        }
-        getModel().setClassItems(list);
+        getModel().setPeriodItems(VrWebHelper.toSelectItemList(core.findValidPeriods()));
+        getModel().setCivilityItems(VrWebHelper.toSelectItemList(core.findCivilities()));
+        getModel().setGenderItems(VrWebHelper.toSelectItemList(core.findGenders()));
+        getModel().setBacItems(VrWebHelper.toSelectItemList(p.findAcademicBacs()));
+        getModel().setPrepItems(VrWebHelper.toSelectItemList(p.findAcademicPreClasses()));
+        getModel().setDepartmentItems(VrWebHelper.toSelectItemList(core.findDepartments()));
+        getModel().setClassItems(VrWebHelper.toSelectItemList(p.findAcademicClasses()));
 
     }
 

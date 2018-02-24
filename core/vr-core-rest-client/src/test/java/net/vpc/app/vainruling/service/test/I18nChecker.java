@@ -52,7 +52,7 @@
 //        I18n i18n = VrApp.getBean(I18n.class);
 //        String s = i18n.get(o);
 //        if (s != null && (s.endsWith("!") || s.equals("Lien Manquant"))) {
-//            final String k = o.getI18NString().getKeys().get(0);
+//            final String k = o.getI18NTitle().getKeys().get(0);
 //            if (!k.endsWith(".Target")) {
 //                System.err.println(k + "=");
 //            }

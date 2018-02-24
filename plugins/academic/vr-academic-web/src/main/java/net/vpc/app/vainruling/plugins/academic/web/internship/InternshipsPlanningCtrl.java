@@ -695,7 +695,7 @@ public class InternshipsPlanningCtrl {
             List<AcademicInternshipGroup> internshipGroups = academicPlugin.findEnabledInternshipGroupsByDepartment(tt.getDepartment().getId());
             for (AcademicInternshipGroup t : internshipGroups) {
                 String n = t.getName();
-                internshipGroupsItems.add(new SelectItem(String.valueOf(t.getId()), n));
+                internshipGroupsItems.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n,""));
             }
         }
         getModel().setGroups(internshipGroupsItems);
@@ -708,7 +708,7 @@ public class InternshipsPlanningCtrl {
         for (AcademicInternshipSessionType t : sessionType) {
             String n = t.getName();
             //no id used because in Planning only session name is mentioned
-            sessionTypeItems.add(new SelectItem(n, n));
+            sessionTypeItems.add(FacesUtils.createSelectItem(n, n));
         }
         getModel().setSessionTypes(sessionTypeItems);
     }

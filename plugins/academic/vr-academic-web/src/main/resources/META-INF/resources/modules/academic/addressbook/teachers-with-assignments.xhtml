@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+
+>
+
+<h:head>
+</h:head>
+
+<h:body>
+
+
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
+    <!--@elvariable id="academicTeachersWithAssignmentsCtrl" type="net.vpc.app.vainruling.plugins.academic.web.addressbook.AcademicTeachersWithAssignmentsCtrl"-->
+
+    <ui:composition template="#{vr.privateTemplatePath}">
+        <ui:define name="content">
+            <h:form id="listForm">
+                <p:confirmDialog message="Etes vous sur de vouloir supprimer la selection ?" header="Suppression"
+                                 widgetVar="confirmationDelete">
+                    <p:commandButton value="Yes Sure" onclick="PF('confirmationDelete').hide();
+                                processOnDeleteCurrent();"/>
+                    <p:commandButton value="Not Yet" onclick="PF('confirmationDelete').hide()" type="button"/>
+                </p:confirmDialog>
+
+                <!-- /.row -->
+                <div>
+                    <div id="buttons">
+                        <p:commandButton value="Rafr."
+                                         styleClass="btn btn-default vr-form-field vr-form-fixed-width-medium ui-ribbon-bigbutton "
+                                         ajax="true"
+                                         actionListener="#{academicTeachersWithAssignmentsCtrl.onRefresh}"
+                                         update=":listForm"/>
+                        <div class="form-group">
+                            <h:outputText value="Periode"/>
+                            <p:selectOneMenu class="form-control vr-form-control"
+                                             id="period"
+                                             value="#{academicTeachersWithAssignmentsCtrl.model.period}"
+                                             converter="#{vr.entityObjConverter('AppPeriod')}">
+                                <f:selectItems value="#{vr.entitySelectItems('AppPeriod',true,false)}"/>
+                            </p:selectOneMenu>
+                        </div>
+                        <div class="form-group">
+                            <h:outputText value="Semestre"/>
+                            <p:selectOneMenu class="form-control vr-form-control"
+                                             id="semester"
+                                             value="#{academicTeachersWithAssignmentsCtrl.model.semester}"
+                                             converter="#{vr.entityObjConverter('AcademicSemester')}">
+                                <f:selectItems value="#{vr.entitySelectItems('AcademicSemester',true,false)}"/>
+                            </p:selectOneMenu>
+                        </div>
+                        <div class="form-group">
+                            <h:outputText value="Appartient au departement"/>
+
+                            <p:selectOneMenu class="form-control vr-form-control"
+                                             id="teacherDepartment"
+                                             value="#{academicTeachersWithAssignmentsCtrl.model.teacherDepartment}"
+                                             converter="#{vr.entityObjConverter('AppDepartment')}">
+                                <f:selectItems value="#{vr.entitySelectItems('AppDepartment',true,false)}"/>
+                            </p:selectOneMenu>
+                        </div>
+                        <div class="form-group">
+                            <h:outputText value="Enseigne dans le departement"/>
+                            <p:selectOneMenu class="form-control vr-form-control"
+                                             id="assignmentDepartment"
+                                             value="#{academicTeachersWithAssignmentsCtrl.model.assignmentDepartment}"
+                                             converter="#{vr.entityObjConverter('AppDepartment')}">
+                                <f:selectItems value="#{vr.entitySelectItems('AppDepartment',true,false)}"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="table-responsive">
+                        <h1>
+                            <p:commandLink
+                                    action="#{vr.gotoPageObjItem('AcademicTeacher',vr.str(teacherCourseLoadCtrl.model.currentTeacher.id))}"
+                                    style="font-weight: bold"
+                                    rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
+                                    value="#{teacherCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.val.teacher.situation.name}  (#{teacherCourseLoadCtrl.teacherFilter.periodName}) "/>
+                        </h1>
+                        <p:panelGrid rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}">
+                            <p:row>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Semaines"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="C"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="TD"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="TP"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="PM"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="TP+PM"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Total Du"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Total Charge"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="Total H.Supp."/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Du / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="Total Charge / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="Total Charge C / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="Total Charge TD / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Total Charge TPPM / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"
+                                          rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="H.Supp. abs / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"
+                                          rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="H.Supp. abs C / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"
+                                          rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="H.Supp. abs TD / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"
+                                          rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="H.Supp. abs Tp / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="H.Supp. C / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="H.Supp. TD / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="H.Supp. TP / Sem"/></p:column>
+                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Balance"/></p:column>
+                                <p:column styleClass="ui-widget-header" style="width: 60px;"><p:outputLabel
+                                        value=""/></p:column>
+                            </p:row>
+
+                            <p:row>
+                                <!--  --> <p:column styleClass="ui-widget-header"><p:outputLabel
+                                    value="Charge Annuelle"/></p:column>
+                                <!-- Semaines --> <p:column><p:outputLabel value=""/></p:column>
+                                <!-- C --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.value.c}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- TD --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.value.td}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- TP --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.value.tp}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- PM --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.value.pm}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- TP+PM --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.value.tppm}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Total Du --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.due.equiv}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Total Charge --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.value.equiv}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Total H.Supp. --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extra.equiv}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Du / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.dueWeek.equiv}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Total Charge / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.valueWeek.equiv}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Total Charge C / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.valueWeek.c}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Total Charge TD / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.valueWeek.td}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Total Charge TPPM / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.valueWeek.tppm}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- H.Supp. abs / Sem --> <p:column
+                                    rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extraWeek.equiv}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- H.Supp. abs C / Sem --> <p:column
+                                    rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extraWeek.c}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- H.Supp. abs TD / Sem --> <p:column
+                                    rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extraWeek.td}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- H.Supp. abs Tp / Sem --> <p:column
+                                    rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extraWeek.tppm}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- H.Supp. C / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extraWeekEff.c}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- H.Supp. TD / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extraWeekEff.td}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- H.Supp. TP / Sem --> <p:column><p:outputLabel
+                                    value="#{teacherCourseLoadCtrl.model.stat.val.extraWeekEff.tppm}"><f:convertNumber
+                                    pattern="#0.00"/></p:outputLabel></p:column>
+                                <!-- Balance --> <p:column>
+                                <p:outputLabel
+                                        value="#{teacherCourseLoadCtrl.model.stat.val.deviation}"><f:convertNumber
+                                        pattern="#0.00%"/></p:outputLabel>
+                                <h:outputText value=" / #{teacherCourseLoadCtrl.model.stat.val.population.size}"/>
+                            </p:column>
+                                <p:column>
+                                    <div class="vr-progress-container" style="width: 100%;">
+                                        <div class="#{teacherCourseLoadCtrl.model.stat.val.deviationLabel}"
+                                             style="width:#{vr.frame(vr.abs(teacherCourseLoadCtrl.model.stat.val.deviation),0,1)*100}%">
+
+                                        </div>
+                                    </div>
+                                </p:column>
+                            </p:row>
+                            <c:forEach items="#{teacherCourseLoadCtrl.model.stat.semesters}" var="sem">
+                                <p:row>
+                                    <!--  --><p:column styleClass="ui-widget-header"><p:outputLabel
+                                        value="Charge #{sem.val.semester.name}"/></p:column>
+                                    <!-- Semaines --><p:column><p:outputLabel value="#{sem.val.weeks}"><f:convertNumber
+                                        pattern="#0.#"/></p:outputLabel></p:column>
+                                    <!-- C --><p:column><p:outputLabel value="#{sem.val.value.c}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- TD --><p:column><p:outputLabel value="#{sem.val.value.td}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- TP --><p:column><p:outputLabel value="#{sem.val.value.tp}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- PM --><p:column><p:outputLabel value="#{sem.val.value.pm}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- TP+PM --><p:column><p:outputLabel
+                                        value="#{sem.val.value.tppm}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Total Du --><p:column><p:outputLabel
+                                        value="#{sem.val.due.equiv}"><f:convertNumber pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Total Charge --><p:column><p:outputLabel
+                                        value="#{sem.val.value.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Total H.Supp. --><p:column><p:outputLabel
+                                        value="#{sem.val.extra.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Du / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.dueWeek.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Total Charge / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.valueWeek.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Total Charge C / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.valueWeek.c}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Total Charge TD / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.valueWeek.td}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Total Charge TPPM / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.valueWeek.tppm}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- H.Supp. abs / Sem --><p:column
+                                        rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="#{sem.val.extraWeek.equiv}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- H.Supp. abs C / Sem --><p:column
+                                        rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="#{sem.val.extraWeek.c}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- H.Supp. abs TD / Sem --><p:column
+                                        rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="#{sem.val.extraWeek.td}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- H.Supp. abs Tp / Sem --><p:column
+                                        rendered="#{teacherCourseLoadCtrl.courseFilter.containsRefreshFilter('extra-abs')}"><p:outputLabel
+                                        value="#{sem.val.extraWeek.tppm}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- H.Supp. C / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.extraWeekEff.c}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- H.Supp. TD / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.extraWeekEff.td}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- H.Supp. TP / Sem --><p:column><p:outputLabel
+                                        value="#{sem.val.extraWeekEff.tppm}"><f:convertNumber
+                                        pattern="#0.00"/></p:outputLabel></p:column>
+                                    <!-- Balance --><p:column>
+                                    <p:outputLabel
+                                            value="#{sem.val.deviation}"><f:convertNumber
+                                            pattern="#0.00%"/></p:outputLabel>
+                                    <h:outputText
+                                            value=" / #{sem.val.population.size}"/>
+                                </p:column>
+                                    <p:column>
+                                        <div class="vr-progress-container" style="width: 100%;">
+                                            <div class="#{sem.val.deviationLabel}"
+                                                 style="width:#{vr.frame(vr.abs(sem.val.deviation),0,1)*100}%">
+
+                                            </div>
+                                        </div>
+                                    </p:column>
+                                </p:row>
+                            </c:forEach>
+                        </p:panelGrid>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="table-responsive">
+                        <p:dataTable var="i" value="#{academicTeachersWithAssignmentsCtrl.model.teachers}"
+                                     class="table table-bordered table-hover"
+                                     paginatorAlwaysVisible="false"
+                                     paginator="true"
+                                     paginatorPosition="bottom"
+                                     rows="200"
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="100,200,500,1000,5000"
+                                     emptyMessage="Aucune charge"
+                                     id="listTable"
+                        >
+
+                            <p:column exportable="false" headerText="" style="width: 65px;">
+                                <img src="#{vr.url(corePlugin.getUserIcon(i.user.id))}"
+                                     style="width: 40px ; height: 40px; margin-right: 10px;"
+                                     alt="User Image"
+                                     onclick="document.getElementById('mainPhotoImg').src='#{vr.url(corePlugin.getUserPhoto(i.user.id))}';$('#'+PF('photodlg').id).find('.ui-dialog-title')[0].textContent='#{i.user.resolveFullName()}';PF('photodlg').show();"
+                                />
+                            </p:column>
+                            <p:column headerText="Enseignant" style="width: 30%;" sortBy="#{i.resolveFullName()}">
+                                <h:outputText value="#{i.resolveFullName()}"/>
+                            </p:column>
+
+                            <p:column headerText="Login"  sortBy="#{i.user.login}">
+                                <h:outputText value="#{i.user.login}"/>
+                            </p:column>
+                            <p:column headerText="Grade" sortBy="#{i.degree.name}">
+                                <h:outputText value="#{i.degree.name}"/>
+                            </p:column>
+                            <p:column headerText="Situation" sortBy="#{i.situation.name}">
+                                <h:outputText value="#{i.situation.name}"/>
+                            </p:column>
+                            <p:column headerText="Discipline" sortBy="#{i.officialDiscipline.name}">
+                                <h:outputText value="#{i.officialDiscipline.name}"/>
+                            </p:column>
+                            <p:column headerText="Depuis" sortBy="#{i.startPeriod.name}">
+                                <h:outputText value="#{i.startPeriod.name}"/>
+                            </p:column>
+                            <p:column headerText="Departement" sortBy="#{i.department.name}">
+                                <h:outputText value="#{i.department.name}"/>
+                            </p:column>
+                            <p:column headerText="Email" rendered="#{corePlugin.currentToken.admin}" sortBy="#{i.user.contact.email}">
+                                <h:outputText value="#{i.user.contact.email}"/>
+                            </p:column>
+                            <p:column headerText="Phone" rendered="#{corePlugin.currentToken.admin}" sortBy="#{i.user.contact.phone1}">
+                                <h:outputText value="#{i.user.contact.phone1}"/>
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:outputLabel
+                                        value="Total #{academicTeachersWithAssignmentsCtrl.model.teachers.size()}"/>
+
+                                <div style="float: right;">
+                                    <h:commandLink>
+                                        <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
+                                                        width="16"/>
+                                        <p:dataExporter type="xls" target="listTable"
+                                                        fileName="#{corePlugin.getPreferredFileName('teachers-with-assignements-')}"
+                                                        postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                    </h:commandLink>
+
+                                    <h:commandLink>
+                                        <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
+                                                        width="16"/>
+                                        <p:dataExporter type="pdf" target="listTable"
+                                                        fileName="#{corePlugin.getPreferredFileName('teachers-with-assignements-')}"/>
+                                    </h:commandLink>
+
+                                    <h:commandLink>
+                                        <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
+                                                        width="16"/>
+                                        <p:dataExporter type="csv" target="listTable"
+                                                        fileName="#{corePlugin.getPreferredFileName('teachers-with-assignements-')}"/>
+                                    </h:commandLink>
+
+                                    <h:commandLink>
+                                        <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
+                                                        width="16"/>
+                                        <p:dataExporter type="xml" target="listTable"
+                                                        fileName="#{corePlugin.getPreferredFileName('teachers-with-assignements-')}"/>
+                                    </h:commandLink>
+                                </div>
+                            </f:facet>
+                        </p:dataTable>
+                    </div>
+                </div>
+
+            </h:form>
+
+            <p:dialog header="Photo" widgetVar="photodlg" modal="true" height="400">
+                <img id="mainPhotoImg" src=""
+                     style="width: 400px ; height: 400px; margin-right: 10px;"
+                     alt="Image"/>
+            </p:dialog>
+
+
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>

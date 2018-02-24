@@ -5,9 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.stat;
 
-import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.util.AcademicCourseAssignmentIdConverter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
@@ -47,8 +46,8 @@ public class GlobalAssignmentStat {
     private double maxWeeks;
     private double teachersCount;
     private Map<Integer, TeacherStat> teachers = new HashMap<Integer, TeacherStat>();
-    private MapList<Integer, AcademicCourseAssignment> targetAssignmentsMap = new DefaultMapList<Integer, AcademicCourseAssignment>(AcademicPlugin.AcademicCourseAssignmentIdConverter);
-    private MapList<Integer, AcademicCourseAssignment> missingAssignmentsMap = new DefaultMapList<Integer, AcademicCourseAssignment>(AcademicPlugin.AcademicCourseAssignmentIdConverter);
+    private MapList<Integer, AcademicCourseAssignment> targetAssignmentsMap = new DefaultMapList<Integer, AcademicCourseAssignment>(AcademicCourseAssignmentIdConverter.INSTANCE);
+    private MapList<Integer, AcademicCourseAssignment> missingAssignmentsMap = new DefaultMapList<Integer, AcademicCourseAssignment>(AcademicCourseAssignmentIdConverter.INSTANCE);
 
     public GlobalAssignmentStat() {
     }

@@ -22,6 +22,7 @@ import net.vpc.app.vainruling.core.web.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
 import net.vpc.app.vainruling.core.web.obj.dialog.ProfileExprDialogCtrl;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
+import net.vpc.app.vainruling.plugins.inbox.service.MailboxPluginSecurity;
 import net.vpc.app.vainruling.plugins.inbox.service.model.*;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -91,17 +92,17 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         if(config.sent) {
             switch (config.folder) {
                 case CURRENT: {
-                    return new UCtrlData(getPreferredTitle(config.folder, config.sent), "Messages Envoyés", "modules/mailbox/mailbox", "fa-table", "Custom.Site.Mailbox",
+                    return new UCtrlData(getPreferredTitle(config.folder, config.sent), "Messages Envoyés", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
                             new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
                 case DELETED: {
-                    return new UCtrlData(getPreferredTitle(config.folder, config.sent), "Messages Envoyés Effacés", "modules/mailbox/mailbox", "fa-table", "Custom.Site.Mailbox",
+                    return new UCtrlData(getPreferredTitle(config.folder, config.sent), "Messages Envoyés Effacés", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
                             new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
                 case ARCHIVED: {
-                    return new UCtrlData(getPreferredTitle(config.folder, config.sent), "Messages Envoyés Archivés", "modules/mailbox/mailbox", "fa-table", "Custom.Site.Mailbox",
+                    return new UCtrlData(getPreferredTitle(config.folder, config.sent), "Messages Envoyés Archivés", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
                             new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
@@ -109,17 +110,17 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         }else{
             switch (config.folder) {
                 case CURRENT: {
-                    return new UCtrlData(getPreferredTitle(config.folder, config.sent), "Messages Reçus", "modules/mailbox/mailbox", "fa-table", "Custom.Site.Mailbox",
+                    return new UCtrlData(getPreferredTitle(config.folder, config.sent), "Messages Reçus", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
                             new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
                 case DELETED: {
-                    return new UCtrlData(getPreferredTitle(config.folder, config.sent), "Messages Reçus Effacés", "modules/mailbox/mailbox", "fa-table", "Custom.Site.Mailbox",
+                    return new UCtrlData(getPreferredTitle(config.folder, config.sent), "Messages Reçus Effacés", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
                             new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
                 case ARCHIVED: {
-                    return new UCtrlData(getPreferredTitle(config.folder, config.sent), "Messages Reçus Archivés", "modules/mailbox/mailbox", "fa-table", "Custom.Site.Mailbox",
+                    return new UCtrlData(getPreferredTitle(config.folder, config.sent), "Messages Reçus Archivés", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
                             new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
@@ -168,7 +169,7 @@ public class MailboxCtrl implements UCtrlProvider, VRMenuDefFactory {
         int userId = currentUser == null ? -1 : currentUser.getId();
         int count = userId < 0 ? 0 : mailboxPlugin.findLocalReceivedMessages(userId, -1, true, MailboxFolder.CURRENT).size();
         return Arrays.asList(
-                new VRMenuDef("Mes Messages", "/Social", "mailbox", "{folder:'CURRENT',sent:false}", "Custom.Site.Mailbox", null,"", 100,
+                new VRMenuDef("Mes Messages", "/Social", "mailbox", "{folder:'CURRENT',sent:false}", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX, null,"", 100,
                         new VRMenuLabel[]{
                                 count <= 0 ? null : new VRMenuLabel(String.valueOf(count), "success")
                         }

@@ -13,13 +13,16 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanningPlugin;
+import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanningPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
 import net.vpc.app.vainruling.plugins.calendars.web.AbstractPlanningCtrl;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.upa.NamedId;
 
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
@@ -35,7 +38,7 @@ import java.util.List;
 //        title = "Emploi par Enseignant",
         url = "modules/academic/planning/teacher-planning",
         menu = "/Calendars",
-        securityKey = "Custom.Education.TeacherPlanning"
+        securityKey = AcademicPlanningPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_PLANNING
 )
 public class TeacherPlanningCtrl extends AbstractPlanningCtrl {
 
@@ -68,11 +71,8 @@ public class TeacherPlanningCtrl extends AbstractPlanningCtrl {
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         AcademicPlanningPlugin pl = VrApp.getBean(AcademicPlanningPlugin.class);
         getModel().setTeachers(new ArrayList<SelectItem>());
-        for (AcademicTeacher t : p.findTeachers()) {
-            AcademicTeacherPeriod tp = p.findAcademicTeacherPeriod(getPeriodId(), t);
-            if (tp.isEnabled()) {
-                getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), t.resolveFullName()));
-            }
+        for (NamedId t : p.findEnabledTeacherNames(getPeriodId())) {
+            getModel().getTeachers().add(FacesUtils.createSelectItem(t.getStringId(), t.getStringName()));
         }
         int t = StringUtils.isEmpty(getModel().getTeacherId()) ? -1 : Integer.parseInt(getModel().getTeacherId());
         CalendarWeek plannings = pl.loadTeacherPlanning(t);

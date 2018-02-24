@@ -31,15 +31,15 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-tx:4.1.2.RELEASE" level="project" />
     <orderEntry type="module" module-name="upa-api" />
     <orderEntry type="module" module-name="upa-impl" scope="RUNTIME" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: cglib:cglib:3.2.5" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm:5.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: cglib:cglib:3.2.6" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm:6.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant:1.9.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant-launcher:1.9.6" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.jexcelapi:jxl:2.6.10" level="project" />
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.14" level="project" />
     <orderEntry type="module" module-name="vpc-common-strings" />
-    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-utils:1.9" level="project" />
-    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-io:1.3.1" level="project" />
+    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-utils:1.10" level="project" />
+    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-io:1.3.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.3.1" level="project" />
     <orderEntry type="module" module-name="vfs" />
     <orderEntry type="library" name="Maven: rome:rome:1.0" level="project" />
@@ -60,6 +60,7 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.4.1" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.4.1" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.4.1" level="project" />
+    <orderEntry type="library" name="Maven: com.lowagie:itext:2.1.7" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-webmvc:4.1.2.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:4.1.2.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:4.1.2.RELEASE" level="project" />
@@ -69,7 +70,7 @@
     <orderEntry type="library" name="Maven: org.primefaces.extensions:primefaces-extensions:6.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.1" level="project" />
     <orderEntry type="module" module-name="upa-web" />
-    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-web-jsf:1.2.3" level="project" />
+    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-web-jsf:1.2.4" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:jstl:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.poi:poi:3.9" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.5" level="project" />
@@ -82,7 +83,7 @@
     <orderEntry type="library" name="Maven: commons-fileupload:commons-fileupload:1.3.3" level="project" />
     <orderEntry type="module" module-name="vr-academic-planning-service" />
     <orderEntry type="module" module-name="vr-academic-service" />
-    <orderEntry type="library" name="Maven: net.vpc.scholar:hadrumaths:3.1.16" level="project" />
+    <orderEntry type="library" name="Maven: net.vpc.scholar:hadrumaths:3.1.20" level="project" />
     <orderEntry type="library" name="Maven: org.jfree:jfreechart:1.0.19" level="project" />
     <orderEntry type="library" name="Maven: org.jfree:jcommon:1.0.23" level="project" />
     <orderEntry type="library" name="Maven: org.jzy3d:jzy3d-api:1.0.0-SNAPSHOT" level="project" />
@@ -148,6 +149,7 @@
     <orderEntry type="library" name="Maven: com.github.fommil.netlib:netlib-native_system-linux-armhf:natives:1.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.fommil.netlib:netlib-native_system-win-x86_64:natives:1.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.fommil.netlib:netlib-native_system-win-i686:natives:1.1" level="project" />
+    <orderEntry type="library" name="Maven: java-oo:javac8-oo-plugin:0.5" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jgap:jgap:3.4.4" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.3" level="project" />
     <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:2.0.2" level="project" />

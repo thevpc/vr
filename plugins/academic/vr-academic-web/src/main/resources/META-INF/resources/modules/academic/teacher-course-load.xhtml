@@ -37,7 +37,7 @@ and open the template in the editor.
                 <div>
                     <div id="buttons">
                         <p:commandButton value="Rafr."
-                                         styleClass="btn btn-default vr-form-field vr-form-fixed-width-medium ui-ribbon-bigbutton vr-icon-aws"
+                                         styleClass="btn btn-default vr-form-field vr-form-fixed-width-medium ui-ribbon-bigbutton "
                                          ajax="true"
                                          actionListener="#{teacherCourseLoadCtrl.onRefresh}" update=":listForm"/>
 
@@ -271,7 +271,7 @@ and open the template in the editor.
                 <div class="row" style="margin-top: 20px">
                     <div class="table-responsive">
 
-                        <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
+                        <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
                     </div>
                 </div>
             </h:form>
@@ -284,7 +284,7 @@ and open the template in the editor.
                                     action="#{vr.gotoPageObjItem('AcademicTeacher',vr.str(teacherCourseLoadCtrl.model.currentTeacher.id))}"
                                     style="font-weight: bold"
                                     rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
-                                    value="#{teacherCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.val.teacher.situation.name}  (#{teacherCourseLoadCtrl.teacherFilter.periodName}) "/>
+                                    value="#{teacherCourseLoadCtrl.model.currentTeacher.user.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.val.teacher.situation.name}  (#{teacherCourseLoadCtrl.teacherFilter.periodName}) "/>
                         </h1>
                         <p:panelGrid rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}">
                             <p:row>
@@ -885,7 +885,7 @@ and open the template in the editor.
                                     >
                                         <p:menuitem
                                                 rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
-                                                value="Aj. Voeux à #{teacherCourseLoadCtrl.model.currentTeacher.contact.firstName}"
+                                                value="Aj. Voeux à #{teacherCourseLoadCtrl.model.currentTeacher.user.contact.firstName}"
                                                 actionListener="#{teacherCourseLoadCtrl.addToMineSelected()}"
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                         <p:menuitem value="Supp. tous les Voeux"
@@ -894,7 +894,7 @@ and open the template in the editor.
                                         <p:separator/>
                                         <p:menuitem
                                                 rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
-                                                value="Affecter à #{teacherCourseLoadCtrl.model.currentTeacher.contact.firstName}"
+                                                value="Affecter à #{teacherCourseLoadCtrl.model.currentTeacher.user.contact.firstName}"
                                                 actionListener="#{teacherCourseLoadCtrl.doAssignSelected()}"
                                                 update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                         <p:menuitem value="Confirmer Aff."
@@ -922,7 +922,7 @@ and open the template in the editor.
                                 >
                                     <p:menuitem
                                             rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
-                                            value="Aj. Voeux à #{teacherCourseLoadCtrl.model.currentTeacher.contact.firstName}"
+                                            value="Aj. Voeux à #{teacherCourseLoadCtrl.model.currentTeacher.user.contact.firstName}"
                                             disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.value.assignment.id) or (teacherCourseLoadCtrl.model.currentTeacher eq null)}"
                                             actionListener="#{teacherCourseLoadCtrl.addToMine(i.value.assignment.id)}"
                                             update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
@@ -933,7 +933,7 @@ and open the template in the editor.
                                     <p:separator/>
                                     <p:menuitem
                                             rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
-                                            value="Affecter à #{teacherCourseLoadCtrl.model.currentTeacher.contact.firstName}"
+                                            value="Affecter à #{teacherCourseLoadCtrl.model.currentTeacher.user.contact.firstName}"
                                             disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.value.assignment.id) or (teacherCourseLoadCtrl.model.currentTeacher eq null)}"
                                             actionListener="#{teacherCourseLoadCtrl.doAssign(i.value.assignment.id)}"
                                             update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>

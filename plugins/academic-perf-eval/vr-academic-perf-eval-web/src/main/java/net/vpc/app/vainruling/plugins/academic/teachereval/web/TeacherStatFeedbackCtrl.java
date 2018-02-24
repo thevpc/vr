@@ -9,7 +9,6 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.ValueCountSet;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
@@ -20,11 +19,13 @@ import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.QuestionView
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.StatData;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import org.primefaces.model.chart.BarChartModel;
 import org.primefaces.model.chart.ChartSeries;
@@ -45,7 +46,7 @@ import java.util.logging.Logger;
 //        title = "Stats Eval. Enseignements",
         menu = "/Education/Evaluation",
         url = "modules/academic/perfeval/teacher-stat-feedback",
-        securityKey = "Custom.Academic.TeacherStatFeedback"
+        securityKey = AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_STAT_FEEDBACK
 )
 public class TeacherStatFeedbackCtrl {
 
@@ -81,12 +82,12 @@ public class TeacherStatFeedbackCtrl {
     @OnPageLoad
     public void onLoad() {
         getModel().setValidate(false);
-        getModel().setTeacherListEnabled(academic.isUserSessionManager());
-        getModel().setFilterTeachersEnabled(academic.isUserSessionManager());
+        getModel().setTeacherListEnabled(AcademicPluginSecurity.isUserSessionManager());
+        getModel().setFilterTeachersEnabled(AcademicPluginSecurity.isUserSessionManager());
 
         ArrayList<SelectItem> filterTypesList = new ArrayList<>();
         for (GroupCondition condition : conditions) {
-            filterTypesList.add(new SelectItem(condition.getId(), condition.getLabel()));
+            filterTypesList.add(FacesUtils.createSelectItem(condition.getId(), condition.getLabel()));
         }
         getModel().setFilterTypesList(filterTypesList);
         getModel().setFilterType((String) filterTypesList.get(0).getValue());
@@ -96,7 +97,7 @@ public class TeacherStatFeedbackCtrl {
         List<AppPeriod> periods = core.findNavigatablePeriods();
         for (AppPeriod t : periods) {
             String n = t.getName();
-            items.add(new SelectItem(String.valueOf(t.getId()), n));
+            items.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
         }
         getModel().setPeriods(items);
 
@@ -141,8 +142,8 @@ public class TeacherStatFeedbackCtrl {
         if (getModel().isFilterTeachersEnabled()) {
             List<AcademicTeacher> teachersWithFeedbacks = feedback.findTeachersWithFeedbacks(getSelectedPeriodId(), getModel().getValidatedFilter(), false, true);
             for (AcademicTeacher f : teachersWithFeedbacks) {
-                if (academic.isManagerOf(f)) {
-                    academicTeachers.add(new SelectItem(String.valueOf(f.getId()), f.resolveFullTitle()));
+                if (AcademicPluginSecurity.isManagerOf(f)) {
+                    academicTeachers.add(FacesUtils.createSelectItem(String.valueOf(f.getId()), f.resolveFullTitle()));
                 }
             }
         }
@@ -509,8 +510,8 @@ public class TeacherStatFeedbackCtrl {
             ArrayList<SelectItem> theList = new ArrayList<>();
             int periodId = getSelectedPeriodId();
             for (AcademicTeacher f : feedback.findTeachersWithFeedbacks(periodId, getModel().getValidatedFilter(), false, true)) {
-                if (academic.isManagerOf(f)) {
-                    theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.resolveFullTitle()));
+                if (AcademicPluginSecurity.isManagerOf(f)) {
+                    theList.add(FacesUtils.createSelectItem(getId() + ":" + String.valueOf(f.getId()), f.resolveFullTitle()));
                 }
             }
             getModel().setFilterList(theList);
@@ -583,7 +584,7 @@ public class TeacherStatFeedbackCtrl {
 //                }catch (NullPointerException ex){
 //
 //                }
-                theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getName()));
+                theList.add(FacesUtils.createSelectItem(getId() + ":" + String.valueOf(f.getId()), f.getName()));
             }
             getModel().setFilterList(theList);
             revalidateSelectedFilter();
@@ -625,8 +626,8 @@ public class TeacherStatFeedbackCtrl {
             int periodId = getSelectedPeriodId();
             int teacherId = getSelectedTeacherId();
             for (AcademicCourseAssignment f : feedback.findAssignmentsWithFeedbacks(periodId, teacherId, getModel().getValidatedFilter(), false, true)) {
-                if (f.getTeacher() != null && academic.isManagerOf(f.getTeacher())) {
-                    theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getFullName()));
+                if (f.getTeacher() != null && AcademicPluginSecurity.isManagerOf(f.getTeacher())) {
+                    theList.add(FacesUtils.createSelectItem(getId() + ":" + String.valueOf(f.getId()), f.getFullName()));
                 }
             }
             getModel().setFilterList(theList);
@@ -681,12 +682,12 @@ public class TeacherStatFeedbackCtrl {
                 boolean accept=core.isCurrentSessionAdmin();
                 if(!accept) {
                     AppDepartment deptId = f.resolveDepartment();
-                    accept=academic.isManagerOf(deptId);
+                    accept= AcademicPluginSecurity.isManagerOf(deptId);
                 }
                 if(!accept) {
                     for (AcademicCourseAssignment ca : academic.findCourseAssignmentsByCoursePlan(f.getId())) {
                         if(ca.getOwnerDepartment()!=null){
-                            accept=academic.isManagerOf(ca.getOwnerDepartment());
+                            accept= AcademicPluginSecurity.isManagerOf(ca.getOwnerDepartment());
                             if(accept){
                                 break;
                             }
@@ -694,7 +695,7 @@ public class TeacherStatFeedbackCtrl {
                     }
                 }
                 if(accept) {
-                    theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getFullName()));
+                    theList.add(FacesUtils.createSelectItem(getId() + ":" + String.valueOf(f.getId()), f.getFullName()));
                 }
             }
             getModel().setFilterList(theList);
@@ -760,7 +761,7 @@ public class TeacherStatFeedbackCtrl {
             int periodId = getSelectedPeriodId();
             int teacherId = getSelectedTeacherId();
             for (AcademicCourseType f : feedback.findAcademicCourseTypesWithFeedbacks(periodId, teacherId, getModel().getValidatedFilter(), false, true)) {
-                theList.add(new SelectItem(getId() + ":" + String.valueOf(f.getId()), f.getName()));
+                theList.add(FacesUtils.createSelectItem(getId() + ":" + String.valueOf(f.getId()), f.getName()));
             }
             getModel().setFilterList(theList);
             revalidateSelectedFilter();

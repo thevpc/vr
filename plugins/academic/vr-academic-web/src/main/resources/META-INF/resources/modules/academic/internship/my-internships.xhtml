@@ -29,7 +29,7 @@ and open the template in the editor.
                                  /.row
                                 <div >
                                     <p:outputLabel id="buttons">
-                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
                                     </p:outputLabel>
                                 </div>
 
@@ -46,7 +46,7 @@ and open the template in the editor.
                     <p:commandButton rendered="#{myInternshipsCtrl.model.internship ne null}" value="Enregistrer"
                                      styleClass="btn btn-primary pull-right"
                                      action="#{myInternshipsCtrl.onSave}" update="currentMessages"/>
-                    <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
+                    <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
                 </div>
 
                 <ui:fragment rendered="#{myInternshipsCtrl.model.internship ne null}">
@@ -177,7 +177,7 @@ and open the template in the editor.
 
                                         <div class="form-group">
                                             <p:outputLabel value="Le stage commence "/>
-                                            <p:calendar styleClass="from-control vr-form-calendar-text"
+                                            <p:calendar styleClass="vr-form-control-calendar"
                                                         value="#{myInternshipsCtrl.model.internship.startDate}"
 
                                                         disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
@@ -185,7 +185,7 @@ and open the template in the editor.
 
                                         <div class="form-group">
                                             <p:outputLabel value="Et se termine "/>
-                                            <p:calendar styleClass="from-control vr-form-calendar-text"
+                                            <p:calendar styleClass="vr-form-control-calendar"
                                                         value="#{myInternshipsCtrl.model.internship.endDate}"
 
                                                         disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
@@ -328,17 +328,17 @@ and open the template in the editor.
                                             <div class="form-group">
                                                 <p:outputLabel value="President"/>
                                                 <p:outputLabel styleClass="form-control"
-                                                               value="#{myInternshipsCtrl.model.internship.chairExaminer eq null ? '' : myInternshipsCtrl.model.internship.chairExaminer.contact.fullName}"/>
+                                                               value="#{myInternshipsCtrl.model.internship.chairExaminer eq null ? '' : myInternshipsCtrl.model.internship.chairExaminer.user.contact.fullName}"/>
                                             </div>
                                             <div class="form-group">
                                                 <p:outputLabel value="Rapporteur"/>
                                                 <p:outputLabel styleClass="form-control"
-                                                               value="#{myInternshipsCtrl.model.internship.firstExaminer eq null ? '' : myInternshipsCtrl.model.internship.firstExaminer.contact.fullName}"/>
+                                                               value="#{myInternshipsCtrl.model.internship.firstExaminer eq null ? '' : myInternshipsCtrl.model.internship.firstExaminer.user.contact.fullName}"/>
                                             </div>
                                             <div class="form-group">
                                                 <p:outputLabel value="Examinateur"/>
                                                 <p:outputLabel styleClass="form-control"
-                                                               value="#{myInternshipsCtrl.model.internship.secondExaminer eq null ? '' : myInternshipsCtrl.model.internship.secondExaminer.contact.fullName}"/>
+                                                               value="#{myInternshipsCtrl.model.internship.secondExaminer eq null ? '' : myInternshipsCtrl.model.internship.secondExaminer.user.contact.fullName}"/>
                                             </div>
                                         </div>
 

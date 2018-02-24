@@ -2,10 +2,11 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>net.vpc.app.vain-ruling</groupId>
+    <groupId>net.vpc.app.vain-ruling.core</groupId>
     <artifactId>vr-plugin</artifactId>
     <version>1.0</version>
     <packaging>pom</packaging>
+    <name>net.vpc.app.vain-ruling.core.vr-plugin</name>
     <url>https://github.com/thevpc/vr/wiki</url>
 
     <organization>
@@ -62,22 +63,22 @@
     <build>
         <plugins>
             <!--<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>properties-maven-plugin</artifactId>-->
-                <!--<version>1.0.0</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<phase>generate-resources</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>write-project-properties</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<outputFile>-->
-                                <!--${project.build.outputDirectory}/app.properties-->
-                            <!--</outputFile>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
+            <!--<groupId>org.codehaus.mojo</groupId>-->
+            <!--<artifactId>properties-maven-plugin</artifactId>-->
+            <!--<version>1.0.0</version>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<phase>generate-resources</phase>-->
+            <!--<goals>-->
+            <!--<goal>write-project-properties</goal>-->
+            <!--</goals>-->
+            <!--<configuration>-->
+            <!--<outputFile>-->
+            <!--${project.build.outputDirectory}/app.properties-->
+            <!--</outputFile>-->
+            <!--</configuration>-->
+            <!--</execution>-->
+            <!--</executions>-->
             <!--</plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -104,38 +105,38 @@
                         userComponentType=project.properties.get("vr-plugin.component-type");
                         componentType="void";
                         if(userComponentType!=null){
-                            componentType=userComponentType;
+                        componentType=userComponentType;
                         }else{
-                            if("jar".equals(project.packaging)){
-                                if(artifactId.endsWith("-service")){
-                                    componentType="service";
-                                }else if(artifactId.endsWith("-web")){
-                                    componentType="web";
-                                }else if(artifactId.endsWith("-theme") || artifactId.startsWith("theme-") || artifactId.contains("-theme-")){
-                                    componentType="theme";
-                                }else{
-                                    componentType="component";
-                                }
-                            }else{
-                                cancel();
-                            }
+                        if("jar".equals(project.packaging)){
+                        if(artifactId.endsWith("-service")){
+                        componentType="service";
+                        }else if(artifactId.endsWith("-web")){
+                        componentType="web";
+                        }else if(artifactId.endsWith("-theme") || artifactId.startsWith("theme-") || artifactId.contains("-theme-")){
+                        componentType="theme";
+                        }else{
+                        componentType="component";
+                        }
+                        }else{
+                        cancel();
+                        }
                         }
                         if(userBundleId!=null){
-                            bundleId=userBundleId;
+                        bundleId=userBundleId;
                         }else{
-                            if("jar".equals(project.packaging)){
-                                if(artifactId.endsWith("-service")){
-                                    bundleId=project.groupId+":"+artifactId.substring(0,artifactId.length()-"-service".length());
-                                }else if(artifactId.endsWith("-web")){
-                                    bundleId=project.groupId+":"+artifactId.substring(0,artifactId.length()-"-web".length());
-                                }else if(artifactId.endsWith("-theme")|| artifactId.startsWith("theme-") || artifactId.contains("-theme-")){
-                                    bundleId=project.groupId+":"+artifactId.substring(0,artifactId.length()-"-theme".length());
-                                }else{
-                                    bundleId=project.groupId+":"+artifactId;
-                                }
-                            }else{
-                                cancel();
-                            }
+                        if("jar".equals(project.packaging)){
+                        if(artifactId.endsWith("-service")){
+                        bundleId=project.groupId+":"+artifactId.substring(0,artifactId.length()-"-service".length());
+                        }else if(artifactId.endsWith("-web")){
+                        bundleId=project.groupId+":"+artifactId.substring(0,artifactId.length()-"-web".length());
+                        }else if(artifactId.endsWith("-theme")|| artifactId.startsWith("theme-") || artifactId.contains("-theme-")){
+                        bundleId=project.groupId+":"+artifactId.substring(0,artifactId.length()-"-theme".length());
+                        }else{
+                        bundleId=project.groupId+":"+artifactId;
+                        }
+                        }else{
+                        cancel();
+                        }
                         }
                         log.info("Detected vr-plugin bundleId="+bundleId+" of type "+componentType);
                         println("########################################");
@@ -154,39 +155,39 @@
                         printlnf("project.name=%s",project.name);
                         printlnfc("project.description=%s",project.description);
                         if(project.organization!=null){
-                            printlnfc("project.organization.name=%s",project.organization.name);
-                            printlnfc("project.organization.url=%s",project.organization.url);
+                        printlnfc("project.organization.name=%s",project.organization.name);
+                        printlnfc("project.organization.url=%s",project.organization.url);
                         }
                         index=0;
                         for(dev : project.developers){
-                            printlnfc("project.developers["+index+"].id=%s",dev.id);
-                            printlnfc("project.developers["+index+"].name=%s",dev.name);
-                            printlnfc("project.developers["+index+"].url=%s",dev.url);
-                            printlnfc("project.developers["+index+"].organization.name=%s",dev.organization);
-                            printlnfc("project.developers["+index+"].organization.url=%s",dev.organizationUrl);
-                            printlnfc("project.developers["+index+"].roles=%s",strlist(" ",dev.roles));
-                            index++;
+                        printlnfc("project.developers["+index+"].id=%s",dev.id);
+                        printlnfc("project.developers["+index+"].name=%s",dev.name);
+                        printlnfc("project.developers["+index+"].url=%s",dev.url);
+                        printlnfc("project.developers["+index+"].organization.name=%s",dev.organization);
+                        printlnfc("project.developers["+index+"].organization.url=%s",dev.organizationUrl);
+                        printlnfc("project.developers["+index+"].roles=%s",strlist(" ",dev.roles));
+                        index++;
                         }
                         index=0;
                         for(dev : project.contributors){
-                            printlnfc("project.contributors["+index+"].name="+dev.name);
-                            printlnfc("project.contributors["+index+"].url="+dev.url);
-                            printlnfc("project.contributors["+index+"].organization.name="+dev.organization);
-                            printlnfc("project.contributors["+index+"].organization.url="+dev.organizationUrl);
-                            printlnfc("project.contributors["+index+"].roles=%s",strlist(" ",dev.roles));
-                            index++;
+                        printlnfc("project.contributors["+index+"].name="+dev.name);
+                        printlnfc("project.contributors["+index+"].url="+dev.url);
+                        printlnfc("project.contributors["+index+"].organization.name="+dev.organization);
+                        printlnfc("project.contributors["+index+"].organization.url="+dev.organizationUrl);
+                        printlnfc("project.contributors["+index+"].roles=%s",strlist(" ",dev.roles));
+                        index++;
                         }
                         java.util.Map scopes=new java.util.HashMap();
                         for(dep : project.dependencies){
-                            java.util.List deps=scopes.get(dep.scope);
-                            if(deps==null){
-                                deps=new java.util.ArrayList();
-                                scopes.put(dep.scope,deps);
-                            }
-                            deps.add(dep.groupId+":"+dep.artifactId+":"+dep.version);
+                        java.util.List deps=scopes.get(dep.scope);
+                        if(deps==null){
+                        deps=new java.util.ArrayList();
+                        scopes.put(dep.scope,deps);
+                        }
+                        deps.add(dep.groupId+":"+dep.artifactId+":"+dep.version);
                         }
                         for(scope : scopes.entrySet()){
-                            printlnfc("project.dependencies.%s=%s",scope.key,strlist(";",scope.value));
+                        printlnfc("project.dependencies.%s=%s",scope.key,strlist(";",scope.value));
                         }
                     </text>
                 </configuration>
@@ -289,6 +290,12 @@
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
             </snapshots>
+        </repository>
+        <repository>
+            <url>http://repository.primefaces.org/</url>
+            <id>PrimeFaces-maven-lib</id>
+            <layout>default</layout>
+            <name>Repository for library PrimeFaces-maven-lib</name>
         </repository>
     </repositories>
     <pluginRepositories>

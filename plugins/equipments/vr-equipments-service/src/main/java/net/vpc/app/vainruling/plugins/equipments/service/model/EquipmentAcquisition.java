@@ -17,7 +17,7 @@ import java.util.Date;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "date desc")
+@Entity(listOrder = "this.date desc")
 @Path("Equipment")
 @Properties(
         {

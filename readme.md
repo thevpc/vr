@@ -102,7 +102,7 @@ FLUSH PRIVILEGES;
 ### 2.3. Staring VR
 
 #### 2.3.1. Deploying
-**eniso-info-web** project is the war application to run on any Tomcat Web Container. No custom webserver configuration is needed.
+**eniso-info-app-web** project is the war application to run on any Tomcat Web Container. No custom webserver configuration is needed.
 
 #### 2.3.2. Default login/password
 login    : admin
@@ -147,7 +147,7 @@ Open apps/eniso-info/eniso-info-service/pom.xml and add these lines in the **dep
             <version>1.0</version>
         </dependency>
 ```
-Then open apps/eniso-info/eniso-info-web/pom.xml and add these lines in the **dependencies** tag
+Then open apps/eniso-info/eniso-info-app-web/pom.xml and add these lines in the **dependencies** tag
 ```xml
         <dependency>
             <groupId>mycompany</groupId>

@@ -12,16 +12,17 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
-import net.vpc.app.vainruling.plugins.academic.service.StatCache;
-import net.vpc.app.vainruling.plugins.academic.service.TeacherFilter;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
+import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
+import net.vpc.app.vainruling.plugins.academic.service.stat.StatCache;
+import net.vpc.app.vainruling.plugins.academic.service.util.TeacherPeriodFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
 import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.stat.GlobalAssignmentStat;
 import net.vpc.app.vainruling.plugins.academic.service.stat.GlobalStat;
-import net.vpc.app.vainruling.plugins.academic.service.util.DefaultTeacherFilter;
+import net.vpc.app.vainruling.plugins.academic.service.util.DefaultTeacherPeriodFilter;
 import net.vpc.app.vainruling.plugins.academic.service.util.TeacherFilterFactory;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -40,7 +41,7 @@ import java.util.*;
 //        title = "Stats Charge",
         url = "modules/academic/global-stat",
         menu = "/Education/Load",
-        securityKey = "Custom.Education.GlobalStat"
+        securityKey = AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_GLOBAL_STAT
 )
 public class GlobalStatCtrl {
 
@@ -101,7 +102,7 @@ public class GlobalStatCtrl {
         int periodId = getTeacherFilter().getPeriodId();
 
         StatCache cache = new StatCache();
-        TeacherFilter teacherFilter = getTeacherFilter().getTeacherFilter();
+        TeacherPeriodFilter teacherFilter = getTeacherFilter().getTeacherFilter();
         DeviationConfig deviationConfig = getCourseFilter().getDeviationConfig();
         CourseAssignmentFilter courseAssignmentFilter = getCourseFilter().getCourseAssignmentFilter();
         GlobalStat allTeachers = p.evalGlobalStat(periodId <= 0 ? -100 : periodId,
@@ -343,7 +344,7 @@ public class GlobalStatCtrl {
 
     public List<GlobalStatByDiscipline> getGlobalStatByDisciplines() {
         List<GlobalStatByDiscipline> all = new ArrayList<>();
-        DefaultTeacherFilter d = getTeacherFilter().getTeacherFilter();
+        DefaultTeacherPeriodFilter d = getTeacherFilter().getTeacherFilter();
         for (GlobalStatByDiscipline globalStatByDiscipline : getModel().getGlobalStatByDisciplines()) {
             if (globalStatByDiscipline.getDiscipline() == null || d.acceptOfficialDiscipline(globalStatByDiscipline.getDiscipline())) {
                 all.add(globalStatByDiscipline);
@@ -355,7 +356,7 @@ public class GlobalStatCtrl {
     public List<AcademicTeacherSituation> getGlobalStatSituations() {
         List<AcademicTeacherSituation> list = new ArrayList<>();
         Set<Integer> set = new HashSet<>();
-        DefaultTeacherFilter teacherFilter = getTeacherFilter().getTeacherFilter();
+        DefaultTeacherPeriodFilter teacherFilter = getTeacherFilter().getTeacherFilter();
         for (GlobalStatByDiscipline globalStatByDiscipline : getGlobalStatByDisciplines()) {
             for (GlobalAssignmentStat s : globalStatByDiscipline.getStat().getSituationDetails(null, null)) {
                 AcademicTeacherSituation sit = s.getSituation();

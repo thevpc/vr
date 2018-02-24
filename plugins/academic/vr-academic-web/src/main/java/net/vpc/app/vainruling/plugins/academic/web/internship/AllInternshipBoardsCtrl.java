@@ -10,6 +10,7 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipBoard;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.ext.AcademicInternshipExtList;
@@ -28,7 +29,7 @@ import java.util.List;
 //        css = "fa-table",
 //        title = "Tous les Stages",
         menu = "/Education/Projects/Internships",
-        securityKey = "Custom.Education.AllInternships",
+        securityKey = AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ALL_INTERNSHIPS,
         url = "modules/academic/internship/all-internships"
 )
 public class AllInternshipBoardsCtrl extends MyInternshipBoardsCtrl {

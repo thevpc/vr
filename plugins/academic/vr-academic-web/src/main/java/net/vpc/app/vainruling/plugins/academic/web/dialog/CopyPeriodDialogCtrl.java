@@ -72,7 +72,7 @@ public class CopyPeriodDialogCtrl {
         getModel().setFromPeriods(new ArrayList<SelectItem>());
         getModel().setToPeriods(new ArrayList<SelectItem>());
         for (AppPeriod period : VrApp.getBean(CorePlugin.class).findValidPeriods()) {
-            SelectItem item = new SelectItem(String.valueOf(period.getId()), period.getName());
+            SelectItem item = FacesUtils.createSelectItem(String.valueOf(period.getId()), period.getName(),"");
             if (!period.isReadOnly()) {
                 getModel().getToPeriods().add(item);
             }

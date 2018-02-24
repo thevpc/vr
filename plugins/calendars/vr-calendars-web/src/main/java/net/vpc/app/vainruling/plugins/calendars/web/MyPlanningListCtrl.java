@@ -11,8 +11,10 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
+import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPluginSecurity;
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,7 +32,7 @@ import java.util.List;
 //        title = "Mon Emploi du temps",
         url = "modules/calendars/my-calendars-list",
         menu = "/Calendars",
-        securityKey = "Custom.Education.MyPlanning"
+        securityKey = CalendarsPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_PLANNING
 )
 public class MyPlanningListCtrl extends AbstractPlanningCtrl {
     @Autowired
@@ -59,7 +61,7 @@ public class MyPlanningListCtrl extends AbstractPlanningCtrl {
             if (!StringUtils.isEmpty(data.getSourceName())) {
                 planningName += " (" + data.getSourceName() + ")";
             }
-            getModel().getGroups().add(new SelectItem(String.valueOf(i), planningName));
+            getModel().getGroups().add(FacesUtils.createSelectItem(String.valueOf(i), planningName));
         }
         if (getModel().getSelectionIndex() == null) {
             if (plannings.size() > 0) {

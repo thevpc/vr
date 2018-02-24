@@ -63,40 +63,40 @@ and open the template in the editor.
                         </p:menuButton>
                         <p:commandButton title="Envoyer" rendered="#{mailboxCtrl.isEnabledButton('Send')}"
                                          icon="fa fa-envelope"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
                                          onclick="processOnSendCurrent()"
                                          update="buttons msgs :listForm :itemForm :pageTitleForm :newItemForm"/>
                         <p:commandButton title="Répondre" rendered="#{mailboxCtrl.isEnabledButton('Reply')}"
                                          icon="fa fa-mail-reply"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
                                          actionListener="#{mailboxCtrl.onReply}"
                                          update=" msgs buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
                         <p:commandButton title="Rafraichir" rendered="#{mailboxCtrl.isEnabledButton('Refresh')}"
                                          icon="fa fa-refresh"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
                                          actionListener="#{mailboxCtrl.onRefresh}"
                                          update=" msgs buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
                         <p:commandButton title="Nouveau" rendered="#{mailboxCtrl.isEnabledButton('New')}"
                                          icon="fa fa-plus"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
                                          actionListener="#{mailboxCtrl.onNew}"
                                          update=" msgs buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
                         <p:commandButton title="Supprimer" rendered="#{mailboxCtrl.isEnabledButton('Remove')}"
                                          icon="fa fa-trash-o"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
                                          onclick="PF('confirmationDelete').show();"/>
                         <p:commandButton title="Archiver" rendered="#{mailboxCtrl.isEnabledButton('Archive')}"
                                          icon="fa fa-archive"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
                                          onclick="PF('confirmationArchive').show();"/>
                         <p:commandButton title="Avancé" rendered="#{mailboxCtrl.isEnabledButton('Advanced')}"
                                          icon="fa fa-flask"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
                                          actionListener="#{mailboxCtrl.onAdvancedSettings}"
                                          update=" msgs buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
                         <p:commandButton title="Fermer" rendered="#{mailboxCtrl.isEnabledButton('Cancel')}"
                                          icon="fa fa-arrow-left"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws vr-toolbox-button" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
                                          actionListener="#{mailboxCtrl.onCancelCurrent}"
                                          update=" msgs buttons :listForm :itemForm :pageTitleForm :newItemForm"/>
                     </p:outputPanel>

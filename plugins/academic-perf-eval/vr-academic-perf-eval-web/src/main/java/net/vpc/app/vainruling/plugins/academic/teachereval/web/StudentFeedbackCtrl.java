@@ -8,14 +8,17 @@ package net.vpc.app.vainruling.plugins.academic.teachereval.web;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.FQuestion;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.FRow;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.FeedbackForm;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackGroup;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackQuestion;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackResponse;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackSession;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -27,7 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.model.SelectItem;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -40,43 +45,54 @@ import java.util.logging.Logger;
 //        title = "Fiches Eval. enseignements",
         menu = "/Education/Evaluation",
         url = "modules/academic/perfeval/student-feedback",
-        securityKey = "Custom.Academic.StudentFeedback"
+        securityKey = AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENT_FEEDBACK
 )
 public class StudentFeedbackCtrl {
 
     private static final Logger log = Logger.getLogger(StudentFeedbackCtrl.class.getName());
     @Autowired
-    private CorePlugin core;
+    protected CorePlugin core;
     @Autowired
-    private AcademicPlugin academic;
+    protected AcademicPlugin academic;
     @Autowired
-    private AcademicPerfEvalPlugin feedback;
-    private Model model = new Model();
+    protected AcademicPerfEvalPlugin feedback;
+    protected Model model = new Model();
 
     @OnPageLoad
     public void onLoad() {
         ArrayList<SelectItem> items = new ArrayList<>();
-        List<AppPeriod> periods = core.findNavigatablePeriods();
-        for (AppPeriod t : periods) {
-            String n = t.getName();
-            items.add(new SelectItem(String.valueOf(t.getId()), n));
+        HashSet<Integer> visitedPeriods = new HashSet<>();
+        for (AcademicFeedbackSession f : findSessions()) {
+            if (f.getPeriod() != null && !visitedPeriods.contains(f.getPeriod().getId())) {
+                visitedPeriods.add(f.getPeriod().getId());
+                String n = f.getPeriod().getName();
+                items.add(FacesUtils.createSelectItem(String.valueOf(f.getPeriod().getId()), n));
+            }
         }
         getModel().setPeriods(items);
         onReloadFeedbacks();
     }
 
+    protected List<AcademicFeedbackSession> findSessions() {
+        return feedback.findAllWritableSessions();
+    }
+
+    protected List<AcademicFeedback> findStudentFeedbacks(int periodId,int studentId){
+        return feedback.findStudentFeedbacks(periodId, studentId, false, false, null, null, true);
+    }
+
     public void onSlideEnd(SlideEndEvent event) {
-        Slider s=(Slider) event.getSource();
+        Slider s = (Slider) event.getSource();
         for (UIComponent uiComponent : s.getParent().getChildren()) {
-            if(uiComponent.getId().equals("responseId")){
-                UIInput input=(UIInput) uiComponent;
+            if (uiComponent.getId().equals("responseId")) {
+                UIInput input = (UIInput) uiComponent;
                 Object value = input.getValue();
-                int id = Integer.parseInt(""+value);
-                for (Row row : getModel().getRows()) {
-                    for (Question question : row.getQuestions()) {
+                int id = Integer.parseInt("" + value);
+                for (FRow row : getModel().getRows()) {
+                    for (FQuestion question : row.getQuestions()) {
                         AcademicFeedbackResponse response = question.getResponse();
-                        if(response.getId()== id){
-                            response.setResponse(""+event.getValue());
+                        if (response.getId() == id) {
+                            response.setResponse("" + event.getValue());
                             return;
                         }
                     }
@@ -89,20 +105,20 @@ public class StudentFeedbackCtrl {
     public void onReloadFeedbacks() {
         AcademicStudent s = academic.getCurrentStudent();
         getModel().setFeedbacks(new ArrayList<SelectItem>());
-        AppPeriod p=null;
-        if(StringUtils.isEmpty(getModel().getPeriodId())){
-            p=core.getCurrentPeriod();
+        AppPeriod p = null;
+        if (StringUtils.isEmpty(getModel().getPeriodId())) {
+            p = core.getCurrentPeriod();
             //
-        }else {
-            p=core.findPeriod(Integer.parseInt(getModel().getPeriodId()));
+        } else {
+            p = core.findPeriod(Integer.parseInt(getModel().getPeriodId()));
         }
-        if(p==null){
-            p=core.getCurrentPeriod();
+        if (p == null) {
+            p = core.getCurrentPeriod();
         }
         if (s != null) {
             HashSet<String> ids = new HashSet<>();
-            for (AcademicFeedback f : feedback.findStudentFeedbacks(p.getId(),s.getId(), false, false, true,true,true)) {
-                getModel().getFeedbacks().add(new SelectItem(String.valueOf(f.getId()), f.getCourse().getFullName() + " - " + academic.getValidName(f.getCourse().getTeacher())));
+            for (AcademicFeedback f : findStudentFeedbacks(p.getId(), s.getId())) {
+                getModel().getFeedbacks().add(FacesUtils.createSelectItem(String.valueOf(f.getId()), f.getCourse().getFullName() + " - " + academic.getValidName(f.getCourse().getTeacher())));
                 ids.add(String.valueOf(f.getId()));
             }
             if (!ids.contains(getModel().getSelectedFeedback())) {
@@ -117,38 +133,14 @@ public class StudentFeedbackCtrl {
     }
 
     public void onFeedbackChange() {
-        List<Row> rows = new ArrayList<>();
-        if (!StringUtils.isEmpty(getModel().getSelectedFeedback())) {
-            getModel().setFeedback(feedback.findFeedback(Integer.parseInt(getModel().getSelectedFeedback())));
-            List<AcademicFeedbackGroup> groups = feedback.findStudentFeedbackGroups(getModel().getFeedback().getModel().getId());
-            Map<Integer, Question> questionsMap = new HashMap<>();
-            Map<Integer, Row> groupsMap = new HashMap<>();
-            for (AcademicFeedbackGroup group : groups) {
-                Row row = new Row();
-                row.setTitle(group.getName());
-                ArrayList<Question> questions = new ArrayList<Question>();
-                row.setQuestions(questions);
-                groupsMap.put(group.getId(), row);
-                rows.add(row);
-            }
-
-            for (AcademicFeedbackQuestion r : feedback.findStudentFeedbackQuestionsByModel(getModel().getFeedback().getModel().getId())) {
-                Question q = new Question();
-                questionsMap.put(r.getId(), q);
-                Row gg = groupsMap.get(r.getParent().getId());
-                if (gg != null) {
-                    gg.getQuestions().add(q);
-                }
-            }
-            for (AcademicFeedbackResponse r : feedback.findStudentFeedbackResponses(Integer.parseInt(getModel().getSelectedFeedback()))) {
-                Question qq = questionsMap.get(r.getQuestion().getId());
-                if (qq != null) {
-                    qq.setResponse(r);
-                }
-            }
-
+        FeedbackForm form;
+        if (StringUtils.isEmpty(getModel().getSelectedFeedback())) {
+            form = new FeedbackForm();
+        } else {
+            form = feedback.createFeedbackForm(Integer.parseInt(getModel().getSelectedFeedback()), -1);
         }
-        getModel().setRows(rows);
+        getModel().setFeedback(form.getFeedback());
+        getModel().setRows(form.getRows());
     }
 
     public void onValidate() {
@@ -156,8 +148,8 @@ public class StudentFeedbackCtrl {
     }
 
     public void onSave() {
-        for (Row row : getModel().getRows()) {
-            for (Question question : row.getQuestions()) {
+        for (FRow row : getModel().getRows()) {
+            for (FQuestion question : row.getQuestions()) {
                 feedback.saveResponse(question.getResponse());
             }
         }
@@ -167,8 +159,8 @@ public class StudentFeedbackCtrl {
     public void onSaveAndValidate() {
         onSave();
         boolean allvalid = true;
-        for (Row row : getModel().getRows()) {
-            for (Question question : row.getQuestions()) {
+        for (FRow row : getModel().getRows()) {
+            for (FQuestion question : row.getQuestions()) {
                 if (StringUtils.isEmpty(question.getResponse().getResponse())) {
                     allvalid = false;
                 }
@@ -181,7 +173,7 @@ public class StudentFeedbackCtrl {
             getModel().setFeedback(null);
             onReloadFeedbacks();
             FacesUtils.addInfoMessage("Formulaire validé");
-            if(getModel().getFeedbacks().isEmpty()){
+            if (getModel().getFeedbacks().isEmpty()) {
                 FacesUtils.addInfoMessage("Merci beaucoup pour votre implication. Toutes les fiches sont validées");
             }
         } else {
@@ -189,49 +181,12 @@ public class StudentFeedbackCtrl {
         }
     }
 
-    public void onUpdatePeriod(){
+    public void onUpdatePeriod() {
         onReloadFeedbacks();
     }
 
     public Model getModel() {
         return model;
-    }
-
-    public static class Question {
-
-        AcademicFeedbackResponse response;
-
-        public AcademicFeedbackResponse getResponse() {
-            return response;
-        }
-
-        public void setResponse(AcademicFeedbackResponse response) {
-            this.response = response;
-        }
-
-    }
-
-    public static class Row {
-
-        private String title;
-        private List<Question> questions;
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public List<Question> getQuestions() {
-            return questions;
-        }
-
-        public void setQuestions(List<Question> questions) {
-            this.questions = questions;
-        }
-
     }
 
     public static class Model {
@@ -242,7 +197,7 @@ public class StudentFeedbackCtrl {
         private List<SelectItem> feedbacks = new ArrayList<SelectItem>();
         private List<SelectItem> periods = new ArrayList<SelectItem>();
         private AcademicFeedback feedback = null;
-        private List<Row> rows = new ArrayList<>();
+        private List<FRow> rows = new ArrayList<>();
 
         public List<SelectItem> getPeriods() {
             return periods;
@@ -284,11 +239,11 @@ public class StudentFeedbackCtrl {
             this.selectedFeedback = selectedFeedback;
         }
 
-        public List<Row> getRows() {
+        public List<FRow> getRows() {
             return rows;
         }
 
-        public void setRows(List<Row> rows) {
+        public void setRows(List<FRow> rows) {
             this.rows = rows;
         }
 

@@ -59,8 +59,12 @@ public class GenerateFeedbackActionCtrl {
         getModel().setSelectedModel(String.valueOf(config.getModelId()));
 
         getModel().setModels(new ArrayList<>());
-        for (AcademicFeedbackModel item : UPA.getPersistenceUnit().<AcademicFeedbackModel>findAll(AcademicFeedbackModel.class)) {
+        List<AcademicFeedbackModel> models = UPA.getPersistenceUnit().<AcademicFeedbackModel>findAll(AcademicFeedbackModel.class);
+        for (AcademicFeedbackModel item : models) {
             getModel().getModels().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), null));
+        }
+        if(models.size()>0){
+            getModel().setSelectedModel(String.valueOf(models.get(0).getId()));
         }
 
         Map<String, Object> options = new HashMap<String, Object>();

@@ -3,7 +3,7 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
         >
 <h:head>
-    <title>#{teacherCurriculumCtrl.model.teacher.contact.fullName}</title>
+    <title>#{teacherCurriculumCtrl.model.teacher.user.contact.fullName}</title>
     <meta charset="utf-8"/>
     <meta name="author" content="vpc"/>
     <meta name="description" content="ENISo's people"/>
@@ -21,11 +21,11 @@
     <header>
         <div class="vr-top">
             <a href="/"><img class="navbar-brand" style="margin-top: 5px;height: 40px;"
-                             src="#{vr.themeContext}/images/app-icon.png" alt="VR ENISo" height="30"/></a>
+                             src="#{vr.privateThemeContext}/images/app-icon.png" alt="VR ENISo" height="30"/></a>
         </div>
 
         <div class="logo">
-            <a href="#" class="vr-contact">#{teacherCurriculumCtrl.model.teacher.contact.firstName}</a>
+            <a href="#" class="vr-contact">#{teacherCurriculumCtrl.model.teacher.user.contact.firstName}</a>
         </div>
         <!-- end logo -->
         <ul style="list-style-type: none;font-family: 'Anivers', serif;">

@@ -14,6 +14,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.A
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipBoard;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipGroup;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
@@ -60,7 +61,7 @@ public class UpdateStatusInternshipsActionCtrl {
         List<AcademicInternshipBoard> internshipBoards = pi.findEnabledInternshipBoardsByDepartment(-1, tt.getDepartment().getId(), true);
         for (AcademicInternshipBoard t : internshipBoards) {
             String n = t.getName();
-            internshipBoardsItems.add(new SelectItem(String.valueOf(t.getId()), n));
+            internshipBoardsItems.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
         }
         getModel().setBoards(internshipBoardsItems);
 
@@ -73,7 +74,7 @@ public class UpdateStatusInternshipsActionCtrl {
         List<AcademicInternshipGroup> internshipGroups = pi.findEnabledInternshipGroupsByDepartment(tt.getDepartment().getId());
         for (AcademicInternshipGroup t : internshipGroups) {
             String n = t.getName();
-            internshipGroupsItems.add(new SelectItem(String.valueOf(t.getId()), n));
+            internshipGroupsItems.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
         }
         getModel().setGroups(internshipGroupsItems);
     }
@@ -83,7 +84,7 @@ public class UpdateStatusInternshipsActionCtrl {
         List<AcademicInternshipType> internshipGroups = pi.findInternshipTypes();
         for (AcademicInternshipType t : internshipGroups) {
             String n = t.getName();
-            list.add(new SelectItem(String.valueOf(t.getId()), n));
+            list.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
         }
         getModel().setInternshipTypes(list);
     }
@@ -94,7 +95,7 @@ public class UpdateStatusInternshipsActionCtrl {
             if (!StringUtils.isEmpty(getModel().getSelectedInternshipType())) {
                 int typeId = Integer.parseInt(getModel().getSelectedInternshipType());
                 for (AcademicInternshipStatus t : pi.findInternshipStatusesByType(typeId)) {
-                    all.add(new SelectItem(String.valueOf(t.getId()), t.getName()));
+                    all.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), t.getName()));
                 }
             }
         } else {
@@ -103,7 +104,7 @@ public class UpdateStatusInternshipsActionCtrl {
                 AcademicInternshipBoard board = pi.findInternshipBoard(boardId);
 
                 for (AcademicInternshipStatus t : pi.findInternshipStatusesByType(board.getInternshipType().getId())) {
-                    all.add(new SelectItem(String.valueOf(t.getId()), t.getName()));
+                    all.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), t.getName()));
                 }
             }
         }

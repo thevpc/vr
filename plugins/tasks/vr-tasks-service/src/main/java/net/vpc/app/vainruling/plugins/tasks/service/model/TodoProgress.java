@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "date desc")
+@Entity(listOrder = "this.date desc")
 @Path("Todo")
 @Properties(
         {

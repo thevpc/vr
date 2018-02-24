@@ -19,7 +19,7 @@ import net.vpc.app.vainruling.core.service.model.AppDepartment;
  *
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "name")
+@Entity(listOrder = "this.name")
 @Path("Education/StudyPlan")
 public class AcademicClass {
 

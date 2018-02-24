@@ -15,8 +15,10 @@ import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.*;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.servicemodel.FeedbacksStats;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
@@ -40,6 +42,10 @@ public class AcademicPerfEvalPlugin {
     @Autowired
     private AcademicPlugin academic;
 
+    public static AcademicPerfEvalPlugin get(){
+        return VrApp.getBean(AcademicPerfEvalPlugin.class);
+    }
+
     public void saveResponse(AcademicFeedbackResponse r) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         String response = r.getResponse();
@@ -55,8 +61,8 @@ public class AcademicPerfEvalPlugin {
 
     @Start
     private void onStart() {
-        VrApp.getBean(CorePlugin.class).createRight("Custom.Academic.StudentFeedback", "Custom.Academic.StudentFeedback");
-        VrApp.getBean(CorePlugin.class).createRight("Custom.Academic.TeacherStatFeedback", "Custom.Academic.TeacherStatFeedback");
+        VrApp.getBean(CorePlugin.class).createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENT_FEEDBACK, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENT_FEEDBACK);
+        VrApp.getBean(CorePlugin.class).createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_STAT_FEEDBACK, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_STAT_FEEDBACK);
         Map<String,AcademicFeedbackSession> sessions=new HashMap<>();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         for (AcademicFeedbackSession session : pu.<AcademicFeedbackSession>findAll(AcademicFeedbackSession.class)) {
@@ -92,6 +98,27 @@ public class AcademicPerfEvalPlugin {
                 }
             }
         }
+    }
+
+    public List<AcademicFeedbackSession> findAllReadableSessions(){
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQueryBuilder(AcademicFeedbackSession.class)
+                .byField("read",true)
+                .<AcademicFeedbackSession>getResultList()
+                ;
+    }
+
+    public List<AcademicFeedbackSession> findAllWritableSessions(){
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQueryBuilder(AcademicFeedbackSession.class)
+                .byField("write",true)
+                .<AcademicFeedbackSession>getResultList()
+                ;
+    }
+
+    public List<AcademicFeedbackSession> findAllSessions(){
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.findAll(AcademicFeedbackSession.class);
     }
 
     public AcademicFeedback findFeedback(int feedbackId) {
@@ -240,6 +267,17 @@ public class AcademicPerfEvalPlugin {
                 .setParameter("academicCourseAssignmentId", academicCourseAssignmentId)
 //                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getResultList();
+    }
+
+    public AcademicFeedback findStudentAssignmentFeedback(int academicCourseAssignmentId, int student) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select f from AcademicFeedback f where f.courseId= :academicCourseAssignmentId "
+                + " and f.studentId=:student"
+                + " order by f.name"
+        )
+                .setParameter("academicCourseAssignmentId", academicCourseAssignmentId)
+                .setParameter("student",student)
+                .getSingleResultOrNull();
     }
 
     public List<AcademicFeedback> findFeedbacks(
@@ -422,7 +460,7 @@ public class AcademicPerfEvalPlugin {
         }
         return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.coursePlan.periodId=:periodId "
                 +(semesterId<0?"":" and a.coursePlan.courseLevel.semesterId=:semesterId ") +
-                (classIdsString.length()==0 ?"" : " and (a.subClassId in (" + classIdsString + ") or a.coursePlan.courseLevel.academicClassId in (" + classIdsString + ")) ") +
+                (classIdsString.length()==0 ?"" : " and (a.subClassId in (" + classIdsString + ") or (a.subClassId = null and a.coursePlan.courseLevel.academicClassId in (" + classIdsString + "))) ") +
                 " and a.teacher.allowCourseFeedback=true " +
                 " and a.coursePlan.allowCourseFeedback=true "
         )
@@ -445,7 +483,7 @@ public class AcademicPerfEvalPlugin {
         try {
             traceService.trace("generateStudentsFeedbackForm", "start generating",
                     "model='" + academicFeedbackModel.getName() + "' for '" + studentProfileFilter + "'",
-                    AcademicPerfEvalPlugin.class.getSimpleName(),
+                    "/Education/Evaluation",
                     java.util.logging.Level.INFO
             );
             TraceService.makeSilenced(new VoidAction() {
@@ -455,13 +493,19 @@ public class AcademicPerfEvalPlugin {
                                                       .setParameter("id", academicFeedbackModelId)
                                                       .getResultList();
 
-                                              for (AcademicStudent s : academic.findStudents(studentProfileFilter, "x.allowCourseFeedback=true")) {
+                                              for (AcademicStudent s : academic.findStudents(studentProfileFilter, AcademicStudentStage.ATTENDING, "x.allowCourseFeedback=true")) {
                                                   //allowCourseFeedback
                                                   boolean allowCourseFeedback;
-                                                  List<AcademicClass> classes = academic.findStudentClasses(s.getId(), true, false);
-                                                  int[] classesId = new int[classes.size()];
+
+                                                  List<AcademicClass> allClasses = academic.findStudentClasses(s.getId(), false, true);
+
+                                                  Set<Integer> myClasses = new HashSet<>();
+                                                  for (AcademicClass mc : academic.findStudentClasses(s.getId(), false, false)) {
+                                                      myClasses.add(mc.getId());
+                                                  }
+                                                  int[] classesId = new int[allClasses.size()];
                                                   for (int i = 0; i < classesId.length; i++) {
-                                                      classesId[i] = classes.get(i).getId();
+                                                      classesId[i] = allClasses.get(i).getId();
                                                   }
                                                   List<AcademicCourseAssignment> assignements = findEvaluatableAssignments(academicFeedbackSession.getPeriod().getId(),academicFeedbackSession.getSemester().getId(),classesId);
                                                   Set<Integer> existingAssignementIds = pu.createQuery("Select f.course.id from AcademicFeedback f where f.course.coursePlan.periodId=:periodId and f.studentId=:studentId")
@@ -469,27 +513,34 @@ public class AcademicPerfEvalPlugin {
                                                           .setParameter("studentId", s.getId())
                                                           .getValueSet(0);
                                                   for (AcademicCourseAssignment assignement : assignements) {
-                                                      if (!existingAssignementIds.contains(assignement.getId())) {
-                                                          if (!"PFE-PFE".equals(assignement.getName())) {
-                                                              //AcademicCoursePlan
-                                                              //check if feedback is still there:
-                                                              AcademicFeedback f = new AcademicFeedback();
-                                                              f.setArchived(false);
-                                                              f.setCourse(assignement);
-                                                              f.setStudent(s);
-                                                              f.setModel(academicFeedbackModel);
-                                                              f.setSession(academicFeedbackSession);
-                                                              pu.persist(f);
+                                                      //if(myClasses.contains(assignement.resolveAcademicClass().getId())){
+                                                          if (!existingAssignementIds.contains(assignement.getId())) {
+                                                              if (!"PFE-PFE".equals(assignement.getName())) {
+                                                                  //AcademicCoursePlan
+                                                                  //check if feedback is still there:
+                                                                  AcademicFeedback f = new AcademicFeedback();
+                                                                  f.setArchived(false);
+                                                                  f.setCourse(assignement);
+                                                                  f.setStudent(s);
+                                                                  f.setModel(academicFeedbackModel);
+                                                                  f.setSession(academicFeedbackSession);
+                                                                  pu.persist(f);
 
-                                                              for (AcademicFeedbackQuestion q : academicFeedbackQuestions) {
-                                                                  AcademicFeedbackResponse r = new AcademicFeedbackResponse();
-                                                                  r.setFeedback(f);
-                                                                  r.setQuestion(q);
-                                                                  r.setValid(false);
-                                                                  pu.persist(r);
+                                                                  for (AcademicFeedbackQuestion q : academicFeedbackQuestions) {
+                                                                      AcademicFeedbackResponse r = new AcademicFeedbackResponse();
+                                                                      r.setFeedback(f);
+                                                                      r.setQuestion(q);
+                                                                      r.setValid(false);
+                                                                      pu.persist(r);
+                                                                  }
                                                               }
                                                           }
-                                                      }
+//                                                      }else{
+//                                                          AcademicFeedback old = findStudentAssignmentFeedback(assignement.getId(), s.getId());
+//                                                          if(old!=null) {
+//                                                              CorePlugin.get().remove("AcademicFeedback", old.getId());
+//                                                          }
+//                                                      }
                                                   }
                                               }
                                           }
@@ -497,14 +548,14 @@ public class AcademicPerfEvalPlugin {
             ).run();
             traceService.trace("generateStudentsFeedbackForm", "generating finished successfully",
                     "model='" + academicFeedbackModel.getName() + "' for '" + studentProfileFilter + "'",
-                    AcademicPerfEvalPlugin.class.getSimpleName(),
+                    "/Education/Evaluation",
                     java.util.logging.Level.INFO
             );
         } catch (Exception ex) {
             log.log(java.util.logging.Level.SEVERE, "Error generating StudentsFeedbackForm", ex);
             traceService.trace("generateStudentsFeedbackForm", "generating finished successfully",
                     "model='" + academicFeedbackModel.getName() + "' for '" + studentProfileFilter + "' : " + ex.getMessage(),
-                    AcademicPerfEvalPlugin.class.getSimpleName(),
+                    "/Education/Evaluation",
                     java.util.logging.Level.SEVERE
             );
 
@@ -625,6 +676,41 @@ public class AcademicPerfEvalPlugin {
         return statData;
     }
 
+    public FeedbackForm createFeedbackForm(int feedbackId,int feedbackModelId){
+        FeedbackForm ff=new FeedbackForm();
+        List<FRow> rows = ff.getRows();
+        if (feedbackId>=0) {
+            AcademicFeedback feedback = findFeedback(feedbackId);
+            ff.setFeedback(feedback);
+            List<AcademicFeedbackGroup> groups = findStudentFeedbackGroups(feedback.getModel().getId());
+            Map<Integer, FQuestion> questionsMap = new HashMap<>();
+            Map<Integer, FRow> groupsMap = new HashMap<>();
+            for (AcademicFeedbackGroup group : groups) {
+                FRow row = new FRow();
+                row.setTitle(group.getName());
+                ArrayList<FQuestion> questions = new ArrayList<FQuestion>();
+                row.setQuestions(questions);
+                groupsMap.put(group.getId(), row);
+                rows.add(row);
+            }
+
+            for (AcademicFeedbackQuestion r : findStudentFeedbackQuestionsByModel(feedback.getModel().getId())) {
+                FQuestion q = new FQuestion();
+                questionsMap.put(r.getId(), q);
+                FRow gg = groupsMap.get(r.getParent().getId());
+                if (gg != null) {
+                    gg.getQuestions().add(q);
+                }
+            }
+            for (AcademicFeedbackResponse r : findStudentFeedbackResponses(feedbackId)) {
+                FQuestion qq = questionsMap.get(r.getQuestion().getId());
+                if (qq != null) {
+                    qq.setResponse(r);
+                }
+            }
+        }
+        return ff;
+    }
 
 }
 

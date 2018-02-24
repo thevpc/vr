@@ -15,6 +15,7 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipType;
@@ -22,6 +23,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipBoard;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.ext.AcademicInternshipExt;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.ext.AcademicInternshipExtList;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
@@ -42,7 +44,7 @@ import java.util.*;
 //        css = "fa-table",
 //        title = "Stats Stages",
         menu = "/Education/Projects/Internships",
-        securityKey = "Custom.Education.InternshipBoardsStat",
+        securityKey = AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_INTERNSHIP_BOARDS_STAT,
         url = "modules/academic/internship/internship-boards-stats"
 )
 public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
@@ -99,7 +101,7 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
         AcademicInternshipExtList internships = new AcademicInternshipExtList();
         List<AcademicInternshipBoard> internshipBoards = new ArrayList<>();
         for (AppPeriod period : core.findNavigatablePeriods()) {
-            getModel().getPeriods().add(new SelectItem(String.valueOf(period.getId()), period.getName()));
+            getModel().getPeriods().add(FacesUtils.createSelectItem(String.valueOf(period.getId()), period.getName()));
         }
 
         int periodId= Convert.toInt(getModel().getPeriodId(), IntegerParserConfig.LENIENT_F);
@@ -125,7 +127,7 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
 
         for (AcademicInternshipBoard t : internshipBoards) {
             String n = t.getName();
-            getModel().getBoards().add(new SelectItem(String.valueOf(t.getId()), n));
+            getModel().getBoards().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
         }
 
         AcademicPlugin pp = VrApp.getBean(AcademicPlugin.class);
@@ -136,7 +138,7 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
             AcademicStudent s = t.getInternship().getStudent();
             String sname = pp.getValidName(s);
             n = (t.getInternship().getBoard() == null ? "?" : t.getInternship().getBoard().getName()) + "-" + t.getInternship().getCode() + "-" + sname + "-" + t.getInternship().getName();
-            internshipItemsToAddTo.add(new SelectItem(String.valueOf(t.getInternship().getId()), n));
+            internshipItemsToAddTo.add(FacesUtils.createSelectItem(String.valueOf(t.getInternship().getId()), n));
             internshipInfosToAddTo.add(new AcademicInternshipInfo(t, getCurrentTeacher()));
         }
 
@@ -146,7 +148,7 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
 
 
         for (AcademicInternshipType t : academic.findInternshipTypes()) {
-            getModel().getInternshipTypes().add(new SelectItem(String.valueOf(t.getId()), t.getName()));
+            getModel().getInternshipTypes().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), t.getName()));
         }
         getModel().setFilterInternshipTypeVisible(StringUtils.isEmpty(getModel().getBoardId()));
 
@@ -260,7 +262,7 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
                         countSuffix += " (" + s1 + "<" + s2 + ")";
                     }
                 }
-                getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), n + countSuffix));
+                getModel().getTeachers().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n + countSuffix));
             }
 
             data = VrUtils.reverseSortCount(data);

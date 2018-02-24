@@ -8,14 +8,12 @@ package net.vpc.app.vainruling.plugins.academic.web.admin;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.MirroredPath;
-import net.vpc.app.vainruling.core.service.util.VrPlatformUtils;
-import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.CourseAssignmentFilter;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
+import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.vfs.VFS;
 import net.vpc.upa.UPA;
@@ -23,7 +21,6 @@ import net.vpc.upa.VoidAction;
 import org.primefaces.event.FileUploadEvent;
 
 import java.io.File;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,7 +34,7 @@ import java.util.logging.Logger;
 //        title = "Admin Tools",
         url = "modules/academic/admin-tools",
         menu = "/Education/Config",
-        securityKey = "Custom.Education.AdminTools"
+        securityKey = AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_CONFIG_WRITE
 )
 public class AcademicAdminToolsCtrl {
 

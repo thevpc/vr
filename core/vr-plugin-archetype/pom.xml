@@ -8,7 +8,7 @@
     <version>1.0.0</version>
     <packaging>maven-archetype</packaging>
 
-    <name>vr-sample-plugin-archetype</name>
+    <name>net.vpc.app.vain-ruling.core.vr-sample-plugin-archetype</name>
     <properties>
         <github.global.server>github</github.global.server>
     </properties>

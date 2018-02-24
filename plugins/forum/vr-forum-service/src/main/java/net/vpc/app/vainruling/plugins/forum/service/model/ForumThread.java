@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "subject")
+@Entity(listOrder = "this.subject")
 @Path("Social")
 public class ForumThread {
 

@@ -54,7 +54,7 @@ public class CourseLoadFilterComponent {
         getModel().setSelectedPeriod(null);
         getModel().getPeriodItems().clear();
         for (AppPeriod p : navigatablePeriods) {
-            getModel().getPeriodItems().add(new SelectItem(String.valueOf(p.getId()), p.getName()));
+            getModel().getPeriodItems().add(FacesUtils.createSelectItem(String.valueOf(p.getId()), p.getName()));
             if (mainPeriod != null && p.getId() == mainPeriod.getId()) {
                 getModel().setSelectedPeriod(String.valueOf(p.getId()));
             }
@@ -127,7 +127,7 @@ public class CourseLoadFilterComponent {
         }
 
         getModel().getTeacherItems().clear();
-        for (AcademicTeacher item : a.findTeachersWithAssignmentsOrIntent(getPeriodId())) {
+        for (AcademicTeacher item : a.findTeachersWithAssignmentsOrIntents(getPeriodId(),-1,true,true,-1,-1)) {
             getModel().getTeacherItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.resolveFullName(), "vr-checkbox"));
         }
 

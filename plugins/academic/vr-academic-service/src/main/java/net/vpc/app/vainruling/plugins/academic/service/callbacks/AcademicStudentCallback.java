@@ -5,14 +5,26 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.callbacks;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.AppUserType;
+import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.*;
 import net.vpc.upa.Entity;
 import net.vpc.upa.callbacks.EntityEvent;
+import net.vpc.upa.callbacks.PersistEvent;
+import net.vpc.upa.callbacks.UpdateEvent;
+import net.vpc.upa.callbacks.UpdateObjectEvent;
 import net.vpc.upa.config.*;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.exceptions.UPAException;
 import net.vpc.upa.types.TypesFactory;
+
+import java.util.List;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -25,7 +37,7 @@ public class AcademicStudentCallback {
     public void onPrepareEntity(EntityEvent event) throws UPAException {
         Entity entity = event.getEntity();
         if (entity.getEntityType().equals(AcademicStudent.class)) {
-            if(!entity.containsField("contactEmail")) {
+            if (!entity.containsField("contactEmail")) {
                 entity.addField(
                         new DefaultFieldBuilder()
                                 .setName("contactEmail")
@@ -33,10 +45,10 @@ public class AcademicStudentCallback {
                                 .setReadProtectionLevel(ProtectionLevel.PROTECTED)
                                 .setDataType(TypesFactory.STRING)
                                 .setIndex(3)
-                                .setLiveSelectFormula("this.contact.email")
+                                .setLiveSelectFormula("this.user.contact.email")
                 );
             }
-            if(!entity.containsField("phone1")) {
+            if (!entity.containsField("phone1")) {
                 entity.addField(
                         new DefaultFieldBuilder()
                                 .setName("contactPhone1")
@@ -44,11 +56,73 @@ public class AcademicStudentCallback {
                                 .setReadProtectionLevel(ProtectionLevel.PROTECTED)
                                 .setDataType(TypesFactory.STRING)
                                 .setIndex(4)
-                                .setLiveSelectFormula("this.contact.phone1")
+                                .setLiveSelectFormula("this.user.contact.phone1")
                 );
             }
         }
     }
 
+    @OnPersist
+    public void onPersist(PersistEvent event) {
+        Entity entity = event.getEntity();
+        AcademicPlugin ap = AcademicPlugin.get();
+
+        if (isEntity(entity, AppUser.class)) {
+            AppUser user = (AppUser) event.getPersistedObject();
+            AppUserType t = user.getType();
+            if (t != null) {
+                if ("Student".equals(AppUserType.getCodeOrName(t))) {
+                    CorePlugin.get().userAddProfile(user.getId(), "Student");
+                }
+            }
+        }
+
+        if (isEntity(entity, AcademicStudent.class)) {
+            AcademicStudent persistedObject = (AcademicStudent) event.getPersistedObject();
+            ap.validateAcademicData_Student(persistedObject.getId(), CorePlugin.get().findPeriodOrMain(-1).getId());
+        }
+    }
+
+    private void onChangeAcademicStudent(net.vpc.upa.Entity entity, Object updatesObject) {
+        AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
+        int id = -1;
+        if (updatesObject instanceof AcademicStudent) {
+            id = ((AcademicStudent) updatesObject).getId();
+        } else if (updatesObject instanceof Document) {
+            id = (Integer) entity.getBuilder().objectToId(updatesObject);
+        }
+        if (id > 0) {
+            p.moveToFormerStudent(id, true);
+        }
+    }
+
+    @OnPreUpdate
+    public void onPreUpdate(UpdateEvent event) {
+        Entity entity = event.getEntity();
+        if (isEntity(entity, AcademicStudent.class)) {
+            event.storeUpdatedIds();
+        }
+    }
+
+    @OnUpdate
+    public void onUpdate(UpdateObjectEvent event) {
+        net.vpc.upa.Entity entity = event.getEntity();
+        AcademicPlugin ap = AcademicPlugin.get();
+        if (entity.getEntityType().equals(AcademicStudent.class)) {
+            int mainPeriod = CorePlugin.get().findPeriodOrMain(-1).getId();
+            for (Integer id : event.<Integer>loadUpdatedIds()) {
+                AcademicStudent student = ap.findStudent(id);
+                if(student!=null){
+                    onChangeAcademicStudent(entity, student);
+                    ap.validateAcademicData_Student(id, mainPeriod);
+                }
+            }
+        }
+    }
+
+    private boolean isEntity(Entity entity, Class entityType) {
+        return !entity.getModifiers().contains(EntityModifier.SYSTEM)
+                && entity.getEntityType().equals(entityType);
+    }
 
 }

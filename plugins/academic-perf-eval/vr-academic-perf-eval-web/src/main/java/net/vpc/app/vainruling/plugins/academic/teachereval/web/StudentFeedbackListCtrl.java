@@ -10,9 +10,13 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPluginSecurity;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.StatData;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
@@ -32,7 +36,7 @@ import java.util.logging.Logger;
 //        title = "Fiches Eval. enseignements",
         menu = "/Education/Evaluation",
         url = "modules/academic/perfeval/student-feedback-list",
-        securityKey = "Custom.Academic.StudentFeedbackList"
+        securityKey = AcademicPerfEvalPluginSecurity.RIGHT_CUSTOM_ACADEMIC_STUDENT_FEEDBACK_LIST
 )
 public class StudentFeedbackListCtrl {
 
@@ -53,16 +57,14 @@ public class StudentFeedbackListCtrl {
     public void onReloadStudents() {
         String studentsFilter=getModel().getStudentsFilter();
         if(StringUtils.isEmpty(studentsFilter)){
-            getModel().setStudents(new ArrayList<SelectItem>());
-            getModel().setSelectedStudent(null);
-        }else{
-            ArrayList<SelectItem> students = new ArrayList<>();
-            for (AcademicStudent academicStudent : academic.findStudents(studentsFilter, null)) {
-                students.add(new SelectItem(String.valueOf(academicStudent.getId()),academicStudent.resolveFullTitle()));
-            }
-            getModel().setStudents(students);
-            getModel().setSelectedStudent(null);
+            studentsFilter="Student";
         }
+        ArrayList<SelectItem> students = new ArrayList<>();
+        for (AcademicStudent academicStudent : academic.findStudents(studentsFilter, AcademicStudentStage.ATTENDING, null)) {
+            students.add(FacesUtils.createSelectItem(String.valueOf(academicStudent.getId()),academicStudent.resolveFullTitle()));
+        }
+        getModel().setStudents(students);
+        getModel().setSelectedStudent(null);
         onReloadFeedbacks();
     }
 
@@ -70,13 +72,43 @@ public class StudentFeedbackListCtrl {
         Integer studentId = Convert.toInt(getModel().getSelectedStudent(), IntegerParserConfig.LENIENT_F);
         AcademicStudent s = studentId<=0?null:academic.findStudent(studentId);
         getModel().setFeedbacks(new ArrayList<AcademicFeedback>());
+        getModel().setFeedbacks(new ArrayList<>());
+        getModel().setFeedbackExts(new ArrayList<>());
         if (s != null) {
-            for (AcademicFeedback f : feedback.findStudentFeedbacks(core.getCurrentPeriod().getId(),s.getId(), false, false, true,true,null)) {
+            for (AcademicFeedback f : feedback.findStudentFeedbacks(core.getCurrentPeriod().getId(),s.getId(), null/*false*/, null/*false*/, null/*true*/,null/*true*/,null)) {
                 getModel().getFeedbacks().add(f);
+                getModel().getFeedbackExts().add(new AcademicFeedbackExt(
+                        f,
+                        AcademicPerfEvalPlugin.get().evalStatData(Arrays.asList(f))
+
+                ));
             }
         }
+        getModel().setStats(AcademicPerfEvalPlugin.get().evalStatData(getModel().getFeedbacks()));
     }
 
+    public static class AcademicFeedbackExt{
+        private AcademicFeedback data;
+        private double completion;
+
+        public AcademicFeedbackExt(AcademicFeedback data, StatData completion) {
+            this.data=data;
+            this.completion=completion.getCountResponseCompletion();
+        }
+
+        public AcademicFeedbackExt(AcademicFeedback data, double completion) {
+            this.data = data;
+            this.completion = completion;
+        }
+
+        public AcademicFeedback getData() {
+            return data;
+        }
+
+        public double getCompletion() {
+            return completion;
+        }
+    }
 
     public Model getModel() {
         return model;
@@ -90,8 +122,18 @@ public class StudentFeedbackListCtrl {
         private String studentsFilter;
         private String selectedStudent;
         private List<AcademicFeedback> feedbacks = new ArrayList<AcademicFeedback>();
+        private List<AcademicFeedbackExt> feedbackExts = new ArrayList<AcademicFeedbackExt>();
         private List<SelectItem> students = new ArrayList<SelectItem>();
         private AcademicFeedback feedback = null;
+        private StatData stats = null;
+
+        public StatData getStats() {
+            return stats;
+        }
+
+        public void setStats(StatData stats) {
+            this.stats = stats;
+        }
 
         public String getStudentsFilter() {
             return studentsFilter;
@@ -147,6 +189,14 @@ public class StudentFeedbackListCtrl {
 
         public void setFeedbacks(List<AcademicFeedback> feedbacks) {
             this.feedbacks = feedbacks;
+        }
+
+        public List<AcademicFeedbackExt> getFeedbackExts() {
+            return feedbackExts;
+        }
+
+        public void setFeedbackExts(List<AcademicFeedbackExt> feedbackExts) {
+            this.feedbackExts = feedbackExts;
         }
     }
 

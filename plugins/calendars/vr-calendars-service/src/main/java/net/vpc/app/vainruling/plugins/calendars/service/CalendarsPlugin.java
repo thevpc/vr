@@ -33,6 +33,10 @@ public class CalendarsPlugin {
     @Start
     public void onStart(){
         providers = VrApp.getContext().getBeansOfType(VrCalendarProvider.class);
+        if(core==null){
+            core=CorePlugin.get();
+        }
+        core.createRight(CalendarsPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_PLANNING, "MyPlanning");
     }
     public CalendarWeek findMergedUserPublicCalendar(int userId) {
         return findMergedUserPublicCalendar(userId,null);

@@ -7,8 +7,9 @@
     <version>1.0.0</version>
     <packaging>pom</packaging>
     <modules>
-        <module>eniso-info-service</module>
-        <module>eniso-info-web</module>
-        <module>plugins/themes/eniso-info-infusion-theme</module>
+        <module>plugins/eniso-info-main/eniso-info-main-service</module>
+        <module>plugins/eniso-info-main/eniso-info-main-web</module>
+        <module>app/eniso-info-app-service</module>
+        <module>app/eniso-info-app-web</module>
     </modules>
 </project>

@@ -12,8 +12,10 @@ import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
 
+import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
 import net.vpc.app.vainruling.plugins.tasks.service.model.*;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.AccessMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -179,14 +181,10 @@ public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {
     @Override
     public void reloadPage(String cmd, boolean ustomization) {
         getModel().setTodoLists(todoService.findTodoListsByInitiator(null));
-        ArrayList<SelectItem> st = new ArrayList<SelectItem>();
-        for (TodoList s : getModel().getTodoLists()) {
-            st.add(new SelectItem(s.getId(), s.getName()));
-        }
+        getModel().setTodoListItems(VrWebHelper.toSelectItemList(getModel().getTodoLists()));
         if (getModel().getTodoLists().size() > 0) {
             getModel().setTodoList(getModel().getTodoLists().get(0));
         }
-        getModel().setTodoListItems(st);
         getModel().setAllTodos(todoService.findTodosByInitiator(null, null, null));
         todoListChanged();
     }
@@ -196,20 +194,9 @@ public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {
 //        int currentListId = list.getId();
 
         getModel().setStatuses(todoService.findTodoStatuses(getModel().getTodoList().getId()));
-        ArrayList<SelectItem> st = new ArrayList<SelectItem>();
-//        st.add(new SelectItem(null, "-"));
-        for (TodoStatus s : getModel().getStatuses()) {
-            st.add(new SelectItem(s.getId(), s.getName()));
-        }
-        getModel().setStatusItems(st);
-
+        getModel().setStatusItems(VrWebHelper.toSelectItemList(getModel().getStatuses()));
         getModel().setCategories(todoService.findTodoCategories(getModel().getTodoList().getId()));
-        st = new ArrayList<SelectItem>();
-//        st.add(new SelectItem(null, "-"));
-        for (TodoCategory s : getModel().getCategories()) {
-            st.add(new SelectItem(s.getId(), s.getName()));
-        }
-        getModel().setCategoryItems(st);
+        getModel().setCategoryItems(VrWebHelper.toSelectItemList(getModel().getCategories()));
     }
 
     public void currentTodoListChanged() {

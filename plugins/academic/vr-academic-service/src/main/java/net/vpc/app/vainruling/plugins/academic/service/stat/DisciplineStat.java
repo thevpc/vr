@@ -3,6 +3,7 @@ package net.vpc.app.vainruling.plugins.academic.service.stat;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.service.util.AcademicCourseAssignmentIdConverter;
 import net.vpc.common.util.DefaultMapList;
 import net.vpc.common.util.MapList;
 
@@ -22,7 +23,7 @@ public class DisciplineStat {
 
     private double coursePlanCount;
     private LoadValue value=new LoadValue();
-    private MapList<Integer,AcademicCourseAssignment> assignments=new DefaultMapList<Integer, AcademicCourseAssignment>(AcademicPlugin.AcademicCourseAssignmentIdConverter);
+    private MapList<Integer,AcademicCourseAssignment> assignments=new DefaultMapList<Integer, AcademicCourseAssignment>(AcademicCourseAssignmentIdConverter.INSTANCE);
     private MapList<Integer,AcademicTeacher> teachers=new DefaultMapList<Integer, AcademicTeacher>(AcademicPlugin.AcademicTeacherIdConverter);
 
     public MapList<Integer, AcademicCourseAssignment> getAssignments() {

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+
+<h:head>
+
+</h:head>
+
+<h:body>
+
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <!--@elvariable id="objCtrl" type="net.vpc.app.vainruling.core.web.obj.ObjCtrl"-->
+    <ui:composition template="#{vr.privateThemePath}/templates/dialog-template.xhtml">
+        <ui:define name="dialog-title">
+            <h:outputText value="Attention"/>
+        </ui:define>
+        <ui:define name="dialog-body">
+
+            <h:form id="myform">
+                <p:outputLabel value="#{objCtrl.model.confirmMessage}" style="margin-top: 20px; vertical-align: super;margin-right: 10px;"/>
+                <p:commandButton icon="ui-icon-search"
+                                 actionListener="#{objCtrl.proceedOpenActionDialog}"
+                                 value="Accepter" styleClass="btn btn-primary"
+                                 style="position: absolute;right: 10px; margin-top: 10px;"/>
+            </h:form>
+        </ui:define>
+
+    </ui:composition>
+
+</h:body>
+
+</html>

@@ -16,6 +16,7 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
@@ -575,7 +576,7 @@ public abstract class AbstractCourseLoadCtrl {
                 if(user!=null) {
                     AppDepartment d = t.getOwnerDepartment();
                     if (d != null) {
-                        if (core.isCurrentAllowed("Custom.Education.CourseLoadUpdateIntents")) {
+                        if (core.isCurrentAllowed(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_INTENTS)) {
                             AppDepartment d2 = user.getDepartment();
                             if (d2 != null && d2.getId() == d.getId()) {
                                 return true;
@@ -584,7 +585,7 @@ public abstract class AbstractCourseLoadCtrl {
                     }
                     d = t.resolveDepartment();
                     if (d != null) {
-                        if (core.isCurrentAllowed("Custom.Education.CourseLoadUpdateIntents")) {
+                        if (core.isCurrentAllowed(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_INTENTS)) {
                             AppDepartment d2 = user.getDepartment();
                             if (d2 != null && d2.getId() == d.getId()) {
                                 return true;
@@ -621,7 +622,7 @@ public abstract class AbstractCourseLoadCtrl {
             if (u!=null && t != null) {
                 AppDepartment d = t.getOwnerDepartment();
                 if (d != null) {
-                    if (core.isCurrentAllowed("Custom.Education.CourseLoadUpdateAssignments")) {
+                    if (core.isCurrentAllowed(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_ASSIGNMENTS)) {
                         AppDepartment d2 = u.getDepartment();
                         if (d2 != null && d2.getId() == d.getId()) {
                             return true;
@@ -630,7 +631,7 @@ public abstract class AbstractCourseLoadCtrl {
                 }
                 d = t.resolveDepartment();
                 if (d != null) {
-                    if (core.isCurrentAllowed("Custom.Education.CourseLoadUpdateAssignments")) {
+                    if (core.isCurrentAllowed(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_ASSIGNMENTS)) {
                         AppDepartment d2 = u.getDepartment();
                         if (d2 != null && d2.getId() == d.getId()) {
                             return true;

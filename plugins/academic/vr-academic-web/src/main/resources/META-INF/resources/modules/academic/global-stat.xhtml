@@ -29,7 +29,7 @@ and open the template in the editor.
                 <div >
                     <p:outputLabel id="buttons">
                         <p:commandButton value="Rafr." icon="a-refresh" style="height: 40px;"
-                                         styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton " ajax="true"
                                          actionListener="#{globalStatCtrl.onRefresh}" update=":listForm"/>
                     </p:outputLabel>
                 </div>
@@ -188,31 +188,31 @@ and open the template in the editor.
                                 >
                                     <f:facet name="{Exporters}">
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
                                                             width="16"/>
                                             <p:dataExporter type="xls" target="tbl1"
-                                                            fileName="eniso-info-teaches-count-a" postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}" postProcessor="#{vr.postProcessDataExporterXLS}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
                                                             width="16"/>
                                             <p:dataExporter type="pdf" target="tbl1"
-                                                            fileName="eniso-info-teaches-count-a"/>
+                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
                                                             width="16"/>
                                             <p:dataExporter type="csv" target="tbl1"
-                                                            fileName="eniso-info-teaches-count-a"/>
+                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
                                                             width="16"/>
                                             <p:dataExporter type="xml" target="tbl1"
-                                                            fileName="eniso-info-teaches-count-a"/>
+                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}"/>
                                         </h:commandLink>
                                     </f:facet>
                                     <p:column headerText="Discipline">
@@ -257,31 +257,31 @@ and open the template in the editor.
                                 >
                                     <f:facet name="{Exporters}">
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
                                                             width="16"/>
                                             <p:dataExporter type="xls" target="tbl2"
-                                                            fileName="eniso-info-teaches-count-b" postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-b')" postProcessor="#{vr.postProcessDataExporterXLS}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
                                                             width="16"/>
                                             <p:dataExporter type="pdf" target="tbl2"
-                                                            fileName="eniso-info-teaches-count-b"/>
+                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-b')"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
                                                             width="16"/>
                                             <p:dataExporter type="csv" target="tbl2"
-                                                            fileName="eniso-info-teaches-count-b"/>
+                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-b')"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
                                                             width="16"/>
                                             <p:dataExporter type="xml" target="tbl2"
-                                                            fileName="eniso-info-teaches-count-b"/>
+                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-b')"/>
                                         </h:commandLink>
                                     </f:facet>
 
@@ -789,31 +789,31 @@ and open the template in the editor.
                                 >
                                     <f:facet name="{Exporters}">
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
                                                             width="16"/>
                                             <p:dataExporter type="xls" target="tabstat"
-                                                            fileName="eniso-info-load-matrix" postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                                            fileName="#{corePlugin.getPreferredFileName('load-matrix')" postProcessor="#{vr.postProcessDataExporterXLS}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
                                                             width="16"/>
                                             <p:dataExporter type="pdf" target="tabstat"
-                                                            fileName="eniso-info-load-matrix"/>
+                                                            fileName="#{corePlugin.getPreferredFileName('load-matrix')"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
                                                             width="16"/>
                                             <p:dataExporter type="csv" target="tabstat"
-                                                            fileName="eniso-info-load-matrix"/>
+                                                            fileName="#{corePlugin.getPreferredFileName('load-matrix')"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
                                                             width="16"/>
                                             <p:dataExporter type="xml" target="tabstat"
-                                                            fileName="eniso-info-load-matrix"/>
+                                                            fileName="#{corePlugin.getPreferredFileName('load-matrix')"/>
                                         </h:commandLink>
                                     </f:facet>
 

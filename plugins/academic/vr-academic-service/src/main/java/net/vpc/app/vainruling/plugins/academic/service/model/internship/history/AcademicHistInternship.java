@@ -18,7 +18,7 @@ import net.vpc.upa.types.DateTime;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "name")
+@Entity(listOrder = "this.name")
 @Path("Education/History")
 public class AcademicHistInternship {
 

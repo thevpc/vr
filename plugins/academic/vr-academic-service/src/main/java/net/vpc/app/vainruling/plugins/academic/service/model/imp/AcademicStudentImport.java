@@ -59,7 +59,7 @@ public class AcademicStudentImport {
 
     public AcademicStudentImport(AcademicStudent student) {
         nin = student.getSubscriptionNumber();
-        AppContact contact = student.getContact();
+        AppContact contact = student.resolveContact();
         if(contact !=null) {
             firstName = contact.getFirstName();
             firstName2 = contact.getFirstName2();

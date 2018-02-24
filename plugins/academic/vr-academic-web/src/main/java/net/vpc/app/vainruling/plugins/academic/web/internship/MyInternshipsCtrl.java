@@ -122,7 +122,14 @@ public class MyInternshipsCtrl implements DocumentUploadListener{
     public AcademicTeacher getSelectedTeacher(String id) {
         if (id != null && id.length() > 0) {
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-            AcademicTeacher tt = p.findTeacher(Integer.parseInt(id));
+            AcademicTeacher tt =
+                    UPA.getPersistenceUnit().invokePrivileged(new Action<AcademicTeacher>() {
+                        @Override
+                        public AcademicTeacher run() {
+                            return p.findTeacher(Integer.parseInt(id));
+                        }
+                    });
+
             if (tt != null) {
                 return tt;
             }
@@ -313,7 +320,7 @@ public class MyInternshipsCtrl implements DocumentUploadListener{
             } else {
                 n = (t.getBoard() == null ? "?" : t.getBoard().getName()) + "-" + t.getCode() + "-" + t.getName();
             }
-            getModel().getInternships().add(new SelectItem(String.valueOf(t.getId()), n));
+            getModel().getInternships().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
         }
 
         if (getModel().getInternship() != null && getModel().getInternship().getCompany() != null) {
@@ -349,20 +356,25 @@ public class MyInternshipsCtrl implements DocumentUploadListener{
         if (getModel().getInternship() != null && getModel().getInternship().getBoard() != null) {
             for (AcademicInternshipVariant t : pi.findInternshipVariantsByType(getModel().getInternship().getBoard().getInternshipType().getId())) {
                 String n = t.getName();
-                getModel().getTypeVariants().add(new SelectItem(String.valueOf(t.getId()), n));
+                getModel().getTypeVariants().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
             }
             for (AcademicInternshipDuration t : pi.findInternshipDurationsByType(getModel().getInternship().getBoard().getInternshipType().getId())) {
                 String n = t.getName();
-                getModel().getDurations().add(new SelectItem(String.valueOf(t.getId()), n));
+                getModel().getDurations().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
             }
         }
 
-        for (AcademicTeacher t : p.findTeachers()) {
+        for (AcademicTeacher t : UPA.getPersistenceUnit().invokePrivileged(new Action<List<AcademicTeacher>>() {
+            @Override
+            public List<AcademicTeacher> run() {
+                return p.findTeachers();
+            }
+        })) {
             String n = p.getValidName(t);
-            getModel().getTeachers().add(new SelectItem(String.valueOf(t.getId()), n));
+            getModel().getTeachers().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
         }
         for (AppCompany t : c.findCompanies()) {
-            getModel().getCompanies().add(new SelectItem(String.valueOf(t.getId()), t.getName()));
+            getModel().getCompanies().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), t.getName()));
         }
         getModel().setSupervisor1Id((getModel().getInternship() == null || getModel().getInternship().getSupervisor() == null) ? null : String.valueOf(getModel().getInternship().getSupervisor().getId()));
         getModel().setSupervisor2Id((getModel().getInternship() == null || getModel().getInternship().getSecondSupervisor() == null) ? null : String.valueOf(getModel().getInternship().getSecondSupervisor().getId()));

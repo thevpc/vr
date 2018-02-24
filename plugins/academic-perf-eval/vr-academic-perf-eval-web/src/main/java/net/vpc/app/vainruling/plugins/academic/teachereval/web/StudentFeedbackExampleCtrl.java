@@ -10,11 +10,13 @@ import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
+import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackGroup;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackModel;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackQuestion;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackResponse;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import org.primefaces.component.slider.Slider;
 import org.primefaces.event.SlideEndEvent;
@@ -36,7 +38,7 @@ import java.util.logging.Logger;
 //        title = "Fiches Eval. enseignements",
         menu = "/Education/Evaluation",
         url = "modules/academic/perfeval/student-feedback-example",
-        securityKey = "Custom.Academic.StudentFeedbackExample"
+        securityKey = AcademicPerfEvalPluginSecurity.RIGHT_CUSTOM_ACADEMIC_STUDENT_FEEDBACK_EXAMPLE
 )
 public class StudentFeedbackExampleCtrl {
 
@@ -79,7 +81,7 @@ public class StudentFeedbackExampleCtrl {
         getModel().setFeedbacks(new ArrayList<SelectItem>());
         HashSet<String> ids = new HashSet<>();
         for (AcademicFeedbackModel f : feedback.findAcademicFeedbackModels()) {
-            getModel().getFeedbacks().add(new SelectItem(String.valueOf(f.getId()), f.getName()));
+            getModel().getFeedbacks().add(FacesUtils.createSelectItem(String.valueOf(f.getId()), f.getName()));
             ids.add(String.valueOf(f.getId()));
         }
         if (!ids.contains(getModel().getSelectedFeedback())) {

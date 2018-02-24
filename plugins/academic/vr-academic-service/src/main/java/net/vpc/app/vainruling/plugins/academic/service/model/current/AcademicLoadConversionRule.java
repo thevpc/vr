@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "name")
+@Entity(listOrder = "this.name")
 @Path("Education/Config")
 public class AcademicLoadConversionRule {
 

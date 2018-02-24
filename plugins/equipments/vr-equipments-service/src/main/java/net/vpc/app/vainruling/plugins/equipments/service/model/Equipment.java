@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.equipments.service.model;
 
 import net.vpc.app.vainruling.core.service.model.AppArea;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
@@ -17,7 +18,7 @@ import java.sql.Timestamp;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "name")
+@Entity(listOrder = "this.name")
 @Path("Equipment")
 @Properties(
         {
@@ -31,7 +32,7 @@ import java.sql.Timestamp;
                 @Property(name = "ui.auto-filter.type", value = "{expr='this.type',order=5}"),
                 @Property(name = "ui.auto-filter.statusType", value = "{expr='this.statusType',order=6}"),
                 @Property(name = "ui.main-photo-property", value = "photo"),
-                @Property(name = "ui.main-photo-property.default", value = "theme-context://images/equipment.png"),
+                @Property(name = "ui.main-photo-property.default", value = "private-theme-context://images/equipment.png"),
         })
 public class Equipment {
 
@@ -90,6 +91,8 @@ public class Equipment {
     @Properties(
             @Property(name = UIConstants.Form.NEWLINE, value = "before,after"))
     private Equipment relativeTo;
+
+    private AppUser actor;
 
 
     @Path("Trace")
@@ -284,5 +287,13 @@ public class Equipment {
 
     public void setActualQuantity(double actualQuantity) {
         this.actualQuantity = actualQuantity;
+    }
+
+    public AppUser getActor() {
+        return actor;
+    }
+
+    public void setActor(AppUser actor) {
+        this.actor = actor;
     }
 }

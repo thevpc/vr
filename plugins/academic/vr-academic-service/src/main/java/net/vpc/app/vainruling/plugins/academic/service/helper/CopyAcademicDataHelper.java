@@ -4,12 +4,13 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.model.AppTrace;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.util.*;
+import net.vpc.common.util.Converter;
+import net.vpc.common.util.DefaultMapList;
+import net.vpc.common.util.MapList;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
@@ -30,7 +31,7 @@ public class CopyAcademicDataHelper {
         final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         Map<Integer, AcademicTeacherSemestrialLoad> oldIdToNewObject = new HashMap<>();
 //copy AcademicTeacherSemestrialLoad
-        Converter<String, AcademicTeacherSemestrialLoad> converter = new Converter<String, AcademicTeacherSemestrialLoad>() {
+        Converter<AcademicTeacherSemestrialLoad,String> converter = new Converter<AcademicTeacherSemestrialLoad,String>() {
             @Override
             public String convert(AcademicTeacherSemestrialLoad value) {
                 return value.getTeacher().getId() + "-" + value.getSemester();
@@ -62,7 +63,7 @@ public class CopyAcademicDataHelper {
     private Map<Integer, AcademicCoursePlan> _copyAcademicDataAcademicCoursePlan(int fromPeriodId, AppPeriod toPeriod, Map<Integer, AcademicCourseGroup> groupsByOlId, PersistenceUnit pu) {
         final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         Map<Integer, AcademicCoursePlan> oldIdToNewObject = new HashMap<>();
-        Converter<String, AcademicCoursePlan> converter = new Converter<String, AcademicCoursePlan>() {
+        Converter<AcademicCoursePlan, String> converter = new Converter<AcademicCoursePlan, String>() {
             @Override
             public String convert(AcademicCoursePlan value) {
                 return value.getFullName();
@@ -95,7 +96,7 @@ public class CopyAcademicDataHelper {
     private Map<Integer, AcademicCourseGroup> _copyAcademicDataAcademicCourseGroup(int fromPeriodId, AppPeriod toPeriod, PersistenceUnit pu) {
         final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         Map<Integer, AcademicCourseGroup> oldIdToNewObject = new HashMap<>();
-        Converter<String, AcademicCourseGroup> converter = new Converter<String, AcademicCourseGroup>() {
+        Converter<AcademicCourseGroup, String> converter = new Converter<AcademicCourseGroup, String>() {
             @Override
             public String convert(AcademicCourseGroup value) {
                 return value.getAcademicClass().getName() + "-" + value.getName();
@@ -124,7 +125,7 @@ public class CopyAcademicDataHelper {
         return oldIdToNewObject;
     }
 
-//    public static void main(String[] args) {
+    //    public static void main(String[] args) {
 ////        System.out.println(generateDiscriminator(8,null));
 ////        System.out.println(generateDiscriminator(8,"g"));
 ////        System.out.println(generateDiscriminator(8,"auto-"));
@@ -163,7 +164,7 @@ public class CopyAcademicDataHelper {
     private Map<Integer, AcademicCourseAssignment> _copyAcademicDataAcademicCourseAssignment(int fromPeriodId, AppPeriod toPeriod, Map<Integer, AcademicCoursePlan> coursePlanMap, PersistenceUnit pu) {
         final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         Map<Integer, AcademicCourseAssignment> oldIdToNewObject = new HashMap<>();
-        Converter<String, AcademicCourseAssignment> converter = new Converter<String, AcademicCourseAssignment>() {
+        Converter<AcademicCourseAssignment, String> converter = new Converter<AcademicCourseAssignment, String>() {
             @Override
             public String convert(AcademicCourseAssignment value) {
                 return value.getFullName();
@@ -174,7 +175,7 @@ public class CopyAcademicDataHelper {
         if (true) {
             HashMap<String, AcademicCourseAssignment> visited = new HashMap<>();
             HashSet<String> reported = new HashSet<>();
-            StringBuilder error=new StringBuilder();
+            StringBuilder error = new StringBuilder();
             error.append("Some Course Assignments have similar names. Here are the problems").append("\n");
             for (AcademicCourseAssignment assignment : courseAssignments) {
                 String item = converter.convert(assignment);
@@ -189,7 +190,7 @@ public class CopyAcademicDataHelper {
                     visited.put(item, assignment);
                 }
             }
-            if(reported.size()>0) {
+            if (reported.size() > 0) {
                 TraceService.get().trace("CopyAcademicData", "Some Course Assignments have similar names", StringUtils.substring(error.toString(), 0, 4096), "Academic", Level.SEVERE);
                 log.severe(error.toString());
                 throw new IllegalArgumentException("Some Course Assignments have similar names. Check log for details");
@@ -208,7 +209,7 @@ public class CopyAcademicDataHelper {
         if (fromList.size() != courseAssignments.size()) {
             HashMap<String, AcademicCourseAssignment> visited = new HashMap<>();
             HashSet<String> reported = new HashSet<>();
-            StringBuilder error=new StringBuilder();
+            StringBuilder error = new StringBuilder();
             error.append("Some Course Assignments have similar names. Here are the problems").append("\n");
             for (AcademicCourseAssignment assignment : courseAssignments) {
                 String item = converter.convert(assignment);
@@ -223,7 +224,7 @@ public class CopyAcademicDataHelper {
                     visited.put(item, assignment);
                 }
             }
-            TraceService.get().trace("CopyAcademicData", "Some Course Assignments have similar names",StringUtils.substring(error.toString(),0,4096),"Academic", Level.SEVERE);
+            TraceService.get().trace("CopyAcademicData", "Some Course Assignments have similar names", StringUtils.substring(error.toString(), 0, 4096), "Academic", Level.SEVERE);
             log.severe(error.toString());
             throw new IllegalArgumentException("Some Course Assignments have similar names. Check log for details");
         }
@@ -246,7 +247,7 @@ public class CopyAcademicDataHelper {
     private Map<Integer, AcademicCourseIntent> _copyAcademicDataAcademicCourseIntent(int fromPeriodId, AppPeriod toPeriod, Map<Integer, AcademicCourseAssignment> courseAssignmentsMap, PersistenceUnit pu) {
         final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         Map<Integer, AcademicCourseIntent> oldIdToNewObject = new HashMap<>();
-        Converter<String, AcademicCourseIntent> converter = new Converter<String, AcademicCourseIntent>() {
+        Converter<AcademicCourseIntent, String> converter = new Converter<AcademicCourseIntent, String>() {
             @Override
             public String convert(AcademicCourseIntent value) {
                 return value.getTeacher().getId() + ":" + value.getAssignment().getFullName();

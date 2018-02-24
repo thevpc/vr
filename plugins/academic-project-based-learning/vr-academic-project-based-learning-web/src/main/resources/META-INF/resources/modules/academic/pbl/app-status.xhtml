@@ -167,7 +167,7 @@ and open the template in the editor.
                                 >
                                     <f:facet name="{Exporters}">
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
                                                             width="16"/>
                                             <p:dataExporter type="xls" target="teachersList"
                                                             fileName="proj-innov-enseignants-#{academicAppStatusCtrl.preferredFileName}"
@@ -175,28 +175,28 @@ and open the template in the editor.
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
                                                             width="16"/>
                                             <p:dataExporter type="pdf" target="teachersList"
                                                             fileName="proj-innov-enseignants-#{academicAppStatusCtrl.preferredFileName}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
                                                             width="16"/>
                                             <p:dataExporter type="csv" target="teachersList"
                                                             fileName="proj-innov-enseignants-#{academicAppStatusCtrl.preferredFileName}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
                                                             width="16"/>
                                             <p:dataExporter type="xml" target="teachersList"
                                                             fileName="proj-innov-enseignants-#{academicAppStatusCtrl.preferredFileName}"/>
                                         </h:commandLink>
                                     </f:facet>
-                                    <p:column headerText="Enseignant" sortBy="#{e.teacher.contact.fullTitle}">
-                                        <p:outputLabel value="#{e.teacher.contact.fullTitle}"/>
+                                    <p:column headerText="Enseignant" sortBy="#{e.teacher.user.contact.fullTitle}">
+                                        <p:outputLabel value="#{e.teacher.user.contact.fullTitle}"/>
                                     </p:column>
                                     <p:column headerText="Departement" sortBy="#{e.teacher.department.name}">
                                         <p:outputLabel value="#{e.teacher.department.name}"/>
@@ -300,7 +300,7 @@ and open the template in the editor.
                                 >
                                     <f:facet name="{Exporters}">
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
                                                             width="16"/>
                                             <p:dataExporter type="xls" target="studentsList"
                                                             fileName="proj-innov-eleves-#{academicAppStatusCtrl.preferredFileName}"
@@ -308,34 +308,34 @@ and open the template in the editor.
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
                                                             width="16"/>
                                             <p:dataExporter type="pdf" target="studentsList"
                                                             fileName="proj-innov-eleves-#{academicAppStatusCtrl.preferredFileName}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
                                                             width="16"/>
                                             <p:dataExporter type="csv" target="studentsList"
                                                             fileName="proj-innov-eleves-#{academicAppStatusCtrl.preferredFileName}"/>
                                         </h:commandLink>
 
                                         <h:commandLink>
-                                            <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png"
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
                                                             width="16"/>
                                             <p:dataExporter type="xml" target="studentsList"
                                                             fileName="proj-innov-eleves-#{academicAppStatusCtrl.preferredFileName}"/>
                                         </h:commandLink>
                                     </f:facet>
-                                    <p:column headerText="Elève" sortBy="#{s.student.contact.fullTitle}">
-                                        <p:outputLabel value="#{s.student.contact.fullTitle}"/>
+                                    <p:column headerText="Elève" sortBy="#{s.student.user.contact.fullTitle}">
+                                        <p:outputLabel value="#{s.student.user.contact.fullTitle}"/>
                                     </p:column>
                                     <p:column headerText="Equipe" sortBy="#{s.team.team.name}">
                                         <p:outputLabel value="#{s.team eq null? '':s.team.team.name}"/>
                                     </p:column>
-                                    <p:column headerText="Coach" sortBy="#{s.coach.contact.fullTitle}">
-                                        <p:outputLabel value="#{s.coach eq null? '':s.coach.contact.fullTitle}"/>
+                                    <p:column headerText="Coach" sortBy="#{s.coach.user.contact.fullTitle}">
+                                        <p:outputLabel value="#{s.coach eq null? '':s.coach.user.contact.fullTitle}"/>
                                     </p:column>
                                     <p:column headerText="Projet" sortBy="#{s.project.project.name}">
                                         <p:outputLabel value="#{s.project eq null? '':s.project.project.name}"/>

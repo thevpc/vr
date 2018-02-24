@@ -35,7 +35,7 @@ and open the template in the editor.
                 <!-- /.row -->
                 <!--                    <div >
                                         <p:outputLabel id="buttons">
-                                            <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton vr-icon-aws" ajax="true" actionListener="# {allTeachersCourseLoadCtrl.onRefresh}"  update=":listForm"/>
+                                            <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {allTeachersCourseLoadCtrl.onRefresh}"  update=":listForm"/>
                                         </p:outputLabel>
                                     </div>-->
 
@@ -250,28 +250,28 @@ and open the template in the editor.
 
                                 <f:facet name="{Exporters}">
                                     <h:commandLink>
-                                        <p:graphicImage url="#{vr.themePath}/images/icons/file-xls16.png" width="16"/>
-                                        <p:dataExporter type="xls" target="tbl" fileName="eniso-info-#{tab.title}" postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                        <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png" width="16"/>
+                                        <p:dataExporter type="xls" target="tbl" fileName="#{corePlugin.getPreferredFileName(tab.title)}" postProcessor="#{vr.postProcessDataExporterXLS}"/>
                                     </h:commandLink>
 
                                     <h:commandLink>
-                                        <p:graphicImage url="#{vr.themePath}/images/icons/file-pdf16.png" width="16"/>
-                                        <p:dataExporter type="pdf" target="tbl" fileName="eniso-info-#{tab.title}"/>
+                                        <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png" width="16"/>
+                                        <p:dataExporter type="pdf" target="tbl" fileName="#{corePlugin.getPreferredFileName(tab.title)}"/>
                                     </h:commandLink>
 
                                     <h:commandLink>
-                                        <p:graphicImage url="#{vr.themePath}/images/icons/file-csv16.png" width="16"/>
-                                        <p:dataExporter type="csv" target="tbl" fileName="eniso-info-#{tab.title}"/>
+                                        <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png" width="16"/>
+                                        <p:dataExporter type="csv" target="tbl" fileName="#{corePlugin.getPreferredFileName(tab.title)}"/>
                                     </h:commandLink>
 
                                     <h:commandLink>
-                                        <p:graphicImage url="#{vr.themePath}/images/icons/file-xml16.png" width="16"/>
-                                        <p:dataExporter type="xml" target="tbl" fileName="eniso-info-#{tab.title}"/>
+                                        <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png" width="16"/>
+                                        <p:dataExporter type="xml" target="tbl" fileName="#{corePlugin.getPreferredFileName(tab.title)}"/>
                                     </h:commandLink>
                                 </f:facet>
 
-                                <p:column headerText="Enseignant" width="10%" sortBy="#{i.teacher.contact.fullName}">
-                                    <h:outputText value="#{i.teacher.contact.fullName}"/>
+                                <p:column headerText="Enseignant" width="10%" sortBy="#{i.teacher.user.contact.fullName}">
+                                    <h:outputText value="#{i.teacher.user.contact.fullName}"/>
                                 </p:column>
 
                                 <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('degree')}"

@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicDiscipline;
+import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,7 @@ public class DisciplineDialogCtrl {
             ExprItem i = new ExprItem(p.getName(), p.getName(), "profile", p.getName());
             if (!getModel().getMap().containsKey(i.getExpr())) {
                 getModel().getMap().put(i.getExpr(), i);
-                getModel().getItems().add(new SelectItem(i.getExpr(), i.getName()));
+                getModel().getItems().add(FacesUtils.createSelectItem(i.getExpr(), i.getName()));
             }
         }
     }

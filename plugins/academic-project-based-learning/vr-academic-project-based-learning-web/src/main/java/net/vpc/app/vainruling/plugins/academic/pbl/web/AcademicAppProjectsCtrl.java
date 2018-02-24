@@ -103,7 +103,7 @@ public class AcademicAppProjectsCtrl {
         getModel().getSessionItems().clear();
         for (ApblSession session : sessions) {
             getModel().getSessionsMap().put(session.getId(), session);
-            getModel().getSessionItems().add(new SelectItem(session.getId(), session.getName()));
+            getModel().getSessionItems().add(FacesUtils.createSelectItem(String.valueOf(session.getId()), session.getName()));
         }
         getModel().setCurrentSessionId(null);
         getModel().setProjects(new ArrayList<>());
@@ -145,7 +145,7 @@ public class AcademicAppProjectsCtrl {
             ArrayList<SelectItem> projectItems = new ArrayList<>();
             HashMap<Integer, ApblProject> projectsMap = new HashMap<>();
             for (ApblProject apblProject : apbl.findProjects(getModel().getSession().getId())) {
-                projectItems.add(new SelectItem(apblProject.getId(), Vr.get().strcut(apblProject.getName(), 80)));
+                projectItems.add(FacesUtils.createSelectItem(String.valueOf(apblProject.getId()), Vr.get().strcut(apblProject.getName(), 80)));
                 projectsMap.put(apblProject.getId(), apblProject);
             }
             getModel().setProjectItems(projectItems);
