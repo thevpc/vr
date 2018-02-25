@@ -5,14 +5,14 @@
  */
 package net.vpc.app.vainruling.plugins.devtoolbox.service;
 
-import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.plugins.Install;
+import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin()
+@VrPlugin()
 public class DevToolboxPlugin {
 
     @Install

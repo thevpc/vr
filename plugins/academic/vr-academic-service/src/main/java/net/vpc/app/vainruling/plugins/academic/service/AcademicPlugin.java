@@ -11,7 +11,6 @@ import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.model.*;
-import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.core.service.stats.KPI;
@@ -47,11 +46,12 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin()
+@VrPlugin()
 public class AcademicPlugin {
 
     public static final Converter<AcademicTeacher,Integer> AcademicTeacherIdConverter = new Converter<AcademicTeacher,Integer>() {

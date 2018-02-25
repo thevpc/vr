@@ -1,8 +1,8 @@
 package net.vpc.app.vainruling.plugins.themes.crew;
 
-import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
+import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
-@AppPlugin
+@VrPlugin
 public class CrewPublicThemePlugin {
     private void onInstall(){
 

@@ -21,7 +21,9 @@ import java.util.*;
  */
 @VrController(
         //title = "Developer Tools", css = "fa-dashboard",
-        url = "modules/devtoolbox/dev-ql", menu = "/Admin", securityKey = CorePluginSecurity.RIGHT_CUSTOM_DEV_TOOLS
+        url = "modules/devtoolbox/dev-ql", 
+        menu = "/Admin", 
+        securityKey = CorePluginSecurity.RIGHT_CUSTOM_DEV_TOOLS
 )
 @Scope(value = "session")
 public class DevToolsCtrl {

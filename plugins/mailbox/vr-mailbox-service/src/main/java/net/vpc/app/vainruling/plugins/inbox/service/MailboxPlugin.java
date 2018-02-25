@@ -16,7 +16,6 @@ import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
 import net.vpc.app.vainruling.core.service.obj.AppEntityExtendedPropertiesProvider;
-import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.core.service.util.VrPasswordStrategyRandom;
@@ -46,11 +45,12 @@ import java.util.*;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin
+@VrPlugin
 public class MailboxPlugin {
     public static final String SEND_EXTERNAL_MAIL_QUEUE = "sendExternalMailQueue";
 

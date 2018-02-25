@@ -1,9 +1,9 @@
 package net.vpc.app.vainruling.plugins.themes.adminlte;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
+import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
-@AppPlugin
+@VrPlugin
 public class AdminLTEPrivateThemePlugin {
     private void onInstall() {
         CorePlugin core = CorePlugin.get();

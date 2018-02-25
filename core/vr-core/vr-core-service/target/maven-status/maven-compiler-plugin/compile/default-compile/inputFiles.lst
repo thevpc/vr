@@ -36,7 +36,6 @@
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/security/UserTokenProvider.java
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/stats/KPIValueDef.java
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/util/LocationInfo.java
-/data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/plugins/AppPlugin.java
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/CorePluginBodyDAOManager.java
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/content/MessageTextService.java
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/callbacks/UpaAspect.java
@@ -73,6 +72,7 @@
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/security/UserSession.java
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/CorePluginBodySecurityAuthenticator.java
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/obj/EntityActionProcessor.java
+/data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/plugins/VrPlugin.java
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/CorePlugin.java
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/obj/ActionInfo.java
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/event/Event.java

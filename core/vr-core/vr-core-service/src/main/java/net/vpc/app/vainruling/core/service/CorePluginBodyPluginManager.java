@@ -286,7 +286,7 @@ class CorePluginBodyPluginManager extends CorePluginBody{
     }
 
     public Map<String, List<String>> getPluginsAPI() {
-        String[] beanNames = VrApp.getContext().getBeanNamesForAnnotation(AppPlugin.class);
+        String[] beanNames = VrApp.getContext().getBeanNamesForAnnotation(VrPlugin.class);
         Map<String, List<String>> api = new HashMap<>();
         for (String beanName : beanNames) {
 
@@ -352,7 +352,7 @@ class CorePluginBodyPluginManager extends CorePluginBody{
     public List<Plugin> getPlugins() {
         if (plugins == null) {
             buildPluginInfos();
-            String[] appPluginBeans = VrApp.getContext().getBeanNamesForAnnotation(AppPlugin.class);
+            String[] appPluginBeans = VrApp.getContext().getBeanNamesForAnnotation(VrPlugin.class);
             ListValueMap<String, Object> instances = new ListValueMap<>();
             ListValueMap<String, String> beanNames = new ListValueMap<>();
             List<String> errors = new ArrayList<>();
@@ -459,45 +459,5 @@ class CorePluginBodyPluginManager extends CorePluginBody{
         }
         return type.toString();
     }
-
-    private List<String> getOrderedPlugins() {
-        final Map<String, Object> s = VrApp.getContext().getBeansWithAnnotation(AppPlugin.class);
-        ArrayList<String> ordered = new ArrayList<>();
-        for (String k : s.keySet()) {
-            Object o1 = VrApp.getContext().getBean(k);
-            AppPlugin a1 = (AppPlugin) PlatformReflector.getTargetClass(o1).getAnnotation(AppPlugin.class);
-            for (String d : a1.dependsOn()) {
-                VrApp.getContext().getBean(d);
-            }
-            ordered.add(k);
-        }
-        Collections.sort(ordered, new Comparator<String>() {
-
-            @Override
-            public int compare(String s1, String s2) {
-                Object o1 = VrApp.getContext().getBean(s1);
-                AppPlugin a1 = (AppPlugin) PlatformReflector.getTargetClass(o1).getAnnotation(AppPlugin.class);
-                Object o2 = VrApp.getContext().getBean(s1);
-                AppPlugin a2 = (AppPlugin) PlatformReflector.getTargetClass(o2).getAnnotation(AppPlugin.class);
-                HashSet<String> hs1 = new HashSet<>(Arrays.asList(a1.dependsOn()));
-                HashSet<String> hs2 = new HashSet<>(Arrays.asList(a2.dependsOn()));
-                if (!s1.equals("coreService")) {
-                    hs1.add("coreService");
-                }
-                if (!s2.equals("coreService")) {
-                    hs2.add("coreService");
-                }
-                if (Arrays.asList(a1.dependsOn()).contains(s2)) {
-                    return -1;
-                }
-                if (Arrays.asList(a2.dependsOn()).contains(s2)) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
-        return ordered;
-    }
-
 
 }

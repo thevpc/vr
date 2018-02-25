@@ -9,7 +9,6 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.*;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.*;
@@ -30,11 +29,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin
+@VrPlugin
 public class AcademicPerfEvalPlugin {
     private static final Logger log = Logger.getLogger(AcademicPerfEvalPlugin.class.getName());
     private static final String[] VALID_RESPONSES_ARRAY={"1","2","3","4"};

@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.plugins.calendars.service;
 
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.plugins.Start;
@@ -20,11 +19,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.*;
+import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin()
+@VrPlugin()
 public class CalendarsPlugin {
 
     @Autowired

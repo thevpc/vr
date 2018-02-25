@@ -5,15 +5,15 @@
  */
 package net.vpc.app.vainruling.plugins.equipments.service;
 
-import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import org.springframework.beans.factory.annotation.Autowired;
+import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin(
+@VrPlugin(
 )
 public class InventoryPlugin {
 

@@ -8,7 +8,6 @@ package net.vpc.app.vainruling.plugins.tasks.service;
 import net.vpc.app.vainruling.core.service.*;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.InstallDemo;
 import net.vpc.app.vainruling.core.service.plugins.Start;
@@ -28,11 +27,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
+import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin
+@VrPlugin
 public class TaskPlugin {
 
     @Autowired

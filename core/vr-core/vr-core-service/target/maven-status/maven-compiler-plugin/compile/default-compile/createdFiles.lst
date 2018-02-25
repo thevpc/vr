@@ -157,7 +157,6 @@ net/vpc/app/vainruling/core/service/content/MessageTextService.class
 net/vpc/app/vainruling/core/service/model/AppBank.class
 net/vpc/app/vainruling/core/service/security/VRSecurityManager.class
 net/vpc/app/vainruling/core/service/util/PlatformReflector$DefaultInstanceInvoker.class
-net/vpc/app/vainruling/core/service/plugins/AppPlugin.class
 net/vpc/app/vainruling/core/service/util/Loop.class
 net/vpc/app/vainruling/core/service/model/AppCivility.class
 net/vpc/app/vainruling/core/service/CorePluginBodySecurityManager$3.class
@@ -293,6 +292,7 @@ net/vpc/app/vainruling/core/service/plugins/PluginDeveloper.class
 net/vpc/app/vainruling/core/service/util/UIConstants.class
 net/vpc/app/vainruling/core/service/obj/AbstractEntityObjSearchFactory.class
 net/vpc/app/vainruling/core/service/security/SessionStore.class
+net/vpc/app/vainruling/core/service/plugins/VrPlugin.class
 net/vpc/app/vainruling/core/service/util/JavascriptEvaluator$1.class
 net/vpc/app/vainruling/core/service/obj/EntityAction.class
 net/vpc/app/vainruling/core/service/content/CmsTextDisposition.class
@@ -306,7 +306,6 @@ net/vpc/app/vainruling/core/service/security/SSOPrincipal.class
 net/vpc/app/vainruling/core/service/util/wiki/VrWikiParser.class
 net/vpc/app/vainruling/core/service/obj/ObjFieldFieldSelection$1.class
 net/vpc/app/vainruling/core/service/content/CmsTextService.class
-net/vpc/app/vainruling/core/service/CorePluginBodyPluginManager$2.class
 net/vpc/app/vainruling/core/service/obj/EntityActionProcessor.class
 net/vpc/app/vainruling/core/service/CorePluginBodyFileSystem$3.class
 net/vpc/app/vainruling/core/service/plugins/Install.class

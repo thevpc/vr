@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.plugins.equipments.service;
 
 import net.vpc.app.vainruling.core.service.*;
 import net.vpc.app.vainruling.core.service.model.*;
-import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.InstallDemo;
 import net.vpc.app.vainruling.core.service.plugins.Start;
@@ -22,11 +21,12 @@ import org.springframework.context.annotation.DependsOn;
 
 import java.sql.Timestamp;
 import java.util.*;
+import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin()
+@VrPlugin()
 @DependsOn("corePlugin")
 public class EquipmentPlugin {
 

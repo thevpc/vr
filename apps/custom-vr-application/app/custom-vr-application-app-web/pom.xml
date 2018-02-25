@@ -47,7 +47,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <github.global.server>github</github.global.server>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
-        <version.vr-core-web>1.13.0</version.vr-core-web>
+        <version.vr-core-web>1.13.1</version.vr-core-web>
     </properties>
 
     <dependencies>

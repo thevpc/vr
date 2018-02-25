@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppContact;
-import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
@@ -18,11 +17,12 @@ import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
+import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
 /**
  * Created by vpc on 7/19/17.
  */
-@AppPlugin
+@VrPlugin
 public class AcademicProfilePlugin {
 
     @Install

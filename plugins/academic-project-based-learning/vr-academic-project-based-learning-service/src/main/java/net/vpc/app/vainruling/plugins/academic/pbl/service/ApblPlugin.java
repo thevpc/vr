@@ -4,7 +4,6 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.util.NameGenerator;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.*;
@@ -26,11 +25,12 @@ import net.vpc.upa.filters.ObjectFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
 /**
  * Created by vpc on 9/25/16.
  */
-@AppPlugin
+@VrPlugin
 public class ApblPlugin {
     public static final Comparator<ApblTeacherInfo> APBL_TEACHER_INFO_COMPARATOR = new Comparator<ApblTeacherInfo>() {
         @Override

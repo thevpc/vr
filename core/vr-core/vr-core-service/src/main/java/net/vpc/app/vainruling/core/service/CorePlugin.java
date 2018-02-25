@@ -39,7 +39,7 @@ import java.util.logging.Level;
 /**
  * @author taha.bensalah@gmail.com
  */
-@AppPlugin()
+@VrPlugin()
 public class CorePlugin {
 
     public static final String PATH_TEMP = "/Var/Temp";
