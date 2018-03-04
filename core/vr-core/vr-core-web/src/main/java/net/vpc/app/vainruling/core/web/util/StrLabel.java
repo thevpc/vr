@@ -1,4 +1,4 @@
-package net.vpc.app.vainruling.core.web;
+package net.vpc.app.vainruling.core.web.util;
 
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.common.vfs.VFile;
@@ -60,8 +60,4 @@ public class StrLabel {
         return labels;
     }
 
-
-    public static void main(String[] args) {
-        System.out.println(extractLabels(" r r:t r:\"f\""));
-    }
 }

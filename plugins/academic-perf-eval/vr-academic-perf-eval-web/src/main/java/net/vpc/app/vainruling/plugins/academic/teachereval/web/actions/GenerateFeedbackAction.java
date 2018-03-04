@@ -31,7 +31,7 @@ public class GenerateFeedbackAction implements ActionDialog {
     @Override
     public void openDialog(String actionId, List<String> itemIds) {
         GenerateFeedbackActionCtrl.Config c = new GenerateFeedbackActionCtrl.Config();
-        c.setSessionId(Integer.parseInt(itemIds.get(0)));
+        c.setSessionId(Convert.toInt(itemIds.get(0),IntegerParserConfig.LENIENT_F));
         VrApp.getBean(GenerateFeedbackActionCtrl.class).openDialog(c);
     }
 

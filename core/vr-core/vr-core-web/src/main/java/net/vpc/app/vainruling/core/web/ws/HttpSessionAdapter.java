@@ -20,6 +20,7 @@ class HttpSessionAdapter implements HttpSession {
         return base;
     }
 
+    @Override
     public long getCreationTime() {
         try {
             return base.getCreationTime();
@@ -29,10 +30,12 @@ class HttpSessionAdapter implements HttpSession {
         }
     }
 
+    @Override
     public String getId() {
         return base.getId();
     }
 
+    @Override
     public long getLastAccessedTime() {
         try {
             return base.getLastAccessedTime();
@@ -42,18 +45,22 @@ class HttpSessionAdapter implements HttpSession {
         }
     }
 
+    @Override
     public ServletContext getServletContext() {
         return base.getServletContext();
     }
 
+    @Override
     public int getMaxInactiveInterval() {
         return base.getMaxInactiveInterval();
     }
 
+    @Override
     public void setMaxInactiveInterval(int interval) {
         base.setMaxInactiveInterval(interval);
     }
 
+    @Override
     public Object getAttribute(String name) {
         try {
             return base.getAttribute(name);
@@ -63,6 +70,7 @@ class HttpSessionAdapter implements HttpSession {
         }
     }
 
+    @Override
     public Enumeration<String> getAttributeNames() {
         try {
             return base.getAttributeNames();
@@ -72,6 +80,7 @@ class HttpSessionAdapter implements HttpSession {
         }
     }
 
+    @Override
     public void removeAttribute(String name) {
         try {
             base.removeAttribute(name);
@@ -81,6 +90,7 @@ class HttpSessionAdapter implements HttpSession {
         }
     }
 
+    @Override
     public void invalidate() {
         IllegalStateException ex0 = null;
         Exception ex1 = null;
@@ -138,14 +148,17 @@ class HttpSessionAdapter implements HttpSession {
 
 
     //deprecated!!
+    @Override
     public HttpSessionContext getSessionContext() {
         return base.getSessionContext();
     }
 
+    @Override
     public Object getValue(String name) {
         return base.getValue(name);
     }
 
+    @Override
     public String[] getValueNames() {
         try {
             return base.getValueNames();
@@ -155,6 +168,7 @@ class HttpSessionAdapter implements HttpSession {
         }
     }
 
+    @Override
     public void putValue(String name, Object value) {
         try {
             base.putValue(name, value);
@@ -164,6 +178,7 @@ class HttpSessionAdapter implements HttpSession {
         }
     }
 
+    @Override
     public void removeValue(String name) {
         try {
             base.removeValue(name);

@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.logging.Logger;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -37,7 +39,7 @@ public class UpdateProfileRightsActionCtrl {
             config = new Config();
         }
         if (!StringUtils.isEmpty(config.profile)) {
-            int profileId = Integer.parseInt(config.profile);
+            int profileId = Convert.toInt(config.profile,IntegerParserConfig.LENIENT_F);
             List<AppRightName>[] list = core.findProfileRightNamesDualList(profileId);
             Comparator<AppRightName> comp = new Comparator<AppRightName>() {
                 @Override

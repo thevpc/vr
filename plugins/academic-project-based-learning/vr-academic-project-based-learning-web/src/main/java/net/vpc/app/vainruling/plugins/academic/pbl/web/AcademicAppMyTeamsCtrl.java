@@ -25,22 +25,24 @@ import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblUtils;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @VrController(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = ""),
-                @UPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),
-        },
-//        css = "fa-table",
-//        title = "Mes Equipes APP",
+            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")
+            ,
+                @UPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),},
+        //        css = "fa-table",
+        //        title = "Mes Equipes APP",
         url = "modules/academic/pbl/my-app-teams",
         menu = "/Education/Projects/Apbl",
         securityKey = "Custom.Education.Apbl.MyTeams"
 )
 public class AcademicAppMyTeamsCtrl {
+
     public static final Logger log = Logger.getLogger(AcademicAppProjectsCtrl.class.getName());
     @Autowired
     private ApblPlugin apbl;
@@ -132,11 +134,8 @@ public class AcademicAppMyTeamsCtrl {
     }
 
     public void onSaveTeam() {
-        if (
-                Objects.equals(getModel().getSelectedTeam().getReport(), getModel().getSelectedPathBeforeUpload())
-                        &&
-                        !StringUtils.isEmpty(getModel().getSelectedPathUploaded())
-                ) {
+        if (Objects.equals(getModel().getSelectedTeam().getReport(), getModel().getSelectedPathBeforeUpload())
+                && !StringUtils.isEmpty(getModel().getSelectedPathUploaded())) {
             getModel().getSelectedTeam().setReport(getModel().getSelectedPathUploaded());
         }
         if (getModel().isEditMode()) {
@@ -167,10 +166,27 @@ public class AcademicAppMyTeamsCtrl {
     public void reloadTeams() {
         ArrayList<SelectItem> teamItems = new ArrayList<>();
         if (currentUser != null) {
-            for (ApblTeam apblTeam : apbl.findOpenTeamsByUser(currentUser.getId(),true,false)) {
+            final List<ApblTeam> teams = apbl.findOpenTeamsByUser(currentUser.getId(), true, false);
+            Collections.sort(teams, new Comparator<ApblTeam>() {
+                @Override
+                public int compare(ApblTeam o1, ApblTeam o2) {
+                    int x = ApblUtils.SESSION_COMPARATOR.compare(o1.getSession(), o2.getSession());
+                    if (x != 0) {
+                        return x;
+                    }
+                    x = StringUtils.trim(o1.getName()).compareTo(StringUtils.trim(o2.getName()));
+                    x = StringUtils.trim(o1.getCode()).compareTo(StringUtils.trim(o2.getCode()));
+                    if (x != 0) {
+                        return x;
+                    }
+                    return Integer.compare(o1.getId(), o2.getId());
+                }
+            });
+
+            for (ApblTeam apblTeam : teams) {
                 teamItems.add(FacesUtils.createSelectItem(
                         String.valueOf(apblTeam.getId()),
-                        apblTeam.getName()
+                        "[" + apblTeam.getName() + "] " + apblTeam.getName() + " (" + apblTeam.getSession().getName() + ")"
                 ));
             }
         }
@@ -193,7 +209,7 @@ public class AcademicAppMyTeamsCtrl {
         } else {
             team = apbl.findTeam(i);
             getModel().setSelectedTeam(team);
-            getModel().setSelectedTeamMembers(team==null?new ArrayList<ApblTeamMember>() : apbl.findTeamMembers(team.getId()));
+            getModel().setSelectedTeamMembers(team == null ? new ArrayList<ApblTeamMember>() : apbl.findTeamMembers(team.getId()));
             getModel().setCoachingLogs(apbl.findTeamCoachingLog(i));
             getModel().setProgressionLogs(apbl.findTeamProgressionLog(i));
             for (ApblCoaching apblCoaching : apbl.findTeamCoaches(i)) {
@@ -232,6 +248,7 @@ public class AcademicAppMyTeamsCtrl {
     }
 
     public class Model {
+
         private List<ApblTeam> teams = new ArrayList<>();
         private List<SelectItem> teamItems = new ArrayList<>();
         private List<ApblProgressionLog> progressionLogs = new ArrayList<>();

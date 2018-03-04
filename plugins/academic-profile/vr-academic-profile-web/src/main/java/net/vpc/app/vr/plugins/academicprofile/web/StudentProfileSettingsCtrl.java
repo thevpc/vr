@@ -40,7 +40,7 @@ import java.util.logging.Logger;
         url = "modules/academic/profile/student-profile-settings"
         //securityKey = "Custom.StudentProfileSettings"
 )
-public class StudentProfileSettingsCtrl implements DocumentUploadListener, ActionEnabler, MyProfileAlternative {
+public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrActionEnabler, MyProfileAlternative {
 
     private static final Logger log = Logger.getLogger(StudentProfileSettingsCtrl.class.getName());
     @Autowired
@@ -79,7 +79,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, Actio
     }
 
     @Override
-    public boolean isEnabled(Object data) {
+    public boolean isEnabled(net.vpc.app.vainruling.core.web.VrActionInfo data) {
         return AcademicPlugin.get().getCurrentStudent() != null;
     }
 

@@ -11,13 +11,18 @@ import net.vpc.upa.config.*;
 @Path("Education/Projects/Apbl")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.session", value = "{expr='this.session',order=1}"),
+            @Property(name = "ui.auto-filter.session", value = "{expr='this.session',order=1}"),
+            @Property(name = "ui.auto-filter.project", value = "{expr='this.project',order=2}"),
         }
 )
 public class ApblTeam {
+
     @Id
     @Sequence
     private int id;
+    @Summary
+    @Formula("concat('T',this.id)")
+    private String code;
     @Main
     private String name;
 
@@ -38,8 +43,9 @@ public class ApblTeam {
     private AppUser owner;
 
     @Properties({
-//            @Property(name = UIConstants.Form.SEPARATOR, value = "Evaluation"),
-            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
+        //            @Property(name = UIConstants.Form.SEPARATOR, value = "Evaluation"),
+        @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE)
+        ,
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     }
     )
@@ -49,6 +55,14 @@ public class ApblTeam {
     private boolean freeMembers;
     private boolean lockedCoaches;
     private boolean excludeFromLoad;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public boolean isFreeMembers() {
         return freeMembers;

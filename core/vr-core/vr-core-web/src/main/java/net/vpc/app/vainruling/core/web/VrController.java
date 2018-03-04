@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.core.web;
 
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -15,6 +14,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 
+ * #{@link VrControllerInfoResolver}
+ * #{@link VrActionEnabler}
+ * #{@link VRMenuProvider}
  * @author taha.bensalah@gmail.com
  */
 @Target(ElementType.TYPE)

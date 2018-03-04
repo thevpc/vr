@@ -56,7 +56,7 @@ import java.util.logging.Logger;
 //        title = "Liste Entités",
         url = "modules/obj/objects"
 )
-public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider {
+public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerInfoResolver {
 
     private static final Logger log = Logger.getLogger(ObjCtrl.class.getName());
     private final List<ColumnView> columns = new ArrayList<>();
@@ -80,11 +80,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements UCtrlProvider
     }
 
     @Override
-    public UCtrlData getUCtrl(String cmd) {
+    public VrControllerInfo resolveVrControllerInfo(String cmd) {
         try {
             Config c = VrUtils.parseJSONObject(cmd, Config.class);
             Entity entity = UPA.getPersistenceUnit().getEntity(c.entity);
-            UCtrlData d = new UCtrlData();
+            VrControllerInfo d = new VrControllerInfo();
             d.setTitle(getPageTitleString(entity, AccessMode.READ));
             d.setUrl("modules/obj/objects");
             d.setCss("fa-table");

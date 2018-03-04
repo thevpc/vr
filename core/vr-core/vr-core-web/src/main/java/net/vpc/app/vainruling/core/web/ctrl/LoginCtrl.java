@@ -27,6 +27,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import net.vpc.app.vainruling.core.web.Vr;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -55,13 +56,13 @@ public class LoginCtrl {
     }
 
     public String gotoAppInfo() {
-        return VrApp.getBean(VrMenuManager.class).gotoPage("appInfo", "");
+        return Vr.get().gotoPage("appInfo", "");
     }
 
     public String doimpersonate() {
         AppUser u = core.impersonate(getModel().getLogin(), getModel().getPassword());
         if (u != null) {
-            return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
+            return Vr.get().gotoPage("welcome", "");
 //            return VRApp.getBean(VrMenu.class).gotoPage("todo", "sys-labo-action");
         }
         FacesUtils.addErrorMessage("Login ou mot de passe incorrect");
@@ -126,7 +127,7 @@ public class LoginCtrl {
                                 return null;
                             }
                         }
-                        return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
+                        return Vr.get().gotoPage("welcome", "");
                     }
 //            return VRApp.getBean(VrMenu.class).gotoPage("todo", "sys-labo-action");
                 }
@@ -153,7 +154,7 @@ public class LoginCtrl {
         boolean impersonating = CorePlugin.get().getCurrentToken().getRootLogin()!=null;
         core.logout();
         if (impersonating) {
-            return VrApp.getBean(VrMenuManager.class).gotoPage("welcome", "");
+            return Vr.get().gotoPage("welcome", "");
         }
         FacesUtils.invalidateSession();
         return "/index.xhtml?faces-redirect=true";

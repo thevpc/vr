@@ -1233,6 +1233,7 @@ public class ApblPlugin {
                 return false;
             }
         });
+        Collections.sort(sessions,ApblUtils.SESSION_COMPARATOR);
         return sessions;
     }
 

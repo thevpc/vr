@@ -12,6 +12,8 @@ import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
 
 public class SingleSelectionAutoFilter extends AutoFilter{
     private List<SelectItem> values=new ArrayList<>();
@@ -46,7 +48,7 @@ public class SingleSelectionAutoFilter extends AutoFilter{
     public String createFilterExpression(Map<String, Object> parameters, String paramPrefix){
         if(!StringUtils.isEmpty(selectedString)){
             if(dataType instanceof KeyType){
-                int id = Integer.parseInt(selectedString);
+                int id = Convert.toInt(selectedString,IntegerParserConfig.LENIENT_F);
                 Entity entity = ((KeyType) dataType).getEntity();
                 Object entityInstance = entity.findById(id);
                 parameters.put(paramPrefix,entityInstance);

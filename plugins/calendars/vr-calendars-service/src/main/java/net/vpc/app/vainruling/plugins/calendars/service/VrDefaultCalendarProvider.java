@@ -16,6 +16,8 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.*;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
 
 /**
  * Created by vpc on 9/15/16.
@@ -136,7 +138,7 @@ public class VrDefaultCalendarProvider implements VrCalendarProvider {
             if (!StringUtils.isEmpty(key)) {
                 key = key.trim();
                 if (Character.isDigit(key.charAt(0))) {
-                    return calendarsPlugin.findUserPublicCalendars(Integer.parseInt(key), true);
+                    return calendarsPlugin.findUserPublicCalendars(Convert.toInt(key,IntegerParserConfig.LENIENT_F), true);
                 }
                 AppUser user = core.findUser(key);
                 if (user != null) {

@@ -8,7 +8,6 @@ package net.vpc.app.vainruling.plugins.academic.web;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.*;
-import net.vpc.app.vainruling.core.web.ActionEnabler;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.VrController;
@@ -40,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.web.VrActionEnabler;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -52,7 +52,7 @@ import java.util.logging.Logger;
 //        url = "modules/academic/my-student-info",
 //        menu = "/Desktop"
 //)
-public class MyStudentInfoCtrl implements DocumentUploadListener ,ActionEnabler{
+public class MyStudentInfoCtrl implements DocumentUploadListener ,VrActionEnabler{
 
     private Model model = new Model();
 
@@ -201,7 +201,7 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,ActionEnabler{
     }
 
     @Override
-    public boolean isEnabled(Object data) {
+    public boolean isEnabled(net.vpc.app.vainruling.core.web.VrActionInfo data) {
         return AcademicPlugin.get().getCurrentStudent()!=null;
     }
 

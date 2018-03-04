@@ -10,24 +10,26 @@ import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 /**
  * @author taha.bensalah@gmail.com
  */
-public class UCtrlData {
+public class VrControllerInfo implements VrActionInfo{
 
     private String title;
     private String subTitle;
 
     private String url;
+    private String menuPath;
+    private String source;
     private String securityKey;
 
     private String css;
-    private ActionEnabler enabler;
+    private VrActionEnabler enabler;
 
     private BreadcrumbItem[] breadcrumb;
     private int priority;
 
-    public UCtrlData() {
+    public VrControllerInfo() {
     }
 
-    public UCtrlData(String title, String subTitle,String url, String css, String securityKey, BreadcrumbItem... breadcrumb) {
+    public VrControllerInfo(String title, String subTitle, String url, String css, String securityKey, BreadcrumbItem... breadcrumb) {
         this.title = title;
         this.subTitle = subTitle;
         this.url = url;
@@ -36,11 +38,27 @@ public class UCtrlData {
         this.breadcrumb = breadcrumb;
     }
 
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getMenuPath() {
+        return menuPath;
+    }
+
+    public void setMenuPath(String menuPath) {
+        this.menuPath = menuPath;
+    }
+
     public BreadcrumbItem[] getBreadcrumb() {
         return breadcrumb;
     }
 
-    public UCtrlData setBreadcrumb(BreadcrumbItem[] breadcrumb) {
+    public VrControllerInfo setBreadcrumb(BreadcrumbItem[] breadcrumb) {
         this.breadcrumb = breadcrumb;
         return this;
     }
@@ -49,7 +67,7 @@ public class UCtrlData {
         return css;
     }
 
-    public UCtrlData setCss(String css) {
+    public VrControllerInfo setCss(String css) {
         this.css = css;
         return this;
     }
@@ -58,12 +76,12 @@ public class UCtrlData {
         return title;
     }
 
-    public UCtrlData setTitle(String title) {
+    public VrControllerInfo setTitle(String title) {
         this.title = title;
         return this;
     }
 
-    public UCtrlData setSubTitle(String subTitle) {
+    public VrControllerInfo setSubTitle(String subTitle) {
         this.subTitle = subTitle;
         return this;
     }
@@ -72,7 +90,7 @@ public class UCtrlData {
         return url;
     }
 
-    public UCtrlData setUrl(String url) {
+    public VrControllerInfo setUrl(String url) {
         this.url = url;
         return this;
     }
@@ -89,11 +107,11 @@ public class UCtrlData {
         return subTitle;
     }
 
-    public ActionEnabler getEnabler() {
+    public VrActionEnabler getEnabler() {
         return enabler;
     }
 
-    public UCtrlData setEnabler(ActionEnabler enabler) {
+    public VrControllerInfo setEnabler(VrActionEnabler enabler) {
         this.enabler = enabler;
         return this;
     }

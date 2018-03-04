@@ -28,6 +28,7 @@ import net.vpc.common.util.Chronometer;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
+import net.vpc.app.vainruling.core.web.Vr;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -106,7 +107,7 @@ public abstract class AbstractCourseLoadCtrl {
             ObjCtrl.Config c = new ObjCtrl.Config();
             c.entity = "AcademicCourseAssignment";
             c.id = String.valueOf(a.getId());
-            return VrApp.getBean(VrMenuManager.class).gotoPage("obj", VrUtils.formatJSONObject(c));
+            return Vr.get().gotoPage("obj", VrUtils.formatJSONObject(c));
         }
         return null;
     }

@@ -5,8 +5,6 @@
  */
 package net.vpc.app.vainruling.core.web.menu;
 
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.ActionEnabler;
 import net.vpc.app.vainruling.core.web.Vr;
 
 import java.io.UnsupportedEncodingException;
@@ -14,15 +12,17 @@ import java.net.URLEncoder;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.web.VrActionInfo;
+import net.vpc.app.vainruling.core.web.VrActionEnabler;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-public class VRMenuDef {
+public class VRMenuInfo implements VrActionInfo{
 
-    public static final Comparator<VRMenuDef> VR_MENU_DEF_COMPARATOR = new Comparator<VRMenuDef>() {
+    public static final Comparator<VRMenuInfo> VR_MENU_DEF_COMPARATOR = new Comparator<VRMenuInfo>() {
         @Override
-        public int compare(VRMenuDef o1, VRMenuDef o2) {
+        public int compare(VRMenuInfo o1, VRMenuInfo o2) {
             int x=Integer.compare(o1.getOrder(),o2.getOrder());
             if(x!=0){
                 return x;
@@ -32,16 +32,17 @@ public class VRMenuDef {
     };
     private int order;
     private String name;
+    private String source;
     private String path;
     private String type;
     private String command;
-    private ActionEnabler enabler;
+    private VrActionEnabler enabler;
     private String securityKey;
     private String icon;
-    private List<VRMenuDef> children;
+    private List<VRMenuInfo> children=null;
     private List<VRMenuLabel> labels=new ArrayList<>();
 
-    public VRMenuDef(String name, String path, String type, String command, String securityKey, ActionEnabler enabler,String icon,int order,VRMenuLabel[] labels) {
+    public VRMenuInfo(String name, String path, String type, String command, String securityKey, VrActionEnabler enabler,String icon,int order,VRMenuLabel[] labels) {
         this.name = name;
         this.path = path;
         this.enabler = enabler;
@@ -71,7 +72,24 @@ public class VRMenuDef {
 //            labels.add(new VRMenuLabel(sval,stype));
 //        }
     }
+    
 
+    @Override
+    public String getMenuPath() {
+        return path;
+    }
+
+    @Override
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+    
+
+    
     public int getOrder() {
         return order;
     }
@@ -94,7 +112,7 @@ public class VRMenuDef {
             try {
                 p += "?a=" + URLEncoder.encode(command, "UTF-8");
             } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(VRMenuDef.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(VRMenuInfo.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return p;
@@ -108,17 +126,17 @@ public class VRMenuDef {
         return securityKey;
     }
 
-    public List<VRMenuDef> getChildren() {
+    public List<VRMenuInfo> getChildren() {
         return children;
     }
 
-    public void setChildren(List<VRMenuDef> children) {
+    public void setChildren(List<VRMenuInfo> children) {
         this.children = children;
     }
 
-    public List<VRMenuDef> getChildren(String type) {
-        List<VRMenuDef> all = new ArrayList<>();
-        for (VRMenuDef c : children) {
+    public List<VRMenuInfo> getChildren(String type) {
+        List<VRMenuInfo> all = new ArrayList<>();
+        for (VRMenuInfo c : children) {
             if (c.getType().equals(type)) {
                 all.add(c);
             }
@@ -134,9 +152,9 @@ public class VRMenuDef {
         return !getType().equals("package");
     }
 
-    public List<VRMenuDef> resolveGroups() {
-        List<VRMenuDef> all = new ArrayList<>();
-        for (VRMenuDef c : children) {
+    public List<VRMenuInfo> resolveGroups() {
+        List<VRMenuInfo> all = new ArrayList<>();
+        for (VRMenuInfo c : children) {
             if (c.getType().equals("package")) {
                 all.add(c);
             }
@@ -145,9 +163,9 @@ public class VRMenuDef {
         return all;
     }
 
-    public List<VRMenuDef> resolveLeaves() {
-        List<VRMenuDef> all = new ArrayList<>();
-        for (VRMenuDef c : children) {
+    public List<VRMenuInfo> resolveLeaves() {
+        List<VRMenuInfo> all = new ArrayList<>();
+        for (VRMenuInfo c : children) {
             if (!c.getType().equals("package")) {
                 all.add(c);
             }
@@ -195,7 +213,7 @@ public class VRMenuDef {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final VRMenuDef other = (VRMenuDef) obj;
+        final VRMenuInfo other = (VRMenuInfo) obj;
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }
@@ -216,11 +234,11 @@ public class VRMenuDef {
         return "VRMenuDef{" + "name=" + name + ", path=" + path + ", type=" + type + ", command=" + command + ", securityKey=" + securityKey + ", icon=" + icon + '}';
     }
 
-    public ActionEnabler getEnabler() {
+    public VrActionEnabler getEnabler() {
         return enabler;
     }
 
-    public void setEnabler(ActionEnabler enabler) {
+    public void setEnabler(VrActionEnabler enabler) {
         this.enabler = enabler;
     }
 }

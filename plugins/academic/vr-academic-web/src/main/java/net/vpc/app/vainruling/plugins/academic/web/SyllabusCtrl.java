@@ -11,7 +11,6 @@ import net.vpc.app.vainruling.core.service.model.AppCivility;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppGender;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.web.ActionEnabler;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.VrController;
@@ -29,6 +28,7 @@ import javax.faces.model.SelectItem;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import net.vpc.app.vainruling.core.web.VrActionEnabler;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -42,7 +42,7 @@ import java.util.List;
         menu = "/Education/Config",
         securityKey = "Custom.Education.Syllabus"
 )
-public class SyllabusCtrl implements ActionEnabler{
+public class SyllabusCtrl implements VrActionEnabler{
 
     private Model model = new Model();
 
@@ -51,7 +51,7 @@ public class SyllabusCtrl implements ActionEnabler{
     }
 
     @Override
-    public boolean isEnabled(Object data) {
+    public boolean isEnabled(net.vpc.app.vainruling.core.web.VrActionInfo data) {
         return true;
     }
 

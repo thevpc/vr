@@ -3,7 +3,6 @@ package net.vpc.app.vainruling.core.restclient;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -23,9 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -36,13 +33,13 @@ public class VrRestClient {
     private CloseableHttpClient httpClient;
     private CookieStore cookieStore = new BasicCookieStore();
     private HttpContext httpContext = new BasicHttpContext();
-    private String url = "http://localhost:8080/";
+    private String url = "http://eniso.info/";
     private String wsContext = "ws";
 
     public static void main(String[] args) {
         VrRestClient s = new VrRestClient();
 
-        System.out.println(s.login("admin", "admin"));
+        System.out.println(s.login("toto", "toto1243"));
         try {
 
             JsonObject ret = s.wscriptJson("" +

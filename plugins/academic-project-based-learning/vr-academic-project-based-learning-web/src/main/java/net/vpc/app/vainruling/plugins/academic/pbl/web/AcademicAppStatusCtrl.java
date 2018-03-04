@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
+import net.vpc.common.util.IntegerParserConfig;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -297,7 +298,7 @@ public class AcademicAppStatusCtrl {
                     accepted.add(t.getTeacher().getId());
                 }
             }
-            apbl.applyTeacherLoad(Integer.parseInt(selectedSessions[0]), new ObjectFilter<AcademicTeacher>() {
+            apbl.applyTeacherLoad(Convert.toInt(selectedSessions[0],IntegerParserConfig.LENIENT_F), new ObjectFilter<AcademicTeacher>() {
                 @Override
                 public boolean accept(AcademicTeacher value) {
                     return accepted.contains(value.getId());
@@ -312,7 +313,7 @@ public class AcademicAppStatusCtrl {
         if (selectedSessions.length == 1) {
             AcademicTeacher t = academic.findTeacher(teacherId);
             if (t != null) {
-                apbl.applyTeacherLoad(Integer.parseInt(selectedSessions[0]), new ObjectFilter<AcademicTeacher>() {
+                apbl.applyTeacherLoad(Convert.toInt(selectedSessions[0],IntegerParserConfig.LENIENT_F), new ObjectFilter<AcademicTeacher>() {
                     @Override
                     public boolean accept(AcademicTeacher value) {
                         return value.getId() == teacherId;

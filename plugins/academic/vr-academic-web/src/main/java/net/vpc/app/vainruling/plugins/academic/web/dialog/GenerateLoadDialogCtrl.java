@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -126,7 +128,7 @@ public class GenerateLoadDialogCtrl {
             }
             return a.getMainPeriod().getId();
         }
-        return Integer.parseInt(p);
+        return Convert.toInt(p,IntegerParserConfig.LENIENT_F);
     }
 
 

@@ -40,22 +40,25 @@ import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.stereotype.Controller;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @VrController(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = ""),
-                @UPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),
-        },
-//        css = "fa-table",
-//        title = "Projets APP",
+            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")
+            ,
+                @UPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),},
+        //        css = "fa-table",
+        //        title = "Projets APP",
         url = "modules/academic/pbl/app-projects",
         menu = "/Education/Projects/Apbl",
         securityKey = "Custom.Education.Apbl.Projects"
 )
+@Controller
 public class AcademicAppProjectsCtrl {
+
     public static final Logger log = Logger.getLogger(AcademicAppProjectsCtrl.class.getName());
     @Autowired
     private ApblPlugin apbl;
@@ -78,7 +81,6 @@ public class AcademicAppProjectsCtrl {
         return model;
     }
 
-
     public boolean isAllowed(String action) {
         if ("CreateProject".equals(action)) {
             return currentAddProjectAllowed;
@@ -99,6 +101,21 @@ public class AcademicAppProjectsCtrl {
         currentUser = core.getCurrentUser();
         currentAdmin = core.isCurrentSessionAdmin();
         List<ApblSession> sessions = apbl.findAvailableSessions();
+//        Collections.sort(sessions, new Comparator<ApblSession>() {
+//            @Override
+//            public int compare(ApblSession o1, ApblSession o2) {
+//                Date d1 = o1.getStartDate();
+//                Date d2 = o2.getStartDate();
+//                if (d1 != null && d1 != null) {
+//                    int x = d2.compareTo(d1);
+//                    if (x != 0) {
+//                        return x;
+//                    }
+//                }
+//                return StringUtils.nonNull(o2.getName()).compareTo(o1.getName());
+//            }
+//
+//        });
         getModel().getSessionsMap().clear();
         getModel().getSessionItems().clear();
         for (ApblSession session : sessions) {
@@ -122,24 +139,24 @@ public class AcademicAppProjectsCtrl {
             getModel().setProjectItems(new ArrayList<>());
 
         } else {
-            List<ProjectNode> projectNodes =
-                    apbl.findProjectNodes(getModel().getSession().getId(),
+            List<ProjectNode> projectNodes
+                    = apbl.findProjectNodes(getModel().getSession().getId(),
                             StringUtils.isEmpty(getModel().getFilterText()) ? null : StringComparators.ilikepart(getModel().getFilterText()).apply(StringTransforms.UNIFORM),
                             new ObjectFilter<ApblNode>() {
-                                @Override
-                                public boolean accept(ApblNode value) {
-                                    if (value instanceof TeamNode) {
-                                        if (!((TeamNode) value).getCoaches().isEmpty() && getModel().isFilterNoCoach()) {
-                                            return false;
-                                        }
-                                        if (!((TeamNode) value).getMembers().isEmpty() && getModel().isFilterNoMember()) {
-                                            return false;
-                                        }
-                                        return true;
-                                    }
-                                    return true;
+                        @Override
+                        public boolean accept(ApblNode value) {
+                            if (value instanceof TeamNode) {
+                                if (!((TeamNode) value).getCoaches().isEmpty() && getModel().isFilterNoCoach()) {
+                                    return false;
                                 }
+                                if (!((TeamNode) value).getMembers().isEmpty() && getModel().isFilterNoMember()) {
+                                    return false;
+                                }
+                                return true;
                             }
+                            return true;
+                        }
+                    }
                     );
             getModel().setProjects(projectNodes);
             ArrayList<SelectItem> projectItems = new ArrayList<>();
@@ -253,7 +270,6 @@ public class AcademicAppProjectsCtrl {
             reloadProjects();
         }
     }
-
 
     public boolean isJoinAllowed(NodeItem item) {
         if (item != null) {
@@ -720,7 +736,7 @@ public class AcademicAppProjectsCtrl {
 
     public void onAddCoach() {
         TeamNode value = getModel().getSelectedTeamNode();
-        if(getModel().getNewCoach()!=null) {
+        if (getModel().getNewCoach() != null) {
             ApblCoaching apblCoaching = apbl.addTeamCoach(value.getTeam().getId(), getModel().getNewCoach().getId());
             if (apblCoaching != null) {
                 value.getCoaches().add(new CoachNode(apblCoaching));
@@ -729,11 +745,8 @@ public class AcademicAppProjectsCtrl {
     }
 
     public void onSaveTeam() {
-        if (
-                Objects.equals(getModel().getSelectedTeam().getReport(), getModel().getSelectedPathBeforeUpload())
-                        &&
-                        !StringUtils.isEmpty(getModel().getSelectedPathUploaded())
-                ) {
+        if (Objects.equals(getModel().getSelectedTeam().getReport(), getModel().getSelectedPathBeforeUpload())
+                && !StringUtils.isEmpty(getModel().getSelectedPathUploaded())) {
             getModel().getSelectedTeam().setReport(getModel().getSelectedPathUploaded());
         }
         if (getModel().isEditMode()) {
@@ -760,11 +773,8 @@ public class AcademicAppProjectsCtrl {
     }
 
     public void onSaveProject() {
-        if (
-                Objects.equals(getModel().getSelectedProject().getSpecFilePath(), getModel().getSelectedPathBeforeUpload())
-                        &&
-                        !StringUtils.isEmpty(getModel().getSelectedPathUploaded())
-                ) {
+        if (Objects.equals(getModel().getSelectedProject().getSpecFilePath(), getModel().getSelectedPathBeforeUpload())
+                && !StringUtils.isEmpty(getModel().getSelectedPathUploaded())) {
             getModel().getSelectedProject().setSpecFilePath(getModel().getSelectedPathUploaded());
         }
         if (getModel().isEditMode()) {
@@ -829,6 +839,7 @@ public class AcademicAppProjectsCtrl {
     }
 
     public class NodeItem {
+
         String name;
         String type;
         String owner;
@@ -924,8 +935,8 @@ public class AcademicAppProjectsCtrl {
 //            n.setSelected(false);
 //        }
 //    }
-
     public class Model {
+
         ApblSession session;
         List<ProjectNode> projects = new ArrayList<>();
         Map<Integer, ApblProject> projectsMap = new HashMap<>();
@@ -1033,7 +1044,6 @@ public class AcademicAppProjectsCtrl {
             }
         }
 
-
         public boolean isViewOnly() {
             return viewOnly;
         }
@@ -1112,21 +1122,20 @@ public class AcademicAppProjectsCtrl {
             root = new DefaultTreeNode(new NodeItem("Root", projects.size(), "root", "", null), null);
             boolean defaultExpand = true;// !net.vpc.common.strings.StringUtils.isEmpty(getFilterText());
             for (ProjectNode i : projects) {
-                NodeItem project =
-                        i.getProject() == null ?
-                                new NodeItem(
-                                        "<Equipes Sans Projets>", i.getTeams().size()
-                                        , "project", "", i)
-                                :
-                                new NodeItem(
-                                        i.getProject().getName(), i.getTeams().size()
-                                        , "project", (i.getProject().getOwner() == null ? null : i.getProject().getOwner().resolveFullTitle()), i);
+                NodeItem project
+                        = i.getProject() == null
+                        ? new NodeItem(
+                                "<Equipes Sans Projets>", i.getTeams().size(),
+                                "project", "", i)
+                        : new NodeItem(
+                                "["+i.getProject().getCode()+"] "+i.getProject().getName(), i.getTeams().size(),
+                                "project", (i.getProject().getOwner() == null ? null : i.getProject().getOwner().resolveFullTitle()), i);
                 DefaultTreeNode n = new DefaultTreeNode(project, this.root);
                 n.setExpanded(defaultExpand);
                 HashSet<Integer> teachersByProject = new HashSet<>();
                 HashSet<Integer> studentsByProject = new HashSet<>();
                 for (TeamNode teamNode : i.getTeams()) {
-                    NodeItem team = new NodeItem(teamNode.getTeam().getName(), -1, "team", (teamNode.getTeam().getOwner()==null?"":teamNode.getTeam().getOwner().resolveFullTitle()), teamNode);
+                    NodeItem team = new NodeItem("["+teamNode.getTeam().getCode()+"] "+ teamNode.getTeam().getName(), -1, "team", (teamNode.getTeam().getOwner() == null ? "" : teamNode.getTeam().getOwner().resolveFullTitle()), teamNode);
                     HashSet<Integer> teachersByTeam = new HashSet<>();
                     HashSet<Integer> studentsByTeam = new HashSet<>();
                     DefaultTreeNode t = new DefaultTreeNode(team, n);

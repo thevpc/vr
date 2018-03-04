@@ -16,11 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.logging.Logger;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
+import org.springframework.stereotype.Controller;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @VrController
+@Controller
 public class UpdateProfileUsersActionCtrl {
 
     private static final Logger log = Logger.getLogger(UpdateProfileUsersActionCtrl.class.getName());
@@ -36,8 +40,22 @@ public class UpdateProfileUsersActionCtrl {
         if (config == null) {
             config = new Config();
         }
-        if (!StringUtils.isEmpty(config.profile)) {
-            int profileId = Integer.parseInt(config.profile);
+        int profileId = (!StringUtils.isEmpty(config.profile)) ? Convert.toInt(config.profile, IntegerParserConfig.LENIENT_F) : -1;
+        setProfile(profileId);
+        Map<String, Object> options = new HashMap<String, Object>();
+        options.put("resizable", false);
+        options.put("draggable", true);
+        options.put("modal", true);
+        options.put("width", 500);
+        options.put("height", 350);
+//        options.put("contentWidth", "100%");
+//        options.put("contentHeight", "100%");
+        RequestContext.getCurrentInstance().openDialog("/modules/admin/update-profile-users-dialog", options, null);
+
+    }
+
+    public void setProfile(int profileId) {
+        if (profileId >= 0) {
             List<AppUser>[] list = core.findProfileUsersDualList(profileId);
             Comparator<AppUser> comp = new Comparator<AppUser>() {
                 @Override
@@ -57,16 +75,6 @@ public class UpdateProfileUsersActionCtrl {
             getModel().setValues(v);
             getModel().setProfileId(-1);
         }
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        options.put("width", 500);
-        options.put("height", 350);
-//        options.put("contentWidth", "100%");
-//        options.put("contentHeight", "100%");
-        RequestContext.getCurrentInstance().openDialog("/modules/admin/update-profile-users-dialog", options, null);
-
     }
 
     public void save() {
@@ -131,7 +139,6 @@ public class UpdateProfileUsersActionCtrl {
         public void setProfileId(int profileId) {
             this.profileId = profileId;
         }
-
 
     }
 

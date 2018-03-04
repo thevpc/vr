@@ -14,8 +14,7 @@ import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
 
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
-import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
-import net.vpc.app.vainruling.core.web.menu.VRMenuDefFactory;
+import net.vpc.app.vainruling.core.web.menu.VRMenuInfo;
 import net.vpc.app.vainruling.core.web.menu.VRMenuLabel;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
@@ -30,6 +29,7 @@ import org.springframework.context.annotation.Scope;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
+import net.vpc.app.vainruling.core.web.VRMenuProvider;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -40,7 +40,7 @@ import java.util.List;
         }, url = "modules/todo/todos"
 )
 @Scope("singleton")
-public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFactory, UCtrlProvider, TaskTextService{
+public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider, VrControllerInfoResolver, TaskTextService{
 
     @Autowired
     private TaskPlugin todoService;
@@ -224,8 +224,8 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
     }
 
     @Override
-    public List<VRMenuDef> createVRMenuDefList() {
-        List<VRMenuDef> ok = new ArrayList<>();
+    public List<VRMenuInfo> createCustomMenus() {
+        List<VRMenuInfo> ok = new ArrayList<>();
         for (TodoList findTodoListsByResp : todoService.findTodoListsByResp(null)) {
             AppUser user = coreService.getCurrentUser();
             int count=user==null?0:todoService.findTodosByResponsible(findTodoListsByResp.getId(),
@@ -235,7 +235,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
                         TodoStatusType.TO_VERIFY,
                     }
                     ).size();
-            final VRMenuDef vrMenuDef = new VRMenuDef(findTodoListsByResp.getName(), "/Todo", "todo", findTodoListsByResp.getName(),
+            final VRMenuInfo vrMenuDef = new VRMenuInfo(findTodoListsByResp.getName(), "/Todo", "todo", findTodoListsByResp.getName(),
                     TaskPluginSecurity.PREFIX_RIGHT_CUSTOM_TODO + findTodoListsByResp.getName(), null,"",100,
                     new VRMenuLabel[]{
                         new VRMenuLabel(String.valueOf(count),"severe")
@@ -248,7 +248,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
     }
 
     @Override
-    public UCtrlData getUCtrl(String cmd) {
+    public VrControllerInfo resolveVrControllerInfo(String cmd) {
         String listName = cmd;
         String title = "?";
         if (TodoList.LABO_ACTION.equals(listName)) {
@@ -259,7 +259,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuDefFacto
             title = (listName);
         }
 
-        UCtrlData d = new UCtrlData();
+        VrControllerInfo d = new VrControllerInfo();
         d.setUrl("modules/todo/todos");
         d.setCss("fa-table");
         d.setTitle(title);

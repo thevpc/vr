@@ -1,9 +1,9 @@
 short-name = ENISo info
 long-name = ENISo info
 id = eniso.info
-version = 1.1.154
-build-date = 2018-01-26
-build-number = 154
+version = 1.1.156
+build-date = 2018-02-28
+build-number = 156
 author = Taha BEN SALAH (c)
 default-public-theme = crew
 default-private-theme = crew

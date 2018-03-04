@@ -35,6 +35,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Logger;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
+import org.springframework.stereotype.Controller;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -48,6 +51,7 @@ import java.util.logging.Logger;
         url = "modules/academic/perfeval/teacher-stat-feedback",
         securityKey = AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_STAT_FEEDBACK
 )
+@Controller
 public class TeacherStatFeedbackCtrl {
 
     private static final Logger log = Logger.getLogger(TeacherStatFeedbackCtrl.class.getName());
@@ -643,14 +647,14 @@ public class TeacherStatFeedbackCtrl {
             int pos = selectedFilter.indexOf(":");
 //            String filterType = selectedFilter.substring(0, pos);
             String idString = selectedFilter.substring(pos + 1);
-            int id = Integer.parseInt(idString);
+            int id = Convert.toInt(idString,IntegerParserConfig.LENIENT_F);
             return feedback.findAssignmentFeedbacks(id, getModel().getValidatedFilter(), false);
         }
 
         @Override
         public String getSearchTitle() {
             StringBuilder sb = new StringBuilder();
-            int assignementId = getSelectedTeacherId();
+            int assignementId = getSelectedFilterIntId();
             if (assignementId < 0) {
                 sb.append("Tous les Enseignements");
             } else {

@@ -114,7 +114,7 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
             }
             return -1;
         }
-        return Integer.parseInt(p);
+        return Convert.toInt(p,IntegerParserConfig.LENIENT_F);
     }
 
     public void onRefresh() {
@@ -133,7 +133,9 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
     public AppUser getCurrentUser() {
         String ii = getModel().getUserId();
         if (ii != null && ii.length() > 0) {
-            AppUser tt = core.findUser(Integer.parseInt(ii));
+            AppUser tt = core.findUser(
+                    Convert.toInt(ii,IntegerParserConfig.LENIENT_F)
+            );
             if (tt != null) {
                 return tt;
             }

@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.UCtrlData;
+import net.vpc.app.vainruling.core.web.VrControllerInfo;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 
@@ -16,7 +16,7 @@ import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 public abstract class BasePageCtrl extends BaseCtrl {
 
     public BreadcrumbItem getTitle() {
-        UCtrlData c = VrApp.getBean(VrMenuManager.class).getUCtrlDataByObj(this, null,null);
+        VrControllerInfo c = VrApp.getBean(VrMenuManager.class).resolveVrControllerInfoByInstance(this, null,null);
 
         return new BreadcrumbItem(c == null ? "" : c.getTitle()
                 , c == null ? "" : c.getSubTitle()

@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
+import org.springframework.stereotype.Controller;
 
 /**
  * internships for teachers
@@ -40,14 +41,16 @@ import java.util.*;
  */
 @VrController(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-//        css = "fa-table",
-//        title = "Stats Stages",
+            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+        //        css = "fa-table",
+        //        title = "Stats Stages",
         menu = "/Education/Projects/Internships",
         securityKey = AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_INTERNSHIP_BOARDS_STAT,
         url = "modules/academic/internship/internship-boards-stats"
 )
+@Controller
 public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
+
     private Model model = new Model();
     @Autowired
     private CorePlugin core;
@@ -104,8 +107,8 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
             getModel().getPeriods().add(FacesUtils.createSelectItem(String.valueOf(period.getId()), period.getName()));
         }
 
-        int periodId= Convert.toInt(getModel().getPeriodId(), IntegerParserConfig.LENIENT_F);
-        int departmentId=currentTeacher==null || currentTeacher.getDepartment()==null?-1:currentTeacher.getDepartment().getId();
+        int periodId = Convert.toInt(getModel().getPeriodId(), IntegerParserConfig.LENIENT_F);
+        int departmentId = currentTeacher == null || currentTeacher.getDepartment() == null ? -1 : currentTeacher.getDepartment().getId();
 
         if (currentTeacher != null) {
             int boardId = getModel().getInternshipBoard() == null ? -1 : getModel().getInternshipBoard().getId();
@@ -113,16 +116,21 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
             if (boardId == -1) {
                 internshipTypeId = StringUtils.isEmpty(getModel().getFilterInternshipTypeId()) ? -1 : Integer.valueOf(getModel().getFilterInternshipTypeId());
             }
-            internshipBoards = academic.findEnabledInternshipBoardsByDepartment(periodId,departmentId,null);
-            if (boardId == -1 && internshipTypeId == -1) {
-                internships = new AcademicInternshipExtList();
-            } else {
-                internships =academic.findInternshipsByTeacherExt(
-                        periodId, departmentId, -1,
-                        internshipTypeId, boardId,
-                        false
-                );
-            }
+            internshipBoards = academic.findEnabledInternshipBoardsByDepartment(periodId, departmentId, null);
+//            if (boardId == -1 && internshipTypeId == -1) {
+//                internships = new AcademicInternshipExtList();
+//            } else {
+//                internships =academic.findInternshipsByTeacherExt(
+//                        periodId, departmentId, -1,
+//                        internshipTypeId, boardId,
+//                        false
+//                );
+//            }
+            internships = academic.findInternshipsByTeacherExt(
+                    periodId, departmentId, -1,
+                    internshipTypeId, boardId,
+                    false
+            );
         }
 
         for (AcademicInternshipBoard t : internshipBoards) {
@@ -143,9 +151,19 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
         }
 
         getModel().setInternships(internships.getInternships());
+        List<StudentAcademicInternshipStatus> academicInternshipStatuses = new ArrayList<>();
+        for (AcademicInternship ii : internships.getInternships()) {
+            int share = ((ii.getStudent() != null) ? 1 : 0) + ((ii.getSecondStudent() != null) ? 1 : 0);
+            if (ii.getStudent() != null) {
+                academicInternshipStatuses.add(new StudentAcademicInternshipStatus(ii.getStudent(), ii, share));
+            }
+            if (ii.getSecondStudent() != null) {
+                academicInternshipStatuses.add(new StudentAcademicInternshipStatus(ii.getSecondStudent(), ii, share));
+            }
+        }
+        getModel().setStudentInternshipStatuses(academicInternshipStatuses);
 
         getModel().setBoardManager(false);
-
 
         for (AcademicInternshipType t : academic.findInternshipTypes()) {
             getModel().getInternshipTypes().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), t.getName()));
@@ -282,7 +300,7 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
 
     }
 
-     public AcademicTeacher getCurrentTeacher() {
+    public AcademicTeacher getCurrentTeacher() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         return a.getCurrentTeacher();
     }
@@ -364,7 +382,6 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
             }
             // disciplines & technologies
             {
-
 
                 List<NamedValueCount> circle1_table = aca.statEvalInternshipDiscipline(internships);
                 List<NamedValueCount> circle2_table = aca.statEvalInternshipTechnologies(internships);
@@ -472,8 +489,6 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
             }
 
             //Teachers
-
-
         }
     }
 //
@@ -490,6 +505,46 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
 //        getModel().getStatTables().put(name, circle1_values);
 //    }
 
+    public class StudentAcademicInternshipStatus {
+
+        private AcademicStudent student;
+        private AcademicInternship internship;
+        private int share;
+
+        public StudentAcademicInternshipStatus() {
+        }
+
+        public StudentAcademicInternshipStatus(AcademicStudent student, AcademicInternship internship, int share) {
+            this.student = student;
+            this.internship = internship;
+            this.share = share;
+        }
+
+        public AcademicStudent getStudent() {
+            return student;
+        }
+
+        public void setStudent(AcademicStudent student) {
+            this.student = student;
+        }
+
+        public AcademicInternship getInternship() {
+            return internship;
+        }
+
+        public void setInternship(AcademicInternship internship) {
+            this.internship = internship;
+        }
+
+        public int getShare() {
+            return share;
+        }
+
+        public void setShare(int share) {
+            this.share = share;
+        }
+
+    }
 
     public class Model {
 
@@ -509,7 +564,17 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
         private Map<String, List<NamedValueCount>> statTables = new HashMap<>();
         private Map<String, ChartModel> statCharts = new HashMap<>();
         private boolean filterInternshipTypeVisible = true;
+        private List<StudentAcademicInternshipStatus> studentInternshipStatuses=new ArrayList<>();
 
+        public List<StudentAcademicInternshipStatus> getStudentInternshipStatuses() {
+            return studentInternshipStatuses;
+        }
+
+        public void setStudentInternshipStatuses(List<StudentAcademicInternshipStatus> studentInternshipStatuses) {
+            this.studentInternshipStatuses = studentInternshipStatuses;
+        }
+        
+        
         public String getPeriodId() {
             return periodId;
         }
@@ -526,7 +591,6 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
             this.statTables = statTables;
         }
 
-
         public boolean isBoardManager() {
             return boardManager;
         }
@@ -534,7 +598,6 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
         public void setBoardManager(boolean boardManager) {
             this.boardManager = boardManager;
         }
-
 
         public List<SelectItem> getInternshipItems() {
             return internshipItems;
@@ -568,7 +631,6 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
             this.internships = internships;
         }
 
-
         public List<SelectItem> getTeachers() {
             return teachers;
         }
@@ -576,7 +638,6 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
         public void setTeachers(List<SelectItem> teachers) {
             this.teachers = teachers;
         }
-
 
         public String getBoardId() {
             return boardId;
@@ -606,7 +667,6 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
             return periods;
         }
 
-
         public List<AcademicInternshipInfo> getInternshipInfos() {
             return internshipInfos;
         }
@@ -622,6 +682,7 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
         public void setAcademicInternshipCounts(List<AcademicInternshipCount> academicInternshipCounts) {
             this.academicInternshipCounts = academicInternshipCounts;
         }
+
         public boolean isFilterInternshipTypeVisible() {
             return filterInternshipTypeVisible;
         }
@@ -638,6 +699,5 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
             this.statCharts = statCharts;
         }
     }
-
 
 }

@@ -14,12 +14,10 @@ import net.vpc.app.vainruling.core.service.fs.VrFSTable;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UCtrlData;
-import net.vpc.app.vainruling.core.web.UCtrlProvider;
+import net.vpc.app.vainruling.core.web.VrControllerInfo;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
-import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
-import net.vpc.app.vainruling.core.web.menu.VRMenuDefFactory;
+import net.vpc.app.vainruling.core.web.menu.VRMenuInfo;
 import net.vpc.app.vainruling.core.web.menu.VRMenuLabel;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.core.web.util.FileUploadEventHandler;
@@ -44,43 +42,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.web.VrControllerInfoResolver;
+import net.vpc.app.vainruling.core.web.VRMenuProvider;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @VrController(
-//        title = "Documents", css = "fa-dashboard",
+        //        title = "Documents", css = "fa-dashboard",
         url = "modules/files/documents"
 //        ,menu = "/FileSystem", securityKey = "Custom.FileSystem.Documents"
 )
-public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUploadListener {
+public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, DocumentUploadListener {
 
     private static final Logger log = Logger.getLogger(DocumentsCtrl.class.getName());
     @Autowired
     private CorePlugin core;
 
-
     private Model model = new Model();
 
-
     @Override
-    public List<VRMenuDef> createVRMenuDefList() {
-        List<VRMenuDef> m = new ArrayList<>();
-        m.add(new VRMenuDef("Documents Privés", "/FileSystem", "documents", "{type:'home'}", CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM, null, "", 100, new VRMenuLabel[0]));
-        m.add(new VRMenuDef("Mes Documents", "/FileSystem", "documents", "{type:'all'}", CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM, null, "", 100, new VRMenuLabel[0]));
-        m.add(new VRMenuDef("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", CorePluginSecurity.RIGHT_CUSTOM_FILESYSTEM_ROOT_FILE_SYSTEM, null, "", 500, new VRMenuLabel[0]));
+    public List<VRMenuInfo> createCustomMenus() {
+        List<VRMenuInfo> m = new ArrayList<>();
+        m.add(new VRMenuInfo("Documents Privés", "/FileSystem", "documents", "{type:'home'}", CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM, null, "", 100, new VRMenuLabel[0]));
+        m.add(new VRMenuInfo("Mes Documents", "/FileSystem", "documents", "{type:'all'}", CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM, null, "", 100, new VRMenuLabel[0]));
+        m.add(new VRMenuInfo("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", CorePluginSecurity.RIGHT_CUSTOM_FILESYSTEM_ROOT_FILE_SYSTEM, null, "", 500, new VRMenuLabel[0]));
         return m;
     }
 
     @Override
-    public UCtrlData getUCtrl(String cmd) {
+    public VrControllerInfo resolveVrControllerInfo(String cmd) {
         try {
             Config c = VrUtils.parseJSONObject(cmd, Config.class);
 
             if (c == null) {
                 c = new Config();
             }
-            UCtrlData d = new UCtrlData();
+            VrControllerInfo d = new VrControllerInfo();
             d.setUrl("modules/files/documents");
             d.setCss("fa-table");
 
@@ -183,7 +181,6 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
 //        VirtualFileSystem userfs = rootfs.filter(null);
 //        return userfs;
 //    }
-
     public void updateCurrent(VFile file) {
         getModel().setCurrent(DocumentsUtils.createFileInfo(file));
         TraceService.get().trace("visit-document", "path visited " + getModel().getCurrent().getFile().getPath(), getModel().getCurrent().getFile().getPath(), "/System/Access", Level.FINE);
@@ -225,7 +222,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
         int x = 1;
         VFile file0 = getModel().getCurrent().getFile();
         while (true) {
-            VFile vFile = file0.get("Nouveau Dossier" + (x == 1 ? "" : (" "+String.valueOf(x))));
+            VFile vFile = file0.get("Nouveau Dossier" + (x == 1 ? "" : (" " + String.valueOf(x))));
             if (!vFile.exists()) {
                 file0 = vFile;
                 break;
@@ -327,7 +324,6 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
         getModel().setFiles(DocumentsUtils.loadFiles(getModel().getCurrent().getFile()));
     }
 
-
     public Model getModel() {
         return model;
     }
@@ -344,8 +340,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
 //                    && getModel().getCurrent().getFile().isAllowedCreateChild(VFileType.FILE, null);
         }
         if ("NewFolder".equals(buttonId)) {
-            return
-                    UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePluginSecurity.RIGHT_FILESYSTEM_WRITE)
+            return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePluginSecurity.RIGHT_FILESYSTEM_WRITE)
                     && getModel().getCurrent().getFile().isAllowedCreateChild(VFileType.DIRECTORY, null);
         }
         if ("Upload".equals(buttonId)) {
@@ -369,11 +364,8 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
         }
         if ("Security".equals(buttonId)) {
             return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePluginSecurity.RIGHT_FILESYSTEM_ASSIGN_RIGHTS)
-                    &&
-                    !getModel().getCurrent().getFile().getACL().isReadOnly()
-                    &&
-                    (core.isCurrentSessionAdmin() || core.getCurrentUserLogin().equals(getModel().getCurrent().getFile().getACL().getOwner()))
-                    ;
+                    && !getModel().getCurrent().getFile().getACL().isReadOnly()
+                    && (core.isCurrentSessionAdmin() || core.getCurrentUserLogin().equals(getModel().getCurrent().getFile().getACL().getOwner()));
         }
         return core.isCurrentSessionAdmin();
     }
@@ -397,7 +389,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
 
                             @Override
                             public boolean acceptOverride(VFile file) {
-    //check if alreay selected
+                                //check if alreay selected
                                 for (VFileInfo ex : getModel().getFiles()) {
                                     if (ex.getFile().getName().equals(file.getName()) && ex.isSelected()) {
                                         return true;
@@ -448,7 +440,7 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
 
     }
 
-    public void onChangeAdvancedACL(){
+    public void onChangeAdvancedACL() {
         getModel().getCurrent().setAdvanced(getModel().getCurrent().isAdvanced());
         getModel().getCurrent().readACL();
     }
@@ -457,7 +449,6 @@ public class DocumentsCtrl implements VRMenuDefFactory, UCtrlProvider,DocumentUp
         //Object obj
         RequestContext.getCurrentInstance().closeDialog(new DialogResult(null, null));
     }
-
 
     public static class Config {
 

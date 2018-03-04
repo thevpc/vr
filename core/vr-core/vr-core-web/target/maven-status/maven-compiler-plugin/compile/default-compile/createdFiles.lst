@@ -21,7 +21,6 @@ net/vpc/app/vainruling/core/web/ctrl/AppGlobalCtrl$Model.class
 net/vpc/app/vainruling/core/web/fs/files/DocumentsCtrl$3$1.class
 net/vpc/app/vainruling/core/web/enc/URLEncoderServlet.class
 net/vpc/app/vainruling/core/web/ctrl/AppInfoCtrl.class
-net/vpc/app/vainruling/core/web/UCtrlData.class
 net/vpc/app/vainruling/core/web/util/VpcMonthConverter.class
 net/vpc/app/vainruling/core/web/obj/PropertyViewDialog.class
 net/vpc/app/vainruling/core/web/admin/actions/UpdateProfileRightsActionCtrl$Config.class
@@ -62,7 +61,6 @@ net/vpc/app/vainruling/core/web/ctrl/ActiveSessionsCtrl$1.class
 net/vpc/app/vainruling/core/web/ctrl/AbstractObjectCtrl.class
 net/vpc/app/vainruling/core/web/obj/ActionDialogResult.class
 net/vpc/app/vainruling/core/web/VrController.class
-net/vpc/app/vainruling/core/web/menu/VRMenuDef$1.class
 net/vpc/app/vainruling/core/web/obj/UPAObjectHelper.class
 net/vpc/app/vainruling/core/web/obj/CustomPropertyViewFactory.class
 net/vpc/app/vainruling/core/web/UPathItem.class
@@ -74,6 +72,7 @@ net/vpc/app/vainruling/core/web/obj/ActionDialogAdapter.class
 net/vpc/app/vainruling/core/web/obj/defaultimpl/ManyToOneTypePropertyViewValuesProvider.class
 net/vpc/app/vainruling/core/web/admin/actions/UpdateProfileUsersActionCtrl$Model.class
 net/vpc/app/vainruling/core/web/install/VrConfigureInstall$Model.class
+net/vpc/app/vainruling/core/web/admin/UpdateMyProfilesCtrl.class
 net/vpc/app/vainruling/core/web/WebScriptServiceInvoker$VrJs.class
 net/vpc/app/vainruling/core/web/fs/files/DocumentUploadListener.class
 net/vpc/app/vainruling/core/web/ctrl/PasswdCtrl$Model.class
@@ -88,11 +87,14 @@ net/vpc/app/vainruling/core/web/obj/CustomTargetType.class
 net/vpc/app/vainruling/core/web/obj/OrderedPropertyView.class
 net/vpc/app/vainruling/core/web/converters/TimestampConverter.class
 net/vpc/app/vainruling/core/web/menu/BreadcrumbItem.class
+net/vpc/app/vainruling/core/web/VrControllerInfo.class
 net/vpc/app/vainruling/core/web/ctrl/ActiveSessionsCtrl.class
+net/vpc/app/vainruling/core/web/VrActionEnabler.class
 net/vpc/app/vainruling/core/web/themes/VrThemeFactory$1.class
 net/vpc/app/vainruling/core/web/obj/ObjCtrl$7.class
 net/vpc/app/vainruling/core/web/converters/EnumConverter.class
 net/vpc/app/vainruling/core/web/menu/VrMenuManager$MenuTree.class
+net/vpc/app/vainruling/core/web/menu/VRMenuInfo.class
 net/vpc/app/vainruling/core/web/themes/VrThemeFactory$VrThemeFactoryFace.class
 net/vpc/app/vainruling/core/web/util/VpcYearConverter.class
 net/vpc/app/vainruling/core/web/util/VrWebHelper$1.class
@@ -113,8 +115,6 @@ net/vpc/app/vainruling/core/web/obj/ObjCtrl$6.class
 net/vpc/app/vainruling/core/web/ws/HttpSessionSerializerXSession.class
 net/vpc/app/vainruling/core/web/fs/files/DocumentsDialogCtrl$Config.class
 net/vpc/app/vainruling/core/web/ctrl/BasePageCtrl.class
-net/vpc/app/vainruling/core/web/menu/VRMenuDef.class
-net/vpc/app/vainruling/core/web/ActionEnabler.class
 net/vpc/app/vainruling/core/web/content/ArticlesModel.class
 net/vpc/app/vainruling/core/web/converters/PeriodToSecondsConverter.class
 net/vpc/app/vainruling/core/web/util/CustomExceptionHandlerFactory.class
@@ -135,7 +135,6 @@ net/vpc/app/vainruling/core/web/ctrl/VrWebSecurityFilter.class
 net/vpc/app/vainruling/core/web/ws/HttpSessionSerializer.class
 net/vpc/app/vainruling/core/web/obj/PropertyViewFactory.class
 net/vpc/app/vainruling/core/web/obj/ObjRow.class
-net/vpc/app/vainruling/core/web/StrLabel.class
 net/vpc/app/vainruling/core/web/WebScriptServiceInvoker$1.class
 net/vpc/app/vainruling/core/web/obj/defaultimpl/ManyToOneTypePropertyViewFactory.class
 net/vpc/app/vainruling/core/web/ctrl/WelcomeCtrl.class
@@ -153,6 +152,7 @@ net/vpc/app/vainruling/core/web/HttpPlatformSession.class
 net/vpc/app/vainruling/core/web/obj/CustomTarget.class
 net/vpc/app/vainruling/core/web/util/VpcDateTimeConverter.class
 net/vpc/app/vainruling/core/web/ws/HttpSessionId.class
+net/vpc/app/vainruling/core/web/VRMenuProvider.class
 net/vpc/app/vainruling/core/web/obj/PropertyMainPhotoProvider.class
 net/vpc/app/vainruling/core/web/converters/PeriodToMinutesConverter.class
 net/vpc/app/vainruling/core/web/util/VrWebContextSwitch.class
@@ -177,7 +177,6 @@ net/vpc/app/vainruling/core/web/ctrl/ActiveSessionsCtrl$Model.class
 net/vpc/app/vainruling/core/web/ws/HttpSessionId_JSESSIONID.class
 net/vpc/app/vainruling/core/web/ctrl/LoginCtrl$Model.class
 net/vpc/app/vainruling/core/web/obj/defaultimpl/EnumTypePropertyViewFactory.class
-net/vpc/app/vainruling/core/web/menu/VRMenuDefFactory.class
 net/vpc/app/vainruling/core/web/fs/files/DocumentsDialogCtrl.class
 net/vpc/app/vainruling/core/web/menu/VrMenuManager.class
 net/vpc/app/vainruling/core/web/ws/HttpSessionId_XJSESSIONID.class
@@ -185,9 +184,9 @@ net/vpc/app/vainruling/core/web/obj/ObjCtrl$Config.class
 net/vpc/app/vainruling/core/web/obj/defaultimpl/DefaultPropertyViewFactory.class
 net/vpc/app/vainruling/core/web/fs/files/VFileKind.class
 net/vpc/app/vainruling/core/web/DummyTaskTextService.class
+net/vpc/app/vainruling/core/web/VrActionInfo.class
 net/vpc/app/vainruling/core/web/ctrl/NavigationHistoryCtrl$Model.class
 net/vpc/app/vainruling/core/web/fs/FSServlet.class
-net/vpc/app/vainruling/core/web/UCtrlProvider.class
 net/vpc/app/vainruling/core/web/obj/dialog/ProfileExprDialogCtrl$Config.class
 net/vpc/app/vainruling/core/web/ws/HttpSessionStoreProvider.class
 net/vpc/app/vainruling/core/web/ctrl/AbstractObjectCtrl$SelectionListener.class
@@ -199,6 +198,7 @@ net/vpc/app/vainruling/core/web/Vr.class
 net/vpc/app/vainruling/core/web/fs/files/DocumentsCtrl$2.class
 net/vpc/app/vainruling/core/web/obj/ObjCtrl$1.class
 net/vpc/app/vainruling/core/web/install/VrConfigureInstall.class
+net/vpc/app/vainruling/core/web/util/StrLabel.class
 net/vpc/app/vainruling/core/web/ctrl/ActivitiesCtrl.class
 net/vpc/app/vainruling/core/web/fs/files/DocumentsUtils.class
 net/vpc/app/vainruling/core/web/fs/files/DocumentsCtrl$Model.class
@@ -212,6 +212,7 @@ net/vpc/app/vainruling/core/web/admin/actions/UpdateProfileUsersActionCtrl$1.cla
 net/vpc/app/vainruling/core/web/ctrl/PublicIndexCtrl.class
 net/vpc/app/vainruling/core/web/ctrl/NewsCtrl.class
 net/vpc/app/vainruling/core/web/fs/files/DocumentsCtrl$1.class
+net/vpc/app/vainruling/core/web/menu/VRMenuInfo$1.class
 net/vpc/app/vainruling/core/web/obj/ObjCtrl.class
 net/vpc/app/vainruling/core/web/obj/MainPhotoProvider.class
 net/vpc/app/vainruling/core/web/util/WebUserSessionConfigurator.class
@@ -225,7 +226,9 @@ net/vpc/app/vainruling/core/web/ctrl/AppGlobalCtrl.class
 net/vpc/app/vainruling/core/web/fs/files/DocumentsDialogCtrl$Model.class
 net/vpc/app/vainruling/core/web/VrColorTable.class
 net/vpc/app/vainruling/core/web/ctrl/PasswdCtrl$1.class
+net/vpc/app/vainruling/core/web/VrControllerInfoResolver.class
 net/vpc/app/vainruling/core/web/ctrl/AbstractNameCtrl$SelectionListener.class
 net/vpc/app/vainruling/core/web/obj/FormContext.class
 net/vpc/app/vainruling/core/web/ctrl/MyProfileCtrl.class
 net/vpc/app/vainruling/core/web/ctrl/WelcomeCtrl$Model.class
+net/vpc/app/vainruling/core/web/admin/UpdateMyProfilesCtrl$Model.class

@@ -6,7 +6,6 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppTrace;
 import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.service.util.VrPlatformUtils;

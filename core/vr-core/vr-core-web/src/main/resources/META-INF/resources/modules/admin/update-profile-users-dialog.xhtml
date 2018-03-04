@@ -10,46 +10,46 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-        >
+      >
 
-<h:head>
+    <h:head>
 
-</h:head>
+    </h:head>
 
-<h:body>
+    <h:body>
 
-    <ui:composition template="#{vr.privateThemePath}/templates/dialog-template.xhtml">
-        <ui:define name="dialog-title">
-            <h:outputText value="Utilisateurs"/>
-        </ui:define>
-        <ui:define name="dialog-body">
-            <div class="row">
-                <h:form id="listForm">
-                    <p:pickList value="#{updateProfileUsersActionCtrl.model.values}" var="v" effect="bounce"
-                                itemValue="#{v.login}"
-                                itemLabel="#{v.contact eq null ? v.login : v.contact.fullName} (#{v.contact eq null ? '' : v.contact.positionTitle1})"
-                                showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
-                            >
+        <ui:composition template="#{vr.privateThemePath}/templates/dialog-template.xhtml">
+            <ui:define name="dialog-title">
+                <h:outputText value="Utilisateurs"/>
+            </ui:define>
+            <ui:define name="dialog-body">
+                <div class="row">
+                    <h:form id="listForm">
+                        <p:pickList value="#{updateProfileUsersActionCtrl.model.values}" var="v" effect="bounce"
+                                    itemValue="#{v.login}"
+                                    itemLabel="#{v.contact eq null ? v.login : v.contact.fullName} (#{v.contact eq null ? '' : v.contact.positionTitle1})"
+                                    showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
+                                    >
 
-                        <f:facet name="sourceCaption">Disponibles</f:facet>
-                        <f:facet name="targetCaption">Affectés</f:facet>
+                            <f:facet name="sourceCaption">Disponibles</f:facet>
+                            <f:facet name="targetCaption">Affectés</f:facet>
 
-                    </p:pickList>
+                        </p:pickList>
 
-                    <p:separator/>
+                        <p:separator/>
 
-                    <p:commandButton value="Enregistrer"
-                                     styleClass="btn btn-primary"
-                                     actionListener="#{updateProfileUsersActionCtrl.save}"
-                                     style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
-                    <p:commandButton value="Fermer"
-                                     styleClass="btn btn-default"
-                                     actionListener="#{updateProfileRightsActionCtrl.fireEventExtraDialogClosed}"
-                                     style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
-                </h:form>
-            </div>
-        </ui:define>
-    </ui:composition>
-</h:body>
+                        <p:commandButton value="Enregistrer"
+                                         styleClass="btn btn-primary"
+                                         actionListener="#{updateProfileUsersActionCtrl.save}"
+                                         style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
+                        <p:commandButton value="Fermer"
+                                         styleClass="btn btn-default"
+                                         actionListener="#{updateProfileRightsActionCtrl.fireEventExtraDialogClosed}"
+                                         style="margin-left: 20px;margin-right: 20px;margin-top: 5px;"/>
+                    </h:form>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
 
 </html>

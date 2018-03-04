@@ -3,7 +3,6 @@ package net.vpc.app.vainruling.plugins.enisoinfo;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.content.ArticlesDisposition;
-import net.vpc.app.vainruling.core.service.plugins.AppPlugin;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPlugin;
@@ -16,8 +15,9 @@ import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
 import java.util.List;
+import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
-@AppPlugin
+@VrPlugin
 public class ENISoInfoPlugin {
     private CorePlugin core;
 

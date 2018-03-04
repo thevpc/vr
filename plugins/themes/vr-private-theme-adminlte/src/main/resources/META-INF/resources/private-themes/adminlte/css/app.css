@@ -1144,6 +1144,7 @@ td.vr-mailbox-name label {
 
 .vr-form-control{
  max-width: 800px;
+ vertical-align: top;
 }
 
 .vr-form-calendar-text{

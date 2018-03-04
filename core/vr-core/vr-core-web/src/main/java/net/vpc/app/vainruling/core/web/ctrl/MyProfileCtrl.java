@@ -6,38 +6,27 @@
 package net.vpc.app.vainruling.core.web.ctrl;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.UCtrlData;
-import net.vpc.app.vainruling.core.web.UCtrlProvider;
+import net.vpc.app.vainruling.core.web.VrControllerInfo;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.web.VrControllerInfoResolver;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @VrController
-public class MyProfileCtrl implements UCtrlProvider {
+public class MyProfileCtrl implements VrControllerInfoResolver {
 
     private static final Logger log = Logger.getLogger(MyProfileCtrl.class.getName());
 
-
     @Override
-    public UCtrlData getUCtrl(String cmd) {
-        UCtrlData o = null;
+    public VrControllerInfo resolveVrControllerInfo(String cmd) {
         VrMenuManager mm = VrApp.getBean(VrMenuManager.class);
-        for (MyProfileAlternative profileAlternative : VrApp.getBeansForType(MyProfileAlternative.class)) {
-            UCtrlData b = mm.getUCtrlDataByObj(profileAlternative, null, cmd);
-            if (b != null) {
-                if(b.getEnabler()==null || b.getEnabler().isEnabled(null)) {
-                    if (o == null || o.getPriority() <= b.getPriority()) {
-                        o = b;
-                    }
-                }
-            }
-        }
-        if(o==null){
-            return new UCtrlData(
+        VrControllerInfo o = mm.resolveBestVrControllerInfo(MyProfileAlternative.class, cmd);
+        if (o == null) {
+            return new VrControllerInfo(
                     "My Profile",
                     "",
                     "modules/config/my-profile",

@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web;
 
+import net.vpc.app.vainruling.core.web.util.StrLabel;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.*;
@@ -23,7 +24,7 @@ import net.vpc.app.vainruling.core.web.fs.files.DocumentUploadListener;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsCtrl;
 import net.vpc.app.vainruling.core.web.fs.files.DocumentsUploadDialogCtrl;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
-import net.vpc.app.vainruling.core.web.menu.VRMenuDef;
+import net.vpc.app.vainruling.core.web.menu.VRMenuInfo;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFace;
@@ -1007,7 +1008,7 @@ public class Vr {
         return VrApp.getBean(VrMenuManager.class).buildMenu();
     }
 
-    public VRMenuDef getMenu() {
+    public VRMenuInfo getMenu() {
         return VrApp.getBean(VrMenuManager.class).getModel().getRoot();
     }
 

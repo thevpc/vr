@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <h:form id="listForm" enctype="multipart/form-data">
+                    <p:messages showDetail="true"/>
+
+                    <p:selectOneMenu class="form-control vr-form-control"
+                                     value="#{updateMyProfilesCtrl.model.profile}"
+                                     converter="#{vr.entityObjConverter('AppProfile')}"
+                                     style="max-width: 400px;display: inline-block; vertical-align: top;"
+                                     >
+                        <f:selectItems value="#{updateMyProfilesCtrl.model.profiles}"/>
+                        <p:ajax listener="#{updateMyProfilesCtrl.onChange}"   update=":listForm:pickList"/>
+                    </p:selectOneMenu>
+
+                    <p:commandButton title="Enregister" icon="fa fa-save"
+                                     styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn btn-primary" ajax="true"
+                                     actionListener="#{updateProfileUsersActionCtrl.save}" update=":listForm"
+                                     style="display: inline;height: 34px"
+                                     />
+                    <div style="margin-top: 20px;">
+                        <p:pickList id="pickList" value="#{updateProfileUsersActionCtrl.model.values}" var="v" effect="bounce"
+                                    itemValue="#{v.login}"
+                                    itemLabel="#{v.contact eq null ? v.login : v.contact.fullName} (#{v.contact eq null ? '' : v.contact.positionTitle1})"
+                                    showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
+                                    >
+
+                            <f:facet name="sourceCaption">Disponibles</f:facet>
+                            <f:facet name="targetCaption">Affectés</f:facet>
+
+                        </p:pickList>
+
+                        <p:separator/>
+
+                    </div>
+                </h:form>
+            </ui:define>
+
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>
