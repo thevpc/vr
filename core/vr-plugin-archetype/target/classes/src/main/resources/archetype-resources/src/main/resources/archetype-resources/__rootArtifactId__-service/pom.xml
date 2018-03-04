@@ -1,0 +1,29 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.vpc.app.vain-ruling.plugins</groupId>
+    <artifactId>${symbol_dollar}{artifactId}</artifactId>
+    <version>${symbol_dollar}{version}</version>
+    <packaging>jar</packaging>
+    <parent>
+        <groupId>net.vpc.app.vain-ruling</groupId>
+        <artifactId>vr-plugin</artifactId>
+        <version>${symbol_dollar}{version}</version>
+    </parent>
+    <properties>
+        <vr-plugin.component-type>service</vr-plugin.component-type>
+        <vr-plugin.name>Sample Plugin</vr-plugin.name>
+        <vr-plugin.description>Description for Sample Plugin</vr-plugin.description>
+        <version.vr-core-service>1.12</version.vr-core-service>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>${package}</groupId>
+            <artifactId>vr-core-service</artifactId>
+            <version>${symbol_dollar}{version.vr-core-service}</version>
+        </dependency>
+    </dependencies>
+</project>
