@@ -23,6 +23,7 @@ public class CorePluginSecurity {
     public static final String RIGHT_CUSTOM_MY_PROFILE = "Custom.MyProfile";
     public static final String RIGHT_CUSTOM_UTIL_NAVIGATION_HISTORY = "Custom.Util.NavigationHistory";
     public static final String RIGHT_CUSTOM_ADMIN = "Custom.Admin";
+    public static final String RIGHT_CUSTOM_UPDATE_MY_PROFILES = "Custom.Admin.UpdateMyProfiles";
     public static final String[] RIGHTS_CORE = VrPlatformUtils.getStringArrayConstantsValues(CorePluginSecurity.class,"RIGHT_*");
 
     public static void requireRight(String right) {

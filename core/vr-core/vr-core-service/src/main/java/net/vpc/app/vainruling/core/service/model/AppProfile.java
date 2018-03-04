@@ -36,7 +36,10 @@ public class AppProfile {
     /**
      * admin user(s)
      */
+    @Summary
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION)
     private String admin;
+
     @Field(max = "4000")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
@@ -46,11 +49,9 @@ public class AppProfile {
     @Field(defaultValue = "false")
     private boolean custom;
     /**
-     * if true, this is considered as a composer group.
-     * A composer group is NOT a top level group and hence
-     * should not be assigned directly to users. It is meant
-     * to be part (parent) of top level groups to help composing
-     * more
+     * if true, this is considered as a composer group. A composer group is NOT
+     * a top level group and hence should not be assigned directly to users. It
+     * is meant to be part (parent) of top level groups to help composing more
      */
     private boolean composer;
     /**
@@ -152,14 +153,14 @@ public class AppProfile {
         return String.valueOf(name);
     }
 
-    public static String getCodeOrName(AppProfile u){
-        if(u==null){
+    public static String getCodeOrName(AppProfile u) {
+        if (u == null) {
             return null;
         }
-        if(!Strings.isNullOrEmpty(u.getCode())){
+        if (!Strings.isNullOrEmpty(u.getCode())) {
             return u.getCode();
         }
-        if(!Strings.isNullOrEmpty(u.getName())){
+        if (!Strings.isNullOrEmpty(u.getName())) {
             return u.getName();
         }
         return null;
@@ -167,8 +168,12 @@ public class AppProfile {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         AppProfile that = (AppProfile) o;
 

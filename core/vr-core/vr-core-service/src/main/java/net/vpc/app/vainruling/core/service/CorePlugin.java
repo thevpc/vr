@@ -28,18 +28,19 @@ import net.vpc.upa.expressions.Expression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import javax.annotation.PostConstruct;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @VrPlugin()
+@DependsOn("vrApp")
 public class CorePlugin {
 
     public static final String PATH_TEMP = "/Var/Temp";
@@ -59,8 +60,6 @@ public class CorePlugin {
     private TraceService trace;
     @Autowired
     private I18n i18n;
-    @Autowired
-    private VrApp app; //actually to force dependency, may have used @DependsOn
     @Autowired
     private CacheService cacheService;
     private boolean updatingPoll = false;
@@ -82,8 +81,6 @@ public class CorePlugin {
 //    public UserSession getUserSession() {
 //        return VrApp.getContext().getBean(UserSession.class);
 //    }
-
-
     void prepare() {
         //LogUtils.configure(Level.FINE,"net.vpc");
         //disable log4j imported by jxl-api
@@ -125,7 +122,6 @@ public class CorePlugin {
             body.onStart();
         }
     }
-
 
     public void onPoll() {
         if (!updatingPoll) {
@@ -224,7 +220,6 @@ public class CorePlugin {
         return bodySecurityManager.findOrCreateCustomProfile(profileCode, customType);
     }
 
-
     public AppProfile findOrCreateProfile(String profileName) {
         return bodySecurityManager.findOrCreateProfile(profileName);
     }
@@ -235,6 +230,10 @@ public class CorePlugin {
 
     public AppProfile findProfileByCode(String profileCode) {
         return bodySecurityManager.findProfileByCode(profileCode);
+    }
+
+    public List<AppProfile> findAdministrableProfiles() {
+        return bodySecurityManager.findAdministrableProfiles();
     }
 
     public List<AppProfile> findProfilesByUser(int userId) {
@@ -345,9 +344,6 @@ public class CorePlugin {
         return bodyConfig.findGenders();
     }
 
-
-
-
     public <T> T findOrCreate(T o) {
         return bodyDaoManager.findOrCreate(o);
     }
@@ -380,6 +376,10 @@ public class CorePlugin {
         return bodySecurityManager.autoCompleteProfileExpression(queryExpr);
     }
 
+    public boolean isCurrentSessionMatchesProfileFilter(String profilePattern) {
+        return bodySecurityManager.isCurrentSessionMatchesProfileFilter(profilePattern);
+    }
+
     public List<AppUser> filterUsersByProfileFilter(List<AppUser> users, String profilePattern, Integer userType) {
         return bodySecurityManager.filterUsersByProfileFilter(users, profilePattern, userType);
     }
@@ -396,7 +396,6 @@ public class CorePlugin {
         return bodySecurityManager.findUsersByProfileFilter(profilePattern, userType);
     }
 
-
     public AppUser findUserByContact(int contactId) {
         return bodyConfig.findUserByContact(contactId);
     }
@@ -409,11 +408,9 @@ public class CorePlugin {
         return bodySecurityManager.findContact(c);
     }
 
-
     public List<AppContact> findContacts(String name, String type) {
         return bodySecurityManager.findContacts(name, type);
     }
-
 
     public String getActualLogin() {
         return bodySecurityAuth.getActualLogin();
@@ -430,7 +427,6 @@ public class CorePlugin {
     public void passwd(String login, String oldPassword, String newPassword) {
         bodySecurityManager.passwd(login, oldPassword, newPassword);
     }
-
 
     public String validateProfileName(String s) {
         return bodySecurityManager.validateProfileName(s);
@@ -520,7 +516,6 @@ public class CorePlugin {
         return bodyPluginManager.getAppVersion();
     }
 
-
     public MirroredPath createTempUploadFolder() {
         return bodyFileSystem.createTempUploadFolder();
     }
@@ -532,7 +527,6 @@ public class CorePlugin {
     public VirtualFileSystem getRootFileSystem() {
         return bodyFileSystem.getRootFileSystem();
     }
-
 
     public VFile getUserDocumentsFolder(final String login) {
         return bodyFileSystem.getUserDocumentsFolder(login);
@@ -707,7 +701,6 @@ public class CorePlugin {
         return bodySecurityAuth.getActiveSessionsCount();
     }
 
-
     public List<UserSessionInfo> getActiveSessions(boolean groupSessions, boolean groupAnonymous, boolean showAnonymous) {
         return bodySecurityAuth.getActiveSessions(groupSessions, groupAnonymous, showAnonymous);
     }
@@ -735,7 +728,6 @@ public class CorePlugin {
     public String getObjectName(String entityName, Object obj) {
         return bodyDaoManager.getObjectName(entityName, obj);
     }
-
 
     public boolean archive(String entityName, Object object) {
         return bodyDaoManager.archive(entityName, object);
@@ -781,7 +773,6 @@ public class CorePlugin {
         return bodyDaoManager.findDocumentsByFilter(entityName, criteria, objSearch, textSearch, parameters);
     }
 
-
     public List<Object> findAll(String entityName) {
         return bodyDaoManager.findAll(entityName);
     }
@@ -822,7 +813,6 @@ public class CorePlugin {
         return i18n.getResourceBundleSuite().getMap();
     }
 
-
     public List<AutoFilterData> getEntityFilters(String entityName) {
         return bodyDaoManager.getEntityFilters(entityName);
     }
@@ -856,10 +846,6 @@ public class CorePlugin {
 
     private I18n getI18n() {
         return i18n;
-    }
-
-    private VrApp getApp() {
-        return app;
     }
 
     private CacheService getCacheService() {
@@ -904,7 +890,6 @@ public class CorePlugin {
 
     /////////////// CONFIG
     /////////////////////////////////////////
-
     public void setAppProperty(String propertyName, String userLogin, Object propertyValue) {
         bodyConfig.setAppProperty(propertyName, userLogin, propertyValue);
     }
@@ -976,7 +961,6 @@ public class CorePlugin {
     public String getUserPhoto(int id, boolean icon) {
         return bodyConfig.getUserPhoto(id, icon);
     }
-
 
     public String getCurrentUserPhoto() {
         return bodyConfig.getCurrentUserPhoto();

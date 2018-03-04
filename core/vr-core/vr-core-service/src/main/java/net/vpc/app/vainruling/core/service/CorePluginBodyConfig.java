@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.logging.FileHandler;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
 
 class CorePluginBodyConfig extends CorePluginBody{
     public static final java.util.logging.Logger LOG_APPLICATION_STATS = java.util.logging.Logger.getLogger(CorePlugin.class.getName() + ".Stats");
@@ -163,7 +165,7 @@ class CorePluginBodyConfig extends CorePluginBody{
                 return propertyValue;
             }
             if (type.equals(Integer.class)) {
-                return Integer.parseInt(propertyValue);
+                return Convert.toInt(propertyValue,IntegerParserConfig.LENIENT_F);
             }
             if (type.equals(Long.class)) {
                 return Long.parseLong(propertyValue);

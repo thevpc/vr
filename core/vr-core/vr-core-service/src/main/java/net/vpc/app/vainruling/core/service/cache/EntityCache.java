@@ -5,7 +5,6 @@ import net.vpc.common.util.MapList;
 import net.vpc.common.util.Utils;
 import net.vpc.upa.Action;
 import net.vpc.upa.Entity;
-import net.vpc.upa.QueryHints;
 import net.vpc.upa.UPA;
 
 import java.lang.ref.SoftReference;

@@ -22,6 +22,5 @@ import java.lang.annotation.Target;
 @UpaAware
 @Scope(value = "singleton") //@Singleton
 public @interface VrPlugin {
-    String[] dependsOn() default {};
     String description() default "";
 }

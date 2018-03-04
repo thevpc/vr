@@ -99,7 +99,6 @@
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/cache/EntityCache.java
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/util/PlatformReflector.java
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/util/FathzerJavaluator.java
-/data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/VrBootstrapComponent.java
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/fs/FileInfo.java
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/model/AppCountry.java
 /data/vpc/Data/xprojects/net/vpc/apps/vain-ruling/core/vr-core/vr-core-service/src/main/java/net/vpc/app/vainruling/core/service/content/NotificationText.java

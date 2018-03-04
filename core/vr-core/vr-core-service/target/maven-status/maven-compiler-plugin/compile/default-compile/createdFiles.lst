@@ -54,7 +54,6 @@ net/vpc/app/vainruling/core/service/CorePluginBodyFileSystem$7.class
 net/vpc/app/vainruling/core/service/stats/KPIEvaluator.class
 net/vpc/app/vainruling/core/service/CorePluginBodySecurityManager$5.class
 net/vpc/app/vainruling/core/service/util/ResourceBundleSuite.class
-net/vpc/app/vainruling/core/service/VrBootstrapComponent.class
 net/vpc/app/vainruling/core/service/util/NamedDoubles.class
 net/vpc/app/vainruling/core/service/util/VrPasswordStrategyRandom.class
 net/vpc/app/vainruling/core/service/model/AppGender.class
@@ -92,6 +91,7 @@ net/vpc/app/vainruling/core/service/util/DefaultCompletionInfo.class
 net/vpc/app/vainruling/core/service/VrApp.class
 net/vpc/app/vainruling/core/service/CorePluginBodyPluginManager.class
 net/vpc/app/vainruling/core/service/model/AppUserType.class
+net/vpc/app/vainruling/core/service/CorePluginBodySecurityManager$11.class
 net/vpc/app/vainruling/core/service/cache/CacheService$DomainCache.class
 net/vpc/app/vainruling/core/service/util/NameGenerator$NameSequence.class
 net/vpc/app/vainruling/core/service/CorePluginBodyContentManager$2.class
@@ -150,6 +150,7 @@ net/vpc/app/vainruling/core/service/util/InSetEvaluator.class
 net/vpc/app/vainruling/core/service/util/LocationInfo.class
 net/vpc/app/vainruling/core/service/stats/KPIGroupList.class
 net/vpc/app/vainruling/core/service/obj/ObjSimpleSearch$1.class
+net/vpc/app/vainruling/core/service/CorePluginBodySecurityManager$10.class
 net/vpc/app/vainruling/core/service/util/VrUtils.class
 net/vpc/app/vainruling/core/service/stats/KPIValue.class
 net/vpc/app/vainruling/core/service/CorePluginBodySecurityManager.class

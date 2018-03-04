@@ -10,16 +10,14 @@ import net.vpc.upa.*;
 import java.util.*;
 import java.util.logging.Level;
 
-class CorePluginBodySecurityManager extends CorePluginBody{
+class CorePluginBodySecurityManager extends CorePluginBody {
+
     private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePluginBodySecurityManager.class.getName());
 
     @Override
     public void onStart() {
         validateRightsDefinitions();
     }
-
-
-
 
     protected void validateRightsDefinitions() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -33,7 +31,7 @@ class CorePluginBodySecurityManager extends CorePluginBody{
                         !CorePlugin.ADMIN_ENTITIES.contains(entity.getName()),
                         true,
                         true
-                        )) {
+                )) {
 
                     AppRightName r = new AppRightName();
                     r.setName(rname);
@@ -133,7 +131,7 @@ class CorePluginBodySecurityManager extends CorePluginBody{
     }
 
     public List<AppUser>[] findProfileUsersDualList(int profileId) {
-        CorePluginSecurity.requireAdmin();
+        checkProfileAdmin(profileId);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Map<String, AppUser> allMap = new HashMap<>();
         Map<String, AppUser> existing = new HashMap<>();
@@ -197,60 +195,79 @@ class CorePluginBodySecurityManager extends CorePluginBody{
         return modifications;
     }
 
+    public void checkProfileAdmin(int profileId) {
+        final AppProfile profile = findProfile(profileId);
+        if (profile == null) {
+            return;
+        }
+        if (StringUtils.isEmpty(profile.getAdmin())) {
+            CorePluginSecurity.requireAdmin();
+        }
+        if (!isCurrentSessionMatchesProfileFilter(profile.getAdmin())) {
+            CorePluginSecurity.requireAdmin();
+        }
+    }
+
     public int setProfileUsers(int profileId, List<String> logins) {
-        CorePluginSecurity.requireAdmin();
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        AppProfile p = pu.findById(AppProfile.class, profileId);
-        if (p == null) {
-            throw new IllegalArgumentException("Profile not found " + profileId);
-        }
-        List<AppUserProfileBinding> oldUserBindings = pu.createQuery("Select u from AppUserProfileBinding u where u.profileId=:profileId")
-                .setParameter("profileId", profileId)
-                .getResultList();
-        List<AppUser> oldUsers = findUsers();
-        Map<String, AppUser> usersByName = new HashMap<String, AppUser>();
-        for (AppUser u : oldUsers) {
-            usersByName.put(u.getLogin(), u);
-        }
-        Set<String> baseSet = new HashSet<String>();
-        Set<String> visitedSet = new HashSet<String>();
-        if (logins != null) {
-            baseSet.addAll(logins);
-        }
-        int modifications = 0;
-        for (AppUserProfileBinding r : oldUserBindings) {
-            if (baseSet.contains(r.getUser().getLogin())) {
-                //ok
-            } else {
-                pu.remove(r);
-                modifications++;
-            }
-            visitedSet.add(r.getUser().getLogin());
-        }
-        for (String s : baseSet) {
-            if (!visitedSet.contains(s)) {
-                //this is new
-                AppUser r = usersByName.get(s);
-                if (r == null) {
-                    log.log(Level.SEVERE, "User " + s + " not found");
-                } else {
-                    AppUserProfileBinding pr = new AppUserProfileBinding();
-                    pr.setProfile(p);
-                    pr.setUser(r);
-                    pu.persist(pr);
-                    modifications++;
+        checkProfileAdmin(profileId);
+        //no need for further security checks!
+        return UPA.getPersistenceUnit().invokePrivileged(new Action<Integer>() {
+            @Override
+            public Integer run() {
+                PersistenceUnit pu = UPA.getPersistenceUnit();
+                AppProfile p = pu.findById(AppProfile.class, profileId);
+                if (p == null) {
+                    throw new IllegalArgumentException("Profile not found " + profileId);
                 }
+                List<AppUserProfileBinding> oldUserBindings = pu.createQuery("Select u from AppUserProfileBinding u where u.profileId=:profileId")
+                        .setParameter("profileId", profileId)
+                        .getResultList();
+                List<AppUser> oldUsers = findUsers();
+                Map<String, AppUser> usersByName = new HashMap<String, AppUser>();
+                for (AppUser u : oldUsers) {
+                    usersByName.put(u.getLogin(), u);
+                }
+                Set<String> baseSet = new HashSet<String>();
+                Set<String> visitedSet = new HashSet<String>();
+                if (logins != null) {
+                    baseSet.addAll(logins);
+                }
+                int modifications = 0;
+                for (AppUserProfileBinding r : oldUserBindings) {
+                    if (baseSet.contains(r.getUser().getLogin())) {
+                        //ok
+                    } else {
+                        pu.remove(r);
+                        modifications++;
+                    }
+                    visitedSet.add(r.getUser().getLogin());
+                }
+                for (String s : baseSet) {
+                    if (!visitedSet.contains(s)) {
+                        //this is new
+                        AppUser r = usersByName.get(s);
+                        if (r == null) {
+                            log.log(Level.SEVERE, "User " + s + " not found");
+                        } else {
+                            AppUserProfileBinding pr = new AppUserProfileBinding();
+                            pr.setProfile(p);
+                            pr.setUser(r);
+                            pu.persist(pr);
+                            modifications++;
+                        }
+                    }
+                }
+                return modifications;
             }
-        }
-        return modifications;
+        });
     }
 
     public boolean addProfileRight(String profileCode, String rightName) {
         AppProfile profileByCode = findProfileByCode(profileCode);
-        if(profileByCode==null){
-            throw new NoSuchElementException("Profile "+profileCode);
+        if (profileByCode == null) {
+            throw new NoSuchElementException("Profile " + profileCode);
         }
-        return addProfileRight(profileByCode.getId(),rightName);
+        return addProfileRight(profileByCode.getId(), rightName);
     }
 
     public boolean addProfileRight(int profileId, String rightName) {
@@ -356,13 +373,13 @@ class CorePluginBodySecurityManager extends CorePluginBody{
     public Set<String> findUserRightsAll(int userId) {
         CorePluginSecurity.requireUser(userId);
         List<AppProfile> a = findProfilesByUser(userId);
-        if(a.isEmpty()){
+        if (a.isEmpty()) {
             return Collections.emptySet();
         }
 
         PersistenceUnit pu = UPA.getPersistenceUnit();
         List<String> rights = pu.createQuery("Select distinct n.rightName from AppProfileRight n where n.profileId in ( "
-                +VrUtils.strcatsep(",",a.stream().map(AppProfile::getId).toArray())
+                + VrUtils.strcatsep(",", a.stream().map(AppProfile::getId).toArray())
                 + " )")
                 .getValueList(0);
         return new HashSet<>(rights);
@@ -380,7 +397,7 @@ class CorePluginBodySecurityManager extends CorePluginBody{
     }
 
     public AppProfile findOrCreateCustomProfile(String profileCode, String customType) {
-        profileCode=validateProfileName(profileCode);//must validate name first!
+        profileCode = validateProfileName(profileCode);//must validate name first!
         AppProfile p = findProfileByCode(profileCode);
         if (p == null) {
             p = findProfileByName(profileCode);
@@ -409,7 +426,6 @@ class CorePluginBodySecurityManager extends CorePluginBody{
         return p;
     }
 
-
 //    public Object getGlobalCache(String name){
 //        synchronized (globalCache){
 //            return globalCache.get(name);
@@ -427,7 +443,6 @@ class CorePluginBodySecurityManager extends CorePluginBody{
 //            globalCache.remove(name);
 //        }
 //    }
-
     public AppProfile findOrCreateProfile(String profileName) {
         AppProfile p = findProfileByName(profileName);
         if (p == null) {
@@ -478,6 +493,24 @@ class CorePluginBodySecurityManager extends CorePluginBody{
 //        }
 //        return all;
 //    }
+    
+    public List<AppProfile> findAdministrableProfiles() {
+        List<AppProfile> profiles = new ArrayList<>();
+        boolean admin = this.getContext().getCorePlugin().isCurrentSessionAdmin();
+        if (admin) {
+            return findProfiles();
+        }
+        for (String profileName : this.getContext().getCorePlugin().getCurrentToken().getProfileNames()) {
+            AppProfile p = findProfileByCode(profileName);
+            String adminProfiles = p.getAdmin();
+            if (!StringUtils.isEmpty(adminProfiles)) {
+                if (isCurrentSessionMatchesProfileFilter(adminProfiles)) {
+                    profiles.add(p);
+                }
+            }
+        }
+        return profiles;
+    }
 
     public AppProfile findProfileByCode(String profileCode) {
         final EntityCache entityCache = getContext().getCacheService().get(AppProfile.class);
@@ -545,7 +578,6 @@ class CorePluginBodySecurityManager extends CorePluginBody{
                     }
                 });
 
-
 //        Map<Integer,Set<String>> value=(Map<Integer, Set<String>>) getGlobalCache(cacheKey);
 //        if(value==null){
 //            PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -568,7 +600,6 @@ class CorePluginBodySecurityManager extends CorePluginBody{
 //            setGlobalCache(cacheKey,value);
 //        }
 //        return value;
-
     }
 
     private List<AppProfile> expandProfiles(List<AppProfile> profiles) {
@@ -700,7 +731,7 @@ class CorePluginBodySecurityManager extends CorePluginBody{
         List<AppUser> users = new ArrayList<>();
         for (AppContact contact : contacts) {
             AppUser u = findUserByContact(contact.getId());
-            if(u!=null){
+            if (u != null) {
                 users.add(u);
             }
         }
@@ -717,7 +748,7 @@ class CorePluginBodySecurityManager extends CorePluginBody{
         List<AppUser> users = new ArrayList<>();
         for (AppContact contact : contacts) {
             AppUser u = findUserByContact(contact.getId());
-            if(u!=null){
+            if (u != null) {
                 users.add(u);
             }
         }
@@ -868,8 +899,8 @@ class CorePluginBodySecurityManager extends CorePluginBody{
         }
         if (b && !StringUtils.isEmpty(profileExpr.getFilterExpression())) {
             return filterUsersByExpression(
-                    userId == null ? new int[0] : new int[]{userId}
-                    , profileExpr.getFilterExpression()).size() > 0;
+                    userId == null ? new int[0] : new int[]{userId},
+                    profileExpr.getFilterExpression()).size() > 0;
         }
         return b;
     }
@@ -881,7 +912,6 @@ class CorePluginBodySecurityManager extends CorePluginBody{
     private InSetEvaluator createProfilesEvaluator(final Set<String> profiles) {
         return new SimpleJavaEvaluator(profiles);
     }
-
 
     public <T> List<T> filterByProfilePattern(List<T> in, Integer userId, String login, ProfilePatternFilter<T> filter) {
         List<T> out = new ArrayList<>();
@@ -903,7 +933,6 @@ class CorePluginBodySecurityManager extends CorePluginBody{
     public boolean userMatchesProfileFilter(String userLogin, String profileExpr) {
         return userMatchesProfileFilter(null, userLogin, profileExpr, null);
     }
-
 
     public List<String> autoCompleteUserOrProfile(String userOrProfile) {
         if (userOrProfile == null) {
@@ -956,6 +985,27 @@ class CorePluginBodySecurityManager extends CorePluginBody{
         } else {
             return new ArrayList<String>(new TreeSet<String>(autoCompleteUserOrProfile(queryExpr)));
         }
+    }
+
+    public boolean isCurrentSessionMatchesProfileFilter(String profilePattern) {
+        final AppUser currentUser = getContext().getCorePlugin().getCurrentUser();
+        if (currentUser == null) {
+            return false;
+        }
+        return filterUsersByProfileFilter(Arrays.asList(currentUser), profilePattern, currentUser.getType() == null ? null : currentUser.getType().getId()).size() > 0;
+    }
+
+    public boolean isUserMatchesProfileFilter(int userId, String profilePattern) {
+        final AppUser currentUser = UPA.getContext().invokePrivileged(new Action<AppUser>() {
+            @Override
+            public AppUser run() {
+                return findUser(userId);
+            }
+        });
+        if (currentUser == null) {
+            return false;
+        }
+        return filterUsersByProfileFilter(Arrays.asList(currentUser), profilePattern, currentUser.getType() == null ? null : currentUser.getType().getId()).size() > 0;
     }
 
     public List<AppUser> filterUsersByProfileFilter(List<AppUser> users, String profilePattern, Integer userType) {
@@ -1023,21 +1073,6 @@ class CorePluginBodySecurityManager extends CorePluginBody{
     public List<AppUser> findUsersByProfileFilter(String profilePattern, Integer userType) {
         return filterUsersByProfileFilter(findEnabledUsers(), profilePattern, userType);
     }
-//    public List<AppUser> resolveUsersByProfileFilter(String profile) {
-//        PersistenceUnit pu = UPA.getPersistenceUnit();
-//        if (profile != null && profile.trim().length() > 0) {
-//            StringBuilder x = new StringBuilder();
-//            for (String p : profile.split(" , |;")) {
-//                if (p != null) {
-//                    x.append("/").append(p);
-//                }
-//            }
-//            return pu.createQuery("Select u.user from AppUserProfileBinding u where :expr like concat('/',u.profile.name,'/')")
-//                    .setParameter("expr", x.toString())
-//                    .getResultList();
-//        }
-//        return Collections.EMPTY_LIST;
-//    }
 
     private List<AppUser> filterUsersByExpression(List<AppUser> all, String expression) {
         if (all.isEmpty()) {
@@ -1076,7 +1111,6 @@ class CorePluginBodySecurityManager extends CorePluginBody{
                 .createQuery("Select x from AppUser x where x.id in (" + ids + ") " + expression)
                 .getResultList();
     }
-
 
     public AppUser createUser(AppContact contact, int userTypeId, int departmentId, boolean attachToExistingUser, String[] defaultProfiles, VrPasswordStrategy passwordStrategy) {
         AppUser u = findUserByContact(contact.getId());
@@ -1215,7 +1249,6 @@ class CorePluginBodySecurityManager extends CorePluginBody{
         return false;
     }
 
-
     public String validateProfileName(String s) {
         StringBuilder sb = new StringBuilder();
         for (char c : s.toCharArray()) {
@@ -1262,7 +1295,6 @@ class CorePluginBodySecurityManager extends CorePluginBody{
                 .byField("contactId", contactId)
                 .getFirstResultOrNull();
     }
-
 
     public List<AppTrace> findTraceByUser(int userId, int maxRows) {
         List<AppTrace> found = new ArrayList<>();
@@ -1334,18 +1366,16 @@ class CorePluginBodySecurityManager extends CorePluginBody{
         return null;
     }
 
-
     public List<AppContact> findContacts(String name, String type) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery(
                 "Select u.contact from AppUser u where 1=1 "
-                        + (StringUtils.isEmpty(name) ? "" : " u.contact.fullName like :name ")
-                        + (StringUtils.isEmpty(type) ? "" : " and u.type.name =:type ")
+                + (StringUtils.isEmpty(name) ? "" : " u.contact.fullName like :name ")
+                + (StringUtils.isEmpty(type) ? "" : " and u.type.name =:type ")
         )
                 .setParameter("name", "%" + name + "%", !StringUtils.isEmpty(name))
                 .setParameter("name", name, !StringUtils.isEmpty(name))
                 .getResultList();
     }
-
 
 }

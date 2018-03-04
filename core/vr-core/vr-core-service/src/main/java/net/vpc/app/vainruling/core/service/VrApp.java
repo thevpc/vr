@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import javax.annotation.PostConstruct;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -32,6 +33,11 @@ public class VrApp implements ApplicationContextAware {
 
     private static ApplicationContext context;
     private static boolean running = false;
+
+    @PostConstruct
+    private void initialize(){
+        VrApp.getBean(CorePlugin.class).prepare();
+    }
 
     public static <T extends Object> T getBean(Class<T> type) throws BeansException {
         return getContext().getBean(type);
