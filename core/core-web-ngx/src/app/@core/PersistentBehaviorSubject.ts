@@ -1,6 +1,6 @@
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
-import {AsyncLocalStorage} from "angular-async-local-storage";
-import {Observable} from "rxjs/Observable";
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {AsyncLocalStorage} from 'angular-async-local-storage';
+import {Observable} from 'rxjs/Observable';
 
 export class PersistentBehaviorSubject<T> extends BehaviorSubject<T> {
   private _storage: AsyncLocalStorage;
@@ -9,7 +9,7 @@ export class PersistentBehaviorSubject<T> extends BehaviorSubject<T> {
 
 
   public constructor(name: string, value: T) {
-    super(value==null?<T>{}:value);
+    super(value == null ? <T>{} : value);
     this.name = name;
     this.defaultValue = value;
   }

@@ -36,10 +36,10 @@ export class VrHttp {
       return this.throwSecurityException();
     }
     const apiURL = `${this.model.apiRoot}/login?app=ng&login=${username}&password=${password}`;
-    //alert('authenticate : ' + apiURL);
+    // alert('authenticate : ' + apiURL);
     return this.http.get(apiURL).map(res => {
       const jsessionid = res.headers.get('x-jsessionid');
-      //alert('found session : ' + jsessionid);
+      // alert('found session : ' + jsessionid);
       if (jsessionid == null) {
         return;
       }
@@ -98,9 +98,9 @@ export class VrHttp {
    */
   public invokeWScript(script: string): Observable<any> {
     if (this.isValidSession()) {
-      //alert('Found a valid Session : '+script);
+      // alert('Found a valid Session : '+script);
       return this.authenticatedWScript(script).catch(err => {
-        //alert('Not a so valid Session  : '+script+JSON.stringify(err));
+        // alert('Not a so valid Session  : '+script+JSON.stringify(err));
         if (this.model.credentials == null) {
           return this.throwSecurityException();
         }
@@ -140,10 +140,10 @@ export class VrHttp {
   public authenticatedCall(apiURL: string): Observable<any> {
     let sessionId = this.model.sessionId.getValue();
     if (sessionId == null || sessionId == '') {
-      //i'm not connected yet, no need to spoiler the server;
+      // i'm not connected yet, no need to spoiler the server;
       return this.throwSecurityException();
     }
-    //alert('authenticatedCall ' + apiURL+" ## "+ sessionId);
+    // alert('authenticatedCall ' + apiURL+" ## "+ sessionId);
 
     const reqHeaders = new Headers();
     reqHeaders.append('X-JSESSIONID', sessionId);
@@ -154,7 +154,7 @@ export class VrHttp {
     };
     return this.http.get(apiURL, basicOptions).map(res => {
       const jsessionid = res.headers.get('x-jsessionid');
-      //alert('found session : ' + jsessionid);
+      // alert('found session : ' + jsessionid);
       if (jsessionid != null && jsessionid != this.model.sessionId.getValue()) {
         this.model.sessionId.next(jsessionid);
       }
@@ -182,14 +182,14 @@ export class VrHttp {
     }
     let ss = JSON.stringify(a);
     if (ss == '{}') {
-      //alert(typeof(a)+'  '+(a.toString != null));
+      // alert(typeof(a)+'  '+(a.toString != null));
       ss = '' + a;
     }
     return ss;
   }
 
   private throwObj(a: any): Observable<any> {
-    //alert('Error : '+JSON.stringify(a));
+    // alert('Error : '+JSON.stringify(a));
     return Observable.throw(a);
   }
 

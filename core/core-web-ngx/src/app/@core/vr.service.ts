@@ -3,8 +3,7 @@ import {Observable} from 'rxjs/Rx';
 import {Injectable} from '@angular/core';
 import {CurrentUser, VrSharedState} from './vr.shared-state';
 import {VrHttp} from "./vr.http";
-import {AsyncLocalStorage} from 'angular-async-local-storage';
-// import {PersistentBehaviorSubject} from "./PersistentBehaviorSubject";
+
 
 /**
  * Http REST Client Service Implementation for Vain Ruling WebScript Services.
@@ -14,7 +13,7 @@ import {AsyncLocalStorage} from 'angular-async-local-storage';
  */
 @Injectable()
 export class VrService {
-  constructor(private model: VrSharedState, private vrHttp: VrHttp, protected storage: AsyncLocalStorage) {
+  constructor(private model: VrSharedState, private vrHttp: VrHttp) {
 
   }
 
@@ -22,7 +21,26 @@ export class VrService {
      return this.vrHttp.invokeBeanMethod('core',`findArticlesByCategory('${dispo}')`);
    }
 
-    public getCurrentUser(): Observable<any> {
+  public getCurrentStudentId () : Observable<any> {
+
+    return this.vrHttp.invokeBeanMethod('academicPlugin', 'getCurrentStudent().getId()');
+  }
+
+  public getAcademicStudentCv(studentId) : Observable<any> {
+    let url = 'findOrCreateAcademicStudentCV('+studentId+')';
+    return this.vrHttp.invokeBeanMethod('academicProfile', url);
+  }
+
+  public getCurrentStudentContacts (studentId) : Observable<any> {
+    return this.vrHttp.invokeBeanMethod('core', `getContact()`);
+  }
+
+  public getPicture (studentId) : Observable<any> {
+    let url = 'getUserPhoto('+studentId+')';
+    return this.vrHttp.invokeBeanMethod('core', url);
+  }
+
+  public getCurrentUser(): Observable<any> {
     return this.vrHttp.invokeBeanMethod('core', 'getCurrentUser()').map(
       r => {
         this.model.currentUser.next(new CurrentUser(r.contact.fullName, '', r, true));
@@ -32,8 +50,8 @@ export class VrService {
   }
 
   public getEntityInfo(entityName: string): Observable<any> {
-    return this.getPersistenceUnitInfo().map(v => {
-      return this.findEntityInfo(v, entityName);
+    return this.getPersistenceUnitInfo().map(v=>{
+      return this.findEntityInfo(v,entityName);
     })
   }
 
@@ -52,7 +70,7 @@ export class VrService {
       return null;
     }
     if (node.type == 'entity') {
-      if (node.name == entityName) {
+      if (node.name==entityName) {
         return node;
       }
       return null;
@@ -98,6 +116,9 @@ export class VrService {
         this.getPersistenceUnitInfo(true).subscribe();
         return cu;
       });
+  }
+  public getSelectList(entityName:string, fieldName:string, constraints:any, currentInstance:any):Observable<any> {
+    return this.vrHttp.invokeBeanMethod('core', `getFieldValues('${entityName}', '${fieldName}',${constraints}, ${currentInstance} )`);
   }
 
   public logout(): Observable<any> {
