@@ -45,7 +45,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
             d.civilities.add(c);
         }
         d.genders = new ArrayList<>();
-        for (String n : new String[]{"H", "F"}) {
+        for (String n : new String[]{"M", "F"}) {
             AppGender c = new AppGender(0, n);
             c = core.findOrCreate(c);
             d.genders.add(c);
