@@ -230,9 +230,9 @@ and open the template in the editor.
                                         <p:outputLabel value="#{i.internship.student.user.contact.fullName}"/>
                                     </p:column>
                                     <p:column headerText="Ens."
-                                              sortBy="#{i.boardTeacher.teacher.contact.fullName}"
+                                              sortBy="#{i.boardTeacher.teacher.user.contact.fullName}"
                                               style="width: 10%;">
-                                        <p:outputLabel value="#{i.boardTeacher.teacher.contact.fullName}"/>
+                                        <p:outputLabel value="#{i.boardTeacher.teacher.user.contact.fullName}"/>
                                     </p:column>
                                     <p:column headerText="Msg"
                                               sortBy="#{i.privateObservations}"
@@ -664,7 +664,7 @@ and open the template in the editor.
                                         <p:column headerText=""
                                                   style="border-left: 0px !important;border-right: 0px !important;width: 20%;">
                                             <p:outputLabel
-                                                    value="#{vr.strcut(i.boardTeacher.teacher.contact.fullName, 50)}"/>
+                                                    value="#{vr.strcut(i.boardTeacher.teacher.user.contact.fullName, 50)}"/>
                                         </p:column>
                                         <p:column headerText=""
                                                   style="border-left: 0px !important;border-right: 0px !important;width: 70%;">

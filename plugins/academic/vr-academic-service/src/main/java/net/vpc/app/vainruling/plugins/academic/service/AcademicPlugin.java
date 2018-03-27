@@ -38,11 +38,8 @@ import net.vpc.common.util.mon.ProgressMonitor;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.Document;
 import net.vpc.upa.NamedId;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
@@ -54,7 +51,7 @@ import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 @VrPlugin()
 public class AcademicPlugin {
 
-    public static final Converter<AcademicTeacher,Integer> AcademicTeacherIdConverter = new Converter<AcademicTeacher,Integer>() {
+    public static final Converter<AcademicTeacher, Integer> AcademicTeacherIdConverter = new Converter<AcademicTeacher, Integer>() {
         @Override
         public Integer convert(AcademicTeacher value) {
             return value.getId();
@@ -62,6 +59,7 @@ public class AcademicPlugin {
     };
 
     private static final Logger log = Logger.getLogger(AcademicPlugin.class.getName());
+    private AcademicPluginBodyContext bodyContext = new AcademicPluginBodyContext(this);
     @Autowired
     TraceService trace;
     @Autowired
@@ -78,25 +76,14 @@ public class AcademicPlugin {
     private AcademicPluginBodyLoad loads = new AcademicPluginBodyLoad();
     private AcademicPluginBodyStudents students = new AcademicPluginBodyStudents();
     private AcademicPluginBodyTeachers teachers = new AcademicPluginBodyTeachers();
-    private AcademicPluginBody[] bodies = new AcademicPluginBody[]{config, assignments, students, teachers, imports, internships,loads,historys};
+    private AcademicPluginBody[] bodies = new AcademicPluginBody[]{config, assignments, students, teachers, imports, internships, loads, historys};
 
     public AcademicPlugin() {
+        System.out.println("");
     }
 
     public static AcademicPlugin get() {
         return VrApp.getBean(AcademicPlugin.class);
-    }
-
-
-    @PostConstruct
-    public void prepare() {
-        AcademicPluginBodyContext context = new AcademicPluginBodyContext(this);
-        for (AcademicPluginBody body : bodies) {
-            body.setContext(context);
-        }
-        for (AcademicPluginBody body : bodies) {
-            body.onPrepare();
-        }
     }
 
     @Install
@@ -110,7 +97,8 @@ public class AcademicPlugin {
         }
 
         for (AcademicPluginBody body : bodies) {
-            body.onInstall();
+            body.setContext(bodyContext);
+            body.install();
         }
     }
 
@@ -121,7 +109,8 @@ public class AcademicPlugin {
             core = CorePlugin.get();
         }
         for (AcademicPluginBody body : bodies) {
-            body.onStart();
+            body.setContext(bodyContext);
+            body.start();
         }
     }
 
@@ -158,7 +147,6 @@ public class AcademicPlugin {
     ) {
         return this.loads.evalTeacherStat0(periodId, teacherId, teacher, findTeacherSemestrialLoads, assignments, filter, deviationConfig);
     }
-
 
     public LoadValue getAssignmentLoadValue(AcademicCourseAssignment assignment, AcademicTeacherDegree degree, AcademicConversionTableHelper conversionTable) {
         return loads.getAssignmentLoadValue(assignment, degree, conversionTable);
@@ -300,7 +288,6 @@ public class AcademicPlugin {
         return loads.evalGlobalStat(periodId, teacherFilter, filter, deviationConfig, mon);
     }
 
-
     public AcademicTeacher findTeacherByUser(int userId) {
         return teachers.findTeacherByUser(userId);
     }
@@ -352,7 +339,6 @@ public class AcademicPlugin {
 //    public List<AcademicTeacher> findTeachersWithIntents(int periodId) {
 //        return teachers.findTeachersWithIntents(periodId);
 //    }
-
     public AcademicTeacher findTeacher(String t) {
         return teachers.findTeacher(t);
     }
@@ -364,7 +350,6 @@ public class AcademicPlugin {
     public AcademicStudent findStudentByUser(Integer userId) {
         return students.findStudentByUser(userId);
     }
-
 
     public AcademicStudent findStudentByContact(int contactId) {
         return students.findStudentByContact(contactId);
@@ -378,9 +363,9 @@ public class AcademicPlugin {
         return students.findStudents();
     }
 
-
     /**
-     * @param studentUpqlFilter ql expression x based. example "x.fullName like '%R%'"
+     * @param studentUpqlFilter ql expression x based. example "x.fullName like
+     * '%R%'"
      * @return
      */
     public List<AcademicStudent> findStudents(String studentProfileFilter, AcademicStudentStage stage, String studentUpqlFilter) {
@@ -390,7 +375,6 @@ public class AcademicPlugin {
     public List<AcademicStudent> filterStudents(List<AcademicStudent> base, String studentProfileFilter) {
         return students.filterStudents(base, studentProfileFilter);
     }
-
 
     public List<AcademicFormerStudent> findGraduatedStudents() {
         return students.findGraduatedStudents();
@@ -416,23 +400,15 @@ public class AcademicPlugin {
         return config.findCoursePlanLabels(periodId);
     }
 
-
     public AcademicTeacher findCurrentHeadOfDepartment() {
         return config.findCurrentHeadOfDepartment();
     }
-
 
     public AcademicTeacher findHeadOfDepartment(int depId) {
         return config.findHeadOfDepartment(depId);
     }
 
-
-
-
-
     ////////////////////////////////////////////////////////////////////////////
-
-
     public AcademicTeacher getCurrentTeacher() {
         AppUser user = core.getCurrentUser();
         if (user != null) {
@@ -466,7 +442,6 @@ public class AcademicPlugin {
         return imports.importFile(periodId, folder, importOptions);
     }
 
-
 //    public void add(Object t) {
 //        if (t instanceof AppPeriod) {
 //            AppPeriod a = (AppPeriod) t;
@@ -475,12 +450,9 @@ public class AcademicPlugin {
 //        }
 //        UPA.getPersistenceUnit().persist(t);
 //    }
-
-
     public void generateTeachingLoad(int periodId, CourseAssignmentFilter courseAssignmentFilter, String version0, String oldVersion, ProgressMonitor monitor) throws IOException {
         assignments.generateTeachingLoad(periodId, courseAssignmentFilter, version0, oldVersion, monitor);
     }
-
 
     public AcademicConversionTableHelper findConversionTableById(int id) {
         return assignments.findConversionTableById(id);
@@ -502,7 +474,6 @@ public class AcademicPlugin {
         return assignments.getAcademicCourseIntentByAssignmentAndSemester(periodId, assignmentId, semester);
     }
 
-
     public Map<Integer, List<AcademicCourseIntent>> getAcademicCourseIntentByTeacherId(int periodId) {
         return assignments.getAcademicCourseIntentByTeacherId(periodId);
     }
@@ -522,7 +493,6 @@ public class AcademicPlugin {
     public KPIResult evalAssignmentKPIs(List<AcademicCourseAssignmentInfo> assignments, KPIGroupBy<AcademicCourseAssignmentInfo> groupBy, KPI<AcademicCourseAssignmentInfo>... kpis) {
         return KPIProcessProcessor.INSTANCE.run(assignments, new KPIGroupBy[]{groupBy}, kpis);
     }
-
 
     public Map<String, Number> statEvalInternshipAssignmentCount(List<AcademicInternship> internships) {
         return this.internships.statEvalInternshipAssignmentCount(internships);

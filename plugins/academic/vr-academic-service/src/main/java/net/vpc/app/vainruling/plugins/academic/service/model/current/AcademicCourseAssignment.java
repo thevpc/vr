@@ -53,13 +53,13 @@ public class AcademicCourseAssignment {
     @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:10%")
     @Formula(
             value = "(this.coursePlan.period.name)", formulaOrder = 1,
-            type = {FormulaType.PERSIST, FormulaType.UPDATE}
+            formulaType = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String periodLabel;
 
     @Formula(
             value = "concat(coalesce((select a.name from AcademicCoursePlan a where a.id=this.coursePlanId),'?'),'-',coalesce((select a.name from AcademicCourseType a where a.id=this.courseTypeId),'?'))", formulaOrder = 1,
-            type = {FormulaType.PERSIST, FormulaType.UPDATE}
+            formulaType = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String name;
 
@@ -71,7 +71,7 @@ public class AcademicCourseAssignment {
             + ",Coalesce(concat('-',this.discriminator),'')"
             + ",'-',coalesce((select a.name from AcademicCourseType a where a.id=this.courseTypeId),'?')"
             + ")", formulaOrder = 1,
-            type = {FormulaType.PERSIST, FormulaType.UPDATE}
+            formulaType = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String fullName;
 
@@ -168,10 +168,10 @@ public class AcademicCourseAssignment {
     @Path("Trace")
 //    @Properties(
 //            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
-    @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
+    @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private Timestamp creationDate;
-    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
 
     private boolean confirmedTeacher;

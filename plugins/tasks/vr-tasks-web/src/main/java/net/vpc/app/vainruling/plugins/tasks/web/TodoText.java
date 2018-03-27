@@ -1,14 +1,13 @@
 package net.vpc.app.vainruling.plugins.tasks.web;
 
 import net.vpc.app.vainruling.core.service.content.ContentPath;
-import net.vpc.app.vainruling.core.service.content.ContentText;
-import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 import net.vpc.app.vainruling.plugins.tasks.service.model.Todo;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import net.vpc.app.vainruling.core.service.content.ContentText;
 
 /**
  * Created by vpc on 9/11/16.

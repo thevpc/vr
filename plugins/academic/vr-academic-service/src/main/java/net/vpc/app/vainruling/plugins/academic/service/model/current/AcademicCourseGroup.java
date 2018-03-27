@@ -34,7 +34,7 @@ public class AcademicCourseGroup {
     @Main
     @Formula(
             value = "Concat(Coalesce((select a.name from AcademicClass a where a.id=this.academicClassId),'?'),'-',Coalesce(this.name,'X'))",formulaOrder = 1,
-            type = {FormulaType.PERSIST, FormulaType.UPDATE}
+            formulaType = {FormulaType.PERSIST, FormulaType.UPDATE}
     )
     private String fullName;
 
@@ -46,7 +46,7 @@ public class AcademicCourseGroup {
     private AppPeriod period;
 
     @Summary
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicClass academicClass;
 
     @Summary
@@ -55,10 +55,10 @@ public class AcademicCourseGroup {
     @Path("Trace")
 //    @Properties(
 //            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
-    @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
+    @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private Timestamp creationDate;
-    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
 
     public AcademicCourseGroup() {

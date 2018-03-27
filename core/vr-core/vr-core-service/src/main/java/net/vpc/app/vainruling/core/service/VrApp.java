@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
+import net.vpc.upa.Action;
+import net.vpc.upa.VoidAction;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -35,8 +37,13 @@ public class VrApp implements ApplicationContextAware {
     private static boolean running = false;
 
     @PostConstruct
-    private void initialize(){
-        VrApp.getBean(CorePlugin.class).prepare();
+    private void initialize() {
+        UPA.getPersistenceGroup().invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                VrApp.getBean(CorePlugin.class).start();
+            }
+        });
     }
 
     public static <T extends Object> T getBean(Class<T> type) throws BeansException {
@@ -68,8 +75,8 @@ public class VrApp implements ApplicationContextAware {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         String goodFile = null;
         for (String s : new String[]{
-                "META-INF/standalone-applicationContext.xml",
-                "META-INF/default-standalone-applicationContext.xml"
+            "META-INF/standalone-applicationContext.xml",
+            "META-INF/default-standalone-applicationContext.xml"
 
         }) {
             if (contextClassLoader.getResource(s) != null) {

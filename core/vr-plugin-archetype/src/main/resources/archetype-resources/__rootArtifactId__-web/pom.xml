@@ -14,7 +14,7 @@
         <vr-plugin.component-type>web</vr-plugin.component-type>
         <vr-plugin.name>Sample Plugin</vr-plugin.name>
         <vr-plugin.description>Description for Sample Plugin</vr-plugin.description>
-        <version.vr-core-web>1.13.1</version.vr-core-web>
+        <version.vr-core-web>1.13.3</version.vr-core-web>
     </properties>
     <dependencies>
         <dependency>

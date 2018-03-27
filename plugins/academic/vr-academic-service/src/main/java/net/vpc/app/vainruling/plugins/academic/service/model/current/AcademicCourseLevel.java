@@ -35,7 +35,7 @@ public class AcademicCourseLevel {
     private String name;
     private String periodLevel;
     @Summary
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicClass academicClass;
     @Summary
     private AcademicSemester semester;
@@ -43,11 +43,11 @@ public class AcademicCourseLevel {
     @Path("Trace")
 //    @Properties(
 //            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
-    @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
+    @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private Timestamp creationDate;
 
-    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
 
     public AcademicCourseLevel() {

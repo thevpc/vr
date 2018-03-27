@@ -89,7 +89,7 @@ and open the template in the editor.
                                     action="#{vr.gotoPageObjItem('AcademicTeacher',vr.str(teacherCourseLoadCtrl.model.currentTeacher.id))}"
                                     style="font-weight: bold"
                                     rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
-                                    value="#{teacherCourseLoadCtrl.model.currentTeacher.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.val.teacher.situation.name}  (#{teacherCourseLoadCtrl.teacherFilter.periodName}) "/>
+                                    value="#{teacherCourseLoadCtrl.model.currentTeacher.user.contact.fullName} - #{teacherCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.val.teacher.situation.name}  (#{teacherCourseLoadCtrl.teacherFilter.periodName}) "/>
                         </h1>
                         <p:panelGrid rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}">
                             <p:row>

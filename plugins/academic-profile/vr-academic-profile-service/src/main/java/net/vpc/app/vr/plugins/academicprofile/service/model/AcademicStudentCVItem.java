@@ -16,7 +16,7 @@ public class AcademicStudentCVItem {
     @Id
     @Sequence
     private int id;
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     @Summary
     private AcademicStudentCV studentCV;
     @Summary

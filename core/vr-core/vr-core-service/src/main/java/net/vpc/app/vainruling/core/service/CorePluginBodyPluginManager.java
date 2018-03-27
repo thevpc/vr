@@ -10,6 +10,7 @@ import net.vpc.upa.VoidAction;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -18,8 +19,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 
-class CorePluginBodyPluginManager extends CorePluginBody{
+class CorePluginBodyPluginManager extends CorePluginBody {
+
     private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePluginBodyPluginManager.class.getName());
     private List<Plugin> plugins;
     private AppVersion appVersion;
@@ -27,7 +32,7 @@ class CorePluginBodyPluginManager extends CorePluginBody{
     private Map<String, PluginBundle> bundles;
 
     @Override
-    public void onPrepare() {
+    public void onStart() {
         for (PersistenceUnit pu : getPersistenceUnits()) {
             pu.invokePrivileged(new VoidAction() {
                 @Override
@@ -96,6 +101,45 @@ class CorePluginBodyPluginManager extends CorePluginBody{
                 toStart.add(pp);
             }
         }
+        for (Plugin plugin : toStart) {
+            List<Object> instances = plugin.getBeanInstances();
+            //this is a workaround!
+            //dont know why beans are not initialized by spring
+            for (Object ins : instances) {
+
+                boolean requirePostContruct = false;
+                for (Field declaredField : ins.getClass().getDeclaredFields()) {
+                    Autowired a = declaredField.getAnnotation(Autowired.class);
+                    declaredField.setAccessible(true);
+                    if (a != null) {
+                        Object v = null;
+                        try {
+                            v = declaredField.get(ins);
+                            if (v == null) {
+                                v = VrApp.getBean(declaredField.getType());
+                                declaredField.set(ins, v);
+                                requirePostContruct = true;
+                            }
+                        } catch (Exception ex) {
+                            Logger.getLogger(CorePluginBodyPluginManager.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+                if (requirePostContruct) {
+                    for (Method declaredMethod : ins.getClass().getDeclaredMethods()) {
+                        PostConstruct a = declaredMethod.getAnnotation(PostConstruct.class);
+                        if (a != null) {
+                        declaredMethod.setAccessible(true);
+                            try {
+                                declaredMethod.invoke(ins);
+                            } catch (Exception ex) {
+                                Logger.getLogger(CorePluginBodyPluginManager.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         HashSet<String> nonCoherent = new HashSet<>();
         Collections.sort(toInstall);
         for (Plugin plugin : toInstall) {
@@ -162,13 +206,13 @@ class CorePluginBodyPluginManager extends CorePluginBody{
                 for (URL url : Collections.list(Thread.currentThread().getContextClassLoader().getResources("/META-INF/vr-plugin.properties"))) {
                     String urlString = url.toString();
                     int pos = urlString.lastIndexOf("/META-INF/vr-plugin.properties");
-                    String p = urlString.substring(0,pos)+urlString.substring(pos+"/META-INF/vr-plugin.properties".length());
-                    if(p.endsWith("!")){
+                    String p = urlString.substring(0, pos) + urlString.substring(pos + "/META-INF/vr-plugin.properties".length());
+                    if (p.endsWith("!")) {
                         int ji = p.lastIndexOf("jar:");
-                        p=p.substring(ji+"jar:".length(),p.length()-1);
+                        p = p.substring(ji + "jar:".length(), p.length() - 1);
 
                     }
-                    PluginComponent e = PluginComponent.parsePluginComponent(new URL(p),url);
+                    PluginComponent e = PluginComponent.parsePluginComponent(new URL(p), url);
                     if (e != null) {
                         if (e.getName() == null) {
                             String id = e.getId();
@@ -196,7 +240,6 @@ class CorePluginBodyPluginManager extends CorePluginBody{
 
                 //reevaluate dependencies
                 //reevaluate versions
-
                 for (PluginBundle bundle : bundles.values()) {
                     for (String depIdAndVer : bundle.getDependencies()) {
                         String depId = depIdAndVer;
@@ -268,7 +311,6 @@ class CorePluginBodyPluginManager extends CorePluginBody{
         return comp.getBundle();
     }
 
-
     public List<String> getPluginIds() {
         List<String> plugins = new ArrayList<>();
         for (Plugin plugin : getPlugins()) {
@@ -299,29 +341,23 @@ class CorePluginBodyPluginManager extends CorePluginBody{
                     continue;
                 }
                 if (method.getParameterCount() == 0) {
-                    if (
-                            mname.equals("toString")
-                                    || mname.equals("notify")
-                                    || mname.equals("notifyAll")
-                                    || mname.equals("getClass")
-                                    || mname.equals("hashCode")
-                                    || mname.equals("wait")
-                            ) {
+                    if (mname.equals("toString")
+                            || mname.equals("notify")
+                            || mname.equals("notifyAll")
+                            || mname.equals("getClass")
+                            || mname.equals("hashCode")
+                            || mname.equals("wait")) {
                         continue;
                     }
                 }
                 if (method.getParameterCount() == 1) {
-                    if (
-                            (mname.equals("wait") && method.getParameterTypes()[0].equals(Long.TYPE))
-                                    || (mname.equals("equals") && method.getParameterTypes()[0].equals(Object.class))
-                            ) {
+                    if ((mname.equals("wait") && method.getParameterTypes()[0].equals(Long.TYPE))
+                            || (mname.equals("equals") && method.getParameterTypes()[0].equals(Object.class))) {
                         continue;
                     }
                 }
                 if (method.getParameterCount() == 2) {
-                    if (
-                            (mname.equals("wait") && method.getParameterTypes()[0].equals(Long.TYPE) && method.getParameterTypes()[1].equals(Integer.TYPE))
-                            ) {
+                    if ((mname.equals("wait") && method.getParameterTypes()[0].equals(Long.TYPE) && method.getParameterTypes()[1].equals(Integer.TYPE))) {
                         continue;
                     }
                 }
@@ -433,10 +469,10 @@ class CorePluginBodyPluginManager extends CorePluginBody{
                 _appVersion.setDefaultPublicTheme(p.getProperty("default-public-theme"));
                 _appVersion.setDefaultPrivateTheme(p.getProperty("default-private-theme"));
                 for (Object k : p.keySet()) {
-                    String sk=String.valueOf(k);
-                    if(sk.startsWith("config.")){
+                    String sk = String.valueOf(k);
+                    if (sk.startsWith("config.")) {
                         String kk = sk.substring("config.".length());
-                        _appVersion.getConfig().put(kk,p.getProperty(kk));
+                        _appVersion.getConfig().put(kk, p.getProperty(kk));
                     }
                 }
 

@@ -39,7 +39,7 @@ public class AcademicLoadConversionRow {
     private String name;
 
     @Summary
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicLoadConversionTable conversionTable;
     @Summary
     private AcademicLoadConversionRule rule;
@@ -56,9 +56,9 @@ public class AcademicLoadConversionRow {
 //    @Properties(
 //            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Field(protectionLevel = ProtectionLevel.PROTECTED,excludeModifiers = UserFieldModifier.UPDATE)
-    @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
+    @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)
     private Timestamp creationDate;
-    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
 
     public AcademicLoadConversionRow() {

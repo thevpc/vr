@@ -38,7 +38,7 @@ public class ForumPost {
     private AppUser user;
 
     @Summary
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private ForumThread thread;
 
     private ForumPost baseMessage;

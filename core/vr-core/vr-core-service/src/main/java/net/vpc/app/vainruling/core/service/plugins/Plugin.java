@@ -51,8 +51,8 @@ public class Plugin implements Comparable<Plugin> {
         return getInfo().getId();
     }
 
-    public <T> T getBeanInstances() {
-        return (T) beanInstances;
+    public <T> List<T> getBeanInstances() {
+        return (List<T>) beanInstances;
     }
 
     public PluginBundle getInfo() {

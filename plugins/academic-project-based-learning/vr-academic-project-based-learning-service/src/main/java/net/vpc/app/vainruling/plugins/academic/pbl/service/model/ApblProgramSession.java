@@ -27,7 +27,7 @@ public class ApblProgramSession {
     private int id;
     @Main
     private String name;
-    @ManyToOne(type = RelationshipType.COMPOSITION) @Summary
+    @ManyToOne(relationType = RelationshipType.COMPOSITION) @Summary
     private ApblSession session;
     @Summary
     private AcademicProgram program;

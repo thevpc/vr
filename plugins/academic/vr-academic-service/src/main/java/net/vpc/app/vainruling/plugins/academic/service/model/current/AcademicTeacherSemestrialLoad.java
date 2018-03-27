@@ -26,7 +26,7 @@ public class AcademicTeacherSemestrialLoad {
     private AppPeriod period;
 
     @Summary
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicTeacher teacher;
 
     @Summary

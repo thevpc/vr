@@ -17,7 +17,7 @@ public class AcademicTeacherSkill {
     private int id;
     @Summary
     private AcademicTeacher teacher;
-    @Main @ManyToOne(type = RelationshipType.COMPOSITION)
+    @Main @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AppSkill skill;
     @Summary
     @Properties(

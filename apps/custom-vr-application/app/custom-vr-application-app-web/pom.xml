@@ -47,7 +47,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <github.global.server>github</github.global.server>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
-        <version.vr-core-web>1.13.1</version.vr-core-web>
+        <version.vr-core-web>1.13.3</version.vr-core-web>
     </properties>
 
     <dependencies>
@@ -184,26 +184,6 @@
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.zeroturnaround</groupId>
-                <artifactId>jrebel-maven-plugin</artifactId>
-                <version>1.1.6</version>
-                <configuration>
-                    <rebelXmlDirectory>src/main/resources</rebelXmlDirectory>
-                    <addResourcesDirToRebelXml>true</addResourcesDirToRebelXml>
-                    <alwaysGenerate>true</alwaysGenerate>
-                    <showGenerated>true</showGenerated>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>generate-rebel-xml</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>

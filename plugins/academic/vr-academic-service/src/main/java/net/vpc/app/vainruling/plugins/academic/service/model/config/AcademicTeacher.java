@@ -26,7 +26,7 @@ import java.sql.Timestamp;
 @Path("Contact")
 @Properties(
         {
-                @Property(name = "cache.navigationDepth", type = "int", value = "5"),
+                @Property(name = "cache.navigationDepth", valueType = "int", value = "5"),
                 @Property(name = "ui.auto-filter.department", value = "{expr='this.department',order=1}"),
                 @Property(name = "ui.auto-filter.officialDiscipline", value = "{expr='this.officialDiscipline',order=2}"),
                 @Property(name = "ui.auto-filter.degree", value = "{expr='this.degree',order=3}"),
@@ -74,11 +74,11 @@ public class AcademicTeacher {
     @Path("Trace")
 //    @Properties(
 //            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
-    @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
+    @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
 
     private Timestamp creationDate;
-    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})
 
     private Timestamp updateDate;
 

@@ -26,7 +26,7 @@ public class AcademicInternshipDuration {
     private int count;
     private DurationType durationType;
 
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicInternshipType internshipType;
 
     public int getId() {

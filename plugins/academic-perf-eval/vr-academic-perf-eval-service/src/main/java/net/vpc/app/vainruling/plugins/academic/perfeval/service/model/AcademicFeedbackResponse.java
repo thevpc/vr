@@ -22,7 +22,7 @@ public class AcademicFeedbackResponse {
     @Sequence
     private int id;
     @Summary
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicFeedback feedback;
     @Summary
     private AcademicFeedbackQuestion question;
@@ -30,7 +30,7 @@ public class AcademicFeedbackResponse {
     private String response;
     @Summary
     private boolean valid;
-    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
 
     public int getId() {

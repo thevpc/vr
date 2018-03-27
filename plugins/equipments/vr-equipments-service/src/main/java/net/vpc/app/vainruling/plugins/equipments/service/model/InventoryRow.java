@@ -24,13 +24,13 @@ public class InventoryRow {
     @Id
     @Sequence
     private int id;
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     @Summary
     private Inventory inventory;
     @Summary
     private AppUser user;
     @Summary
-    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Date date;
     @Summary
     private Equipment equipment;

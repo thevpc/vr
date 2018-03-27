@@ -22,7 +22,7 @@ public class AcademicHistTeacherSemestrialLoad {
     private int id;
 
     @Summary
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicHistTeacherAnnualLoad annualLoad;
 
     @Summary

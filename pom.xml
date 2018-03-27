@@ -19,6 +19,7 @@
         <module>plugins/dev-toolbox</module>
 
         <module>plugins/equipments</module>
+        <module>plugins/equipment-tracker</module>
 
         <module>plugins/academic</module>
         <module>plugins/academic-report</module>

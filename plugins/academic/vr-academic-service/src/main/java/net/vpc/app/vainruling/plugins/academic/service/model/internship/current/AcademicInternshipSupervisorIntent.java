@@ -26,7 +26,7 @@ public class AcademicInternshipSupervisorIntent {
     @Sequence
 
     private int id;
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     @Main
     private AcademicInternship internship;
     @Summary

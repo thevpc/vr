@@ -26,7 +26,7 @@ public class AcademicFeedbackQuestion {
     private int position;
     @Summary
     private boolean mandatory = true;
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicFeedbackGroup parent;
 
     public int getId() {

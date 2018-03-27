@@ -5,7 +5,7 @@
     <groupId>net.vpc.app.vain-ruling.plugins.academic-report</groupId>
     <artifactId>vr-academic-report-web</artifactId>
     <name>net.vpc.app.vain-ruling.plugins.academic-report.vr-academic-report-web</name>
-    <version>1.13.1</version>
+    <version>1.13.3</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 
@@ -18,7 +18,7 @@
 
     <properties>
         <vr-plugin.component-type>web</vr-plugin.component-type>
-        <version.vr-core-web>1.13.1</version.vr-core-web>
+        <version.vr-core-web>1.13.3</version.vr-core-web>
     </properties>
 
     <dependencies>
@@ -30,12 +30,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vr-academic-report-service</artifactId>
-            <version>1.13.1</version>
+            <version>1.13.3</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-web</artifactId>
-            <version>1.13.1</version>
+            <version>1.13.3</version>
         </dependency>
     </dependencies>
 

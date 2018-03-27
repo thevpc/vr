@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web;
 
+import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.web.util.StrLabel;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
@@ -68,13 +69,16 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.springframework.stereotype.Controller;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @VrController
 @Scope(value = "singleton")
+@Controller
 public class Vr {
+
     public static final Object NullSelected = new Object();
 
     public static final Map<String, String> extensionsToCss = new HashMap<String, String>();
@@ -557,8 +561,8 @@ public class Vr {
             }
             imageURL = "";
         }
-        return url((String) nvl(imageURL, strFormat("/Site/images/articles/%1s"
-                , randomize(
+        return url((String) nvl(imageURL, strFormat("/Site/images/articles/%1s",
+                randomize(
                         "article-01.jpg",
                         "article-02.jpg",
                         "article-03.jpg",
@@ -574,8 +578,8 @@ public class Vr {
     }
 
     public String articleImageOrDefault(String imageURL) {
-        return url((String) nvl(imageURL, strFormat("/Site/images/articles/%1s"
-                , "article-01.jpg"
+        return url((String) nvl(imageURL, strFormat("/Site/images/articles/%1s",
+                "article-01.jpg"
         )));
     }
 
@@ -964,7 +968,6 @@ public class Vr {
     }
 
     // Session Aware
-
     public Locale getLocale(String preferred) {
         Locale loc = StringUtils.isEmpty(preferred) ? null : new Locale(preferred);
         if (loc == null) {
@@ -1054,9 +1057,7 @@ public class Vr {
         if (activeSessions != null) {
             for (UserSessionInfo userSession : activeSessions) {
                 String name = userSession.getUserTypeName();
-                if (type == null || (
-                        type.equals(name)
-                )) {
+                if (type == null || (type.equals(name))) {
                     r.add(userSession);
                 }
             }
@@ -1284,6 +1285,10 @@ public class Vr {
         return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(key);
     }
 
+    public boolean hasProfile(String key) {
+        return core.getCurrentToken().getProfileNames().contains(key);
+    }
+
     public String gotoPublicSubSite(String siteFilter) {
         CorePlugin.get().getCurrentSession().setSelectedSiteFilter(siteFilter);
         return gotoPage("publicIndex", "");
@@ -1450,7 +1455,7 @@ public class Vr {
     }
 
     public String strListifyNoEmpty(String sep, Object... items) {
-        return StringUtils.listToStringDeep(sep,true,null,items);
+        return StringUtils.listToStringDeep(sep, true, null, items);
     }
 
     public void postProcessDataExporterXLS(Object document) {
@@ -1470,7 +1475,6 @@ public class Vr {
             cell.setCellStyle(headerCellStyle);
         }
 
-
         HSSFCellStyle intStyle = book.createCellStyle();
         intStyle.setDataFormat((short) 1);
 
@@ -1479,7 +1483,6 @@ public class Vr {
 
         HSSFCellStyle dollarStyle = book.createCellStyle();
         dollarStyle.setDataFormat((short) 5);
-
 
         int maxColumn = -1;
         Map<String, HSSFCellStyle> datFormats = new HashMap<>();
@@ -1607,4 +1610,43 @@ public class Vr {
         return m.format(size);
     }
 
+    public void prepareCurrArticleType(ContentText listItem) {
+        setHttpRequestAttribute("currArticleType",
+                (isEmpty(listItem.getImageURL()) ? "center"
+                : (this.contextTextHasDecoration(listItem, "left") ? "left"
+                : this.contextTextHasDecoration(listItem, "right") ? "right"
+                : this.contextTextHasDecoration(listItem, "center") ? "center"
+                : this.randomize("left", "right")))
+        );
+
+        this.setHttpRequestAttribute("currArticleBackground",
+                this.contextTextHasDecoration(listItem, "bg-rand-image") ? "rand-image"
+                : this.contextTextHasDecoration(listItem, "bg-image") ? (this.isEmpty(listItem.getImageURL()) ? "rand-image" : "image")
+                : this.contextTextHasDecoration(listItem, "bg-solid") ? "solid"
+                : this.isEmpty(listItem.getImageURL()) ? this.randomize("solid", "solid")
+                : "solid"
+        );
+
+        this.setHttpRequestAttribute("currArticleBackgroundImage",
+                (this.getHttpRequest().getAttribute("currArticleBackground") == "rand-image")
+                ? (this.randomizeList(this.listFlattenAndTrimAndAppend(this.strcat(this.getPublicThemeContext(), "/wplugins/crew/images/slide_5.jpg"), this.fsurlList(this.findValidImages("/Site/wplugins/crew/images/slider")))))
+                : (this.getHttpRequest().getAttribute("currArticleBackground") == "image")
+                ? (this.randomizeList(this.fsurlList(this.findValidImages(listItem.getImageURL()))))
+                : ""
+        );
+
+        this.setHttpRequestAttribute("currArticleCompanionImage",
+                (this.getHttpRequest().getAttribute("currArticleBackground") == "rand-image")
+                ? this.url(listItem.getImageURL())
+                : (this.getHttpRequest().getAttribute("currArticleBackground") == "image")
+                ? (this.randomizeList(this.contentPathToFSUrlList(this.findImageAttachments(listItem.getImageAttachments()))))
+                : this.url(listItem.getImageURL())
+        );
+
+        this.setHttpRequestAttribute("currArticleBackgroundSolid",
+                (this.getHttpRequest().getAttribute("currArticleBackground") == "solid")
+                ? this.randomize("#38569f", "#352f44", "#2f4432", "#44362f", "#442f39", "#38969f")
+                : ""
+        );
+    }
 }

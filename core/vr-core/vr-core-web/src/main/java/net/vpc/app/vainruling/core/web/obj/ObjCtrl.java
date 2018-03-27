@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web.obj;
 
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.VrApp;
@@ -1990,7 +1991,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
 
     private static Function hashToStringArr = new Function() {
         @Override
-        public Object eval(EvalContext evalContext) {
+        public Object eval(FunctionEvalContext evalContext) {
             Object[] a = evalContext.getArguments();
             if (a.length == 0) {
                 return "";
@@ -2004,7 +2005,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     };
     Function inthash = new Function() {
         @Override
-        public Object eval(EvalContext evalContext) {
+        public Object eval(FunctionEvalContext evalContext) {
             Object[] a = evalContext.getArguments();
             if (a.length == 0) {
                 return 0;

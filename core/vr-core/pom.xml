@@ -3,10 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.core</groupId>
     <artifactId>vr-core</artifactId>
-    <version>1.13.1</version>
+    <version>1.13.3</version>
     <packaging>pom</packaging>
     <name>net.vpc.app.vain-ruling.core.vr-core</name>
     <modules>
+        <module>vr-core-model</module>
         <module>vr-core-service</module>
         <module>vr-core-web</module>
     </modules>

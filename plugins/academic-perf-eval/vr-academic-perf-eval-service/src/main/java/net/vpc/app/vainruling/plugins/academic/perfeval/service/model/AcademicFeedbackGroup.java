@@ -30,7 +30,7 @@ public class AcademicFeedbackGroup {
     @Summary
     private AcademicFeedbackGroup parent;
     @Summary
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicFeedbackModel model;
 
     public int getId() {

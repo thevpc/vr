@@ -27,7 +27,7 @@ public class AcademicReportTitleProperty {
     @Field(max = "4096")
     private String propertyConstraints;
     @Summary
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicReportTitle reportTitle;
 
     public AcademicReportTitleProperty() {

@@ -11,7 +11,6 @@ import net.vpc.app.vainruling.core.service.fs.FileInfo;
 import net.vpc.app.vainruling.core.service.fs.VrFSEntry;
 import net.vpc.app.vainruling.core.service.fs.VrFSTable;
 import net.vpc.app.vainruling.core.service.model.*;
-import net.vpc.app.vainruling.core.service.model.content.*;
 import net.vpc.app.vainruling.core.service.notification.PollAware;
 import net.vpc.app.vainruling.core.service.obj.AutoFilterData;
 import net.vpc.app.vainruling.core.service.obj.ObjSearch;
@@ -34,6 +33,12 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesDisposition;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionGroup;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionGroupType;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesFile;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
+import net.vpc.app.vainruling.core.service.model.content.FullArticle;
 import org.springframework.context.annotation.DependsOn;
 
 /**
@@ -63,15 +68,16 @@ public class CorePlugin {
     @Autowired
     private CacheService cacheService;
     private boolean updatingPoll = false;
-    private Set<String> managerProfiles = new HashSet<>(Arrays.asList("Director"));
-    private CorePluginBodyPluginManager bodyPluginManager = new CorePluginBodyPluginManager();
-    private CorePluginBodySecurityManager bodySecurityManager = new CorePluginBodySecurityManager();
-    private CorePluginBodySecurityAuthenticator bodySecurityAuth = new CorePluginBodySecurityAuthenticator();
-    private CorePluginBodyDAOManager bodyDaoManager = new CorePluginBodyDAOManager();
-    private CorePluginBodyContentManager bodyContentManager = new CorePluginBodyContentManager();
-    private CorePluginBodyConfig bodyConfig = new CorePluginBodyConfig();
-    private CorePluginBody[] bodies = new CorePluginBody[]{bodyFileSystem, bodyConfig, bodyPluginManager, bodySecurityAuth, bodySecurityManager, bodyDaoManager, bodyContentManager};
-
+    private final Set<String> managerProfiles = new HashSet<>(Arrays.asList("Director"));
+    private final CorePluginBodyPluginManager bodyPluginManager = new CorePluginBodyPluginManager();
+    private final CorePluginBodySecurityManager bodySecurityManager = new CorePluginBodySecurityManager();
+    private final CorePluginBodySecurityAuthenticator bodySecurityAuth = new CorePluginBodySecurityAuthenticator();
+    private final CorePluginBodyDAOManager bodyDaoManager = new CorePluginBodyDAOManager();
+    private final CorePluginBodyContentManager bodyContentManager = new CorePluginBodyContentManager();
+    private final CorePluginBodyConfig bodyConfig = new CorePluginBodyConfig();
+    private final CorePluginBody[] bodies = new CorePluginBody[]{bodyFileSystem, bodyConfig, bodySecurityAuth, bodySecurityManager, bodyDaoManager, bodyContentManager, bodyPluginManager};
+    private CorePluginBodyContext bodyContext;
+    
     public static CorePlugin get() {
         return VrApp.getBean(CorePlugin.class);
     }
@@ -81,7 +87,7 @@ public class CorePlugin {
 //    public UserSession getUserSession() {
 //        return VrApp.getContext().getBean(UserSession.class);
 //    }
-    void prepare() {
+    void start() {
         //LogUtils.configure(Level.FINE,"net.vpc");
         //disable log4j imported by jxl-api
         org.apache.log4j.LogManager.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
@@ -95,31 +101,16 @@ public class CorePlugin {
 //        }catch(Exception ex){
 //            ex.printStackTrace();
 //        }
-        CorePluginBodyContext context = new CorePluginBodyContext(this, cacheService, trace);
+        bodyContext = new CorePluginBodyContext(this, cacheService, trace);
 
         for (CorePluginBody body : bodies) {
-            body.setContext(context);
+            body.setContext(bodyContext);
         }
         for (CorePluginBody body : bodies) {
-            body.onPrepare();
-        }
-    }
-
-    @Install
-    private void onInstall() {
-
-        for (CorePluginBody body : bodies) {
-            body.onInstall();
-        }
-    }
-
-    @Start
-    private void onStart() {
-        if (findUser(USER_ADMIN) == null) {
-            onInstall();
+            body.install();
         }
         for (CorePluginBody body : bodies) {
-            body.onStart();
+            body.start();
         }
     }
 
@@ -1006,6 +997,14 @@ public class CorePlugin {
         String shortName = getAppVersion().getShortName();
         String n = shortName.replace(" ", "-");
         return n + "-" + name + "-" + NAME_DATE_FORMAT.format(new Date());
+    }
+
+    public boolean isAllowed(String key) {
+        return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(key);
+    }
+
+    public boolean hasProfile(String key) {
+        return getCurrentToken().getProfileNames().contains(key);
     }
 
 }

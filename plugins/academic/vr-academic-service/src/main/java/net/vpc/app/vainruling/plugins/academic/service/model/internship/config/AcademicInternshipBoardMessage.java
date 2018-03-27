@@ -24,7 +24,7 @@ public class AcademicInternshipBoardMessage {
     @Sequence
     private int id;
     private AcademicInternshipBoardTeacher boardTeacher;
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicInternship internship;
     @Field(max = "4000")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)

@@ -5,14 +5,10 @@
  */
 package net.vpc.app.vainruling.plugins.inbox.service.model;
 
-import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.obj.AppFile;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.RelationshipType;
 import net.vpc.upa.config.*;
-import net.vpc.upa.types.DateTime;
-
-import java.sql.Timestamp;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -22,7 +18,7 @@ public class MailboxReceivedAttachment implements AppFile{
     @Id
     @Sequence
     private int id;
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private MailboxReceived parent;
 
     @Main

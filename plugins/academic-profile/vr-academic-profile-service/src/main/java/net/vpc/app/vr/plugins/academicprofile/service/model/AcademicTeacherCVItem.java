@@ -17,7 +17,7 @@ public class AcademicTeacherCVItem {
     @Sequence
     private int id;
     @Summary
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicTeacherCV teacherCV;
     @Summary
     private AcademicCVSection section;

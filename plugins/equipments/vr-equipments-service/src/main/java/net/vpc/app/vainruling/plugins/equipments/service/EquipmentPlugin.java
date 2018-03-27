@@ -52,7 +52,7 @@ public class EquipmentPlugin {
                 .getResultList();
 
     }
-
+    
     public List<Equipment> findEquipmentsByType(int typeId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select a from Equipment a where a.typeId=:typeId order by a.name")

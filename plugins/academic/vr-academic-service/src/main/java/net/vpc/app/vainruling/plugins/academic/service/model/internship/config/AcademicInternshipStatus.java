@@ -23,7 +23,7 @@ public class AcademicInternshipStatus {
     private int id;
     @Main
     private String name;
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicInternshipType internshipType;
     @Field(max = "4000")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)

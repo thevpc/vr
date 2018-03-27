@@ -5,7 +5,7 @@
     <groupId>net.vpc.app.vain-ruling.plugins.blog</groupId>
     <artifactId>vr-blog-service</artifactId>
     <name>net.vpc.app.vain-ruling.plugins.blog.vr-blog-service</name>
-    <version>1.13.1</version>
+    <version>1.13.3</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 
@@ -20,7 +20,7 @@
         <vr-plugin.component-type>service</vr-plugin.component-type>
         <vr-plugin.name>Blog</vr-plugin.name>
         <vr-plugin.description>Simple Blog Placeholder Plugin</vr-plugin.description>
-        <version.vr-core-service>1.13.1</version.vr-core-service>
+        <version.vr-core-service>1.13.3</version.vr-core-service>
     </properties>
 
     <dependencies>

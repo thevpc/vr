@@ -44,12 +44,11 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
         core = CorePlugin.get();
         cacheService = CacheService.get();
         academic = getContext().getPlugin();
+        AppProfile teacherProfile = core.findOrCreateCustomProfile("Teacher", "UserType");
+        AppProfile studentProfile = core.findOrCreateCustomProfile("Student", "UserType");
         AppProfile director = core.findOrCreateCustomProfile("Director", "UserType");
         AppProfile headOfDepartment = core.findOrCreateCustomProfile(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT, "UserType");
-        AppProfile directorOfStudies = core.findOrCreateProfile("DirectorOfStudies");
-        directorOfStudies.setCustom(true);
-        directorOfStudies.setCustomType("UserType");
-        pu.merge(directorOfStudies);
+        AppProfile directorOfStudies = core.findOrCreateCustomProfile("DirectorOfStudies","UserType");
 
 
         core.addProfileRight(director.getId(), CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM);

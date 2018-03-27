@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.apps.eniso-info.plugins</groupId>
     <artifactId>eniso-info-main-service</artifactId>
-    <version>1.13.1</version>
+    <version>1.13.3</version>
     <packaging>jar</packaging>
     <name>net.vpc.app.vain-ruling.apps.eniso-info.plugins.eniso-info-main-service</name>
     <url>https://github.com/thevpc/vr/wiki</url>
@@ -20,7 +20,7 @@
         <vr-plugin.component-type>service</vr-plugin.component-type>
         <vr-plugin.name>ENISo Info Plugin</vr-plugin.name>
         <vr-plugin.description>ENISo Info Plugin</vr-plugin.description>
-        <version.vr-core-service>1.13.1</version.vr-core-service>
+        <version.vr-core-service>1.13.3</version.vr-core-service>
     </properties>
 
     <dependencies>
@@ -32,27 +32,32 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.equipments</groupId>
             <artifactId>vr-equipments-service</artifactId>
-            <version>1.13.1</version>
+            <version>1.13.3</version>
+        </dependency>
+        <dependency>
+            <groupId>net.vpc.app.vain-ruling.plugins.equipment-tracker</groupId>
+            <artifactId>vr-equipment-tracker-service</artifactId>
+            <version>1.13.3</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.tasks</groupId>
             <artifactId>vr-tasks-service</artifactId>
-            <version>1.13.1</version>
+            <version>1.13.3</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-service</artifactId>
-            <version>1.13.1</version>
+            <version>1.13.3</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.mailbox</groupId>
             <artifactId>vr-mailbox-service</artifactId>
-            <version>1.13.1</version>
+            <version>1.13.3</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-project-based-learning</groupId>
             <artifactId>vr-academic-project-based-learning-service</artifactId>
-            <version>1.13.1</version>
+            <version>1.13.3</version>
         </dependency>
         <!--<dependency>-->
         <!--<groupId>net.vpc.app.vain-ruling.plugins.blog</groupId>-->
@@ -62,32 +67,32 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.forum</groupId>
             <artifactId>vr-forum-service</artifactId>
-            <version>1.13.1</version>
+            <version>1.13.3</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-report</groupId>
             <artifactId>vr-academic-report-service</artifactId>
-            <version>1.13.1</version>
+            <version>1.13.3</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-perf-eval</groupId>
             <artifactId>vr-academic-perf-eval-service</artifactId>
-            <version>1.13.1</version>
+            <version>1.13.3</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-planning</groupId>
             <artifactId>vr-academic-planning-service</artifactId>
-            <version>1.13.1</version>
+            <version>1.13.3</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.dev-toolbox</groupId>
             <artifactId>vr-dev-toolbox-service</artifactId>
-            <version>1.13.1</version>
+            <version>1.13.3</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-profile</groupId>
             <artifactId>vr-academic-profile-service</artifactId>
-            <version>1.13.1</version>
+            <version>1.13.3</version>
         </dependency>
 
     </dependencies>
@@ -187,4 +192,14 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>vpc-public-maven</id>
+            <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

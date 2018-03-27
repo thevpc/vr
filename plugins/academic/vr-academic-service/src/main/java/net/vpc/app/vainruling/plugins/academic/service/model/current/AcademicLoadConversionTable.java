@@ -34,9 +34,9 @@ public class AcademicLoadConversionTable {
 //    @Properties(
 //            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Field(protectionLevel = ProtectionLevel.PRIVATE, excludeModifiers = UserFieldModifier.UPDATE)
-    @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
+    @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)
     private Timestamp creationDate;
-    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
     private String evaluator;
 

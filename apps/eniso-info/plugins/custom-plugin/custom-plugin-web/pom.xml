@@ -18,7 +18,7 @@
 
     <properties>
         <vr-plugin.component-type>web</vr-plugin.component-type>
-        <version.vr-core-web>1.13.1</version.vr-core-web>
+        <version.vr-core-web>1.13.3</version.vr-core-web>
     </properties>
 
     <dependencies>

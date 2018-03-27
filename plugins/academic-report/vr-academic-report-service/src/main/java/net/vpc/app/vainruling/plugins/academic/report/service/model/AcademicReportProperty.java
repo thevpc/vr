@@ -30,7 +30,7 @@ public class AcademicReportProperty {
     private AppPropertyTypeKind propertyType = AppPropertyTypeKind.STRING;
 
     @Summary
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicReport report;
 
     public AcademicReportProperty() {

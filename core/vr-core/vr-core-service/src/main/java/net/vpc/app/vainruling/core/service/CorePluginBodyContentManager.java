@@ -5,7 +5,6 @@ import com.sun.syndication.io.SyndFeedOutput;
 import net.vpc.app.vainruling.core.service.cache.EntityCache;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.model.content.*;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.ProfilePatternFilter;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
@@ -23,6 +22,14 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.*;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesDisposition;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionGroup;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionGroupType;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesFile;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesItemStrict;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesProperty;
+import net.vpc.app.vainruling.core.service.model.content.FullArticle;
 
 class CorePluginBodyContentManager extends CorePluginBody{
     @Override
@@ -57,10 +64,19 @@ class CorePluginBodyContentManager extends CorePluginBody{
         findOrCreateDisposition("Activities","Activities","Activities");
         findOrCreateDisposition("Activities.Header","Activities",null);
         if(core.findFullArticlesByDisposition(null,"About.Header").isEmpty()){
-            ArticlesItem a = new ArticlesItem();
-            a.setSubject("About");
-            a.setDisposition(findArticleDisposition("About.Header"));
-            core.save("ArticlesItem", a);
+            core.save("ArticlesItem", new ArticlesItem("About",null,findArticleDisposition("About.Header")));
+        }
+        if(core.findFullArticlesByDisposition(null,"About").isEmpty()){
+            core.save("ArticlesItem", new ArticlesItem("Nos Valeurs",null,findArticleDisposition("About.Header")));
+        }
+        if(core.findFullArticlesByDisposition(null,"About").isEmpty()){
+            core.save("ArticlesItem", new ArticlesItem("Reinvention",null,findArticleDisposition("About.Header")));
+        }
+        if(core.findFullArticlesByDisposition(null,"About").isEmpty()){
+            core.save("ArticlesItem", new ArticlesItem("Actualite",null,findArticleDisposition("About.Header")));
+        }
+        if(core.findFullArticlesByDisposition(null,"About").isEmpty()){
+            core.save("ArticlesItem", new ArticlesItem("APropos",null,findArticleDisposition("About.Header")));
         }
         if(core.findFullArticlesByDisposition(null,"News.Header").isEmpty()){
             ArticlesItem a = new ArticlesItem();

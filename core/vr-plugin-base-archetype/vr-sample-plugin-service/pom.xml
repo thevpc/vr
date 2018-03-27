@@ -15,7 +15,7 @@
         <vr-plugin.component-type>service</vr-plugin.component-type>
         <vr-plugin.name>Sample Plugin</vr-plugin.name>
         <vr-plugin.description>Description for Sample Plugin</vr-plugin.description>
-        <version.vr-core-service>1.13.1</version.vr-core-service>
+        <version.vr-core-service>1.13.3</version.vr-core-service>
     </properties>
     <dependencies>
         <dependency>

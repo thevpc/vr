@@ -22,7 +22,7 @@ public class AcademicInternshipBoardTeacher {
     @Sequence
 
     private int id;
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     @Summary
     private AcademicInternshipBoard board;
     @Summary

@@ -11,12 +11,8 @@ import net.vpc.app.vainruling.core.service.content.CmsTextDisposition;
 import net.vpc.app.vainruling.core.service.content.CmsTextService;
 import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.model.content.*;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.upa.*;
-import net.vpc.upa.expressions.UserExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -25,6 +21,10 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import java.io.IOException;
 import java.util.*;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesDisposition;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesFile;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
+import net.vpc.app.vainruling.core.service.model.content.FullArticle;
 
 /**
  * @author taha.bensalah@gmail.com

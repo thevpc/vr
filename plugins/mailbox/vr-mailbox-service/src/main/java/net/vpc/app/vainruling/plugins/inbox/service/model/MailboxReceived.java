@@ -80,7 +80,7 @@ public class MailboxReceived {
 
     private RecipientType recipientType = RecipientType.TO;
 
-    @ManyToOne(type = RelationshipType.SHADOW_ASSOCIATION)
+    @ManyToOne(relationType = RelationshipType.SHADOW_ASSOCIATION)
     private MailboxSent outboxMessage;
 
     public int getId() {

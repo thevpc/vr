@@ -7,12 +7,8 @@ package net.vpc.app.vainruling.plugins.mailbox.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.content.ContentPath;
-import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.service.content.MessageTextService;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
-import net.vpc.app.vainruling.core.service.notification.PollAware;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
@@ -27,6 +23,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import net.vpc.app.vainruling.core.service.content.ContentPath;
+import net.vpc.app.vainruling.core.service.content.ContentText;
+import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
+import net.vpc.app.vainruling.core.service.notification.PollAware;
 
 /**
  * @author taha.bensalah@gmail.com

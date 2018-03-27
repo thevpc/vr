@@ -9,7 +9,6 @@ import net.vpc.upa.types.*;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
 
-import java.sql.Timestamp;
 
 /**
  * @author me
@@ -40,10 +39,10 @@ public class SampleEntity {
 
     @Properties(
             @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
-    @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
+    @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private DateTime creationDate;
-    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})
     private DateTime updateDate;
 
     //add getters and setters

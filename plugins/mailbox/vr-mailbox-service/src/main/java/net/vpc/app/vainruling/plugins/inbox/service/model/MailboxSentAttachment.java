@@ -18,7 +18,7 @@ public class MailboxSentAttachment implements AppFile{
     @Id
     @Sequence
     private int id;
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private MailboxSent parent;
 
     @Main

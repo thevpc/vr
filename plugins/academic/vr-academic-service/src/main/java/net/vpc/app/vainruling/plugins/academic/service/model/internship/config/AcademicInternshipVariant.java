@@ -22,7 +22,7 @@ public class AcademicInternshipVariant {
     private int id;
     @Main
     private String name;
-    @ManyToOne(type = RelationshipType.COMPOSITION)
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicInternshipType internshipType;
 
     public int getId() {

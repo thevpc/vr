@@ -104,7 +104,7 @@ public class Equipment {
     private Timestamp deletedOn;
 
     @Summary
-    @Formula(value = "currentTimestamp()", type = FormulaType.PERSIST)
+    @Formula(value = "currentTimestamp()", formulaType = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private Timestamp createdOn;
 

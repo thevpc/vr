@@ -104,7 +104,7 @@ public class XlsxLoadImporter {
                 AppDepartment parent = core.findDepartment(Convert.toString(values[2]));
                 d.setParent(parent);
                 d.setName2(Convert.toString(values[3]));
-                corePlugin.save("AppDepartment",d);
+                corePlugin.save("AppDepartment", d);
                 count++;
             }
         }
@@ -139,7 +139,7 @@ public class XlsxLoadImporter {
 //            d.setValuePM(Convert.toDouble(values[4]));
             d.setValueDU(Convert.toDouble(values[5]));
             d.setPosition(Convert.toInt(values[6]));
-            CorePlugin.get().save("AcademicTeacherDegree",d);
+            CorePlugin.get().save("AcademicTeacherDegree", d);
             count++;
         }
         TraceService trace = TraceService.get();
@@ -168,7 +168,7 @@ public class XlsxLoadImporter {
                 if (table == null) {
                     table = new AcademicLoadConversionTable();
                     table.setName("Table");
-                    CorePlugin.get().save("AcademicLoadConversionTable",table);
+                    CorePlugin.get().save("AcademicLoadConversionTable", table);
                 }
             }
 
@@ -176,7 +176,7 @@ public class XlsxLoadImporter {
             if (rule == null) {
                 rule = new AcademicLoadConversionRule();
                 rule.setName(Convert.toString(values[1]));
-                CorePlugin.get().save("AcademicLoadConversionRule",rule);
+                CorePlugin.get().save("AcademicLoadConversionRule", rule);
             }
             AcademicLoadConversionRow trow = service.findLoadConversionRow(table.getId(), rule.getId());
             if (trow == null) {
@@ -187,13 +187,13 @@ public class XlsxLoadImporter {
                 trow.setValueTD(Convert.toDouble(values[3]));
                 trow.setValueTP(Convert.toDouble(values[4]));
                 trow.setValuePM(Convert.toDouble(values[5]));
-                CorePlugin.get().save("AcademicLoadConversionRow",trow);
+                CorePlugin.get().save("AcademicLoadConversionRow", trow);
             } else {
                 trow.setValueC(Convert.toDouble(values[2]));
                 trow.setValueTD(Convert.toDouble(values[3]));
                 trow.setValueTP(Convert.toDouble(values[4]));
                 trow.setValuePM(Convert.toDouble(values[5]));
-                CorePlugin.get().save("AcademicLoadConversionRow",trow);
+                CorePlugin.get().save("AcademicLoadConversionRow", trow);
             }
             count++;
         }
@@ -342,8 +342,8 @@ public class XlsxLoadImporter {
             academicTeacherImport.setEmail(Convert.toString(values[COL_EMAIL]));
             academicTeacherImport.setDiscipline(Convert.toString(values[COL_DISCIPLINE]));
             academicTeacherImport.setWeekLoads(new int[]{
-                    Convert.toInt(values[COL_WEEK_LOAD_1], IntegerParserConfig.LENIENT),
-                    Convert.toInt(values[COL_WEEK_LOAD_2], IntegerParserConfig.LENIENT)
+                Convert.toInt(values[COL_WEEK_LOAD_1], IntegerParserConfig.LENIENT),
+                Convert.toInt(values[COL_WEEK_LOAD_2], IntegerParserConfig.LENIENT)
             });
             return academicTeacherImport;
         }
@@ -496,8 +496,8 @@ public class XlsxLoadImporter {
         if (oldAcademicTeacher != null) {
             academicTeacher = oldAcademicTeacher;
         } else {
-            AppUser u= core.findUserByContact(contact.getId());
-            if(u!=null) {
+            AppUser u = core.findUserByContact(contact.getId());
+            if (u != null) {
                 academicTeacher.setUser(u);
             }
         }
@@ -525,11 +525,11 @@ public class XlsxLoadImporter {
 
         academicTeacher.setDiscipline(VrApp.getBean(AcademicPlugin.class).formatDisciplinesNames(a.getDiscipline(), true));
         CorePlugin corePlugin = CorePlugin.get();
-        corePlugin.save(null,contact);
+        corePlugin.save(null, contact);
 
         AppDepartment finalDept = dept;
         AppContact finalContact = contact;
-        if(academicTeacher.getUser()==null) {
+        if (academicTeacher.getUser() == null) {
             AppUser user = UPA.getContext().invokePrivileged(new Action<AppUser>() {
 
                 @Override
@@ -541,7 +541,7 @@ public class XlsxLoadImporter {
             }, null);
             academicTeacher.setUser(user);
         }
-        corePlugin.save(null,academicTeacher);
+        corePlugin.save(null, academicTeacher);
 
         if (a.getWeekLoads() != null) {
             for (int i = 0; i < a.getWeekLoads().length; i++) {
@@ -560,13 +560,13 @@ public class XlsxLoadImporter {
             for (AcademicTeacherSemestrialLoad al : academicTeacherSemestrialLoads) {
                 if (al.getSemester() == sload.getSemester()) {
                     al.setWeeksLoad(sload.getWeeksLoad());
-                    corePlugin.save(null,al);
+                    corePlugin.save(null, al);
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                corePlugin.save(null,sload);
+                corePlugin.save(null, sload);
             }
         }
         AcademicTeacherPeriod academicTeacherPeriod = service.findAcademicTeacherPeriod(mainPeriodId, academicTeacher);
@@ -624,10 +624,10 @@ public class XlsxLoadImporter {
         final int COL_PREP_SCORE = col++;
         final int COL_BAC = col++;
         final int COL_BAC_SCORE = col++;
-        if(values==null){
-            values=new Object[col];
-        }else if(values.length<col){
-            values=Arrays.copyOf(values,col);
+        if (values == null) {
+            values = new Object[col];
+        } else if (values.length < col) {
+            values = Arrays.copyOf(values, col);
         }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         String fn = VrUtils.validateContactName(Convert.toString(values[COL_FIRST_NAME]));
@@ -648,13 +648,13 @@ public class XlsxLoadImporter {
             a.setPreClassBacName(Convert.toString(values[COL_BAC]));
             Object value = values[COL_PREP_SCORE];
             if (value != null && (value instanceof String)) {
-                value= VrUtils.prepareParseInt((String) value);
+                value = VrUtils.prepareParseInt((String) value);
             }
             a.setPreClassPrepScore(Convert.toDouble(value, DoubleParserConfig.LENIENT));
 
             value = values[COL_BAC_SCORE];
             if (value != null && (value instanceof String)) {
-                value= VrUtils.prepareParseInt((String) value);
+                value = VrUtils.prepareParseInt((String) value);
             }
             a.setPreClassBacScore(Convert.toDouble(value, DoubleParserConfig.LENIENT));
             a.setLastName2(Convert.toString(values[COL_LAST_NAME2]));
@@ -721,7 +721,6 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Department Not Found " + a.getDepartmentName());
             }
         }
-
         AppPeriod period = null;
         if (a.getStartPeriodId() != null) {
             period = core.findPeriod(a.getStartPeriodId());
@@ -819,6 +818,12 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Class Not Found " + a.getClassName());
             }
         }
+        if(dept==null){
+            dept=studentclass.resolveDepartment();
+        }
+        if(dept==null){
+                throw new NoSuchElementException("Department Not Found ");
+        }
         boolean force = false;
         AppContact contact = new AppContact();
         contact.setNin(a.getNin());
@@ -841,7 +846,7 @@ public class XlsxLoadImporter {
         } else {
             academicStudent = new AcademicStudent();
             AppUser u = core.findUserByContact(contact.getId());
-            if(u!=null) {
+            if (u != null) {
                 academicStudent.setUser(u);
             }
         }
@@ -912,9 +917,9 @@ public class XlsxLoadImporter {
             contact.setCompany(ctx.mainCompany);
         }
         if (!ctx.isSimulate()) {
-            CorePlugin.get().save(null,contact);
+            CorePlugin.get().save(null, contact);
             academicStudent.setStage(AcademicStudentStage.ATTENDING);
-            if(academicStudent.getUser()==null) {
+            if (academicStudent.getUser() == null) {
                 final AppContact finalContact = contact;
                 final AppDepartment finalDept = dept;
                 AppUser user = UPA.getContext().invokePrivileged(new Action<AppUser>() {
@@ -928,7 +933,7 @@ public class XlsxLoadImporter {
                 });
                 academicStudent.setUser(user);
             }
-            CorePlugin.get().save(null,academicStudent);
+            CorePlugin.get().save(null, academicStudent);
         }
     }
 
@@ -1154,7 +1159,7 @@ public class XlsxLoadImporter {
                         courseLevel.setCreationDate(new Timestamp(System.currentTimeMillis()));
                         courseLevel.setSemester(semester);
                         courseLevel.setAcademicClass(studentClass);
-                        CorePlugin.get().save(null,courseLevel);
+                        CorePlugin.get().save(null, courseLevel);
                     }
                 }
                 {
@@ -1166,7 +1171,7 @@ public class XlsxLoadImporter {
                             courseGroup.setName(stringVal);
                             courseGroup.setAcademicClass(courseLevel.getAcademicClass());
                             courseGroup.setPeriod(period);
-                            CorePlugin.get().save(null,courseGroup);
+                            CorePlugin.get().save(null, courseGroup);
                         }
                     }
                 }
@@ -1223,10 +1228,10 @@ public class XlsxLoadImporter {
                     double effWeek = (Math.ceil(valueC / 15.0) + Math.floor(valueTP / 15.0)) * 1.5;
                     String coursePlanName = courseName;
                     for (String suffix : new String[]{
-                            "- TP", "- C", "- PS", "- PM",
-                            "\u2013 TP", "\u2013 C", "\u2013 PS", "\u2013 PM",
-                            "-TP", "-C", "-PS", "-PM",
-                            "\u2013TP", "\u2013C", "\u2013PS", "\u2013PM",}) {
+                        "- TP", "- C", "- PS", "- PM",
+                        "\u2013 TP", "\u2013 C", "\u2013 PS", "\u2013 PM",
+                        "-TP", "-C", "-PS", "-PM",
+                        "\u2013TP", "\u2013C", "\u2013PS", "\u2013PM",}) {
                         if (courseName.toUpperCase().endsWith(suffix)) {
                             coursePlanName = courseName.substring(0, courseName.length() - suffix.length()).trim();
                             break;
@@ -1244,7 +1249,7 @@ public class XlsxLoadImporter {
                         coursePlan.setValueTD(valueTD);
                         coursePlan.setValueTP(valueTP);
                         coursePlan.setValuePM(valuePM);
-                        CorePlugin.get().save(null,coursePlan);
+                        CorePlugin.get().save(null, coursePlan);
                     }
 
                     AcademicCourseAssignment d = service.findCourseAssignment(coursePlan.getId(), studentClass == null ? null : studentClass.getId(), null);
@@ -1263,7 +1268,7 @@ public class XlsxLoadImporter {
                         d.setShareCount(nbrShares);
                         d.setValueEffWeek(effWeek);
                         d.setTeacher(teacher);
-                        CorePlugin.get().save(null,d);
+                        CorePlugin.get().save(null, d);
                         count++;
                     } else {
                         for (AcademicTeacher ti : teacherIntents) {

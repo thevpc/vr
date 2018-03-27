@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+
+<h:head>
+</h:head>
+
+<h:body>
+
+
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+    <!--@elvariable id="equipmentMaintenanceCtrl" type="net.vpc.app.vainruling.plugins.equipments.web.EquipmentMaintenanceCtrl"-->
+    <ui:composition template="#{vr.privateTemplatePath}">
+        <ui:define name="content">
+            <h:form id="listForm" enctype="multipart/form-data">
+                <div class="row">
+
+                </div>
+            </h:form>
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>

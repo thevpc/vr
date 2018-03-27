@@ -62,7 +62,7 @@ public class AcademicCoursePlan {
     @Main
     @Formula(
             value = "concat((select a.name from AppPeriod a where a.id=this.periodId),'-',(select a.name from AcademicCourseLevel a where a.id=this.courseLevelId),'-',Coalesce(this.code,'X'),'-',this.name)",
-            type = {FormulaType.PERSIST, FormulaType.UPDATE},
+            formulaType = {FormulaType.PERSIST, FormulaType.UPDATE},
             formulaOrder = 1
     )
     private String fullName;
@@ -224,10 +224,10 @@ public class AcademicCoursePlan {
     @Path("Trace")
 //    @Properties(
 //            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
-    @Formula(value = "CurrentTimestamp()", type = FormulaType.PERSIST)
+    @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
     private Timestamp creationDate;
-    @Formula(value = "CurrentTimestamp()", type = {FormulaType.PERSIST, FormulaType.UPDATE})
+    @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
 
     public int getId() {
